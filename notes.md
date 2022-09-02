@@ -7,7 +7,7 @@ project_name/
       session/
         ephys/
         behav/
-        camera/
+          camera/
         microscopy/
 
 ```
