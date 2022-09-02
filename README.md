@@ -6,11 +6,16 @@
 - convenient API for transfering data between local and remote hosts
 
 ### Directory Tree
+
+Below is an suggested folder structure based on the BIDS framework. BIDS is a data organisation format widely used in neuroimaging and human electrophysiology that has recently been extended to animal electrophysiology (1, 2, 3).
+
+Each mouse directory is formatted as sub-XXX (e.g. sub-001) and eachs session is formatted ses-XXX (e.g. ses-001).
+
 ```
 └── project_name/
     └── raw_data/
-        └── mouse/
-            └── session/
+        └── sub-<label>/
+            └── ses-<label>/
                 ├── ephys/
                 ├── behav/
                 │   └── camera/
