@@ -6,7 +6,7 @@
 - convenient API for transfering data between local and remote hosts
 
 ### Directory Tree
-
+```
 project_name >
           > raw_data
                 mouse >
@@ -15,5 +15,5 @@ project_name >
                           > behav
                           > camera
                           > microscopy
-                          
+```                      
                           
