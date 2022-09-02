@@ -7,17 +7,26 @@
 
 ### Directory Tree
 ```
-project_name >
-          > raw_data
-                mouse >
-                  session >
-                     > ephys
-                         raw ephys data (.bin, imec0)
-                     > behav
-                         behaviour output (.csv, .json)
-                     > camera
-                         video from session (.mp4)
-                     > microscopy
-                         associated imaging data (brainglobe)
+project_name/
+¦          raw_data/
+¦                mouse/
+¦                  session/
+¦                     > ephys/
+¦                         raw ephys data (.bin, imec0)
+¦                     > behav/
+¦                         behaviour output (.csv, .json)
+¦                     > camera/
+¦                         video from session (.mp4)
+¦                     > microscopy/
+ ¦                        associated imaging data (brainglobe)
 ```                      
                           
+                          # the
+## quick
+### brown
+## fox
+## jumps
+### over
+#### the
+### lazy
+## dog
