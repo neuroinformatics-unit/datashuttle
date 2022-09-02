@@ -7,7 +7,6 @@
 
 ### Directory Tree
 ```
-.
 └── project_name/
     └── raw_data/
         └── mouse/
