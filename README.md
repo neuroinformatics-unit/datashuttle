@@ -1,4 +1,4 @@
-# SWC Data Management TOol
+# SWC Data Management Tool
 
 - Conveneint GUI / Python API / Command line interface Tool for project data management
 - Generate standardized directory trees for projects, convenient when collecting new data
