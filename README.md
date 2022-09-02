@@ -7,13 +7,14 @@
 
 ### Directory Tree
 ```
+.
 └── project_name/
     └── raw_data/
         └── mouse/
             └── session/
                 ├── ephys/
                 ├── behav/
-                ├── camera/
+                │   └── camera/
                 └── microscopy/
 ```                      
 
