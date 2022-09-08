@@ -14,11 +14,15 @@ Each mouse directory is formatted as sub-XXX (e.g. sub-001) and eachs session is
 ```
 └── project_name/
     └── raw_data/
-        └── sub-<label>/
-            └── ses-<label>/
-                ├── ephys/
-                ├── behav/
-                │   └── camera/
-                └── microscopy/
+        ├── ephys/
+        │   └── mouse/
+        │       └── session/
+        │           └── behav/
+        │               └── camera
+        ├── behav/
+        │   └── mouse/
+        │       └── session/
+        └── microscopy/
+            └── mouse/
 ```                      
 
