@@ -8,6 +8,7 @@ import warnings
 from pathlib import Path
 from typing import Union
 
+
 # Assumptions: the remote host is unix system
 
 # TODO:
@@ -15,28 +16,17 @@ from typing import Union
 # - print is currently used to feedback information, improve
 # - logging
 # - mounted network drive not supported
+# - 'generate bids filename name'
+# - (partial - check) allow different profiles on the same system by passing the username to the class rather than loading from config
+# - handling the configs is a little circlar ATM as if fail, set_config_path loads them back into the class, might be easier to extract make_config_file() to separate loading class / function
+#   but it is less neat for the user.
 
 # --------------------------------------------------------------------------------------------------------------------
-# Folder Class
+# Project Manager Class
 # --------------------------------------------------------------------------------------------------------------------
-
-
-class Folder():
-    def __init__(self, name, used, subfolders=None):
-        self.name = name
-        self.used = used
-        self.subfolders = subfolders
-
-    # --------------------------------------------------------------------------------------------------------------------
-    # Project Manager Class
-    # --------------------------------------------------------------------------------------------------------------------
-
 
 class ProjectManager():
     """
-    TODO: allow different profiles on the same system by passing the username to the class rather than loading from config
-    TODO: handling the configs is a little circlar ATM as if fail, set_config_path loads them back into the class, might be easier to extract make_config_file() to separate loading class / function
-          but it is less neat for the user.
     """
 
     def __init__(self, username):
@@ -58,18 +48,27 @@ class ProjectManager():
         """
         Once config file is loaded, update all private attributes according to config contents.
 
-        TODO: for adding new files, first this tree but be extended, then a new option added to inputs of make_config file. Can be neatened.
+        The _ses_folders contains the entire directory tree for each data type. The structure is that the top-level folder (e.g. ephys,
+        behav, microscopy) are found in the project root. Then sub- and ses- folders are created in this project root, and all subfolders
+        are created at the session level.
+
+        TODO: - for adding new files, first this tree but be extended, then a new option added to inputs of make_config file. This can be
+                refactored and an easier way to indicate the relationship between folders found.
+              - factor out _ses_folders generation
+              - decide whether to repeat top-level dir name in the session level dir
         """
         self._username_ssh_key = self.username + "_ssh_key"
 
         self._ses_folders = {"ephys": Folder("ephys",
                                              self.cfg.use_ephys,
                                              subfolders={"ephys_behav": Folder("behav",
-                                                                                self.cfg.use_ephys_behav,
-                                                                                subfolders={"ephys_behav_camera": Folder("camera",
-                                                                                                                         True,
-                                                                                                                         subfolders={"test_2": Folder("test_2", False), "test_3": Folder("test_3", True)})}),
-                                             }
+                                                                               self.cfg.use_ephys_behav,
+                                                                               subfolders={"ephys_behav_camera": Folder("camera",
+                                                                                                                        self.cfg.use_ephys_behav_camera,
+                                                                                                                        ),
+                                                                                           },
+                                                                               ),
+                                                         },
                                              ),
 
                              "behav": Folder("behav",
@@ -77,8 +76,8 @@ class ProjectManager():
                                              subfolders={"behav_camera":
                                                              Folder("camera",
                                                                     self.cfg.use_behav_camera
-                                                                    )
-                                                         }
+                                                                    ),
+                                                         },
                                              ),
 
                              "microscopy": Folder("microscopy",
@@ -87,118 +86,20 @@ class ProjectManager():
                                                   ),
                              }
 
-    def make_config_file(self,
-                         local_path: str,
-                         remote_path: str,
-                         remote_host_id: str,
-                         remote_host_username: str,
-                         sub_prefix: str = "sub-",
-                         ses_prefix: str = "ses-",
-                         use_ephys: bool = True,
-                         use_ephys_behav: bool = True,
-                         use_ephys_behav_camera: bool = True,
-                         use_behav: bool = True,
-                         use_behav_camera: bool = True,
-                         use_microscopy: bool = True
-                         ):
-        """
-        Initialise a config file for using the project manager on the local system. Once initialised, these
-        settings will be used each time the project manager is opened.
-
-        :param local_path:                  path to project folder on local machine
-        :param remote_path:                 path to project folder on remote machine
-        :param remote_host_id:              path to remote machine root, either path to mounted drive (TODO: CURRENTLY NOT SUPPORTED) or address for host for ssh
-        :param remote_host_username:        username for which to login to remote host. 
-        :param sub_prefix:                  prefix for all subject (i.e. mouse) level directory. Default is BIDS: "sub-"
-        :param ses_prefix:                  prefix for all session level directory. Default is BIDS: "ses-"
-        :param use_ephys:                   setting true will create ephys directory tree on this machine
-        :param use_ephys_behav:             setting true will create behav directory in ephys directory on this machine
-        :param use_ephys_behav_camera:      setting true will create camera directory in ephys behaviour directory on this machine
-        :param use_behav:                   setting true will create behav directory
-        :param use_behav_camera:            setting true will create camera directory in behav directory
-        :param use_microscopy:              settin true will create microscope directory
-        :return: None
-
-        NOTE: higher level folder settings will override lower level settings (e.g. if ephys_behav_camera=True and ephys_behav=False,
-              ephys_behav_camera will not be made).
-
-        TODO: - this does not currently consider file levels (e.g. behav > camera file structure).
-              - check if already exists, if so throw a overwrite warning
-              - mounted network drive not supported
-              - perform checks on inputs
-        """
-        config = {
-            "local_path": local_path,
-            "remote_path": remote_path,
-            "remote_host_id": remote_host_id,  # TODO: this could be path (mounted) or server (SSH)
-            "remote_host_username": remote_host_username,
-            "sub_prefix": sub_prefix,
-            "ses_prefix": ses_prefix,
-            "use_ephys": use_ephys,
-            "use_ephys_behav": use_ephys_behav,
-            "use_ephys_behav_camera": use_ephys_behav_camera,
-            "use_behav": use_behav,
-            "use_behav_camera": use_behav_camera,
-            "use_microscopy": use_microscopy,
-        }
-
-        with open(self._config_path, "w") as config_file:
-            yaml.dump(config, config_file, sort_keys=False)
-
-        self.cfg = self._attempt_load_configs(prompt_on_fail=False)
-        self.set_attributes_after_config_load()
-        print("Configuration file has been saved and options loaded into the project manager.")
-
-    def _config_file_exists(self, prompt_on_fail : bool) -> bool:
-        """
-        Check the config file exists in the expected directory.
-
-        :param prompt_on_fail: if config file not found, warn the user.
-
-        :return: True or False
-        """
-        exists = os.path.isfile(self._config_path)  # TODO: could make own var
-
-        if not exists and prompt_on_fail:
-            warnings.warn("Configuration file has not been initialed. Use make_config_file() to setup before continuing.")
-
-        return exists
-
-    def _attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
-        """
-        Attempt to load the config file. If it does not exist or crashes when attempt to load from file, return False.
-
-        :param prompt_on_fail: if config file not found, or crashes on load, warn the user.
-
-        :return: loaded dictionary, or False if not loaded.
-        """
-        if not self._config_file_exists(prompt_on_fail):
-            return False
-
-        try:
-            with open(self._config_path, "r") as config_file:
-                config_dict = yaml.full_load(config_file)
-
-            for path_key in ["local_path", "remote_path"]:
-                config_dict[path_key] = Path(config_dict[path_key])
-
-            config = SimpleNamespace(**config_dict)
-
-        except:
-            config = False
-
-            if prompt_on_fail:
-                print(f"Config file failed to load. Check file formatting at {self._config_path}. "
-                      f"If cannot load, re-initialise configs with make_config_file()")
-
-        return config
-
     # --------------------------------------------------------------------------------------------------------------------
     # Publicly Accessible Directory Makers
     # --------------------------------------------------------------------------------------------------------------------
 
-    def make_mouse_folder(self, sub_names, ses_names=None, make_ses_tree=True):
-        """"""
+    def make_sub_folder(self,
+                        data_type: str,
+                        sub_names: Union[str, list],
+                        ses_names: Union[str, list] = None,
+                        make_ses_tree: bool = True):
+        """
+        Make a subject directory in the data type folder. By default, it will create the entire directory tree for this subject.
+
+        See _make_directory_tree() for inputs.
+        """
         sub_names = self._process_names(sub_names, "sub")
 
         if make_ses_tree:
@@ -209,32 +110,61 @@ class ProjectManager():
         else:
             ses_names = []
 
-        self._make_directory_trees(sub_names, ses_names, make_ses_tree, process_names=False)
+        self._make_directory_trees(data_type, sub_names, ses_names, make_ses_tree, process_names=False)
 
-    def make_ses_folder(self, sub_names, ses_names, make_ses_tree=True):
-        """"""
-        self._make_directory_trees(sub_names, ses_names, make_ses_tree)
+    def make_ses_folder(self,
+                        data_type: str,
+                        sub_names: Union[str, list],
+                        ses_names: Union[str, list],
+                        make_ses_tree: bool = True):
+        """
+        See _make_directory_tree() for inputs.
+        """
+        self._make_directory_trees(data_type, sub_names, ses_names, make_ses_tree)
 
-    def make_ses_tree(self, sub_names, ses_names):
-        """"""
-        self._make_directory_trees(sub_names, ses_names)
-
-    def get_local_path(self):
-        return self.cfg.local_path.as_posix()
-
-    def get_appdir_path(self):
-        return self._get_user_appdir_path().as_posix()
+    def make_ses_tree(self,
+                      data_type: str,
+                      sub_names: Union[str, list],
+                      ses_names: Union[str, list]):
+        """
+        See _make_directory_tree() for inputs.
+        """
+        self._make_directory_trees(data_type, sub_names, ses_names)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Make Directory Trees
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _make_directory_trees(self, sub_names, ses_names, make_ses_tree=True, process_names=True):
-        """"""
+    def _make_directory_trees(self,
+                              data_type: str,
+                              sub_names: Union[str, list],
+                              ses_names: Union[str, list],
+                              make_ses_tree: bool = True,
+                              process_names: bool = True):
+        """
+        Entry method to make a full directory tree. It will iterate through all
+        passed subjects, then sessions, then subfolders within a data_type folder. This
+        permits flexible creation of folders (e.g. to make subject only, do not pass session name.
+
+        subject and session names are first processed to ensure correct format.
+
+        :param data_type:       The data_type to make the folder in (e.g. "ephys", "behav", "microscopy"). If "all" is selected,
+                                folder will be created for all data type.
+        :param sub_names:       subject name / list of subject names to make within the folder (if not already, these will be prefixed with sub/ses identifier)
+        :param ses_names:       session names (same format as subject name). If no session is provided, defaults to "ses-001".
+        :param make_ses_tree:   option to make the entire session tree under the subject directory. If False, the subject folder only will be created.
+        :param process_names:   option to process names or not (e.g. if names were processed already).
+
+        """
         sub_names = self._process_names(sub_names, "sub") if process_names else sub_names
         ses_names = self._process_names(ses_names, "ses") if process_names else ses_names
 
-        for data_type_key, data_type_dir in self._ses_folders.items():
+        if not self._check_data_type_is_valid(data_type, prompt_on_fail=True):
+            return
+
+        data_type_items = zip([data_type], [self._ses_folders[data_type]]) if data_type != "all" else self._ses_folders.items()
+
+        for data_type_key, data_type_dir in data_type_items:
 
             if data_type_dir.used:
                 self._make_dirs(self._join("local", data_type_dir.name))
@@ -250,23 +180,48 @@ class ProjectManager():
                         if make_ses_tree:
                             self._make_ses_directory_tree(sub, ses, data_type_key)
 
-    def _make_ses_directory_tree(self, sub, ses, top_level_key):  # TODO: use fully recursive structure by giving each folder class a function to make its own dir tree, much more extendable than this
+    def _make_ses_directory_tree(self,
+                                 sub: str,
+                                 ses: str,
+                                 data_type_key: str):
         """
-        Assumes sub, ses dir is already made
+        Make the directory tree within a session. This is dependent on the data_type (e.g. "ephys")
+        folder and defined in the subfolders field on the Folder class, in self._ses_folders.
+
+        All subfolders will be make recursively, unless the .used attribute on the Folder class is
+        False. This will also stop and subfolders of the subfolder been created.
+
+        :param sub:              subject name to make directory tree in
+        :param ses:              session name to make directory tree in
+        :param data_type_key:    data_type_key (e.g. "ephys") to make directory tree in. Note this defines the subfolders created.
         """
-        data_type_dir = self._ses_folders[top_level_key]
+        data_type_dir = self._ses_folders[data_type_key]
 
         if data_type_dir.used and data_type_dir.subfolders:
             self._recursive_make_subfolders(folder=data_type_dir,
                                             path_to_folder=[data_type_dir.name, sub, ses])
 
-    def _recursive_make_subfolders(self, folder, path_to_folder):
+    def _recursive_make_subfolders(self,
+                                   folder: Folder,
+                                   path_to_folder: list):
         """
-        assumes top level dir is already made and now just making subfolders
+        Function to recursively create all directories in a Folder .subfolders field.
+
+        i.e. this will first create a folder based on the .name attribute. It will then
+        loop through all .subfolders, and do the same - recursively looping through subfolders
+        until the entire directory tree is made. If .used attribute on a folder is False,
+        that folder and all subfolders of the folder will not be made.
+
+        :param folder:
+        :param path_to_folder:
+        :return:
         """
         if folder.subfolders:
+
             for subfolder in folder.subfolders.values():
+
                 if subfolder.used:
+
                     new_path_to_folder = path_to_folder + [subfolder.name]
                     self._make_dirs(self._join("local", new_path_to_folder))
                     self._recursive_make_subfolders(subfolder, new_path_to_folder)
@@ -336,7 +291,117 @@ class ProjectManager():
             client.exec_command("chmod 700 ~/.ssh/")
 
     # --------------------------------------------------------------------------------------------------------------------
-    # Utils TODO: move
+    # Handle Configs
+    # --------------------------------------------------------------------------------------------------------------------
+
+    def make_config_file(self,
+                         local_path: str,
+                         remote_path: str,
+                         remote_host_id: str,
+                         remote_host_username: str,
+                         sub_prefix: str = "sub-",
+                         ses_prefix: str = "ses-",
+                         use_ephys: bool = True,
+                         use_ephys_behav: bool = True,
+                         use_ephys_behav_camera: bool = True,
+                         use_behav: bool = True,
+                         use_behav_camera: bool = True,
+                         use_microscopy: bool = True
+                         ):
+        """
+        Initialise a config file for using the project manager on the local system. Once initialised, these
+        settings will be used each time the project manager is opened.
+
+        :param local_path:                  path to project folder on local machine
+        :param remote_path:                 path to project folder on remote machine
+        :param remote_host_id:              path to remote machine root, either path to mounted drive (TODO: CURRENTLY NOT SUPPORTED) or address for host for ssh
+        :param remote_host_username:        username for which to login to remote host.
+        :param sub_prefix:                  prefix for all subject (i.e. mouse) level directory. Default is BIDS: "sub-"
+        :param ses_prefix:                  prefix for all session level directory. Default is BIDS: "ses-"
+        :param use_ephys:                   setting true will create ephys directory tree on this machine
+        :param use_ephys_behav:             setting true will create behav directory in ephys directory on this machine
+        :param use_ephys_behav_camera:      setting true will create camera directory in ephys behaviour directory on this machine
+        :param use_behav:                   setting true will create behav directory
+        :param use_behav_camera:            setting true will create camera directory in behav directory
+        :param use_microscopy:              settin true will create microscope directory
+        :return: None
+
+        NOTE: higher level folder settings will override lower level settings (e.g. if ephys_behav_camera=True and ephys_behav=False,
+              ephys_behav_camera will not be made).
+
+        TODO: - this does not currently consider file levels (e.g. behav > camera file structure).
+              - check if already exists, if so throw a overwrite warning
+              - mounted network drive not supported
+              - perform checks on inputs
+        """
+        config = {
+            "local_path": local_path,
+            "remote_path": remote_path,
+            "remote_host_id": remote_host_id,  # TODO: this could be path (mounted) or server (SSH)
+            "remote_host_username": remote_host_username,
+            "sub_prefix": sub_prefix,
+            "ses_prefix": ses_prefix,
+            "use_ephys": use_ephys,
+            "use_ephys_behav": use_ephys_behav,
+            "use_ephys_behav_camera": use_ephys_behav_camera,
+            "use_behav": use_behav,
+            "use_behav_camera": use_behav_camera,
+            "use_microscopy": use_microscopy,
+        }
+
+        with open(self._config_path, "w") as config_file:
+            yaml.dump(config, config_file, sort_keys=False)
+
+        self.cfg = self._attempt_load_configs(prompt_on_fail=False)
+        self.set_attributes_after_config_load()
+        self._message_user("Configuration file has been saved and options loaded into the project manager.")
+
+    def _config_file_exists(self, prompt_on_fail: bool) -> bool:
+        """
+        Check the config file exists in the expected directory.
+
+        :param prompt_on_fail: if config file not found, warn the user.
+
+        :return: True or False
+        """
+        exists = os.path.isfile(self._config_path)  # TODO: could make own var
+
+        if not exists and prompt_on_fail:
+            warnings.warn("Configuration file has not been initialed. Use make_config_file() to setup before continuing.")
+
+        return exists
+
+    def _attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
+        """
+        Attempt to load the config file. If it does not exist or crashes when attempt to load from file, return False.
+
+        :param prompt_on_fail: if config file not found, or crashes on load, warn the user.
+
+        :return: loaded dictionary, or False if not loaded.
+        """
+        if not self._config_file_exists(prompt_on_fail):
+            return False
+
+        try:
+            with open(self._config_path, "r") as config_file:
+                config_dict = yaml.full_load(config_file)
+
+            for path_key in ["local_path", "remote_path"]:
+                config_dict[path_key] = Path(config_dict[path_key])
+
+            config = SimpleNamespace(**config_dict)
+
+        except:
+            config = False
+
+            if prompt_on_fail:
+                self._message_user(f"Config file failed to load. Check file formatting at {self._config_path}. "
+                                   f"If cannot load, re-initialise configs with make_config_file()")
+
+        return config
+
+    # --------------------------------------------------------------------------------------------------------------------
+    # Utils TODO: move where possible
     # --------------------------------------------------------------------------------------------------------------------
 
     def _join(self, base, subfolders):
@@ -360,7 +425,7 @@ class ProjectManager():
     def _process_names(self, names, sub_or_ses):
         """"""
         if type(names) not in [str, list] or any([type(ele) != str for ele in names]):  # TODO: tidy up, decide whether to handle non-str types
-            print("Ensure subject and session names are list of strings, or string")  # TODO: better error
+            self._message_user("Ensure subject and session names are list of strings, or string")  # TODO: better error
             return False
 
         if type(names) == str:
@@ -393,6 +458,25 @@ class ProjectManager():
             os.makedirs(base_path)
         return base_path
 
+    def get_local_path(self):
+        return self.cfg.local_path.as_posix()
+
+    def get_appdir_path(self):
+        return self._get_user_appdir_path().as_posix()
+
+    def _check_data_type_is_valid(self, data_type, prompt_on_fail):
+
+        is_valid = data_type in self._ses_folders.keys()
+
+        if prompt_on_fail and not is_valid:
+            self._message_user(f"data_type: {data_type} is not valid. Must be one of {list(self._ses_folders.keys())}. No folders were made.")  # TODO: warning?
+
+        return is_valid
+
+    @staticmethod
+    def _message_user(message):
+        print(message)
+
     @staticmethod
     def _make_dirs(paths):
         """"""
@@ -412,11 +496,12 @@ class ProjectManager():
         return [prefix + name if name[:n_chars] != prefix else name for name in names]
 
     # --------------------------------------------------------------------------------------------------------------------
-    # Handle Configs
+    # Folder Class
     # --------------------------------------------------------------------------------------------------------------------
 
-    def set_configs(self):
-        pass
 
-    def _check_configs(self):
-        pass
+class Folder():
+    def __init__(self, name, used, subfolders=None):
+        self.name = name
+        self.used = used
+        self.subfolders = subfolders
