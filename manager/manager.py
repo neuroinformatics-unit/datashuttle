@@ -8,6 +8,10 @@ import warnings
 from pathlib import Path
 from typing import Union
 import copy
+from ftpsync.ftp_target import FTPTarget
+from ftpsync.sftp_target import SFTPTarget
+from ftpsync.targets import FsTarget
+from ftpsync.synchronizers import UploadSynchronizer
 
     # --------------------------------------------------------------------------------------------------------------------
     # Folder Class
@@ -251,43 +255,19 @@ class ProjectManager():
     # add ssh single folder
     # add
 
+    # TODO: add function for upload syncronise within project
+    #       add function for general upload (not in standard folder setup)
+    #       add download function
+    #       think hard - is there any other function to implement?
+    #       doc, refactor, type
+    #       talk to Adam, write tests
+    #       CLI, GUI
+
     def upload_folder_or_file(self, filepath, preview=False):
         """
         """
-        from ftpsync.targets import FsTarget
-        from ftpsync.ftp_target import FTPTarget
-        from ftpsync.synchronizers import UploadSynchronizer
-
-        local = FsTarget("~/temp")
-        user = "joe"
-        passwd = "secret"
-        remote = FTPTarget("/temp", "example.com", username=user, password=passwd)
-
-        opts = {"help": False,
-                "verbose": True,
-                "quiet": 3,
-                "debug ": 3,
-                "case": 3,
-                "dry_run": 3,
-                "progress": 3,
-                "no_color": 3,
-                "ftp_active": 3,
-                "migrate": 3,
-                "no_verify_host_keys": 3,
-                "match": 3,
-                "exclude": 3,
-                "prompt": 3,
-                "no_prompt": 3,
-                "no_keyring": 3,
-                "no_netrc": 3,
-                "store_password": 3,
-                "force": 3,
-                "resolve": 3,
-                "delete": None,
-                "delete_unmatched": None,
-                "create_folder": True,
-                "report_problems": True,
-                }
+        local = FsTarget(self._join("local", "manager"))
+        remote = SFTPTarget("/nfs/nhome/live/jziminski/manager", "ssh.swc.ucl.ac.uk", username="jziminski", private_key=r"C:\Users\User\AppData\Local\ProjectManagerSWC\jziminski\jziminski_ssh_key", hostkeys=self._hostkeys)
 
         s = UploadSynchronizer(local, remote, opts)
         s.run()
@@ -296,7 +276,42 @@ class ProjectManager():
 
 
 
+    def _get_default_upload_opts(self, preview):
+        """
+        """
+        opts = {"help": False,
+                "verbose": 5,
+                #           "quiet": 3,
+                "debug ": False,
+                "case": "strict",
+                "dry_run": preview,
+                "progress": False,  # TODO
+                "no_color": True,
+                "ftp_active": False,  # TODO
+                "migrate": False,
+                "no_verify_host_keys": False,
+                #                "match": 3,
+                #                "exclude": 3,
+                "prompt": False,
+                "no_prompt": False,
+                "no_keyring": True,
+                "no_netrc": True,
+                "store_password": False,
+                "force": "restore",  # False
+                "resolve": "ask",
+                "delete": False,
+                "delete_unmatched": False,
+                "create_folder": True,
+                "report_problems": False,
+                }
+        return opts
 
+    def setup_ssh_connection_to_remote_server(self):
+
+        verified = self.verify_ssh_remote_host()
+
+        if verified:
+            self.setup_ssh_key()
 
     def setup_ssh_key(self):
         """generate_ssh_key_and_copy_pub_to_remote_host"""
@@ -313,6 +328,29 @@ class ProjectManager():
 
         self._add_public_key_to_remote_authorized_keys(password, key)
 
+    def verify_ssh_remote_host(self):
+        """"""
+        with paramiko.Transport(self.cfg["remote_host_id"]) as transport:
+            transport.connect()
+            key = transport.get_remote_server_key()
+
+        self._message_user(f"The host key is not cached for this server: {self.cfg['remote_host_id']}.\n"
+                           f"You have no guarantee that the server is the computer you think it is.\n"
+                           f"The server's {key.get_name()} key fingerprint is: {key.get_base64()}\n"
+                           f"If you trust this host, to connect and cache the host key, press y: ")
+        input_ = input()
+
+        if input_ == "y":
+            client = paramiko.SSHClient()
+            client.get_host_keys().add(self.cfg["remote_host_id"], key.get_name(), key)
+            client.get_host_keys().save(self._hostkeys)
+            set = True
+        else:
+            self._message_user("Host not accepted. No connection made.")
+            set = False
+
+        return set
+
     def write_public_key(self, filepath, key):
         """
         TODO: should this be done automatically, or just provided in case user wants public key? Paramiko can use the private key only.
@@ -327,27 +365,6 @@ class ProjectManager():
         """"""
         key = paramiko.RSAKey.generate(4096)
         key.write_private_key_file(self._ssh_key_path)
-
-    def test_sync(self):
-        from ftpsync.sftp_target import SFTPTarget
-        x = SFTPTarget("/nfs/nhome/live/jziminski/manager", "ssh.swc.ucl.ac.uk", username="jziminski", private_key=r"C:\Users\User\AppData\Local\ProjectManagerSWC\jziminski\jziminski_ssh_key", hostkeys=self._hostkeys)
-
-    def verify_ssh_remote_host(self):
-
-        with paramiko.SSHClient() as client:
-            key = client.get_transport().get_remote_server_key()
-
-            self._message_user(f"The host key is not cached for this server: {self.cfg['remote_host_id']}.\n"
-                               f"You have no guarantee that the server is the computer you think it is."
-                               f"The server's {key.get_name()} key fingerprint is: {key.get_base64()}\n"
-                               f"If you trust this host, input y")
-            input_ = input()
-
-            if input_ == "y":
-                client.get_host_keys().add(self.cfg["remote_host_id"], key.get_name(), key)
-                client.get_host_keys().save(self._hostkeys_path)
-            else:
-                self._message_user("Host not accepted. No connection made.")
 
     def _add_public_key_to_remote_authorized_keys(self, password, key):
         """ssh-copy-id but from any platform.Could be improved (i.e. use ssh-copy-id if possible / there is a python version for windows"""
@@ -369,7 +386,8 @@ class ProjectManager():
     # populate remote by syncing only... otherwise confusing to populate on remote from local. If want
     # full file tree can go to remote and set it up there
 
-    # TODEL
+    # TODEL -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
     def _connect_client(self, client):
         client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(self.cfg["remote_host_id"], username=self.username, key_filename=self._ssh_key_path, look_for_keys=True)  # TODO: return error
@@ -396,7 +414,7 @@ class ProjectManager():
 
             # stdin, stdout, stderr = client.exec_command('w')
             # print(stdout.read().decode())
-            
+
 
     # --------------------------------------------------------------------------------------------------------------------
     # Handle Configs
