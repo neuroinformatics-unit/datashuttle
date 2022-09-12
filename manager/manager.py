@@ -68,6 +68,7 @@ class ProjectManager():
               - decide whether to repeat top-level dir name in the session level dir
         """
         self._ssh_key_path = self._join("appdir", self.username + "_ssh_key")
+        self._hostkeys = self._join("appdir", "hostkeys")
 
         self._ses_folders = {"ephys": Folder("ephys",
                                              self.cfg["use_ephys"],
@@ -246,6 +247,57 @@ class ProjectManager():
     # 4) checks
     # TODO: need to setup different users for ssh key / test multiple users
 
+    # TODO
+    # add ssh single folder
+    # add
+
+    def upload_folder_or_file(self, filepath, preview=False):
+        """
+        """
+        from ftpsync.targets import FsTarget
+        from ftpsync.ftp_target import FTPTarget
+        from ftpsync.synchronizers import UploadSynchronizer
+
+        local = FsTarget("~/temp")
+        user = "joe"
+        passwd = "secret"
+        remote = FTPTarget("/temp", "example.com", username=user, password=passwd)
+
+        opts = {"help": False,
+                "verbose": True,
+                "quiet": 3,
+                "debug ": 3,
+                "case": 3,
+                "dry_run": 3,
+                "progress": 3,
+                "no_color": 3,
+                "ftp_active": 3,
+                "migrate": 3,
+                "no_verify_host_keys": 3,
+                "match": 3,
+                "exclude": 3,
+                "prompt": 3,
+                "no_prompt": 3,
+                "no_keyring": 3,
+                "no_netrc": 3,
+                "store_password": 3,
+                "force": 3,
+                "resolve": 3,
+                "delete": None,
+                "delete_unmatched": None,
+                "create_folder": True,
+                "report_problems": True,
+                }
+
+        s = UploadSynchronizer(local, remote, opts)
+        s.run()
+
+
+
+
+
+
+
     def setup_ssh_key(self):
         """generate_ssh_key_and_copy_pub_to_remote_host"""
         # TODO: checks that these dont already exist.
@@ -260,29 +312,6 @@ class ProjectManager():
         key = paramiko.RSAKey.from_private_key_file(self._ssh_key_path)
 
         self._add_public_key_to_remote_authorized_keys(password, key)
-
-    def copy_file_to_server(self, filepath, preview=False):
-        """"""
-        source = self._join("local", filepath)
-        dest = self._join("remote", filepath)
-
-        if preview:
-            self._message_user(f"source: {source}\n" 
-                               f"destination: {dest}")
-            return
-
-        with paramiko.client.SSHClient() as client:
-            self._connect_client(client)
-
-            with client.open_sftp() as sftp:
-                self._mkdir_p(sftp, dest)
-                sftp.put(source, dest)    # TODO: see documentation and add test https://docs.paramiko.org/en/stable/api/sftp.html # TODO: handle case with alraedy opened client (we not going to reopen connection for every file!
-
-            # TODO: support list of files
-            # TODO: join_local, join_remote
-
-            # stdin, stdout, stderr = client.exec_command('w')
-            # print(stdout.read().decode())
 
     def write_public_key(self, filepath, key):
         """
@@ -299,9 +328,26 @@ class ProjectManager():
         key = paramiko.RSAKey.generate(4096)
         key.write_private_key_file(self._ssh_key_path)
 
-    def _connect_client(self, client):
-        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        client.connect(self.cfg["remote_host_id"], username=self.username, key_filename=self._ssh_key_path, look_for_keys=True)  # TODO: return error
+    def test_sync(self):
+        from ftpsync.sftp_target import SFTPTarget
+        x = SFTPTarget("/nfs/nhome/live/jziminski/manager", "ssh.swc.ucl.ac.uk", username="jziminski", private_key=r"C:\Users\User\AppData\Local\ProjectManagerSWC\jziminski\jziminski_ssh_key", hostkeys=self._hostkeys)
+
+    def verify_ssh_remote_host(self):
+
+        with paramiko.SSHClient() as client:
+            key = client.get_transport().get_remote_server_key()
+
+            self._message_user(f"The host key is not cached for this server: {self.cfg['remote_host_id']}.\n"
+                               f"You have no guarantee that the server is the computer you think it is."
+                               f"The server's {key.get_name()} key fingerprint is: {key.get_base64()}\n"
+                               f"If you trust this host, input y")
+            input_ = input()
+
+            if input_ == "y":
+                client.get_host_keys().add(self.cfg["remote_host_id"], key.get_name(), key)
+                client.get_host_keys().save(self._hostkeys_path)
+            else:
+                self._message_user("Host not accepted. No connection made.")
 
     def _add_public_key_to_remote_authorized_keys(self, password, key):
         """ssh-copy-id but from any platform.Could be improved (i.e. use ssh-copy-id if possible / there is a python version for windows"""
@@ -320,37 +366,41 @@ class ProjectManager():
 
         self._message_user(f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}")
 
+    # populate remote by syncing only... otherwise confusing to populate on remote from local. If want
+    # full file tree can go to remote and set it up there
+
+    # TODEL
+    def _connect_client(self, client):
+        client.set_missing_host_key_policy(paramiko.RejectPolicy())
+        client.connect(self.cfg["remote_host_id"], username=self.username, key_filename=self._ssh_key_path, look_for_keys=True)  # TODO: return error
+
+    def copy_file_to_server(self, filepath, preview=False):
+        """"""
+        source = self._join("local", filepath)
+        dest = self._join("remote", filepath)
+
+        if preview:
+            self._message_user(f"source: {source}\n"
+                               f"destination: {dest}")
+            return
+
+        with paramiko.client.SSHClient() as client:
+            self._connect_client(client)
+
+            with client.open_sftp() as sftp:
+                self._mkdir_p(sftp, dest)
+                sftp.put(source, dest)  # TODO: see documentation and add test https://docs.paramiko.org/en/stable/api/sftp.html # TODO: handle case with alraedy opened client (we not going to reopen connection for every file!
+
+            # TODO: support list of files
+            # TODO: join_local, join_remote
+
+            # stdin, stdout, stderr = client.exec_command('w')
+            # print(stdout.read().decode())
+            
+
     # --------------------------------------------------------------------------------------------------------------------
     # Handle Configs
     # --------------------------------------------------------------------------------------------------------------------
-
-    def _mkdir_p(self, sftp, remote, is_dir=False):  # TODO: move
-        """
-        emulates mkdir_p if required.
-        sftp - is a valid sftp object
-        remote - remote path to create.
-
-        NOTE: from https://stackoverflow.com/questions/14819681/upload-files-using-sftp-in-python-but-create-directories-if-path-doesnt-exist
-        """
-        dirs_ = []
-        if is_dir:
-            dir_ = remote
-        else:
-            dir_, basename = os.path.split(remote)
-        while len(dir_) > 1:
-            dirs_.append(dir_)
-            dir_, _ = os.path.split(dir_)
-
-        if len(dir_) == 1 and not dir_.startswith("/"):
-            dirs_.append(dir_)  # For a remote path like y/x.txt
-
-        while len(dirs_):
-            dir_ = dirs_.pop()
-            try:
-                sftp.stat(dir_)
-            except:
-                print(f"making {dir_}")
-                sftp.mkdir(dir_)
 
     def make_config_file(self,
                          local_path: str,
