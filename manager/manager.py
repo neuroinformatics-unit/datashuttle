@@ -11,20 +11,38 @@ import copy
 from ftpsync.ftp_target import FTPTarget
 from ftpsync.sftp_target import SFTPTarget
 from ftpsync.targets import FsTarget
-from ftpsync.synchronizers import UploadSynchronizer
+from ftpsync.synchronizers import UploadSynchronizer, DownloadSynchronizer
+from functools import wraps
+import fnmatch
+import stat
+import glob
 
-    # --------------------------------------------------------------------------------------------------------------------
-    # Folder Class
-    # --------------------------------------------------------------------------------------------------------------------
+# TODO
 
+# 1) setup SSH key in windows, mac, linux
+# 2) ssh to remote server
+# 3) transfer file
+# 4) checks
+# TODO: need to setup different users for ssh key / test multiple users
 
-class Folder():
-    def __init__(self, name, used, subfolders=None):
-        self.name = name
-        self.used = used
-        self.subfolders = subfolders
-
+# TODO
+# add ssh single folder
+# add
+# Tree to walk through entire directory tree
+# TODO: add function for upload syncronise within project
+#       add function for general upload (not in standard folder setup)
+#       add download function
+#       think hard - is there any other function to implement?
+#       doc, refactor, type
+#       talk to Adam, write tests
+#       CLI, GUI
+#       test pysync fork
+# TODO: going to need to print all instances where a file was not moved because already exists.
+# populate remote by syncing only... otherwise confusing to populate on remote from local. If want
+# full file tree can go to remote and set it up there
+# test breaking the internet connection mid-up / download
 # Assumptions: the remote host is unix system
+# TODO: add info file for each ses with date time etc.
 
 # TODO:
 # - typing
@@ -36,6 +54,46 @@ class Folder():
 # - handling the configs is a little circlar ATM as if fail, set_config_path loads them back into the class, might be easier to extract make_config_file() to separate loading class / function
 #   but it is less neat for the user.
 
+
+# filter files and folders
+# return
+
+# filter out files.
+
+# TODO: completely different procedure if it is not local
+
+# handle all
+# handle if data type not selected / file not found
+# handle upload vs download versions
+
+# --------------------------------------------------------------------------------------------------------------------
+# Folder Class
+# --------------------------------------------------------------------------------------------------------------------
+
+
+class Folder():
+    def __init__(self, name, used, subfolders=None):
+        self.name = name
+        self.used = used
+        self.subfolders = subfolders
+
+# --------------------------------------------------------------------------------------------------------------------
+# Class Decorators
+# --------------------------------------------------------------------------------------------------------------------
+
+def requires_ssh_configs(func):
+    """
+    Decorator to check file is loaded. Used on Mainwindow class methods only as first arg is assumed to be self (containing cfgs)
+    """
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if (not args[0].cfg["remote_host_id"] or not args[0].cfg["remote_host_username"]):
+            args[0]._raise_error("Cannot setup SSH connection, configuration file remote_host_id or remote_host_username is not set.")
+        else:
+            func(*args, **kwargs)
+
+    return wrapper
+
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
 # --------------------------------------------------------------------------------------------------------------------
@@ -43,7 +101,6 @@ class Folder():
 class ProjectManager():
     """
     """
-
     def __init__(self, username):
 
         self.username = username
@@ -97,13 +154,12 @@ class ProjectManager():
 
                              "microscopy": Folder("microscopy",
                                                   self.cfg["use_microscopy"],
-                                                  subfolders={"test1": Folder("test_1", True)},
                                                   ),
                              }
 
-    # --------------------------------------------------------------------------------------------------------------------
-    # Publicly Accessible Directory Makers
-    # --------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------
+# Publicly Accessible Directory Makers
+# --------------------------------------------------------------------------------------------------------------------
 
     def make_sub_folder(self,
                         data_type: str,
@@ -146,9 +202,9 @@ class ProjectManager():
         """
         self._make_directory_trees(data_type, sub_names, ses_names)
 
-    # --------------------------------------------------------------------------------------------------------------------
-    # Make Directory Trees
-    # --------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------
+# Make Directory Trees
+# --------------------------------------------------------------------------------------------------------------------
 
     def _make_directory_trees(self,
                               data_type: str,
@@ -177,7 +233,7 @@ class ProjectManager():
         if not self._check_data_type_is_valid(data_type, prompt_on_fail=True):
             return
 
-        data_type_items = zip([data_type], [self._ses_folders[data_type]]) if data_type != "all" else self._ses_folders.items()
+        data_type_items = self._get_data_type_items(data_type)
 
         for data_type_key, data_type_dir in data_type_items:
 
@@ -236,52 +292,160 @@ class ProjectManager():
             for subfolder in folder.subfolders.values():
 
                 if subfolder.used:
-
                     new_path_to_folder = path_to_folder + [subfolder.name]
                     self._make_dirs(self._join("local", new_path_to_folder))
                     self._recursive_make_subfolders(subfolder, new_path_to_folder)
 
+# --------------------------------------------------------------------------------------------------------------------
+# File Transfer Public (TODO)
+# --------------------------------------------------------------------------------------------------------------------
+
+    def upload_data(self, data_type, sub_names, ses_names):  # TODO: this is going to be very sub-optimal as keep opening server. Maybe it is better to use the MATCH / ETC Filtering. This really is sub-optimal for ssh, ssh every time to search sub folder for ses...
+        """"""
+        self._transfer_sub_ses_data("upload", data_type, sub_names, ses_names)
+
+    def download_data(self):
+        """"""
+        self._transfer_sub_ses_data("download", data_type, sub_names, ses_names)
+
+    def _transfer_sub_ses_data(self, upload_or_download, data_type, sub_names, ses_names):  # TODO: fix naming
+        """"""
+        folder_to_search = "local" if upload_or_download == "upload" else "remote"
+
+        data_type_items = self._get_data_type_items(data_type)
+
+        for data_type_key, data_type_dir in data_type_items:  # TODO: do that key is canonical while .name is user name
+
+            if sub_names != "all":  # TODO: own function? line?
+                sub_names = self._process_names(sub_names, "sub")
+            else:
+                sub_names = self._search_subs_from_project_folder(folder_to_search, data_type_key)  # TODO: change local vs remote
+
+            for sub in sub_names:
+
+                if ses_names != "all":  # TODO: own function? line?
+                    ses_names = self._process_names(ses_names, "ses")
+                else:
+                    ses_names = self._search_ses_from_sub_folder(folder_to_search, data_type_key, sub)  # TODO: change local vs remote
+
+                for ses in ses_names:
+
+                    filepath = os.path.join(data_type_dir.name, sub, ses)
+                    self._move_folder_or_file(filepath, upload_or_download, preview=False)
+
     # --------------------------------------------------------------------------------------------------------------------
-    # SSH
+    # Handle "all" flag and search for all sub and ses
     # --------------------------------------------------------------------------------------------------------------------
 
-    # 1) setup SSH key in windows, mac, linux
-    # 2) ssh to remote server
-    # 3) transfer file
-    # 4) checks
-    # TODO: need to setup different users for ssh key / test multiple users
+    def _search_subs_from_project_folder(self, local_or_remote, data_type):  # TODO: change name! not from filesystem!
+            """"""
+            search_path = self._join(local_or_remote, data_type)
+            search_prefix = self.cfg["sub_prefix"] + "*"
+            return self._search_for_directories(local_or_remote, search_path, search_prefix)
 
-    # TODO
-    # add ssh single folder
-    # add
+    def _search_ses_from_sub_folder(self, local_or_remote, data_type, sub):  # TODO: change name! not from filesystem!
+        """"""
+        search_path = self._join(local_or_remote, [data_type, sub])
+        search_prefix = self.cfg["ses_prefix"] + "*"
+        return self._search_for_directories(local_or_remote, search_path, search_prefix)
 
-    # TODO: add function for upload syncronise within project
-    #       add function for general upload (not in standard folder setup)
-    #       add download function
-    #       think hard - is there any other function to implement?
-    #       doc, refactor, type
-    #       talk to Adam, write tests
-    #       CLI, GUI
+    def _search_for_directories(self, local_or_remote, search_path, search_prefix):
+        """"""
+        if local_or_remote == "remote" and self.cfg["ssh_to_remote"]:
+            all_foldernames = self._search_ssh_remote_for_directories(search_path, search_prefix)  # use Pathlib? TODO: come to some conclusion on this... (i.e. allwasy use path? str? etc messy ATM
+        else:
+            all_foldernames = self._search_filesystem_path_for_directorys(search_path + "/" + search_prefix)
+        return all_foldernames
 
-    def upload_folder_or_file(self, filepath, preview=False):
+    def _search_filesystem_path_for_directorys(self, search_path):
+        """"""
+        all_foldernames = []
+        for file_or_folder in glob.glob(search_path):
+            if os.path.isdir(file_or_folder):
+                all_foldernames.append(os.path.basename(file_or_folder))
+        return all_foldernames
+
+    def _search_ssh_remote_for_directories(self, search_path, search_prefix):
+        """
+        https://stackoverflow.com/questions/12295551/how-to-list-all-the-folders-and-files-in-the-directory-after-connecting-through
+        """
+        with paramiko.SSHClient() as client:
+            self._connect_client(client, private_key=self._ssh_key_path)
+
+            sftp = client.open_sftp()
+
+            all_foldernames = [] # TODO: not just filenames
+            try:
+                for file_or_folder in sftp.listdir_attr(search_path):  # TODO: own function, utils
+                    if stat.S_ISDIR(file_or_folder.st_mode):
+                        if fnmatch.fnmatch(file_or_folder.filename, search_prefix):
+                            all_foldernames.append(file_or_folder.filename)
+            except FileNotFoundError:
+                self._raise_error((f"No file found at {search_path}"))
+
+        return all_foldernames
+
+# --------------------------------------------------------------------------------------------------------------------
+# File Transfer Private (TODO)
+# --------------------------------------------------------------------------------------------------------------------
+
+    def upload_project_folder_or_file(self, filepath, upload, preview=False):
+        """
+        TODO: currently everything is relative to base path. Do we ever want to let people provide full filepath?
+        """
+        self._move_folder_or_file(filepath, "upload", preview)
+
+    def download_project_folder_or_file(self, filepath, preview=False):
         """
         """
-        local = FsTarget(self._join("local", "manager"))
-        remote = SFTPTarget("/nfs/nhome/live/jziminski/manager", "ssh.swc.ucl.ac.uk", username="jziminski", private_key=r"C:\Users\User\AppData\Local\ProjectManagerSWC\jziminski\jziminski_ssh_key", hostkeys=self._hostkeys)
+        self._move_folder_or_file(filepath, "download", preview)
 
-        s = UploadSynchronizer(local, remote, opts)
+    def _move_folder_or_file(self, filepath, upload_or_download, preview):
+        """"""
+        local_filepath = self._join("local", filepath)
+        remote_filepath = self._join("remote", filepath)  # TODO: function that checks if the leading path is already provided? yes...
+
+        local = FsTarget(local_filepath)
+        remote = self._get_remote_target(remote_filepath)
+
+        opts = self._get_default_upload_opts(preview)
+
+        syncronizer = self._get_syncronizer(upload_or_download)
+        s = syncronizer(local, remote, opts)
         s.run()
 
+    def _get_syncronizer(self, upload_or_download):
+        """"""
+        if upload_or_download == "upload":
+            syncronizer = UploadSynchronizer
 
+        elif upload_or_download == "download":
+            syncronizer = DownloadSynchronizer
 
+        return syncronizer
 
+    def _get_remote_target(self, remote_filepath):
+        """
+        """
+        if self.cfg["ssh_to_remote"]:  # TODO: own function
+
+            remote = SFTPTarget(remote_filepath,
+                                self.cfg["remote_host_id"],
+                                username=self.cfg["remote_host_username"],
+                                private_key=self._ssh_key_path,
+                                hostkeys=self._hostkeys)
+
+        else:
+            remote = FsTarget(remote_filepath)
+
+        return remote
 
     def _get_default_upload_opts(self, preview):
         """
         """
         opts = {"help": False,
                 "verbose": 5,
-                #           "quiet": 3,
+                "quiet": 0,
                 "debug ": False,
                 "case": "strict",
                 "dry_run": preview,
@@ -306,6 +470,11 @@ class ProjectManager():
                 }
         return opts
 
+# --------------------------------------------------------------------------------------------------------------------
+# SSH
+# --------------------------------------------------------------------------------------------------------------------
+
+    @requires_ssh_configs
     def setup_ssh_connection_to_remote_server(self):
 
         verified = self.verify_ssh_remote_host()
@@ -313,6 +482,7 @@ class ProjectManager():
         if verified:
             self.setup_ssh_key()
 
+    @requires_ssh_configs
     def setup_ssh_key(self):
         """generate_ssh_key_and_copy_pub_to_remote_host"""
         # TODO: checks that these dont already exist.
@@ -328,6 +498,7 @@ class ProjectManager():
 
         self._add_public_key_to_remote_authorized_keys(password, key)
 
+    @requires_ssh_configs
     def verify_ssh_remote_host(self):
         """"""
         with paramiko.Transport(self.cfg["remote_host_id"]) as transport:
@@ -368,13 +539,9 @@ class ProjectManager():
 
     def _add_public_key_to_remote_authorized_keys(self, password, key):
         """ssh-copy-id but from any platform.Could be improved (i.e. use ssh-copy-id if possible / there is a python version for windows"""
-        with paramiko.client.SSHClient() as client:
+        with paramiko.SSHClient() as client:
 
-            try:
-                client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # TODO ######################
-                client.connect(self.cfg["remote_host_id"], username=self.username, password=password)
-            except:
-                self._raise_error("ssh_connection_error")
+            self._connect_client(client, password=password)
 
             client.exec_command("mkdir -p ~/.ssh/")  # not used ssh-copy-id as platform independent # TODO: check that formatting is the same as ssh-copy-id
             client.exec_command(f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys')  # double >> for concatenate
@@ -383,48 +550,24 @@ class ProjectManager():
 
         self._message_user(f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}")
 
-    # populate remote by syncing only... otherwise confusing to populate on remote from local. If want
-    # full file tree can go to remote and set it up there
+    def _connect_client(self, client, password=None, private_key=None):  # TODO: private key name
+        try:
+            client.get_host_keys().load(self._hostkeys)
+            client.set_missing_host_key_policy(paramiko.RejectPolicy())  # TODO ######################
+            client.connect(self.cfg["remote_host_id"], username=self.cfg["remote_host_username"], password=password, key_filename=private_key, look_for_keys=True)
+        except:
+            self._raise_error("ssh_connection_error")
 
-    # TODEL -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-    def _connect_client(self, client):
-        client.set_missing_host_key_policy(paramiko.RejectPolicy())
-        client.connect(self.cfg["remote_host_id"], username=self.username, key_filename=self._ssh_key_path, look_for_keys=True)  # TODO: return error
-
-    def copy_file_to_server(self, filepath, preview=False):
-        """"""
-        source = self._join("local", filepath)
-        dest = self._join("remote", filepath)
-
-        if preview:
-            self._message_user(f"source: {source}\n"
-                               f"destination: {dest}")
-            return
-
-        with paramiko.client.SSHClient() as client:
-            self._connect_client(client)
-
-            with client.open_sftp() as sftp:
-                self._mkdir_p(sftp, dest)
-                sftp.put(source, dest)  # TODO: see documentation and add test https://docs.paramiko.org/en/stable/api/sftp.html # TODO: handle case with alraedy opened client (we not going to reopen connection for every file!
-
-            # TODO: support list of files
-            # TODO: join_local, join_remote
-
-            # stdin, stdout, stderr = client.exec_command('w')
-            # print(stdout.read().decode())
-
-
-    # --------------------------------------------------------------------------------------------------------------------
-    # Handle Configs
-    # --------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------
+# Handle Configs
+# --------------------------------------------------------------------------------------------------------------------
 
     def make_config_file(self,
                          local_path: str,
                          remote_path: str,
-                         remote_host_id: str,
-                         remote_host_username: str,
+                         ssh_to_remote: bool,
+                         remote_host_id: str = None,  # TODO: use Optional
+                         remote_host_username: str = None,
                          sub_prefix: str = "sub-",
                          ses_prefix: str = "ses-",
                          use_ephys: bool = True,
@@ -441,6 +584,7 @@ class ProjectManager():
         :param local_path:                  path to project folder on local machine
         :param remote_path:                 path to project folder on remote machine. Note this cannot
                                             include ~ home directory syntax, must contain the full path (e.g. /nfs/nhome/live/jziminski)
+        :param ssh_to_remote                if true, ssh will be used to connect to remote cluster and remote_host_id, remote_host_username must be provided.
         :param remote_host_id:              path to remote machine root, either path to mounted drive (TODO: CURRENTLY NOT SUPPORTED) or address for host for ssh
         :param remote_host_username:        username for which to login to remote host.
         :param sub_prefix:                  prefix for all subject (i.e. mouse) level directory. Default is BIDS: "sub-"
@@ -461,12 +605,20 @@ class ProjectManager():
               - mounted network drive not supported
               - perform checks on inputs
         """
+        # TODO: refactor to own function
         if remote_path[0] == "~":
             self._raise_error("remote_path must contain the full directory path with no ~ syntax")
+
+        if ssh_to_remote is True and (not remote_host_id or not remote_host_username):
+            self._raise_error("ssh to remote set but no remote_host_id or remote_host_username not provided")
+
+        if ssh_to_remote is False and (remote_host_id or remote_host_username):
+            warnings.warn("SSH to remote is false, but remote_host_id or remote_host_username provided")
 
         config_dict = {
             "local_path": local_path,
             "remote_path": remote_path,
+            "ssh_to_remote": ssh_to_remote,
             "remote_host_id": remote_host_id,
             "remote_host_username": remote_host_username,
             "sub_prefix": sub_prefix,
@@ -557,9 +709,12 @@ class ProjectManager():
             else:
                 self._raise_error("Option must be 'path_to_str' or 'str_to_path'")
 
-    # --------------------------------------------------------------------------------------------------------------------
-    # Public Getters
-    # --------------------------------------------------------------------------------------------------------------------
+    def _get_data_type_items(self, data_type):
+        return zip([data_type], [self._ses_folders[data_type]]) if data_type != "all" else self._ses_folders.items()
+
+# --------------------------------------------------------------------------------------------------------------------
+# Public Getters
+# --------------------------------------------------------------------------------------------------------------------
 
     def get_local_path(self):
         return self.cfg["local_path"].as_posix()
@@ -570,27 +725,37 @@ class ProjectManager():
     def get_remote_path(self):
         return self.cfg["remote_path"].as_posix()
 
-    # --------------------------------------------------------------------------------------------------------------------
-    # Utils TODO: move where possible
-    # --------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------------------------------------
+# Utils TODO: move where possible
+# --------------------------------------------------------------------------------------------------------------------
 
-    def _join(self, base, subfolders):
+    def _join(self, base, subfolders):  # list or string
         """
-        TODO: this function is kind of messy now
+        TODO: this function is kind of messy now, and goes str / list > Path > str...
+        will not add if path already starts with
         """
-        if base == "local":  # cannot use dict as paths not defined before cfg loaded
+        if type(subfolders) == list:  # TODO: own function, this ins't very neat
+            subfolders = "/".join(subfolders)
+
+        subfolders = Path(subfolders)
+
+        if base == "local":  # cannot use dict as paths not defined before cfg loaded, TODO: own function
             base_dir = self.cfg["local_path"]
         elif base == "remote":
             base_dir = self.cfg["remote_path"]
         elif base == "appdir":
             base_dir = self._get_user_appdir_path()
 
-        if type(subfolders) == str:
-            subfolders = [subfolders]
+        if self.path_already_stars_with_base_dir(base_dir, subfolders):
+            joined_path = subfolders
+        else:
+            joined_path = base_dir / subfolders
 
-        joined_path = "/".join([base_dir.as_posix()] + subfolders)  # don't use os.path.join, operating on list is easier
+        return joined_path.as_posix()
 
-        return joined_path
+    def path_already_stars_with_base_dir(self, base_dir, path_):
+        """ note Path(x) where x is already a Path object does not cause error TODO: type"""
+        return path_.as_posix().startswith(base_dir.as_posix())
 
     def _process_names(self, names, sub_or_ses):
         """"""
@@ -601,17 +766,23 @@ class ProjectManager():
         if type(names) == str:
             names = [names]
 
-        if sub_or_ses == "sub":  # TODO: own function if required anywhere else
-            prefix = self.cfg["sub_prefix"]
-        elif sub_or_ses == "ses":
-            prefix = self.cfg["ses_prefix"]
-
+        prefix = self._get_sub_or_ses_prefix(sub_or_ses)
         prefixed_names = self._ensure_prefixes_on_list_of_names(names, prefix)
 
         if len(prefixed_names) != len(set(prefixed_names)):
             self._raise_error("Subject and session names but all be unqiue (i.e. there are no duplicates in list input)")
 
         return prefixed_names
+
+    def _get_sub_or_ses_prefix(self, sub_or_ses):
+        """
+        TODO
+        """
+        if sub_or_ses == "sub":
+            prefix = self.cfg["sub_prefix"]
+        elif sub_or_ses == "ses":
+            prefix = self.cfg["ses_prefix"]
+        return prefix
 
     def _get_user_appdir_path(self):
         """
@@ -626,10 +797,10 @@ class ProjectManager():
 
     def _check_data_type_is_valid(self, data_type, prompt_on_fail):
 
-        is_valid = data_type in self._ses_folders.keys()
+        is_valid = (data_type in self._ses_folders.keys() or data_type == "all")
 
         if prompt_on_fail and not is_valid:
-            self._message_user(f"data_type: {data_type} is not valid. Must be one of {list(self._ses_folders.keys())}. No folders were made.")  # TODO: warning?
+            self._message_user(f"data_type: '{data_type}' is not valid. Must be one of {list(self._ses_folders.keys())}. No folders were made.")  # TODO: warning?
 
         return is_valid
 
