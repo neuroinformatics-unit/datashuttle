@@ -822,7 +822,7 @@ class ProjectManager:
 
     def _add_public_key_to_remote_authorized_keys(
         self, password: str, key: paramiko.rsakey.RSAKey
-    ):  # TODO: this seems very strange, but initialising removes pycharm warning on key.() functions self not passed
+    ):
         """
         Append the public part of key to remote server ~/.ssh/authorized_keys.
 
@@ -834,8 +834,8 @@ class ProjectManager:
 
             client.exec_command("mkdir -p ~/.ssh/")
             client.exec_command(
-                f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys'
-            )  # double >> for concatenate
+                f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys'  # double >> for concatenate
+            )
             client.exec_command("chmod 644 ~/.ssh/authorized_keys")
             client.exec_command("chmod 700 ~/.ssh/")
 
@@ -895,7 +895,8 @@ class ProjectManager:
 
         if not exists and prompt_on_fail:
             warnings.warn(
-                "Configuration file has not been initialized. Use make_config_file() to setup before continuing."
+                "Configuration file has not been initialized. "
+                "Use make_config_file() to setup before continuing."
             )
 
         return exists
