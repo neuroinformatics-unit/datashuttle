@@ -101,14 +101,10 @@ class ProjectManager:
         """
         Once config file is loaded, update all private attributes according to config contents.
 
-        The _ses_folders contains the entire directory tree for each data type. The structure is that the top-level folder (e.g. ephys,
-        behav, microscopy) are found in the project root. Then sub- and ses- folders are created in this project root, and all subfolders
-        are created at the session level.
-
-        TODO: - for adding new files, first this tree but be extended, then a new option added to inputs of make_config file. This can be
-                refactored and an easier way to indicate the relationship between folders found.
-              - factor out _ses_folders generation
-              - decide whether to repeat top-level dir name in the session level dir
+        The _ses_folders contains the entire directory tree for each data type.
+        The structure is that the top-level folder (e.g. ephys, behav, microscopy) are found in
+        the project root. Then sub- and ses- folders are created in this project root, and
+        all subfolders are created at the session level.
         """
         self._ssh_key_path = self._join(
             "appdir", self.project_name + "_ssh_key"
@@ -141,9 +137,13 @@ class ProjectManager:
                     ),
                 },
             ),
-            "microscopy": Folder(
-                "microscopy",
-                self.cfg["use_microscopy"],
+            "imaging": Folder(
+                "imaging",
+                self.cfg["use_imaging"],
+            ),
+            "histology": Folder(
+                "histology",
+                self.cfg["use_histology"],
             ),
         }
 
@@ -171,9 +171,7 @@ class ProjectManager:
 
         if make_ses_tree:
             if ses_names is None:
-                ses_names = [
-                    self.cfg["ses_prefix"] + "001"
-                ]  # TODO: default ses name
+                ses_names = [self.cfg["ses_prefix"] + "001"]
             else:
                 ses_names = self._process_names(ses_names, "ses")
         else:
@@ -223,11 +221,6 @@ class ProjectManager:
         Upload data from a local machine to the remote project folder.
         In the case that a file / folder exists on the remote and local, the local will
         not be overwritten even if the remote file is an older version.
-
-        TODO: this is highly sub-optimal performance wise when downloading using the "all" option
-              as opens a connection each time to check what subdirectories are present on the remote.
-              Also, re-opens connection for each ses folder, although this is not be too bad as each ses
-              folder will usually contain quite a lot of data.
 
         :param data_type: see make_sub_folder()
         :param sub_names: a list of sub names as accepted in make_sub_folder(). "all" will search for all
@@ -299,9 +292,6 @@ class ProjectManager:
         Next, the user is prompted to input their password for the remote cluster.
         Once input, SSH private / public key pair will be setup (see _setup_ssh_key()
         for details).
-
-        TODO: The password should be starred, but it is not in IDE. It will be in terminal
-              as (apparently) IDE such as pycharm use a pseudo-terminal
         """
         verified = self._verify_ssh_remote_host()
 
@@ -331,7 +321,7 @@ class ProjectManager:
         local_path: str,
         remote_path: str,
         ssh_to_remote: bool,
-        remote_host_id: str = None,  # TODO: use Optional
+        remote_host_id: str = None,
         remote_host_username: str = None,
         sub_prefix: str = "sub-",
         ses_prefix: str = "ses-",
@@ -340,7 +330,8 @@ class ProjectManager:
         use_ephys_behav_camera: bool = True,
         use_behav: bool = True,
         use_behav_camera: bool = True,
-        use_microscopy: bool = True,
+        use_imaging: bool = True,
+        use_histology: bool = True,
     ):
         """
         Initialise a config file for using the project manager on the local system. Once initialised, these
@@ -348,29 +339,25 @@ class ProjectManager:
 
         :param local_path:                  path to project folder on local machine
         :param remote_path:                 path to project folder on remote machine. Note this cannot
-                                            include ~ home directory syntax, must contain the full path (e.g. /nfs/nhome/live/jziminski)
-        :param ssh_to_remote                if true, ssh will be used to connect to remote cluster and remote_host_id, remote_host_username must be provided.
-        :param remote_host_id:              path to remote machine root, either path to mounted drive (TODO: CURRENTLY NOT SUPPORTED) or address for host for ssh
+                                            include ~ home directory syntax, must contain the full path (
+                                            e.g. /nfs/nhome/live/jziminski)
+        :param ssh_to_remote                if true, ssh will be used to connect to remote cluster and
+                                            remote_host_id, remote_host_username must be provided.
+        :param remote_host_id:              address for remote host for ssh connection
         :param remote_host_username:        username for which to login to remote host.
         :param sub_prefix:                  prefix for all subject (i.e. mouse) level directory. Default is BIDS: "sub-"
         :param ses_prefix:                  prefix for all session level directory. Default is BIDS: "ses-"
-        :param use_ephys:                   setting true will create ephys directory tree on this machine
-        :param use_ephys_behav:             setting true will create behav directory in ephys directory on this machine
-        :param use_ephys_behav_camera:      setting true will create camera directory in ephys behaviour directory on this machine
-        :param use_behav:                   setting true will create behav directory
-        :param use_behav_camera:            setting true will create camera directory in behav directory
-        :param use_microscopy:              settin true will create microscope directory
-        :return: None
+        :param use_ephys:                   setting true will setup ephys directory tree on this machine
+        :param use_imaging:                 create imaging directory tree
+        :param use_histology:               create histology directory tree
+        :param use_ephys_behav:             create behav directory in ephys directory on this machine
+        :param use_ephys_behav_camera:      create camera directory in ephys behaviour directory on this machine
+        :param use_behav:                   create behav directory
+        :param use_behav_camera:            create camera directory in behav directory
 
-        NOTE: higher level folder settings will override lower level settings (e.g. if ephys_behav_camera=True and ephys_behav=False,
-              ephys_behav_camera will not be made).
-
-        TODO: - this does not currently consider file levels (e.g. behav > camera file structure).
-              - check if already exists, if so throw a overwrite warning
-              - mounted network drive not supported
-              - perform checks on inputs
+        NOTE: higher level folder settings will override lower level settings (e.g. if ephys_behav_camera=True
+              and ephys_behav=False, ephys_behav_camera will not be made).
         """
-        # TODO: refactor to own function
         if remote_path[0] == "~":
             self._raise_error(
                 "remote_path must contain the full directory path with no ~ syntax"
@@ -391,7 +378,7 @@ class ProjectManager:
             )
 
         config_dict = {
-            "local_path": local_path,  # TODO: move somewhere...
+            "local_path": local_path,
             "remote_path": remote_path,
             "ssh_to_remote": ssh_to_remote,
             "remote_host_id": remote_host_id,
@@ -399,11 +386,12 @@ class ProjectManager:
             "sub_prefix": sub_prefix,
             "ses_prefix": ses_prefix,
             "use_ephys": use_ephys,
+            "use_imaging": use_imaging,
+            "use_histology": use_histology,
             "use_ephys_behav": use_ephys_behav,
             "use_ephys_behav_camera": use_ephys_behav_camera,
             "use_behav": use_behav,
             "use_behav_camera": use_behav_camera,
-            "use_microscopy": use_microscopy,
         }
 
         self._dump_configs_to_file(config_dict)
@@ -420,11 +408,9 @@ class ProjectManager:
         Convenience function to update individual entry of configuration file.
         The config file, and currently loaded self.cfg will be updated.
 
-        :param option_key: dictionary key of the option to change, see make_config_file()
+        :param option_key: dictionary key of the option to change,
+                           see make_config_file()
         :param new_info: value to update the config too
-
-        TODO:  move ["local_path", "remote_path"] to init,
-               some duplicate of _convert_str_and_pathlib_paths
         """
         if option_key in ["local_path", "remote_path"]:
             new_info = Path(new_info)
@@ -469,11 +455,14 @@ class ProjectManager:
 
         subject and session names are first processed to ensure correct format.
 
-        :param data_type:       The data_type to make the folder in (e.g. "ephys", "behav", "microscopy"). If "all" is selected,
-                                folder will be created for all data type.
-        :param sub_names:       subject name / list of subject names to make within the folder (if not already, these will be prefixed with sub/ses identifier)
-        :param ses_names:       session names (same format as subject name). If no session is provided, defaults to "ses-001".
-        :param make_ses_tree:   option to make the entire session tree under the subject directory. If False, the subject folder only will be created.
+        :param data_type:       The data_type to make the folder in (e.g. "ephys", "behav", "microscopy").
+                                If "all" is selected, folder will be created for all data type.
+        :param sub_names:       subject name / list of subject names to make within the folder
+                                (if not already, these will be prefixed with sub/ses identifier)
+        :param ses_names:       session names (same format as subject name). If no session is
+                                provided, defaults to "ses-001".
+        :param make_ses_tree:   option to make the entire session tree under the subject directory.
+                                If False, the subject folder only will be created.
         :param process_names:   option to process names or not (e.g. if names were processed already).
 
         """
@@ -522,7 +511,8 @@ class ProjectManager:
 
         :param sub:              subject name to make directory tree in
         :param ses:              session name to make directory tree in
-        :param data_type_key:    data_type_key (e.g. "ephys") to make directory tree in. Note this defines the subfolders created.
+        :param data_type_key:    data_type_key (e.g. "ephys") to make directory tree in.
+                                 Note this defines the subfolders created.
         """
         data_type_dir = self._ses_folders[data_type_key]
 
@@ -543,7 +533,6 @@ class ProjectManager:
 
         :param folder:
         :param path_to_folder:
-        :return:
         """
         if folder.subfolders:
             for subfolder in folder.subfolders.values():
@@ -569,10 +558,6 @@ class ProjectManager:
         """
         Iterate through all data type, sub, ses and transfer session folder.
 
-        TODO: - currently this transfers the entire session folder, finer control will
-              likely be desired.
-              - see optimisation issues described in upload_data()
-
         :param upload_or_download: "upload" or "download"
         :param data_type: see make_sub_folder()
         :param sub_names: see make_sub_folder()
@@ -586,7 +571,7 @@ class ProjectManager:
         data_type_items = self._get_data_type_items(data_type)
 
         for data_type_key, data_type_dir in data_type_items:
-            if sub_names != "all":  # TODO: own function? line?
+            if sub_names != "all":
                 sub_names = self._process_names(sub_names, "sub")
             else:
                 sub_names = self._search_subs_from_project_folder(
@@ -594,7 +579,7 @@ class ProjectManager:
                 )
 
             for sub in sub_names:
-                if ses_names != "all":  # TODO: own function? line?
+                if ses_names != "all":
                     ses_names = self._process_names(ses_names, "ses")
                 else:
                     ses_names = self._search_ses_from_sub_folder(
@@ -758,8 +743,7 @@ class ProjectManager:
         :param search_prefix: file / foldername to search (e.g. "sub-*")
         """
         if local_or_remote == "remote" and self.cfg["ssh_to_remote"]:
-            # use Pathlib? TODO: come to some conclusion on this... (i.e.
-            # allwasy use path? str? etc messy ATM
+
             all_foldernames = self._search_ssh_remote_for_directories(
                 search_path, search_prefix
             )
@@ -786,21 +770,17 @@ class ProjectManager:
         self, search_path: str, search_prefix: str
     ):
         """
-        Search for the search prefix in the search path over SSH. Returns the list of matching
-        directories, files are filtered out.
-
-        From: https://stackoverflow.com/questions/12295551/how-to-list-all-the-folders-and-files-in-the-directory-after-connecting-through
+        Search for the search prefix in the search path over SSH.
+        Returns the list of matching directories, files are filtered out.
         """
         with paramiko.SSHClient() as client:
             self._connect_client(client, private_key_path=self._ssh_key_path)
 
             sftp = client.open_sftp()
 
-            all_foldernames = []  # TODO: not just filenames
+            all_foldernames = []
             try:
-                for file_or_folder in sftp.listdir_attr(
-                    search_path
-                ):  # TODO: own function, utils
+                for file_or_folder in sftp.listdir_attr(search_path):
                     if stat.S_ISDIR(file_or_folder.st_mode):
                         if fnmatch.fnmatch(
                             file_or_folder.filename, search_prefix
@@ -874,8 +854,6 @@ class ProjectManager:
     ):
         """
         Append the public part of key to remote server ~/.ssh/authorized_keys.
-
-        TODO: Could be improved (i.e. use ssh-copy-id if possible / there is a python version for windows
         """
         with paramiko.SSHClient() as client:
             self._connect_client(client, password=password)
@@ -898,8 +876,6 @@ class ProjectManager:
         """
         Connect client to remote server using paramiko.
         Accept either password or path to private key, but not both.
-
-        TODO: currently password on prviate key is not supported in the project manager.
         """
         try:
             client.get_host_keys().load(self._hostkeys)
@@ -951,9 +927,11 @@ class ProjectManager:
 
     def _attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
         """
-        Attempt to load the config file. If it does not exist or crashes when attempt to load from file, return False.
+        Attempt to load the config file. If it does not exist or crashes
+        when attempt to load from file, return False.
 
-        :param prompt_on_fail: if config file not found, or crashes on load, warn the user.
+        :param prompt_on_fail: if config file not found, or crashes on load,
+                               warn the user.
 
         :return: loaded dictionary, or False if not loaded.
         """
@@ -987,8 +965,6 @@ class ProjectManager:
 
         :param config_dict: self.cfg dict of configs
         :param direction: "path_to_str" or "str_to_path"
-
-        TODO: put "local_path" and "remote_path" keys somewhere central.
         """
         for path_key in ["local_path", "remote_path"]:
             if direction == "str_to_path":
@@ -1002,8 +978,8 @@ class ProjectManager:
 
     def _get_data_type_items(self, data_type):
         """
-        Get the .items() structure of the data type, either all of them (stored in self._ses_folders
-        or
+        Get the .items() structure of the data type, either all of
+        them (stored in self._ses_folders or a single item.
         """
         return (
             zip([data_type], [self._ses_folders[data_type]])
@@ -1023,34 +999,36 @@ class ProjectManager:
         :param base: "local", "remote" or "appdir"
         :param subfolders: a list (or string for 1) of folder names to be joined into a path.
                            If file included, must be last entry (with ext).
-
-        TODO: this function is kind of messy now, and goes str / list > Path > str...
-              will not add if path already starts with
         """
-        if isinstance(
-            subfolders, list
-        ):  # TODO: own function, this ins't very neat
+        if isinstance(subfolders, list):
             subfolders_str = "/".join(subfolders)
         else:
             subfolders_str = cast(str, subfolders)
 
         subfolders_path = Path(subfolders_str)
 
-        if base == "local":
-            base_dir = self.cfg["local_path"]
-        elif base == "remote":
-            base_dir = self.cfg["remote_path"]
-        elif base == "appdir":
-            base_dir = self._get_user_appdir_path()
+        base_dir = self._get_base_dir(base)
 
-        if self.path_already_stars_with_base_dir(base_dir, subfolders_path):
+        if self._path_already_stars_with_base_dir(base_dir, subfolders_path):
             joined_path = subfolders_path
         else:
             joined_path = base_dir / subfolders_path
 
         return joined_path.as_posix()
 
-    def path_already_stars_with_base_dir(self, base_dir: Path, path_: Path):
+    def _get_base_dir(self, base):
+        """
+        Convenience function to return the full base path.
+        """
+        if base == "local":
+            base_dir = self.cfg["local_path"]
+        elif base == "remote":
+            base_dir = self.cfg["remote_path"]
+        elif base == "appdir":
+            base_dir = self._get_user_appdir_path()
+        return base_dir
+
+    def _path_already_stars_with_base_dir(self, base_dir: Path, path_: Path):
         return path_.as_posix().startswith(base_dir.as_posix())
 
     def _process_names(self, names: Union[list, str], sub_or_ses: str):
@@ -1111,8 +1089,6 @@ class ProjectManager:
     def _check_data_type_is_valid(self, data_type, prompt_on_fail):
         """
         Check the user-passed data type is valid (must be a key on self.ses_folders or "all"
-
-        TODO: support list of data_type (e.g. for a subset)
         """
         is_valid = data_type in self._ses_folders.keys() or data_type == "all"
 
@@ -1120,13 +1096,13 @@ class ProjectManager:
             self._message_user(
                 f"data_type: '{data_type}' is not valid. Must be one of"
                 f" {list(self._ses_folders.keys())}. No folders were made."
-            )  # TODO: warning?
+            )
 
         return is_valid
 
     def _raise_error(self, message: str):
         """
-        TODO: improve with custom exception / integrate to GUI
+        Temporary centralized way to raise and error
         """
         if message == "ssh_connection_error":
             message = (
@@ -1140,7 +1116,7 @@ class ProjectManager:
     @staticmethod
     def _message_user(message: str):
         """
-        TODO: improve for GUI, CLI etc.
+        Temporary centralised way to message user.
         """
         print(message)
 
