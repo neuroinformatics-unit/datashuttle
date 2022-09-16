@@ -153,7 +153,7 @@ class ProjectManager:
 
     def make_sub_folder(
         self,
-        data_type: str,
+        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list] = None,
         make_ses_tree: bool = True,
@@ -161,7 +161,7 @@ class ProjectManager:
         """
         Make a subject directory in the data type folder. By default, it will create the entire directory tree for this subject.
 
-        :param data_type:       The data_type to make the folder in (e.g. "ephys", "behav", "microscopy"). If "all" is selected,
+        :param experiment_type: The experiment_type to make the folder in (e.g. "ephys", "behav", "microscopy"). If "all" is selected,
                                 folder will be created for all data type.
         :param sub_names:       subject name / list of subject names to make within the folder (if not already, these will be prefixed with sub/ses identifier)
         :param ses_names:       session names (same format as subject name). If no session is provided, defaults to "ses-001".
@@ -178,12 +178,16 @@ class ProjectManager:
             ses_names = []
 
         self._make_directory_trees(
-            data_type, sub_names, ses_names, make_ses_tree, process_names=False
+            experiment_type,
+            sub_names,
+            ses_names,
+            make_ses_tree,
+            process_names=False,
         )
 
     def make_ses_folder(
         self,
-        data_type: str,
+        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         make_ses_tree: bool = True,
@@ -192,19 +196,19 @@ class ProjectManager:
         See make_sub_folder() for inputs.
         """
         self._make_directory_trees(
-            data_type, sub_names, ses_names, make_ses_tree
+            experiment_type, sub_names, ses_names, make_ses_tree
         )
 
     def make_ses_tree(
         self,
-        data_type: str,
+        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
     ):
         """
         See make_sub_folder() for inputs.
         """
-        self._make_directory_trees(data_type, sub_names, ses_names)
+        self._make_directory_trees(experiment_type, sub_names, ses_names)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
@@ -212,7 +216,7 @@ class ProjectManager:
 
     def upload_data(
         self,
-        data_type: str,
+        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         preview: bool = False,
@@ -222,7 +226,7 @@ class ProjectManager:
         In the case that a file / folder exists on the remote and local, the local will
         not be overwritten even if the remote file is an older version.
 
-        :param data_type: see make_sub_folder()
+        :param experiment_type: see make_sub_folder()
         :param sub_names: a list of sub names as accepted in make_sub_folder(). "all" will search for all
                           sub- folders in the data type folder to upload.
         :param ses_names: a list of ses names as accepted in make_sub_folder(). "all" will search each
@@ -230,12 +234,12 @@ class ProjectManager:
         :param preview: perform a dry-run of upload, to see which files are moved.
         """
         self._transfer_sub_ses_data(
-            "upload", data_type, sub_names, ses_names, preview
+            "upload", experiment_type, sub_names, ses_names, preview
         )
 
     def download_data(
         self,
-        data_type: str,
+        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         preview: bool = False,
@@ -249,7 +253,7 @@ class ProjectManager:
         for sub / ses to download.
         """
         self._transfer_sub_ses_data(
-            "download", data_type, sub_names, ses_names, preview
+            "download", experiment_type, sub_names, ses_names, preview
         )
 
     def upload_project_folder_or_file(
@@ -442,7 +446,7 @@ class ProjectManager:
 
     def _make_directory_trees(
         self,
-        data_type: str,
+        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         make_ses_tree: bool = True,
@@ -450,12 +454,12 @@ class ProjectManager:
     ):
         """
         Entry method to make a full directory tree. It will iterate through all
-        passed subjects, then sessions, then subfolders within a data_type folder. This
+        passed subjects, then sessions, then subfolders within a experiment_type folder. This
         permits flexible creation of folders (e.g. to make subject only, do not pass session name.
 
         subject and session names are first processed to ensure correct format.
 
-        :param data_type:       The data_type to make the folder in (e.g. "ephys", "behav", "microscopy").
+        :param experiment_type: The experiment_type to make the folder in (e.g. "ephys", "behav", "microscopy").
                                 If "all" is selected, folder will be created for all data type.
         :param sub_names:       subject name / list of subject names to make within the folder
                                 (if not already, these will be prefixed with sub/ses identifier)
@@ -477,49 +481,57 @@ class ProjectManager:
             else ses_names
         )
 
-        if not self._check_data_type_is_valid(data_type, prompt_on_fail=True):
+        if not self._check_experiment_type_is_valid(
+            experiment_type, prompt_on_fail=True
+        ):
             return
 
-        data_type_items = self._get_data_type_items(data_type)
+        experiment_type_items = self._get_experiment_type_items(
+            experiment_type
+        )
 
-        for data_type_key, data_type_dir in data_type_items:
-            if data_type_dir.used:
-                self._make_dirs(self._join("local", data_type_dir.name))
+        for experiment_type_key, experiment_type_dir in experiment_type_items:
+            if experiment_type_dir.used:
+                self._make_dirs(self._join("local", experiment_type_dir.name))
 
                 for sub in sub_names:
                     self._make_dirs(
-                        self._join("local", [data_type_dir.name, sub])
+                        self._join("local", [experiment_type_dir.name, sub])
                     )
 
                     for ses in ses_names:
                         self._make_dirs(
-                            self._join("local", [data_type_dir.name, sub, ses])
+                            self._join(
+                                "local", [experiment_type_dir.name, sub, ses]
+                            )
                         )
 
                         if make_ses_tree:
                             self._make_ses_directory_tree(
-                                sub, ses, data_type_key
+                                sub, ses, experiment_type_key
                             )
 
-    def _make_ses_directory_tree(self, sub: str, ses: str, data_type_key: str):
+    def _make_ses_directory_tree(
+        self, sub: str, ses: str, experiment_type_key: str
+    ):
         """
-        Make the directory tree within a session. This is dependent on the data_type (e.g. "ephys")
+        Make the directory tree within a session. This is dependent on the experiment_type (e.g. "ephys")
         folder and defined in the subfolders field on the Folder class, in self._ses_folders.
 
-        All subfolders will be make recursively, unless the .used attribute on the Folder class is
+        All subfolders will be made recursively, unless the .used attribute on the Folder class is
         False. This will also stop and subfolders of the subfolder been created.
 
-        :param sub:              subject name to make directory tree in
-        :param ses:              session name to make directory tree in
-        :param data_type_key:    data_type_key (e.g. "ephys") to make directory tree in.
-                                 Note this defines the subfolders created.
+        :param sub:                    subject name to make directory tree in
+        :param ses:                    session name to make directory tree in
+        :param experiment_type_key:    experiment_type_key (e.g. "ephys") to make directory tree in.
+                                       Note this defines the subfolders created.
         """
-        data_type_dir = self._ses_folders[data_type_key]
+        experiment_type_dir = self._ses_folders[experiment_type_key]
 
-        if data_type_dir.used and data_type_dir.subfolders:
+        if experiment_type_dir.used and experiment_type_dir.subfolders:
             self._recursive_make_subfolders(
-                folder=data_type_dir,
-                path_to_folder=[data_type_dir.name, sub, ses],
+                folder=experiment_type_dir,
+                path_to_folder=[experiment_type_dir.name, sub, ses],
             )
 
     def _recursive_make_subfolders(self, folder: Folder, path_to_folder: list):
@@ -550,7 +562,7 @@ class ProjectManager:
     def _transfer_sub_ses_data(
         self,
         upload_or_download: str,
-        data_type: str,
+        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         preview: bool,
@@ -559,7 +571,7 @@ class ProjectManager:
         Iterate through all data type, sub, ses and transfer session folder.
 
         :param upload_or_download: "upload" or "download"
-        :param data_type: see make_sub_folder()
+        :param experiment_type: see make_sub_folder()
         :param sub_names: see make_sub_folder()
         :param ses_names: see make_sub_folder()
         :param preview: see upload_project_folder_or_file*(
@@ -568,14 +580,16 @@ class ProjectManager:
             "local" if upload_or_download == "upload" else "remote"
         )
 
-        data_type_items = self._get_data_type_items(data_type)
+        experiment_type_items = self._get_experiment_type_items(
+            experiment_type
+        )
 
-        for data_type_key, data_type_dir in data_type_items:
+        for experiment_type_key, experiment_type_dir in experiment_type_items:
             if sub_names != "all":
                 sub_names = self._process_names(sub_names, "sub")
             else:
                 sub_names = self._search_subs_from_project_folder(
-                    folder_to_search, data_type_key
+                    folder_to_search, experiment_type_key
                 )
 
             for sub in sub_names:
@@ -583,11 +597,11 @@ class ProjectManager:
                     ses_names = self._process_names(ses_names, "ses")
                 else:
                     ses_names = self._search_ses_from_sub_folder(
-                        folder_to_search, data_type_key, sub
+                        folder_to_search, experiment_type_key, sub
                     )
 
                 for ses in ses_names:
-                    filepath = os.path.join(data_type_dir.name, sub, ses)
+                    filepath = os.path.join(experiment_type_dir.name, sub, ses)
                     self._move_folder_or_file(
                         filepath, upload_or_download, preview=preview
                     )
@@ -703,29 +717,29 @@ class ProjectManager:
     # --------------------------------------------------------------------------------------------------------------------
 
     def _search_subs_from_project_folder(
-        self, local_or_remote: str, data_type: str
+        self, local_or_remote: str, experiment_type: str
     ):
         """
         Search a datatype folder for all present sub- prefixed folders.
         If remote, ssh or filesystem will be used depending on config.
 
         :param local_or_remote: "local" or "remote"
-        :param data_type: the data type (e.g. behav, cannot be "all")
+        :param experiment_type: the data type (e.g. behav, cannot be "all")
         """
-        search_path = self._join(local_or_remote, data_type)
+        search_path = self._join(local_or_remote, experiment_type)
         search_prefix = self.cfg["sub_prefix"] + "*"
         return self._search_for_directories(
             local_or_remote, search_path, search_prefix
         )
 
     def _search_ses_from_sub_folder(
-        self, local_or_remote: str, data_type: str, sub: str
+        self, local_or_remote: str, experiment_type: str, sub: str
     ):
         """
         See _search_subs_from_project_folder(), same but for serching sessions
         within a sub folder.
         """
-        search_path = self._join(local_or_remote, [data_type, sub])
+        search_path = self._join(local_or_remote, [experiment_type, sub])
         search_prefix = self.cfg["ses_prefix"] + "*"
         return self._search_for_directories(
             local_or_remote, search_path, search_prefix
@@ -976,14 +990,14 @@ class ProjectManager:
                     "Option must be 'path_to_str' or 'str_to_path'"
                 )
 
-    def _get_data_type_items(self, data_type):
+    def _get_experiment_type_items(self, experiment_type):
         """
         Get the .items() structure of the data type, either all of
         them (stored in self._ses_folders or a single item.
         """
         return (
-            zip([data_type], [self._ses_folders[data_type]])
-            if data_type != "all"
+            zip([experiment_type], [self._ses_folders[experiment_type]])
+            if experiment_type != "all"
             else self._ses_folders.items()
         )
 
@@ -1086,15 +1100,18 @@ class ProjectManager:
 
         return base_path
 
-    def _check_data_type_is_valid(self, data_type, prompt_on_fail):
+    def _check_experiment_type_is_valid(self, experiment_type, prompt_on_fail):
         """
         Check the user-passed data type is valid (must be a key on self.ses_folders or "all"
         """
-        is_valid = data_type in self._ses_folders.keys() or data_type == "all"
+        is_valid = (
+            experiment_type in self._ses_folders.keys()
+            or experiment_type == "all"
+        )
 
         if prompt_on_fail and not is_valid:
             self._message_user(
-                f"data_type: '{data_type}' is not valid. Must be one of"
+                f"experiment_type: '{experiment_type}' is not valid. Must be one of"
                 f" {list(self._ses_folders.keys())}. No folders were made."
             )
 
