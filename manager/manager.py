@@ -17,20 +17,20 @@ from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
 from ftpsync.targets import FsTarget
 
 # --------------------------------------------------------------------------------------------------------------------
-# Folder Class
+# Directory Class
 # --------------------------------------------------------------------------------------------------------------------
 
 
-class Folder:
+class Directory:
     """
-    Folder class used to contain details of canonical
+    Directory class used to contain details of canonical
     directories in the project directory tree.
     """
 
-    def __init__(self, name, used, subfolders=None):
+    def __init__(self, name, used, subdirs=None):
         self.name = name
         self.used = used
-        self.subfolders = subfolders
+        self.subdirs = subdirs
 
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -80,7 +80,7 @@ class ProjectManager:
     This will allow you to check the server Key, add host key to profile if accepted, and setup ssh key pair.
 
     INPUTS: project_name - The project name to use the software under. Each project has a root directory
-                           that is specified during initial setup. Profile files are stored in the Appdir folder
+                           that is specified during initial setup. Profile files are stored in the Appdir directory
                            (platform specific). Use get_appdir_path() to retrieve the path.
     """
 
@@ -92,7 +92,7 @@ class ProjectManager:
 
         if self.cfg:
             self._ssh_key_path = None
-            self._ses_folders = None
+            self._ses_dirs = None
 
             if self.cfg:
                 self.set_attributes_after_config_load()
@@ -101,26 +101,26 @@ class ProjectManager:
         """
         Once config file is loaded, update all private attributes according to config contents.
 
-        The _ses_folders contains the entire directory tree for each data type.
-        The structure is that the top-level folder (e.g. ephys, behav, microscopy) are found in
-        the project root. Then sub- and ses- folders are created in this project root, and
-        all subfolders are created at the session level.
+        The _ses_dirs contains the entire directory tree for each data type.
+        The structure is that the top-level directory (e.g. ephys, behav, microscopy) are found in
+        the project root. Then sub- and ses- directory are created in this project root, and
+        all subdirs are created at the session level.
         """
         self._ssh_key_path = self._join(
             "appdir", self.project_name + "_ssh_key"
         )
         self._hostkeys = self._join("appdir", "hostkeys")
 
-        self._ses_folders = {
-            "ephys": Folder(
+        self._ses_dirs = {
+            "ephys": Directory(
                 "ephys",
                 self.cfg["use_ephys"],
-                subfolders={
-                    "ephys_behav": Folder(
+                subdirs={
+                    "ephys_behav": Directory(
                         "behav",
                         self.cfg["use_ephys_behav"],
-                        subfolders={
-                            "ephys_behav_camera": Folder(
+                        subdirs={
+                            "ephys_behav_camera": Directory(
                                 "camera",
                                 self.cfg["use_ephys_behav_camera"],
                             ),
@@ -128,20 +128,20 @@ class ProjectManager:
                     ),
                 },
             ),
-            "behav": Folder(
+            "behav": Directory(
                 "behav",
                 self.cfg["use_behav"],
-                subfolders={
-                    "behav_camera": Folder(
+                subdirs={
+                    "behav_camera": Directory(
                         "camera", self.cfg["use_behav_camera"]
                     ),
                 },
             ),
-            "imaging": Folder(
+            "imaging": Directory(
                 "imaging",
                 self.cfg["use_imaging"],
             ),
-            "histology": Folder(
+            "histology": Directory(
                 "histology",
                 self.cfg["use_histology"],
             ),
@@ -151,7 +151,7 @@ class ProjectManager:
     # Public Directory Makers
     # --------------------------------------------------------------------------------------------------------------------
 
-    def make_sub_folder(
+    def make_sub_dir(
         self,
         experiment_type: str,
         sub_names: Union[str, list],
@@ -159,13 +159,16 @@ class ProjectManager:
         make_ses_tree: bool = True,
     ):
         """
-        Make a subject directory in the data type folder. By default, it will create the entire directory tree for this subject.
+        Make a subject directory in the data type directory. By default, it will create
+        the entire directory tree for this subject.
 
-        :param experiment_type: The experiment_type to make the folder in (e.g. "ephys", "behav", "microscopy"). If "all" is selected,
-                                folder will be created for all data type.
-        :param sub_names:       subject name / list of subject names to make within the folder (if not already, these will be prefixed with sub/ses identifier)
+        :param experiment_type: The experiment_type to make the directory in (e.g. "ephys", "behav",
+                                "microscopy"). If "all" is selected, directory will be created for all data type.
+        :param sub_names:       subject name / list of subject names to make within the directory (if not
+                                already, these will be prefixed with sub/ses identifier)
         :param ses_names:       session names (same format as subject name). If no session is provided, defaults to "ses-001".
-        :param make_ses_tree:   option to make the entire session tree under the subject directory. If False, the subject folder only will be created.
+        :param make_ses_tree:   option to make the entire session tree under the subject directory. If False, the subject
+                                directory only will be created.
         """
         sub_names = self._process_names(sub_names, "sub")
 
@@ -185,7 +188,7 @@ class ProjectManager:
             process_names=False,
         )
 
-    def make_ses_folder(
+    def make_ses_dir(
         self,
         experiment_type: str,
         sub_names: Union[str, list],
@@ -193,7 +196,7 @@ class ProjectManager:
         make_ses_tree: bool = True,
     ):
         """
-        See make_sub_folder() for inputs.
+        See make_sub_dir() for inputs.
         """
         self._make_directory_trees(
             experiment_type, sub_names, ses_names, make_ses_tree
@@ -206,7 +209,7 @@ class ProjectManager:
         ses_names: Union[str, list],
     ):
         """
-        See make_sub_folder() for inputs.
+        See make_sub_dir() for inputs.
         """
         self._make_directory_trees(experiment_type, sub_names, ses_names)
 
@@ -222,15 +225,15 @@ class ProjectManager:
         preview: bool = False,
     ):
         """
-        Upload data from a local machine to the remote project folder.
-        In the case that a file / folder exists on the remote and local, the local will
+        Upload data from a local machine to the remote project directory.
+        In the case that a file / directory exists on the remote and local, the local will
         not be overwritten even if the remote file is an older version.
 
-        :param experiment_type: see make_sub_folder()
-        :param sub_names: a list of sub names as accepted in make_sub_folder(). "all" will search for all
-                          sub- folders in the data type folder to upload.
-        :param ses_names: a list of ses names as accepted in make_sub_folder(). "all" will search each
-                          sub- folder for ses- folders and upload all.
+        :param experiment_type: see make_sub_dir()
+        :param sub_names: a list of sub names as accepted in make_sub_dir(). "all" will search for all
+                          sub- directories in the data type directory to upload.
+        :param ses_names: a list of ses names as accepted in make_sub_dir(). "all" will search each
+                          sub- directory for ses- directories and upload all.
         :param preview: perform a dry-run of upload, to see which files are moved.
         """
         self._transfer_sub_ses_data(
@@ -245,8 +248,8 @@ class ProjectManager:
         preview: bool = False,
     ):
         """
-        Download data from the remote project folder to the local computer.
-        In the case that a file / folder exists on the remote and local, the local will
+        Download data from the remote project dir to the local computer.
+        In the case that a file / dir exists on the remote and local, the local will
         not be overwritten even if the remote file is an older version.
 
         see upload_data() for inputs. "all" arguments will search the remote project
@@ -256,29 +259,27 @@ class ProjectManager:
             "download", experiment_type, sub_names, ses_names, preview
         )
 
-    def upload_project_folder_or_file(
-        self, filepath: str, preview: bool = False
-    ):
+    def upload_project_dir_or_file(self, filepath: str, preview: bool = False):
         """
-        Upload an entire folder (including all subdirectories and files) from the local
+        Upload an entire directory (including all subdirectories and files) from the local
         to the remote machine
 
         :param filepath: a string containing the filepath to move, relative to the project directory
         :param preview: preview the transfer (see which files will be transferred without actually transferring)
 
         """
-        self._move_folder_or_file(filepath, "upload", preview)
+        self._move_dir_or_file(filepath, "upload", preview)
 
-    def download_project_folder_or_file(
+    def download_project_dir_or_file(
         self, filepath: str, preview: bool = False
     ):
         """
-        Download an entire folder (including all subdirectories and files) from the local
+        Download an entire directory (including all subdirectories and files) from the local
         to the remote machine.
 
-        see upload_project_folder_or_file() for inputs
+        see upload_project_dir_or_file() for inputs
         """
-        self._move_folder_or_file(filepath, "download", preview)
+        self._move_dir_or_file(filepath, "download", preview)
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
@@ -305,7 +306,7 @@ class ProjectManager:
     def write_public_key(self, filepath: str):
         """
         By default, the SSH private key only is stored on the local
-        computer (in the Appdir folder). Use this function to generate
+        computer (in the Appdir directory). Use this function to generate
         the public key.
 
         :param filepath: full filepath (inc filename) to write the public key to.
@@ -341,8 +342,8 @@ class ProjectManager:
         Initialise a config file for using the project manager on the local system. Once initialised, these
         settings will be used each time the project manager is opened.
 
-        :param local_path:                  path to project folder on local machine
-        :param remote_path:                 path to project folder on remote machine. Note this cannot
+        :param local_path:                  path to project dir on local machine
+        :param remote_path:                 path to project directory on remote machine. Note this cannot
                                             include ~ home directory syntax, must contain the full path (
                                             e.g. /nfs/nhome/live/jziminski)
         :param ssh_to_remote                if true, ssh will be used to connect to remote cluster and
@@ -359,7 +360,7 @@ class ProjectManager:
         :param use_behav:                   create behav directory
         :param use_behav_camera:            create camera directory in behav directory
 
-        NOTE: higher level folder settings will override lower level settings (e.g. if ephys_behav_camera=True
+        NOTE: higher level directory settings will override lower level settings (e.g. if ephys_behav_camera=True
               and ephys_behav=False, ephys_behav_camera will not be made).
         """
         if remote_path[0] == "~":
@@ -454,19 +455,19 @@ class ProjectManager:
     ):
         """
         Entry method to make a full directory tree. It will iterate through all
-        passed subjects, then sessions, then subfolders within a experiment_type folder. This
-        permits flexible creation of folders (e.g. to make subject only, do not pass session name.
+        passed subjects, then sessions, then subdirs within a experiment_type directory. This
+        permits flexible creation of directories (e.g. to make subject only, do not pass session name.
 
         subject and session names are first processed to ensure correct format.
 
-        :param experiment_type: The experiment_type to make the folder in (e.g. "ephys", "behav", "microscopy").
-                                If "all" is selected, folder will be created for all data type.
-        :param sub_names:       subject name / list of subject names to make within the folder
+        :param experiment_type: The experiment_type to make the directory in (e.g. "ephys", "behav", "microscopy").
+                                If "all" is selected, directory will be created for all data type.
+        :param sub_names:       subject name / list of subject names to make within the directory
                                 (if not already, these will be prefixed with sub/ses identifier)
         :param ses_names:       session names (same format as subject name). If no session is
                                 provided, defaults to "ses-001".
         :param make_ses_tree:   option to make the entire session tree under the subject directory.
-                                If False, the subject folder only will be created.
+                                If False, the subject directory only will be created.
         :param process_names:   option to process names or not (e.g. if names were processed already).
 
         """
@@ -516,44 +517,42 @@ class ProjectManager:
     ):
         """
         Make the directory tree within a session. This is dependent on the experiment_type (e.g. "ephys")
-        folder and defined in the subfolders field on the Folder class, in self._ses_folders.
+        dir and defined in the subdirs field on the Directory class, in self._ses_dirs.
 
-        All subfolders will be made recursively, unless the .used attribute on the Folder class is
-        False. This will also stop and subfolders of the subfolder been created.
+        All subdirs will be made recursively, unless the .used attribute on the Directory class is
+        False. This will also stop and subdirs of the subdir been created.
 
         :param sub:                    subject name to make directory tree in
         :param ses:                    session name to make directory tree in
         :param experiment_type_key:    experiment_type_key (e.g. "ephys") to make directory tree in.
-                                       Note this defines the subfolders created.
+                                       Note this defines the subdirs created.
         """
-        experiment_type_dir = self._ses_folders[experiment_type_key]
+        experiment_type_dir = self._ses_dirs[experiment_type_key]
 
-        if experiment_type_dir.used and experiment_type_dir.subfolders:
-            self._recursive_make_subfolders(
-                folder=experiment_type_dir,
-                path_to_folder=[experiment_type_dir.name, sub, ses],
+        if experiment_type_dir.used and experiment_type_dir.subdirs:
+            self._recursive_make_subdirs(
+                directory=experiment_type_dir,
+                path_to_dir=[experiment_type_dir.name, sub, ses],
             )
 
-    def _recursive_make_subfolders(self, folder: Folder, path_to_folder: list):
+    def _recursive_make_subdirs(self, directory: Directory, path_to_dir: list):
         """
-        Function to recursively create all directories in a Folder .subfolders field.
+        Function to recursively create all directories in a Directory .subdirs field.
 
-        i.e. this will first create a folder based on the .name attribute. It will then
-        loop through all .subfolders, and do the same - recursively looping through subfolders
-        until the entire directory tree is made. If .used attribute on a folder is False,
-        that folder and all subfolders of the folder will not be made.
+        i.e. this will first create a directory based on the .name attribute. It will then
+        loop through all .subdirs, and do the same - recursively looping through subdirs
+        until the entire directory tree is made. If .used attribute on a directory is False,
+        that directory and all subdirs of the directory will not be made.
 
-        :param folder:
-        :param path_to_folder:
+        :param directory:
+        :param path_to_dir:
         """
-        if folder.subfolders:
-            for subfolder in folder.subfolders.values():
-                if subfolder.used:
-                    new_path_to_folder = path_to_folder + [subfolder.name]
-                    self._make_dirs(self._join("local", new_path_to_folder))
-                    self._recursive_make_subfolders(
-                        subfolder, new_path_to_folder
-                    )
+        if directory.subdirs:
+            for subdir in directory.subdirs.values():
+                if subdir.used:
+                    new_path_to_dir = path_to_dir + [subdir.name]
+                    self._make_dirs(self._join("local", new_path_to_dir))
+                    self._recursive_make_subdirs(subdir, new_path_to_dir)
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
@@ -568,17 +567,15 @@ class ProjectManager:
         preview: bool,
     ):
         """
-        Iterate through all data type, sub, ses and transfer session folder.
+        Iterate through all data type, sub, ses and transfer session directory.
 
         :param upload_or_download: "upload" or "download"
-        :param experiment_type: see make_sub_folder()
-        :param sub_names: see make_sub_folder()
-        :param ses_names: see make_sub_folder()
-        :param preview: see upload_project_folder_or_file*(
+        :param experiment_type: see make_sub_dir()
+        :param sub_names: see make_sub_dir()
+        :param ses_names: see make_sub_dir()
+        :param preview: see upload_project_dir_or_file*(
         """
-        folder_to_search = (
-            "local" if upload_or_download == "upload" else "remote"
-        )
+        dir_to_search = "local" if upload_or_download == "upload" else "remote"
 
         experiment_type_items = self._get_experiment_type_items(
             experiment_type
@@ -588,37 +585,37 @@ class ProjectManager:
             if sub_names != "all":
                 sub_names = self._process_names(sub_names, "sub")
             else:
-                sub_names = self._search_subs_from_project_folder(
-                    folder_to_search, experiment_type_key
+                sub_names = self._search_subs_from_project_dir(
+                    dir_to_search, experiment_type_key
                 )
 
             for sub in sub_names:
                 if ses_names != "all":
                     ses_names = self._process_names(ses_names, "ses")
                 else:
-                    ses_names = self._search_ses_from_sub_folder(
-                        folder_to_search, experiment_type_key, sub
+                    ses_names = self._search_ses_from_sub_dir(
+                        dir_to_search, experiment_type_key, sub
                     )
 
                 for ses in ses_names:
                     filepath = os.path.join(experiment_type_dir.name, sub, ses)
-                    self._move_folder_or_file(
+                    self._move_dir_or_file(
                         filepath, upload_or_download, preview=preview
                     )
 
-    def _move_folder_or_file(
+    def _move_dir_or_file(
         self, filepath: str, upload_or_download: str, preview: bool
     ):
         """
-        High-level function for transferring folders or files with pyftpsync.
+        High-level function for transferring directories or files with pyftpsync.
         Adds the filepath provided to the remote and local base dir, wraps
         in the appropriate pyftpsync Target class (e.g. filesystem vs. ssh)
         and uses the appropriate syncronizer (upload or download) to transfer
-        the folder (and all subfolders, files).
+        the directory (and all subdirs, files).
 
         :param filepath: relative project filepath to move
         :param upload_or_download: "upload" or "download"
-        :param preview:  see upload_project_folder_or_file*(
+        :param preview:  see upload_project_dir_or_file*(
         """
         local_filepath = self._join("local", filepath)
         remote_filepath = self._join("remote", filepath)
@@ -671,9 +668,9 @@ class ProjectManager:
         file if it is not found on the local filesystem).
 
         Currently, all options are set so that no file is ever overwritten.
-        If there is a remote folder that is older than the local folder, it will not
+        If there is a remote directory that is older than the local directory, it will not
         be overwritten. The only 'overwrite' that occurs is if the remote
-        or local folder has been deleted - by default this will not be replaced as
+        or local directory has been deleted - by default this will not be replaced as
         pyftpsync metadata indicates the file has been deleted. Using the default
         'force' option will force file transfer, but also has other effects e.g.
         overwriting newer files with old, which we dont want. This option has been
@@ -706,7 +703,7 @@ class ProjectManager:
             "resolve": "ask",
             "delete": False,
             "delete_unmatched": False,
-            "create_folder": True,
+            "create_dir": True,
             "report_problems": False,
         }
 
@@ -716,11 +713,11 @@ class ProjectManager:
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _search_subs_from_project_folder(
+    def _search_subs_from_project_dir(
         self, local_or_remote: str, experiment_type: str
     ):
         """
-        Search a datatype folder for all present sub- prefixed folders.
+        Search a datatype directory for all present sub- prefixed directories.
         If remote, ssh or filesystem will be used depending on config.
 
         :param local_or_remote: "local" or "remote"
@@ -732,12 +729,12 @@ class ProjectManager:
             local_or_remote, search_path, search_prefix
         )
 
-    def _search_ses_from_sub_folder(
+    def _search_ses_from_sub_dir(
         self, local_or_remote: str, experiment_type: str, sub: str
     ):
         """
-        See _search_subs_from_project_folder(), same but for serching sessions
-        within a sub folder.
+        See _search_subs_from_project_dir(), same but for serching sessions
+        within a sub directory.
         """
         search_path = self._join(local_or_remote, [experiment_type, sub])
         search_prefix = self.cfg["ses_prefix"] + "*"
@@ -749,23 +746,23 @@ class ProjectManager:
         self, local_or_remote: str, search_path: str, search_prefix: str
     ):
         """
-        Wrapper to determine the method used to search for search prefix folders
+        Wrapper to determine the method used to search for search prefix directories
         in the search path.
 
         :param local_or_remote: "local" or "remote"
         :param search_path: full filepath to search in0
-        :param search_prefix: file / foldername to search (e.g. "sub-*")
+        :param search_prefix: file / dirname to search (e.g. "sub-*")
         """
         if local_or_remote == "remote" and self.cfg["ssh_to_remote"]:
 
-            all_foldernames = self._search_ssh_remote_for_directories(
+            all_dirnames = self._search_ssh_remote_for_directories(
                 search_path, search_prefix
             )
         else:
-            all_foldernames = self._search_filesystem_path_for_directorys(
+            all_dirnames = self._search_filesystem_path_for_directorys(
                 search_path + "/" + search_prefix
             )
-        return all_foldernames
+        return all_dirnames
 
     def _search_filesystem_path_for_directorys(
         self, search_path_with_prefix: str
@@ -774,11 +771,11 @@ class ProjectManager:
         Use glob to search the full search path (including prefix) with glob.
         Files are filtered out of results, returning directories only.
         """
-        all_foldernames = []
-        for file_or_folder in glob.glob(search_path_with_prefix):
-            if os.path.isdir(file_or_folder):
-                all_foldernames.append(os.path.basename(file_or_folder))
-        return all_foldernames
+        all_dirnames = []
+        for file_or_dir in glob.glob(search_path_with_prefix):
+            if os.path.isdir(file_or_dir):
+                all_dirnames.append(os.path.basename(file_or_dir))
+        return all_dirnames
 
     def _search_ssh_remote_for_directories(
         self, search_path: str, search_prefix: str
@@ -792,18 +789,18 @@ class ProjectManager:
 
             sftp = client.open_sftp()
 
-            all_foldernames = []
+            all_dirnames = []
             try:
-                for file_or_folder in sftp.listdir_attr(search_path):
-                    if stat.S_ISDIR(file_or_folder.st_mode):
+                for file_or_dir in sftp.listdir_attr(search_path):
+                    if stat.S_ISDIR(file_or_dir.st_mode):
                         if fnmatch.fnmatch(
-                            file_or_folder.filename, search_prefix
+                            file_or_dir.filename, search_prefix
                         ):
-                            all_foldernames.append(file_or_folder.filename)
+                            all_dirnames.append(file_or_dir.filename)
             except FileNotFoundError:
                 self._raise_error(f"No file found at {search_path}")
 
-        return all_foldernames
+        return all_dirnames
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
@@ -993,40 +990,40 @@ class ProjectManager:
     def _get_experiment_type_items(self, experiment_type):
         """
         Get the .items() structure of the data type, either all of
-        them (stored in self._ses_folders or a single item.
+        them (stored in self._ses_dirs or a single item.
         """
         return (
-            zip([experiment_type], [self._ses_folders[experiment_type]])
+            zip([experiment_type], [self._ses_dirs[experiment_type]])
             if experiment_type != "all"
-            else self._ses_folders.items()
+            else self._ses_dirs.items()
         )
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils TODO: move where possible
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _join(self, base: str, subfolders: Union[str, list]):
+    def _join(self, base: str, subdirs: Union[str, list]):
         """
         Function for joining relative path to base dir. If path already
         starts with base dir, the base dir will not be joined.
 
         :param base: "local", "remote" or "appdir"
-        :param subfolders: a list (or string for 1) of folder names to be joined into a path.
+        :param subdirs: a list (or string for 1) of directory names to be joined into a path.
                            If file included, must be last entry (with ext).
         """
-        if isinstance(subfolders, list):
-            subfolders_str = "/".join(subfolders)
+        if isinstance(subdirs, list):
+            subdirs_str = "/".join(subdirs)
         else:
-            subfolders_str = cast(str, subfolders)
+            subdirs_str = cast(str, subdirs)
 
-        subfolders_path = Path(subfolders_str)
+        subdirs_path = Path(subdirs_str)
 
         base_dir = self._get_base_dir(base)
 
-        if self._path_already_stars_with_base_dir(base_dir, subfolders_path):
-            joined_path = subfolders_path
+        if self._path_already_stars_with_base_dir(base_dir, subdirs_path):
+            joined_path = subdirs_path
         else:
-            joined_path = base_dir / subfolders_path
+            joined_path = base_dir / subdirs_path
 
         return joined_path.as_posix()
 
@@ -1102,17 +1099,17 @@ class ProjectManager:
 
     def _check_experiment_type_is_valid(self, experiment_type, prompt_on_fail):
         """
-        Check the user-passed data type is valid (must be a key on self.ses_folders or "all"
+        Check the user-passed data type is valid (must be a key on self.ses_dirs or "all"
         """
         is_valid = (
-            experiment_type in self._ses_folders.keys()
+            experiment_type in self._ses_dirs.keys()
             or experiment_type == "all"
         )
 
         if prompt_on_fail and not is_valid:
             self._message_user(
                 f"experiment_type: '{experiment_type}' is not valid. Must be one of"
-                f" {list(self._ses_folders.keys())}. No folders were made."
+                f" {list(self._ses_dirs.keys())}. No directories were made."
             )
 
         return is_valid
@@ -1150,7 +1147,7 @@ class ProjectManager:
                 os.makedirs(path_)
             else:
                 warnings.warn(
-                    "The following folder was not made because it already exists"
+                    "The following directory was not made because it already exists"
                     f" {path_}"
                 )
 
