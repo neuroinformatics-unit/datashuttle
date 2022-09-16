@@ -7,13 +7,11 @@ import stat
 import warnings
 from functools import wraps
 from pathlib import Path
-from types import SimpleNamespace
-from typing import Type, Union
+from typing import Union, cast
 
 import appdirs
 import paramiko
 import yaml
-from ftpsync.ftp_target import FTPTarget
 from ftpsync.sftp_target import SFTPTarget
 from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
 from ftpsync.targets import FsTarget
@@ -25,7 +23,8 @@ from ftpsync.targets import FsTarget
 
 class Folder:
     """
-    Folder class used to contain details of canonical directories in the project directory tree.
+    Folder class used to contain details of canonical
+    directories in the project directory tree.
     """
 
     def __init__(self, name, used, subfolders=None):
@@ -41,14 +40,19 @@ class Folder:
 
 def requires_ssh_configs(func):
     """
-    Decorator to check file is loaded. Used on Mainwindow class methods only as first arg is assumed to be self (containing cfgs)
+    Decorator to check file is loaded. Used on Mainwindow class
+    methods only as first arg is assumed to be self (containing cfgs)
     """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        if not args[0].cfg["remote_host_id"] or not args[0].cfg["remote_host_username"]:
+        if (
+            not args[0].cfg["remote_host_id"]
+            or not args[0].cfg["remote_host_username"]
+        ):
             args[0]._raise_error(
-                "Cannot setup SSH connection, configuration file remote_host_id or remote_host_username is not set."
+                "Cannot setup SSH connection, configuration file remote_host_id or"
+                " remote_host_username is not set."
             )
         else:
             return func(*args, **kwargs)
@@ -64,7 +68,7 @@ def requires_ssh_configs(func):
 class ProjectManager:
     """
     Main project manager class for data organisation and transfer in BIDS-style project directory.
-    The expected organisation is a central repository on a linux remote cluster ('remote') that
+    The expected organisation is a central repository on a remote machine ('remote') that
     contains all project data. This is connected to multiple local machines ('local') which
     each contain a subset of the full project (e.g. machine for electrophysiology collection,
     machine for behavioural connection, machine for analysis for specific data etc.).
@@ -80,7 +84,6 @@ class ProjectManager:
     """
 
     def __init__(self, username: str):
-
         self.username = username
 
         self._config_path = self._join("appdir", "config.yaml")
@@ -130,7 +133,9 @@ class ProjectManager:
                 "behav",
                 self.cfg["use_behav"],
                 subfolders={
-                    "behav_camera": Folder("camera", self.cfg["use_behav_camera"]),
+                    "behav_camera": Folder(
+                        "camera", self.cfg["use_behav_camera"]
+                    ),
                 },
             ),
             "microscopy": Folder(
@@ -163,7 +168,9 @@ class ProjectManager:
 
         if make_ses_tree:
             if ses_names is None:
-                ses_names = [self.cfg["ses_prefix"] + "001"]  # TODO: default ses name
+                ses_names = [
+                    self.cfg["ses_prefix"] + "001"
+                ]  # TODO: default ses name
             else:
                 ses_names = self._process_names(ses_names, "ses")
         else:
@@ -183,10 +190,15 @@ class ProjectManager:
         """
         See make_sub_folder() for inputs.
         """
-        self._make_directory_trees(data_type, sub_names, ses_names, make_ses_tree)
+        self._make_directory_trees(
+            data_type, sub_names, ses_names, make_ses_tree
+        )
 
     def make_ses_tree(
-        self, data_type: str, sub_names: Union[str, list], ses_names: Union[str, list]
+        self,
+        data_type: str,
+        sub_names: Union[str, list],
+        ses_names: Union[str, list],
     ):
         """
         See make_sub_folder() for inputs.
@@ -221,10 +233,16 @@ class ProjectManager:
                           sub- folder for ses- folders and upload all.
         :param preview: perform a dry-run of upload, to see which files are moved.
         """
-        self._transfer_sub_ses_data("upload", data_type, sub_names, ses_names, preview)
+        self._transfer_sub_ses_data(
+            "upload", data_type, sub_names, ses_names, preview
+        )
 
     def download_data(
-        self, data_type: str, sub_names: Union[str, list], ses_names: Union[str, list]
+        self,
+        data_type: str,
+        sub_names: Union[str, list],
+        ses_names: Union[str, list],
+        preview: bool = False,
     ):
         """
         Download data from the remote project folder to the local computer.
@@ -238,7 +256,9 @@ class ProjectManager:
             "download", data_type, sub_names, ses_names, preview
         )
 
-    def upload_project_folder_or_file(self, filepath: str, preview: bool = False):
+    def upload_project_folder_or_file(
+        self, filepath: str, preview: bool = False
+    ):
         """
         Upload an entire folder (including all subdirectories and files) from the local
         to the remote machine
@@ -249,7 +269,9 @@ class ProjectManager:
         """
         self._move_folder_or_file(filepath, "upload", preview)
 
-    def download_project_folder_or_file(self, filepath: str, preview: bool = False):
+    def download_project_folder_or_file(
+        self, filepath: str, preview: bool = False
+    ):
         """
         Download an entire folder (including all subdirectories and files) from the local
         to the remote machine.
@@ -351,14 +373,18 @@ class ProjectManager:
                 "remote_path must contain the full directory path with no ~ syntax"
             )
 
-        if ssh_to_remote is True and (not remote_host_id or not remote_host_username):
+        if ssh_to_remote is True and (
+            not remote_host_id or not remote_host_username
+        ):
             self._raise_error(
-                "ssh to remote set but no remote_host_id or remote_host_username not provided"
+                "ssh to remote set but no remote_host_id or remote_host_username not"
+                " provided"
             )
 
         if ssh_to_remote is False and (remote_host_id or remote_host_username):
             warnings.warn(
-                "SSH to remote is false, but remote_host_id or remote_host_username provided"
+                "SSH to remote is false, but remote_host_id or remote_host_username"
+                " provided"
             )
 
         config_dict = {
@@ -382,7 +408,8 @@ class ProjectManager:
         self.cfg = self._attempt_load_configs(prompt_on_fail=False)
         self.set_attributes_after_config_load()
         self._message_user(
-            "Configuration file has been saved and options loaded into the project manager."
+            "Configuration file has been saved and options loaded into the project"
+            " manager."
         )
 
     def update_config(self, option_key: str, new_info: Union[str, bool]):
@@ -448,10 +475,14 @@ class ProjectManager:
 
         """
         sub_names = (
-            self._process_names(sub_names, "sub") if process_names else sub_names
+            self._process_names(sub_names, "sub")
+            if process_names
+            else sub_names
         )
         ses_names = (
-            self._process_names(ses_names, "ses") if process_names else ses_names
+            self._process_names(ses_names, "ses")
+            if process_names
+            else ses_names
         )
 
         if not self._check_data_type_is_valid(data_type, prompt_on_fail=True):
@@ -460,22 +491,23 @@ class ProjectManager:
         data_type_items = self._get_data_type_items(data_type)
 
         for data_type_key, data_type_dir in data_type_items:
-
             if data_type_dir.used:
                 self._make_dirs(self._join("local", data_type_dir.name))
 
                 for sub in sub_names:
-
-                    self._make_dirs(self._join("local", [data_type_dir.name, sub]))
+                    self._make_dirs(
+                        self._join("local", [data_type_dir.name, sub])
+                    )
 
                     for ses in ses_names:
-
                         self._make_dirs(
                             self._join("local", [data_type_dir.name, sub, ses])
                         )
 
                         if make_ses_tree:
-                            self._make_ses_directory_tree(sub, ses, data_type_key)
+                            self._make_ses_directory_tree(
+                                sub, ses, data_type_key
+                            )
 
     def _make_ses_directory_tree(self, sub: str, ses: str, data_type_key: str):
         """
@@ -493,7 +525,8 @@ class ProjectManager:
 
         if data_type_dir.used and data_type_dir.subfolders:
             self._recursive_make_subfolders(
-                folder=data_type_dir, path_to_folder=[data_type_dir.name, sub, ses]
+                folder=data_type_dir,
+                path_to_folder=[data_type_dir.name, sub, ses],
             )
 
     def _recursive_make_subfolders(self, folder: Folder, path_to_folder: list):
@@ -510,14 +543,13 @@ class ProjectManager:
         :return:
         """
         if folder.subfolders:
-
             for subfolder in folder.subfolders.values():
-
                 if subfolder.used:
-
                     new_path_to_folder = path_to_folder + [subfolder.name]
                     self._make_dirs(self._join("local", new_path_to_folder))
-                    self._recursive_make_subfolders(subfolder, new_path_to_folder)
+                    self._recursive_make_subfolders(
+                        subfolder, new_path_to_folder
+                    )
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
@@ -544,12 +576,13 @@ class ProjectManager:
         :param ses_names: see make_sub_folder()
         :param preview: see upload_project_folder_or_file*(
         """
-        folder_to_search = "local" if upload_or_download == "upload" else "remote"
+        folder_to_search = (
+            "local" if upload_or_download == "upload" else "remote"
+        )
 
         data_type_items = self._get_data_type_items(data_type)
 
         for data_type_key, data_type_dir in data_type_items:
-
             if sub_names != "all":  # TODO: own function? line?
                 sub_names = self._process_names(sub_names, "sub")
             else:
@@ -558,7 +591,6 @@ class ProjectManager:
                 )
 
             for sub in sub_names:
-
                 if ses_names != "all":  # TODO: own function? line?
                     ses_names = self._process_names(ses_names, "ses")
                 else:
@@ -567,7 +599,6 @@ class ProjectManager:
                     )
 
                 for ses in ses_names:
-
                     filepath = os.path.join(data_type_dir.name, sub, ses)
                     self._move_folder_or_file(
                         filepath, upload_or_download, preview=preview
@@ -617,7 +648,6 @@ class ProjectManager:
         based on remote connection type.
         """
         if self.cfg["ssh_to_remote"]:
-
             remote = SFTPTarget(
                 remote_filepath,
                 self.cfg["remote_host_id"],
@@ -684,7 +714,9 @@ class ProjectManager:
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _search_subs_from_project_folder(self, local_or_remote: str, data_type: str):
+    def _search_subs_from_project_folder(
+        self, local_or_remote: str, data_type: str
+    ):
         """
         Search a datatype folder for all present sub- prefixed folders.
         If remote, ssh or filesystem will be used depending on config.
@@ -694,7 +726,9 @@ class ProjectManager:
         """
         search_path = self._join(local_or_remote, data_type)
         search_prefix = self.cfg["sub_prefix"] + "*"
-        return self._search_for_directories(local_or_remote, search_path, search_prefix)
+        return self._search_for_directories(
+            local_or_remote, search_path, search_prefix
+        )
 
     def _search_ses_from_sub_folder(
         self, local_or_remote: str, data_type: str, sub: str
@@ -705,7 +739,9 @@ class ProjectManager:
         """
         search_path = self._join(local_or_remote, [data_type, sub])
         search_prefix = self.cfg["ses_prefix"] + "*"
-        return self._search_for_directories(local_or_remote, search_path, search_prefix)
+        return self._search_for_directories(
+            local_or_remote, search_path, search_prefix
+        )
 
     def _search_for_directories(
         self, local_or_remote: str, search_path: str, search_prefix: str
@@ -719,16 +755,20 @@ class ProjectManager:
         :param search_prefix: file / foldername to search (e.g. "sub-*")
         """
         if local_or_remote == "remote" and self.cfg["ssh_to_remote"]:
+            # use Pathlib? TODO: come to some conclusion on this... (i.e.
+            # allwasy use path? str? etc messy ATM
             all_foldernames = self._search_ssh_remote_for_directories(
                 search_path, search_prefix
-            )  # use Pathlib? TODO: come to some conclusion on this... (i.e. allwasy use path? str? etc messy ATM
+            )
         else:
             all_foldernames = self._search_filesystem_path_for_directorys(
                 search_path + "/" + search_prefix
             )
         return all_foldernames
 
-    def _search_filesystem_path_for_directorys(self, search_path_with_prefix: str):
+    def _search_filesystem_path_for_directorys(
+        self, search_path_with_prefix: str
+    ):
         """
         Use glob to search the full search path (including prefix) with glob.
         Files are filtered out of results, returning directories only.
@@ -739,7 +779,9 @@ class ProjectManager:
                 all_foldernames.append(os.path.basename(file_or_folder))
         return all_foldernames
 
-    def _search_ssh_remote_for_directories(self, search_path: str, search_prefix: str):
+    def _search_ssh_remote_for_directories(
+        self, search_path: str, search_prefix: str
+    ):
         """
         Search for the search prefix in the search path over SSH. Returns the list of matching
         directories, files are filtered out.
@@ -747,7 +789,7 @@ class ProjectManager:
         From: https://stackoverflow.com/questions/12295551/how-to-list-all-the-folders-and-files-in-the-directory-after-connecting-through
         """
         with paramiko.SSHClient() as client:
-            self._connect_client(client, private_key=self._ssh_key_path)
+            self._connect_client(client, private_key_path=self._ssh_key_path)
 
             sftp = client.open_sftp()
 
@@ -757,10 +799,12 @@ class ProjectManager:
                     search_path
                 ):  # TODO: own function, utils
                     if stat.S_ISDIR(file_or_folder.st_mode):
-                        if fnmatch.fnmatch(file_or_folder.filename, search_prefix):
+                        if fnmatch.fnmatch(
+                            file_or_folder.filename, search_prefix
+                        ):
                             all_foldernames.append(file_or_folder.filename)
             except FileNotFoundError:
-                self._raise_error((f"No file found at {search_path}"))
+                self._raise_error(f"No file found at {search_path}")
 
         return all_foldernames
 
@@ -797,16 +841,19 @@ class ProjectManager:
             key = transport.get_remote_server_key()
 
         self._message_user(
-            f"The host key is not cached for this server: {self.cfg['remote_host_id']}.\n"
-            f"You have no guarantee that the server is the computer you think it is.\n"
-            f"The server's {key.get_name()} key fingerprint is: {key.get_base64()}\n"
-            f"If you trust this host, to connect and cache the host key, press y: "
+            "The host key is not cached for this server:"
+            f" {self.cfg['remote_host_id']}.\nYou have no guarantee that the server is"
+            f" the computer you think it is.\nThe server's {key.get_name()} key"
+            f" fingerprint is: {key.get_base64()}\nIf you trust this host, to connect"
+            " and cache the host key, press y: "
         )
         input_ = input()
 
         if input_ == "y":
             client = paramiko.SSHClient()
-            client.get_host_keys().add(self.cfg["remote_host_id"], key.get_name(), key)
+            client.get_host_keys().add(
+                self.cfg["remote_host_id"], key.get_name(), key
+            )
             client.get_host_keys().save(self._hostkeys)
             sucess = True
         else:
@@ -816,7 +863,6 @@ class ProjectManager:
         return sucess
 
     def _generate_and_write_ssh_key(self):
-
         key = paramiko.RSAKey.generate(4096)
         key.write_private_key_file(self._ssh_key_path)
 
@@ -829,12 +875,12 @@ class ProjectManager:
         TODO: Could be improved (i.e. use ssh-copy-id if possible / there is a python version for windows
         """
         with paramiko.SSHClient() as client:
-
             self._connect_client(client, password=password)
 
             client.exec_command("mkdir -p ~/.ssh/")
             client.exec_command(
-                f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys'  # double >> for concatenate
+                # double >> for concatenate
+                f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys'
             )
             client.exec_command("chmod 644 ~/.ssh/authorized_keys")
             client.exec_command("chmod 700 ~/.ssh/")
@@ -862,7 +908,7 @@ class ProjectManager:
                 key_filename=private_key_path,
                 look_for_keys=True,
             )
-        except:
+        except Exception:
             self._raise_error("ssh_connection_error")
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -879,7 +925,6 @@ class ProjectManager:
         self._dump_configs_to_file(cfg_to_save)
 
     def _dump_configs_to_file(self, config_dict):
-
         with open(self._config_path, "w") as config_file:
             yaml.dump(config_dict, config_file, sort_keys=False)
 
@@ -918,18 +963,21 @@ class ProjectManager:
 
             self._convert_str_and_pathlib_paths(config_dict, "str_to_path")
 
-        except:
+        except Exception:
             config_dict = False
 
             if prompt_on_fail:
                 self._message_user(
-                    f"Config file failed to load. Check file formatting at {self._config_path}. "
-                    f"If cannot load, re-initialise configs with make_config_file()"
+                    "Config file failed to load. Check file formatting at"
+                    f" {self._config_path}. If cannot load, re-initialise configs with"
+                    " make_config_file()"
                 )
 
         return config_dict
 
-    def _convert_str_and_pathlib_paths(self, config_dict: dict, direction: str):
+    def _convert_str_and_pathlib_paths(
+        self, config_dict: dict, direction: str
+    ):
         """
         Config paths are stored as str in the .yaml but used as Path
         in the module, so make the conversion here.
@@ -945,7 +993,9 @@ class ProjectManager:
             elif direction == "path_to_str":
                 config_dict[path_key] = config_dict[path_key].as_posix()
             else:
-                self._raise_error("Option must be 'path_to_str' or 'str_to_path'")
+                self._raise_error(
+                    "Option must be 'path_to_str' or 'str_to_path'"
+                )
 
     def _get_data_type_items(self, data_type):
         """
@@ -974,10 +1024,14 @@ class ProjectManager:
         TODO: this function is kind of messy now, and goes str / list > Path > str...
               will not add if path already starts with
         """
-        if type(subfolders) == list:  # TODO: own function, this ins't very neat
-            subfolders = "/".join(subfolders)
+        if isinstance(
+            subfolders, list
+        ):  # TODO: own function, this ins't very neat
+            subfolders_str = "/".join(subfolders)
+        else:
+            subfolders_str = cast(str, subfolders)
 
-        subfolders = Path(subfolders)
+        subfolders_path = Path(subfolders_str)
 
         if base == "local":
             base_dir = self.cfg["local_path"]
@@ -986,10 +1040,10 @@ class ProjectManager:
         elif base == "appdir":
             base_dir = self._get_user_appdir_path()
 
-        if self.path_already_stars_with_base_dir(base_dir, subfolders):
-            joined_path = subfolders
+        if self.path_already_stars_with_base_dir(base_dir, subfolders_path):
+            joined_path = subfolders_path
         else:
-            joined_path = base_dir / subfolders
+            joined_path = base_dir / subfolders_path
 
         return joined_path.as_posix()
 
@@ -1006,14 +1060,14 @@ class ProjectManager:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         if type(names) not in [str, list] or any(
-            [type(ele) != str for ele in names]
-        ):  # TODO: tidy up, decide whether to handle non-str types
+            [not isinstance(ele, str) for ele in names]
+        ):
             self._raise_error(
                 "Ensure subject and session names are list of strings, or string"
             )
             return False
 
-        if type(names) == str:
+        if isinstance(names, str):
             names = [names]
 
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
@@ -1021,13 +1075,13 @@ class ProjectManager:
 
         if len(prefixed_names) != len(set(prefixed_names)):
             self._raise_error(
-                "Subject and session names but all be unqiue (i.e. there are no duplicates in list input)"
+                "Subject and session names but all be unqiue (i.e. there are no"
+                " duplicates in list input)"
             )
 
         return prefixed_names
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str):
-
         if sub_or_ses == "sub":
             prefix = self.cfg["sub_prefix"]
         elif sub_or_ses == "ses":
@@ -1040,7 +1094,11 @@ class ProjectManager:
         However if admin permission given drag and drop dont work, and it is not good practice.
         Use appdirs module to get the AppData cross-platform and save / load all files form here .
         """
-        base_path = Path(appdirs.user_data_dir(self.username, "ProjectManagerSWC"))
+        base_path = Path(
+            os.path.join(
+                appdirs.user_data_dir("ProjectManagerSWC"), self.username
+            )
+        )
 
         if not os.path.isdir(base_path):
             os.makedirs(base_path)
@@ -1057,7 +1115,8 @@ class ProjectManager:
 
         if prompt_on_fail and not is_valid:
             self._message_user(
-                f"data_type: '{data_type}' is not valid. Must be one of {list(self._ses_folders.keys())}. No folders were made."
+                f"data_type: '{data_type}' is not valid. Must be one of"
+                f" {list(self._ses_folders.keys())}. No folders were made."
             )  # TODO: warning?
 
         return is_valid
@@ -1068,10 +1127,10 @@ class ProjectManager:
         """
         if message == "ssh_connection_error":
             message = (
-                f"Could not connect to server. Ensure that \n"
-                f"1) You are on SWC network / VPN. \n"
-                f"2) The remote_host_id: {self.cfg['remote_host_id']} is correct.\n"
-                f"3) The remote username: {self.cfg['remote_host_username']}, and password are correct."
+                "Could not connect to server. Ensure that \n1) You are on SWC network"
+                f" / VPN. \n2) The remote_host_id: {self.cfg['remote_host_id']} is"
+                " correct.\n3) The remote username:"
+                f" {self.cfg['remote_host_username']}, and password are correct."
             )
         raise BaseException(message)
 
@@ -1087,7 +1146,7 @@ class ProjectManager:
         """
         For path or list of path, make them if do not already exist.
         """
-        if type(paths) == str:
+        if isinstance(paths, str):
             paths = [paths]
 
         for path_ in paths:
@@ -1095,11 +1154,15 @@ class ProjectManager:
                 os.makedirs(path_)
             else:
                 warnings.warn(
-                    f"The following folder was not made because it already exists {path_}"
+                    "The following folder was not made because it already exists"
+                    f" {path_}"
                 )
 
     @staticmethod
     def _ensure_prefixes_on_list_of_names(names, prefix):
         """ """
         n_chars = len(prefix)
-        return [prefix + name if name[:n_chars] != prefix else name for name in names]
+        return [
+            prefix + name if name[:n_chars] != prefix else name
+            for name in names
+        ]
