@@ -79,12 +79,13 @@ class ProjectManager:
     For transferring data between a remote data storage with SSH, use setup setup_ssh_connection_to_remote_server().
     This will allow you to check the server Key, add host key to profile if accepted, and setup ssh key pair.
 
-    INPUTS: username - the username for the profile to use. Profile files are stored in your Appdir folder
-                       (platform specific). Use get_appdir_path() to retrieve the path.
+    INPUTS: project_name - The project name to use the software under. Each project has a root directory
+                           that is specified during initial setup. Profile files are stored in the Appdir folder
+                           (platform specific). Use get_appdir_path() to retrieve the path.
     """
 
-    def __init__(self, username: str):
-        self.username = username
+    def __init__(self, project_name: str):
+        self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
         self.cfg = self._attempt_load_configs(prompt_on_fail=True)
@@ -109,7 +110,9 @@ class ProjectManager:
               - factor out _ses_folders generation
               - decide whether to repeat top-level dir name in the session level dir
         """
-        self._ssh_key_path = self._join("appdir", self.username + "_ssh_key")
+        self._ssh_key_path = self._join(
+            "appdir", self.project_name + "_ssh_key"
+        )
         self._hostkeys = self._join("appdir", "hostkeys")
 
         self._ses_folders = {
@@ -1096,7 +1099,7 @@ class ProjectManager:
         """
         base_path = Path(
             os.path.join(
-                appdirs.user_data_dir("ProjectManagerSWC"), self.username
+                appdirs.user_data_dir("ProjectManagerSWC"), self.project_name
             )
         )
 
