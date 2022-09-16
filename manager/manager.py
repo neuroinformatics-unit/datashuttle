@@ -1,64 +1,18 @@
 import copy
-import fnmatch
 import getpass
-import glob
 import os
-import stat
 import warnings
-from functools import wraps
 from pathlib import Path
 from typing import Union, cast
 
-import appdirs
+import configs
 import paramiko
-import yaml
+from decorators import requires_ssh_configs
+from directory_class import Directory
 from ftpsync.sftp_target import SFTPTarget
-from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
 from ftpsync.targets import FsTarget
 
-# --------------------------------------------------------------------------------------------------------------------
-# Directory Class
-# --------------------------------------------------------------------------------------------------------------------
-
-
-class Directory:
-    """
-    Directory class used to contain details of canonical
-    directories in the project directory tree.
-    """
-
-    def __init__(self, name, used, subdirs=None):
-        self.name = name
-        self.used = used
-        self.subdirs = subdirs
-
-
-# --------------------------------------------------------------------------------------------------------------------
-# Class Decorators
-# --------------------------------------------------------------------------------------------------------------------
-
-
-def requires_ssh_configs(func):
-    """
-    Decorator to check file is loaded. Used on Mainwindow class
-    methods only as first arg is assumed to be self (containing cfgs)
-    """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        if (
-            not args[0].cfg["remote_host_id"]
-            or not args[0].cfg["remote_host_username"]
-        ):
-            args[0]._raise_error(
-                "Cannot setup SSH connection, configuration file remote_host_id or"
-                " remote_host_username is not set."
-            )
-        else:
-            return func(*args, **kwargs)
-
-    return wrapper
-
+from manager import utils
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
@@ -88,11 +42,13 @@ class ProjectManager:
         self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
-        self.cfg = self._attempt_load_configs(prompt_on_fail=True)
+        self.cfg = None
+        self._ssh_key_path = None  # TODO: move to config
+        self._ses_dirs = None
+
+        self.attempt_load_configs(prompt_on_fail=True)
 
         if self.cfg:
-            self._ssh_key_path = None
-            self._ses_dirs = None
 
             if self.cfg:
                 self.set_attributes_after_config_load()
@@ -298,7 +254,9 @@ class ProjectManager:
         Once input, SSH private / public key pair will be setup (see _setup_ssh_key()
         for details).
         """
-        verified = self._verify_ssh_remote_host()
+        verified = utils.verify_ssh_remote_host(
+            self.cfg["remote_host_id"], self._hostkeys
+        )
 
         if verified:
             self._setup_ssh_key()
@@ -363,50 +321,70 @@ class ProjectManager:
         NOTE: higher level directory settings will override lower level settings (e.g. if ephys_behav_camera=True
               and ephys_behav=False, ephys_behav_camera will not be made).
         """
-        if remote_path[0] == "~":
-            self._raise_error(
-                "remote_path must contain the full directory path with no ~ syntax"
-            )
+        self.cfg = configs.Configs(
+            self._config_path,
+            {
+                "local_path": local_path,
+                "remote_path": remote_path,
+                "ssh_to_remote": ssh_to_remote,
+                "remote_host_id": remote_host_id,
+                "remote_host_username": remote_host_username,
+                "sub_prefix": sub_prefix,
+                "ses_prefix": ses_prefix,
+                "use_ephys": use_ephys,
+                "use_ephys_behav": use_ephys_behav,
+                "use_ephys_behav_camera": use_ephys_behav_camera,
+                "use_behav": use_behav,
+                "use_behav_camera": use_behav_camera,
+                "use_imaging": use_imaging,
+                "use_histology": use_histology,
+            },
+        )
 
-        if ssh_to_remote is True and (
-            not remote_host_id or not remote_host_username
-        ):
-            self._raise_error(
-                "ssh to remote set but no remote_host_id or remote_host_username not"
-                " provided"
-            )
+        self.cfg.setup_after_load()  ##
 
-        if ssh_to_remote is False and (remote_host_id or remote_host_username):
-            warnings.warn(
-                "SSH to remote is false, but remote_host_id or remote_host_username"
-                " provided"
-            )
+        if self.cfg:
+            self.cfg.dump_to_file()
 
-        config_dict = {
-            "local_path": local_path,
-            "remote_path": remote_path,
-            "ssh_to_remote": ssh_to_remote,
-            "remote_host_id": remote_host_id,
-            "remote_host_username": remote_host_username,
-            "sub_prefix": sub_prefix,
-            "ses_prefix": ses_prefix,
-            "use_ephys": use_ephys,
-            "use_imaging": use_imaging,
-            "use_histology": use_histology,
-            "use_ephys_behav": use_ephys_behav,
-            "use_ephys_behav_camera": use_ephys_behav_camera,
-            "use_behav": use_behav,
-            "use_behav_camera": use_behav_camera,
-        }
-
-        self._dump_configs_to_file(config_dict)
-
-        self.cfg = self._attempt_load_configs(prompt_on_fail=False)
         self.set_attributes_after_config_load()
-        self._message_user(
+        utils.message_user(
             "Configuration file has been saved and options loaded into the project"
             " manager."
         )
+
+    def attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
+        """
+        Attempt to load the config file. If it does not exist or crashes
+        when attempt to load from file, return False.
+
+        :param prompt_on_fail: if config file not found, or crashes on load,
+                               warn the user.
+
+        :return: loaded dictionary, or False if not loaded.
+        """
+        exists = os.path.isfile(self._config_path)
+
+        if not exists and prompt_on_fail:
+            warnings.warn(
+                "Configuration file has not been initialized. "
+                "Use make_config_file() to setup before continuing."
+            )
+            return False
+
+        self.cfg = Configs(self._config_path, None)
+
+        try:
+            self.cfg.load_from_file()
+
+        except Exception:
+            self.cfg = False
+
+            if prompt_on_fail:
+                message_user(
+                    "Config file failed to load. Check file formatting at"
+                    f" {config_path}. If cannot load, re-initialise configs with"
+                    " make_config_file()"
+                )
 
     def update_config(self, option_key: str, new_info: Union[str, bool]):
         """
@@ -417,12 +395,8 @@ class ProjectManager:
                            see make_config_file()
         :param new_info: value to update the config too
         """
-        if option_key in ["local_path", "remote_path"]:
-            new_info = Path(new_info)
-
-        self.cfg[option_key] = new_info
+        self.cfg.update_an_entry(option_key, new_info)
         self.set_attributes_after_config_load()
-        self._save_cfg_to_configs_file()
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
@@ -432,7 +406,7 @@ class ProjectManager:
         return self.cfg["local_path"].as_posix()
 
     def get_appdir_path(self):
-        return self._get_user_appdir_path().as_posix()
+        return utils.get_user_appdir_path(self.project_name).as_posix()
 
     def get_remote_path(self):
         return self.cfg["remote_path"].as_posix()
@@ -493,15 +467,15 @@ class ProjectManager:
 
         for experiment_type_key, experiment_type_dir in experiment_type_items:
             if experiment_type_dir.used:
-                self._make_dirs(self._join("local", experiment_type_dir.name))
+                utils.make_dirs(self._join("local", experiment_type_dir.name))
 
                 for sub in sub_names:
-                    self._make_dirs(
+                    utils.make_dirs(
                         self._join("local", [experiment_type_dir.name, sub])
                     )
 
                     for ses in ses_names:
-                        self._make_dirs(
+                        utils.make_dirs(
                             self._join(
                                 "local", [experiment_type_dir.name, sub, ses]
                             )
@@ -551,7 +525,7 @@ class ProjectManager:
             for subdir in directory.subdirs.values():
                 if subdir.used:
                     new_path_to_dir = path_to_dir + [subdir.name]
-                    self._make_dirs(self._join("local", new_path_to_dir))
+                    utils.make_dirs(self._join("local", new_path_to_dir))
                     self._recursive_make_subdirs(subdir, new_path_to_dir)
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -623,23 +597,11 @@ class ProjectManager:
         local = FsTarget(local_filepath)
         remote = self._get_remote_target(remote_filepath)
 
-        opts = self._get_default_syncronizer_opts(preview)
+        opts = utils.get_default_syncronizer_opts(preview)
 
-        syncronizer = self._get_syncronizer(upload_or_download)
+        syncronizer = utils.get_syncronizer(upload_or_download)
         s = syncronizer(local, remote, opts)
         s.run()
-
-    def _get_syncronizer(self, upload_or_download: str):
-        """
-        Convenience function to get the pyftpsync syncronizer
-        """
-        if upload_or_download == "upload":
-            syncronizer = UploadSynchronizer
-
-        elif upload_or_download == "download":
-            syncronizer = DownloadSynchronizer
-
-        return syncronizer
 
     def _get_remote_target(self, remote_filepath: str):
         """
@@ -659,55 +621,6 @@ class ProjectManager:
             remote = FsTarget(remote_filepath)
 
         return remote
-
-    def _get_default_syncronizer_opts(self, preview: bool):
-        """
-        Retrieve the default options for upload and download. These
-        are very important as define the behaviour of file transfer
-        when there are conflicts (e.g. whether to delete remote
-        file if it is not found on the local filesystem).
-
-        Currently, all options are set so that no file is ever overwritten.
-        If there is a remote directory that is older than the local directory, it will not
-        be overwritten. The only 'overwrite' that occurs is if the remote
-        or local directory has been deleted - by default this will not be replaced as
-        pyftpsync metadata indicates the file has been deleted. Using the default
-        'force' option will force file transfer, but also has other effects e.g.
-        overwriting newer files with old, which we dont want. This option has been
-        edited to permit a "restore" argumnent, which acts Force=False except
-        in the case where the local / remote file has been deleted entirely, in which
-        case it will be replaced.
-
-        :param preview: run pyftpsync's "dry_run" option.
-        """
-        opts = {
-            "help": False,
-            "verbose": 5,
-            "quiet": 0,
-            "debug ": False,
-            "case": "strict",
-            "dry_run": preview,
-            "progress": False,
-            "no_color": True,
-            "ftp_active": False,
-            "migrate": False,
-            "no_verify_host_keys": False,
-            # "match": 3,
-            # "exclude": 3,
-            "prompt": False,
-            "no_prompt": False,
-            "no_keyring": True,
-            "no_netrc": True,
-            "store_password": False,
-            "force": "restore",
-            "resolve": "ask",
-            "delete": False,
-            "delete_unmatched": False,
-            "create_dir": True,
-            "report_problems": False,
-        }
-
-        return opts
 
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
@@ -759,22 +672,9 @@ class ProjectManager:
                 search_path, search_prefix
             )
         else:
-            all_dirnames = self._search_filesystem_path_for_directorys(
+            all_dirnames = utils.search_filesystem_path_for_directories(
                 search_path + "/" + search_prefix
             )
-        return all_dirnames
-
-    def _search_filesystem_path_for_directorys(
-        self, search_path_with_prefix: str
-    ):
-        """
-        Use glob to search the full search path (including prefix) with glob.
-        Files are filtered out of results, returning directories only.
-        """
-        all_dirnames = []
-        for file_or_dir in glob.glob(search_path_with_prefix):
-            if os.path.isdir(file_or_dir):
-                all_dirnames.append(os.path.basename(file_or_dir))
         return all_dirnames
 
     def _search_ssh_remote_for_directories(
@@ -789,16 +689,9 @@ class ProjectManager:
 
             sftp = client.open_sftp()
 
-            all_dirnames = []
-            try:
-                for file_or_dir in sftp.listdir_attr(search_path):
-                    if stat.S_ISDIR(file_or_dir.st_mode):
-                        if fnmatch.fnmatch(
-                            file_or_dir.filename, search_prefix
-                        ):
-                            all_dirnames.append(file_or_dir.filename)
-            except FileNotFoundError:
-                self._raise_error(f"No file found at {search_path}")
+            all_dirnames = utils.get_list_of_directory_names_over_sftp(
+                sftp, search_path, search_prefix
+            )
 
         return all_dirnames
 
@@ -813,7 +706,7 @@ class ProjectManager:
         is generated in the appdir. Next a connection requiring input password
         made, and the public part of the key added to ~/.ssh/authorized_keys.
         """
-        self._generate_and_write_ssh_key()
+        utils.generate_and_write_ssh_key(self._ssh_key_path)
 
         password = getpass.getpass(
             "Please enter password to your remote host to add the public key. "
@@ -824,41 +717,24 @@ class ProjectManager:
 
         self._add_public_key_to_remote_authorized_keys(password, key)
 
-    @requires_ssh_configs
-    def _verify_ssh_remote_host(self):
+    def _connect_client(
+        self,
+        client: paramiko.SSHClient,
+        password: str = None,
+        private_key_path: str = None,
+    ):
         """
-        Setup SSH host keys. Display the server RSA key and require user to accept.
-        Once accepted, hostkey is stored in appdir for future use with paramiko.
+        Connect client to remote server using paramiko.
+        Accept either password or path to private key, but not both.
         """
-        with paramiko.Transport(self.cfg["remote_host_id"]) as transport:
-            transport.connect()
-            key = transport.get_remote_server_key()
-
-        self._message_user(
-            "The host key is not cached for this server:"
-            f" {self.cfg['remote_host_id']}.\nYou have no guarantee that the server is"
-            f" the computer you think it is.\nThe server's {key.get_name()} key"
-            f" fingerprint is: {key.get_base64()}\nIf you trust this host, to connect"
-            " and cache the host key, press y: "
+        utils.connect_client(
+            client,
+            self.cfg["remote_host_id"],
+            self.cfg["remote_host_username"],
+            self._hostkeys,
+            password,
+            private_key_path,
         )
-        input_ = input()
-
-        if input_ == "y":
-            client = paramiko.SSHClient()
-            client.get_host_keys().add(
-                self.cfg["remote_host_id"], key.get_name(), key
-            )
-            client.get_host_keys().save(self._hostkeys)
-            sucess = True
-        else:
-            self._message_user("Host not accepted. No connection made.")
-            sucess = False
-
-        return sucess
-
-    def _generate_and_write_ssh_key(self):
-        key = paramiko.RSAKey.generate(4096)
-        key.write_private_key_file(self._ssh_key_path)
 
     def _add_public_key_to_remote_authorized_keys(
         self, password: str, key: paramiko.rsakey.RSAKey
@@ -869,137 +745,14 @@ class ProjectManager:
         with paramiko.SSHClient() as client:
             self._connect_client(client, password=password)
 
-            client.exec_command("mkdir -p ~/.ssh/")
-            client.exec_command(
-                # double >> for concatenate
-                f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys'
-            )
-            client.exec_command("chmod 644 ~/.ssh/authorized_keys")
-            client.exec_command("chmod 700 ~/.ssh/")
+            utils.setup_authorized_keys_over_client(client, key)
 
-        self._message_user(
+        utils.message_user(
             f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}"
         )
 
-    def _connect_client(
-        self, client, password: str = None, private_key_path: str = None
-    ):
-        """
-        Connect client to remote server using paramiko.
-        Accept either password or path to private key, but not both.
-        """
-        try:
-            client.get_host_keys().load(self._hostkeys)
-            client.set_missing_host_key_policy(paramiko.RejectPolicy())
-            client.connect(
-                self.cfg["remote_host_id"],
-                username=self.cfg["remote_host_username"],
-                password=password,
-                key_filename=private_key_path,
-                look_for_keys=True,
-            )
-        except Exception:
-            self._raise_error("ssh_connection_error")
-
     # --------------------------------------------------------------------------------------------------------------------
-    # Handle Configs
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def _save_cfg_to_configs_file(self):
-        """
-        Save self.cfg to appdir configuration .yaml file.
-        Path objects must be converted to string (and likewise, back to Path when loaded).
-        """
-        cfg_to_save = copy.deepcopy(self.cfg)
-        self._convert_str_and_pathlib_paths(cfg_to_save, "path_to_str")
-        self._dump_configs_to_file(cfg_to_save)
-
-    def _dump_configs_to_file(self, config_dict):
-        with open(self._config_path, "w") as config_file:
-            yaml.dump(config_dict, config_file, sort_keys=False)
-
-    def _config_file_exists(self, prompt_on_fail: bool) -> bool:
-        """
-        Check the config file exists in the expected directory.
-
-        :param prompt_on_fail: if config file not found, warn the user.
-
-        :return: True or False
-        """
-        exists = os.path.isfile(self._config_path)
-
-        if not exists and prompt_on_fail:
-            warnings.warn(
-                "Configuration file has not been initialized. "
-                "Use make_config_file() to setup before continuing."
-            )
-
-        return exists
-
-    def _attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
-        """
-        Attempt to load the config file. If it does not exist or crashes
-        when attempt to load from file, return False.
-
-        :param prompt_on_fail: if config file not found, or crashes on load,
-                               warn the user.
-
-        :return: loaded dictionary, or False if not loaded.
-        """
-        if not self._config_file_exists(prompt_on_fail):
-            return False
-
-        try:
-            with open(self._config_path, "r") as config_file:
-                config_dict = yaml.full_load(config_file)
-
-            self._convert_str_and_pathlib_paths(config_dict, "str_to_path")
-
-        except Exception:
-            config_dict = False
-
-            if prompt_on_fail:
-                self._message_user(
-                    "Config file failed to load. Check file formatting at"
-                    f" {self._config_path}. If cannot load, re-initialise configs with"
-                    " make_config_file()"
-                )
-
-        return config_dict
-
-    def _convert_str_and_pathlib_paths(
-        self, config_dict: dict, direction: str
-    ):
-        """
-        Config paths are stored as str in the .yaml but used as Path
-        in the module, so make the conversion here.
-
-        :param config_dict: self.cfg dict of configs
-        :param direction: "path_to_str" or "str_to_path"
-        """
-        for path_key in ["local_path", "remote_path"]:
-            if direction == "str_to_path":
-                config_dict[path_key] = Path(config_dict[path_key])
-            elif direction == "path_to_str":
-                config_dict[path_key] = config_dict[path_key].as_posix()
-            else:
-                self._raise_error(
-                    "Option must be 'path_to_str' or 'str_to_path'"
-                )
-
-    def _get_experiment_type_items(self, experiment_type):
-        """
-        Get the .items() structure of the data type, either all of
-        them (stored in self._ses_dirs or a single item.
-        """
-        return (
-            zip([experiment_type], [self._ses_dirs[experiment_type]])
-            if experiment_type != "all"
-            else self._ses_dirs.items()
-        )
-
-    # --------------------------------------------------------------------------------------------------------------------
-    # Utils TODO: move where possible
+    # Utils
     # --------------------------------------------------------------------------------------------------------------------
 
     def _join(self, base: str, subdirs: Union[str, list]):
@@ -1020,7 +773,7 @@ class ProjectManager:
 
         base_dir = self._get_base_dir(base)
 
-        if self._path_already_stars_with_base_dir(base_dir, subdirs_path):
+        if utils.path_already_stars_with_base_dir(base_dir, subdirs_path):
             joined_path = subdirs_path
         else:
             joined_path = base_dir / subdirs_path
@@ -1036,66 +789,24 @@ class ProjectManager:
         elif base == "remote":
             base_dir = self.cfg["remote_path"]
         elif base == "appdir":
-            base_dir = self._get_user_appdir_path()
+            base_dir = utils.get_user_appdir_path(self.project_name)
         return base_dir
-
-    def _path_already_stars_with_base_dir(self, base_dir: Path, path_: Path):
-        return path_.as_posix().startswith(base_dir.as_posix())
 
     def _process_names(self, names: Union[list, str], sub_or_ses: str):
         """
-        Check a single or list of input session or subject names. First check the type is correct,
-        next prepend the prefix sub- or ses- to entries that do not have the relevant prefix. Finally,
-        check for duplicates.
-
         :param names: str or list containing sub or ses names (e.g. to make dirs)
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
-        if type(names) not in [str, list] or any(
-            [not isinstance(ele, str) for ele in names]
-        ):
-            self._raise_error(
-                "Ensure subject and session names are list of strings, or string"
-            )
-            return False
-
-        if isinstance(names, str):
-            names = [names]
-
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        prefixed_names = self._ensure_prefixes_on_list_of_names(names, prefix)
-
-        if len(prefixed_names) != len(set(prefixed_names)):
-            self._raise_error(
-                "Subject and session names but all be unqiue (i.e. there are no"
-                " duplicates in list input)"
-            )
-
-        return prefixed_names
+        utils.process_names(names, prefix)
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str):
+
         if sub_or_ses == "sub":
             prefix = self.cfg["sub_prefix"]
         elif sub_or_ses == "ses":
             prefix = self.cfg["ses_prefix"]
         return prefix
-
-    def _get_user_appdir_path(self):
-        """
-        It is not possible to write to programfiles in windows from app without admin permissions
-        However if admin permission given drag and drop dont work, and it is not good practice.
-        Use appdirs module to get the AppData cross-platform and save / load all files form here .
-        """
-        base_path = Path(
-            os.path.join(
-                appdirs.user_data_dir("ProjectManagerSWC"), self.project_name
-            )
-        )
-
-        if not os.path.isdir(base_path):
-            os.makedirs(base_path)
-
-        return base_path
 
     def _check_experiment_type_is_valid(self, experiment_type, prompt_on_fail):
         """
@@ -1107,55 +818,20 @@ class ProjectManager:
         )
 
         if prompt_on_fail and not is_valid:
-            self._message_user(
+            utils.message_user(
                 f"experiment_type: '{experiment_type}' is not valid. Must be one of"
                 f" {list(self._ses_dirs.keys())}. No directories were made."
             )
 
         return is_valid
 
-    def _raise_error(self, message: str):
+    def _get_experiment_type_items(self, experiment_type):
         """
-        Temporary centralized way to raise and error
+        Get the .items() structure of the data type, either all of
+        them (stored in self._ses_dirs or a single item.
         """
-        if message == "ssh_connection_error":
-            message = (
-                "Could not connect to server. Ensure that \n1) You are on SWC network"
-                f" / VPN. \n2) The remote_host_id: {self.cfg['remote_host_id']} is"
-                " correct.\n3) The remote username:"
-                f" {self.cfg['remote_host_username']}, and password are correct."
-            )
-        raise BaseException(message)
-
-    @staticmethod
-    def _message_user(message: str):
-        """
-        Temporary centralised way to message user.
-        """
-        print(message)
-
-    @staticmethod
-    def _make_dirs(paths: Union[str, list]):
-        """
-        For path or list of path, make them if do not already exist.
-        """
-        if isinstance(paths, str):
-            paths = [paths]
-
-        for path_ in paths:
-            if not os.path.isdir(path_):
-                os.makedirs(path_)
-            else:
-                warnings.warn(
-                    "The following directory was not made because it already exists"
-                    f" {path_}"
-                )
-
-    @staticmethod
-    def _ensure_prefixes_on_list_of_names(names, prefix):
-        """ """
-        n_chars = len(prefix)
-        return [
-            prefix + name if name[:n_chars] != prefix else name
-            for name in names
-        ]
+        return (
+            zip([experiment_type], [self._ses_dirs[experiment_type]])
+            if experiment_type != "all"
+            else self._ses_dirs.items()
+        )
