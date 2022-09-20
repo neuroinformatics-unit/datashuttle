@@ -1,4 +1,3 @@
-import copy
 import getpass
 import os
 import warnings
@@ -341,7 +340,7 @@ class ProjectManager:
             },
         )
 
-        self.cfg.setup_after_load()  ##
+        self.cfg.setup_after_load()
 
         if self.cfg:
             self.cfg.dump_to_file()
@@ -371,7 +370,7 @@ class ProjectManager:
             )
             return False
 
-        self.cfg = Configs(self._config_path, None)
+        self.cfg = configs.Configs(self._config_path, None)
 
         try:
             self.cfg.load_from_file()
@@ -380,9 +379,9 @@ class ProjectManager:
             self.cfg = False
 
             if prompt_on_fail:
-                message_user(
+                utils.message_user(
                     "Config file failed to load. Check file formatting at"
-                    f" {config_path}. If cannot load, re-initialise configs with"
+                    f" {self._config_path}. If cannot load, re-initialise configs with"
                     " make_config_file()"
                 )
 
@@ -403,10 +402,11 @@ class ProjectManager:
     # --------------------------------------------------------------------------------------------------------------------
 
     def get_local_path(self):
-        return self.cfg["local_path"].as_posix()
+        return os.fspath(self.cfg["local_path"])
 
     def get_appdir_path(self):
-        return utils.get_user_appdir_path(self.project_name).as_posix()
+        appdir_path = utils.get_user_appdir_path(self.project_name)
+        return os.fspath(appdir_path)
 
     def get_remote_path(self):
         return self.cfg["remote_path"].as_posix()
@@ -482,51 +482,12 @@ class ProjectManager:
                         )
 
                         if make_ses_tree:
-                            self._make_ses_directory_tree(
-                                sub, ses, experiment_type_key
+                            utils.make_ses_directory_tree(
+                                sub,
+                                ses,
+                                experiment_type_dir,
+                                base_path=self.cfg["local_path"],
                             )
-
-    def _make_ses_directory_tree(
-        self, sub: str, ses: str, experiment_type_key: str
-    ):
-        """
-        Make the directory tree within a session. This is dependent on the experiment_type (e.g. "ephys")
-        dir and defined in the subdirs field on the Directory class, in self._ses_dirs.
-
-        All subdirs will be made recursively, unless the .used attribute on the Directory class is
-        False. This will also stop and subdirs of the subdir been created.
-
-        :param sub:                    subject name to make directory tree in
-        :param ses:                    session name to make directory tree in
-        :param experiment_type_key:    experiment_type_key (e.g. "ephys") to make directory tree in.
-                                       Note this defines the subdirs created.
-        """
-        experiment_type_dir = self._ses_dirs[experiment_type_key]
-
-        if experiment_type_dir.used and experiment_type_dir.subdirs:
-            self._recursive_make_subdirs(
-                directory=experiment_type_dir,
-                path_to_dir=[experiment_type_dir.name, sub, ses],
-            )
-
-    def _recursive_make_subdirs(self, directory: Directory, path_to_dir: list):
-        """
-        Function to recursively create all directories in a Directory .subdirs field.
-
-        i.e. this will first create a directory based on the .name attribute. It will then
-        loop through all .subdirs, and do the same - recursively looping through subdirs
-        until the entire directory tree is made. If .used attribute on a directory is False,
-        that directory and all subdirs of the directory will not be made.
-
-        :param directory:
-        :param path_to_dir:
-        """
-        if directory.subdirs:
-            for subdir in directory.subdirs.values():
-                if subdir.used:
-                    new_path_to_dir = path_to_dir + [subdir.name]
-                    utils.make_dirs(self._join("local", new_path_to_dir))
-                    self._recursive_make_subdirs(subdir, new_path_to_dir)
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
@@ -549,18 +510,27 @@ class ProjectManager:
         :param ses_names: see make_sub_dir()
         :param preview: see upload_project_dir_or_file*(
         """
-        dir_to_search = "local" if upload_or_download == "upload" else "remote"
-
-        experiment_type_items = self._get_experiment_type_items(
-            experiment_type
+        local_or_remote = (
+            "local" if upload_or_download == "upload" else "remote"
         )
+
+        if experiment_type != "all":
+            experiment_type_items = self._get_experiment_type_items(
+                experiment_type
+            )
+        else:
+            experiment_type_items = (
+                self._search_base_dir_for_experiment_directories(
+                    local_or_remote
+                )
+            )
 
         for experiment_type_key, experiment_type_dir in experiment_type_items:
             if sub_names != "all":
                 sub_names = self._process_names(sub_names, "sub")
             else:
                 sub_names = self._search_subs_from_project_dir(
-                    dir_to_search, experiment_type_key
+                    local_or_remote, experiment_type_key
                 )
 
             for sub in sub_names:
@@ -568,7 +538,7 @@ class ProjectManager:
                     ses_names = self._process_names(ses_names, "ses")
                 else:
                     ses_names = self._search_ses_from_sub_dir(
-                        dir_to_search, experiment_type_key, sub
+                        local_or_remote, experiment_type_key, sub
                     )
 
                 for ses in ses_names:
@@ -668,8 +638,12 @@ class ProjectManager:
         """
         if local_or_remote == "remote" and self.cfg["ssh_to_remote"]:
 
-            all_dirnames = self._search_ssh_remote_for_directories(
-                search_path, search_prefix
+            all_dirnames = utils.search_ssh_remote_for_directories(
+                search_path,
+                search_prefix,
+                self.cfg,
+                self._hostkeys,
+                self._ssh_key_path,
             )
         else:
             all_dirnames = utils.search_filesystem_path_for_directories(
@@ -677,23 +651,41 @@ class ProjectManager:
             )
         return all_dirnames
 
-    def _search_ssh_remote_for_directories(
-        self, search_path: str, search_prefix: str
+    def _search_base_dir_for_experiment_directories(
+        self, local_or_remote: str
     ):
         """
-        Search for the search prefix in the search path over SSH.
-        Returns the list of matching directories, files are filtered out.
+        Find experiment type directories in the project base directory (e.g. "ephys", "behav"),
+        (by filtering the names of all directories present). Return these in the same format as
+        dict.items()
+
+        :param local_or_remote: "local" or "remote"
         """
-        with paramiko.SSHClient() as client:
-            self._connect_client(client, private_key_path=self._ssh_key_path)
+        base_dir = self._get_base_dir(local_or_remote)
 
-            sftp = client.open_sftp()
+        top_level_directory_names = self._search_for_directories(
+            local_or_remote, base_dir.as_posix(), "*"
+        )
 
-            all_dirnames = utils.get_list_of_directory_names_over_sftp(
-                sftp, search_path, search_prefix
-            )
+        ses_dir_keys = []
+        ses_dir_values = []
+        for dir_name in top_level_directory_names:
+            experiment_type_key = [
+                key
+                for key, value in self._ses_dirs.items()
+                if value.name == dir_name
+            ]
 
-        return all_dirnames
+            if len(experiment_type_key) > 1:
+                utils.raise_error(
+                    "There are matching experiment type names in the tree specified at self._ses_dirs. Remove duplicates"
+                )
+
+            if experiment_type_key:
+                ses_dir_keys.append(experiment_type_key[0])
+                ses_dir_values.append(self._ses_dirs[experiment_type_key[0]])
+
+        return zip(ses_dir_keys, ses_dir_values)
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
@@ -715,37 +707,9 @@ class ProjectManager:
 
         key = paramiko.RSAKey.from_private_key_file(self._ssh_key_path)
 
-        self._add_public_key_to_remote_authorized_keys(password, key)
-
-    def _connect_client(
-        self,
-        client: paramiko.SSHClient,
-        password: str = None,
-        private_key_path: str = None,
-    ):
-        """
-        Connect client to remote server using paramiko.
-        Accept either password or path to private key, but not both.
-        """
-        utils.connect_client(
-            client,
-            self.cfg["remote_host_id"],
-            self.cfg["remote_host_username"],
-            self._hostkeys,
-            password,
-            private_key_path,
+        utils.add_public_key_to_remote_authorized_keys(
+            self.cfg, self._hostkeys, password, key
         )
-
-    def _add_public_key_to_remote_authorized_keys(
-        self, password: str, key: paramiko.rsakey.RSAKey
-    ):
-        """
-        Append the public part of key to remote server ~/.ssh/authorized_keys.
-        """
-        with paramiko.SSHClient() as client:
-            self._connect_client(client, password=password)
-
-            utils.setup_authorized_keys_over_client(client, key)
 
         utils.message_user(
             f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}"
@@ -780,7 +744,7 @@ class ProjectManager:
 
         return joined_path.as_posix()
 
-    def _get_base_dir(self, base):
+    def _get_base_dir(self, base: str):
         """
         Convenience function to return the full base path.
         """
@@ -798,10 +762,13 @@ class ProjectManager:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        utils.process_names(names, prefix)
+        processed_names = utils.process_names(names, prefix)
+        return processed_names
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str):
-
+        """
+        Get the user-supplied sub / ses prefix (default is sub- and ses-".
+        """
         if sub_or_ses == "sub":
             prefix = self.cfg["sub_prefix"]
         elif sub_or_ses == "ses":
@@ -812,10 +779,14 @@ class ProjectManager:
         """
         Check the user-passed data type is valid (must be a key on self.ses_dirs or "all"
         """
-        is_valid = (
-            experiment_type in self._ses_dirs.keys()
-            or experiment_type == "all"
-        )
+        if type(experiment_type) == list:
+            valid_keys = self._ses_dirs.keys()
+            is_valid = all([type in valid_keys for type in experiment_type])
+        else:
+            is_valid = (
+                experiment_type in self._ses_dirs.keys()
+                or experiment_type == "all"
+            )
 
         if prompt_on_fail and not is_valid:
             utils.message_user(
@@ -825,13 +796,32 @@ class ProjectManager:
 
         return is_valid
 
-    def _get_experiment_type_items(self, experiment_type):
+    def _get_experiment_type_items(self, experiment_type: Union[str, list]):
         """
         Get the .items() structure of the data type, either all of
         them (stored in self._ses_dirs or a single item.
         """
-        return (
-            zip([experiment_type], [self._ses_dirs[experiment_type]])
-            if experiment_type != "all"
-            else self._ses_dirs.items()
-        )
+        if type(experiment_type) == list:
+
+            items = self._get_ses_dirs_items_from_list_of_keys(experiment_type)
+
+        else:
+            items = (
+                zip([experiment_type], [self._ses_dirs[experiment_type]])
+                if experiment_type != "all"
+                else self._ses_dirs.items()
+            )
+
+        return items
+
+    def _get_ses_dirs_items_from_list_of_keys(self, experiment_type: list):
+        """
+        Key the items of specific keys from a dict in a form that mathes
+        dict.items().
+        """
+        keys = []
+        values = []
+        for key in experiment_type:
+            keys.append(key)
+            values.append(self._ses_dirs[key])
+        return zip(key, values)
