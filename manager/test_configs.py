@@ -18,11 +18,12 @@ TEST_PROJECT_NAME = "test1"
 
 
 class TestConfigs:
-    # TODO: decide on best way to use pytest fixture and use pytest
-
     @pytest.fixture(scope="function")
     def project(test):
-        """"""
+        """
+        Fixture that creates an empty project. Ignore the warning
+        that no configs are setup yet.
+        """
         test.delete_project_if_it_exists()
 
         warnings.filterwarnings("ignore")
@@ -36,7 +37,10 @@ class TestConfigs:
     # --------------------------------------------------------------------------------------------------------------------
 
     def test_warning_on_startup(self):
-        """"""
+        """
+        When no configs have been set, a warning should be shown that
+        tells the user the config has not been initialized.
+        """
         self.delete_project_if_it_exists()
         with warnings.catch_warnings(record=True) as w:
             ProjectManager(TEST_PROJECT_NAME)
@@ -48,7 +52,11 @@ class TestConfigs:
         )
 
     def test_required_configs(self, project):
-        """"""
+        """
+        Set the required arguemnts of the config (local_path, remote_path,
+        ssh_to_remote) and check they are set correctly in both the project.cfg
+        dict and config.yaml file.
+        """
         required_options = self.get_test_config_arguments_dict(
             required_arguments_only=True
         )
@@ -61,7 +69,10 @@ class TestConfigs:
         )
 
     def test_config_defaults(self, project):
-
+        """
+        Check the default configs are set as expected
+        (see get_test_config_arguments_dict()) for tested defaults.
+        """
         required_options = self.get_test_config_arguments_dict(
             required_arguments_only=True
         )
@@ -74,8 +85,11 @@ class TestConfigs:
 
         self.check_configs(project, default_options)
 
-    def test_optional_configs(self, project):
-        """"""
+    def test_non_default_configs(self, project):
+        """
+        Set the configs to non-default options, make the
+        config file and check file and project.cfg are set correctly.
+        """
         changed_configs = self.get_test_config_arguments_dict(
             set_as_defaults=False
         )
@@ -86,7 +100,11 @@ class TestConfigs:
         )
 
     def test_update_configs(self, project):
-        """"""
+        """
+        Set the configs as default and then sequentially update
+        each entry with a different option. Check that
+        the option is updated at project.cfg and the yaml file.
+        """
         default_configs = self.get_test_config_arguments_dict(
             set_as_defaults=True
         )
@@ -124,7 +142,13 @@ class TestConfigs:
         project,
         *kwargs,
     ):
-        """ """
+        """
+        Core function for checking the config against provided configs (kwargs).
+        Open the config.yaml file and check the config values stored there,
+        and in project.cfg, against the provided configs.
+
+        Paths are stored as pathlib in the cfg but str in the .yaml
+        """
         config_path = project.get_appdir_path() + "/config.yaml"
 
         if not os.path.isfile(config_path):
@@ -152,19 +176,27 @@ class TestConfigs:
     # --------------------------------------------------------------------------------------------------------------------
 
     def check_config_reopen_and_check_config_again(self, project, *kwargs):
-        """"""
+        """
+        Check the config file and project.cfg against provided kwargs,
+        delete the project and setup the project againt,
+        checking everything is loaded correctly.
+        """
         self.check_configs(project, kwargs[0])
 
-        del project
+        del project  # del project is almost certainly unecessary
 
-        project = ProjectManager("test1")  # TODO: central loader
+        project = ProjectManager(TEST_PROJECT_NAME)
 
         self.check_configs(project, kwargs[0])
 
     def get_test_config_arguments_dict(
         self, set_as_defaults=None, required_arguments_only=None
     ):
-        """"""
+        """
+        Retrieve configs, either the required configs (for project.make_config_file()),
+        all configs (default) or non-default configs. Note that default configs here
+        are the expected default arguments in project.make_config_file().
+        """
         dict_ = {
             "local_path": r"C:/test/test_local/path",
             "remote_path": r"/nfs/testdir/user",
@@ -211,6 +243,7 @@ class TestConfigs:
         return dict_
 
     def delete_project_if_it_exists(self):
+        """"""
         if os.path.isdir(
             os.path.join(
                 appdirs.user_data_dir("ProjectManagerSWC"), TEST_PROJECT_NAME
