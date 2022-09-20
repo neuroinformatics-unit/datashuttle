@@ -7,9 +7,9 @@ from pathlib import Path
 from typing import Union
 
 import appdirs
-import directory_class
 import paramiko
 from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
+from utils.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
@@ -19,7 +19,7 @@ from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
 def make_ses_directory_tree(
     sub: str,
     ses: str,
-    experiment_type_dir: directory_class.Directory,
+    experiment_type_dir: Directory,
     base_path: str,
 ):
     """
@@ -43,7 +43,7 @@ def make_ses_directory_tree(
 
 
 def recursive_make_subdirs(
-    directory: directory_class.Directory, path_to_dir: list, base_path: Path
+    directory: Directory, path_to_dir: list, base_path: Path
 ):
     """
     Function to recursively create all directories in a Directory .subdirs field.

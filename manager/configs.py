@@ -5,8 +5,7 @@ from pathlib import Path
 from typing import Union
 
 import yaml
-
-from manager import utils
+from utils import utils
 
 
 class Configs(UserDict):

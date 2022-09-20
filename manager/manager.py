@@ -6,12 +6,11 @@ from typing import Union, cast
 
 import configs
 import paramiko
-from decorators import requires_ssh_configs
-from directory_class import Directory
 from ftpsync.sftp_target import SFTPTarget
 from ftpsync.targets import FsTarget
-
-from manager import utils
+from utils import utils
+from utils.decorators import requires_ssh_configs
+from utils.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
