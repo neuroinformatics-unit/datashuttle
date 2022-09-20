@@ -9,30 +9,27 @@ import shutil
 import warnings
 
 import appdirs
+import pytest
 import yaml
 
-from manager import ProjectManager
+from manager.manager import ProjectManager
+
+TEST_PROJECT_NAME = "test1"
 
 
 class TestConfigs:
     # TODO: decide on best way to use pytest fixture and use pytest
 
-    def create_new_user_project(self):
+    @pytest.fixture(scope="function")
+    def project(test):
+        """"""
+        test.delete_project_if_it_exists()
 
-        username = "test1"
+        warnings.filterwarnings("ignore")
+        project = ProjectManager(TEST_PROJECT_NAME)
+        warnings.filterwarnings("default")
 
-        if os.path.isdir(
-            os.path.join(appdirs.user_data_dir("ProjectManagerSWC"), username)
-        ):  # TODO! this is not system agnostic, need to use os.path.join(appdirs.user_data_dir("ProjectManagerSWC"), username)
-            shutil.rmtree(
-                os.path.join(
-                    appdirs.user_data_dir("ProjectManagerSWC"), username
-                )
-            )
-
-        project = ProjectManager(username)
-
-        return project
+        yield project
 
     # --------------------------------------------------------------------------------------------------------------------
     # Tests
@@ -40,8 +37,9 @@ class TestConfigs:
 
     def test_warning_on_startup(self):
         """"""
+        self.delete_project_if_it_exists()
         with warnings.catch_warnings(record=True) as w:
-            self.create_new_user_project()
+            ProjectManager(TEST_PROJECT_NAME)
 
         assert len(w) == 1
         assert (
@@ -49,10 +47,8 @@ class TestConfigs:
             == "Configuration file has not been initialized. Use make_config_file() to setup before continuing."
         )
 
-    def test_required_configs(self):
+    def test_required_configs(self, project):
         """"""
-        project = self.create_new_user_project()
-
         required_options = self.get_test_config_arguments_dict(
             required_arguments_only=True
         )
@@ -64,7 +60,7 @@ class TestConfigs:
             required_options,
         )
 
-    def test_config_defaults(self):
+    def test_config_defaults(self, project):
 
         required_options = self.get_test_config_arguments_dict(
             required_arguments_only=True
@@ -78,10 +74,8 @@ class TestConfigs:
 
         self.check_configs(project, default_options)
 
-    def test_optional_configs(self):
+    def test_optional_configs(self, project):
         """"""
-        project = self.create_new_user_project()
-
         changed_configs = self.get_test_config_arguments_dict(
             set_as_defaults=False
         )
@@ -91,9 +85,8 @@ class TestConfigs:
             project, changed_configs
         )
 
-    def test_update_configs(self):
+    def test_update_configs(self, project):
         """"""
-        project = self.create_new_user_project()
         default_configs = self.get_test_config_arguments_dict(
             set_as_defaults=True
         )
@@ -150,6 +143,7 @@ class TestConfigs:
                 assert value == project.cfg[arg_name].as_posix()
 
             else:
+
                 assert value == project.cfg[arg_name]
                 assert value == config_yaml[arg_name]
 
@@ -216,8 +210,15 @@ class TestConfigs:
 
         return dict_
 
-
-# TOOD: use pytest
-test = TestConfigs()
-project = ProjectManager("test1")
-test.test_update_configs()
+    def delete_project_if_it_exists(self):
+        if os.path.isdir(
+            os.path.join(
+                appdirs.user_data_dir("ProjectManagerSWC"), TEST_PROJECT_NAME
+            )
+        ):
+            shutil.rmtree(
+                os.path.join(
+                    appdirs.user_data_dir("ProjectManagerSWC"),
+                    TEST_PROJECT_NAME,
+                )
+            )
