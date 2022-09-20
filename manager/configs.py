@@ -1,37 +1,24 @@
 import copy
-import fnmatch
-import getpass
-import glob
-import os
-import stat
 import warnings
-from functools import wraps
-from pathlib import Path
-from typing import Union, cast
-
-import appdirs
-import paramiko
-import yaml
-from ftpsync.sftp_target import SFTPTarget
-from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
-from ftpsync.targets import FsTarget
-from directory_class import Directory
-from manager import utils
 from collections import UserDict
+from pathlib import Path
+from typing import Union
+
+import yaml
+
+from manager import utils
 
 
 class Configs(UserDict):
-    """
+    """ """
 
-    """
     def __init__(self, file_path, input_dict):
         super(Configs, self).__init__(input_dict)
 
         self.file_path = file_path
 
     def check_dict_values_and_inform_user(self):
-        """
-        """
+        """ """
         if self["remote_path"][0] == "~":  # TODO: handle path or string
             utils.raise_error(
                 "remote_path must contain the full directory path with no ~ syntax"
@@ -45,7 +32,9 @@ class Configs(UserDict):
                 " provided"
             )
 
-        if self["ssh_to_remote"] is False and (self["remote_host_id"] or self["remote_host_username"]):
+        if self["ssh_to_remote"] is False and (
+            self["remote_host_id"] or self["remote_host_username"]
+        ):
             warnings.warn(
                 "SSH to remote is false, but remote_host_id or remote_host_username"
                 " provided"
@@ -68,11 +57,24 @@ class Configs(UserDict):
 
     def dump_to_file(self):
         """"""
-        cfg_to_save = copy.deepcopy(self)
+        cfg_to_save = copy.deepcopy(self.data)
         self.convert_str_and_pathlib_paths(cfg_to_save, "path_to_str")
 
         with open(self.file_path, "w") as config_file:
             yaml.dump(cfg_to_save, config_file, sort_keys=False)
+
+    def load_from_file(self):
+        """"""
+        with open(self.file_path, "r") as config_file:
+            config_dict = yaml.full_load(config_file)
+
+        self.convert_str_and_pathlib_paths(config_dict, "str_to_path")
+
+        self.data = config_dict
+
+    def setup_after_load(self):
+        self.check_dict_values_and_inform_user()
+        self.convert_str_and_pathlib_paths(self, "str_to_path")
 
     @staticmethod
     def convert_str_and_pathlib_paths(config_dict: dict, direction: str):
@@ -84,22 +86,13 @@ class Configs(UserDict):
         :param direction: "path_to_str" or "str_to_path"
         """
         for path_key in ["local_path", "remote_path"]:
+            value = config_dict[path_key]
             if direction == "str_to_path":
-                config_dict[path_key] = Path(config_dict[path_key])
+                config_dict[path_key] = Path(value)
             elif direction == "path_to_str":
-                config_dict[path_key] = config_dict[path_key].as_posix()
+                if type(value) != str:
+                    config_dict[path_key] = value.as_posix()
             else:
-                utils.raise_error("Option must be 'path_to_str' or 'str_to_path'")
-
-    def load_from_file(self):
-        """"""
-        with open(self.file_path, "r") as config_file:
-            config_dict = yaml.full_load(config_file)
-
-        convert_str_and_pathlib_paths(config_dict, "str_to_path")
-
-        self.update(config_dict)
-
-    def setup_after_load(self):
-        self.check_dict_values_and_inform_user()
-        self.convert_str_and_pathlib_paths(self, "str_to_path")
+                utils.raise_error(
+                    "Option must be 'path_to_str' or 'str_to_path'"
+                )
