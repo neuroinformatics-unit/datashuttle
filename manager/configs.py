@@ -87,11 +87,14 @@ class Configs(UserDict):
         """
         for path_key in ["local_path", "remote_path"]:
             value = config_dict[path_key]
+
             if direction == "str_to_path":
                 config_dict[path_key] = Path(value)
+
             elif direction == "path_to_str":
                 if type(value) != str:
                     config_dict[path_key] = value.as_posix()
+
             else:
                 utils.raise_error(
                     "Option must be 'path_to_str' or 'str_to_path'"

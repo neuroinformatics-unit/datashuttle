@@ -164,7 +164,6 @@ class TestConfigs:
                 assert value == project.cfg[arg_name].as_posix()
 
             else:
-
                 assert value == project.cfg[arg_name]
                 assert value == config_yaml[arg_name]
 
