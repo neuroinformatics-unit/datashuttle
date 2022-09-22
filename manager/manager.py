@@ -143,31 +143,6 @@ class ProjectManager:
             process_names=False,
         )
 
-    def make_ses_dir(
-        self,
-        experiment_type: str,
-        sub_names: Union[str, list],
-        ses_names: Union[str, list],
-        make_ses_tree: bool = True,
-    ):
-        """
-        See make_sub_dir() for inputs.
-        """
-        self._make_directory_trees(
-            experiment_type, sub_names, ses_names, make_ses_tree
-        )
-
-    def make_ses_tree(
-        self,
-        experiment_type: str,
-        sub_names: Union[str, list],
-        ses_names: Union[str, list],
-    ):
-        """
-        See make_sub_dir() for inputs.
-        """
-        self._make_directory_trees(experiment_type, sub_names, ses_names)
-
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
