@@ -9,7 +9,8 @@ from typing import Union
 import appdirs
 import paramiko
 from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
-from utils.directory_class import Directory
+
+from manager.utils.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
