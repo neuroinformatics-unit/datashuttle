@@ -78,7 +78,6 @@ def make_dirs(paths: Union[str, list]):
         if not os.path.isdir(path_):
             os.makedirs(path_)
         else:
-            breakpoint()
             warnings.warn(
                 "The following directory was not made because it already exists"
                 f" {path_}"
