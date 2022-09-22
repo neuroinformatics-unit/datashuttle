@@ -1,30 +1,26 @@
-# TODO: setup fixtures
-import sys
-
-sys.path.append("/Users/easyelectrophysiology/git-repos/project_manager_swc")
-
 import os
 import pathlib
-import shutil
 import warnings
 
-import appdirs
 import pytest
 import yaml
 
+from manager import test_utils
 from manager.manager import ProjectManager
 
-TEST_PROJECT_NAME = "test1"
+TEST_PROJECT_NAME = "test_configs"
 
 
 class TestConfigs:
+    """ """
+
     @pytest.fixture(scope="function")
     def project(test):
         """
         Fixture that creates an empty project. Ignore the warning
         that no configs are setup yet.
         """
-        test.delete_project_if_it_exists()
+        test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
         warnings.filterwarnings("ignore")
         project = ProjectManager(TEST_PROJECT_NAME)
@@ -41,7 +37,8 @@ class TestConfigs:
         When no configs have been set, a warning should be shown that
         tells the user the config has not been initialized.
         """
-        self.delete_project_if_it_exists()
+        test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
+
         with warnings.catch_warnings(record=True) as w:
             ProjectManager(TEST_PROJECT_NAME)
 
@@ -57,7 +54,7 @@ class TestConfigs:
         ssh_to_remote) and check they are set correctly in both the project.cfg
         dict and config.yaml file.
         """
-        required_options = self.get_test_config_arguments_dict(
+        required_options = test_utils.get_test_config_arguments_dict(
             required_arguments_only=True
         )
 
@@ -73,13 +70,13 @@ class TestConfigs:
         Check the default configs are set as expected
         (see get_test_config_arguments_dict()) for tested defaults.
         """
-        required_options = self.get_test_config_arguments_dict(
+        required_options = test_utils.get_test_config_arguments_dict(
             required_arguments_only=True
         )
 
         project.make_config_file(*required_options.values())
 
-        default_options = self.get_test_config_arguments_dict(
+        default_options = test_utils.get_test_config_arguments_dict(
             set_as_defaults=True
         )
 
@@ -90,7 +87,7 @@ class TestConfigs:
         Set the configs to non-default options, make the
         config file and check file and project.cfg are set correctly.
         """
-        changed_configs = self.get_test_config_arguments_dict(
+        changed_configs = test_utils.get_test_config_arguments_dict(
             set_as_defaults=False
         )
 
@@ -105,7 +102,7 @@ class TestConfigs:
         each entry with a different option. Check that
         the option is updated at project.cfg and the yaml file.
         """
-        default_configs = self.get_test_config_arguments_dict(
+        default_configs = test_utils.get_test_config_arguments_dict(
             set_as_defaults=True
         )
         project.make_config_file(*default_configs.values())
@@ -188,70 +185,3 @@ class TestConfigs:
         project = ProjectManager(TEST_PROJECT_NAME)
 
         self.check_configs(project, kwargs[0])
-
-    def get_test_config_arguments_dict(
-        self, set_as_defaults=None, required_arguments_only=None
-    ):
-        """
-        Retrieve configs, either the required configs (for project.make_config_file()),
-        all configs (default) or non-default configs. Note that default configs here
-        are the expected default arguments in project.make_config_file().
-        """
-        dict_ = {
-            "local_path": r"C:/test/test_local/path",
-            "remote_path": r"/nfs/testdir/user",
-            "ssh_to_remote": False,
-        }
-
-        if required_arguments_only:
-            return dict_
-
-        if set_as_defaults:
-            dict_.update(
-                {
-                    "remote_host_id": None,
-                    "remote_host_username": None,
-                    "sub_prefix": "sub-",
-                    "ses_prefix": "ses-",
-                    "use_ephys": True,
-                    "use_ephys_behav": True,
-                    "use_ephys_behav_camera": True,
-                    "use_behav": True,
-                    "use_behav_camera": True,
-                    "use_histology": True,
-                    "use_imaging": True,
-                }
-            )
-        else:
-            dict_.update(
-                {
-                    "ssh_to_remote": True,
-                    "remote_host_id": "test_remote_host_id",
-                    "remote_host_username": "test_remote_host_username",
-                    "sub_prefix": "testsub-",
-                    "ses_prefix": "testses-",
-                    "use_ephys": False,
-                    "use_ephys_behav": False,
-                    "use_ephys_behav_camera": False,
-                    "use_behav": False,
-                    "use_behav_camera": False,
-                    "use_histology": False,
-                    "use_imaging": False,
-                }
-            )
-
-        return dict_
-
-    def delete_project_if_it_exists(self):
-        """"""
-        if os.path.isdir(
-            os.path.join(
-                appdirs.user_data_dir("ProjectManagerSWC"), TEST_PROJECT_NAME
-            )
-        ):
-            shutil.rmtree(
-                os.path.join(
-                    appdirs.user_data_dir("ProjectManagerSWC"),
-                    TEST_PROJECT_NAME,
-                )
-            )
