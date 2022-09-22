@@ -143,6 +143,12 @@ class ProjectManager:
             process_names=False,
         )
 
+    def make_empty_ses_dir(self, experiment_type, sub_names, ses_names):
+        """"""
+        self._make_directory_trees(
+            experiment_type, sub_names, ses_names, make_ses_tree=False
+        )
+
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
