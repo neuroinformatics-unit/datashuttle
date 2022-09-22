@@ -127,13 +127,13 @@ class ProjectManager:
         """
         sub_names = self._process_names(sub_names, "sub")
 
-        if make_ses_tree:
-            if ses_names is None:
+        if ses_names is None:
+            if make_ses_tree:
                 ses_names = [self.cfg["ses_prefix"] + "001"]
             else:
-                ses_names = self._process_names(ses_names, "ses")
+                ses_names = []
         else:
-            ses_names = []
+            ses_names = self._process_names(ses_names, "ses")
 
         self._make_directory_trees(
             experiment_type,
