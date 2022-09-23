@@ -421,6 +421,10 @@ class ProjectManager:
                                 (if not already, these will be prefixed with sub/ses identifier)
         :param ses_names:       session names (same format as subject name). If no session is
                                 provided, defaults to "ses-001".
+
+                                Note if ses name contains @DATE or @DATETIME, this text will be replaced
+                                with hte date / datetime at the time of directory creation.
+
         :param make_ses_tree:   option to make the entire session tree under the subject directory.
                                 If False, the subject directory only will be created.
         :param process_names:   option to process names or not (e.g. if names were processed already).
@@ -743,7 +747,8 @@ class ProjectManager:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        processed_names = utils.process_names(names, prefix)
+        is_ses = True if sub_or_ses == "ses" else False
+        processed_names = utils.process_names(names, prefix, is_ses)
         return processed_names
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str):
