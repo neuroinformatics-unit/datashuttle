@@ -1,9 +1,6 @@
-import os.path
-import sys
-
-sys.path.append("/Users/easyelectrophysiology/git-repos/project_manager_swc")
 import datetime
 import glob
+import os.path
 import re
 from os.path import join
 
@@ -13,18 +10,6 @@ from manager import test_utils
 from manager.utils import utils
 
 TEST_PROJECT_NAME = "test_make_dirs"
-
-
-def get_default_directory_used():  # TODO: need to find a way to know to update this when new ones added
-    return {
-        "ephys": True,
-        "ephys_behav": True,
-        "ephys_behav_camera": True,
-        "behav": True,
-        "behav_camera": True,
-        "imaging": True,
-        "histology": True,
-    }
 
 
 class TestMakeDirs:
@@ -40,13 +25,11 @@ class TestMakeDirs:
         Ensure change dir at end of session otherwise it is not possible
         to delete project.
         """
-        test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
-
         project = test_utils.setup_project_default_configs(TEST_PROJECT_NAME)
 
         cwd = os.getcwd()
         yield project
-        os.chdir(cwd)
+        test_utils.teardown_project(cwd, project)
 
     # ----------------------------------------------------------------------------------------------------------
     # Tests
@@ -128,12 +111,12 @@ class TestMakeDirs:
 
         project.make_sub_dir("all", subs)
 
-        self.check_directory_tree_is_made(
+        test_utils.check_directory_tree_is_made(
             project,
             base_dir=project.get_local_path(),
             subs=["sub-1_1", "sub-two-2", "sub-3_3-3=3"],
             sessions=["ses-001"],
-            directory_used=get_default_directory_used(),
+            directory_used=test_utils.get_default_directory_used(),
         )
 
     def test_explicitly_session_list(self, project):
@@ -152,16 +135,22 @@ class TestMakeDirs:
 
         for sub in subs:
             for ses in ["ses-001", "ses-="]:
-                self.check_and_cd_dir(
+                test_utils.check_and_cd_dir(
                     join(base_dir, "behav", sub, ses, "camera")
                 )
-                self.check_and_cd_dir(
+                test_utils.check_and_cd_dir(
                     join(base_dir, "ephys", sub, ses, "behav", "camera")
                 )
-                self.check_and_cd_dir(join(base_dir, "histology", sub, ses))
-                self.check_and_cd_dir(join(base_dir, "imaging", sub, ses))
+                test_utils.check_and_cd_dir(
+                    join(base_dir, "histology", sub, ses)
+                )
+                test_utils.check_and_cd_dir(
+                    join(base_dir, "imaging", sub, ses)
+                )
 
-    @pytest.mark.parametrize("dir_key", get_default_directory_used().keys())
+    @pytest.mark.parametrize(
+        "dir_key", test_utils.get_default_directory_used().keys()
+    )
     def test_turn_off_specific_directory_used(self, project, dir_key):
         """
         Whether or not a directory is made is held in the .used key of the
@@ -170,7 +159,7 @@ class TestMakeDirs:
 
         # Overwrite configs to make specified directory not used.
         project.update_config("use_" + dir_key, False)
-        directory_used = get_default_directory_used()
+        directory_used = test_utils.get_default_directory_used()
         directory_used[dir_key] = False
 
         # Make dir tree
@@ -179,7 +168,7 @@ class TestMakeDirs:
         project.make_sub_dir("all", subs, sessions)
 
         # Check dir tree is not made but all others are
-        self.check_directory_tree_is_made(
+        test_utils.check_directory_tree_is_made(
             project,
             base_dir=project.get_local_path(),
             subs=subs,
@@ -216,7 +205,7 @@ class TestMakeDirs:
 
         # Check the directories were not made / made.
         base_dir = project.get_local_path()
-        self.check_and_cd_dir(
+        test_utils.check_and_cd_dir(
             join(
                 base_dir,
                 "change_ephys",
@@ -226,11 +215,13 @@ class TestMakeDirs:
                 "change_ephys_behav_camera",
             )
         )
-        self.check_and_cd_dir(
+        test_utils.check_and_cd_dir(
             join(base_dir, "change_behav", sub, ses, "change_behav_camera")
         )
-        self.check_and_cd_dir(join(base_dir, "change_histology", sub, ses))
-        self.check_and_cd_dir(join(base_dir, "change_imaging", sub, ses))
+        test_utils.check_and_cd_dir(
+            join(base_dir, "change_histology", sub, ses)
+        )
+        test_utils.check_and_cd_dir(join(base_dir, "change_imaging", sub, ses))
 
     def test_make_sub_dir_no_tree(self, project):
         """
@@ -238,7 +229,7 @@ class TestMakeDirs:
         """
         project.make_sub_dir("ephys", "001", make_ses_tree=False)
         sub_path = join(project.get_local_path(), "ephys", "sub-001")
-        self.check_and_cd_dir(sub_path)
+        test_utils.check_and_cd_dir(sub_path)
         assert glob.glob(join(sub_path, "*")) == []
 
     def test_make_sub_dir_with_ses_no_tree(self, project):
@@ -249,7 +240,7 @@ class TestMakeDirs:
         ses_path = join(
             project.get_local_path(), "ephys", "sub-001", "ses-001"
         )
-        self.check_and_cd_dir(ses_path)
+        test_utils.check_and_cd_dir(ses_path)
         assert glob.glob(join(ses_path, "*")) == []
 
     def test_make_empty_ses_dir(self, project):
@@ -260,7 +251,7 @@ class TestMakeDirs:
         ses_path = join(
             project.get_local_path(), "ephys", "sub-001", "ses-001"
         )
-        self.check_and_cd_dir(ses_path)
+        test_utils.check_and_cd_dir(ses_path)
         assert glob.glob(join(ses_path, "*")) == []
 
     def test_default_sub_prefix(self, project):
@@ -277,9 +268,11 @@ class TestMakeDirs:
         )
 
         base_path = join(project.get_local_path(), "ephys")
-        self.check_and_cd_dir(join(base_path, "edited_sub_prefix_sub-001"))
-        self.check_and_cd_dir(join(base_path, "edited_sub_prefix_001"))
-        self.check_and_cd_dir(join(base_path, "edited_sub_prefix_1"))
+        test_utils.check_and_cd_dir(
+            join(base_path, "edited_sub_prefix_sub-001")
+        )
+        test_utils.check_and_cd_dir(join(base_path, "edited_sub_prefix_001"))
+        test_utils.check_and_cd_dir(join(base_path, "edited_sub_prefix_1"))
 
     def test_default_ses_prefix(self, project):
         """
@@ -294,11 +287,15 @@ class TestMakeDirs:
 
         base_path = join(project.get_local_path(), "ephys")
 
-        self.check_and_cd_dir(
+        test_utils.check_and_cd_dir(
             join(base_path, sub, "edited_ses_prefix_ses-001")
         )
-        self.check_and_cd_dir(join(base_path, sub, "edited_ses_prefix_001"))
-        self.check_and_cd_dir(join(base_path, sub, "edited_ses_prefix_1"))
+        test_utils.check_and_cd_dir(
+            join(base_path, sub, "edited_ses_prefix_001")
+        )
+        test_utils.check_and_cd_dir(
+            join(base_path, sub, "edited_ses_prefix_1")
+        )
 
     @pytest.mark.parametrize(
         "file_info",
@@ -320,8 +317,9 @@ class TestMakeDirs:
         """
         project.make_sub_dir(file_info, "sub-001", make_ses_tree=False)
 
-        file_paths = glob.glob(join(project.get_local_path(), "*"))
-        file_names = [os.path.basename(path_) for path_ in file_paths]
+        file_names = test_utils.glob_basenames(
+            join(project.get_local_path(), "*")
+        )
 
         if file_info == ["all"]:
             assert file_names == sorted(
@@ -340,10 +338,9 @@ class TestMakeDirs:
             "ephys", ["sub-001", "sub-002"], ["ses-001-@DATE", "002-@DATE"]
         )
 
-        ses_paths = glob.glob(
+        ses_names = test_utils.glob_basenames(
             join(project.get_local_path(), "**", "ses-*"), recursive=True
         )
-        ses_names = [os.path.basename(path_) for path_ in ses_paths]
 
         assert all([date in name for name in ses_names])
         assert all(["@DATE" not in name for name in ses_names])
@@ -360,10 +357,9 @@ class TestMakeDirs:
             ["ses-001-@DATETIME", "002-@DATETIME"],
         )
 
-        ses_paths = glob.glob(
+        ses_names = test_utils.glob_basenames(
             join(project.get_local_path(), "**", "ses-*"), recursive=True
         )
-        ses_names = [os.path.basename(path_) for path_ in ses_paths]
 
         # Convert the minutes to regexp as could change during test runtime
         regexp_time = time_[:-3] + r"\d\dm"
@@ -375,99 +371,6 @@ class TestMakeDirs:
     # ----------------------------------------------------------------------------------------------------------
     # Test Helpers
     # ----------------------------------------------------------------------------------------------------------
-
-    def check_directory_tree_is_made(
-        self, project, base_dir, subs, sessions, directory_used
-    ):
-        """
-        Automated test that directories are made based on the structure specified on project itself.
-
-        Cycle through all experiment type (defined in project._ses_dirs()), sub, sessions
-        and check that the expected file exists. For subdirs, recursively check all exist.
-
-        Directories in which directory_used[key] (where key is the cannoincal dict
-        key in project._ses_dirs()) is not used are expected not to be made, and this is checked.
-
-        The directory_used variable must be passed so we dont rely on project settings itself,
-        as this doesn't explicitly test this.
-        """
-        for key, directory in project._ses_dirs.items():
-
-            assert key in directory_used.keys(), (
-                "Key not found in directory_used. "
-                "Update directory used and hard-coded tests: test_custom_directory_names(), test_explicitly_session_list()"
-            )
-
-            if self.check_directory_is_used(
-                base_dir, directory, directory_used, key
-            ):
-                self.check_and_cd_dir(join(base_dir, directory.name))
-
-                for sub in subs:
-                    self.check_and_cd_dir(join(base_dir, directory.name, sub))
-
-                    for ses in sessions:
-                        path_to_folder = join(
-                            base_dir, directory.name, sub, ses
-                        )
-                        self.check_and_cd_dir(path_to_folder)
-
-                        self.recursive_check_subfolder_exists(
-                            path_to_folder, directory, directory_used
-                        )
-
-    def recursive_check_subfolder_exists(
-        self, path_to_dir, upper_dir, directory_used
-    ):
-        """
-        Check each subdir in the subdirs field on the Directory class are
-        made, and that directory_used is as expected.
-        """
-        if upper_dir.subdirs:
-            for key, subdir in upper_dir.subdirs.items():
-
-                if self.check_directory_is_used(
-                    path_to_dir, subdir, directory_used, key
-                ):
-                    new_path_to_dir = join(path_to_dir, subdir.name)
-
-                    self.check_and_cd_dir(new_path_to_dir)
-                    self.recursive_check_subfolder_exists(
-                        new_path_to_dir, subdir, directory_used
-                    )
-
-    def check_directory_is_used(
-        self, base_dir, directory, directory_used, key
-    ):
-        """
-        Test whether the .used flag on the Directory class matched the expected
-        state (provided in directory_used dict). If directory is not used, check
-        it does not exist.
-
-        Use the pytest -s flag to print all tested paths
-        """
-        assert directory.used == directory_used[key]
-
-        is_used = directory.used
-
-        if not is_used:
-            print(
-                "Path was correctly not made: "
-                + join(base_dir, directory.name)
-            )
-            assert not os.path.isdir(join(base_dir, directory.name))
-
-        return is_used
-
-    def check_and_cd_dir(self, path_):
-        """
-        Check a directory exists and CD to it if it does.
-
-        Use the pytest -s flag to print all tested paths
-        """
-        assert os.path.isdir(path_)
-        os.chdir(path_)
-        print(f"checked: {path_}")  # -s flag
 
     def get_formatted_date_and_time(self):
         date = str(datetime.datetime.now().date())
