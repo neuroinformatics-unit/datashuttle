@@ -495,7 +495,7 @@ class ProjectManager:
             "local" if upload_or_download == "upload" else "remote"
         )
 
-        if experiment_type != "all":
+        if experiment_type not in ["all", ["all"]]:
             experiment_type_items = self._get_experiment_type_items(
                 experiment_type
             )
@@ -507,7 +507,7 @@ class ProjectManager:
             )
 
         for experiment_type_key, experiment_type_dir in experiment_type_items:
-            if sub_names != "all":
+            if sub_names not in ["all", ["all"]]:
                 sub_names = self._process_names(sub_names, "sub")
             else:
                 sub_names = self._search_subs_from_project_dir(
@@ -515,7 +515,7 @@ class ProjectManager:
                 )
 
             for sub in sub_names:
-                if ses_names != "all":
+                if ses_names not in ["all", ["all"]]:
                     ses_names = self._process_names(ses_names, "ses")
                 else:
                     ses_names = self._search_ses_from_sub_dir(
@@ -761,7 +761,7 @@ class ProjectManager:
         Check the user-passed data type is valid (must be a key on self.ses_dirs or "all"
         """
         if type(experiment_type) == list:
-            valid_keys = self._ses_dirs.keys()
+            valid_keys = list(self._ses_dirs.keys()) + ["all"]
             is_valid = all([type in valid_keys for type in experiment_type])
         else:
             is_valid = (
@@ -782,14 +782,14 @@ class ProjectManager:
         Get the .items() structure of the data type, either all of
         them (stored in self._ses_dirs or a single item.
         """
-        if type(experiment_type) == list:
+        if type(experiment_type) == list and "all" not in experiment_type:
 
             items = self._get_ses_dirs_items_from_list_of_keys(experiment_type)
 
         else:
             items = (
                 zip([experiment_type], [self._ses_dirs[experiment_type]])
-                if experiment_type != "all"
+                if experiment_type not in ["all", ["all"]]
                 else self._ses_dirs.items()
             )
 
