@@ -1,7 +1,28 @@
 import os
 import shutil
+import warnings
 
 import appdirs
+
+from manager.manager import ProjectManager
+
+
+def setup_project_default_configs(project_name):
+    """"""
+    warnings.filterwarnings("ignore")
+
+    project = ProjectManager(project_name)
+
+    default_configs = get_test_config_arguments_dict(set_as_defaults=True)
+    project.make_config_file(*default_configs.values())
+
+    warnings.filterwarnings("default")
+
+    project.update_config(
+        "local_path", project.get_appdir_path() + "/base_dir"
+    )
+
+    return project
 
 
 def delete_project_if_it_exists(project_name):

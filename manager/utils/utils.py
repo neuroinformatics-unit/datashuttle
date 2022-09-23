@@ -1,3 +1,4 @@
+import datetime
 import fnmatch
 import glob
 import os
@@ -314,7 +315,7 @@ def get_user_appdir_path(project_name):
     return base_path
 
 
-def process_names(names: Union[list, str], prefix: str):
+def process_names(names: Union[list, str], prefix: str, is_ses=False):
     """
     Check a single or list of input session or subject names. First check the type is correct,
     next prepend the prefix sub- or ses- to entries that do not have the relevant prefix. Finally,
@@ -334,6 +335,9 @@ def process_names(names: Union[list, str], prefix: str):
     if isinstance(names, str):
         names = [names]
 
+    if is_ses:
+        update_ses_names_with_datetime(names)
+
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
     if len(prefixed_names) != len(set(prefixed_names)):
@@ -343,6 +347,24 @@ def process_names(names: Union[list, str], prefix: str):
         )
 
     return prefixed_names
+
+
+def update_ses_names_with_datetime(names):
+    """
+    Replate @DATE and @DATETIME flag with date and datetime respectively.
+    Currently formats time as XXhXXh.
+
+    Dont format datetime directly so we can keep timezone aware.
+    """
+    date = str(datetime.datetime.now().date())
+    time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
+    datetime_ = f"{date}-{time_}"
+
+    for i, val in enumerate(names):
+        if "@DATETIME" in val:
+            names[i] = val.replace("@DATETIME", datetime_)
+        elif "@DATE" in val:
+            names[i] = val.replace("@DATE", date)
 
 
 def ensure_prefixes_on_list_of_names(names, prefix):

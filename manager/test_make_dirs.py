@@ -2,14 +2,14 @@ import os.path
 import sys
 
 sys.path.append("/Users/easyelectrophysiology/git-repos/project_manager_swc")
+import datetime
 import glob
-import warnings
+import re
 from os.path import join
 
 import pytest
 
 from manager import test_utils
-from manager.manager import ProjectManager
 from manager.utils import utils
 
 TEST_PROJECT_NAME = "test_make_dirs"
@@ -27,7 +27,7 @@ def get_default_directory_used():  # TODO: need to find a way to know to update 
     }
 
 
-class TestConfigs:
+class TestMakeDirs:
     """"""
 
     @pytest.fixture(scope="function")
@@ -42,19 +42,7 @@ class TestConfigs:
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
-        warnings.filterwarnings("ignore")
-
-        project = ProjectManager(TEST_PROJECT_NAME)
-        default_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
-        )
-        project.make_config_file(*default_configs.values())
-
-        warnings.filterwarnings("default")
-
-        project.update_config(
-            "local_path", project.get_appdir_path() + "/base_dir"
-        )
+        project = test_utils.setup_project_default_configs(TEST_PROJECT_NAME)
 
         cwd = os.getcwd()
         yield project
@@ -312,6 +300,78 @@ class TestConfigs:
         self.check_and_cd_dir(join(base_path, sub, "edited_ses_prefix_001"))
         self.check_and_cd_dir(join(base_path, sub, "edited_ses_prefix_1"))
 
+    @pytest.mark.parametrize(
+        "file_info",
+        [
+            ["all"],
+            ["ephys", "behav"],
+            ["ephys", "behav", "histology"],
+            ["ephys", "behav", "histology", "imaging"],
+            ["imaging", "ephys"],
+        ],
+    )
+    def test_experimental_data_subsection(self, project, file_info):
+        """
+        Check that combinations of experiment_types passed to make file dir
+        make the correct combination of epxeriment types.
+
+        Note this will fail when new top level dirs are added, and should be
+        updated.
+        """
+        project.make_sub_dir(file_info, "sub-001", make_ses_tree=False)
+
+        file_paths = glob.glob(join(project.get_local_path(), "*"))
+        file_names = [os.path.basename(path_) for path_ in file_paths]
+
+        if file_info == ["all"]:
+            assert file_names == sorted(
+                ["ephys", "behav", "histology", "imaging"]
+            )
+        else:
+            assert file_names == sorted(file_info)
+
+    def test_date_flags_in_session(self, project):
+        """
+        Check that @DATE is converted into current date in generated directory names
+        """
+        date, time_ = self.get_formatted_date_and_time()
+
+        project.make_sub_dir(
+            "ephys", ["sub-001", "sub-002"], ["ses-001-@DATE", "002-@DATE"]
+        )
+
+        ses_paths = glob.glob(
+            join(project.get_local_path(), "**", "ses-*"), recursive=True
+        )
+        ses_names = [os.path.basename(path_) for path_ in ses_paths]
+
+        assert all([date in name for name in ses_names])
+        assert all(["@DATE" not in name for name in ses_names])
+
+    def test_datetime_flag_in_session(self, project):
+        """
+        Check that @DATETIME is converted to datetime in generated directory names
+        """
+        date, time_ = self.get_formatted_date_and_time()
+
+        project.make_sub_dir(
+            "ephys",
+            ["sub-001", "sub-002"],
+            ["ses-001-@DATETIME", "002-@DATETIME"],
+        )
+
+        ses_paths = glob.glob(
+            join(project.get_local_path(), "**", "ses-*"), recursive=True
+        )
+        ses_names = [os.path.basename(path_) for path_ in ses_paths]
+
+        # Convert the minutes to regexp as could change during test runtime
+        regexp_time = time_[:-3] + r"\d\dm"
+        datetime_regexp = f"{date}-{regexp_time}"
+
+        assert all([re.search(datetime_regexp, name) for name in ses_names])
+        assert all(["@DATETIME" not in name for name in ses_names])
+
     # ----------------------------------------------------------------------------------------------------------
     # Test Helpers
     # ----------------------------------------------------------------------------------------------------------
@@ -408,3 +468,8 @@ class TestConfigs:
         assert os.path.isdir(path_)
         os.chdir(path_)
         print(f"checked: {path_}")  # -s flag
+
+    def get_formatted_date_and_time(self):
+        date = str(datetime.datetime.now().date())
+        time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
+        return date, time_
