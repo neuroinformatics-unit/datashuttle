@@ -10,7 +10,7 @@ from manager.manager import ProjectManager
 
 
 def setup_project_default_configs(
-    project_name, override_local_and_remote_paths=False
+    project_name, local_path=False, remote_path=False,
 ):
     """"""
     delete_project_if_it_exists(project_name)
@@ -28,12 +28,12 @@ def setup_project_default_configs(
         "local_path", project.get_appdir_path() + "/base_dir"
     )
 
-    if override_local_and_remote_paths:
-        local_path, remote_path = override_local_and_remote_paths
-
+    if local_path:
         project.update_config("local_path", local_path)
+
+    if remote_path:
         project.update_config("remote_path", remote_path)
-        delete_all_dirs_in_remote_and_local_path(project)
+        delete_all_dirs_in_remote_path(project)
 
     return project
 
@@ -47,14 +47,14 @@ def glob_basenames(search_path, recursive=False):
 def teardown_project(cwd, project):
     """"""
     os.chdir(cwd)
-    delete_all_dirs_in_remote_and_local_path(project)
+    delete_all_dirs_in_remote_path(project)
     delete_project_if_it_exists(project.project_name)
 
 
-def delete_all_dirs_in_remote_and_local_path(project):
+def delete_all_dirs_in_remote_path(project):
     """"""
-    if os.path.isdir(project.get_local_path()):
-        shutil.rmtree(project.get_local_path())
+ #   if os.path.isdir(project.get_local_path()):
+  #      shutil.rmtree(project.get_local_path())
 
     if os.path.isdir(project.get_remote_path()):
         shutil.rmtree(project.get_remote_path())
@@ -132,7 +132,7 @@ def get_test_config_arguments_dict(
 # ----------------------------------------------------------------------------------------------------------
 
 
-def check_directory_tree_is_made(
+def check_directory_tree_is_correct(
     project, base_dir, subs, sessions, directory_used
 ):
     """

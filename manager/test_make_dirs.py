@@ -9,14 +9,12 @@ import pytest
 from manager import test_utils
 from manager.utils import utils
 
-TEST_PROJECT_NAME = "test_make_dirs"
-
 
 class TestMakeDirs:
     """"""
 
     @pytest.fixture(scope="function")
-    def project(test):
+    def project(test, tmp_path):
         """
         Create a project with default configs loaded. This makes a fresh project
         for each function, saved in the appdir path for platform independent and to
@@ -25,7 +23,10 @@ class TestMakeDirs:
         Ensure change dir at end of session otherwise it is not possible
         to delete project.
         """
-        project = test_utils.setup_project_default_configs(TEST_PROJECT_NAME)
+        test_project_name = "test_make_dirs"
+
+        project = test_utils.setup_project_default_configs(test_project_name,
+                                                           local_path=tmp_path / test_project_name)
 
         cwd = os.getcwd()
         yield project
@@ -111,7 +112,7 @@ class TestMakeDirs:
 
         project.make_sub_dir("all", subs)
 
-        test_utils.check_directory_tree_is_made(
+        test_utils.check_directory_tree_is_correct(
             project,
             base_dir=project.get_local_path(),
             subs=["sub-1_1", "sub-two-2", "sub-3_3-3=3"],
@@ -168,7 +169,7 @@ class TestMakeDirs:
         project.make_sub_dir("all", subs, sessions)
 
         # Check dir tree is not made but all others are
-        test_utils.check_directory_tree_is_made(
+        test_utils.check_directory_tree_is_correct(
             project,
             base_dir=project.get_local_path(),
             subs=subs,
