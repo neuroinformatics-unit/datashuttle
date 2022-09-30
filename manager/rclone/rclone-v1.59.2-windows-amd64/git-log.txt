@@ -1,0 +1,57 @@
+commit ea73ac75ba76205d9234fd3fae3d88552049024f
+Author: Nick Craig-Wood <nick@craig-wood.com>
+Date:   Thu Sep 15 10:34:50 2022 +0100
+
+    Version v1.59.2
+
+commit 50657752fdf71faaf4f6289d61251e4df87d26f0
+Author: Nick Craig-Wood <nick@craig-wood.com>
+Date:   Sat Aug 13 11:59:42 2022 +0100
+
+    config: move locking to fix fatal error: concurrent map read and map write
+
+    Before this change we assumed that github.com/Unknwon/goconfig was
+    threadsafe as documented.
+
+    However it turns out it is not threadsafe and looking at the code it
+    appears that making it threadsafe might be quite hard.
+
+    So this change increases the lock coverage in configfile to cover the
+    goconfig uses also.
+
+    Fixes #6378
+
+commit 603efbfe76cbfb25a8f41fcce88c0683b3e5bbfd
+Author: Nick Craig-Wood <nick@craig-wood.com>
+Date:   Tue Aug 9 10:44:54 2022 +0100
+
+    azureblob,b2,s3: fix chunksize calculations producing too many parts
+
+    Before this fix, the chunksize calculator was using the previous size
+    of the object, not the new size of the object to calculate the chunk
+    sizes.
+
+    This meant that uploading a replacement object which needed a new
+    chunk size would fail, using too many parts.
+
+    This fix fixes the calculator to take the size explicitly.
+
+commit 831c79b11d12eca00a4bf7551033e4aaf9b905e0
+Author: Nick Craig-Wood <nick@craig-wood.com>
+Date:   Mon Aug 8 10:03:25 2022 +0100
+
+    local: disable xattr support if the filesystems indicates it is not supported
+
+    Before this change, if rclone was run with `-M` on a filesystem
+    without xattr support, it would error out.
+
+    This patch makes rclone detect the not supported errors and disable
+    xattrs from then on. It prints one ERROR level message about this.
+
+    See: https://forum.rclone.org/t/metadata-update-local-s3/32277/7
+
+commit acec3dbf1103c081f8d1ba13c90d8bee8f07a12e
+Author: Nick Craig-Wood <nick@craig-wood.com>
+Date:   Mon Aug 8 19:00:01 2022 +0100
+
+    Start v1.59.2-DEV development
