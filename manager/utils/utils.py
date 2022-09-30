@@ -188,8 +188,8 @@ def connect_client(
         )
     except Exception:
         raise_error(
-            "Could not connect to server. Ensure that \n1) You are on SWC network"
-            f" / VPN. \n2) The remote_host_id: {cfg['remote_host_id']} is"
+            "Could not connect to server. Ensure that \n1) You are on VPN network"
+            f" if required. \n2) The remote_host_id: {cfg['remote_host_id']} is"
             " correct.\n3) The remote username:"
             f" {cfg['remote_host_username']}, and password are correct."
         )
