@@ -6,7 +6,7 @@ from os.path import join
 
 import pytest
 
-from manager import test_utils
+import test_utils
 from manager.utils import utils
 
 

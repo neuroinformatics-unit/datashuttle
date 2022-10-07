@@ -18,8 +18,6 @@ def remote_path():
     if is_empty is not True:
         pytest.fail("[Test Setup Error] remote_path (set in conftest.py) directory specified is not empty.")
 
-    remote_path.name
-
     return remote_path
 
 
