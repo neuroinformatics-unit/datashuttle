@@ -8,10 +8,13 @@ import paramiko
 from ftpsync.sftp_target import SFTPTarget
 from ftpsync.targets import FsTarget
 
-from manager import configs
-from manager.utils import utils
-from manager.utils.decorators import requires_ssh_configs
-from manager.utils.directory_class import Directory
+import configs
+from utils_mod import utils
+from utils_mod.decorators import requires_ssh_configs
+from utils_mod.directory_class import Directory
+from utils_mod import http_utils
+import shutil
+import glob
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
@@ -41,6 +44,7 @@ class ProjectManager:
         self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
+
         self.cfg = None
         self._ssh_key_path = None  # TODO: move to config
         self._ses_dirs = None
@@ -51,6 +55,9 @@ class ProjectManager:
 
             if self.cfg:
                 self.set_attributes_after_config_load()
+
+        self._rclone_download_path = self.get_appdir_path() + "/rclone"
+        self._rclone_exe_path = self._get_rclone_exe_path()
 
     def set_attributes_after_config_load(self):
         """
@@ -392,6 +399,34 @@ class ProjectManager:
     def get_remote_path(self):
         return self.cfg["remote_path"].as_posix()
 
+    def get_rclone_path(self):
+        return os.fspath(self._rclone_path)
+
+    def download_rclone(self):
+        """"""
+        utils.make_dirs(self._rclone_download_path)  # TODO: fix ugly paths
+
+        if os.name == "nt":
+            zip_file_path = Path(self._rclone_download_path + "/rclone.zip")
+            http_utils.retrieve_over_http("https://downloads.rclone.org/v1.03/rclone-v1.03-windows-amd64.zip", zip_file_path)
+            shutil.unpack_archive(zip_file_path,
+                                  Path(self._rclone_download_path) / "rclone")
+
+            self._rclone_exe_path = self._get_rclone_exe_path
+        else:
+            raise NotImplementedError("Windows rclone currently supported only.")
+
+
+    def _get_rclone_exe_path(self):
+        """
+        The wildcard dir contains info on the platform-dependent installation,
+        as does the file ext.
+        """
+        paths = glob.glob(self._rclone_download_path + "/rclone/*/rclone.*")
+        executable_rclone_path = [path_ for path_ in paths if Path(path_).name != "rclone.1"]
+        return executable_rclone_path
+
+
     # ====================================================================================================================
     # Private Functions
     # ====================================================================================================================
@@ -532,6 +567,14 @@ class ProjectManager:
                         filepath, upload_or_download, preview=preview
                     )
 
+  #  def move_dir_or_file_rclone(self):
+
+
+
+
+
+
+
     def _move_dir_or_file(
         self, filepath: str, upload_or_download: str, preview: bool
     ):
@@ -576,6 +619,15 @@ class ProjectManager:
             remote = FsTarget(remote_filepath)
 
         return remote
+
+
+
+
+
+
+
+
+
 
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
