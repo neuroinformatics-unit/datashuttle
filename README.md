@@ -1,9 +1,9 @@
 # SWC Data Management Tool
 
-- Conveneint GUI / Python API / Command line interface Tool for project data management
+- Convenient GUI / Python API / Command line interface Tool for project data management
 - Generate standardized directory trees for projects, convenient when collecting new data
-- automatically sync data between local and remote storage after collection
-- convenient API for transfering data between local and remote hosts
+- Automatically sync data between local and remote storage after collection
+- Convenient API for transfering data between local and remote hosts
 
 ### Directory Tree
 
@@ -14,11 +14,15 @@ Each mouse directory is formatted as sub-XXX (e.g. sub-001) and eachs session is
 ```
 └── project_name/
     └── raw_data/
-        └── sub-<label>/
-            └── ses-<label>/
-                ├── ephys/
-                ├── behav/
-                │   └── camera/
-                └── microscopy/
+        ├── ephys/
+        │   └── mouse/
+        │       └── session/
+        │           └── behav/
+        │               └── camera
+        ├── behav/
+        │   └── mouse/
+        │       └── session/
+        └── microscopy/
+            └── mouse/
 ```                      
 
