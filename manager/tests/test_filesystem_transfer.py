@@ -3,7 +3,7 @@ from os.path import join
 
 import pytest
 
-from manager import test_utils
+import test_utils
 
 # NOTE, these tests will delete all folders in the local and remote path
 # (as these are dedicated for testing). But in theory this could cause
@@ -39,7 +39,7 @@ class TestFileTransfer:
     # Tests
     # ----------------------------------------------------------------------------------------------------------
 
-    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("upload_or_download", ["upload"])  # , "download"])
     def test_transfer_empty_folder_structure(self, project, upload_or_download):
         """
         First make a project (folders only) locally. Next upload this to the remote path
@@ -240,8 +240,9 @@ class TestFileTransfer:
         to test download just swap the remote and local server (so things are
         still transferred from local machine to remote, but using the download function).
         """
-        local_path = project.get_local_path()
-        remote_path = project.get_remote_path()
+        import copy
+        local_path = copy.deepcopy(project.get_local_path())
+        remote_path = copy.deepcopy(project.get_remote_path())
 
         if upload_or_download == "download":
 
