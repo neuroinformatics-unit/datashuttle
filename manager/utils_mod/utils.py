@@ -11,7 +11,7 @@ import appdirs
 import paramiko
 from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
 
-from manager.utils.directory_class import Directory
+from utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
