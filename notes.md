@@ -3,11 +3,16 @@ https://tree.nathanfriend.io
 ```
 project_name/
   raw_data/
-    mouse/
-      session/
-        ephys/
-        behav/
-          camera/
-        microscopy/
+    ephys/
+      mouse/
+        session/
+            behav
+              camera
+    behav
+      mouse/
+        session/
+    microscopy
+      mouse/
+      
 
 ```
