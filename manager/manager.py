@@ -403,7 +403,7 @@ class ProjectManager:
         return os.fspath(self._rclone_path)
 
     def download_rclone(self):
-        """"""
+        """https://downloads.rclone.org/v1.03/"""
         utils.make_dirs(self._rclone_download_path)  # TODO: fix ugly paths
 
         if os.name == "nt":
