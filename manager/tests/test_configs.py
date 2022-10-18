@@ -3,9 +3,9 @@ import pathlib
 import warnings
 
 import pytest
+import test_utils
 import yaml
 
-import test_utils
 from manager.manager import ProjectManager
 
 TEST_PROJECT_NAME = "test_configs"

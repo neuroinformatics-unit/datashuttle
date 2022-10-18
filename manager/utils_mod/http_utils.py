@@ -1,14 +1,8 @@
-
 # TODO: this is directly copy from https://github.com/brainglobe/bg-atlasapi/blob/5835887c5f9fac16ea1f2682f861411e4f789b3c/bg_atlasapi/utils.py#L132
 
-import configparser
-import json
-import logging
 from typing import Callable
 
 import requests
-from rich.panel import Panel
-from rich.pretty import Pretty
 from rich.progress import (
     BarColumn,
     DownloadColumn,
@@ -17,9 +11,6 @@ from rich.progress import (
     TimeRemainingColumn,
     TransferSpeedColumn,
 )
-from rich.table import Table
-from rich.text import Text
-
 
 
 def retrieve_over_http(

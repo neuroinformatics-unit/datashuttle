@@ -5,9 +5,9 @@ import re
 from os.path import join
 
 import pytest
-
 import test_utils
-from manager.utils import utils
+
+from manager.utils_mod import utils
 
 
 class TestMakeDirs:
@@ -25,8 +25,9 @@ class TestMakeDirs:
         """
         test_project_name = "test_make_dirs"
 
-        project = test_utils.setup_project_default_configs(test_project_name,
-                                                           local_path=tmp_path / test_project_name)
+        project = test_utils.setup_project_default_configs(
+            test_project_name, local_path=tmp_path / test_project_name
+        )
 
         cwd = os.getcwd()
         yield project
