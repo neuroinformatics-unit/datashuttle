@@ -9,9 +9,9 @@ from ftpsync.sftp_target import SFTPTarget
 from ftpsync.targets import FsTarget
 
 from manager import configs
-from manager.utils import utils
-from manager.utils.decorators import requires_ssh_configs
-from manager.utils.directory_class import Directory
+from manager.utils_mod import utils
+from manager.utils_mod.decorators import requires_ssh_configs
+from manager.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
