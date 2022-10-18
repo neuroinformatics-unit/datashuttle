@@ -7,7 +7,7 @@ import test_utils
 
 class TestFileTransfer:
     @pytest.fixture(scope="function")
-    def project(test, tmp_path, remote_path):
+    def project(test, tmp_path):
         """
         Create a project with default configs loaded. This makes a fresh project
         for each function, saved in the appdir path for platform independent and to
