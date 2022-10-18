@@ -7,17 +7,26 @@ from os.path import join
 import appdirs
 
 from manager.manager import ProjectManager
+from manager.utils_mod import rclone_utils
 
 
 def setup_project_default_configs(
-    project_name, local_path=False, remote_path=False,
+    project_name,
+    local_path=False,
+    remote_path=False,
 ):
     """"""
+    if not rclone_utils.check_rclone_exists():
+        rclone_utils.download_rclone()
+
     delete_project_if_it_exists(project_name)
 
     warnings.filterwarnings("ignore")
 
     project = ProjectManager(project_name)
+    project._setup_remote_as_rclone_target(
+        "mounted"
+    )  # TODO: check this is efficiently handled in manager
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
     project.make_config_file(*default_configs.values())
@@ -53,8 +62,8 @@ def teardown_project(cwd, project):
 
 def delete_all_dirs_in_remote_path(project):
     """"""
- #   if os.path.isdir(project.get_local_path()):
-  #      shutil.rmtree(project.get_local_path())
+    #   if os.path.isdir(project.get_local_path()):
+    #      shutil.rmtree(project.get_local_path())
 
     if os.path.isdir(project.get_remote_path()):
         shutil.rmtree(project.get_remote_path())

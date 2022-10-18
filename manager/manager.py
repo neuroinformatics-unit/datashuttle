@@ -5,16 +5,11 @@ from pathlib import Path
 from typing import Union, cast
 
 import paramiko
-from ftpsync.sftp_target import SFTPTarget
-from ftpsync.targets import FsTarget
 
-import configs
-from utils_mod import utils
-from utils_mod.decorators import requires_ssh_configs
-from utils_mod.directory_class import Directory
-from utils_mod import http_utils
-import shutil
-import glob
+import manager.configs as configs
+from manager.utils_mod import rclone_utils, utils
+from manager.utils_mod.decorators import requires_ssh_configs
+from manager.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
@@ -56,8 +51,7 @@ class ProjectManager:
             if self.cfg:
                 self.set_attributes_after_config_load()
 
-        self._rclone_download_path = self.get_appdir_path() + "/rclone"
-        self._rclone_exe_path = self._get_rclone_exe_path()
+        rclone_utils.prompt_rclone_download_if_does_not_exist()
 
     def set_attributes_after_config_load(self):
         """
@@ -100,7 +94,7 @@ class ProjectManager:
                 },
             ),
             "imaging": Directory(
-                "imaging",
+                "imaging_",
                 self.cfg["use_imaging"],
             ),
             "histology": Directory(
@@ -400,32 +394,86 @@ class ProjectManager:
         return self.cfg["remote_path"].as_posix()
 
     def get_rclone_path(self):
-        return os.fspath(self._rclone_path)
+        return os.fspath(rclone_utils.get_rclone_exe_path())
 
-    def download_rclone(self):
-        """https://downloads.rclone.org/v1.03/"""
-        utils.make_dirs(self._rclone_download_path)  # TODO: fix ugly paths
+    # --------------------------------------------------------------------------------------------------------------------
+    # Setup RClone
+    # --------------------------------------------------------------------------------------------------------------------
 
-        if os.name == "nt":
-            zip_file_path = Path(self._rclone_download_path + "/rclone.zip")
-            http_utils.retrieve_over_http("https://downloads.rclone.org/v1.03/rclone-v1.03-windows-amd64.zip", zip_file_path)
-            shutil.unpack_archive(zip_file_path,
-                                  Path(self._rclone_download_path) / "rclone")
+    # TODO: check rclone download (similar to checking configs)
+    # transfer with rclone -
+    # check it is setup properly (SSH vs local filestorage)
+    # if not,setup new rclone name
 
-            self._rclone_exe_path = self._get_rclone_exe_path
-        else:
-            raise NotImplementedError("Windows rclone currently supported only.")
+    # TODO: need to decide when to init rclone configs
+    # DOC and
+    # setup remote path when changed... check for SSH and mount maybbe just setup one at start...
+    # TODO: fix ugly paths
+    # TODO: dry run doesn't work
+    # TODO: change name from mounted to local
 
+    # Note tests are failing because top-level empty dir is not (as currently can tell) copied with rlcone: https://forum.rclone.org/t/copying-top-level-empty-folder/33591
 
-    def _get_rclone_exe_path(self):
+    # rclone copy won't delete anything unless you copy over a file with the same name as an existing one,
+    # and the copied file also has a newer modified date. It basically works the same as you'd expect a copy
+    # operation on your local OS to work (except it won't ask if you want to replace files - it will j…
+
+    # ^^ make sure it is never overwritten but logs give warning
+
+    def _move_dir_or_file(
+        self, filepath: str, upload_or_download: str, preview: bool
+    ):
         """
-        The wildcard dir contains info on the platform-dependent installation,
-        as does the file ext.
+        TODO: carefully doc rclone behaviour
+        :param filepath:
+        :param upload_or_download:
+        :param preview:
+        :return:
         """
-        paths = glob.glob(self._rclone_download_path + "/rclone/*/rclone.*")
-        executable_rclone_path = [path_ for path_ in paths if Path(path_).name != "rclone.1"]
-        return executable_rclone_path
+        local_filepath = self._join("local", filepath)
+        remote_filepath = self._join("remote", filepath)
 
+        mounted_or_ssh = "ssh" if self.cfg["ssh_to_remote"] else "mounted"
+
+        extra_arguments = "--create-empty-src-dirs"
+        if preview:
+            extra_arguments += " --dry_run"
+
+        if upload_or_download == "upload":
+
+            #      rclone_utils.call_rclone(f"copy {local_filepath} {self.get_rclone_config_name(mounted_or_ssh)}:{remote_filepath} --create-empty-src-dirs")
+
+            rclone_utils.call_rclone(
+                f"copy "
+                f"{local_filepath} "
+                f"{self.get_rclone_config_name(mounted_or_ssh)}:"
+                f"{remote_filepath} "
+                f"{extra_arguments}"
+            )
+
+        elif upload_or_download == "download":
+            rclone_utils.call_rclone(
+                f"copy "
+                f"{self.get_rclone_config_name(mounted_or_ssh)}:"
+                f"{remote_filepath} "
+                f"{local_filepath}  "
+                f"{extra_arguments}"
+            )
+
+    def _setup_remote_as_rclone_target(self, mounted_or_ssh):
+        """
+        rclone shares config file so need to create new local and remote for all project
+        :param mounted_or_ssh:
+        :return:
+        """
+        rclone_config_name = self.get_rclone_config_name(mounted_or_ssh)
+
+        rclone_utils.setup_remote_as_rclone_target(
+            self.cfg, mounted_or_ssh, rclone_config_name, self._ssh_key_path
+        )
+
+    def get_rclone_config_name(self, mounted_or_ssh):
+        return f"remote_{self.project_name}_{mounted_or_ssh}"
 
     # ====================================================================================================================
     # Private Functions
@@ -546,6 +594,7 @@ class ProjectManager:
             )
 
         for experiment_type_key, experiment_type_dir in experiment_type_items:
+
             if sub_names not in ["all", ["all"]]:
                 sub_names = self._process_names(sub_names, "sub")
             else:
@@ -566,68 +615,6 @@ class ProjectManager:
                     self._move_dir_or_file(
                         filepath, upload_or_download, preview=preview
                     )
-
-  #  def move_dir_or_file_rclone(self):
-
-
-
-
-
-
-
-    def _move_dir_or_file(
-        self, filepath: str, upload_or_download: str, preview: bool
-    ):
-        """
-        High-level function for transferring directories or files with pyftpsync.
-        Adds the filepath provided to the remote and local base dir, wraps
-        in the appropriate pyftpsync Target class (e.g. filesystem vs. ssh)
-        and uses the appropriate syncronizer (upload or download) to transfer
-        the directory (and all subdirs, files).
-
-        :param filepath: relative project filepath to move
-        :param upload_or_download: "upload" or "download"
-        :param preview:  see upload_project_dir_or_file*(
-        """
-        local_filepath = self._join("local", filepath)
-        remote_filepath = self._join("remote", filepath)
-
-        local = FsTarget(local_filepath)
-        remote = self._get_remote_target(remote_filepath)
-
-        opts = utils.get_default_syncronizer_opts(preview)
-
-        syncronizer = utils.get_syncronizer(upload_or_download)
-        s = syncronizer(local, remote, opts)
-        s.run()
-
-    def _get_remote_target(self, remote_filepath: str):
-        """
-        Convenience function to get the pyftsync target
-        based on remote connection type.
-        """
-        if self.cfg["ssh_to_remote"]:
-            remote = SFTPTarget(
-                remote_filepath,
-                self.cfg["remote_host_id"],
-                username=self.cfg["remote_host_username"],
-                private_key=self._ssh_key_path,
-                hostkeys=self._hostkeys,
-            )
-
-        else:
-            remote = FsTarget(remote_filepath)
-
-        return remote
-
-
-
-
-
-
-
-
-
 
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
@@ -747,6 +734,8 @@ class ProjectManager:
         utils.add_public_key_to_remote_authorized_keys(
             self.cfg, self._hostkeys, password, key
         )
+
+        self._setup_remote_as_rclone_target("ssh")
 
         utils.message_user(
             f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}"
