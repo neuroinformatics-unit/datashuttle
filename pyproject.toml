@@ -11,12 +11,16 @@ authors = [
     {name = "Niko Sirmpilatze", email = "n.sirmpilatze@ucl.ac.uk"},
 ]
 
+
 dependencies = [
-"appdirs",
-"paramiko",
-"PyYAML",
-"setuptools",
+    "appdirs",
+    "ftpsync",
+    "pyftpsync @ git+ssh://git@github.com/JoeZiminski/pyftpsync.git#open_api_to_private_key",
+    "paramiko",
+    "pytest",
+    "PyYAML",
 ]
+
 
 [project.optional-dependencies]
 dev = [
