@@ -203,7 +203,7 @@ def check_directory_is_used(base_dir, directory, directory_used, key):
     is_used = directory.used
 
     if not is_used:
-        print("Path was correctly not made: " + join(base_dir, directory.name))
+#        print("Path was correctly not made: " + join(base_dir, directory.name))
         assert not os.path.isdir(join(base_dir, directory.name))
 
     return is_used
@@ -217,7 +217,7 @@ def check_and_cd_dir(path_):
     """
     assert os.path.isdir(path_)
     os.chdir(path_)
-    print(f"checked: {path_}")  # -s flag
+#    print(f"checked: {path_}")  # -s flag
 
 
 def get_default_directory_used():  # TODO: need to find a way to know to update this when new ones added
