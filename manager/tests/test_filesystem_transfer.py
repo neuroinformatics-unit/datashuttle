@@ -2,7 +2,6 @@ import os
 from os.path import join
 
 import pytest
-
 import test_utils
 
 # NOTE, these tests will delete all folders in the local and remote path
@@ -27,8 +26,8 @@ class TestFileTransfer:
 
         project = test_utils.setup_project_default_configs(
             test_project_name,
-            local_path = tmp_path / test_project_name,
-            remote_path = remote_path / test_project_name,
+            local_path=tmp_path / test_project_name,
+            remote_path=remote_path / test_project_name,
         )
 
         cwd = os.getcwd()
@@ -39,8 +38,12 @@ class TestFileTransfer:
     # Tests
     # ----------------------------------------------------------------------------------------------------------
 
-    @pytest.mark.parametrize("upload_or_download", ["upload"])  # , "download"])
-    def test_transfer_empty_folder_structure(self, project, upload_or_download):
+    @pytest.mark.parametrize(
+        "upload_or_download", ["upload"]
+    )  # , "download"])
+    def test_transfer_empty_folder_structure(
+        self, project, upload_or_download
+    ):
         """
         First make a project (folders only) locally. Next upload this to the remote path
         and check all folders are uploaded correctly.
@@ -49,23 +52,27 @@ class TestFileTransfer:
 
         self.make_and_check_local_project(project, "all", subs, sessions)
 
-        transfer_function, base_path_to_check = self.handle_upload_or_download(project,  upload_or_download)
+        transfer_function, base_path_to_check = self.handle_upload_or_download(
+            project, upload_or_download
+        )
 
         transfer_function("all", "all", "all")
-
-        test_utils.check_directory_tree_is_correct(
-            project,
-            base_path_to_check,
-            subs,
-            sessions,
-            test_utils.get_default_directory_used(),
-        )
+        try:
+            test_utils.check_directory_tree_is_correct(
+                project,
+                base_path_to_check,
+                subs,
+                sessions,
+                test_utils.get_default_directory_used(),
+            )
+        except:
+            breakpoint()
 
     @pytest.mark.parametrize(
         "experiment_type_to_transfer",
         [
-            ["behav"],
-            ["ephys"],
+            #    ["behav"],
+            #   ["ephys"],
             ["imaging"],
             ["histology"],
             ["behav", "ephys"],
@@ -87,7 +94,9 @@ class TestFileTransfer:
         subs, sessions = self.get_default_sub_sessions_to_test()
         self.make_and_check_local_project(project, "all", subs, sessions)
 
-        transfer_function, base_path_to_check = self.handle_upload_or_download(project, upload_or_download)
+        transfer_function, base_path_to_check = self.handle_upload_or_download(
+            project, upload_or_download
+        )
 
         transfer_function(experiment_type_to_transfer, subs, sessions)
 
@@ -107,7 +116,9 @@ class TestFileTransfer:
             ["behav", "ephys", "imaging", "histology"],
         ],
     )
-    @pytest.mark.parametrize("upload_or_download", ["download"])  # "upload" "download"
+    @pytest.mark.parametrize(
+        "upload_or_download", ["download"]
+    )  # "upload" "download"
     def test_transfer_empty_folder_specific_subs(
         self,
         project,
@@ -123,7 +134,9 @@ class TestFileTransfer:
         subs, sessions = self.get_default_sub_sessions_to_test()
         self.make_and_check_local_project(project, "all", subs, sessions)
 
-        transfer_function, base_path_to_check = self.handle_upload_or_download(project, upload_or_download)
+        transfer_function, base_path_to_check = self.handle_upload_or_download(
+            project, upload_or_download
+        )
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         transfer_function(
@@ -131,7 +144,10 @@ class TestFileTransfer:
         )
         try:
             self.check_experiment_type_sub_ses_uploaded_correctly(
-                project, base_path_to_check, experiment_type_to_transfer, subs_to_upload
+                project,
+                base_path_to_check,
+                experiment_type_to_transfer,
+                subs_to_upload,
             )
         except:
             breakpoint()
@@ -160,7 +176,9 @@ class TestFileTransfer:
         subs, sessions = self.get_default_sub_sessions_to_test()
         self.make_and_check_local_project(project, "all", subs, sessions)
 
-        transfer_function, base_path_to_check = self.handle_upload_or_download(project, upload_or_download)
+        transfer_function, base_path_to_check = self.handle_upload_or_download(
+            project, upload_or_download
+        )
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         ses_to_upload = [sessions[i] for i in ses_idx_to_upload]
@@ -170,7 +188,11 @@ class TestFileTransfer:
         )
 
         self.check_experiment_type_sub_ses_uploaded_correctly(
-            project, base_path_to_check, experiment_type_to_transfer, subs_to_upload, ses_to_upload
+            project,
+            base_path_to_check,
+            experiment_type_to_transfer,
+            subs_to_upload,
+            ses_to_upload,
         )
 
     # ----------------------------------------------------------------------------------------------------------
@@ -216,14 +238,18 @@ class TestFileTransfer:
                         )
                         assert ses_names == sorted(ses_to_upload)
 
-
-    def make_and_check_local_project(self, project, experiment_type, subs, sessions):
+    def make_and_check_local_project(
+        self, project, experiment_type, subs, sessions
+    ):
         """
         Make a local project directory tree with the specified experiment_type,
         subs, sessions and check it is made successfully.
         """
         project.make_sub_dir(
-            experiment_type, subs, sessions, test_utils.get_default_directory_used()
+            experiment_type,
+            subs,
+            sessions,
+            test_utils.get_default_directory_used(),
         )
 
         test_utils.check_directory_tree_is_correct(
@@ -241,6 +267,7 @@ class TestFileTransfer:
         still transferred from local machine to remote, but using the download function).
         """
         import copy
+
         local_path = copy.deepcopy(project.get_local_path())
         remote_path = copy.deepcopy(project.get_remote_path())
 

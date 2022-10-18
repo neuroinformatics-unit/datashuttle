@@ -1,5 +1,7 @@
 from functools import wraps
 
+from .utils import raise_error
+
 
 def requires_ssh_configs(func):
     """
@@ -13,7 +15,7 @@ def requires_ssh_configs(func):
             not args[0].cfg["remote_host_id"]
             or not args[0].cfg["remote_host_username"]
         ):
-            args[0]._raise_error(
+            raise_error(
                 "Cannot setup SSH connection, configuration file remote_host_id or"
                 " remote_host_username is not set."
             )
