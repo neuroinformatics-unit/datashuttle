@@ -6,7 +6,7 @@ from typing import Union
 
 import yaml
 
-from manager.utils_mod import utils
+from datashuttle.utils_mod import utils
 
 
 class Configs(UserDict):
@@ -82,7 +82,7 @@ class Configs(UserDict):
         Config paths are stored as str in the .yaml but used as Path
         in the module, so make the conversion here.
 
-        :param config_dict:ProjectManager.cfg dict of configs
+        :param config_dict:datashuttle.cfg dict of configs
         :param direction: "path_to_str" or "str_to_path"
         """
         for path_key in ["local_path", "remote_path"]:

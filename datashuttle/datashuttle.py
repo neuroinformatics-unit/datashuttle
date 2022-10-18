@@ -8,19 +8,19 @@ import paramiko
 from ftpsync.sftp_target import SFTPTarget
 from ftpsync.targets import FsTarget
 
-from manager import configs
-from manager.utils_mod import utils
-from manager.utils_mod.decorators import requires_ssh_configs
-from manager.utils_mod.directory_class import Directory
+from datashuttle import configs
+from datashuttle.utils_mod import utils
+from datashuttle.utils_mod.decorators import requires_ssh_configs
+from datashuttle.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
 # --------------------------------------------------------------------------------------------------------------------
 
 
-class ProjectManager:
+class DataShuttle:
     """
-    Main project manager class for data organisation and transfer in BIDS-style project directory.
+    Main datashuttle class for data organisation and transfer in BIDS-style project directory.
     The expected organisation is a central repository on a remote machine ('remote') that
     contains all project data. This is connected to multiple local machines ('local') which
     each contain a subset of the full project (e.g. machine for electrophysiology collection,
@@ -277,8 +277,8 @@ class ProjectManager:
         use_histology: bool = True,
     ):
         """
-        Initialise a config file for using the project manager on the local system. Once initialised, these
-        settings will be used each time the project manager is opened.
+        Initialise a config file for using the datashuttle on the local system. Once initialised, these
+        settings will be used each time the datashuttle is opened.
 
         :param local_path:                  path to project dir on local machine
         :param remote_path:                 path to project directory on remote machine. Note this cannot
@@ -328,8 +328,7 @@ class ProjectManager:
 
         self.set_attributes_after_config_load()
         utils.message_user(
-            "Configuration file has been saved and options loaded into the project"
-            " manager."
+            "Configuration file has been saved and options loaded into datashuttle."
         )
 
     def attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
