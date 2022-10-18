@@ -6,7 +6,7 @@ from typing import Union
 
 import yaml
 
-from manager.utils import utils
+from manager.utils_mod import utils
 
 
 class Configs(UserDict):
