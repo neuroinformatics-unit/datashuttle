@@ -1,6 +1,6 @@
 name: tests
 
-on: [workflow_dispatch ] #[push, pull_request]
+on: [push] #[push, pull_request]
 
 jobs:
   lint:
