@@ -6,8 +6,8 @@ from os.path import join
 
 import appdirs
 
-from manager.manager import ProjectManager
-from manager.utils_mod import rclone_utils
+from datashuttle.datashuttle import DataShuttle
+from datashuttle.utils_mod import rclone_utils
 
 
 def setup_project_default_configs(
@@ -23,10 +23,10 @@ def setup_project_default_configs(
 
     warnings.filterwarnings("ignore")
 
-    project = ProjectManager(project_name)
+    project = DataShuttle(project_name)
     project._setup_remote_as_rclone_target(
         "mounted"
-    )  # TODO: check this is efficiently handled in manager
+    )  # TODO: check this is efficiently handled in datashuttle
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
     project.make_config_file(*default_configs.values())
@@ -72,11 +72,11 @@ def delete_all_dirs_in_remote_path(project):
 def delete_project_if_it_exists(project_name):
     """"""
     if os.path.isdir(
-        os.path.join(appdirs.user_data_dir("ProjectManagerSWC"), project_name)
+        os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
     ):
         shutil.rmtree(
             os.path.join(
-                appdirs.user_data_dir("ProjectManagerSWC"),
+                appdirs.user_data_dir("DataShuttle"),
                 project_name,
             )
         )
