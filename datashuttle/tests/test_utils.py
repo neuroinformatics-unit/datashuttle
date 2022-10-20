@@ -180,6 +180,7 @@ def check_directory_tree_is_correct(
                         path_to_folder, directory, directory_used
                     )
 
+
 def recursive_check_subfolder_exists(path_to_dir, upper_dir, directory_used):
     """
     Check each subdir in the subdirs field on the Directory class are
