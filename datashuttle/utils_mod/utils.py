@@ -9,7 +9,6 @@ from typing import Union
 
 import appdirs
 import paramiko
-from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
 
 from datashuttle.utils_mod.directory_class import Directory
 
@@ -84,11 +83,9 @@ def make_dirs(paths: Union[str, list]):
                 f" {path_}"
             )
 
-
 def make_datashuttle_metadata_folder(full_path):
     meta_folder_path = full_path + "/.datashuttle_meta"
     make_dirs(meta_folder_path)
-
 
 def search_filesystem_path_for_directories(search_path_with_prefix: str):
     """
@@ -101,74 +98,9 @@ def search_filesystem_path_for_directories(search_path_with_prefix: str):
             all_dirnames.append(os.path.basename(file_or_dir))
     return all_dirnames
 
-
 # --------------------------------------------------------------------------------------------------------------------
-# Syncronizer Utils
+# SSH
 # --------------------------------------------------------------------------------------------------------------------
-
-
-def get_default_syncronizer_opts(preview: bool):
-    """
-    Retrieve the default options for upload and download. These
-    are very important as define the behaviour of file transfer
-    when there are conflicts (e.g. whether to delete remote
-    file if it is not found on the local filesystem).
-
-    Currently, all options are set so that no file is ever overwritten.
-    If there is a remote directory that is older than the local directory, it will not
-    be overwritten. The only 'overwrite' that occurs is if the remote
-    or local directory has been deleted - by default this will not be replaced as
-    pyftpsync metadata indicates the file has been deleted. Using the default
-    'force' option will force file transfer, but also has other effects e.g.
-    overwriting newer files with old, which we dont want. This option has been
-    edited to permit a "restore" argumnent, which acts Force=False except
-    in the case where the local / remote file has been deleted entirely, in which
-    case it will be replaced.
-
-    :param preview: run pyftpsync's "dry_run" option.
-    """
-    opts = {
-        "help": False,
-        "verbose": 5,
-        "quiet": 0,
-        "debug ": False,
-        "case": "strict",
-        "dry_run": preview,
-        "progress": False,
-        "no_color": True,
-        "ftp_active": False,
-        "migrate": False,
-        "no_verify_host_keys": False,
-        # "match": 3,
-        # "exclude": 3,
-        "prompt": False,
-        "no_prompt": False,
-        "no_keyring": True,
-        "no_netrc": True,
-        "store_password": False,
-        "force": "restore",
-        "resolve": "ask",
-        "delete": False,
-        "delete_unmatched": False,
-        "create_folder": True,
-        "report_problems": False,
-    }
-
-    return opts
-
-
-def get_syncronizer(upload_or_download: str):
-    """
-    Convenience function to get the pyftpsync syncronizer
-    """
-    if upload_or_download == "upload":
-        syncronizer = UploadSynchronizer
-
-    elif upload_or_download == "download":
-        syncronizer = DownloadSynchronizer
-
-    return syncronizer
-
 
 def connect_client(
     client: paramiko.SSHClient,

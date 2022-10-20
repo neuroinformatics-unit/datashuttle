@@ -26,7 +26,7 @@ def setup_project_default_configs(
     project = DataShuttle(project_name)
     project._setup_remote_as_rclone_target(
         "local"
-    )  # TODO: check this is efficiently handled in datashuttle
+    )
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
     project.make_config_file(*default_configs.values())

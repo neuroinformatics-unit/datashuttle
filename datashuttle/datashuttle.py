@@ -417,11 +417,11 @@ class DataShuttle:
         self, filepath: str, upload_or_download: str, preview: bool
     ):
         """
-        TODO: carefully doc rclone behaviour
-        :param filepath:
-        :param upload_or_download:
-        :param preview:
-        :return:
+        Copy a directory or file with Rclone.
+
+        :param filepath: filepath (not including local or remote root) to copy
+        :param upload_or_download: upload goes local to remote, download goes remote to local
+        :param preview: do not actually move the files, just report what would be moved.
         """
         local_filepath = self._join("local", filepath)
         remote_filepath = self._join("remote", filepath)

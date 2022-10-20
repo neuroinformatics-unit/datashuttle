@@ -58,22 +58,20 @@ class TestFileTransfer:
         )
 
         transfer_function("all", "all", "all")
-        try:
-            test_utils.check_directory_tree_is_correct(
-                project,
-                base_path_to_check,
-                subs,
-                sessions,
-                test_utils.get_default_directory_used(),
-            )
-        except:
-            breakpoint()
+
+        test_utils.check_directory_tree_is_correct(
+            project,
+            base_path_to_check,
+            subs,
+            sessions,
+            test_utils.get_default_directory_used(),
+        )
 
     @pytest.mark.parametrize(
         "experiment_type_to_transfer",
         [
-            #    ["behav"],
-            #   ["ephys"],
+                ["behav"],
+               ["ephys"],
             ["imaging"],
             ["histology"],
             ["behav", "ephys"],
@@ -118,8 +116,8 @@ class TestFileTransfer:
         ],
     )
     @pytest.mark.parametrize(
-        "upload_or_download", ["download"]
-    )  # "upload" "download"
+        "upload_or_download", ["upload" "download"]
+    )
     def test_transfer_empty_folder_specific_subs(
         self,
         project,
@@ -143,15 +141,13 @@ class TestFileTransfer:
         transfer_function(
             experiment_type_to_transfer, subs_to_upload, sessions
         )
-        try:
-            self.check_experiment_type_sub_ses_uploaded_correctly(
-                project,
-                base_path_to_check,
-                experiment_type_to_transfer,
-                subs_to_upload,
-            )
-        except:
-            breakpoint()
+
+        self.check_experiment_type_sub_ses_uploaded_correctly(
+            project,
+            base_path_to_check,
+            experiment_type_to_transfer,
+            subs_to_upload,
+        )
 
     @pytest.mark.parametrize(
         "ses_idx_to_upload", [[0], [1], [2], [0, 1], [1, 2], [0, 2], [0, 1, 2]]
