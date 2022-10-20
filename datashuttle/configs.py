@@ -27,12 +27,10 @@ class Configs(UserDict):
         # Check relevant remote_path is set
         if self["ssh_to_remote"]:
             if not self["remote_path_ssh"]:
-                utils.raise_error("ssh to remote is on but remote_path_ssh has not been set. "
-                                  "Use project.update_configs('remote_path_ssh', your_remote_path) to update")
+                utils.raise_error("ssh to remote is on but remote_path_ssh has not been set.")
         else:
             if not self["remote_path_local"]:
-                utils.raise_error("ssh to remote is off but remote_path_local has not been set. "
-                                  "Use project.update_configs('remote_path_local', your_remote_path) to update")
+                utils.raise_error("ssh to remote is off but remote_path_local has not been set.")
 
         # Check bad remote path format
         if self.get_remote_path().as_posix()[0] == "~":
@@ -46,7 +44,7 @@ class Configs(UserDict):
         ):
             utils.raise_error(
                 "ssh to remote set but no remote_host_id or remote_host_username not"
-                " provided"
+                " provided."
             )
 
         if self["ssh_to_remote"] is False and (
@@ -54,7 +52,7 @@ class Configs(UserDict):
         ):
             warnings.warn(
                 "SSH to remote is false, but remote_host_id or remote_host_username"
-                " provided"
+                " provided."
             )
 
     def update_an_entry(self, option_key: str, new_info: Union[str, bool]):
@@ -84,16 +82,16 @@ class Configs(UserDict):
         if change_valid:
             self.dump_to_file()
             utils.message_user(f"{option_key} has been updated to {new_info}")
+
+            if option_key == "ssh_to_remote":
+                if new_info:
+                    utils.message_user(f"SSH will be used to connect to project directory at: {self.get_remote_path(for_user=True)}")
+                else:
+                    utils.message_user(f"Local filesystem will be used for project directory at: {self.get_remote_path(for_user=True)}")
         else:
             self[option_key] = original_value
-            utils.message_user(f"{option_key} was not updated")
+            warnings.warn(f"{option_key} was not updated")
             self[option_key] = original_value
-
-        if option_key == "ssh_to_remote":
-            if new_info:
-                utils.message_user(f"SSH will be used to connect to project directory at: {self.get_remote_path(for_user=True)}")
-            else:
-                utils.message_user(f"Local filesystem will be used for project directory at: {self.get_remote_path(for_user=True)}")
 
     def safe_check_current_dict_is_valid(self):
         """
@@ -103,7 +101,7 @@ class Configs(UserDict):
             return True
 
         except BaseException as e:  # TODO: test invalid change
-            warnings.warn(f"UPDATE ERROR: {e}")
+            warnings.warn(f"WARNING: {e}")
             return False
 
     def dump_to_file(self):

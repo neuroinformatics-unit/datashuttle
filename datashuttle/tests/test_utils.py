@@ -6,7 +6,7 @@ from os.path import join
 
 import appdirs
 
-from datashuttle.datashuttle import DataShuttle
+from datashuttle.datashuttle.datashuttle import DataShuttle
 from datashuttle.utils_mod import rclone_utils
 
 
@@ -41,7 +41,7 @@ def setup_project_default_configs(
         project.update_config("local_path", local_path)
 
     if remote_path:
-        project.update_config("remote_path", remote_path)
+        project.update_config("remote_path_local", remote_path)
         delete_all_dirs_in_remote_path(project)
 
     return project
@@ -92,8 +92,9 @@ def get_test_config_arguments_dict(
     """
     dict_ = {
         "local_path": r"Not:/a/real/local/directory",
-        "remote_path": r"/Not/a/real/remote/directory",
         "ssh_to_remote": False,
+        "remote_path_local": r"/Not/a/real/remote_local/directory",
+        "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
     }
 
     if required_arguments_only:
@@ -173,10 +174,11 @@ def check_directory_tree_is_correct(
                     path_to_folder = join(base_dir, directory.name, sub, ses)
                     check_and_cd_dir(path_to_folder)
 
+                    check_and_cd_dir(path_to_folder + "/.datashuttle_meta")
+
                     recursive_check_subfolder_exists(
                         path_to_folder, directory, directory_used
                     )
-
 
 def recursive_check_subfolder_exists(path_to_dir, upper_dir, directory_used):
     """

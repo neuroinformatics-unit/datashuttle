@@ -2,7 +2,7 @@ import os
 from os.path import join
 
 import pytest
-import test_utils
+from datashuttle.tests import test_utils
 
 # NOTE, these tests will delete all folders in the local and remote path
 # (as these are dedicated for testing). But in theory this could cause
@@ -13,7 +13,7 @@ import test_utils
 
 class TestFileTransfer:
     @pytest.fixture(scope="function")
-    def project(test, tmp_path, remote_path):
+    def project(test, tmp_path):
         """
         Create a project with default configs loaded. This makes a fresh project
         for each function, saved in the appdir path for platform independent and to
@@ -27,7 +27,7 @@ class TestFileTransfer:
         project = test_utils.setup_project_default_configs(
             test_project_name,
             local_path=tmp_path / test_project_name,
-            remote_path=remote_path / test_project_name,
+            remote_path=tmp_path / test_project_name / "remote",
         )
 
         cwd = os.getcwd()
@@ -274,7 +274,7 @@ class TestFileTransfer:
         if upload_or_download == "download":
 
             project.update_config("local_path", remote_path)
-            project.update_config("remote_path", local_path)
+            project.update_config("remote_path_local", local_path)
 
             transfer_function = project.download_data
 
