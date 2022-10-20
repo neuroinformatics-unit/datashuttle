@@ -2,7 +2,6 @@ from functools import wraps
 
 from .utils import raise_error
 
-
 def requires_ssh_configs(func):
     """
     Decorator to check file is loaded. Used on Mainwindow class

@@ -5,13 +5,6 @@ import pytest
 
 from datashuttle.tests import test_utils
 
-# NOTE, these tests will delete all folders in the local and remote path
-# (as these are dedicated for testing). But in theory this could cause
-# problems if mis-understood and files are deleted without intention. worth discussing.
-# a hook before tests are run to check nothing is in the folders specified in configs? probs work best
-# TODO: add 'all' subs and 'all' ses
-
-
 class TestFileTransfer:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
@@ -27,7 +20,8 @@ class TestFileTransfer:
 
         project = test_utils.setup_project_default_configs(
             test_project_name,
-            local_path=tmp_path / test_project_name,
+
+            local_path=tmp_path / test_project_name / "local",
             remote_path=tmp_path / test_project_name / "remote",
         )
 
@@ -40,8 +34,7 @@ class TestFileTransfer:
     # ----------------------------------------------------------------------------------------------------------
 
     @pytest.mark.parametrize(
-        "upload_or_download", ["upload"]
-    )  # , "download"])
+        "upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_structure(
         self, project, upload_or_download
     ):
@@ -70,8 +63,8 @@ class TestFileTransfer:
     @pytest.mark.parametrize(
         "experiment_type_to_transfer",
         [
-                ["behav"],
-               ["ephys"],
+            ["behav"],
+            ["ephys"],
             ["imaging"],
             ["histology"],
             ["behav", "ephys"],
@@ -193,7 +186,7 @@ class TestFileTransfer:
         )
 
     # ----------------------------------------------------------------------------------------------------------
-    # Test Helers
+    # Test Helpers
     # ----------------------------------------------------------------------------------------------------------
 
     def check_experiment_type_sub_ses_uploaded_correctly(

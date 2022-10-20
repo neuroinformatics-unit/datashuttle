@@ -6,8 +6,9 @@ from typing import Union, cast
 
 import paramiko
 
-import datashuttle.configs as configs
+from datashuttle import configs
 from datashuttle.utils_mod import rclone_utils, utils
+
 from datashuttle.utils_mod.decorators import requires_ssh_configs
 from datashuttle.utils_mod.directory_class import Directory
 
@@ -39,7 +40,6 @@ class DataShuttle:
         self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
-
         self.cfg = None
         self._ssh_key_path = None  # TODO: move to config
         self._ses_dirs = None
@@ -53,7 +53,7 @@ class DataShuttle:
 
         rclone_utils.prompt_rclone_download_if_does_not_exist()
 
-    def set_attributes_after_config_load(self):
+def set_attributes_after_config_load(self):
         """
         Once config file is loaded, update all private attributes according to config contents.
 
@@ -325,6 +325,7 @@ class DataShuttle:
                 "use_histology": use_histology,
             },
         )
+
         assert (
             remote_path_ssh or remote_path_local
         ), "Must set either remote_path_ssh or remote_path_local"
@@ -335,7 +336,6 @@ class DataShuttle:
             self.cfg.dump_to_file()
 
         self.set_attributes_after_config_load()
-
         self._setup_remote_as_rclone_target("local")
 
         utils.message_user(
@@ -535,13 +535,13 @@ class DataShuttle:
 
                     for ses in ses_names:
 
-                        sub_path = self._join(
+                        ses_path = self._join(
                             "local", [experiment_type_dir.name, sub, ses]
                         )
 
-                        utils.make_dirs(sub_path)
+                        utils.make_dirs(ses_path)
 
-                        utils.make_datashuttle_metadata_folder(sub_path)
+                        utils.make_datashuttle_metadata_folder(ses_path)
 
                         if make_ses_tree:
                             utils.make_ses_directory_tree(
@@ -609,7 +609,7 @@ class DataShuttle:
                     self._move_dir_or_file(
                         filepath, upload_or_download, preview=preview
                     )
-
+                    
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
@@ -730,7 +730,6 @@ class DataShuttle:
         )
 
         self._setup_remote_as_rclone_target("ssh")
-
         utils.message_user(
             f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}"
         )

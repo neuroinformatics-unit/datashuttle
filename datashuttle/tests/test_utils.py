@@ -9,7 +9,6 @@ import appdirs
 from datashuttle.datashuttle.datashuttle import DataShuttle
 from datashuttle.utils_mod import rclone_utils
 
-
 def setup_project_default_configs(
     project_name,
     local_path=False,
@@ -24,9 +23,11 @@ def setup_project_default_configs(
     warnings.filterwarnings("ignore")
 
     project = DataShuttle(project_name)
+
     project._setup_remote_as_rclone_target(
         "local"
     )
+
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
     project.make_config_file(*default_configs.values())
@@ -42,6 +43,7 @@ def setup_project_default_configs(
 
     if remote_path:
         project.update_config("remote_path_local", remote_path)
+
         delete_all_dirs_in_remote_path(project)
 
     return project
@@ -214,6 +216,7 @@ def check_directory_is_used(base_dir, directory, directory_used, key):
 
     if not is_used:
         print("Path was correctly not made: " + join(base_dir, directory.name))
+
         assert not os.path.isdir(join(base_dir, directory.name))
 
     return is_used
