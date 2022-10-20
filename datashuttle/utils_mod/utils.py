@@ -11,7 +11,7 @@ import appdirs
 import paramiko
 from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
 
-from manager.utils_mod.directory_class import Directory
+from datashuttle.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
@@ -306,7 +306,7 @@ def get_user_appdir_path(project_name):
     Use appdirs module to get the AppData cross-platform and save / load all files form here .
     """
     base_path = Path(
-        os.path.join(appdirs.user_data_dir("ProjectManagerSWC"), project_name)
+        os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
     )
 
     if not os.path.isdir(base_path):

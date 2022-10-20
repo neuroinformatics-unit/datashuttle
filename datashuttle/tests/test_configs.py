@@ -6,7 +6,7 @@ import pytest
 import test_utils
 import yaml
 
-from manager.manager import ProjectManager
+from datashuttle.datashuttle import DataShuttle
 
 TEST_PROJECT_NAME = "test_configs"
 
@@ -23,7 +23,7 @@ class TestConfigs:
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
         warnings.filterwarnings("ignore")
-        project = ProjectManager(TEST_PROJECT_NAME)
+        project = DataShuttle(TEST_PROJECT_NAME)
         warnings.filterwarnings("default")
 
         yield project
@@ -40,7 +40,7 @@ class TestConfigs:
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
         with warnings.catch_warnings(record=True) as w:
-            ProjectManager(TEST_PROJECT_NAME)
+            DataShuttle(TEST_PROJECT_NAME)
 
         assert len(w) == 1
         assert (
@@ -181,6 +181,6 @@ class TestConfigs:
 
         del project  # del project is almost certainly unecessary
 
-        project = ProjectManager(TEST_PROJECT_NAME)
+        project = DataShuttle(TEST_PROJECT_NAME)
 
         self.check_configs(project, kwargs[0])

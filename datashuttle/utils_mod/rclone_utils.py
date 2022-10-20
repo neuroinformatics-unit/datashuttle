@@ -5,7 +5,7 @@ import subprocess
 import warnings
 from pathlib import Path
 
-from manager.utils_mod import http_utils, utils
+from datashuttle.utils_mod import http_utils, utils
 
 
 def call_rclone(command, silent=False):
