@@ -12,7 +12,6 @@ TEST_PROJECT_NAME = "test_configs"
 
 
 class TestConfigs:
-    """ """
 
     @pytest.fixture(scope="function")
     def project(test):

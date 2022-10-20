@@ -8,11 +8,15 @@ from pathlib import Path
 from datashuttle.utils_mod import http_utils, utils
 
 
-def call_rclone(command, silent=False):
-    """"""
+def call_rclone(command : str, silent : bool = False):
+    """
+    :param command: Rclone command to be run
+    :param silent: if True, do not output anything to stdout.
+    :return:
+    """
     command = (
         get_rclone_exe_path()[0] + " " + command
-    )  # TODO: hacky _get_rclone_exe_path. NOTE: rlcone has HTTP API might be easier to use in future
+    )
     if silent:
         return_code = subprocess.run(
             command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
@@ -23,7 +27,13 @@ def call_rclone(command, silent=False):
 
 
 def get_rclone_dir(for_user=False):
-    rclone_directory_name = "rclone_root_no_delete_no_overwrite"  # shared directory with project names, choose something user never will
+    """
+    Rclone dir is always stored on the users appdir.
+
+    Note this is also where project dirs are stored and so
+    this must never share a name with a user project.
+    """
+    rclone_directory_name = "rclone_root_no_delete_no_overwrite"
     path_ = utils.get_user_appdir_path(rclone_directory_name)
     if for_user:
         path_ = os.fspath(path_)
@@ -32,8 +42,8 @@ def get_rclone_dir(for_user=False):
 
 def get_rclone_exe_path():
     """
-    The wildcard dir contains info on the platform-dependent installation,
-    as does the file ext.
+    The wildcard dir contains info on the platform-dependent
+    installation, as does the file ext.
     """
     paths = glob.glob(get_rclone_dir().as_posix() + "/rclone/*/rclone.*")
     executable_rclone_path = [
@@ -43,7 +53,9 @@ def get_rclone_exe_path():
 
 
 def check_rclone_exists():
-    """"""
+    """
+    Check that the rclone executable exists in the root drive.
+    """
     exe_path = glob.glob(f"{get_rclone_dir().as_posix()}/rclone/*/rclone.exe")
 
     if len(exe_path) not in [0, 1]:
@@ -57,7 +69,10 @@ def check_rclone_exists():
 
 
 def download_rclone():
-    """"""
+    """
+    Download Rclone to the user Appdir. This will pull
+    the RClone version for the current OS.
+    """
     if os.path.isdir(get_rclone_dir()):
         delete_rclone_dir()
 
@@ -95,7 +110,13 @@ def delete_rclone_dir():
 
 
 def prompt_rclone_download_if_does_not_exist():
-    """"""
+    """
+    Check that rclone exists on the user appdir. If it does not
+    (e.g. first time using datashuttle) then download.
+
+    Also check that the rclone is not corrupted by
+    calling its --help. If it is corrupted, re-download.
+    """
     if not check_rclone_exists():
         utils.message_user(
             f"rclone download is not found at {get_rclone_dir(for_user=True)}\n"
@@ -115,11 +136,20 @@ def prompt_rclone_download_if_does_not_exist():
             delete_rclone_dir()
             download_rclone()
 
-
 def setup_remote_as_rclone_target(
     cfg, local_or_ssh, rclone_config_name, ssh_key_path
 ):
+    """
+    RClone sets remote targets in a config file. When
+    copying to remote, use the syntax remote: to
+    identify the remote to copy to.
 
+    For local filesystem, this is just a placeholder and
+    the config contains no further information.
+
+    For SSH, this contains information for
+    connecting to remote with SSH. 
+    """
     if local_or_ssh == "local":
         call_rclone(f"config create {rclone_config_name} local")
 
