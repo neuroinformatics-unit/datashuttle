@@ -73,6 +73,7 @@ def download_rclone():
         shutil.unpack_archive(zip_file_path, get_rclone_dir() / "rclone")
         zip_file_path.unlink()
 
+        utils.message_user("RClone successfully downloaded.")
     else:
         raise NotImplementedError("Windows rclone currently supported only.")
 

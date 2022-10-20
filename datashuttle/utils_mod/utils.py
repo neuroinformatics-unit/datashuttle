@@ -84,6 +84,9 @@ def make_dirs(paths: Union[str, list]):
                 f" {path_}"
             )
 
+def make_datashuttle_metadata_folder(full_path):
+    meta_folder_path = full_path + "/.datashuttle_meta"
+    make_dirs(meta_folder_path)
 
 def search_filesystem_path_for_directories(search_path_with_prefix: str):
     """

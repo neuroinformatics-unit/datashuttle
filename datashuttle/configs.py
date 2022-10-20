@@ -23,10 +23,6 @@ class Configs(UserDict):
         correctly and will not cause error (e.g. user has
         set ssh_to_remote on but not set remote_path_ssh.
         """
-        if self.get_remote_path().as_posix()[0] == "~":  # TODO: handle path or string
-            utils.raise_error(
-                "remote_path must contain the full directory path with no ~ syntax"
-            )
 
         # Check relevant remote_path is set
         if self["ssh_to_remote"]:
@@ -37,6 +33,12 @@ class Configs(UserDict):
             if not self["remote_path_local"]:
                 utils.raise_error("ssh to remote is off but remote_path_local has not been set. "
                                   "Use project.update_configs('remote_path_local', your_remote_path) to update")
+
+        # Check bad remote path format
+        if self.get_remote_path().as_posix()[0] == "~":
+            utils.raise_error(
+                "remote_path must contain the full directory path with no ~ syntax"
+            )
 
         # Check SSH settings
         if self["ssh_to_remote"] is True and (
@@ -72,7 +74,7 @@ class Configs(UserDict):
         """
         original_value = copy.deepcopy(self[option_key])
 
-        if option_key in ["local_path", "remote_path"]:
+        if option_key in ["local_path", "remote_path_ssh", "remote_path_local"]:
             new_info = Path(new_info)
 
         self[option_key] = new_info
@@ -87,7 +89,13 @@ class Configs(UserDict):
             utils.message_user(f"{option_key} was not updated")
             self[option_key] = original_value
 
-    def save_check_current_dict_is_valid(self):
+        if option_key == "ssh_to_remote":
+            if new_info:
+                utils.message_user(f"SSH will be used to connect to project directory at: {self.get_remote_path(for_user=True)}")
+            else:
+                utils.message_user(f"Local filesystem will be used for project directory at: {self.get_remote_path(for_user=True)}")
+
+    def safe_check_current_dict_is_valid(self):
         """
         """
         try:
@@ -95,6 +103,7 @@ class Configs(UserDict):
             return True
 
         except BaseException as e:  # TODO: test invalid change
+            warnings.warn(f"UPDATE ERROR: {e}")
             return False
 
     def dump_to_file(self):
@@ -115,8 +124,8 @@ class Configs(UserDict):
         self.data = config_dict
 
     def setup_after_load(self):
-        self.check_dict_values_and_inform_user()
         self.convert_str_and_pathlib_paths(self, "str_to_path")
+        self.check_dict_values_and_inform_user()
 
     def get_remote_path(self, for_user=False):
         """
