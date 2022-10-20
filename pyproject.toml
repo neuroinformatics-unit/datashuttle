@@ -20,6 +20,7 @@ dependencies = [
     "pytest",
     "PyYAML",
     "requests",
+    "rich",
 ]
 
 

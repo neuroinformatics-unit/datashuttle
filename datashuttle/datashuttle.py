@@ -10,7 +10,7 @@ import datashuttle.configs as configs
 from datashuttle.utils_mod import rclone_utils, utils
 from datashuttle.utils_mod.decorators import requires_ssh_configs
 from datashuttle.utils_mod.directory_class import Directory
-breakpoint()
+
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
 # --------------------------------------------------------------------------------------------------------------------
@@ -334,6 +334,9 @@ class DataShuttle:
             self.cfg.dump_to_file()
 
         self.set_attributes_after_config_load()
+
+        self._setup_remote_as_rclone_target("local")
+
         utils.message_user(
             "Configuration file has been saved and options loaded into datashuttle."
         )
@@ -384,8 +387,6 @@ class DataShuttle:
         self.cfg.update_an_entry(option_key, new_info)
         self.set_attributes_after_config_load()
 
-        if self.cfg["ssh_to_remote"] and
-
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
     # --------------------------------------------------------------------------------------------------------------------
@@ -402,7 +403,7 @@ class DataShuttle:
         Force remote path to return as posix as if local fs is windows and remote is
         unix this will break paths.
         """
-        self.cfg.get_remote_path(for_user=True)
+        return self.cfg.get_remote_path(for_user=True)
 
     def get_rclone_path(self):
         return os.fspath(rclone_utils.get_rclone_exe_path())
@@ -532,11 +533,12 @@ class DataShuttle:
                     )
 
                     for ses in ses_names:
-                        utils.make_dirs(
-                            self._join(
-                                "local", [experiment_type_dir.name, sub, ses]
-                            )
-                        )
+
+                        sub_path = self._join("local", [experiment_type_dir.name, sub, ses])
+
+                        utils.make_dirs(sub_path)
+
+                        utils.make_datashuttle_metadata_folder(sub_path)
 
                         if make_ses_tree:
                             utils.make_ses_directory_tree(
