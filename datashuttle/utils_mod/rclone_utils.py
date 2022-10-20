@@ -23,7 +23,7 @@ def call_rclone(command, silent=False):
 
 
 def get_rclone_dir(for_user=False):
-    rclone_directory_name = "rclone_root_no_delete_no_overwrite_915639"  # shared directory with project names, choose something user never will
+    rclone_directory_name = "rclone_root_no_delete_no_overwrite"  # shared directory with project names, choose something user never will
     path_ = utils.get_user_appdir_path(rclone_directory_name)
     if for_user:
         path_ = os.fspath(path_)

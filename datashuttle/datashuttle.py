@@ -10,7 +10,7 @@ import datashuttle.configs as configs
 from datashuttle.utils_mod import rclone_utils, utils
 from datashuttle.utils_mod.decorators import requires_ssh_configs
 from datashuttle.utils_mod.directory_class import Directory
-
+breakpoint()
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
 # --------------------------------------------------------------------------------------------------------------------
@@ -263,8 +263,9 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        remote_path: str,
         ssh_to_remote: bool,
+        remote_path_local: str = None,
+        remote_path_ssh: str = None,
         remote_host_id: str = None,
         remote_host_username: str = None,
         sub_prefix: str = "sub-",
@@ -282,11 +283,13 @@ class DataShuttle:
         settings will be used each time the datashuttle is opened.
 
         :param local_path:                  path to project dir on local machine
-        :param remote_path:                 path to project directory on remote machine. Note this cannot
-                                            include ~ home directory syntax, must contain the full path (
-                                            e.g. /nfs/nhome/live/jziminski)
+        :param remote_path_local:           Full filepath to local filesystem (e.g. mounted drive) dir
+        :param remote_path_ssh:             path to project directory on remote machine. If ssh_to_remote is true,
+                                                this should be a full path to remote directory i.e. this cannot
+                                                include ~ home directory syntax, must contain the full path (
+                                                e.g. /nfs/nhome/live/jziminski)
         :param ssh_to_remote                if true, ssh will be used to connect to remote cluster and
-                                            remote_host_id, remote_host_username must be provided.
+                                                remote_host_id, remote_host_username must be provided.
         :param remote_host_id:              address for remote host for ssh connection
         :param remote_host_username:        username for which to login to remote host.
         :param sub_prefix:                  prefix for all subject (i.e. mouse) level directory. Default is BIDS: "sub-"
@@ -306,7 +309,8 @@ class DataShuttle:
             self._config_path,
             {
                 "local_path": local_path,
-                "remote_path": remote_path,
+                "remote_path_local": remote_path_local,
+                "remote_path_ssh": remote_path_ssh,
                 "ssh_to_remote": ssh_to_remote,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
@@ -321,6 +325,8 @@ class DataShuttle:
                 "use_histology": use_histology,
             },
         )
+        assert (remote_path_ssh or remote_path_local), \
+            "Must set either remote_path_ssh or remote_path_local"
 
         self.cfg.setup_after_load()
 
@@ -378,6 +384,8 @@ class DataShuttle:
         self.cfg.update_an_entry(option_key, new_info)
         self.set_attributes_after_config_load()
 
+        if self.cfg["ssh_to_remote"] and
+
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
     # --------------------------------------------------------------------------------------------------------------------
@@ -390,7 +398,11 @@ class DataShuttle:
         return os.fspath(appdir_path)
 
     def get_remote_path(self):
-        return self.cfg["remote_path"].as_posix()
+        """
+        Force remote path to return as posix as if local fs is windows and remote is
+        unix this will break paths.
+        """
+        self.cfg.get_remote_path(for_user=True)
 
     def get_rclone_path(self):
         return os.fspath(rclone_utils.get_rclone_exe_path())
@@ -419,8 +431,6 @@ class DataShuttle:
             extra_arguments += " --dry_run"
 
         if upload_or_download == "upload":
-
-            #      rclone_utils.call_rclone(f"copy {local_filepath} {self.get_rclone_config_name(local_or_ssh)}:{remote_filepath} --create-empty-src-dirs")
 
             rclone_utils.call_rclone(
                 f"copy "
@@ -756,7 +766,7 @@ class DataShuttle:
         if base == "local":
             base_dir = self.cfg["local_path"]
         elif base == "remote":
-            base_dir = self.cfg["remote_path"]
+            base_dir = self.cfg.get_remote_path()
         elif base == "appdir":
             base_dir = utils.get_user_appdir_path(self.project_name)
         return base_dir
