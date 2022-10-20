@@ -38,6 +38,7 @@ class Configs(UserDict):
 
         # Check bad remote path format
         if self.get_remote_path().as_posix()[0] == "~":
+        
             utils.raise_error(
                 "remote_path must contain the full directory path with no ~ syntax"
             )
@@ -69,7 +70,6 @@ class Configs(UserDict):
 
         There is always a chance that the user will make a breaking update.
         As such set to new value, test validity and revert if breaking change.
-
         :param option_key: dictionary key of the option to change,
                            see make_config_file()
         :param new_info: value to update the config too
@@ -157,7 +157,7 @@ class Configs(UserDict):
         """
         Config paths are stored as str in the .yaml but used as Path
         in the module, so make the conversion here.
-
+        
         :param config_dict:DataShuttle.cfg dict of configs
         :param direction: "path_to_str" or "str_to_path"
         """

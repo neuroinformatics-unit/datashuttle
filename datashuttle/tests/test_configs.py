@@ -5,8 +5,9 @@ import warnings
 import pytest
 import yaml
 
-from datashuttle.datashuttle.datashuttle import DataShuttle
+
 from datashuttle.tests import test_utils
+from datashuttle.datashuttle import DataShuttle
 
 TEST_PROJECT_NAME = "test_configs"
 
@@ -232,7 +233,7 @@ class TestConfigs:
 
             project.update_config(key, value)
             default_configs[key] = value
-
+            
             self.check_configs(project, default_configs)
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -260,12 +261,12 @@ class TestConfigs:
             config_yaml = yaml.full_load(config_file)
 
         for arg_name, value in kwargs[0].items():
+
             if arg_name in [
                 "local_path",
                 "remote_path_ssh",
                 "remote_path_local",
             ]:
-
                 assert type(project.cfg[arg_name]) in [
                     pathlib.PosixPath,
                     pathlib.WindowsPath,
@@ -275,6 +276,7 @@ class TestConfigs:
             else:
                 assert value == project.cfg[arg_name], f"{arg_name}"
                 assert value == config_yaml[arg_name], f"{arg_name}"
+
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils

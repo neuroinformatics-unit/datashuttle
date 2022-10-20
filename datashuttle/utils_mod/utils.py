@@ -97,7 +97,7 @@ def search_filesystem_path_for_directories(search_path_with_prefix: str):
         if os.path.isdir(file_or_dir):
             all_dirnames.append(os.path.basename(file_or_dir))
     return all_dirnames
-
+    
 # --------------------------------------------------------------------------------------------------------------------
 # SSH
 # --------------------------------------------------------------------------------------------------------------------
