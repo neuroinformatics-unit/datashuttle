@@ -399,26 +399,6 @@ class DataShuttle:
     # Setup RClone
     # --------------------------------------------------------------------------------------------------------------------
 
-    # TODO: check rclone download (similar to checking configs)
-    # transfer with rclone -
-    # check it is setup properly (SSH vs local filestorage)
-    # if not,setup new rclone name
-
-    # TODO: need to decide when to init rclone configs
-    # DOC and
-    # setup remote path when changed... check for SSH and mount maybbe just setup one at start...
-    # TODO: fix ugly paths
-    # TODO: dry run doesn't work
-    # TODO: change name from mounted to local
-
-    # Note tests are failing because top-level empty dir is not (as currently can tell) copied with rlcone: https://forum.rclone.org/t/copying-top-level-empty-folder/33591
-
-    # rclone copy won't delete anything unless you copy over a file with the same name as an existing one,
-    # and the copied file also has a newer modified date. It basically works the same as you'd expect a copy
-    # operation on your local OS to work (except it won't ask if you want to replace files - it will j…
-
-    # ^^ make sure it is never overwritten but logs give warning
-
     def _move_dir_or_file(
         self, filepath: str, upload_or_download: str, preview: bool
     ):
@@ -432,7 +412,7 @@ class DataShuttle:
         local_filepath = self._join("local", filepath)
         remote_filepath = self._join("remote", filepath)
 
-        mounted_or_ssh = "ssh" if self.cfg["ssh_to_remote"] else "mounted"
+        local_or_ssh = "ssh" if self.cfg["ssh_to_remote"] else "local"
 
         extra_arguments = "--create-empty-src-dirs"
         if preview:
@@ -440,12 +420,12 @@ class DataShuttle:
 
         if upload_or_download == "upload":
 
-            #      rclone_utils.call_rclone(f"copy {local_filepath} {self.get_rclone_config_name(mounted_or_ssh)}:{remote_filepath} --create-empty-src-dirs")
+            #      rclone_utils.call_rclone(f"copy {local_filepath} {self.get_rclone_config_name(local_or_ssh)}:{remote_filepath} --create-empty-src-dirs")
 
             rclone_utils.call_rclone(
                 f"copy "
                 f"{local_filepath} "
-                f"{self.get_rclone_config_name(mounted_or_ssh)}:"
+                f"{self.get_rclone_config_name(local_or_ssh)}:"
                 f"{remote_filepath} "
                 f"{extra_arguments}"
             )
@@ -453,26 +433,26 @@ class DataShuttle:
         elif upload_or_download == "download":
             rclone_utils.call_rclone(
                 f"copy "
-                f"{self.get_rclone_config_name(mounted_or_ssh)}:"
+                f"{self.get_rclone_config_name(local_or_ssh)}:"
                 f"{remote_filepath} "
                 f"{local_filepath}  "
                 f"{extra_arguments}"
             )
 
-    def _setup_remote_as_rclone_target(self, mounted_or_ssh):
+    def _setup_remote_as_rclone_target(self, local_or_ssh):
         """
         rclone shares config file so need to create new local and remote for all project
-        :param mounted_or_ssh:
+        :param local_or_ssh:
         :return:
         """
-        rclone_config_name = self.get_rclone_config_name(mounted_or_ssh)
+        rclone_config_name = self.get_rclone_config_name(local_or_ssh)
 
         rclone_utils.setup_remote_as_rclone_target(
-            self.cfg, mounted_or_ssh, rclone_config_name, self._ssh_key_path
+            self.cfg, local_or_ssh, rclone_config_name, self._ssh_key_path
         )
 
-    def get_rclone_config_name(self, mounted_or_ssh):
-        return f"remote_{self.project_name}_{mounted_or_ssh}"
+    def get_rclone_config_name(self, local_or_ssh):
+        return f"remote_{self.project_name}_{local_or_ssh}"
 
     # ====================================================================================================================
     # Private Functions

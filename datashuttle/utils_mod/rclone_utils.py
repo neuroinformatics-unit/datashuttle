@@ -116,13 +116,13 @@ def prompt_rclone_download_if_does_not_exist():
 
 
 def setup_remote_as_rclone_target(
-    cfg, mounted_or_ssh, rclone_config_name, ssh_key_path
+    cfg, local_or_ssh, rclone_config_name, ssh_key_path
 ):
 
-    if mounted_or_ssh == "mounted":
+    if local_or_ssh == "local":
         call_rclone(f"config create {rclone_config_name} local")
 
-    elif mounted_or_ssh == "ssh":
+    elif local_or_ssh == "ssh":
 
         call_rclone(
             f"config create "
