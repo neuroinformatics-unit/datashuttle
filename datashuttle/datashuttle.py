@@ -325,8 +325,9 @@ class DataShuttle:
                 "use_histology": use_histology,
             },
         )
-        assert (remote_path_ssh or remote_path_local), \
-            "Must set either remote_path_ssh or remote_path_local"
+        assert (
+            remote_path_ssh or remote_path_local
+        ), "Must set either remote_path_ssh or remote_path_local"
 
         self.cfg.setup_after_load()
 
@@ -534,7 +535,9 @@ class DataShuttle:
 
                     for ses in ses_names:
 
-                        sub_path = self._join("local", [experiment_type_dir.name, sub, ses])
+                        sub_path = self._join(
+                            "local", [experiment_type_dir.name, sub, ses]
+                        )
 
                         utils.make_dirs(sub_path)
 

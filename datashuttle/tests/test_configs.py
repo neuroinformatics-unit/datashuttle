@@ -5,8 +5,8 @@ import warnings
 import pytest
 import yaml
 
-from datashuttle.tests import test_utils
 from datashuttle.datashuttle.datashuttle import DataShuttle
+from datashuttle.tests import test_utils
 
 TEST_PROJECT_NAME = "test_configs"
 
@@ -58,7 +58,10 @@ class TestConfigs:
             assert False, "expected error was not caught"
 
         except AssertionError as e:
-            assert str(e) == "Must set either remote_path_ssh or remote_path_local"
+            assert (
+                str(e)
+                == "Must set either remote_path_ssh or remote_path_local"
+            )
 
     def test_no_remote_local_path_set(self, project):
         """
@@ -66,10 +69,13 @@ class TestConfigs:
         then tries to turn off ssh_to_remote, it will
         warn that the setting was not updated.
         """
-        project.make_config_file("test_local_path", True,
-                                 remote_path_ssh="random_path",
-                                 remote_host_id="fake_id",
-                                 remote_host_username="fake_user")
+        project.make_config_file(
+            "test_local_path",
+            True,
+            remote_path_ssh="random_path",
+            remote_host_id="fake_id",
+            remote_host_username="fake_user",
+        )
 
         with warnings.catch_warnings(record=True) as w:
             project.update_config("ssh_to_remote", False)
@@ -80,10 +86,7 @@ class TestConfigs:
                 str(w[0].message)
                 == "WARNING: ssh to remote is off but remote_path_local has not been set."
             )
-            assert (
-                str(w[0].message)
-                == "ssh_to_remote was not updated",
-            )
+            assert (str(w[0].message) == "ssh_to_remote was not updated",)
 
             assert project.cfg["ssh_to_remote"] is True
 
@@ -93,21 +96,33 @@ class TestConfigs:
         are set on make_config_file
         """
         try:
-            project.make_config_file("test_local_path", True, remote_path_local="local_path")
+            project.make_config_file(
+                "test_local_path", True, remote_path_local="local_path"
+            )
             assert False, "expected error was not caught"
 
         except BaseException as e:
-            assert str(e) == "ssh to remote is on but remote_path_ssh has not been set."
+            assert (
+                str(e)
+                == "ssh to remote is on but remote_path_ssh has not been set."
+            )
 
-    @pytest.mark.parametrize("argument_type", ["none",
-                                               "remote_host_id", "remote_host_username", "both"])
+    @pytest.mark.parametrize(
+        "argument_type",
+        ["none", "remote_host_id", "remote_host_username", "both"],
+    )
     def test_no_ssh_options_set_update_config(self, project, argument_type):
         """
         Check every config option missing does not allow
         user to switch to ssh_to_remote unless all options
         are set.
         """
-        project.make_config_file("test_local_path", False, remote_path_local="local_path", remote_path_ssh="ssh_path")
+        project.make_config_file(
+            "test_local_path",
+            False,
+            remote_path_local="local_path",
+            remote_path_ssh="ssh_path",
+        )
 
         if argument_type in ["remote_host_id", "both"]:
             project.update_config("remote_host_id", "fake_id")
@@ -124,7 +139,10 @@ class TestConfigs:
             else:
                 assert len(w) == 2
 
-                assert str(w[0].message) == "WARNING: ssh to remote set but no remote_host_id or remote_host_username not provided."
+                assert (
+                    str(w[0].message)
+                    == "WARNING: ssh to remote set but no remote_host_id or remote_host_username not provided."
+                )
 
                 assert str(w[1].message) == "ssh_to_remote was not updated"
 
@@ -208,14 +226,15 @@ class TestConfigs:
             "use_behav_camera": not project.cfg["use_behav_camera"],
             "use_histology": not project.cfg["use_histology"],
             "use_imaging": not project.cfg["use_imaging"],
-            "ssh_to_remote": not project.cfg["ssh_to_remote"],  # test last so ssh items already set
+            "ssh_to_remote": not project.cfg[
+                "ssh_to_remote"
+            ],  # test last so ssh items already set
         }.items():
 
             project.update_config(key, value)
             default_configs[key] = value
 
             self.check_configs(project, default_configs)
-
 
     # --------------------------------------------------------------------------------------------------------------------
     # Test Helpers
@@ -242,7 +261,11 @@ class TestConfigs:
             config_yaml = yaml.full_load(config_file)
 
         for arg_name, value in kwargs[0].items():
-            if arg_name in ["local_path", "remote_path_ssh", "remote_path_local"]:
+            if arg_name in [
+                "local_path",
+                "remote_path_ssh",
+                "remote_path_local",
+            ]:
 
                 assert type(project.cfg[arg_name]) in [
                     pathlib.PosixPath,

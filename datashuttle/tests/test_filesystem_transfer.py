@@ -2,6 +2,7 @@ import os
 from os.path import join
 
 import pytest
+
 from datashuttle.tests import test_utils
 
 # NOTE, these tests will delete all folders in the local and remote path

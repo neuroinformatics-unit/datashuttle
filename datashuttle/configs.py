@@ -27,10 +27,14 @@ class Configs(UserDict):
         # Check relevant remote_path is set
         if self["ssh_to_remote"]:
             if not self["remote_path_ssh"]:
-                utils.raise_error("ssh to remote is on but remote_path_ssh has not been set.")
+                utils.raise_error(
+                    "ssh to remote is on but remote_path_ssh has not been set."
+                )
         else:
             if not self["remote_path_local"]:
-                utils.raise_error("ssh to remote is off but remote_path_local has not been set.")
+                utils.raise_error(
+                    "ssh to remote is off but remote_path_local has not been set."
+                )
 
         # Check bad remote path format
         if self.get_remote_path().as_posix()[0] == "~":
@@ -72,7 +76,11 @@ class Configs(UserDict):
         """
         original_value = copy.deepcopy(self[option_key])
 
-        if option_key in ["local_path", "remote_path_ssh", "remote_path_local"]:
+        if option_key in [
+            "local_path",
+            "remote_path_ssh",
+            "remote_path_local",
+        ]:
             new_info = Path(new_info)
 
         self[option_key] = new_info
@@ -85,17 +93,20 @@ class Configs(UserDict):
 
             if option_key == "ssh_to_remote":
                 if new_info:
-                    utils.message_user(f"SSH will be used to connect to project directory at: {self.get_remote_path(for_user=True)}")
+                    utils.message_user(
+                        f"SSH will be used to connect to project directory at: {self.get_remote_path(for_user=True)}"
+                    )
                 else:
-                    utils.message_user(f"Local filesystem will be used for project directory at: {self.get_remote_path(for_user=True)}")
+                    utils.message_user(
+                        f"Local filesystem will be used for project directory at: {self.get_remote_path(for_user=True)}"
+                    )
         else:
             self[option_key] = original_value
             warnings.warn(f"{option_key} was not updated")
             self[option_key] = original_value
 
     def safe_check_current_dict_is_valid(self):
-        """
-        """
+        """ """
         try:
             self.check_dict_values_and_inform_user()
             return True
@@ -130,7 +141,11 @@ class Configs(UserDict):
         Interpath function to get pathlib remote path
         based on using ssh or local filesystem.
         """
-        remote_path = self["remote_path_ssh"] if self["ssh_to_remote"] else self["remote_path_local"]
+        remote_path = (
+            self["remote_path_ssh"]
+            if self["ssh_to_remote"]
+            else self["remote_path_local"]
+        )
 
         if for_user:
             return remote_path.as_posix()
