@@ -5,8 +5,8 @@ import subprocess
 import warnings
 from pathlib import Path
 
-from datashuttle.utils_mod import http_utils, utils
-
+from datashuttle._vendored import bgatlasapi
+from datashuttle.utils_mod import utils
 
 def call_rclone(command : str, silent : bool = False):
     """
@@ -80,7 +80,7 @@ def download_rclone():
 
     if os.name == "nt":
         zip_file_path = Path(get_rclone_dir().as_posix() + "/rclone.zip")
-        http_utils.retrieve_over_http(
+        bgatlasapi.retrieve_over_http(
             "https://downloads.rclone.org/v1.59.2/rclone-v1.59.2-windows-amd64.zip",
             zip_file_path,
         )
