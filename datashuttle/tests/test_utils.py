@@ -28,7 +28,6 @@ def setup_project_default_configs(
         "local"
     )
 
-
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
     project.make_config_file(*default_configs.values())
 
@@ -48,6 +47,10 @@ def setup_project_default_configs(
 
     return project
 
+
+def check_and_download_rclone():
+    if not rclone_utils.check_rclone_exists():
+        rclone_utils.download_rclone()
 
 def glob_basenames(search_path, recursive=False):
     paths_ = glob.glob(search_path, recursive=recursive)

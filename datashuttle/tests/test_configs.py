@@ -7,7 +7,7 @@ import yaml
 
 
 from datashuttle.tests import test_utils
-from datashuttle.datashuttle import DataShuttle
+from datashuttle.datashuttle.datashuttle import DataShuttle
 
 TEST_PROJECT_NAME = "test_configs"
 
@@ -22,6 +22,8 @@ class TestConfigs:
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
+        test_utils.check_and_download_rclone()
+
         warnings.filterwarnings("ignore")
         project = DataShuttle(TEST_PROJECT_NAME)
         warnings.filterwarnings("default")
@@ -35,7 +37,7 @@ class TestConfigs:
     def test_warning_on_startup(self):
         """
         When no configs have been set, a warning should be shown that
-        tells the user the config has not been initialized.
+        the config has not been initialized.
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
@@ -65,7 +67,7 @@ class TestConfigs:
 
     def test_no_remote_local_path_set(self, project):
         """
-        Check that if the user does not set local path,
+        Check that if the local path is not set and
         then tries to turn off ssh_to_remote, it will
         warn that the setting was not updated.
         """
@@ -114,7 +116,7 @@ class TestConfigs:
     def test_no_ssh_options_set_update_config(self, project, argument_type):
         """
         Check every config option missing does not allow
-        user to switch to ssh_to_remote unless all options
+        switching on ssh_to_remote unless all options
         are set.
         """
         project.make_config_file(
