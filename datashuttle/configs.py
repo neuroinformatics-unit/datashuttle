@@ -108,7 +108,7 @@ class Configs(UserDict):
             self.check_dict_values_and_inform_user()
             return True
 
-        except BaseException as e:  # TODO: test invalid change
+        except BaseException as e: 
             warnings.warn(f"WARNING: {e}")
             return False
 
