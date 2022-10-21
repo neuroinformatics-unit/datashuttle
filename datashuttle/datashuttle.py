@@ -5,11 +5,10 @@ from pathlib import Path
 from typing import Union, cast
 
 import paramiko
-from ftpsync.sftp_target import SFTPTarget
-from ftpsync.targets import FsTarget
 
 from datashuttle import configs
-from datashuttle.utils_mod import utils
+from datashuttle.utils_mod import rclone_utils, utils
+
 from datashuttle.utils_mod.decorators import requires_ssh_configs
 from datashuttle.utils_mod.directory_class import Directory
 
@@ -26,7 +25,7 @@ class DataShuttle:
     each contain a subset of the full project (e.g. machine for electrophysiology collection,
     machine for behavioural connection, machine for analysis for specific data etc.).
 
-    On first use on a new profile, the user will be prompted to set configurations with the function
+    On first use on a new profile, show warning prompting to set configurations with the function
     make_config_file().
 
     For transferring data between a remote data storage with SSH, use setup setup_ssh_connection_to_remote_server().
@@ -52,55 +51,57 @@ class DataShuttle:
             if self.cfg:
                 self.set_attributes_after_config_load()
 
+        rclone_utils.prompt_rclone_download_if_does_not_exist()
+
     def set_attributes_after_config_load(self):
-        """
-        Once config file is loaded, update all private attributes according to config contents.
-
-        The _ses_dirs contains the entire directory tree for each data type.
-        The structure is that the top-level directory (e.g. ephys, behav, microscopy) are found in
-        the project root. Then sub- and ses- directory are created in this project root, and
-        all subdirs are created at the session level.
-        """
-        self._ssh_key_path = self._join(
-            "appdir", self.project_name + "_ssh_key"
-        )
-        self._hostkeys = self._join("appdir", "hostkeys")
-
-        self._ses_dirs = {
-            "ephys": Directory(
-                "ephys",
-                self.cfg["use_ephys"],
-                subdirs={
-                    "ephys_behav": Directory(
-                        "behav",
-                        self.cfg["use_ephys_behav"],
-                        subdirs={
-                            "ephys_behav_camera": Directory(
-                                "camera",
-                                self.cfg["use_ephys_behav_camera"],
-                            ),
-                        },
-                    ),
-                },
-            ),
-            "behav": Directory(
-                "behav",
-                self.cfg["use_behav"],
-                subdirs={
-                    "behav_camera": Directory(
-                        "camera", self.cfg["use_behav_camera"]
-                    ),
-                },
-            ),
-            "imaging": Directory(
-                "imaging",
-                self.cfg["use_imaging"],
-            ),
-            "histology": Directory(
-                "histology",
-                self.cfg["use_histology"],
-            ),
-        }
+            """
+            Once config file is loaded, update all private attributes according to config contents.
+    
+            The _ses_dirs contains the entire directory tree for each data type.
+            The structure is that the top-level directory (e.g. ephys, behav, microscopy) are found in
+            the project root. Then sub- and ses- directory are created in this project root, and
+            all subdirs are created at the session level.
+            """
+            self._ssh_key_path = self._join(
+                "appdir", self.project_name + "_ssh_key"
+            )
+            self._hostkeys = self._join("appdir", "hostkeys")
+    
+            self._ses_dirs = {
+                "ephys": Directory(
+                    "ephys",
+                    self.cfg["use_ephys"],
+                    subdirs={
+                        "ephys_behav": Directory(
+                            "behav",
+                            self.cfg["use_ephys_behav"],
+                            subdirs={
+                                "ephys_behav_camera": Directory(
+                                    "camera",
+                                    self.cfg["use_ephys_behav_camera"],
+                                ),
+                            },
+                        ),
+                    },
+                ),
+                "behav": Directory(
+                    "behav",
+                    self.cfg["use_behav"],
+                    subdirs={
+                        "behav_camera": Directory(
+                            "camera", self.cfg["use_behav_camera"]
+                        ),
+                    },
+                ),
+                "imaging": Directory(
+                    "imaging",
+                    self.cfg["use_imaging"],
+                ),
+                "histology": Directory(
+                    "histology",
+                    self.cfg["use_histology"],
+                ),
+            }
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Directory Makers
@@ -227,10 +228,10 @@ class DataShuttle:
         Setup a connection to the remote server using SSH. Assumes the remote_host_id and
         remote_host_username are set in the configuration file.
 
-        First, the server key will be displayed and the user will confirm connection
-        to the server. This will store the hostkey for all future use.
+        First, the server key will be displayed, requiring verification of the server ID.
+        This will store the hostkey for all future use.
 
-        Next, the user is prompted to input their password for the remote cluster.
+        Next, prompt to input their password for the remote cluster.
         Once input, SSH private / public key pair will be setup (see _setup_ssh_key()
         for details).
         """
@@ -262,8 +263,9 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        remote_path: str,
         ssh_to_remote: bool,
+        remote_path_local: str = None,
+        remote_path_ssh: str = None,
         remote_host_id: str = None,
         remote_host_username: str = None,
         sub_prefix: str = "sub-",
@@ -281,11 +283,13 @@ class DataShuttle:
         settings will be used each time the datashuttle is opened.
 
         :param local_path:                  path to project dir on local machine
-        :param remote_path:                 path to project directory on remote machine. Note this cannot
-                                            include ~ home directory syntax, must contain the full path (
-                                            e.g. /nfs/nhome/live/jziminski)
+        :param remote_path_local:           Full filepath to local filesystem (e.g. mounted drive) dir
+        :param remote_path_ssh:             path to project directory on remote machine. If ssh_to_remote is true,
+                                                this should be a full path to remote directory i.e. this cannot
+                                                include ~ home directory syntax, must contain the full path (
+                                                e.g. /nfs/nhome/live/jziminski)
         :param ssh_to_remote                if true, ssh will be used to connect to remote cluster and
-                                            remote_host_id, remote_host_username must be provided.
+                                                remote_host_id, remote_host_username must be provided.
         :param remote_host_id:              address for remote host for ssh connection
         :param remote_host_username:        username for which to login to remote host.
         :param sub_prefix:                  prefix for all subject (i.e. mouse) level directory. Default is BIDS: "sub-"
@@ -305,7 +309,8 @@ class DataShuttle:
             self._config_path,
             {
                 "local_path": local_path,
-                "remote_path": remote_path,
+                "remote_path_local": remote_path_local,
+                "remote_path_ssh": remote_path_ssh,
                 "ssh_to_remote": ssh_to_remote,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
@@ -321,12 +326,18 @@ class DataShuttle:
             },
         )
 
+        assert (
+            remote_path_ssh or remote_path_local
+        ), "Must set either remote_path_ssh or remote_path_local"
+
         self.cfg.setup_after_load()
 
         if self.cfg:
             self.cfg.dump_to_file()
 
         self.set_attributes_after_config_load()
+        self._setup_remote_as_rclone_target("local")
+
         utils.message_user(
             "Configuration file has been saved and options loaded into datashuttle."
         )
@@ -337,7 +348,7 @@ class DataShuttle:
         when attempt to load from file, return False.
 
         :param prompt_on_fail: if config file not found, or crashes on load,
-                               warn the user.
+                               show warning.
 
         :return: loaded dictionary, or False if not loaded.
         """
@@ -385,11 +396,75 @@ class DataShuttle:
         return os.fspath(self.cfg["local_path"])
 
     def get_appdir_path(self):
-        appdir_path = utils.get_user_appdir_path(self.project_name)
+        appdir_path = utils.get_appdir_path(self.project_name)
         return os.fspath(appdir_path)
 
     def get_remote_path(self):
-        return self.cfg["remote_path"].as_posix()
+        """
+        Force remote path to return as posix as if local filesystem
+        is windows and remote is unix this will break paths.
+        """
+        return self.cfg.get_remote_path(for_user=True)
+
+    def get_rclone_path(self):
+        return os.fspath(rclone_utils.get_rclone_exe_path())
+
+    # --------------------------------------------------------------------------------------------------------------------
+    # Setup RClone
+    # --------------------------------------------------------------------------------------------------------------------
+
+    def _move_dir_or_file(
+        self, filepath: str, upload_or_download: str, preview: bool
+    ):
+        """
+        Copy a directory or file with Rclone.
+
+        :param filepath: filepath (not including local or remote root) to copy
+        :param upload_or_download: upload goes local to remote, download goes remote to local
+        :param preview: do not actually move the files, just report what would be moved.
+        """
+        local_filepath = self._join("local", filepath)
+        remote_filepath = self._join("remote", filepath)
+
+        local_or_ssh = "ssh" if self.cfg["ssh_to_remote"] else "local"
+
+        extra_arguments = "--create-empty-src-dirs"
+        if preview:
+            extra_arguments += " --dry_run"
+
+        if upload_or_download == "upload":
+
+            rclone_utils.call_rclone(
+                f"copy "
+                f"{local_filepath} "
+                f"{self.get_rclone_config_name(local_or_ssh)}:"
+                f"{remote_filepath} "
+                f"{extra_arguments}"
+            )
+
+        elif upload_or_download == "download":
+            rclone_utils.call_rclone(
+                f"copy "
+                f"{self.get_rclone_config_name(local_or_ssh)}:"
+                f"{remote_filepath} "
+                f"{local_filepath}  "
+                f"{extra_arguments}"
+            )
+
+    def _setup_remote_as_rclone_target(self, local_or_ssh):
+        """
+        rclone shares config file so need to create new local and remote for all project
+        :param local_or_ssh:
+        :return:
+        """
+        rclone_config_name = self.get_rclone_config_name(local_or_ssh)
+
+        rclone_utils.setup_remote_as_rclone_target(
+            self.cfg, local_or_ssh, rclone_config_name, self._ssh_key_path
+        )
+
+    def get_rclone_config_name(self, local_or_ssh):
+        return f"remote_{self.project_name}_{local_or_ssh}"
 
     # ====================================================================================================================
     # Private Functions
@@ -459,11 +534,14 @@ class DataShuttle:
                     )
 
                     for ses in ses_names:
-                        utils.make_dirs(
-                            self._join(
-                                "local", [experiment_type_dir.name, sub, ses]
-                            )
+
+                        ses_path = self._join(
+                            "local", [experiment_type_dir.name, sub, ses]
                         )
+
+                        utils.make_dirs(ses_path)
+
+                        utils.make_datashuttle_metadata_folder(ses_path)
 
                         if make_ses_tree:
                             utils.make_ses_directory_tree(
@@ -510,6 +588,7 @@ class DataShuttle:
             )
 
         for experiment_type_key, experiment_type_dir in experiment_type_items:
+
             if sub_names not in ["all", ["all"]]:
                 sub_names = self._process_names(sub_names, "sub")
             else:
@@ -530,52 +609,7 @@ class DataShuttle:
                     self._move_dir_or_file(
                         filepath, upload_or_download, preview=preview
                     )
-
-    def _move_dir_or_file(
-        self, filepath: str, upload_or_download: str, preview: bool
-    ):
-        """
-        High-level function for transferring directories or files with pyftpsync.
-        Adds the filepath provided to the remote and local base dir, wraps
-        in the appropriate pyftpsync Target class (e.g. filesystem vs. ssh)
-        and uses the appropriate syncronizer (upload or download) to transfer
-        the directory (and all subdirs, files).
-
-        :param filepath: relative project filepath to move
-        :param upload_or_download: "upload" or "download"
-        :param preview:  see upload_project_dir_or_file*(
-        """
-        local_filepath = self._join("local", filepath)
-        remote_filepath = self._join("remote", filepath)
-
-        local = FsTarget(local_filepath)
-        remote = self._get_remote_target(remote_filepath)
-
-        opts = utils.get_default_syncronizer_opts(preview)
-
-        syncronizer = utils.get_syncronizer(upload_or_download)
-        s = syncronizer(local, remote, opts)
-        s.run()
-
-    def _get_remote_target(self, remote_filepath: str):
-        """
-        Convenience function to get the pyftsync target
-        based on remote connection type.
-        """
-        if self.cfg["ssh_to_remote"]:
-            remote = SFTPTarget(
-                remote_filepath,
-                self.cfg["remote_host_id"],
-                username=self.cfg["remote_host_username"],
-                private_key=self._ssh_key_path,
-                hostkeys=self._hostkeys,
-            )
-
-        else:
-            remote = FsTarget(remote_filepath)
-
-        return remote
-
+                    
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
@@ -695,6 +729,7 @@ class DataShuttle:
             self.cfg, self._hostkeys, password, key
         )
 
+        self._setup_remote_as_rclone_target("ssh")
         utils.message_user(
             f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}"
         )
@@ -735,9 +770,9 @@ class DataShuttle:
         if base == "local":
             base_dir = self.cfg["local_path"]
         elif base == "remote":
-            base_dir = self.cfg["remote_path"]
+            base_dir = self.cfg.get_remote_path()
         elif base == "appdir":
-            base_dir = utils.get_user_appdir_path(self.project_name)
+            base_dir = utils.get_appdir_path(self.project_name)
         return base_dir
 
     def _process_names(self, names: Union[list, str], sub_or_ses: str):
@@ -752,7 +787,7 @@ class DataShuttle:
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str):
         """
-        Get the user-supplied sub / ses prefix (default is sub- and ses-".
+        Get the sub / ses prefix (default is sub- and ses-") set in cfgs.
         """
         if sub_or_ses == "sub":
             prefix = self.cfg["sub_prefix"]
@@ -762,7 +797,7 @@ class DataShuttle:
 
     def _check_experiment_type_is_valid(self, experiment_type, prompt_on_fail):
         """
-        Check the user-passed data type is valid (must be a key on self.ses_dirs or "all"
+        Check the passed experiemnt_type is valid (must be a key on self.ses_dirs or "all")
         """
         if type(experiment_type) == list:
             valid_keys = list(self._ses_dirs.keys()) + ["all"]
