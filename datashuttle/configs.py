@@ -20,8 +20,7 @@ class Configs(UserDict):
     def check_dict_values_and_inform_user(self):
         """
         Check the values of the current dictionary are set
-        correctly and will not cause error (e.g. user has
-        set ssh_to_remote on but not set remote_path_ssh.
+        correctly and will not cause downstream errors.
         """
 
         # Check relevant remote_path is set
@@ -65,11 +64,9 @@ class Configs(UserDict):
         Convenience function to update individual entry of configuration file.
         The config file, and currently loaded self.cfg will be updated.
 
-        Note if user updates connection type, a different remote_path
-        is used to avoid confusion. Inform the user of the new remote path.
+        In case an update is breaking (e.g. use ssh_to_remote but no remote_host_id),
+        set to new value, test validity and revert if breaking change.
 
-        There is always a chance that the user will make a breaking update.
-        As such set to new value, test validity and revert if breaking change.
         :param option_key: dictionary key of the option to change,
                            see make_config_file()
         :param new_info: value to update the config too

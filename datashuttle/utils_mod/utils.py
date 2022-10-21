@@ -224,7 +224,7 @@ def get_list_of_directory_names_over_sftp(sftp, search_path, search_prefix):
 
 def message_user(message: str):
     """
-    Temporary centralised way to message user.
+    Centralised way to send message.
     """
     print(message)
 
@@ -236,7 +236,7 @@ def raise_error(message: str):
     raise BaseException(message)
 
 
-def get_user_appdir_path(project_name):
+def get_appdir_path(project_name):
     """
     It is not possible to write to programfiles in windows from app without admin permissions
     However if admin permission given drag and drop dont work, and it is not good practice.

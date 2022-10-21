@@ -25,7 +25,7 @@ class DataShuttle:
     each contain a subset of the full project (e.g. machine for electrophysiology collection,
     machine for behavioural connection, machine for analysis for specific data etc.).
 
-    On first use on a new profile, the user will be prompted to set configurations with the function
+    On first use on a new profile, show warning prompting to set configurations with the function
     make_config_file().
 
     For transferring data between a remote data storage with SSH, use setup setup_ssh_connection_to_remote_server().
@@ -53,55 +53,55 @@ class DataShuttle:
 
         rclone_utils.prompt_rclone_download_if_does_not_exist()
 
-def set_attributes_after_config_load(self):
-        """
-        Once config file is loaded, update all private attributes according to config contents.
-
-        The _ses_dirs contains the entire directory tree for each data type.
-        The structure is that the top-level directory (e.g. ephys, behav, microscopy) are found in
-        the project root. Then sub- and ses- directory are created in this project root, and
-        all subdirs are created at the session level.
-        """
-        self._ssh_key_path = self._join(
-            "appdir", self.project_name + "_ssh_key"
-        )
-        self._hostkeys = self._join("appdir", "hostkeys")
-
-        self._ses_dirs = {
-            "ephys": Directory(
-                "ephys",
-                self.cfg["use_ephys"],
-                subdirs={
-                    "ephys_behav": Directory(
-                        "behav",
-                        self.cfg["use_ephys_behav"],
-                        subdirs={
-                            "ephys_behav_camera": Directory(
-                                "camera",
-                                self.cfg["use_ephys_behav_camera"],
-                            ),
-                        },
-                    ),
-                },
-            ),
-            "behav": Directory(
-                "behav",
-                self.cfg["use_behav"],
-                subdirs={
-                    "behav_camera": Directory(
-                        "camera", self.cfg["use_behav_camera"]
-                    ),
-                },
-            ),
-            "imaging": Directory(
-                "imaging",
-                self.cfg["use_imaging"],
-            ),
-            "histology": Directory(
-                "histology",
-                self.cfg["use_histology"],
-            ),
-        }
+    def set_attributes_after_config_load(self):
+            """
+            Once config file is loaded, update all private attributes according to config contents.
+    
+            The _ses_dirs contains the entire directory tree for each data type.
+            The structure is that the top-level directory (e.g. ephys, behav, microscopy) are found in
+            the project root. Then sub- and ses- directory are created in this project root, and
+            all subdirs are created at the session level.
+            """
+            self._ssh_key_path = self._join(
+                "appdir", self.project_name + "_ssh_key"
+            )
+            self._hostkeys = self._join("appdir", "hostkeys")
+    
+            self._ses_dirs = {
+                "ephys": Directory(
+                    "ephys",
+                    self.cfg["use_ephys"],
+                    subdirs={
+                        "ephys_behav": Directory(
+                            "behav",
+                            self.cfg["use_ephys_behav"],
+                            subdirs={
+                                "ephys_behav_camera": Directory(
+                                    "camera",
+                                    self.cfg["use_ephys_behav_camera"],
+                                ),
+                            },
+                        ),
+                    },
+                ),
+                "behav": Directory(
+                    "behav",
+                    self.cfg["use_behav"],
+                    subdirs={
+                        "behav_camera": Directory(
+                            "camera", self.cfg["use_behav_camera"]
+                        ),
+                    },
+                ),
+                "imaging": Directory(
+                    "imaging",
+                    self.cfg["use_imaging"],
+                ),
+                "histology": Directory(
+                    "histology",
+                    self.cfg["use_histology"],
+                ),
+            }
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Directory Makers
@@ -228,10 +228,10 @@ def set_attributes_after_config_load(self):
         Setup a connection to the remote server using SSH. Assumes the remote_host_id and
         remote_host_username are set in the configuration file.
 
-        First, the server key will be displayed and the user will confirm connection
-        to the server. This will store the hostkey for all future use.
+        First, the server key will be displayed, requiring verification of the server ID.
+        This will store the hostkey for all future use.
 
-        Next, the user is prompted to input their password for the remote cluster.
+        Next, prompt to input their password for the remote cluster.
         Once input, SSH private / public key pair will be setup (see _setup_ssh_key()
         for details).
         """
@@ -348,7 +348,7 @@ def set_attributes_after_config_load(self):
         when attempt to load from file, return False.
 
         :param prompt_on_fail: if config file not found, or crashes on load,
-                               warn the user.
+                               show warning.
 
         :return: loaded dictionary, or False if not loaded.
         """
@@ -396,7 +396,7 @@ def set_attributes_after_config_load(self):
         return os.fspath(self.cfg["local_path"])
 
     def get_appdir_path(self):
-        appdir_path = utils.get_user_appdir_path(self.project_name)
+        appdir_path = utils.get_appdir_path(self.project_name)
         return os.fspath(appdir_path)
 
     def get_remote_path(self):
@@ -772,7 +772,7 @@ def set_attributes_after_config_load(self):
         elif base == "remote":
             base_dir = self.cfg.get_remote_path()
         elif base == "appdir":
-            base_dir = utils.get_user_appdir_path(self.project_name)
+            base_dir = utils.get_appdir_path(self.project_name)
         return base_dir
 
     def _process_names(self, names: Union[list, str], sub_or_ses: str):
@@ -787,7 +787,7 @@ def set_attributes_after_config_load(self):
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str):
         """
-        Get the user-supplied sub / ses prefix (default is sub- and ses-".
+        Get the sub / ses prefix (default is sub- and ses-") set in cfgs.
         """
         if sub_or_ses == "sub":
             prefix = self.cfg["sub_prefix"]
@@ -797,7 +797,7 @@ def set_attributes_after_config_load(self):
 
     def _check_experiment_type_is_valid(self, experiment_type, prompt_on_fail):
         """
-        Check the user-passed data type is valid (must be a key on self.ses_dirs or "all"
+        Check the passed experiemnt_type is valid (must be a key on self.ses_dirs or "all")
         """
         if type(experiment_type) == list:
             valid_keys = list(self._ses_dirs.keys()) + ["all"]

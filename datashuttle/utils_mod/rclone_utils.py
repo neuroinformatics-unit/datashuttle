@@ -34,7 +34,7 @@ def get_rclone_dir(for_user=False):
     this must never share a name with a user project.
     """
     rclone_directory_name = "rclone_root_no_delete_no_overwrite"
-    path_ = utils.get_user_appdir_path(rclone_directory_name)
+    path_ = utils.get_appdir_path(rclone_directory_name)
     if for_user:
         path_ = os.fspath(path_)
     return path_
