@@ -13,7 +13,6 @@ TEST_PROJECT_NAME = "test_configs"
 
 
 class TestConfigs:
-
     @pytest.fixture(scope="function")
     def project(test):
         """
@@ -41,7 +40,7 @@ class TestConfigs:
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
-        with warnings.catch_warnings(record=True) as w:
+        with pytest.warns() as w:
             DataShuttle(TEST_PROJECT_NAME)
 
         assert len(w) == 1
@@ -55,15 +54,13 @@ class TestConfigs:
         Test that the make_config_file will assert if neither
         remote_path_ssh or remote_path_local are passed.
         """
-        try:
+        with pytest.raises(AssertionError) as e:
             project.make_config_file("test_local_path", False)
-            assert False, "expected error was not caught"
 
-        except AssertionError as e:
-            assert (
-                str(e)
-                == "Must set either remote_path_ssh or remote_path_local"
-            )
+        assert (
+            str(e.value)
+            == "Must set either remote_path_ssh or remote_path_local"
+        )
 
     def test_no_remote_local_path_set(self, project):
         """
@@ -79,35 +76,34 @@ class TestConfigs:
             remote_host_username="fake_user",
         )
 
-        with warnings.catch_warnings(record=True) as w:
+        with pytest.warns() as w:
             project.update_config("ssh_to_remote", False)
 
-            assert len(w) == 2
+        assert len(w) == 2
 
-            assert (
-                str(w[0].message)
-                == "WARNING: ssh to remote is off but remote_path_local has not been set."
-            )
-            assert (str(w[0].message) == "ssh_to_remote was not updated",)
+        assert (
+            str(w[0].message)
+            == "WARNING: ssh to remote is off but remote_path_local has not been set."
+        )
 
-            assert project.cfg["ssh_to_remote"] is True
+        assert str(w[1].message) == "ssh_to_remote was not updated"
+
+        assert project.cfg["ssh_to_remote"] is True
 
     def test_no_ssh_options_set_on_make_config_file(self, project):
         """
         Check that program will assert if not all ssh options
         are set on make_config_file
         """
-        try:
+        with pytest.raises(BaseException) as e:  # TODO: checkk what the original exceptions were
             project.make_config_file(
                 "test_local_path", True, remote_path_local="local_path"
             )
-            assert False, "expected error was not caught"
 
-        except BaseException as e:
-            assert (
-                str(e)
-                == "ssh to remote is on but remote_path_ssh has not been set."
-            )
+        assert (
+            str(e.value)
+            == "ssh to remote is on but remote_path_ssh has not been set."
+        )
 
     @pytest.mark.parametrize(
         "argument_type",
@@ -235,7 +231,7 @@ class TestConfigs:
 
             project.update_config(key, value)
             default_configs[key] = value
-            
+
             self.check_configs(project, default_configs)
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -278,7 +274,6 @@ class TestConfigs:
             else:
                 assert value == project.cfg[arg_name], f"{arg_name}"
                 assert value == config_yaml[arg_name], f"{arg_name}"
-
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
