@@ -6,8 +6,8 @@ from os.path import join
 
 import appdirs
 
-from datashuttle.datashuttle import DataShuttle
-
+from datashuttle.datashuttle.datashuttle import DataShuttle
+from datashuttle.utils_mod import rclone_utils
 
 def setup_project_default_configs(
     project_name,
@@ -15,11 +15,18 @@ def setup_project_default_configs(
     remote_path=False,
 ):
     """"""
+    if not rclone_utils.check_rclone_exists():
+        rclone_utils.download_rclone()
+
     delete_project_if_it_exists(project_name)
 
     warnings.filterwarnings("ignore")
 
     project = DataShuttle(project_name)
+
+    project._setup_remote_as_rclone_target(
+        "local"
+    )
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
     project.make_config_file(*default_configs.values())
@@ -34,11 +41,16 @@ def setup_project_default_configs(
         project.update_config("local_path", local_path)
 
     if remote_path:
-        project.update_config("remote_path", remote_path)
+        project.update_config("remote_path_local", remote_path)
+
         delete_all_dirs_in_remote_path(project)
 
     return project
 
+
+def check_and_download_rclone():
+    if not rclone_utils.check_rclone_exists():
+        rclone_utils.download_rclone()
 
 def glob_basenames(search_path, recursive=False):
     paths_ = glob.glob(search_path, recursive=recursive)
@@ -85,8 +97,9 @@ def get_test_config_arguments_dict(
     """
     dict_ = {
         "local_path": r"Not:/a/real/local/directory",
-        "remote_path": r"/Not/a/real/remote/directory",
         "ssh_to_remote": False,
+        "remote_path_local": r"/Not/a/real/remote_local/directory",
+        "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
     }
 
     if required_arguments_only:
@@ -166,6 +179,8 @@ def check_directory_tree_is_correct(
                     path_to_folder = join(base_dir, directory.name, sub, ses)
                     check_and_cd_dir(path_to_folder)
 
+                    check_and_cd_dir(path_to_folder + "/.datashuttle_meta")
+
                     recursive_check_subfolder_exists(
                         path_to_folder, directory, directory_used
                     )
@@ -203,7 +218,8 @@ def check_directory_is_used(base_dir, directory, directory_used, key):
     is_used = directory.used
 
     if not is_used:
-#        print("Path was correctly not made: " + join(base_dir, directory.name))
+        print("Path was correctly not made: " + join(base_dir, directory.name))
+
         assert not os.path.isdir(join(base_dir, directory.name))
 
     return is_used
@@ -217,7 +233,7 @@ def check_and_cd_dir(path_):
     """
     assert os.path.isdir(path_)
     os.chdir(path_)
-#    print(f"checked: {path_}")  # -s flag
+    print(f"checked: {path_}")  # -s flag
 
 
 def get_default_directory_used():  # TODO: need to find a way to know to update this when new ones added
