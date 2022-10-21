@@ -401,8 +401,8 @@ class DataShuttle:
 
     def get_remote_path(self):
         """
-        Force remote path to return as posix as if local fs is windows and remote is
-        unix this will break paths.
+        Force remote path to return as posix as if local filesystem
+        is windows and remote is unix this will break paths.
         """
         return self.cfg.get_remote_path(for_user=True)
 
