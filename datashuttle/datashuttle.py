@@ -6,7 +6,7 @@ from typing import Union, cast
 
 import paramiko
 
-from datashuttle import configs
+from .datashuttle import configs
 from datashuttle.utils_mod import rclone_utils, utils
 from datashuttle.utils_mod.decorators import requires_ssh_configs
 from datashuttle.utils_mod.directory_class import Directory
