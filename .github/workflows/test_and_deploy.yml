@@ -5,11 +5,15 @@ on: [push] #[push, pull_request]
 jobs:
   lint:
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash -l {0}
     strategy:
       matrix:
         os: [windows-latest, ubuntu-latest]  # ubuntu-latest, macos-latest,
         python-version: [ "3.9", "3.10" ] # "3.7","3.8",
     steps:
+      -
       - uses: actions/checkout@v2
       - name: Set up Python
         uses: actions/setup-python@v2
