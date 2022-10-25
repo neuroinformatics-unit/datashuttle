@@ -4,7 +4,7 @@ on: [push] #[push, pull_request]
 
 jobs:
   lint:
-    runs-on: windows-latest # ubuntu-latest
+    runs-on: [windows-latest, ubuntu-latest]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
@@ -26,11 +26,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]  # ubuntu-latest, macos-latest,
+        os: [windows-latest, ubuntu-latest]]  # ubuntu-latest, macos-latest,
         python-version: ["3.9", "3.10"] # "3.7","3.8",
-        exclude:
-          - os: windows-latest
-            python-version: 3.9
+#        exclude:
+#          - os: windows-latest
+#            python-version: 3.9
 #          - os: macos-latest
 #            python-version: 3.7
 #          - os: macos-latest
