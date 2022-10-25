@@ -7,7 +7,6 @@ from os.path import join
 import appdirs
 
 from datashuttle.datashuttle import DataShuttle
-from datashuttle.utils_mod import rclone_utils
 
 
 def setup_project_default_configs(
@@ -16,9 +15,6 @@ def setup_project_default_configs(
     remote_path=False,
 ):
     """"""
-    if not rclone_utils.check_rclone_exists():
-        rclone_utils.download_rclone()
-
     delete_project_if_it_exists(project_name)
 
     warnings.filterwarnings("ignore")
@@ -45,11 +41,6 @@ def setup_project_default_configs(
         delete_all_dirs_in_remote_path(project)
 
     return project
-
-
-def check_and_download_rclone():
-    if not rclone_utils.check_rclone_exists():
-        rclone_utils.download_rclone()
 
 
 def glob_basenames(search_path, recursive=False):
