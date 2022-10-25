@@ -16,12 +16,13 @@ class TestMakeDirs:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
         """
-        Create a project with default configs loaded. This makes a fresh project
-        for each function, saved in the appdir path for platform independent and to
-        avoid path setup on new machine.
+        Create a project with default configs loaded.
+        This makes a fresh project for each function,
+        saved in the appdir path for platform independent
+        and to avoid path setup on new machine.
 
-        Ensure change dir at end of session otherwise it is not possible
-        to delete project.
+        Ensure change dir at end of session otherwise
+        it is not possible to delete project.
         """
         test_project_name = "test_make_dirs"
 
@@ -43,19 +44,16 @@ class TestMakeDirs:
     )
     def test_process_names_bad_input(self, input, prefix):
         """
-        Test that names passed in incorrect type (not str, list) raise appropriate error.
+        Test that names passed in incorrect type
+        (not str, list) raise appropriate error.
         """
-        exception_was_raised = False
-        try:
+        with pytest.raises(BaseException) as e:
             utils.process_names(input, prefix)
-        except BaseException as e:
-            assert (
-                "Ensure subject and session names are list of strings, or string"
-                == str(e)
-            )
-            exception_was_raised = True
 
-        assert exception_was_raised
+        assert (
+            "Ensure subject and session names are "
+            "list of strings, or string" == str(e)
+        )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_names_duplicate_ele(self, prefix):
@@ -63,17 +61,13 @@ class TestMakeDirs:
         Test that appropriate error is raised when duplicate name
         is passed to process_names().
         """
-        exception_was_raised = False
-        try:
+        with pytest.raises(BaseException) as e:
             utils.process_names(["1", "2", "3", "3", "4"], prefix)
-        except BaseException as e:
-            assert (
-                "Subject and session names but all be unqiue (i.e. there are no duplicates in list input)"
-                == str(e)
-            )
-        exception_was_raised = True
 
-        assert exception_was_raised
+        assert (
+            "Subject and session names but all be unqiue "
+            "(i.e. there are no duplicates in list input)" == str(e)
+        )
 
     def test_process_names_prefix(self, project):
         """
@@ -180,8 +174,8 @@ class TestMakeDirs:
 
     def test_custom_directory_names(self, project):
         """
-        Change directory names to custom (non-default) and ensure they are made
-        correctly.
+        Change directory names to custom (non-default) and
+        ensure they are made correctly.
         """
         # Change directory names to custom names
         project._ses_dirs["ephys"].name = "change_ephys"
@@ -236,7 +230,8 @@ class TestMakeDirs:
 
     def test_make_sub_dir_with_ses_no_tree(self, project):
         """
-        Make ses directory (in a sub dir) only, and check no lower level dirs exist
+        Make ses directory (in a sub dir) only, and check no
+        lower level dirs exist
         """
         project.make_sub_dir("ephys", "001", "001", make_ses_tree=False)
         ses_path = join(
@@ -258,8 +253,9 @@ class TestMakeDirs:
 
     def test_default_sub_prefix(self, project):
         """
-        Change the default subject prefix and check dirs are created correctly.
-        Note this is very similar to test_default_ses_prefix(), but trying to combine
+        Change the default subject prefix and check dirs are
+        created correctly. Note this is very similar to
+        test_default_ses_prefix(), but trying to combine
         made the tests very difficult to follow.
         """
         project.update_config("sub_prefix", "edited_sub_prefix_")
@@ -332,7 +328,8 @@ class TestMakeDirs:
 
     def test_date_flags_in_session(self, project):
         """
-        Check that @DATE is converted into current date in generated directory names
+        Check that @DATE is converted into current date
+        in generated directory names
         """
         date, time_ = self.get_formatted_date_and_time()
 
@@ -349,7 +346,8 @@ class TestMakeDirs:
 
     def test_datetime_flag_in_session(self, project):
         """
-        Check that @DATETIME is converted to datetime in generated directory names
+        Check that @DATETIME is converted to datetime
+        in generated directory names
         """
         date, time_ = self.get_formatted_date_and_time()
 

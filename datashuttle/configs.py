@@ -27,19 +27,22 @@ class Configs(UserDict):
         if self["ssh_to_remote"]:
             if not self["remote_path_ssh"]:
                 utils.raise_error(
-                    "ssh to remote is on but remote_path_ssh has not been set."
+                    "ssh to remote is on but remote_path_ssh "
+                    "has not been set."
                 )
         else:
             if not self["remote_path_local"]:
                 utils.raise_error(
-                    "ssh to remote is off but remote_path_local has not been set."
+                    "ssh to remote is off but remote_path_local "
+                    "has not been set."
                 )
 
         # Check bad remote path format
         if self.get_remote_path().as_posix()[0] == "~":
-        
+
             utils.raise_error(
-                "remote_path must contain the full directory path with no ~ syntax"
+                "remote_path must contain the full directory path "
+                "with no ~ syntax"
             )
 
         # Check SSH settings
@@ -47,25 +50,27 @@ class Configs(UserDict):
             not self["remote_host_id"] or not self["remote_host_username"]
         ):
             utils.raise_error(
-                "ssh to remote set but no remote_host_id or remote_host_username not"
-                " provided."
+                "ssh to remote set but no remote_host_id or "
+                "remote_host_username not provided."
             )
 
         if self["ssh_to_remote"] is False and (
             self["remote_host_id"] or self["remote_host_username"]
         ):
             warnings.warn(
-                "SSH to remote is false, but remote_host_id or remote_host_username"
-                " provided."
+                "SSH to remote is false, but remote_host_id or "
+                "remote_host_username provided."
             )
 
     def update_an_entry(self, option_key: str, new_info: Union[str, bool]):
         """
-        Convenience function to update individual entry of configuration file.
-        The config file, and currently loaded self.cfg will be updated.
+        Convenience function to update individual entry of configuration
+        file. The config file, and currently loaded self.cfg will be
+        updated.
 
-        In case an update is breaking (e.g. use ssh_to_remote but no remote_host_id),
-        set to new value, test validity and revert if breaking change.
+        In case an update is breaking (e.g. use ssh_to_remote but
+        no remote_host_id), set to new value, test validity and
+        revert if breaking change.
 
         :param option_key: dictionary key of the option to change,
                            see make_config_file()
@@ -91,11 +96,13 @@ class Configs(UserDict):
             if option_key == "ssh_to_remote":
                 if new_info:
                     utils.message_user(
-                        f"SSH will be used to connect to project directory at: {self.get_remote_path(for_user=True)}"
+                        f"SSH will be used to connect to project directory at:"
+                        f" {self.get_remote_path(for_user=True)}"
                     )
                 else:
                     utils.message_user(
-                        f"Local filesystem will be used for project directory at: {self.get_remote_path(for_user=True)}"
+                        f"Local filesystem will be used for project "
+                        f"directory at: {self.get_remote_path(for_user=True)}"
                     )
         else:
             self[option_key] = original_value
@@ -108,7 +115,7 @@ class Configs(UserDict):
             self.check_dict_values_and_inform_user()
             return True
 
-        except BaseException as e: 
+        except BaseException as e:
             warnings.warn(f"WARNING: {e}")
             return False
 
@@ -154,7 +161,7 @@ class Configs(UserDict):
         """
         Config paths are stored as str in the .yaml but used as Path
         in the module, so make the conversion here.
-        
+
         :param config_dict:DataShuttle.cfg dict of configs
         :param direction: "path_to_str" or "str_to_path"
         """

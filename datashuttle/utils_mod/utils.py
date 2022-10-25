@@ -24,16 +24,20 @@ def make_ses_directory_tree(
     base_path: str,
 ):
     """
-    Make the directory tree within a session. This is dependent on the experiment_type (e.g. "ephys")
-    dir and defined in the subdirs field on the Directory class, in self._ses_dirs.
+    Make the directory tree within a session. This is dependent on
+    the experiment_type (e.g. "ephys") dir and defined in the
+    subdirs field on the Directory class, in self._ses_dirs.
 
-    All subdirs will be made recursively, unless the .used attribute on the Directory class is
-    False. This will also stop and subdirs of the subdir been created.
+    All subdirs will be made recursively, unless the .used
+    attribute on the Directory class is False. This will also
+    stop and subdirs of the subdir been created.
 
-    :param sub:                    subject name to make directory tree in
+    :param sub:                    subject name to make
+                                   directory tree in
     :param ses:                    session name to make directory tree in
-    :param experiment_type_key:    experiment_type_key (e.g. "ephys") to make directory tree in.
-                                   Note this defines the subdirs created.
+    :param experiment_type_key:    experiment_type_key (e.g. "ephys") to
+                                   make directory tree in. Note this defines
+                                   the subdirs created.
     """
     if experiment_type_dir.used and experiment_type_dir.subdirs:
         recursive_make_subdirs(
@@ -47,12 +51,16 @@ def recursive_make_subdirs(
     directory: Directory, path_to_dir: list, base_path: Path
 ):
     """
-    Function to recursively create all directories in a Directory .subdirs field.
+    Function to recursively create all directories
+    in a Directory .subdirs field.
 
-    i.e. this will first create a directory based on the .name attribute. It will then
-    loop through all .subdirs, and do the same - recursively looping through subdirs
-    until the entire directory tree is made. If .used attribute on a directory is False,
-    that directory and all subdirs of the directory will not be made.
+    i.e. this will first create a directory based on
+    the .name attribute. It will then loop through all
+    .subdirs, and do the same - recursively looping
+    through subdirs  until the entire directory tree
+    is made. If .used attribute on a directory is False,
+    that directory and all subdirs of the directory will
+    not be made.
 
     :param directory:
     :param path_to_dir:
@@ -69,7 +77,8 @@ def recursive_make_subdirs(
 
 def make_dirs(paths: Union[str, list]):
     """
-    For path or list of path, make them if do not already exist.
+    For path or list of path, make them if
+    do not already exist.
     """
     if isinstance(paths, str):
         paths = [paths]
@@ -79,13 +88,16 @@ def make_dirs(paths: Union[str, list]):
             os.makedirs(path_)
         else:
             warnings.warn(
-                "The following directory was not made because it already exists"
+                "The following directory was not made "
+                "because it already exists"
                 f" {path_}"
             )
+
 
 def make_datashuttle_metadata_folder(full_path):
     meta_folder_path = full_path + "/.datashuttle_meta"
     make_dirs(meta_folder_path)
+
 
 def search_filesystem_path_for_directories(search_path_with_prefix: str):
     """
@@ -97,10 +109,12 @@ def search_filesystem_path_for_directories(search_path_with_prefix: str):
         if os.path.isdir(file_or_dir):
             all_dirnames.append(os.path.basename(file_or_dir))
     return all_dirnames
-    
+
+
 # --------------------------------------------------------------------------------------------------------------------
 # SSH
 # --------------------------------------------------------------------------------------------------------------------
+
 
 def connect_client(
     client: paramiko.SSHClient,
@@ -125,9 +139,11 @@ def connect_client(
         )
     except Exception:
         raise_error(
-            "Could not connect to server. Ensure that \n1) You are on VPN network"
-            f" if required. \n2) The remote_host_id: {cfg['remote_host_id']} is"
-            " correct.\n3) The remote username:"
+            "Could not connect to server. Ensure that \n"
+            "1) You are on VPN network if required. \n"
+            "2) The remote_host_id: {cfg['remote_host_id']} is"
+            " correct.\n"
+            "3) The remote username:"
             f" {cfg['remote_host_username']}, and password are correct."
         )
 
@@ -142,7 +158,8 @@ def add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key):
         client.exec_command("mkdir -p ~/.ssh/")
         client.exec_command(
             # double >> for concatenate
-            f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys'
+            f'echo "{key.get_name()} {key.get_base64()}" '
+            f">> ~/.ssh/authorized_keys"
         )
         client.exec_command("chmod 644 ~/.ssh/authorized_keys")
         client.exec_command("chmod 700 ~/.ssh/")
@@ -156,9 +173,10 @@ def verify_ssh_remote_host(remote_host_id, hostkeys):
 
     message_user(
         "The host key is not cached for this server:"
-        f" {remote_host_id}.\nYou have no guarantee that the server is"
-        f" the computer you think it is.\nThe server's {key.get_name()} key"
-        f" fingerprint is: {key.get_base64()}\nIf you trust this host, to connect"
+        f" {remote_host_id}.\nYou have no guarantee "
+        f"that the server is the computer you think it is.\n"
+        f"The server's {key.get_name()} key fingerprint is: "
+        f"{key.get_base64()}\nIf you trust this host, to connect"
         " and cache the host key, press y: "
     )
     input_ = input()
@@ -238,9 +256,11 @@ def raise_error(message: str):
 
 def get_appdir_path(project_name):
     """
-    It is not possible to write to programfiles in windows from app without admin permissions
-    However if admin permission given drag and drop dont work, and it is not good practice.
-    Use appdirs module to get the AppData cross-platform and save / load all files form here .
+    It is not possible to write to programfiles in windows
+    from app without admin permissions. However if admin
+    permission given drag and drop dont work, and it is
+    not good practice. Use appdirs module to get the
+    AppData cross-platform and save / load all files form here .
     """
     base_path = Path(
         os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
@@ -254,9 +274,10 @@ def get_appdir_path(project_name):
 
 def process_names(names: Union[list, str], prefix: str, is_ses=False):
     """
-    Check a single or list of input session or subject names. First check the type is correct,
-    next prepend the prefix sub- or ses- to entries that do not have the relevant prefix. Finally,
-    check for duplicates.
+    Check a single or list of input session or subject names.
+    First check the type is correct, next prepend the prefix
+    sub- or ses- to entries that do not have the relevant prefix.
+    Finally, check for duplicates.
 
     :param names: str or list containing sub or ses names (e.g. to make dirs)
     :param prefix: "sub" or "ses" - this defines the prefix checks.

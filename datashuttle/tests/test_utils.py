@@ -9,6 +9,7 @@ import appdirs
 from datashuttle.datashuttle.datashuttle import DataShuttle
 from datashuttle.utils_mod import rclone_utils
 
+
 def setup_project_default_configs(
     project_name,
     local_path=False,
@@ -24,9 +25,7 @@ def setup_project_default_configs(
 
     project = DataShuttle(project_name)
 
-    project._setup_remote_as_rclone_target(
-        "local"
-    )
+    project._setup_remote_as_rclone_target("local")
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
     project.make_config_file(*default_configs.values())
@@ -51,6 +50,7 @@ def setup_project_default_configs(
 def check_and_download_rclone():
     if not rclone_utils.check_rclone_exists():
         rclone_utils.download_rclone()
+
 
 def glob_basenames(search_path, recursive=False):
     paths_ = glob.glob(search_path, recursive=recursive)
@@ -91,8 +91,9 @@ def get_test_config_arguments_dict(
     set_as_defaults=None, required_arguments_only=None
 ):
     """
-    Retrieve configs, either the required configs (for project.make_config_file()),
-    all configs (default) or non-default configs. Note that default configs here
+    Retrieve configs, either the required configs
+    (for project.make_config_file()), all configs (default)
+    or non-default configs. Note that default configs here
     are the expected default arguments in project.make_config_file().
     """
     dict_ = {
@@ -151,22 +152,29 @@ def check_directory_tree_is_correct(
     project, base_dir, subs, sessions, directory_used
 ):
     """
-    Automated test that directories are made based on the structure specified on project itself.
+    Automated test that directories are made based
+    on the  structure specified on project itself.
 
-    Cycle through all experiment type (defined in project._ses_dirs()), sub, sessions
-    and check that the expected file exists. For subdirs, recursively check all exist.
+    Cycle through all experiment type (defined in
+    project._ses_dirs()), sub, sessions and check that
+    the expected file exists. For  subdirs, recursively
+    check all exist.
 
-    Directories in which directory_used[key] (where key is the cannoincal dict
-    key in project._ses_dirs()) is not used are expected not to be made, and this is checked.
+    Directories in which directory_used[key] (where key
+    is the cannoincal dict key in project._ses_dirs())
+    is not used are expected  not to be made, and this
+     is checked.
 
-    The directory_used variable must be passed so we dont rely on project settings itself,
+    The directory_used variable must be passed so we dont
+    rely on project settings itself,
     as this doesn't explicitly test this.
     """
     for key, directory in project._ses_dirs.items():
 
         assert key in directory_used.keys(), (
             "Key not found in directory_used. "
-            "Update directory used and hard-coded tests: test_custom_directory_names(), test_explicitly_session_list()"
+            "Update directory used and hard-coded tests: "
+            "test_custom_directory_names(), test_explicitly_session_list()"
         )
 
         if check_directory_is_used(base_dir, directory, directory_used, key):
@@ -236,7 +244,7 @@ def check_and_cd_dir(path_):
     print(f"checked: {path_}")  # -s flag
 
 
-def get_default_directory_used():  # TODO: need to find a way to know to update this when new ones added
+def get_default_directory_used():
     return {
         "ephys": True,
         "ephys_behav": True,

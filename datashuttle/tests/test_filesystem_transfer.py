@@ -1,3 +1,4 @@
+import copy
 import os
 from os.path import join
 
@@ -5,22 +6,23 @@ import pytest
 
 from datashuttle.tests import test_utils
 
+
 class TestFileTransfer:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
         """
-        Create a project with default configs loaded. This makes a fresh project
-        for each function, saved in the appdir path for platform independent and to
-        avoid path setup on new machine.
+        Create a project with default configs loaded.
+        This makes a fresh project for each function,
+        saved in the appdir path for platform independent
+        and to avoid path setup on new machine.
 
-        Ensure change dir at end of session otherwise it is not possible
-        to delete project.
+        Ensure change dir at end of session otherwise it
+        is not possible to delete project.
         """
         test_project_name = "test_filesystem_transfer"
 
         project = test_utils.setup_project_default_configs(
             test_project_name,
-
             local_path=tmp_path / test_project_name / "local",
             remote_path=tmp_path / test_project_name / "remote",
         )
@@ -33,13 +35,13 @@ class TestFileTransfer:
     # Tests
     # ----------------------------------------------------------------------------------------------------------
 
-    @pytest.mark.parametrize(
-        "upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_structure(
         self, project, upload_or_download
     ):
         """
-        First make a project (folders only) locally. Next upload this to the remote path
+        First make a project (folders only) locally.
+        Next upload this to the remote path
         and check all folders are uploaded correctly.
         """
         subs, sessions = self.get_default_sub_sessions_to_test()
@@ -108,9 +110,7 @@ class TestFileTransfer:
             ["behav", "ephys", "imaging", "histology"],
         ],
     )
-    @pytest.mark.parametrize(
-        "upload_or_download", ["upload" "download"]
-    )
+    @pytest.mark.parametrize("upload_or_download", ["upload" "download"])
     def test_transfer_empty_folder_specific_subs(
         self,
         project,
@@ -252,12 +252,11 @@ class TestFileTransfer:
 
     def handle_upload_or_download(self, project, upload_or_download):
         """
-        To keep things consistent and avoid the pain of writing files over SSH,
-        to test download just swap the remote and local server (so things are
-        still transferred from local machine to remote, but using the download function).
+        To keep things consistent and avoid the pain of writing
+        files over SSH, to test download just swap the remote
+        and local server (so things are still transferred from
+        local machine to remote, but using the download function).
         """
-        import copy
-
         local_path = copy.deepcopy(project.get_local_path())
         remote_path = copy.deepcopy(project.get_remote_path())
 
