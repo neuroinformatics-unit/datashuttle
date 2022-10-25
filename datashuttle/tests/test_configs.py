@@ -35,9 +35,11 @@ class TestConfigs:
     def test_warning_on_startup(self):
         """
         When no configs have been set, a warning should be shown that
-        the config has not been initialized.
+        the config has not been initialized. Need to download
+        Rclone first to ensure input() is not called.
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
+        test_utils.check_and_download_rclone()
 
         with pytest.warns() as w:
             DataShuttle(TEST_PROJECT_NAME)
