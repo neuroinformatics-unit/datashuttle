@@ -53,14 +53,16 @@ jobs:
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
+          auto-update-conda: true
           auto-activate-base: true
           activate-environment: ""
+          python-version: ${{ matrix.python-version }}
       - name: Install RClone
         run: conda install -c conda-forge rclone
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
+#      - name: Set up Python
+ #       uses: actions/setup-python@v2
+  #      with:
+   #       python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
