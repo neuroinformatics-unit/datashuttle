@@ -42,11 +42,11 @@ jobs:
           python-version: ${{ matrix.python-version }}
           auto-update-conda: true
           channels: conda-forge
-          activate-environment: "my-test-env"
+          activate-environment: true
       - name: Install RClone
-       run: |
-        conda activate my-test-env
-        conda install -c conda-forge rclone
+        run: |
+          conda activate true
+          conda install -c conda-forge rclone
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
