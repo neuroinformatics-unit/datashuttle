@@ -20,8 +20,6 @@ class TestConfigs:
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
-        test_utils.check_and_download_rclone()
-
         warnings.filterwarnings("ignore")
         project = DataShuttle(TEST_PROJECT_NAME)
         warnings.filterwarnings("default")
