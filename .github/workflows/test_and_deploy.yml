@@ -7,7 +7,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-latest, ubuntu-latest ]  # ubuntu-latest, macos-latest,
+        os: [windows-latest, ubuntu-latest]  # ubuntu-latest, macos-latest,
         python-version: [ "3.9", "3.10" ] # "3.7","3.8",
     steps:
       - uses: actions/checkout@v2
@@ -30,7 +30,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]  # ubuntu-latest, macos-latest,
+        os: [windows-latest]  # ubuntu-latest, macos-latest,
         python-version: ["3.9", "3.10"] # "3.7","3.8",
 #        exclude:
 #          - os: windows-latest
