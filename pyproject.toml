@@ -15,7 +15,6 @@ authors = [
 dependencies = [
     "appdirs",
     "paramiko",
-    "pytest",
     "PyYAML",
     "requests",
     "rich",
