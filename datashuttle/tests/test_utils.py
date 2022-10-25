@@ -7,7 +7,7 @@ from os.path import join
 import appdirs
 
 from datashuttle.datashuttle.datashuttle import DataShuttle
-from datashuttle.utils_mod import rclone_utils
+from datashuttle.datashuttle.utils_mod import rclone_utils
 
 
 def setup_project_default_configs(

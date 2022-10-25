@@ -6,8 +6,8 @@ from os.path import join
 
 import pytest
 
-from datashuttle.tests import test_utils
-from datashuttle.utils_mod import utils
+from datashuttle.datashuttle.tests import test_utils
+from datashuttle.datashuttle.utils_mod import utils
 
 
 class TestMakeDirs:
@@ -52,7 +52,7 @@ class TestMakeDirs:
 
         assert (
             "Ensure subject and session names are "
-            "list of strings, or string" == str(e)
+            "list of strings, or string" == str(e.value)
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
@@ -66,7 +66,7 @@ class TestMakeDirs:
 
         assert (
             "Subject and session names but all be unqiue "
-            "(i.e. there are no duplicates in list input)" == str(e)
+            "(i.e. there are no duplicates in list input)" == str(e.value)
         )
 
     def test_process_names_prefix(self, project):

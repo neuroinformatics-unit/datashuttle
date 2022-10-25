@@ -6,7 +6,7 @@ import pytest
 import yaml
 
 from datashuttle.datashuttle.datashuttle import DataShuttle
-from datashuttle.tests import test_utils
+from datashuttle.datashuttle.tests import test_utils
 
 TEST_PROJECT_NAME = "test_configs"
 

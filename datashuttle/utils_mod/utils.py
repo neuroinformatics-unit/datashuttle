@@ -10,7 +10,7 @@ from typing import Union
 import appdirs
 import paramiko
 
-from datashuttle.utils_mod.directory_class import Directory
+from datashuttle.datashuttle.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils

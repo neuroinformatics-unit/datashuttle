@@ -6,7 +6,7 @@ from typing import Union
 
 import yaml
 
-from datashuttle.utils_mod import utils
+from datashuttle.datashuttle.utils_mod import utils
 
 
 class Configs(UserDict):
