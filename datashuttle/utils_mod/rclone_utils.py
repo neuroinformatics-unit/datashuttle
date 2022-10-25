@@ -5,7 +5,7 @@ import subprocess
 import warnings
 from pathlib import Path
 
-from datashuttle._vendored import bgatlasapi
+from ..datashuttle._vendored import bg_atlasapi
 from datashuttle.utils_mod import utils
 
 def call_rclone(command : str, silent : bool = False):
