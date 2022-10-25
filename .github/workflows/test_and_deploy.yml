@@ -55,16 +55,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           auto-update-conda: true
-#          auto-activate-base: true
           channels: conda-forge
           activate-environment: "my-test-env"
-
 #      - name: Set up Python
  #       uses: actions/setup-python@v2
   #      with:
    #       python-version: ${{ matrix.python-version }}
-
-      -name: Set up Conda
+      - name: Set up Conda
        run: |
         conda activate my-test-env
         conda install -c conda-forge rclone
