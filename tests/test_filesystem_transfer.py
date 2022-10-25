@@ -3,8 +3,7 @@ import os
 from os.path import join
 
 import pytest
-
-from datashuttle.datashuttle.tests import test_utils
+import test_utils
 
 
 class TestFileTransfer:
