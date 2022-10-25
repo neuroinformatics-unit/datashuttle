@@ -4,7 +4,7 @@ from os.path import join
 
 import pytest
 
-from datashuttle.tests import test_utils
+from datashuttle.datashuttle.tests import test_utils
 
 
 class TestFileTransfer:
