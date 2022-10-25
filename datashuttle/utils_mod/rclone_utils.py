@@ -5,18 +5,18 @@ import subprocess
 import warnings
 from pathlib import Path
 
-from ..datashuttle._vendored import bg_atlasapi
 from datashuttle.utils_mod import utils
 
-def call_rclone(command : str, silent : bool = False):
+from ..datashuttle._vendored import bg_atlasapi
+
+
+def call_rclone(command: str, silent: bool = False):
     """
     :param command: Rclone command to be run
     :param silent: if True, do not output anything to stdout.
     :return:
     """
-    command = (
-        get_rclone_exe_path()[0] + " " + command
-    )
+    command = get_rclone_exe_path()[0] + " " + command
     if silent:
         return_code = subprocess.run(
             command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT
@@ -60,7 +60,8 @@ def check_rclone_exists():
 
     if len(exe_path) not in [0, 1]:
         raise BaseException(
-            f"There are two rclone.exe files in the rclone download directory.\n"
+            f"There are two rclone.exe files in the "
+            f"rclone download directory.\n"
             f"Please  check {get_rclone_dir(for_user=True)}"
         )
     if not any(exe_path):
@@ -80,8 +81,8 @@ def download_rclone():
 
     if os.name == "nt":
         zip_file_path = Path(get_rclone_dir().as_posix() + "/rclone.zip")
-        bgatlasapi.retrieve_over_http(
-            "https://downloads.rclone.org/v1.59.2/rclone-v1.59.2-windows-amd64.zip",
+        bg_atlasapi.retrieve_over_http(
+            "https://downloads.rclone.org/v1.59.2/rclone-v1.59.2-windows-amd64.zip",  # noqa: E501
             zip_file_path,
         )
 
@@ -104,7 +105,8 @@ def delete_rclone_dir():
         shutil.rmtree(get_rclone_dir().as_posix())
     except PermissionError:
         warnings.warn(
-            f"Could not delete entire Rclone directory at {get_rclone_dir(for_user=True)}.\n"
+            f"Could not delete entire Rclone "
+            f"directory at {get_rclone_dir(for_user=True)}.\n"
             f"Continuing Anyway."
         )
 
@@ -119,7 +121,8 @@ def prompt_rclone_download_if_does_not_exist():
     """
     if not check_rclone_exists():
         utils.message_user(
-            f"rclone download is not found at {get_rclone_dir(for_user=True)}\n"
+            f"rclone download is not found at "
+            f"{get_rclone_dir(for_user=True)}\n"
             f"Press y to begin download."
         )
         input_ = input()
@@ -136,6 +139,7 @@ def prompt_rclone_download_if_does_not_exist():
             delete_rclone_dir()
             download_rclone()
 
+
 def setup_remote_as_rclone_target(
     cfg, local_or_ssh, rclone_config_name, ssh_key_path
 ):
@@ -148,7 +152,7 @@ def setup_remote_as_rclone_target(
     the config contains no further information.
 
     For SSH, this contains information for
-    connecting to remote with SSH. 
+    connecting to remote with SSH.
     """
     if local_or_ssh == "local":
         call_rclone(f"config create {rclone_config_name} local")

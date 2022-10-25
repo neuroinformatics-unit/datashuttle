@@ -30,8 +30,11 @@ dev = [
     "bump2version",
     "pre-commit",
     "flake8",
+    "isort",
 ]
 
+[tool.isort]
+profile = "black"
 
 [tool.black]
 target-version = ['py36', 'py37', 'py38']

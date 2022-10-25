@@ -5,9 +5,8 @@ import warnings
 import pytest
 import yaml
 
-
-from datashuttle.tests import test_utils
 from datashuttle.datashuttle.datashuttle import DataShuttle
+from datashuttle.tests import test_utils
 
 TEST_PROJECT_NAME = "test_configs"
 
@@ -46,7 +45,8 @@ class TestConfigs:
         assert len(w) == 1
         assert (
             str(w[0].message)
-            == "Configuration file has not been initialized. Use make_config_file() to setup before continuing."
+            == "Configuration file has not been initialized. "
+            "Use make_config_file() to setup before continuing."
         )
 
     def test_fail_to_pass_remote_path(self, project):
@@ -82,8 +82,8 @@ class TestConfigs:
         assert len(w) == 2
 
         assert (
-            str(w[0].message)
-            == "WARNING: ssh to remote is off but remote_path_local has not been set."
+            str(w[0].message) == "WARNING: ssh to remote is off but "
+            "remote_path_local has not been set."
         )
 
         assert str(w[1].message) == "ssh_to_remote was not updated"
@@ -95,7 +95,9 @@ class TestConfigs:
         Check that program will assert if not all ssh options
         are set on make_config_file
         """
-        with pytest.raises(BaseException) as e:  # TODO: checkk what the original exceptions were
+        with pytest.raises(
+            BaseException
+        ) as e:  # TODO: checkk what the original exceptions were
             project.make_config_file(
                 "test_local_path", True, remote_path_local="local_path"
             )
@@ -139,7 +141,8 @@ class TestConfigs:
 
                 assert (
                     str(w[0].message)
-                    == "WARNING: ssh to remote set but no remote_host_id or remote_host_username not provided."
+                    == "WARNING: ssh to remote set but no remote_host_id "
+                    "or remote_host_username not provided."
                 )
 
                 assert str(w[1].message) == "ssh_to_remote was not updated"
@@ -244,8 +247,9 @@ class TestConfigs:
         *kwargs,
     ):
         """
-        Core function for checking the config against provided configs (kwargs).
-        Open the config.yaml file and check the config values stored there,
+        Core function for checking the config against
+        provided configs (kwargs). Open the config.yaml file
+        and check the config values stored there,
         and in project.cfg, against the provided configs.
 
         Paths are stored as pathlib in the cfg but str in the .yaml

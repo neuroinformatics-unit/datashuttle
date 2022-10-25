@@ -8,7 +8,6 @@ import paramiko
 
 from datashuttle import configs
 from datashuttle.utils_mod import rclone_utils, utils
-
 from datashuttle.utils_mod.decorators import requires_ssh_configs
 from datashuttle.utils_mod.directory_class import Directory
 
@@ -19,21 +18,28 @@ from datashuttle.utils_mod.directory_class import Directory
 
 class DataShuttle:
     """
-    Main datashuttle class for data organisation and transfer in BIDS-style project directory.
-    The expected organisation is a central repository on a remote machine ('remote') that
-    contains all project data. This is connected to multiple local machines ('local') which
-    each contain a subset of the full project (e.g. machine for electrophysiology collection,
-    machine for behavioural connection, machine for analysis for specific data etc.).
+    Main datashuttle class for data organisation and transfer in
+    BIDS-style project directory. The expected organisation is a
+    central repository on a remote machine ('remote') that contains
+    all project data. This is connected to multiple local machines
+    ('local') which each contain a subset of the full project (e.g.
+    machine for electrophysiology collection, machine for behavioural
+    connection, machine for analysis for specific data etc.).
 
-    On first use on a new profile, show warning prompting to set configurations with the function
-    make_config_file().
+    On first use on a new profile, show warning prompting to set
+    configurations with the function make_config_file().
 
-    For transferring data between a remote data storage with SSH, use setup setup_ssh_connection_to_remote_server().
-    This will allow you to check the server Key, add host key to profile if accepted, and setup ssh key pair.
+    For transferring data between a remote data storage with SSH,
+    use setup setup_ssh_connection_to_remote_server().
+    This will allow you to check the server Key, add host key to
+    profile if accepted, and setup ssh key pair.
 
-    INPUTS: project_name - The project name to use the software under. Each project has a root directory
-                           that is specified during initial setup. Profile files are stored in the Appdir directory
-                           (platform specific). Use get_appdir_path() to retrieve the path.
+    INPUTS: project_name - The project name to use the software under.
+                           Each project has a root directory that is
+                           specified during initial setup. Profile files
+                           are stored in the Appdir directory
+                           (platform specific). Use get_appdir_path()
+                           to retrieve the path.
     """
 
     def __init__(self, project_name: str):
@@ -54,54 +60,57 @@ class DataShuttle:
         rclone_utils.prompt_rclone_download_if_does_not_exist()
 
     def set_attributes_after_config_load(self):
-            """
-            Once config file is loaded, update all private attributes according to config contents.
-    
-            The _ses_dirs contains the entire directory tree for each data type.
-            The structure is that the top-level directory (e.g. ephys, behav, microscopy) are found in
-            the project root. Then sub- and ses- directory are created in this project root, and
-            all subdirs are created at the session level.
-            """
-            self._ssh_key_path = self._join(
-                "appdir", self.project_name + "_ssh_key"
-            )
-            self._hostkeys = self._join("appdir", "hostkeys")
-    
-            self._ses_dirs = {
-                "ephys": Directory(
-                    "ephys",
-                    self.cfg["use_ephys"],
-                    subdirs={
-                        "ephys_behav": Directory(
-                            "behav",
-                            self.cfg["use_ephys_behav"],
-                            subdirs={
-                                "ephys_behav_camera": Directory(
-                                    "camera",
-                                    self.cfg["use_ephys_behav_camera"],
-                                ),
-                            },
-                        ),
-                    },
-                ),
-                "behav": Directory(
-                    "behav",
-                    self.cfg["use_behav"],
-                    subdirs={
-                        "behav_camera": Directory(
-                            "camera", self.cfg["use_behav_camera"]
-                        ),
-                    },
-                ),
-                "imaging": Directory(
-                    "imaging",
-                    self.cfg["use_imaging"],
-                ),
-                "histology": Directory(
-                    "histology",
-                    self.cfg["use_histology"],
-                ),
-            }
+        """
+        Once config file is loaded, update all private attributes
+        according to config contents.
+
+        The _ses_dirs contains the entire directory tree for each
+        data type. The structure is that the top-level directory
+        (e.g. ephys, behav, microscopy) are found in
+        the project root. Then sub- and ses- directory are created
+        in this project root, and all subdirs are created at the
+        session level.
+        """
+        self._ssh_key_path = self._join(
+            "appdir", self.project_name + "_ssh_key"
+        )
+        self._hostkeys = self._join("appdir", "hostkeys")
+
+        self._ses_dirs = {
+            "ephys": Directory(
+                "ephys",
+                self.cfg["use_ephys"],
+                subdirs={
+                    "ephys_behav": Directory(
+                        "behav",
+                        self.cfg["use_ephys_behav"],
+                        subdirs={
+                            "ephys_behav_camera": Directory(
+                                "camera",
+                                self.cfg["use_ephys_behav_camera"],
+                            ),
+                        },
+                    ),
+                },
+            ),
+            "behav": Directory(
+                "behav",
+                self.cfg["use_behav"],
+                subdirs={
+                    "behav_camera": Directory(
+                        "camera", self.cfg["use_behav_camera"]
+                    ),
+                },
+            ),
+            "imaging": Directory(
+                "imaging",
+                self.cfg["use_imaging"],
+            ),
+            "histology": Directory(
+                "histology",
+                self.cfg["use_histology"],
+            ),
+        }
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Directory Makers
@@ -115,15 +124,21 @@ class DataShuttle:
         make_ses_tree: bool = True,
     ):
         """
-        Make a subject directory in the data type directory. By default, it will create
-        the entire directory tree for this subject.
+        Make a subject directory in the data type directory. By default,
+        it will create the entire directory tree for this subject.
 
-        :param experiment_type: The experiment_type to make the directory in (e.g. "ephys", "behav",
-                                "microscopy"). If "all" is selected, directory will be created for all data type.
-        :param sub_names:       subject name / list of subject names to make within the directory (if not
-                                already, these will be prefixed with sub/ses identifier)
-        :param ses_names:       session names (same format as subject name). If no session is provided, defaults to "ses-001".
-        :param make_ses_tree:   option to make the entire session tree under the subject directory. If False, the subject
+        :param experiment_type: The experiment_type to make the directory
+                                in (e.g. "ephys", "behav", "histology"). If
+                                "all" is selected, directory will be created
+                                for all data type.
+        :param sub_names:       subject name / list of subject names to make
+                                within the directory (if not already, these
+                                will be prefixed with sub/ses identifier)
+        :param ses_names:       session names (same format as subject name).
+                                If no session is provided, defaults to
+                                "ses-001".
+        :param make_ses_tree:   option to make the entire session tree under
+                                the subject directory. If False, the subject
                                 directory only will be created.
         """
         sub_names = self._process_names(sub_names, "sub")
@@ -162,16 +177,20 @@ class DataShuttle:
         preview: bool = False,
     ):
         """
-        Upload data from a local machine to the remote project directory.
-        In the case that a file / directory exists on the remote and local, the local will
-        not be overwritten even if the remote file is an older version.
+        Upload data from a local machine to the remote project
+        directory. In the case that a file / directory exists on
+        the remote and local, the local will not be overwritten
+        even if the remote file is an older version.
 
         :param experiment_type: see make_sub_dir()
-        :param sub_names: a list of sub names as accepted in make_sub_dir(). "all" will search for all
-                          sub- directories in the data type directory to upload.
-        :param ses_names: a list of ses names as accepted in make_sub_dir(). "all" will search each
-                          sub- directory for ses- directories and upload all.
-        :param preview: perform a dry-run of upload, to see which files are moved.
+        :param sub_names: a list of sub names as accepted in make_sub_dir().
+                          "all" will search for all sub- directories in the
+                          data type directory to upload.
+        :param ses_names: a list of ses names as accepted in make_sub_dir().
+                          "all" will search each sub- directory for
+                          ses- directories and upload all.
+        :param preview: perform a dry-run of upload, to see which files
+                        are moved.
         """
         self._transfer_sub_ses_data(
             "upload", experiment_type, sub_names, ses_names, preview
@@ -185,12 +204,14 @@ class DataShuttle:
         preview: bool = False,
     ):
         """
-        Download data from the remote project dir to the local computer.
-        In the case that a file / dir exists on the remote and local, the local will
-        not be overwritten even if the remote file is an older version.
+        Download data from the remote project dir to the
+        local computer. In the case that a file / dir
+        exists on the remote and local, the local will
+        not be overwritten even if the remote file is an
+        older version.
 
-        see upload_data() for inputs. "all" arguments will search the remote project
-        for sub / ses to download.
+        see upload_data() for inputs. "all" arguments will
+        search the remote project for sub / ses to download.
         """
         self._transfer_sub_ses_data(
             "download", experiment_type, sub_names, ses_names, preview
@@ -198,11 +219,13 @@ class DataShuttle:
 
     def upload_project_dir_or_file(self, filepath: str, preview: bool = False):
         """
-        Upload an entire directory (including all subdirectories and files) from the local
-        to the remote machine
+        Upload an entire directory (including all subdirectories
+        and files) from the local to the remote machine
 
-        :param filepath: a string containing the filepath to move, relative to the project directory
-        :param preview: preview the transfer (see which files will be transferred without actually transferring)
+        :param filepath: a string containing the filepath to
+                         move, relative to the project directory
+        :param preview: preview the transfer (see which files
+                        will be transferred without actually transferring)
 
         """
         self._move_dir_or_file(filepath, "upload", preview)
@@ -211,8 +234,8 @@ class DataShuttle:
         self, filepath: str, preview: bool = False
     ):
         """
-        Download an entire directory (including all subdirectories and files) from the local
-        to the remote machine.
+        Download an entire directory (including all subdirectories
+        and files) from the local to the remote machine.
 
         see upload_project_dir_or_file() for inputs
         """
@@ -225,15 +248,17 @@ class DataShuttle:
     @requires_ssh_configs
     def setup_ssh_connection_to_remote_server(self):
         """
-        Setup a connection to the remote server using SSH. Assumes the remote_host_id and
-        remote_host_username are set in the configuration file.
+        Setup a connection to the remote server using SSH.
+        Assumes the remote_host_id and remote_host_username
+        are set in the configuration file.
 
-        First, the server key will be displayed, requiring verification of the server ID.
-        This will store the hostkey for all future use.
+        First, the server key will be displayed, requiring
+        verification of the server ID. This will store the
+        hostkey for all future use.
 
-        Next, prompt to input their password for the remote cluster.
-        Once input, SSH private / public key pair will be setup (see _setup_ssh_key()
-        for details).
+        Next, prompt to input their password for the remote
+        cluster. Once input, SSH private / public key pair
+        will be setup (see _setup_ssh_key() for details).
         """
         verified = utils.verify_ssh_remote_host(
             self.cfg["remote_host_id"], self._hostkeys
@@ -248,7 +273,8 @@ class DataShuttle:
         computer (in the Appdir directory). Use this function to generate
         the public key.
 
-        :param filepath: full filepath (inc filename) to write the public key to.
+        :param filepath: full filepath (inc filename) to write the
+                         public key to.
         """
         key = paramiko.RSAKey.from_private_key_file(self._ssh_key_path)
 
@@ -279,30 +305,45 @@ class DataShuttle:
         use_histology: bool = True,
     ):
         """
-        Initialise a config file for using the datashuttle on the local system. Once initialised, these
-        settings will be used each time the datashuttle is opened.
+        Initialise a config file for using the datashuttle on the
+        local system. Once initialised, these settings will be
+        used each time the datashuttle is opened.
 
-        :param local_path:                  path to project dir on local machine
-        :param remote_path_local:           Full filepath to local filesystem (e.g. mounted drive) dir
-        :param remote_path_ssh:             path to project directory on remote machine. If ssh_to_remote is true,
-                                                this should be a full path to remote directory i.e. this cannot
-                                                include ~ home directory syntax, must contain the full path (
-                                                e.g. /nfs/nhome/live/jziminski)
-        :param ssh_to_remote                if true, ssh will be used to connect to remote cluster and
-                                                remote_host_id, remote_host_username must be provided.
-        :param remote_host_id:              address for remote host for ssh connection
-        :param remote_host_username:        username for which to login to remote host.
-        :param sub_prefix:                  prefix for all subject (i.e. mouse) level directory. Default is BIDS: "sub-"
-        :param ses_prefix:                  prefix for all session level directory. Default is BIDS: "ses-"
-        :param use_ephys:                   setting true will setup ephys directory tree on this machine
-        :param use_imaging:                 create imaging directory tree
-        :param use_histology:               create histology directory tree
-        :param use_ephys_behav:             create behav directory in ephys directory on this machine
-        :param use_ephys_behav_camera:      create camera directory in ephys behaviour directory on this machine
-        :param use_behav:                   create behav directory
-        :param use_behav_camera:            create camera directory in behav directory
+        :param local_path:          path to project dir on local machine
+        :param remote_path_local:   Full filepath to local filesystem
+                                   (e.g. mounted drive) dir
+        :param remote_path_ssh:     path to project directory on remote
+                                    machine. If ssh_to_remote is true,
+                                    this should be a full path to remote
+                                    directory i.e. this cannot include
+                                    ~ home directory syntax, must contain
+                                    the full path
+                                    (e.g. /nfs/nhome/live/jziminski)
+        :param ssh_to_remote        if true, ssh will be used to connect
+                                    to remote cluster and remote_host_id,
+                                    remote_host_username must be provided.
+        :param remote_host_id:      address for remote host for ssh connection
+        :param remote_host_username:  username for which to login to
+                                    remote host.
+        :param sub_prefix:          prefix for all subject (i.e. mouse)
+                                    level directory. Default is BIDS: "sub-"
+        :param ses_prefix:          prefix for all session level directory.
+                                    Default is BIDS: "ses-"
+        :param use_ephys:           setting true will setup ephys directory
+                                    tree on this machine
+        :param use_imaging:         create imaging directory tree
+        :param use_histology:       create histology directory tree
+        :param use_ephys_behav:     create behav directory in ephys
+                                    directory on this machine
+        :param use_ephys_behav_camera: create camera directory in ephys
+                                       behaviour
+                                    directory on this machine
+        :param use_behav:           create behav directory
+        :param use_behav_camera:    create camera directory in
+                                    behav directory
 
-        NOTE: higher level directory settings will override lower level settings (e.g. if ephys_behav_camera=True
+        NOTE: higher level directory settings will override lower level
+              settings (e.g. if ephys_behav_camera=True
               and ephys_behav=False, ephys_behav_camera will not be made).
         """
         self.cfg = configs.Configs(
@@ -339,7 +380,8 @@ class DataShuttle:
         self._setup_remote_as_rclone_target("local")
 
         utils.message_user(
-            "Configuration file has been saved and options loaded into datashuttle."
+            "Configuration file has been saved and "
+            "options loaded into datashuttle."
         )
 
     def attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
@@ -371,9 +413,10 @@ class DataShuttle:
 
             if prompt_on_fail:
                 utils.message_user(
-                    "Config file failed to load. Check file formatting at"
-                    f" {self._config_path}. If cannot load, re-initialise configs with"
-                    " make_config_file()"
+                    "Config file failed to load. Check file "
+                    "formatting at {self._config_path}. If "
+                    "cannot load, re-initialise configs with "
+                    "make_config_file()"
                 )
 
     def update_config(self, option_key: str, new_info: Union[str, bool]):
@@ -419,9 +462,13 @@ class DataShuttle:
         """
         Copy a directory or file with Rclone.
 
-        :param filepath: filepath (not including local or remote root) to copy
-        :param upload_or_download: upload goes local to remote, download goes remote to local
-        :param preview: do not actually move the files, just report what would be moved.
+        :param filepath: filepath (not including local
+                         or remote root) to copy
+        :param upload_or_download: upload goes local to
+                                   remote, download goes
+                                   remote to local
+        :param preview: do not actually move the files,
+                        just report what would be moved.
         """
         local_filepath = self._join("local", filepath)
         remote_filepath = self._join("remote", filepath)
@@ -453,7 +500,8 @@ class DataShuttle:
 
     def _setup_remote_as_rclone_target(self, local_or_ssh):
         """
-        rclone shares config file so need to create new local and remote for all project
+        rclone shares config file so need to create
+        new local and remote for all project
         :param local_or_ssh:
         :return:
         """
@@ -483,25 +531,38 @@ class DataShuttle:
         process_names: bool = True,
     ):
         """
-        Entry method to make a full directory tree. It will iterate through all
-        passed subjects, then sessions, then subdirs within a experiment_type directory. This
-        permits flexible creation of directories (e.g. to make subject only, do not pass session name.
+        Entry method to make a full directory tree. It will
+        iterate through all passed subjects, then sessions, then
+        subdirs within a experiment_type directory. This
+        permits flexible creation of directories (e.g.
+        to make subject only, do not pass session name.
 
-        subject and session names are first processed to ensure correct format.
+        subject and session names are first processed to
+        ensure correct format.
 
-        :param experiment_type: The experiment_type to make the directory in (e.g. "ephys", "behav", "microscopy").
-                                If "all" is selected, directory will be created for all data type.
-        :param sub_names:       subject name / list of subject names to make within the directory
-                                (if not already, these will be prefixed with sub/ses identifier)
-        :param ses_names:       session names (same format as subject name). If no session is
-                                provided, defaults to "ses-001".
+        :param experiment_type: The experiment_type to make the
+                                directory in (e.g. "ephys",
+                                "behav", "histology").
+                                If "all" is selected, directory
+                                will be created for all data type.
+        :param sub_names:       subject name / list of subject names
+                                to make within the directory
+                                (if not already, these will be prefixed
+                                with sub/ses identifier)
+        :param ses_names:       session names (same format as subject
+                                name). If no session is provided, defaults
+                                to "ses-001".
 
-                                Note if ses name contains @DATE or @DATETIME, this text will be replaced
-                                with hte date / datetime at the time of directory creation.
+                                Note if ses name contains @DATE or @DATETIME,
+                                this text will be replaced with the date /
+                                datetime at the time of directory creation.
 
-        :param make_ses_tree:   option to make the entire session tree under the subject directory.
-                                If False, the subject directory only will be created.
-        :param process_names:   option to process names or not (e.g. if names were processed already).
+        :param make_ses_tree:   option to make the entire session tree
+                                under the subject directory.
+                                If False, the subject directory only
+                                will be created.
+        :param process_names:   option to process names or not (e.g.
+                                if names were processed already).
 
         """
         sub_names = (
@@ -609,7 +670,7 @@ class DataShuttle:
                     self._move_dir_or_file(
                         filepath, upload_or_download, preview=preview
                     )
-                    
+
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
@@ -647,8 +708,8 @@ class DataShuttle:
         self, local_or_remote: str, search_path: str, search_prefix: str
     ):
         """
-        Wrapper to determine the method used to search for search prefix directories
-        in the search path.
+        Wrapper to determine the method used to search for search
+        prefix directories in the search path.
 
         :param local_or_remote: "local" or "remote"
         :param search_path: full filepath to search in0
@@ -673,9 +734,10 @@ class DataShuttle:
         self, local_or_remote: str
     ):
         """
-        Find experiment type directories in the project base directory (e.g. "ephys", "behav"),
-        (by filtering the names of all directories present). Return these in the same format as
-        dict.items()
+        Find experiment type directories in the project base
+        directory (e.g. "ephys", "behav"), (by filtering the
+        names of all directories present).  Return these in the
+        same format as dict.items()
 
         :param local_or_remote: "local" or "remote"
         """
@@ -696,7 +758,8 @@ class DataShuttle:
 
             if len(experiment_type_key) > 1:
                 utils.raise_error(
-                    "There are matching experiment type names in the tree specified at self._ses_dirs. Remove duplicates"
+                    "There are matching experiment type names in "
+                    "the tree specified at self._ses_dirs. Remove duplicates"
                 )
 
             if experiment_type_key:
@@ -712,9 +775,11 @@ class DataShuttle:
     @requires_ssh_configs
     def _setup_ssh_key(self):
         """
-        Setup an SSH private / public key pair with remote server. First, a private key
-        is generated in the appdir. Next a connection requiring input password
-        made, and the public part of the key added to ~/.ssh/authorized_keys.
+        Setup an SSH private / public key pair with
+        remote server. First, a private key is generated
+        in the appdir. Next a connection requiring input
+        password made, and the public part of the key
+        added to ~/.ssh/authorized_keys.
         """
         utils.generate_and_write_ssh_key(self._ssh_key_path)
 
@@ -731,7 +796,8 @@ class DataShuttle:
 
         self._setup_remote_as_rclone_target("ssh")
         utils.message_user(
-            f"SSH key pair setup successfully. Private key at: {self._ssh_key_path}"
+            f"SSH key pair setup successfully. "
+            f"Private key at: {self._ssh_key_path}"
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -740,12 +806,14 @@ class DataShuttle:
 
     def _join(self, base: str, subdirs: Union[str, list]):
         """
-        Function for joining relative path to base dir. If path already
-        starts with base dir, the base dir will not be joined.
+        Function for joining relative path to base dir.
+        If path already starts with base dir, the base
+        dir will not be joined.
 
         :param base: "local", "remote" or "appdir"
-        :param subdirs: a list (or string for 1) of directory names to be joined into a path.
-                           If file included, must be last entry (with ext).
+        :param subdirs: a list (or string for 1) of
+                        directory names to be joined into a path.
+                        If file included, must be last entry (with ext).
         """
         if isinstance(subdirs, list):
             subdirs_str = "/".join(subdirs)
@@ -777,7 +845,8 @@ class DataShuttle:
 
     def _process_names(self, names: Union[list, str], sub_or_ses: str):
         """
-        :param names: str or list containing sub or ses names (e.g. to make dirs)
+        :param names: str or list containing sub or ses names
+                      (e.g. to make dirs)
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
@@ -797,7 +866,8 @@ class DataShuttle:
 
     def _check_experiment_type_is_valid(self, experiment_type, prompt_on_fail):
         """
-        Check the passed experiemnt_type is valid (must be a key on self.ses_dirs or "all")
+        Check the passed experiemnt_type is valid (must
+        be a key on self.ses_dirs or "all")
         """
         if type(experiment_type) == list:
             valid_keys = list(self._ses_dirs.keys()) + ["all"]
@@ -810,8 +880,10 @@ class DataShuttle:
 
         if prompt_on_fail and not is_valid:
             utils.message_user(
-                f"experiment_type: '{experiment_type}' is not valid. Must be one of"
-                f" {list(self._ses_dirs.keys())}. No directories were made."
+                f"experiment_type: '{experiment_type}' "
+                f"is not valid. Must be one of"
+                f" {list(self._ses_dirs.keys())}."
+                f" No directories were made."
             )
 
         return is_valid
