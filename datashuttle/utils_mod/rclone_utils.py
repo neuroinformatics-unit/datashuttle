@@ -18,9 +18,11 @@ def call_rclone(command: str, silent: bool = False):
             command,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.STDOUT,
+            shell=True,
         )
     else:
-        return_code = subprocess.run(command)
+        return_code = subprocess.run(command,
+                                     shell=True)
     return return_code.returncode
 
 
