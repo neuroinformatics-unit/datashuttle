@@ -33,6 +33,9 @@ dev = [
     "isort",
 ]
 
+[tool.pytest.ini_options]
+addopts = "--cov=datashuttle"
+
 [tool.isort]
 profile = "black"
 
