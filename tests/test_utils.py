@@ -46,7 +46,7 @@ def setup_project_default_configs(
 def glob_basenames(search_path, recursive=False):
     paths_ = glob.glob(search_path, recursive=recursive)
     basenames = [os.path.basename(path_) for path_ in paths_]
-    return basenames
+    return sorted(basenames)
 
 
 def teardown_project(cwd, project):

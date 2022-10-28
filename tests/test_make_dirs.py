@@ -324,8 +324,10 @@ class TestMakeDirs:
                 ["ephys", "behav", "histology", "imaging"]
             )
         else:
-            assert file_names == sorted(file_info)
-
+            try:
+                assert file_names == sorted(file_info)
+            except:
+                breakpoint()
     def test_date_flags_in_session(self, project):
         """
         Check that @DATE is converted into current date
