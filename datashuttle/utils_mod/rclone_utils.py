@@ -21,8 +21,7 @@ def call_rclone(command: str, silent: bool = False):
             shell=True,
         )
     else:
-        return_code = subprocess.run(command,
-                                     shell=True)
+        return_code = subprocess.run(command, shell=True)
     return return_code.returncode
 
 
