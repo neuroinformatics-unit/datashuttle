@@ -12,6 +12,7 @@ def call_rclone(command: str, silent: bool = False):
     :param silent: if True, do not output anything to stdout.
     :return:
     """
+    print("command ", command)
     command = "rclone " + command
     if silent:
         return_code = subprocess.run(
@@ -21,6 +22,7 @@ def call_rclone(command: str, silent: bool = False):
             shell=True,
         )
     else:
+        breakpoint()
         return_code = subprocess.run(command, shell=True)
     return return_code.returncode
 
