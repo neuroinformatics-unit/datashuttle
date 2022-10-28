@@ -42,13 +42,13 @@ def make_ses_directory_tree(
     if experiment_type_dir.used and experiment_type_dir.subdirs:
         recursive_make_subdirs(
             directory=experiment_type_dir,
-            path_to_dir=[experiment_type_dir.name, sub, ses],
-            base_path=base_path,
+            path_to_dir=[base_path, experiment_type_dir.name, sub, ses],
         )
 
 
 def recursive_make_subdirs(
-    directory: Directory, path_to_dir: list, base_path: Path
+    directory: Directory,
+    path_to_dir: list,
 ):
     """
     Function to recursively create all directories
@@ -68,11 +68,9 @@ def recursive_make_subdirs(
     if directory.subdirs:
         for subdir in directory.subdirs.values():
             if subdir.used:
-                new_path_to_dir = (
-                    [os.fspath(base_path)] + path_to_dir + [subdir.name]
-                )
+                new_path_to_dir = path_to_dir + [subdir.name]
                 make_dirs(os.path.join(*new_path_to_dir))
-                recursive_make_subdirs(subdir, new_path_to_dir, base_path)
+                recursive_make_subdirs(subdir, new_path_to_dir)
 
 
 def make_dirs(paths: Union[str, list]):
@@ -84,6 +82,7 @@ def make_dirs(paths: Union[str, list]):
         paths = [paths]
 
     for path_ in paths:
+        path_ = os.path.expanduser(path_)
         if not os.path.isdir(path_):
             os.makedirs(path_)
         else:

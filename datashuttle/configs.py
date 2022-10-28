@@ -39,7 +39,6 @@ class Configs(UserDict):
 
         # Check bad remote path format
         if self.get_remote_path().as_posix()[0] == "~":
-
             utils.raise_error(
                 "remote_path must contain the full directory path "
                 "with no ~ syntax"
