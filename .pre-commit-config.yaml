@@ -29,3 +29,6 @@ repos:
           - id: mypy
             additional_dependencies:
                 - types-requests
+                - types-PyYAML
+                - types-appdirs
+                - types-paramiko
