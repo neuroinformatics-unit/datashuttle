@@ -38,6 +38,13 @@ dev = [
     "types-paramiko",
 ]
 
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[datashuttle.scripts]
+my-client = "datashuttle.command_line_interface"
+
 [tool.pytest.ini_options]
 addopts = "--cov=datashuttle"
 

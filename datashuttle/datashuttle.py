@@ -450,6 +450,9 @@ class DataShuttle:
         appdir_path = utils.get_appdir_path(self.project_name)
         return os.fspath(appdir_path)
 
+    def get_config_path(self):
+        return os.fspath(self._config_path)
+
     def get_remote_path(self) -> str:
         """
         Force remote path to return as posix as if local filesystem
