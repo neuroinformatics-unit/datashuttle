@@ -32,6 +32,10 @@ dev = [
     "flake8",
     "isort",
     "mypy",
+    "types-requests",
+    "types-PyYAML",
+    "types-appdirs",
+    "types-paramiko",
 ]
 
 [tool.pytest.ini_options]
