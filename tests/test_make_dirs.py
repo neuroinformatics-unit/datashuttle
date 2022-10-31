@@ -374,5 +374,6 @@ class TestMakeDirs:
 
     def get_formatted_date_and_time(self):
         date = str(datetime.datetime.now().date())
+        date = date.replace("-", "")
         time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
         return date, time_
