@@ -1,8 +1,8 @@
 import os.path
-import pathlib
 import shutil
 import subprocess
 import warnings
+from pathlib import Path
 from typing import Union
 
 from datashuttle.configs import Configs
@@ -28,18 +28,20 @@ def call_rclone(command: str, silent: bool = False):
     return return_code.returncode
 
 
-def get_rclone_dir(for_user: bool = False) -> Union[pathlib.Path, str]:
+def get_rclone_dir(for_user: bool = False) -> Union[Path, str]:
     """
     Rclone dir is always stored on the users appdir.
 
     Note this is also where project dirs are stored and so
-    this must never share a name with a user project.
+    this must never share a name with a user project  .
     """
     rclone_directory_name = "rclone_root_no_delete_no_overwrite"
     path_ = utils.get_appdir_path(rclone_directory_name)
-    if for_user:
-        path_ = os.fspath(path_)
-    return path_
+
+    output_path: Union[Path, str]
+    output_path = os.fspath(path_) if for_user else path_
+
+    return output_path
 
 
 def check_rclone_exists() -> bool:

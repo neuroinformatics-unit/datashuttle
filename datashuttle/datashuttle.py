@@ -3,13 +3,16 @@ import os
 import pathlib
 import warnings
 from pathlib import Path
-from typing import Union, cast
+from typing import Any, Union, cast
 
 import paramiko
 
 from datashuttle import configs
 from datashuttle.utils_mod import rclone_utils, utils
-from datashuttle.utils_mod.decorators import requires_ssh_configs
+from datashuttle.utils_mod.decorators import (  # noqa
+    check_configs_set,
+    requires_ssh_configs,
+)
 from datashuttle.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -47,16 +50,15 @@ class DataShuttle:
         self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
-        self.cfg = None
-        self._ssh_key_path = None  # TODO: move to config
-        self._ses_dirs = None
+
+        self.cfg: Any = None
+        self._ssh_key_path: Any = None
+        self._ses_dirs: Any = None
 
         self.attempt_load_configs(prompt_on_fail=True)
 
         if self.cfg:
-
-            if self.cfg:
-                self.set_attributes_after_config_load()
+            self.set_attributes_after_config_load()
 
         rclone_utils.prompt_rclone_download_if_does_not_exist()
 
@@ -117,6 +119,7 @@ class DataShuttle:
     # Public Directory Makers
     # --------------------------------------------------------------------------------------------------------------------
 
+    @check_configs_set
     def make_sub_dir(
         self,
         experiment_type: str,
@@ -390,7 +393,7 @@ class DataShuttle:
             "options loaded into datashuttle."
         )
 
-    def attempt_load_configs(self, prompt_on_fail: bool) -> Union[bool, dict]:
+    def attempt_load_configs(self, prompt_on_fail: bool):
         """
         Attempt to load the config file. If it does not exist or crashes
         when attempt to load from file, return False.
@@ -407,7 +410,6 @@ class DataShuttle:
                 "Configuration file has not been initialized. "
                 "Use make_config_file() to setup before continuing."
             )
-            return False
 
         self.cfg = configs.Configs(self._config_path, None)
 
@@ -415,7 +417,7 @@ class DataShuttle:
             self.cfg.load_from_file()
 
         except Exception:
-            self.cfg = False
+            self.cfg = None
 
             if prompt_on_fail:
                 utils.message_user(
@@ -454,9 +456,6 @@ class DataShuttle:
         is windows and remote is unix this will break paths.
         """
         return self.cfg.get_remote_path(for_user=True)
-
-    def get_rclone_path(self) -> str:
-        return os.fspath(rclone_utils.get_rclone_exe_path())
 
     # --------------------------------------------------------------------------------------------------------------------
     # Setup RClone
@@ -860,6 +859,7 @@ class DataShuttle:
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
         is_ses = True if sub_or_ses == "ses" else False
         processed_names = utils.process_names(names, prefix, is_ses)
+
         return processed_names
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str) -> str:

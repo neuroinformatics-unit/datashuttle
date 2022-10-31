@@ -8,7 +8,7 @@ class Directory:
     """
 
     def __init__(
-        self, name: str, used: bool, subdirs: Union[bool, dict] = None
+        self, name: str, used: bool, subdirs: Union[None, dict] = None
     ):
         self.name = name
         self.used = used
