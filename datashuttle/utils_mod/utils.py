@@ -259,7 +259,7 @@ def raise_error(message: str):
     raise BaseException(message)
 
 
-def get_appdir_path(project_name: str) -> str:
+def get_appdir_path(project_name: str) -> Path:
     """
     It is not possible to write to programfiles in windows
     from app without admin permissions. However if admin
@@ -279,7 +279,7 @@ def get_appdir_path(project_name: str) -> str:
 
 def process_names(
     names: Union[list, str], prefix: str, is_ses=False
-) -> Union[bool, list, str]:
+) -> Union[list, str]:
     """
     Check a single or list of input session or subject names.
     First check the type is correct, next prepend the prefix
@@ -295,7 +295,6 @@ def process_names(
         raise_error(
             "Ensure subject and session names are list of strings, or string"
         )
-        return False
 
     if isinstance(names, str):
         names = [names]
@@ -314,7 +313,7 @@ def process_names(
     return prefixed_names
 
 
-def update_ses_names_with_datetime(names: Union[list, str]):
+def update_ses_names_with_datetime(names: list):
     """
     Replate @DATE and @DATETIME flag with date and datetime respectively.
     Currently formats time as XXhXXh.

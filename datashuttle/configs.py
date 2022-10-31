@@ -3,7 +3,7 @@ import pathlib
 import warnings
 from collections import UserDict
 from pathlib import Path
-from typing import Union
+from typing import Any, Union
 
 import yaml
 
@@ -62,7 +62,7 @@ class Configs(UserDict):
                 "remote_host_username provided."
             )
 
-    def update_an_entry(self, option_key: str, new_info: Union[str, bool]):
+    def update_an_entry(self, option_key: str, new_info: Any):
         """
         Convenience function to update individual entry of configuration
         file. The config file, and currently loaded self.cfg will be
