@@ -93,12 +93,14 @@ def make_dirs(paths: Union[str, list]):
             )
 
 
-def make_datashuttle_metadata_folder(full_path):
+def make_datashuttle_metadata_folder(full_path: str):
     meta_folder_path = full_path + "/.datashuttle_meta"
     make_dirs(meta_folder_path)
 
 
-def search_filesystem_path_for_directories(search_path_with_prefix: str):
+def search_filesystem_path_for_directories(
+    search_path_with_prefix: str,
+) -> list:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.
@@ -147,7 +149,9 @@ def connect_client(
         )
 
 
-def add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key):
+def add_public_key_to_remote_authorized_keys(
+    cfg, hostkeys: str, password: str, key: paramiko.RSAKey
+):
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
@@ -164,8 +168,8 @@ def add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key):
         client.exec_command("chmod 700 ~/.ssh/")
 
 
-def verify_ssh_remote_host(remote_host_id, hostkeys):
-    """ """
+def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
+    """"""
     with paramiko.Transport(remote_host_id) as transport:
         transport.connect()
         key = transport.get_remote_server_key()
@@ -192,7 +196,7 @@ def verify_ssh_remote_host(remote_host_id, hostkeys):
     return sucess
 
 
-def generate_and_write_ssh_key(ssh_key_path):
+def generate_and_write_ssh_key(ssh_key_path: str):
     key = paramiko.RSAKey.generate(4096)
     key.write_private_key_file(ssh_key_path)
 
@@ -201,9 +205,9 @@ def search_ssh_remote_for_directories(
     search_path: str,
     search_prefix: str,
     cfg,
-    hostkeys,
-    ssh_key_path,
-):
+    hostkeys: str,
+    ssh_key_path: str,
+) -> list:
     """
     Search for the search prefix in the search path over SSH.
     Returns the list of matching directories, files are filtered out.
@@ -220,7 +224,9 @@ def search_ssh_remote_for_directories(
     return all_dirnames
 
 
-def get_list_of_directory_names_over_sftp(sftp, search_path, search_prefix):
+def get_list_of_directory_names_over_sftp(
+    sftp, search_path: str, search_prefix: str
+) -> list:
 
     all_dirnames = []
     try:
@@ -253,7 +259,7 @@ def raise_error(message: str):
     raise BaseException(message)
 
 
-def get_appdir_path(project_name):
+def get_appdir_path(project_name: str) -> str:
     """
     It is not possible to write to programfiles in windows
     from app without admin permissions. However if admin
@@ -271,7 +277,9 @@ def get_appdir_path(project_name):
     return base_path
 
 
-def process_names(names: Union[list, str], prefix: str, is_ses=False):
+def process_names(
+    names: Union[list, str], prefix: str, is_ses=False
+) -> Union[bool, list, str]:
     """
     Check a single or list of input session or subject names.
     First check the type is correct, next prepend the prefix
@@ -306,7 +314,7 @@ def process_names(names: Union[list, str], prefix: str, is_ses=False):
     return prefixed_names
 
 
-def update_ses_names_with_datetime(names):
+def update_ses_names_with_datetime(names: Union[list, str]):
     """
     Replate @DATE and @DATETIME flag with date and datetime respectively.
     Currently formats time as XXhXXh.
@@ -325,7 +333,9 @@ def update_ses_names_with_datetime(names):
             names[i] = val.replace("@DATE", date)
 
 
-def ensure_prefixes_on_list_of_names(names, prefix):
+def ensure_prefixes_on_list_of_names(
+    names: Union[list, str], prefix: str
+) -> list:
     """ """
     n_chars = len(prefix)
     return [
@@ -333,5 +343,5 @@ def ensure_prefixes_on_list_of_names(names, prefix):
     ]
 
 
-def path_already_stars_with_base_dir(base_dir: Path, path_: Path):
+def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())
