@@ -1,8 +1,11 @@
 import os.path
+import pathlib
 import shutil
 import subprocess
 import warnings
+from typing import Union
 
+from datashuttle.configs import Configs
 from datashuttle.utils_mod import utils
 
 
@@ -25,7 +28,7 @@ def call_rclone(command: str, silent: bool = False):
     return return_code.returncode
 
 
-def get_rclone_dir(for_user=False):
+def get_rclone_dir(for_user: bool = False) -> Union[pathlib.Path, str]:
     """
     Rclone dir is always stored on the users appdir.
 
@@ -39,14 +42,14 @@ def get_rclone_dir(for_user=False):
     return path_
 
 
-def check_rclone_exists():
+def check_rclone_exists() -> bool:
     """
     Check that the rclone executable exists in the root drive.
     """
     return check_rclone_with_default_call()
 
 
-def check_rclone_with_default_call():
+def check_rclone_with_default_call() -> bool:
     """"""
     try:
         return_code = call_rclone("-h", silent=True)
@@ -82,7 +85,7 @@ def prompt_rclone_download_if_does_not_exist():
 
 
 def setup_remote_as_rclone_target(
-    cfg, local_or_ssh, rclone_config_name, ssh_key_path
+    cfg: Configs, local_or_ssh: str, rclone_config_name: str, ssh_key_path: str
 ):
     """
     RClone sets remote targets in a config file. When

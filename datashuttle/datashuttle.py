@@ -1,5 +1,6 @@
 import getpass
 import os
+import pathlib
 import warnings
 from pathlib import Path
 from typing import Union, cast
@@ -159,7 +160,12 @@ class DataShuttle:
             process_names=False,
         )
 
-    def make_empty_ses_dir(self, experiment_type, sub_names, ses_names):
+    def make_empty_ses_dir(
+        self,
+        experiment_type: str,
+        sub_names: Union[str, list],
+        ses_names: Union[str, list],
+    ):
         """"""
         self._make_directory_trees(
             experiment_type, sub_names, ses_names, make_ses_tree=False
@@ -435,21 +441,21 @@ class DataShuttle:
     # Public Getters
     # --------------------------------------------------------------------------------------------------------------------
 
-    def get_local_path(self):
+    def get_local_path(self) -> str:
         return os.fspath(self.cfg["local_path"])
 
-    def get_appdir_path(self):
+    def get_appdir_path(self) -> str:
         appdir_path = utils.get_appdir_path(self.project_name)
         return os.fspath(appdir_path)
 
-    def get_remote_path(self):
+    def get_remote_path(self) -> str:
         """
         Force remote path to return as posix as if local filesystem
         is windows and remote is unix this will break paths.
         """
         return self.cfg.get_remote_path(for_user=True)
 
-    def get_rclone_path(self):
+    def get_rclone_path(self) -> str:
         return os.fspath(rclone_utils.get_rclone_exe_path())
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -498,12 +504,11 @@ class DataShuttle:
                 f"{extra_arguments}"
             )
 
-    def _setup_remote_as_rclone_target(self, local_or_ssh):
+    def _setup_remote_as_rclone_target(self, local_or_ssh: str):
         """
         rclone shares config file so need to create
         new local and remote for all project
         :param local_or_ssh:
-        :return:
         """
         rclone_config_name = self.get_rclone_config_name(local_or_ssh)
 
@@ -511,7 +516,7 @@ class DataShuttle:
             self.cfg, local_or_ssh, rclone_config_name, self._ssh_key_path
         )
 
-    def get_rclone_config_name(self, local_or_ssh):
+    def get_rclone_config_name(self, local_or_ssh: str) -> str:
         return f"remote_{self.project_name}_{local_or_ssh}"
 
     # ====================================================================================================================
@@ -677,7 +682,7 @@ class DataShuttle:
 
     def _search_subs_from_project_dir(
         self, local_or_remote: str, experiment_type: str
-    ):
+    ) -> list:
         """
         Search a datatype directory for all present sub- prefixed directories.
         If remote, ssh or filesystem will be used depending on config.
@@ -693,20 +698,21 @@ class DataShuttle:
 
     def _search_ses_from_sub_dir(
         self, local_or_remote: str, experiment_type: str, sub: str
-    ):
+    ) -> list:
         """
         See _search_subs_from_project_dir(), same but for serching sessions
         within a sub directory.
         """
         search_path = self._join(local_or_remote, [experiment_type, sub])
         search_prefix = self.cfg["ses_prefix"] + "*"
+
         return self._search_for_directories(
             local_or_remote, search_path, search_prefix
         )
 
     def _search_for_directories(
         self, local_or_remote: str, search_path: str, search_prefix: str
-    ):
+    ) -> list:
         """
         Wrapper to determine the method used to search for search
         prefix directories in the search path.
@@ -732,7 +738,7 @@ class DataShuttle:
 
     def _search_base_dir_for_experiment_directories(
         self, local_or_remote: str
-    ):
+    ) -> zip:
         """
         Find experiment type directories in the project base
         directory (e.g. "ephys", "behav"), (by filtering the
@@ -804,7 +810,7 @@ class DataShuttle:
     # Utils
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _join(self, base: str, subdirs: Union[str, list]):
+    def _join(self, base: str, subdirs: Union[str, list]) -> str:
         """
         Function for joining relative path to base dir.
         If path already starts with base dir, the base
@@ -831,7 +837,7 @@ class DataShuttle:
 
         return joined_path.as_posix()
 
-    def _get_base_dir(self, base: str):
+    def _get_base_dir(self, base: str) -> pathlib.Path:
         """
         Convenience function to return the full base path.
         """
@@ -843,7 +849,9 @@ class DataShuttle:
             base_dir = utils.get_appdir_path(self.project_name)
         return base_dir
 
-    def _process_names(self, names: Union[list, str], sub_or_ses: str):
+    def _process_names(
+        self, names: Union[list, str], sub_or_ses: str
+    ) -> Union[str, list]:
         """
         :param names: str or list containing sub or ses names
                       (e.g. to make dirs)
@@ -854,7 +862,7 @@ class DataShuttle:
         processed_names = utils.process_names(names, prefix, is_ses)
         return processed_names
 
-    def _get_sub_or_ses_prefix(self, sub_or_ses: str):
+    def _get_sub_or_ses_prefix(self, sub_or_ses: str) -> str:
         """
         Get the sub / ses prefix (default is sub- and ses-") set in cfgs.
         """
@@ -864,7 +872,9 @@ class DataShuttle:
             prefix = self.cfg["ses_prefix"]
         return prefix
 
-    def _check_experiment_type_is_valid(self, experiment_type, prompt_on_fail):
+    def _check_experiment_type_is_valid(
+        self, experiment_type: str, prompt_on_fail: bool
+    ) -> bool:
         """
         Check the passed experiemnt_type is valid (must
         be a key on self.ses_dirs or "all")
@@ -906,7 +916,9 @@ class DataShuttle:
 
         return items
 
-    def _get_ses_dirs_items_from_list_of_keys(self, experiment_type: list):
+    def _get_ses_dirs_items_from_list_of_keys(
+        self, experiment_type: list
+    ) -> zip:
         """
         Key the items of specific keys from a dict in a form that mathes
         dict.items().

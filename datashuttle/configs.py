@@ -1,4 +1,5 @@
 import copy
+import pathlib
 import warnings
 from collections import UserDict
 from pathlib import Path
@@ -108,7 +109,7 @@ class Configs(UserDict):
             warnings.warn(f"{option_key} was not updated")
             self[option_key] = original_value
 
-    def safe_check_current_dict_is_valid(self):
+    def safe_check_current_dict_is_valid(self) -> bool:
         """ """
         try:
             self.check_dict_values_and_inform_user()
@@ -139,7 +140,9 @@ class Configs(UserDict):
         self.convert_str_and_pathlib_paths(self, "str_to_path")
         self.check_dict_values_and_inform_user()
 
-    def get_remote_path(self, for_user=False):
+    def get_remote_path(
+        self, for_user: bool = False
+    ) -> Union[pathlib.Path, str]:
         """
         Interpath function to get pathlib remote path
         based on using ssh or local filesystem.
