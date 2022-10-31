@@ -314,6 +314,7 @@ def update_ses_names_with_datetime(names):
     Dont format datetime directly so we can keep timezone aware.
     """
     date = str(datetime.datetime.now().date())
+    date = date.replace("-", "")
     time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
     datetime_ = f"{date}-{time_}"
 
