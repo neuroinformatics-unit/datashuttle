@@ -269,6 +269,7 @@ class TestMakeDirs:
             ["ephys", "behav", "histology"],
             ["ephys", "behav", "histology", "imaging"],
             ["imaging", "ephys"],
+            ["imaging"],
         ],
     )
     def test_experimental_data_subsection(self, project, file_info):

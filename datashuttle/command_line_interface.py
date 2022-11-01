@@ -3,11 +3,13 @@ Setup the CLI for DataShuttle. Uses Click to wrap API arguments
 and decorator to inherit the API function docstring, which are
 used as --help arguments.
 """
-
 import click
+import simplejson
 
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils_mod import utils
+
+PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 # ------------------------------------------------------------------------------------------
 # Utils
@@ -33,7 +35,7 @@ def handle_sub_ses_names_list(names):
     str or some other low-levle type (e.g. bool, int)
     to minic list of strings use a resevered <> syntax.
 
-    Everything between <>, with space in the middle,
+    Everything between "<>", with space in the middle,
     will be converted to list.
 
     e.g. "<one two three>" = ["one", "two", "three"]
@@ -70,11 +72,20 @@ def entry(ctx, project_name):
     and all strings separated by a space will be used as distinct elements.
     """
     ctx.obj = DataShuttle(project_name)
+    ctx.obj.run_as_test = project_name == PROTECTED_TEST_PROJECT_NAME
 
 
 # ------------------------------------------------------------------------------------------
 # Setup
 # ------------------------------------------------------------------------------------------
+
+
+def run_command(ctx, function, *args, **kwargs):
+    """"""
+    if ctx.obj.run_as_test:
+        print("TEST_OUT_START: ", simplejson.dumps([args, kwargs]))
+    else:
+        function(*args, **kwargs)
 
 
 @entry.command("make_config_file")
@@ -99,7 +110,13 @@ def make_config_file(ctx, local_path, ssh_to_remote, **kwargs):
     """"""
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-    ctx.obj.make_config_file(local_path, ssh_to_remote, **filtered_kwargs)
+    run_command(
+        ctx,
+        ctx.obj.make_config_file,
+        local_path,
+        ssh_to_remote,
+        **filtered_kwargs,
+    )
 
 
 @entry.command("update_config")
@@ -122,9 +139,9 @@ def update_config(ctx, option_key, new_info):
         if new_info not in ["True", "False"]:
             utils.raise_error("Input value must be True or False")
 
-        new_info = bool(new_info)
+        new_info = new_info is True
 
-    ctx.obj.update_config(option_key, new_info)
+    run_command(ctx, ctx.obj.update_config, option_key, new_info)
 
 
 @entry.command("setup_ssh_connection_to_remote_server")
@@ -150,20 +167,28 @@ def setup_ssh_connection_to_remote_server(ctx):
 def make_sub_dir(ctx, experiment_type, sub_names, **kwargs):
     """
     FOR CLI INPUT: To input a list of strings
-    (to --sub_names, --ses_names), use the reserved
-    <> syntax. Everything between <> will be assumed to be
-    a list of string with elements separated by
-    spaces.
+    (to --experiment_type, --sub_names, --ses_names),
+    use the reserved "<>" syntax. Everything between
+    "<>" will be assumed to be a list of string with
+    elements separated by spaces.
 
     e.g. "<one two three>" = ["one", "two", "three"]
     """
+    experiment_type = handle_sub_ses_names_list(experiment_type)
     sub_names = handle_sub_ses_names_list(sub_names)
+
     if kwargs["ses_names"] is not None:
         kwargs["ses_names"] = handle_sub_ses_names_list(kwargs["ses_names"])
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-    ctx.obj.make_sub_dir(experiment_type, sub_names, **filtered_kwargs)
+    run_command(
+        ctx,
+        ctx.obj.make_sub_dir,
+        experiment_type,
+        sub_names,
+        **filtered_kwargs,
+    )
 
 
 # ------------------------------------------------------------------------------------------
@@ -181,17 +206,25 @@ def make_sub_dir(ctx, experiment_type, sub_names, **kwargs):
 def upload_data(ctx, experiment_type, sub_names, ses_names, preview):
     """
     FOR CLI INPUT: To input a list of strings
-    (to --sub_names, --ses_names), use the reserved
-    <> syntax. Everything between <> will be assumed to be
-    a list of string with elements separated by
-    spaces.
+    (to --experiment_type, --sub_names, --ses_names),
+    use the reserved "<>" syntax. Everything between
+    "<>" will be assumed to be a list of string with
+    elements separated by spaces.
 
     e.g. "<one two three>" = ["one", "two", "three"]
     """
+    experiment_type = handle_sub_ses_names_list(experiment_type)
     sub_names = handle_sub_ses_names_list(sub_names)
     ses_names = handle_sub_ses_names_list(ses_names)
 
-    ctx.obj.upload_data(experiment_type, sub_names, ses_names, preview)
+    run_command(
+        ctx,
+        ctx.obj.upload_data,
+        experiment_type,
+        sub_names,
+        ses_names,
+        preview,
+    )
 
 
 @entry.command("download_data")
@@ -204,17 +237,25 @@ def upload_data(ctx, experiment_type, sub_names, ses_names, preview):
 def download_data(ctx, experiment_type, sub_names, ses_names, preview):
     """
     FOR CLI INPUT: To input a list of strings
-    (to --sub_names, --ses_names), use the reserved
-    <> syntax. Everything between <> will be assumed to be
-    a list of string with elements separated by
-    spaces.
+    (to --experiment_type, --sub_names, --ses_names),
+    use the reserved "<>" syntax. Everything between
+    "<>" will be assumed to be a list of string with
+    elements separated by spaces.
 
     e.g. "<one two three>" = ["one", "two", "three"]
     """
+    experiment_type = handle_sub_ses_names_list(experiment_type)
     sub_names = handle_sub_ses_names_list(sub_names)
     ses_names = handle_sub_ses_names_list(ses_names)
 
-    ctx.obj.download_data(experiment_type, sub_names, ses_names, preview)
+    run_command(
+        ctx,
+        ctx.obj.download_data,
+        experiment_type,
+        sub_names,
+        ses_names,
+        preview,
+    )
 
 
 @entry.command("upload_project_dir_or_file")
@@ -224,7 +265,7 @@ def download_data(ctx, experiment_type, sub_names, ses_names, preview):
 @inherit_docstring_from_subfunction
 def upload_project_dir_or_file(ctx, filepath, preview):
     """"""
-    ctx.obj.upload_project_dir_or_file(filepath, preview)
+    run_command(ctx, ctx.obj.upload_project_dir_or_file, filepath, preview)
 
 
 @entry.command("download_project_dir_or_file")
@@ -234,7 +275,7 @@ def upload_project_dir_or_file(ctx, filepath, preview):
 @inherit_docstring_from_subfunction
 def download_project_dir_or_file(ctx, filepath, preview):
     """"""
-    ctx.obj.download_project_dir_or_file(filepath, preview)
+    run_command(ctx, ctx.obj.download_project_dir_or_file, filepath, preview)
 
 
 # ------------------------------------------------------------------------------------------
@@ -272,3 +313,11 @@ def get_config_path(ctx):
 def get_remote_path(ctx):
     """"""
     click.echo(ctx.obj.get_remote_path())
+
+
+@entry.command("show_configs")
+@click.pass_context
+@inherit_docstring_from_subfunction
+def show_configs(ctx):
+    """"""
+    click.echo(ctx.obj.show_configs())
