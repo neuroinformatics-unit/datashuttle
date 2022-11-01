@@ -680,9 +680,9 @@ class DataShuttle:
                     local_or_remote
                 )
             )
-        breakpoint()
+
         for experiment_type_key, experiment_type_dir in experiment_type_items:
-            breakpoint()
+
             if sub_names not in ["all", ["all"]]:
                 sub_names = self._process_names(sub_names, "sub")
             else:
@@ -699,7 +699,6 @@ class DataShuttle:
                     )
 
                 for ses in ses_names:
-                    breakpoint()
                     filepath = os.path.join(experiment_type_dir.name, sub, ses)
                     self._move_dir_or_file(
                         filepath, upload_or_download, preview=preview
