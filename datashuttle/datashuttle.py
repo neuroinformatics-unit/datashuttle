@@ -163,17 +163,6 @@ class DataShuttle:
             process_names=False,
         )
 
-    def make_empty_ses_dir(
-        self,
-        experiment_type: str,
-        sub_names: Union[str, list],
-        ses_names: Union[str, list],
-    ):
-        """"""
-        self._make_directory_trees(
-            experiment_type, sub_names, ses_names, make_ses_tree=False
-        )
-
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
@@ -232,12 +221,19 @@ class DataShuttle:
         and files) from the local to the remote machine
 
         :param filepath: a string containing the filepath to
-                         move, relative to the project directory
+                         move, relative to the project directory or
+                         full local path accepted.
         :param preview: preview the transfer (see which files
                         will be transferred without actually transferring)
 
         """
-        self._move_dir_or_file(filepath, "upload", preview)
+        processed_filepath = utils.get_path_after_base_dir(
+            self._get_base_dir("local"), Path(filepath)
+        )
+
+        self._move_dir_or_file(
+            processed_filepath.as_posix(), "upload", preview
+        )
 
     def download_project_dir_or_file(
         self, filepath: str, preview: bool = False
@@ -246,9 +242,18 @@ class DataShuttle:
         Download an entire directory (including all subdirectories
         and files) from the local to the remote machine.
 
-        see upload_project_dir_or_file() for inputs
+        :param filepath: a string containing the filepath to
+                         move, relative to the project directory or
+                         full remote path accepted.
+        :param preview: preview the transfer (see which files
+                         will be transferred without actually transferring)
         """
-        self._move_dir_or_file(filepath, "download", preview)
+        processed_filepath = utils.get_path_after_base_dir(
+            self._get_base_dir("remote"), Path(filepath)
+        )
+        self._move_dir_or_file(
+            processed_filepath.as_posix(), "download", preview
+        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
@@ -410,6 +415,7 @@ class DataShuttle:
                 "Configuration file has not been initialized. "
                 "Use make_config_file() to setup before continuing."
             )
+            return
 
         self.cfg = configs.Configs(self._config_path, None)
 
@@ -421,10 +427,10 @@ class DataShuttle:
 
             if prompt_on_fail:
                 utils.message_user(
-                    "Config file failed to load. Check file "
-                    "formatting at {self._config_path}. If "
-                    "cannot load, re-initialise configs with "
-                    "make_config_file()"
+                    f"Config file failed to load. Check file "
+                    f"formatting at {self._config_path}. If "
+                    f"cannot load, re-initialise configs with "
+                    f"make_config_file()"
                 )
 
     def update_config(self, option_key: str, new_info: Union[str, bool]):
@@ -444,19 +450,29 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     def get_local_path(self) -> str:
+        """
+        Return the project local path.
+        """
         return os.fspath(self.cfg["local_path"])
 
     def get_appdir_path(self) -> str:
+        """
+        Return the system appdirs path where
+        project settings are stored.
+        """
         appdir_path = utils.get_appdir_path(self.project_name)
         return os.fspath(appdir_path)
 
     def get_config_path(self):
+        """
+        Return the full path to the DataShuttle config file.
+        """
         return os.fspath(self._config_path)
 
     def get_remote_path(self) -> str:
         """
-        Force remote path to return as posix as if local filesystem
-        is windows and remote is unix this will break paths.
+        Return the project remote path.
+        This is always formatted to UNIX style.
         """
         return self.cfg.get_remote_path(for_user=True)
 
