@@ -67,6 +67,11 @@ class Configs(UserDict):
                 "sub_prefix and ses_prefix must both be strings."
             )
 
+        if type(self["ssh_to_remote"]) != bool:
+            utils.raise_error(
+                "ssh_to_remote must be a boolean."
+            )
+
     def update_an_entry(self, option_key: str, new_info: Any):
         """
         Convenience function to update individual entry of configuration

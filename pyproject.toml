@@ -36,6 +36,7 @@ dev = [
     "types-PyYAML",
     "types-appdirs",
     "types-paramiko",
+    "types-simplejson",
 ]
 
 [build-system]
