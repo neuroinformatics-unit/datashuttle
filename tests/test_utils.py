@@ -1,7 +1,6 @@
 import glob
 import os
 import shutil
-import subprocess
 import warnings
 from os.path import join
 
@@ -246,34 +245,3 @@ def get_default_directory_used():
         "imaging": True,
         "histology": True,
     }
-
-
-def run_cli_command(command):
-
-    result = subprocess.run(
-        "python -m datashuttle " + command, shell=True, stderr=subprocess.PIPE
-    )
-
-    return result.stderr.decode("utf8")
-
-
-def convert_kwargs_to_cli(kwargs):
-    args_list = " ".join("--" + k + " " + str(v) for k, v in kwargs.items())
-    return args_list
-
-
-def run_command(command, setup, kwargs):
-    """ """
-    if command == "make_config_file":
-        if setup["api_or_cli"] == "api":
-            setup["project"].make_config_file(*kwargs.values())
-        else:
-            run_cli_command(
-                " ".join(
-                    [
-                        setup["project_name"],
-                        "make_config_file",
-                        convert_kwargs_to_cli(kwargs),
-                    ]
-                )
-            )
