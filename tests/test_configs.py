@@ -12,48 +12,25 @@ TEST_PROJECT_NAME = "test_configs"
 
 
 class TestConfigs:
-    @pytest.fixture(
-        scope="function",
-        params=["api", "cli"],
-        ids=["normalised", "cumulative"],
-    )
-    def setup(test, request):
+    @pytest.fixture(scope="function")
+    def project(test):
         """
         Fixture that creates an empty project. Ignore the warning
         that no configs are setup yet.
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
-        if request.param == "api":
-            warnings.filterwarnings("ignore")
-            project = DataShuttle(TEST_PROJECT_NAME)
-            warnings.filterwarnings("default")
+        warnings.filterwarnings("ignore")
+        project = DataShuttle(TEST_PROJECT_NAME)
+        warnings.filterwarnings("default")
 
-        elif request.param == "cli":
-            project = None
-
-        setup = {
-            "project": project,
-            "api_or_cli": request.param,
-            "project_name": TEST_PROJECT_NAME,
-        }
-
-        yield setup
+        yield project
 
     # --------------------------------------------------------------------------------------------------------------------
     # Tests
     # --------------------------------------------------------------------------------------------------------------------
 
-    def get_default_empty_init_warning(self):
-        return (
-            "Configuration file has not been initialized. "
-            "Use make_config_file() to setup before continuing."
-        )
-
-    def get_no_remote_path_set_error(self):
-        return "Must set either remote_path_ssh or remote_path_local"
-
-    def test_warning_on_startup_api(self, setup):
+    def test_warning_on_startup(self):
         """
         When no configs have been set, a warning should be shown that
         the config has not been initialized. Need to download
@@ -65,16 +42,13 @@ class TestConfigs:
             DataShuttle(TEST_PROJECT_NAME)
 
         assert len(w) == 1
-        assert str(w[0].message) == self.get_default_empty_init_warning()
+        assert (
+            str(w[0].message)
+            == "Configuration file has not been initialized. "
+            "Use make_config_file() to setup before continuing."
+        )
 
-    def test_warning_on_startup_cli(self):
-        """"""
-        test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
-        stderr = test_utils.run_cli_command(TEST_PROJECT_NAME)
-
-        assert self.get_default_empty_init_warning() in stderr
-
-    def test_fail_to_pass_remote_path_api(self, project):
+    def test_fail_to_pass_remote_path(self, project):
         """
         Test that the make_config_file will assert if neither
         remote_path_ssh or remote_path_local are passed.
@@ -82,19 +56,9 @@ class TestConfigs:
         with pytest.raises(AssertionError) as e:
             project.make_config_file("test_local_path", False)
 
-        assert str(e.value) == self.get_no_remote_path_set_error()
-
-    def test_fail_to_pass_remote_path_cli(self):
-        """ """
-        stderr = test_utils.run_cli_command(
-            f"{TEST_PROJECT_NAME} "
-            f"make_config_file "
-            f"--local_path test_local_path "
-            f"--ssh_to_remote False"
-        )
-
         assert (
-            "AssertionError: " + self.get_no_remote_path_set_error() in stderr
+            str(e.value)
+            == "Must set either remote_path_ssh or remote_path_local"
         )
 
     def test_no_remote_local_path_set(self, project):
@@ -202,22 +166,7 @@ class TestConfigs:
             required_options,
         )
 
-    def get_project_for_testing(self, setup):
-        """
-        Tests were originally written to check both the config.yaml
-        and configs loaded into project. With testing CLI, rather
-        than re-write it is better to init a project based on the
-        configs just generated on CLI and test this. This gives
-        additional test of interoperabiliy between API and CLI.
-        """
-        if setup["project"] is None:
-            project = DataShuttle(setup["project_name"])
-        else:
-            project = setup["project"]
-
-        return project
-
-    def test_config_defaults(self, setup):
+    def test_config_defaults(self, project):
         """
         Check the default configs are set as expected
         (see get_test_config_arguments_dict()) for tested defaults.
@@ -226,15 +175,13 @@ class TestConfigs:
             required_arguments_only=True
         )
 
-        test_utils.run_command("make_config_file", setup, required_options)
+        project.make_config_file(*required_options.values())
 
         default_options = test_utils.get_test_config_arguments_dict(
             set_as_defaults=True
         )
 
-        self.check_configs(
-            self.get_project_for_testing(setup), default_options
-        )
+        self.check_configs(project, default_options)
 
     def test_non_default_configs(self, project):
         """
