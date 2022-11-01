@@ -1,4 +1,6 @@
+import copy
 import getpass
+import json
 import os
 import pathlib
 import warnings
@@ -476,6 +478,14 @@ class DataShuttle:
         """
         return self.cfg.get_remote_path(for_user=True)
 
+    def show_configs(self):
+        """
+        Print the current configs to the terminal.
+        """
+        copy_dict = copy.deepcopy(self.cfg.data)
+        self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
+        utils.message_user(json.dumps(copy_dict, indent=4))
+
     # --------------------------------------------------------------------------------------------------------------------
     # Setup RClone
     # --------------------------------------------------------------------------------------------------------------------
@@ -670,9 +680,9 @@ class DataShuttle:
                     local_or_remote
                 )
             )
-
+        breakpoint()
         for experiment_type_key, experiment_type_dir in experiment_type_items:
-
+            breakpoint()
             if sub_names not in ["all", ["all"]]:
                 sub_names = self._process_names(sub_names, "sub")
             else:
@@ -689,6 +699,7 @@ class DataShuttle:
                     )
 
                 for ses in ses_names:
+                    breakpoint()
                     filepath = os.path.join(experiment_type_dir.name, sub, ses)
                     self._move_dir_or_file(
                         filepath, upload_or_download, preview=preview
@@ -922,15 +933,15 @@ class DataShuttle:
         Get the .items() structure of the data type, either all of
         them (stored in self._ses_dirs or a single item.
         """
-        if type(experiment_type) == list and "all" not in experiment_type:
+        if type(experiment_type) == str:
+            experiment_type = [experiment_type]
 
-            items = self._get_ses_dirs_items_from_list_of_keys(experiment_type)
-
+        if "all" in experiment_type:
+            items = self._ses_dirs.items()
         else:
-            items = (
-                zip([experiment_type], [self._ses_dirs[experiment_type]])
-                if experiment_type not in ["all", ["all"]]
-                else self._ses_dirs.items()
+            items = zip(
+                experiment_type,
+                [self._ses_dirs[key] for key in experiment_type],
             )
 
         return items
@@ -939,7 +950,7 @@ class DataShuttle:
         self, experiment_type: list
     ) -> zip:
         """
-        Key the items of specific keys from a dict in a form that mathes
+        Key the items of specific keys from a dict in a form that matches
         dict.items().
         """
         keys = []
