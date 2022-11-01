@@ -1,13 +1,53 @@
-from typing import Any, Union
+"""
+Setup the CLI for DataShuttle. Uses Click to wrap API arguments
+and decorator to inherit the API function docstring, which are
+used as --help arguments.
+"""
 
 import click
 
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils_mod import utils
 
-# @click.option('--repo-home', envvar='REPO_HOME', default='.repo')
-# @click.option('--debug/--no-debug', default=False,
-#            envvar='REPO_DEBUG')
+# ------------------------------------------------------------------------------------------
+# Utils
+# ------------------------------------------------------------------------------------------
+
+
+def inherit_docstring_from_subfunction(func):
+    """
+    Take the docstring from the sub-function (i.e.
+    the API function of the same name) and set the
+    docstring of the CLI command to it.
+    """
+    subfunction_docstring = getattr(DataShuttle, func.__name__).__doc__
+    new_dostring = "\n".join([subfunction_docstring, func.__doc__])
+
+    setattr(func, "__doc__", new_dostring)
+    return func
+
+
+def handle_sub_ses_names_list(names):
+    """
+    Process list input. Because CLI inputs must be
+    str or some other low-levle type (e.g. bool, int)
+    to minic list of strings use a resevered <> syntax.
+
+    Everything between <>, with space in the middle,
+    will be converted to list.
+
+    e.g. "<one two three>" = ["one", "two", "three"]
+    """
+    if names.strip()[0] == "<" and names.strip()[-1] == ">":
+        names_list = names.strip()[1:-1].split(" ")
+    else:
+        names_list = [names]
+    return names_list
+
+
+# ------------------------------------------------------------------------------------------
+# Entry
+# ------------------------------------------------------------------------------------------
 
 
 @click.group(invoke_without_command=True)
@@ -15,14 +55,29 @@ from datashuttle.utils_mod import utils
 @click.pass_context
 def entry(ctx, project_name):
     """
-    All Errors, Warnings will be propagated so no need to explicitly check at this level.
-    TODO: underscores go to dashes
-    TODO:
+    DataShuttle command line interface. To get detailed help for
+    commands, type 'python -m datashuttle <project_name> <command_name> --help'
+
+    On first use it is necessary to setup configurations. e.g.
+    'python -m datashuttle <project_name> make_config_file [args] [kwargs]'
+
+    see 'python -m datashuttle <project_name> make_config_file --help'
+    for arguments.
+
+    All command and argument names are matched exactly to the API /
+    documentation. To pass a list of strings as sub_names or ses_names,
+    use <> to start/end the list. This reserved syntax will be recognised
+    and all strings separated by a space will be used as distinct elements.
     """
     ctx.obj = DataShuttle(project_name)
 
 
-@entry.command()
+# ------------------------------------------------------------------------------------------
+# Setup
+# ------------------------------------------------------------------------------------------
+
+
+@entry.command("make_config_file")
 @click.option("--local_path", required=True, type=str)
 @click.option("--ssh_to_remote", required=True, type=bool)
 @click.option("--remote_path_local", required=False, type=str)
@@ -39,26 +94,26 @@ def entry(ctx, project_name):
 @click.option("--use_imaging", required=False, type=bool)
 @click.option("--use_histology", required=False, type=bool)
 @click.pass_context
+@inherit_docstring_from_subfunction
 def make_config_file(ctx, local_path, ssh_to_remote, **kwargs):
-    """
-    think more about None
-    """
+    """"""
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-    ctx.obj.make_config_file(local_path, ssh_to_remote, *filtered_kwargs)
+    ctx.obj.make_config_file(local_path, ssh_to_remote, **filtered_kwargs)
 
 
-@entry.command()
+@entry.command("update_config")
 @click.argument("option_key", type=str)
 @click.argument("new_info")
 @click.pass_context
+@inherit_docstring_from_subfunction
 def update_config(ctx, option_key, new_info):
-    """ """
+    """"""
     if option_key in [
-        "ssh_to_remote",  # this is not nice, need to find a way to type input depending on str value
+        "ssh_to_remote",
         "use_ephys",
-        "use_ephys_behav",  # TODO: also, it is still possible for users to input wrong type in update_configs
-        "use_ephys_behav_camera",  # TODO: this is still not create because it is not clear that user input string
+        "use_ephys_behav",
+        "use_ephys_behav_camera",
         "use_behav",
         "use_behav_camera",
         "use_imaging",
@@ -72,75 +127,148 @@ def update_config(ctx, option_key, new_info):
     ctx.obj.update_config(option_key, new_info)
 
 
-@entry.command()
+@entry.command("setup_ssh_connection_to_remote_server")
 @click.pass_context
+@inherit_docstring_from_subfunction
+def setup_ssh_connection_to_remote_server(ctx):
+    """"""
+    ctx.obj.setup_ssh_connection_to_remote_server()
+
+
+# ------------------------------------------------------------------------------------------
+# Make Dirs
+# ------------------------------------------------------------------------------------------
+
+
+@entry.command("make_sub_dir")
+@click.option("--experiment_type", type=str, required=True)
+@click.option("--sub_names", type=str, required=True)
+@click.option("--ses_names", type=str, required=False)
+@click.option("--make_ses_tree", type=bool, required=False)
+@click.pass_context
+@inherit_docstring_from_subfunction
+def make_sub_dir(ctx, experiment_type, sub_names, **kwargs):
+    """
+    FOR CLI INPUT: To input a list of strings
+    (to --sub_names, --ses_names), use the reserved
+    <> syntax. Everything between <> will be assumed to be
+    a list of string with elements separated by
+    spaces.
+
+    e.g. "<one two three>" = ["one", "two", "three"]
+    """
+    sub_names = handle_sub_ses_names_list(sub_names)
+    if kwargs["ses_names"] is not None:
+        kwargs["ses_names"] = handle_sub_ses_names_list(kwargs["ses_names"])
+
+    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
+    ctx.obj.make_sub_dir(experiment_type, sub_names, **filtered_kwargs)
+
+
+# ------------------------------------------------------------------------------------------
+# Transfer
+# ------------------------------------------------------------------------------------------
+
+
+@entry.command("upload_data")
+@click.option("--experiment_type", type=str, required=True)
+@click.option("--sub_names", type=str, required=True)
+@click.option("--ses_names", type=str, required=True)
+@click.option("--preview", is_flag=True)
+@click.pass_context
+@inherit_docstring_from_subfunction
+def upload_data(ctx, experiment_type, sub_names, ses_names, preview):
+    """
+    FOR CLI INPUT: To input a list of strings
+    (to --sub_names, --ses_names), use the reserved
+    <> syntax. Everything between <> will be assumed to be
+    a list of string with elements separated by
+    spaces.
+
+    e.g. "<one two three>" = ["one", "two", "three"]
+    """
+    sub_names = handle_sub_ses_names_list(sub_names)
+    ses_names = handle_sub_ses_names_list(ses_names)
+
+    ctx.obj.upload_data(experiment_type, sub_names, ses_names, preview)
+
+
+@entry.command("download_data")
+@click.option("--experiment_type", type=str, required=True)
+@click.option("--sub_names", type=str, required=True)
+@click.option("--ses_names", type=str, required=True)
+@click.option("--preview", is_flag=True)
+@click.pass_context
+@inherit_docstring_from_subfunction
+def download_data(ctx, experiment_type, sub_names, ses_names, preview):
+    """
+    FOR CLI INPUT: To input a list of strings
+    (to --sub_names, --ses_names), use the reserved
+    <> syntax. Everything between <> will be assumed to be
+    a list of string with elements separated by
+    spaces.
+
+    e.g. "<one two three>" = ["one", "two", "three"]
+    """
+    sub_names = handle_sub_ses_names_list(sub_names)
+    ses_names = handle_sub_ses_names_list(ses_names)
+
+    ctx.obj.download_data(experiment_type, sub_names, ses_names, preview)
+
+
+@entry.command("upload_project_dir_or_file")
+@click.argument("filepath", type=str, required=True)
+@click.option("--preview", is_flag=True)
+@click.pass_context
+@inherit_docstring_from_subfunction
+def upload_project_dir_or_file(ctx, filepath, preview):
+    """"""
+    ctx.obj.upload_project_dir_or_file(filepath, preview)
+
+
+@entry.command("download_project_dir_or_file")
+@click.argument("filepath", type=str, required=True)
+@click.option("--preview", is_flag=True)
+@click.pass_context
+@inherit_docstring_from_subfunction
+def download_project_dir_or_file(ctx, filepath, preview):
+    """"""
+    ctx.obj.download_project_dir_or_file(filepath, preview)
+
+
+# ------------------------------------------------------------------------------------------
+# Getters
+# ------------------------------------------------------------------------------------------
+
+
+@entry.command("get_local_path")
+@click.pass_context
+@inherit_docstring_from_subfunction
 def get_local_path(ctx):
+    """"""
     click.echo(ctx.obj.get_local_path())
 
 
-@entry.command()
+@entry.command("get_appdir_path")
 @click.pass_context
+@inherit_docstring_from_subfunction
 def get_appdir_path(ctx):
+    """"""
     click.echo(ctx.obj.get_appdir_path())
 
 
-@entry.command()
+@entry.command("get_config_path")
 @click.pass_context
+@inherit_docstring_from_subfunction
 def get_config_path(ctx):
+    """"""
     click.echo(ctx.obj.get_config_path())
 
 
-@entry.command()
+@entry.command("get_remote_path")
 @click.pass_context
+@inherit_docstring_from_subfunction
 def get_remote_path(ctx):
+    """"""
     click.echo(ctx.obj.get_remote_path())
-
-
-"""
-local_path,
-ssh_to_remote,
-remote_path_local,
-remote_path_ssh,
-remote_host_id,
-remote_host_username,
-sub_prefix, ses_prefix,
-use_ephys,
-use_ephys_behav,
-use_ephys_behav_camera,
-use_behav,
-use_behav_camera,
-use_imaging,
-use_histology
-
-remote_path_local: str = None,
-remote_path_ssh: str = None,
-remote_host_id: str = None,
-remote_host_username: str = None,
-sub_prefix: str = "sub-",
-ses_prefix: str = "ses-",
-use_ephys: bool = True,
-use_ephys_behav: bool = True,
-use_ephys_behav_camera: bool = True,
-use_behav: bool = True,
-use_behav_camera: bool = True,
-use_imaging: bool = True,
-use_histology: bool = True,
-"""
-"""
-@click.group()
-@click.pass_context
-def entry(ctx, project_name):
-
-    # ctx.obj =
-
-    breakpoint()
-"""
-"""
-@click.command()
-@click.argument('filename')
-@click.argument("command")
-def entry(filename, command):
-    Print FILENAME.
-    click.echo(filename)
-    click.echo(command)
-"""
