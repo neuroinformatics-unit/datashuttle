@@ -1,5 +1,4 @@
 import copy
-import os
 from os.path import join
 
 import pytest
@@ -19,14 +18,9 @@ class TestFileTransfer:
         is not possible to delete project.
         """
         test_project_name = "test_filesystem_transfer"
-
-        project = test_utils.setup_project_default_configs(
-            test_project_name,
-            local_path=tmp_path / test_project_name / "local",
-            remote_path=tmp_path / test_project_name / "remote",
+        project, cwd = test_utils.setup_project_fixture(
+            tmp_path, test_project_name
         )
-
-        cwd = os.getcwd()
         yield project
         test_utils.teardown_project(cwd, project)
 
