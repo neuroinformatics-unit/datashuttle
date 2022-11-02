@@ -12,6 +12,10 @@ import yaml
 
 from datashuttle.datashuttle import DataShuttle
 
+# ----------------------------------------------------------------------------------------------------------
+# Setup and Teardown Test Project
+# ----------------------------------------------------------------------------------------------------------
+
 
 def setup_project_default_configs(
     project_name,
@@ -86,6 +90,27 @@ def delete_project_if_it_exists(project_name):
         )
 
 
+def setup_project_fixture(tmp_path, test_project_name):
+
+    project = setup_project_default_configs(
+        test_project_name,
+        local_path=tmp_path / test_project_name / "local",
+        remote_path=tmp_path / test_project_name / "remote",
+    )
+
+    cwd = os.getcwd()
+    return project, cwd
+
+
+def get_protected_test_dir():
+    return "ds_protected_test_name"
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Test Configs
+# ----------------------------------------------------------------------------------------------------------
+
+
 def get_test_config_arguments_dict(
     set_as_defaults=None, required_arguments_only=None
 ):
@@ -141,8 +166,47 @@ def get_test_config_arguments_dict(
     return dict_
 
 
+def get_not_set_config_args(project):
+    return {
+        "local_path": r"C:/test/test_local/test_edit",
+        "remote_path_local": r"/nfs/testdir/test_edit2",
+        "remote_path_ssh": r"/nfs/testdir/test_edit3",
+        "remote_host_id": "test_id",
+        "remote_host_username": "test_host",
+        "sub_prefix": "sub-optional",
+        "ses_prefix": "ses-optional",
+        "use_ephys": not project.cfg["use_ephys"],
+        "use_ephys_behav": not project.cfg["use_ephys_behav"],
+        "use_ephys_behav_camera": not project.cfg["use_ephys_behav_camera"],
+        "use_behav": not project.cfg["use_behav"],
+        "use_behav_camera": not project.cfg["use_behav_camera"],
+        "use_histology": not project.cfg["use_histology"],
+        "use_imaging": not project.cfg["use_imaging"],
+        "ssh_to_remote": not project.cfg["ssh_to_remote"],
+        # ^test last so ssh items already set
+    }
+
+
+def get_default_directory_used():
+    return {
+        "ephys": True,
+        "ephys_behav": True,
+        "ephys_behav_camera": True,
+        "behav": True,
+        "behav_camera": True,
+        "imaging": True,
+        "histology": True,
+    }
+
+
+def get_config_path_with_cli(project_name=None):
+    stdout = run_cli(" get_config_path", project_name)
+    path_ = stdout[0].split(".yaml")[0] + ".yaml"
+    return path_
+
+
 # ----------------------------------------------------------------------------------------------------------
-# Test Helpers
+# Directory Checkers
 # ----------------------------------------------------------------------------------------------------------
 
 
@@ -240,49 +304,68 @@ def check_and_cd_dir(path_):
     """
     assert os.path.isdir(path_)
     os.chdir(path_)
-    print(f"checked: {path_}")  # -s flag
 
 
-def get_default_directory_used():
-    return {
-        "ephys": True,
-        "ephys_behav": True,
-        "ephys_behav_camera": True,
-        "behav": True,
-        "behav_camera": True,
-        "imaging": True,
-        "histology": True,
-    }
+def check_experiment_type_sub_ses_uploaded_correctly(
+    base_path_to_check,
+    experiment_type_to_transfer,
+    subs_to_upload=None,
+    ses_to_upload=None,
+):
+    """
+    Itereate through the project (experiment_type > ses > sub) and
+    check that the directories at each level match those that are
+    expected (passed in experiment / sub / ses to upload). Dirs
+    are searched with wildcard glob.
+    """
+    experiment_names = glob_basenames(join(base_path_to_check, "*"))
+    assert experiment_names == sorted(experiment_type_to_transfer)
+
+    if subs_to_upload:
+        for experiment_type in experiment_type_to_transfer:
+            sub_names = glob_basenames(
+                join(base_path_to_check, experiment_type, "*")
+            )
+            assert sub_names == sorted(subs_to_upload)
+
+            if ses_to_upload:
+
+                for sub in subs_to_upload:
+                    ses_names = glob_basenames(
+                        join(
+                            base_path_to_check,
+                            experiment_type,
+                            sub,
+                            "*",
+                        )
+                    )
+                    assert ses_names == sorted(ses_to_upload)
 
 
-def get_protected_test_dir():
-    return "ds_protected_test_name"  # TODO: get from configs
-
-
-def run_cli(command, project_name=None):
-
-    name = get_protected_test_dir() if project_name is None else project_name
-
-    result = subprocess.Popen(
-        " ".join(["python -m datashuttle", name, command]),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-    )  # shell=True  TODO: https://stackoverflow.com/questions/2408650/why-does-python-subprocess-hang-after-proc-communicate see no use shell...
-
-    stdout, stderr = result.communicate()
-    return stdout.decode("utf8"), stderr.decode("utf8")
-
-
-def setup_project_fixture(tmp_path, test_project_name):
-
-    project = setup_project_default_configs(
-        test_project_name,
-        local_path=tmp_path / test_project_name / "local",
-        remote_path=tmp_path / test_project_name / "remote",
+def make_and_check_local_project(project, experiment_type, subs, sessions):
+    """
+    Make a local project directory tree with the specified experiment_type,
+    subs, sessions and check it is made successfully.
+    """
+    project.make_sub_dir(
+        experiment_type,
+        subs,
+        sessions,
+        get_default_directory_used(),
     )
 
-    cwd = os.getcwd()
-    return project, cwd
+    check_directory_tree_is_correct(
+        project,
+        project.get_local_path(),
+        subs,
+        sessions,
+        get_default_directory_used(),
+    )
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Config Checkers
+# ----------------------------------------------------------------------------------------------------------
 
 
 def check_configs(project, kwargs):
@@ -336,99 +419,6 @@ def check_config_file(config_path, *kwargs):
             assert value == config_yaml[name], f"{name}"
 
 
-def get_not_set_config_args(project):
-    return {
-        "local_path": r"C:/test/test_local/test_edit",
-        "remote_path_local": r"/nfs/testdir/test_edit2",
-        "remote_path_ssh": r"/nfs/testdir/test_edit3",
-        "remote_host_id": "test_id",
-        "remote_host_username": "test_host",
-        "sub_prefix": "sub-optional",
-        "ses_prefix": "ses-optional",
-        "use_ephys": not project.cfg["use_ephys"],
-        "use_ephys_behav": not project.cfg["use_ephys_behav"],
-        "use_ephys_behav_camera": not project.cfg["use_ephys_behav_camera"],
-        "use_behav": not project.cfg["use_behav"],
-        "use_behav_camera": not project.cfg["use_behav_camera"],
-        "use_histology": not project.cfg["use_histology"],
-        "use_imaging": not project.cfg["use_imaging"],
-        "ssh_to_remote": not project.cfg["ssh_to_remote"],
-        # ^test last so ssh items already set
-    }
-
-
-def get_config_path_with_cli(project_name=None):
-    stdout = run_cli(" get_config_path", project_name)
-    path_ = stdout[0].split(".yaml")[0] + ".yaml"
-    return path_
-
-
-def make_and_check_local_project(project, experiment_type, subs, sessions):
-    """
-    Make a local project directory tree with the specified experiment_type,
-    subs, sessions and check it is made successfully.
-    """
-    project.make_sub_dir(
-        experiment_type,
-        subs,
-        sessions,
-        get_default_directory_used(),
-    )
-
-    check_directory_tree_is_correct(
-        project,
-        project.get_local_path(),
-        subs,
-        sessions,
-        get_default_directory_used(),
-    )
-
-
-def get_default_sub_sessions_to_test():
-    """
-    Cannonial subs / sessions for these tests
-    """
-    subs = ["sub-001", "sub-002", "sub-003"]
-    sessions = ["ses-001-23092022-13h50s", "ses-002", "ses-003"]
-    return subs, sessions
-
-
-def check_experiment_type_sub_ses_uploaded_correctly(
-    base_path_to_check,
-    experiment_type_to_transfer,
-    subs_to_upload=None,
-    ses_to_upload=None,
-):
-    """
-    Itereate through the project (experiment_type > ses > sub) and
-    check that the directories at each level match those that are
-    expected (passed in experiment / sub / ses to upload). Dirs
-    are searched with wildcard glob.
-    """
-    experiment_names = glob_basenames(join(base_path_to_check, "*"))
-    assert experiment_names == sorted(experiment_type_to_transfer)
-
-    if subs_to_upload:
-        for experiment_type in experiment_type_to_transfer:
-            sub_names = glob_basenames(
-                join(base_path_to_check, experiment_type, "*")
-            )
-            assert sub_names == sorted(subs_to_upload)
-
-            if ses_to_upload:
-
-                for sub in subs_to_upload:
-                    ses_names = glob_basenames(
-                        join(
-                            base_path_to_check,
-                            experiment_type,
-                            sub,
-                            "*",
-                        )
-                    )
-                    assert ses_names == sorted(ses_to_upload)  #
-
-
 # ----------------------------------------------------------------------------------------------------------
 # Test Helpers
 # ----------------------------------------------------------------------------------------------------------
@@ -455,3 +445,26 @@ def handle_upload_or_download(project, upload_or_download):
         transfer_function = project.upload_data
 
     return transfer_function, remote_path
+
+
+def get_default_sub_sessions_to_test():
+    """
+    Canonical subs / sessions for these tests
+    """
+    subs = ["sub-001", "sub-002", "sub-003"]
+    sessions = ["ses-001-23092022-13h50s", "ses-002", "ses-003"]
+    return subs, sessions
+
+
+def run_cli(command, project_name=None):
+
+    name = get_protected_test_dir() if project_name is None else project_name
+
+    result = subprocess.Popen(
+        " ".join(["python -m datashuttle", name, command]),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )  # shell=True  TODO: https://stackoverflow.com/questions/2408650/why-does-python-subprocess-hang-after-proc-communicate see no use shell...
+
+    stdout, stderr = result.communicate()
+    return stdout.decode("utf8"), stderr.decode("utf8")
