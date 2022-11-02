@@ -121,7 +121,7 @@ def make_config_file(ctx, local_path, ssh_to_remote, **kwargs):
 
 @entry.command("update_config")
 @click.argument("option_key", type=str)
-@click.argument("new_info")
+@click.argument("new_info", type=str)
 @click.pass_context
 @inherit_docstring_from_subfunction
 def update_config(ctx, option_key, new_info):
@@ -139,7 +139,7 @@ def update_config(ctx, option_key, new_info):
         if new_info not in ["True", "False"]:
             utils.raise_error("Input value must be True or False")
 
-        new_info = new_info is True
+        new_info = new_info == "True"
 
     run_command(ctx, ctx.obj.update_config, option_key, new_info)
 

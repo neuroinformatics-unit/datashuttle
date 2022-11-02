@@ -1,10 +1,13 @@
 import glob
 import os
+import pathlib
 import shutil
+import subprocess
 import warnings
 from os.path import join
 
 import appdirs
+import yaml
 
 from datashuttle.datashuttle import DataShuttle
 
@@ -130,7 +133,6 @@ def get_test_config_arguments_dict(
                 "use_imaging": False,
             }
         )
-
     return dict_
 
 
@@ -245,3 +247,111 @@ def get_default_directory_used():
         "imaging": True,
         "histology": True,
     }
+
+
+def get_protected_test_dir():
+    return "ds_protected_test_name"  # TODO: get from configs
+
+
+def run_cli(command, project_name=None):
+
+    name = get_protected_test_dir() if project_name is None else project_name
+
+    result = subprocess.run(
+        " ".join(["python -m datashuttle", name, command]),
+        shell=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+
+    return result.stdout.decode("utf8"), result.stderr.decode("utf8")
+
+
+def setup_project_fixture(tmp_path, test_project_name):
+
+    project = setup_project_default_configs(
+        test_project_name,
+        local_path=tmp_path / test_project_name / "local",
+        remote_path=tmp_path / test_project_name / "remote",
+    )
+
+    cwd = os.getcwd()
+    return project, cwd
+
+
+def check_configs(project, kwargs):
+    """"""
+    config_path = (
+        project.get_appdir_path() + "/config.yaml"
+    )  # TODO: can use new get_config()
+
+    if not os.path.isfile(config_path):
+        raise BaseException("Config file not found.")
+
+    check_project_configs(project, kwargs)
+    check_config_file(config_path, kwargs)
+
+
+def check_project_configs(
+    project,
+    *kwargs,
+):
+    """
+    Core function for checking the config against
+    provided configs (kwargs). Open the config.yaml file
+    and check the config values stored there,
+    and in project.cfg, against the provided configs.
+
+    Paths are stored as pathlib in the cfg but str in the .yaml
+    """
+    for arg_name, value in kwargs[0].items():
+
+        if arg_name in [
+            "local_path",
+            "remote_path_ssh",
+            "remote_path_local",
+        ]:
+            assert type(project.cfg[arg_name]) in [
+                pathlib.PosixPath,
+                pathlib.WindowsPath,
+            ]
+            assert value == project.cfg[arg_name].as_posix()
+
+        else:
+            assert value == project.cfg[arg_name], f"{arg_name}"
+
+
+def check_config_file(config_path, *kwargs):
+    """ """
+    with open(config_path, "r") as config_file:
+        config_yaml = yaml.full_load(config_file)
+
+        for name, value in kwargs[0].items():
+            assert value == config_yaml[name], f"{name}"
+
+
+def get_not_set_config_args(project):
+    return {
+        "local_path": r"C:/test/test_local/test_edit",
+        "remote_path_local": r"/nfs/testdir/test_edit2",
+        "remote_path_ssh": r"/nfs/testdir/test_edit3",
+        "remote_host_id": "test_id",
+        "remote_host_username": "test_host",
+        "sub_prefix": "sub-optional",
+        "ses_prefix": "ses-optional",
+        "use_ephys": not project.cfg["use_ephys"],
+        "use_ephys_behav": not project.cfg["use_ephys_behav"],
+        "use_ephys_behav_camera": not project.cfg["use_ephys_behav_camera"],
+        "use_behav": not project.cfg["use_behav"],
+        "use_behav_camera": not project.cfg["use_behav_camera"],
+        "use_histology": not project.cfg["use_histology"],
+        "use_imaging": not project.cfg["use_imaging"],
+        "ssh_to_remote": not project.cfg["ssh_to_remote"],
+        # ^test last so ssh items already set
+    }
+
+
+def get_config_path_with_cli(project_name=None):
+    stdout = run_cli(" get_config_path", project_name)
+    path_ = stdout[0].split(".yaml")[0] + ".yaml"
+    return path_
