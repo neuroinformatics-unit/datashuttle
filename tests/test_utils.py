@@ -1,3 +1,4 @@
+import copy
 import glob
 import os
 import pathlib
@@ -37,10 +38,10 @@ def setup_project_default_configs(
 
     if local_path:
         project.update_config("local_path", local_path)
+        delete_all_dirs_in_local_path(project)
 
     if remote_path:
         project.update_config("remote_path_local", remote_path)
-
         delete_all_dirs_in_remote_path(project)
 
     return project
@@ -52,18 +53,22 @@ def glob_basenames(search_path, recursive=False):
     return sorted(basenames)
 
 
-def teardown_project(cwd, project):
+def teardown_project(
+    cwd, project
+):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
     os.chdir(cwd)
     delete_all_dirs_in_remote_path(project)
     delete_project_if_it_exists(project.project_name)
 
 
+def delete_all_dirs_in_local_path(project):
+    if os.path.isdir(project.get_local_path()):
+        shutil.rmtree(project.get_local_path())
+
+
 def delete_all_dirs_in_remote_path(project):
     """"""
-    #   if os.path.isdir(project.get_local_path()):
-    #      shutil.rmtree(project.get_local_path())
-
     if os.path.isdir(project.get_remote_path()):
         shutil.rmtree(project.get_remote_path())
 
@@ -174,6 +179,7 @@ def check_directory_tree_is_correct(
             check_and_cd_dir(join(base_dir, directory.name))
 
             for sub in subs:
+
                 check_and_cd_dir(join(base_dir, directory.name, sub))
 
                 for ses in sessions:
@@ -257,14 +263,14 @@ def run_cli(command, project_name=None):
 
     name = get_protected_test_dir() if project_name is None else project_name
 
-    result = subprocess.run(
+    result = subprocess.Popen(
         " ".join(["python -m datashuttle", name, command]),
-        shell=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-    )
+    )  # shell=True  TODO: https://stackoverflow.com/questions/2408650/why-does-python-subprocess-hang-after-proc-communicate see no use shell...
 
-    return result.stdout.decode("utf8"), result.stderr.decode("utf8")
+    stdout, stderr = result.communicate()
+    return stdout.decode("utf8"), stderr.decode("utf8")
 
 
 def setup_project_fixture(tmp_path, test_project_name):
@@ -355,3 +361,97 @@ def get_config_path_with_cli(project_name=None):
     stdout = run_cli(" get_config_path", project_name)
     path_ = stdout[0].split(".yaml")[0] + ".yaml"
     return path_
+
+
+def make_and_check_local_project(project, experiment_type, subs, sessions):
+    """
+    Make a local project directory tree with the specified experiment_type,
+    subs, sessions and check it is made successfully.
+    """
+    project.make_sub_dir(
+        experiment_type,
+        subs,
+        sessions,
+        get_default_directory_used(),
+    )
+
+    check_directory_tree_is_correct(
+        project,
+        project.get_local_path(),
+        subs,
+        sessions,
+        get_default_directory_used(),
+    )
+
+
+def get_default_sub_sessions_to_test():
+    """
+    Cannonial subs / sessions for these tests
+    """
+    subs = ["sub-001", "sub-002", "sub-003"]
+    sessions = ["ses-001-23092022-13h50s", "ses-002", "ses-003"]
+    return subs, sessions
+
+
+def check_experiment_type_sub_ses_uploaded_correctly(
+    base_path_to_check,
+    experiment_type_to_transfer,
+    subs_to_upload=None,
+    ses_to_upload=None,
+):
+    """
+    Itereate through the project (experiment_type > ses > sub) and
+    check that the directories at each level match those that are
+    expected (passed in experiment / sub / ses to upload). Dirs
+    are searched with wildcard glob.
+    """
+    experiment_names = glob_basenames(join(base_path_to_check, "*"))
+    assert experiment_names == sorted(experiment_type_to_transfer)
+
+    if subs_to_upload:
+        for experiment_type in experiment_type_to_transfer:
+            sub_names = glob_basenames(
+                join(base_path_to_check, experiment_type, "*")
+            )
+            assert sub_names == sorted(subs_to_upload)
+
+            if ses_to_upload:
+
+                for sub in subs_to_upload:
+                    ses_names = glob_basenames(
+                        join(
+                            base_path_to_check,
+                            experiment_type,
+                            sub,
+                            "*",
+                        )
+                    )
+                    assert ses_names == sorted(ses_to_upload)  #
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Test Helpers
+# ----------------------------------------------------------------------------------------------------------
+
+
+def handle_upload_or_download(project, upload_or_download):
+    """
+    To keep things consistent and avoid the pain of writing
+    files over SSH, to test download just swap the remote
+    and local server (so things are still transferred from
+    local machine to remote, but using the download function).
+    """
+    local_path = copy.deepcopy(project.get_local_path())
+    remote_path = copy.deepcopy(project.get_remote_path())
+
+    if upload_or_download == "download":
+
+        project.update_config("local_path", remote_path)
+        project.update_config("remote_path_local", local_path)
+
+        transfer_function = project.download_data
+
+    else:
+        transfer_function = project.upload_data
+
+    return transfer_function, remote_path

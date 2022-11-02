@@ -1,8 +1,8 @@
 import warnings
 
 import pytest
+import test_utils
 
-import tests.test_utils as test_utils
 from datashuttle.datashuttle import DataShuttle
 
 TEST_PROJECT_NAME = "test_configs"

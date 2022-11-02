@@ -68,9 +68,7 @@ class Configs(UserDict):
             )
 
         if type(self["ssh_to_remote"]) != bool:
-            utils.raise_error(
-                "ssh_to_remote must be a boolean."
-            )
+            utils.raise_error("ssh_to_remote must be a boolean.")
 
     def update_an_entry(self, option_key: str, new_info: Any):
         """
