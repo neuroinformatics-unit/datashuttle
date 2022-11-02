@@ -3,6 +3,9 @@ Setup the CLI for DataShuttle. Uses Click to wrap API arguments
 and decorator to inherit the API function docstring, which are
 used as --help arguments.
 """
+
+from functools import wraps
+
 import click
 import simplejson
 
@@ -14,6 +17,19 @@ PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 # ------------------------------------------------------------------------------------------
 # Utils
 # ------------------------------------------------------------------------------------------
+
+
+def convert_none_from_str_to_nonetype(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+
+        for key, value in kwargs.items():
+            if value == "None":
+                kwargs[key] = None
+
+        return func(*args, **kwargs)
+
+    return wrapper
 
 
 def inherit_docstring_from_subfunction(func):
@@ -41,7 +57,10 @@ def handle_sub_ses_names_list(names):
     e.g. "<one two three>" = ["one", "two", "three"]
     """
     if names.strip()[0] == "<" and names.strip()[-1] == ">":
-        names_list = names.strip()[1:-1].split(" ")
+        names_list = names.strip()[1:-1].split(",")
+        names_list = [
+            ele.strip() for ele in names_list
+        ]  # TODO: assumes no leading or ending " " of sub / ses names
     else:
         names_list = [names]
     return names_list
@@ -68,8 +87,9 @@ def entry(ctx, project_name):
 
     All command and argument names are matched exactly to the API /
     documentation. To pass a list of strings as sub_names or ses_names,
-    use <> to start/end the list. This reserved syntax will be recognised
-    and all strings separated by a space will be used as distinct elements.
+    use "<>" to start/end the list and seperate all elements with a comma.
+    This reserved syntax will be recognised and all strings separated by
+    a comma will be used as distinct elements.
     """
     ctx.obj = DataShuttle(project_name)
     ctx.obj.run_as_test = project_name == PROTECTED_TEST_PROJECT_NAME
@@ -106,6 +126,7 @@ def run_command(ctx, function, *args, **kwargs):
 @click.option("--use_histology", required=False, type=bool)
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def make_config_file(ctx, local_path, ssh_to_remote, **kwargs):
     """"""
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
@@ -121,11 +142,15 @@ def make_config_file(ctx, local_path, ssh_to_remote, **kwargs):
 
 @entry.command("update_config")
 @click.argument("option_key", type=str)
-@click.argument("new_info", type=str)
+@click.argument("new_info")
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def update_config(ctx, option_key, new_info):
     """"""
+    if new_info == "None":
+        new_info = None
+
     if option_key in [
         "ssh_to_remote",
         "use_ephys",
@@ -147,6 +172,7 @@ def update_config(ctx, option_key, new_info):
 @entry.command("setup_ssh_connection_to_remote_server")
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def setup_ssh_connection_to_remote_server(ctx):
     """"""
     ctx.obj.setup_ssh_connection_to_remote_server()
@@ -164,13 +190,14 @@ def setup_ssh_connection_to_remote_server(ctx):
 @click.option("--make_ses_tree", type=bool, required=False)
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def make_sub_dir(ctx, experiment_type, sub_names, **kwargs):
     """
     FOR CLI INPUT: To input a list of strings
     (to --experiment_type, --sub_names, --ses_names),
     use the reserved "<>" syntax. Everything between
     "<>" will be assumed to be a list of string with
-    elements separated by spaces.
+    elements separated by commas.
 
     e.g. "<one two three>" = ["one", "two", "three"]
     """
@@ -203,13 +230,14 @@ def make_sub_dir(ctx, experiment_type, sub_names, **kwargs):
 @click.option("--preview", is_flag=True)
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def upload_data(ctx, experiment_type, sub_names, ses_names, preview):
     """
     FOR CLI INPUT: To input a list of strings
     (to --experiment_type, --sub_names, --ses_names),
     use the reserved "<>" syntax. Everything between
     "<>" will be assumed to be a list of string with
-    elements separated by spaces.
+    elements separated by commas.
 
     e.g. "<one two three>" = ["one", "two", "three"]
     """
@@ -234,13 +262,14 @@ def upload_data(ctx, experiment_type, sub_names, ses_names, preview):
 @click.option("--preview", is_flag=True)
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def download_data(ctx, experiment_type, sub_names, ses_names, preview):
     """
     FOR CLI INPUT: To input a list of strings
     (to --experiment_type, --sub_names, --ses_names),
     use the reserved "<>" syntax. Everything between
     "<>" will be assumed to be a list of string with
-    elements separated by spaces.
+    elements separated by commas.
 
     e.g. "<one two three>" = ["one", "two", "three"]
     """
@@ -263,6 +292,7 @@ def download_data(ctx, experiment_type, sub_names, ses_names, preview):
 @click.option("--preview", is_flag=True)
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def upload_project_dir_or_file(ctx, filepath, preview):
     """"""
     run_command(ctx, ctx.obj.upload_project_dir_or_file, filepath, preview)
@@ -273,6 +303,7 @@ def upload_project_dir_or_file(ctx, filepath, preview):
 @click.option("--preview", is_flag=True)
 @click.pass_context
 @inherit_docstring_from_subfunction
+@convert_none_from_str_to_nonetype
 def download_project_dir_or_file(ctx, filepath, preview):
     """"""
     run_command(ctx, ctx.obj.download_project_dir_or_file, filepath, preview)
