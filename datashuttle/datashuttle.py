@@ -511,7 +511,7 @@ class DataShuttle:
 
         extra_arguments = "--create-empty-src-dirs"
         if preview:
-            extra_arguments += " --dry_run"
+            extra_arguments += " --dry-run"
 
         if upload_or_download == "upload":
 
