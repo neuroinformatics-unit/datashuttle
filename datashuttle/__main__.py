@@ -14,11 +14,14 @@ PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 
 def run_command(PROJECT, function, *args, **kwargs):
-    """"""
+    """
+    If project is protected test name, dump the variables to
+    stdout so they can be checked. Otherwise, run the
+    DataShuttle function.
+    """
     if PROJECT.project_name == PROTECTED_TEST_PROJECT_NAME:
         print("TEST_OUT_START: ", simplejson.dumps([args, kwargs]))
     else:
-        breakpoint()
         function(*args, **kwargs)
 
 
@@ -33,14 +36,39 @@ def make_kwargs(args):
 # Entry
 # ------------------------------------------------------------------------------------------
 
+description = (
+    "----------------------------------------------------------------------\n"
+    "DataShuttle command line interface. "
+    "\n\n"
+    "datashuttle [PROJECT NAME] [COMMAND] [OPTIONS]"
+    "\n\n"
+    "To get detailed help for commands and their optional arguments, "
+    "\ntype python -m datashuttle [PROJECT NAME] [COMMAND] --help'"
+    "\n\n"
+    "On first use it is necessary to setup configurations. \ne.g."
+    "'python -m datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
+    "\n\n"
+    "see \n'python -m datashuttle <project_name> make_config_file --help'"
+    "\nfor full list of options."
+    "\n\n"
+    "All command and argument names are matched to the API "
+    "documentation. "
+    "\n(str) inputs do not need to be in quotations."
+    "\n\n"
+    "----------------------------------------------------------------------"
+)
+
 parser = argparse.ArgumentParser(
     prog="datashuttle",
-    usage="%(prog)s [PROJECT NAME] [COMMAND] [OPTIONS]",
-    description="PLACEHOLDER DESCRIPTION",
-)  # TODO: check aginst parserck
+    usage="%(prog)s [PROJECT NAME]",
+    description=description,
+    formatter_class=argparse.RawTextHelpFormatter,
+)
 
-project_name_argument = parser.add_argument(dest="project_name")
-subparsers = parser.add_subparsers()
+project_name_argument = parser.add_argument(
+    dest="project_name",
+)
+subparsers = parser.add_subparsers(metavar="\ncommands:")
 
 # ------------------------------------------------------------------------------------------
 # Setup
@@ -60,46 +88,105 @@ def make_config_file(args):
 
 
 make_config_file_parser = subparsers.add_parser(
-    "make_config_file", usage=DataShuttle.make_config_file.__doc__
+    "make_config_file",
+    description=DataShuttle.make_config_file.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
 )
 make_config_file_parser.set_defaults(func=make_config_file)
 
-make_config_file_parser.add_argument("--local_path", required=True, type=str)
 make_config_file_parser.add_argument(
-    "--ssh_to_remote", required=False, action="store_true"
+    "local_path", type=str, help="Required: (str)"
+)
+
+make_config_file_parser = make_config_file_parser.add_argument_group(
+    "named arguments:"
 )
 make_config_file_parser.add_argument(
-    "--remote_path_local", required=False, type=str
+    "--ssh_to_remote",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
 )
 make_config_file_parser.add_argument(
-    "--remote_path_ssh", required=False, type=str
+    "--remote_path_local",
+    required=False,
+    type=str,
+    help="This or --remote_path_ssh must be set(str)",
+    metavar="",
 )
 make_config_file_parser.add_argument(
-    "--remote_host_id", required=False, type=str
-)
-make_config_file_parser.add_argument("--remote_host_username", required=False)
-make_config_file_parser.add_argument("--sub_prefix", required=False, type=str)
-make_config_file_parser.add_argument("--ses_prefix", required=False, type=str)
-make_config_file_parser.add_argument(
-    "--use_ephys", required=False, action="store_true"
+    "--remote_path_ssh",
+    required=False,
+    type=str,
+    help="This or --remote_path_local must be set(str)",
+    metavar="",
 )
 make_config_file_parser.add_argument(
-    "--use_ephys_behav", required=False, action="store_true"
+    "--remote_host_id",
+    required=False,
+    type=str,
+    help="(str)",
+    metavar="",
 )
 make_config_file_parser.add_argument(
-    "--use_ephys_behav_camera", required=False, action="store_true"
+    "--remote_host_username", required=False, help="(str)", metavar=""
 )
 make_config_file_parser.add_argument(
-    "--use_behav", required=False, action="store_true"
+    "--sub_prefix",
+    required=False,
+    type=str,
+    help="(str) default: sub-",
+    metavar="",
 )
 make_config_file_parser.add_argument(
-    "--use_behav_camera", required=False, action="store_true"
+    "--ses_prefix",
+    required=False,
+    type=str,
+    help="(str) default: ses-",
+    metavar="",
 )
 make_config_file_parser.add_argument(
-    "--use_imaging", required=False, action="store_true"
+    "--use_ephys",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
 )
 make_config_file_parser.add_argument(
-    "--use_histology", required=False, action="store_true"
+    "--use_ephys_behav",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
+)
+make_config_file_parser.add_argument(
+    "--use_ephys_behav_camera",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
+)
+make_config_file_parser.add_argument(
+    "--use_behav",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
+)
+make_config_file_parser.add_argument(
+    "--use_behav_camera",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
+)
+make_config_file_parser.add_argument(
+    "--use_imaging",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
+)
+make_config_file_parser.add_argument(
+    "--use_histology",
+    required=False,
+    action="store_true",
+    help="flag (default False)",
 )
 
 
@@ -141,12 +228,21 @@ def update_config(args):
 
 
 make_config_file_parser = subparsers.add_parser(
-    "update_config", usage=DataShuttle.update_config.__doc__
+    "update_config",
+    description=DataShuttle.update_config.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
 )
 make_config_file_parser.set_defaults(func=update_config)
 
-make_config_file_parser.add_argument("option_key", action="store")
-make_config_file_parser.add_argument("new_info", action="store")
+make_config_file_parser.add_argument(
+    "option_key",
+    action="store",
+    help="(str) (see make_config_file --help",
+)
+make_config_file_parser.add_argument(
+    "new_info", action="store", help="(str or bool) depending on option key"
+)
 
 # ------------------------------------------------------------------------------------------
 # Setup SSH
@@ -159,7 +255,9 @@ def setup_ssh_connection_to_remote_server(args):
 
 setup_ssh_connection_to_remote_server_parser = subparsers.add_parser(
     "setup_ssh_connection_to_remote_server",
-    usage=DataShuttle.setup_ssh_connection_to_remote_server.__doc__,
+    description=DataShuttle.setup_ssh_connection_to_remote_server.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
 )
 setup_ssh_connection_to_remote_server_parser.set_defaults(
     func=setup_ssh_connection_to_remote_server
@@ -188,20 +286,47 @@ def make_sub_dir(args):  # TODO: fix doc! wrong!
 
 
 make_sub_dir_parser = subparsers.add_parser(
-    "make_sub_dir", usage=DataShuttle.make_sub_dir.__doc__
+    "make_sub_dir",
+    description=DataShuttle.make_sub_dir.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
+)
+make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
+    "named arguments:"
 )
 make_sub_dir_parser.set_defaults(func=make_sub_dir)
 
 make_sub_dir_parser.add_argument(
-    "--experiment_type", type=str, nargs="+", required=True
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple) (selection of data types, or 'all')",
+    metavar="",
 )
 make_sub_dir_parser.add_argument(
-    "--sub_names", type=str, nargs="+", required=True
+    "--sub_names",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple) (selection of data types, or 'all')",
+    metavar="",
 )
-make_sub_dir_parser.add_argument("--ses_names", type=str, required=False)
 make_sub_dir_parser.add_argument(
-    "--make_ses_tree", type=bool, required=False
-)  # TODO: flip this to match
+    "--ses_names",
+    nargs="+",
+    type=str,
+    required=False,
+    help="Optional: (str, single or multiple) (selection of data types, or 'all')",
+    metavar="",
+)
+make_sub_dir_parser.add_argument(
+    "--make_ses_tree",
+    type=bool,
+    required=False,
+    help="Optional: flag (default False)",
+    metavar="",
+)
 
 # ------------------------------------------------------------------------------------------
 # Transfer
@@ -230,21 +355,43 @@ def upload_data(args):
 
 
 upload_data_parser = subparsers.add_parser(
-    "upload_data", usage=DataShuttle.upload_data.__doc__
+    "upload_data",
+    description=DataShuttle.upload_data.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
 )
+upload_data_parser = upload_data_parser.add_argument_group("named arguments:")
 upload_data_parser.set_defaults(func=upload_data)
 
 upload_data_parser.add_argument(
-    "--experiment_type", type=str, nargs="+", required=True
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple) (selection of data types, or 'all')",
+    metavar="",
 )
 upload_data_parser.add_argument(
-    "--sub_names", type=str, nargs="+", required=True
+    "--sub_names",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple)",
+    metavar="",
 )
 upload_data_parser.add_argument(
-    "--ses_names", type=str, nargs="+", required=True
+    "--ses_names",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple)",
+    metavar="",
 )
 upload_data_parser.add_argument(
-    "--preview", required=False, action="store_true"
+    "--preview",
+    required=False,
+    action="store_true",
+    help="Optional: flag (default False)",
 )
 
 # Download Data --------------------------------------------------------------------------
@@ -270,21 +417,45 @@ def download_data(args):  # TODO: FIX DOC!
 
 
 download_data_parser = subparsers.add_parser(
-    "download_data", usage=DataShuttle.download_data.__doc__
+    "download_data",
+    description=DataShuttle.download_data.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
+)
+download_data_parser = download_data_parser.add_argument_group(
+    "named arguments:"
 )
 download_data_parser.set_defaults(func=download_data)
 
 download_data_parser.add_argument(
-    "--experiment_type", type=str, nargs="+", required=True
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str or list) (selection of data types, or 'all')",
+    metavar="",
 )
 download_data_parser.add_argument(
-    "--sub_names", type=str, nargs="+", required=True
+    "--sub_names",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple)",
+    metavar="",
 )
 download_data_parser.add_argument(
-    "--ses_names", type=str, nargs="+", required=True
+    "--ses_names",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple)",
+    metavar="",
 )
 download_data_parser.add_argument(
-    "--preview", required=False, action="store_true"
+    "--preview",
+    required=False,
+    action="store_true",
+    help="Optional: flag (default False)",
 )
 
 # Upload Project Dir or File -----------------------------------------------------------
@@ -299,13 +470,17 @@ def upload_project_dir_or_file(args):
 
 upload_project_dir_or_file_parser = subparsers.add_parser(
     "upload_project_dir_or_file",
-    usage=DataShuttle.upload_project_dir_or_file.__doc__,
+    description=DataShuttle.upload_project_dir_or_file.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
 )
 upload_project_dir_or_file_parser.set_defaults(func=upload_project_dir_or_file)
 
-upload_project_dir_or_file_parser.add_argument("filepath", type=str)
 upload_project_dir_or_file_parser.add_argument(
-    "--preview", action="store_true"
+    "filepath", type=str, help="Required: (str)"
+)
+upload_project_dir_or_file_parser.add_argument(
+    "--preview", action="store_true", help="flag (default False)"
 )
 
 # Download Project Dir or File ---------------------------------------------------------
@@ -320,15 +495,19 @@ def download_project_dir_or_file(args):
 
 download_project_dir_or_file_parser = subparsers.add_parser(
     "download_project_dir_or_file",
-    usage=DataShuttle.download_project_dir_or_file.__doc__,
+    description=DataShuttle.download_project_dir_or_file.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
 )
 download_project_dir_or_file_parser.set_defaults(
     func=download_project_dir_or_file
 )
 
-download_project_dir_or_file_parser.add_argument("filepath", type=str)
 download_project_dir_or_file_parser.add_argument(
-    "--preview", action="store_true"
+    "filepath", type=str, help="Required: (str)"
+)
+download_project_dir_or_file_parser.add_argument(
+    "--preview", action="store_true", help="flag (default False)"
 )
 
 # ------------------------------------------------------------------------------------------
@@ -346,7 +525,8 @@ def get_local_path(args):
 
 
 get_local_path_parser = subparsers.add_parser(
-    "get_local_path", usage=DataShuttle.get_local_path.__doc__
+    "get_local_path",
+    description=DataShuttle.get_local_path.__doc__,
 )
 get_local_path_parser.set_defaults(func=get_local_path)
 
@@ -359,7 +539,8 @@ def get_appdir_path(args):
 
 
 get_appdir_path_parser = subparsers.add_parser(
-    "get_appdir_path", usage=DataShuttle.get_appdir_path.__doc__
+    "get_appdir_path",
+    description=DataShuttle.get_appdir_path.__doc__,
 )
 get_appdir_path_parser.set_defaults(func=get_appdir_path)
 
@@ -372,7 +553,8 @@ def get_config_path(args):
 
 
 get_config_path_parser = subparsers.add_parser(
-    "get_config_path", usage=DataShuttle.get_config_path.__doc__
+    "get_config_path",
+    description=DataShuttle.get_config_path.__doc__,
 )
 get_config_path_parser.set_defaults(func=get_config_path)
 
@@ -385,7 +567,8 @@ def get_remote_path(args):
 
 
 get_remote_path_parser = subparsers.add_parser(
-    "get_remote_path", usage=DataShuttle.get_remote_path.__doc__
+    "get_remote_path",
+    description=DataShuttle.get_remote_path.__doc__,
 )
 get_remote_path_parser.set_defaults(func=get_remote_path)
 
@@ -398,7 +581,8 @@ def show_configs(args):
 
 
 show_configs_parser = subparsers.add_parser(
-    "show_configs", usage=DataShuttle.show_configs.__doc__
+    "show_configs",
+    description=DataShuttle.show_configs.__doc__,
 )
 show_configs_parser.set_defaults(func=show_configs)
 
