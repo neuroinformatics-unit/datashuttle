@@ -24,19 +24,22 @@ from datashuttle.utils_mod.directory_class import Directory
 
 class DataShuttle:
     """
-    Main datashuttle class for data organisation and transfer in
-    BIDS-style project directory. The expected organisation is a
-    central repository on a remote machine ('remote') that contains
-    all project data. This is connected to multiple local machines
-    ('local') which each contain a subset of the full project (e.g.
-    machine for electrophysiology collection, machine for behavioural
-    connection, machine for analysis for specific data etc.).
+    DataShuttle is a tool for convenient scientific
+    project management and transfer in BIDS format.
 
-    On first use on a new profile, show warning prompting to set
-    configurations with the function make_config_file().
+    The expected organisation is a central repository
+    on a remote machine  ('remote') that contains all
+    project data. This is connected to multiple local
+    machines ('local') which each contain a subset of
+    the full project (e.g. machine for electrophysiology
+    collection, machine for behavioural connection, machine
+    for analysis for specific data etc.).
 
-    For transferring data between a remote data storage with SSH,
-    use setup setup_ssh_connection_to_remote_server().
+    On first use on a new profile, show warning prompting
+    to set configurations with the function make_config_file().
+
+    For transferring data between a remote data storage
+    with SSH, use setup setup_ssh_connection_to_remote_server().
     This will allow you to check the server Key, add host key to
     profile if accepted, and setup ssh key pair.
 
