@@ -161,10 +161,10 @@ def update_config(ctx, option_key, new_info):
         "use_imaging",
         "use_histology",
     ]:
-        if new_info not in ["True", "False"]:
+        if new_info not in ["True", "False", "true", "false"]:
             utils.raise_error("Input value must be True or False")
 
-        new_info = new_info == "True"
+        new_info = new_info in ["True", "true"]
 
     run_command(ctx, ctx.obj.update_config, option_key, new_info)
 
