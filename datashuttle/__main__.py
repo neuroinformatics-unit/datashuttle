@@ -1,5 +1,4 @@
 import argparse
-import sys
 
 import simplejson
 
@@ -101,7 +100,7 @@ make_config_file_parser.add_argument(
 
 make_config_file_parser = make_config_file_parser.add_argument_group(
     "named arguments:"
-)
+)  # type: ignore
 make_config_file_parser.add_argument(
     "--ssh_to_remote",
     required=False,
@@ -268,16 +267,8 @@ setup_ssh_connection_to_remote_server_parser.set_defaults(
 # ------------------------------------------------------------------------------------------
 
 
-def make_sub_dir(args):  # TODO: fix doc! wrong!
-    """
-    FOR CLI INPUT: To input a list of strings
-    (to --experiment_type, --sub_names, --ses_names),
-    use the reserved "<>" syntax. Everything between
-    "<>" will be assumed to be a list of string with
-    elements separated by commas.
-
-    e.g. "<one two three>" = ["one", "two", "three"]
-    """
+def make_sub_dir(args):
+    """"""
     kwargs = make_kwargs(args)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
@@ -293,7 +284,7 @@ make_sub_dir_parser = subparsers.add_parser(
 )
 make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
     "named arguments:"
-)
+)  # type: ignore
 make_sub_dir_parser.set_defaults(func=make_sub_dir)
 
 make_sub_dir_parser.add_argument(
@@ -321,11 +312,10 @@ make_sub_dir_parser.add_argument(
     metavar="",
 )
 make_sub_dir_parser.add_argument(
-    "--make_ses_tree",
-    type=bool,
+    "--dont_make_ses_tree",
     required=False,
+    action="store_true",
     help="Optional: flag (default False)",
-    metavar="",
 )
 
 # ------------------------------------------------------------------------------------------
@@ -336,15 +326,7 @@ make_sub_dir_parser.add_argument(
 
 
 def upload_data(args):
-    """
-    FOR CLI INPUT: To input a list of strings
-    (to --experiment_type, --sub_names, --ses_names),
-    use the reserved "<>" syntax. Everything between
-    "<>" will be assumed to be a list of string with
-    elements separated by commas.
-
-    e.g. "<one two three>" = ["one", "two", "three"]
-    """
+    """"""
     kwargs = make_kwargs(args)
 
     run_command(
@@ -360,7 +342,9 @@ upload_data_parser = subparsers.add_parser(
     formatter_class=argparse.RawTextHelpFormatter,
     help="",
 )
-upload_data_parser = upload_data_parser.add_argument_group("named arguments:")
+upload_data_parser = upload_data_parser.add_argument_group(
+    "named arguments:"
+)  # type: ignore
 upload_data_parser.set_defaults(func=upload_data)
 
 upload_data_parser.add_argument(
@@ -398,15 +382,7 @@ upload_data_parser.add_argument(
 
 
 def download_data(args):  # TODO: FIX DOC!
-    """
-    FOR CLI INPUT: To input a list of strings
-    (to --experiment_type, --sub_names, --ses_names),
-    use the reserved "<>" syntax. Everything between
-    "<>" will be assumed to be a list of string with
-    elements separated by commas.
-
-    e.g. "<one two three>" = ["one", "two", "three"]
-    """
+    """"""
     kwargs = make_kwargs(args)
 
     run_command(
@@ -423,7 +399,7 @@ download_data_parser = subparsers.add_parser(
     help="",
 )
 download_data_parser = download_data_parser.add_argument_group(
-    "named arguments:"
+    "named arguments:"  # type: ignore
 )
 download_data_parser.set_defaults(func=download_data)
 
@@ -592,5 +568,4 @@ show_configs_parser.set_defaults(func=show_configs)
 
 args = parser.parse_args()
 PROJECT = DataShuttle(args.project_name)
-PROJECT.run_as_test = args.project_name == PROTECTED_TEST_PROJECT_NAME
 args.func(args)

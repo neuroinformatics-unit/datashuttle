@@ -131,14 +131,14 @@ class TestCommandLineInterface:
             "--experiment_type all "
             "--sub_names one "
             "--ses_names two "
-            "--make_ses_tree False"
+            "--dont_make_ses_tree True"
         )
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == ["all"]
         assert args_[1] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
-        assert kwargs_["make_ses_tree"] is False
+        assert kwargs_["dont_make_ses_tree"] is True
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_upload_download_data_variables(self, upload_or_download):
