@@ -130,7 +130,7 @@ class DataShuttle:
         experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list] = None,
-        make_ses_tree: bool = True,
+        dont_make_ses_tree: bool = False,
     ):
         """
         Make a subject directory in the data type directory. By default,
@@ -146,14 +146,14 @@ class DataShuttle:
         :param ses_names:       session names (same format as subject name).
                                 If no session is provided, defaults to
                                 "ses-001".
-        :param make_ses_tree:   option to make the entire session tree under
-                                the subject directory. If False, the subject
+        :param dont_make_ses_tree:   option to make the entire session tree under
+                                the subject directory. If True, the subject
                                 directory only will be created.
         """
         sub_names = self._process_names(sub_names, "sub")
 
         if ses_names is None:
-            if make_ses_tree:
+            if not dont_make_ses_tree:
                 ses_names = [self.cfg["ses_prefix"] + "001"]
             else:
                 ses_names = []
@@ -164,7 +164,7 @@ class DataShuttle:
             experiment_type,
             sub_names,
             ses_names,
-            make_ses_tree,
+            dont_make_ses_tree,
             process_names=False,
         )
 
@@ -563,7 +563,7 @@ class DataShuttle:
         experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        make_ses_tree: bool = True,
+        dont_make_ses_tree: bool = False,
         process_names: bool = True,
     ):
         """
@@ -593,9 +593,9 @@ class DataShuttle:
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 
-        :param make_ses_tree:   option to make the entire session tree
+        :param dont_make_ses_tree:   option to make the entire session tree
                                 under the subject directory.
-                                If False, the subject directory only
+                                If True, the subject directory only
                                 will be created.
         :param process_names:   option to process names or not (e.g.
                                 if names were processed already).
@@ -640,7 +640,7 @@ class DataShuttle:
 
                         utils.make_datashuttle_metadata_folder(ses_path)
 
-                        if make_ses_tree:
+                        if not dont_make_ses_tree:
                             utils.make_ses_directory_tree(
                                 sub,
                                 ses,

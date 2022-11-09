@@ -223,7 +223,7 @@ class TestMakeDirs:
         """
         Make sub directory only, check it is made and no lower level dirs exist
         """
-        project.make_sub_dir("ephys", "001", make_ses_tree=False)
+        project.make_sub_dir("ephys", "001", dont_make_ses_tree=True)
         sub_path = join(project.get_local_path(), "ephys", "sub-001")
         test_utils.check_and_cd_dir(sub_path)
         assert glob.glob(join(sub_path, "*")) == []
@@ -233,7 +233,7 @@ class TestMakeDirs:
         Make ses directory (in a sub dir) only, and check no
         lower level dirs exist
         """
-        project.make_sub_dir("ephys", "001", "001", make_ses_tree=False)
+        project.make_sub_dir("ephys", "001", "001", dont_make_ses_tree=True)
         ses_path = join(
             project.get_local_path(), "ephys", "sub-001", "ses-001"
         )
@@ -251,7 +251,7 @@ class TestMakeDirs:
         project.make_sub_dir(
             "ephys",
             ["sub-001", "001", "edited_sub_prefix_1"],
-            make_ses_tree=False,
+            dont_make_ses_tree=True,
         )
 
         base_path = join(project.get_local_path(), "ephys")
@@ -280,7 +280,7 @@ class TestMakeDirs:
         Note this will fail when new top level dirs are added, and should be
         updated.
         """
-        project.make_sub_dir(file_info, "sub-001", make_ses_tree=False)
+        project.make_sub_dir(file_info, "sub-001", dont_make_ses_tree=True)
 
         file_names = test_utils.glob_basenames(
             join(project.get_local_path(), "*")

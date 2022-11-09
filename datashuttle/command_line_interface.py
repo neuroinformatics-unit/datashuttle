@@ -187,7 +187,7 @@ def setup_ssh_connection_to_remote_server(ctx):
 @click.option("--experiment_type", type=str, required=True)
 @click.option("--sub_names", type=str, required=True)
 @click.option("--ses_names", type=str, required=False)
-@click.option("--make_ses_tree", type=bool, required=False)
+@click.option("--dont_make_ses_tree", type=bool, required=False)
 @click.pass_context
 @inherit_docstring_from_subfunction
 @convert_none_from_str_to_nonetype
