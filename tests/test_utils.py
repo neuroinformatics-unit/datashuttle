@@ -456,7 +456,7 @@ def run_cli(command, project_name=None):
     name = get_protected_test_dir() if project_name is None else project_name
 
     result = subprocess.Popen(
-        " ".join(["python -m datashuttle", name, command]),
+        " ".join(["datashuttle", name, command]),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True,
