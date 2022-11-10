@@ -32,6 +32,7 @@ dev = [
     "flake8",
     "isort",
     "mypy",
+    "simplejson",
     "types-requests",
     "types-PyYAML",
     "types-appdirs",
