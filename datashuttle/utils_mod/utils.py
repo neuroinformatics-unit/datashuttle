@@ -39,14 +39,18 @@ def make_ses_directory_tree(
                                    make directory tree in. Note this defines
                                    the subdirs created.
     """
-    if experiment_type_dir.used and experiment_type_dir.subdirs:
-        recursive_make_subdirs(
-            directory=experiment_type_dir,
-            path_to_dir=[base_path, experiment_type_dir.name, sub, ses],
-        )
+    if experiment_type_dir.used:
+        make_dirs(os.path.join(base_path, sub, ses, experiment_type_dir.name))
 
 
-def recursive_make_subdirs(
+#        if experiment_type_dir.subdirs:
+#       recursive_make_subdirs(
+#          directory=experiment_type_dir.name,
+#         path_to_dir=[base_path, sub, ses, experiment_type_dir.name],
+#    )
+
+
+def recursive_make_subdirs(  # TODO: depreciate?
     directory: Directory,
     path_to_dir: list,
 ):
