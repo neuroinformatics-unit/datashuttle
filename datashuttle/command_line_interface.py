@@ -267,7 +267,7 @@ def make_sub_dir(project, args):
     kwargs = make_kwargs(args)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-    print(filtered_kwargs)
+
     run_command(project, project.make_sub_dir, **filtered_kwargs)
 
 
