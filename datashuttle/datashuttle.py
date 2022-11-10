@@ -155,7 +155,7 @@ class DataShuttle:
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
 
-    def upload_data(
+    def upload_data(  #######################################################
         self,
         experiment_type: str,
         sub_names: Union[str, list],
@@ -182,7 +182,7 @@ class DataShuttle:
             "upload", experiment_type, sub_names, ses_names, preview
         )
 
-    def download_data(
+    def download_data(  #######################################################
         self,
         experiment_type: str,
         sub_names: Union[str, list],
@@ -203,7 +203,9 @@ class DataShuttle:
             "download", experiment_type, sub_names, ses_names, preview
         )
 
-    def upload_project_dir_or_file(self, filepath: str, preview: bool = False):
+    def upload_project_dir_or_file(
+        self, filepath: str, preview: bool = False
+    ):  #######################################################
         """
         Upload an entire directory (including all subdirectories
         and files) from the local to the remote machine
@@ -223,7 +225,7 @@ class DataShuttle:
             processed_filepath.as_posix(), "upload", preview
         )
 
-    def download_project_dir_or_file(
+    def download_project_dir_or_file(  #######################################################
         self, filepath: str, preview: bool = False
     ):
         """
@@ -296,13 +298,8 @@ class DataShuttle:
         remote_path_ssh: str = None,
         remote_host_id: str = None,
         remote_host_username: str = None,
-        sub_prefix: str = "sub-",
-        ses_prefix: str = "ses-",
         use_ephys: bool = True,
-        use_ephys_behav: bool = True,
-        use_ephys_behav_camera: bool = True,
         use_behav: bool = True,
-        use_behav_camera: bool = True,
         use_imaging: bool = True,
         use_histology: bool = True,
     ):
@@ -327,22 +324,12 @@ class DataShuttle:
         :param remote_host_id:      address for remote host for ssh connection
         :param remote_host_username:  username for which to login to
                                     remote host.
-        :param sub_prefix:          prefix for all subject (i.e. mouse)
-                                    level directory. Default is BIDS: "sub-"
-        :param ses_prefix:          prefix for all session level directory.
-                                    Default is BIDS: "ses-"
         :param use_ephys:           setting true will setup ephys directory
                                     tree on this machine
         :param use_imaging:         create imaging directory tree
         :param use_histology:       create histology directory tree
-        :param use_ephys_behav:     create behav directory in ephys
-                                    directory on this machine
-        :param use_ephys_behav_camera: create camera directory in ephys
-                                       behaviour
                                     directory on this machine
         :param use_behav:           create behav directory
-        :param use_behav_camera:    create camera directory in
-                                    behav directory
 
         NOTE: higher level directory settings will override lower level
               settings (e.g. if ephys_behav_camera=True
@@ -357,13 +344,10 @@ class DataShuttle:
                 "ssh_to_remote": ssh_to_remote,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
-                "sub_prefix": sub_prefix,
-                "ses_prefix": ses_prefix,
+                "sub_prefix": "sub-",  # TODO: move to configs
+                "ses_prefix": "ses-",  # TODO: move to configs
                 "use_ephys": use_ephys,
-                "use_ephys_behav": use_ephys_behav,
-                "use_ephys_behav_camera": use_ephys_behav_camera,
                 "use_behav": use_behav,
-                "use_behav_camera": use_behav_camera,
                 "use_imaging": use_imaging,
                 "use_histology": use_histology,
             },
@@ -476,7 +460,7 @@ class DataShuttle:
     # Setup RClone
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _move_dir_or_file(
+    def _move_dir_or_file(  #######################################################
         self, filepath: str, upload_or_download: str, preview: bool
     ):
         """
@@ -637,7 +621,7 @@ class DataShuttle:
     # File Transfer
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _transfer_sub_ses_data(
+    def _transfer_sub_ses_data(  #######################################################
         self,
         upload_or_download: str,
         experiment_type: str,
@@ -696,7 +680,7 @@ class DataShuttle:
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _search_subs_from_project_dir(
+    def _search_subs_from_project_dir(  #######################################################
         self, local_or_remote: str, experiment_type: str
     ) -> list:
         """
@@ -712,7 +696,7 @@ class DataShuttle:
             local_or_remote, search_path, search_prefix
         )
 
-    def _search_ses_from_sub_dir(
+    def _search_ses_from_sub_dir(  #######################################################
         self, local_or_remote: str, experiment_type: str, sub: str
     ) -> list:
         """
@@ -726,7 +710,7 @@ class DataShuttle:
             local_or_remote, search_path, search_prefix
         )
 
-    def _search_for_directories(
+    def _search_for_directories(  #######################################################
         self, local_or_remote: str, search_path: str, search_prefix: str
     ) -> list:
         """
@@ -752,7 +736,7 @@ class DataShuttle:
             )
         return all_dirnames
 
-    def _search_base_dir_for_experiment_directories(
+    def _search_base_dir_for_experiment_directories(  #######################################################
         self, local_or_remote: str
     ) -> zip:
         """
@@ -909,7 +893,7 @@ class DataShuttle:
             utils.message_user(
                 f"experiment_type: '{experiment_type}' "
                 f"is not valid. Must be one of"
-                f" {list(self._ses_dirs.keys())}."
+                f" {list(self._ses_dirs.keys())}. or 'all'"
                 f" No directories were made."
             )
 

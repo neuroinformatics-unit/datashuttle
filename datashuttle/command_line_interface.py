@@ -169,20 +169,6 @@ make_config_file_parser.add_argument(
     "--remote_host_username", required=False, help="(str)", metavar=""
 )
 make_config_file_parser.add_argument(
-    "--sub_prefix",
-    required=False,
-    type=str,
-    help="(str) default: sub-",
-    metavar="",
-)
-make_config_file_parser.add_argument(
-    "--ses_prefix",
-    required=False,
-    type=str,
-    help="(str) default: ses-",
-    metavar="",
-)
-make_config_file_parser.add_argument(
     "--use_ephys",
     required=False,
     default=None,
@@ -190,28 +176,7 @@ make_config_file_parser.add_argument(
     help="flag (default False)",
 )
 make_config_file_parser.add_argument(
-    "--use_ephys_behav",
-    required=False,
-    default=None,
-    action="store",
-    help="flag (default False)",
-)
-make_config_file_parser.add_argument(
-    "--use_ephys_behav_camera",
-    required=False,
-    default=None,
-    action="store",
-    help="flag (default False)",
-)
-make_config_file_parser.add_argument(
     "--use_behav",
-    required=False,
-    default=None,
-    action="store",
-    help="flag (default False)",
-)
-make_config_file_parser.add_argument(
-    "--use_behav_camera",
     required=False,
     default=None,
     action="store",
