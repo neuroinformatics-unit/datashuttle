@@ -10,71 +10,9 @@ from typing import Union
 import appdirs
 import paramiko
 
-from datashuttle.utils_mod.directory_class import Directory
-
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
 # --------------------------------------------------------------------------------------------------------------------
-
-
-def make_ses_directory_tree(
-    sub: str,
-    ses: str,
-    experiment_type_dir: Directory,
-    base_path: str,
-):
-    """
-    Make the directory tree within a session. This is dependent on
-    the experiment_type (e.g. "ephys") dir and defined in the
-    subdirs field on the Directory class, in self._ses_dirs.
-
-    All subdirs will be made recursively, unless the .used
-    attribute on the Directory class is False. This will also
-    stop and subdirs of the subdir been created.
-
-    :param sub:                    subject name to make
-                                   directory tree in
-    :param ses:                    session name to make directory tree in
-    :param experiment_type_key:    experiment_type_key (e.g. "ephys") to
-                                   make directory tree in. Note this defines
-                                   the subdirs created.
-    """
-    if experiment_type_dir.used:
-        make_dirs(os.path.join(base_path, sub, ses, experiment_type_dir.name))
-
-
-#        if experiment_type_dir.subdirs:
-#       recursive_make_subdirs(
-#          directory=experiment_type_dir.name,
-#         path_to_dir=[base_path, sub, ses, experiment_type_dir.name],
-#    )
-
-
-def recursive_make_subdirs(  # TODO: depreciate?
-    directory: Directory,
-    path_to_dir: list,
-):
-    """
-    Function to recursively create all directories
-    in a Directory .subdirs field.
-
-    i.e. this will first create a directory based on
-    the .name attribute. It will then loop through all
-    .subdirs, and do the same - recursively looping
-    through subdirs  until the entire directory tree
-    is made. If .used attribute on a directory is False,
-    that directory and all subdirs of the directory will
-    not be made.
-
-    :param directory:
-    :param path_to_dir:
-    """
-    if directory.subdirs:
-        for subdir in directory.subdirs.values():
-            if subdir.used:
-                new_path_to_dir = path_to_dir + [subdir.name]
-                make_dirs(os.path.join(*new_path_to_dir))
-                recursive_make_subdirs(subdir, new_path_to_dir)
 
 
 def make_dirs(paths: Union[str, list]):

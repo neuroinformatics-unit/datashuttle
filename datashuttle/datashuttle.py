@@ -633,13 +633,6 @@ class DataShuttle:
 
                 utils.make_datashuttle_metadata_folder(experiment_type_path)
 
-            #            utils.make_ses_directory_tree(
-            #               sub,
-            #              ses,
-            #             experiment_type_dir,
-            #            base_path=self.cfg["local_path"] / top_level_dir,
-            #       )
-
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
     # --------------------------------------------------------------------------------------------------------------------
