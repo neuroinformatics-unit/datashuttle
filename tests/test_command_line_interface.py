@@ -60,8 +60,6 @@ class TestCommandLineInterface:
         yield setup_project
         test_utils.teardown_project(cwd, setup_project)
 
-    # def check errors are propagated
-
     # ----------------------------------------------------------------------------------------------------------
     # Test CLI Variables are read and passed correctly
     # ----------------------------------------------------------------------------------------------------------
@@ -83,9 +81,9 @@ class TestCommandLineInterface:
         stdout, __ = test_utils.run_cli(
             " make_config_file " + self.convert_kwargs_to_cli(required_options)
         )
-        args_, kwargs_ = self.decode(stdout)
 
-        self.check_config_args(args_, required_options)
+        __, kwargs_ = self.decode(stdout)
+
         self.check_kwargs(required_options, kwargs_)
 
     def test_make_config_file_non_default_variables(self):
@@ -100,9 +98,9 @@ class TestCommandLineInterface:
         stdout, __ = test_utils.run_cli(
             " make_config_file " + self.convert_kwargs_to_cli(changed_configs)
         )
+
         args_, kwargs_ = self.decode(stdout)
 
-        self.check_config_args(args_, changed_configs)
         self.check_kwargs(changed_configs, kwargs_)
 
     def test_update_config_variables(self):
@@ -131,12 +129,14 @@ class TestCommandLineInterface:
             "--experiment_type all "
             "--sub_names one "
             "--ses_names two "
-            "--dont_make_ses_tree True"
+            "--dont_make_ses_tree"
         )
+
         args_, kwargs_ = self.decode(stdout)
 
-        assert args_[0] == ["all"]
-        assert args_[1] == ["one"]
+        assert args_ == []
+        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
         assert kwargs_["dont_make_ses_tree"] is True
 
@@ -152,6 +152,7 @@ class TestCommandLineInterface:
             f"--sub_names one "
             f"--ses_names two"
         )
+
         args_, kwargs_ = self.decode(stdout)
         self.check_upload_download_args(args_, kwargs_, preview_is=False)
 
@@ -162,7 +163,9 @@ class TestCommandLineInterface:
             f"--ses_names two "
             f"--preview"
         )
+
         args_, kwargs_ = self.decode(stdout)
+
         self.check_upload_download_args(args_, kwargs_, preview_is=True)
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -176,8 +179,7 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
-        assert args_[1] is False
-        assert kwargs_ == {}
+        assert kwargs_["preview"] is False
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_project_dir_or_file /fake/filepath "
@@ -186,28 +188,41 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
-        assert args_[1] is True
-        assert kwargs_ == {}
+        assert kwargs_["preview"] is True
 
-    def test_cli_list_syntax(self):
+    @pytest.mark.parametrize(
+        "command", ["make_sub_dir", "upload_data", "download_data"]
+    )
+    def test_multiple_inputs(self, command):
         """
         To process lists, a syntax "<>" is used
         to specify input is list. Check the passed
         varialbes are processed as expected.
         """
         stdout, stderr = test_utils.run_cli(
-            """ make_sub_dir --experiment_type all --sub_names "<one,  two, 3, sub-004, sub-w23@>" """  # noqa
+            f"{command} "
+            f"--experiment_type all "
+            f"--sub_names one  two 3 sub-004 sub-w23@ "
+            f"--ses_names 5 06 007"
         )
 
-        args_, kwargs_ = self.decode(stdout)
+        __, kwargs_ = self.decode(stdout)
 
-        assert args_[1] == ["one", "two", "3", "sub-004", "sub-w23@"]
+        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["sub_names"] == [
+            "one",
+            "two",
+            "3",
+            "sub-004",
+            "sub-w23@",
+        ]
+        assert kwargs_["ses_names"] == ["5", "06", "007"]
 
     # ----------------------------------------------------------------------------------------------------------
     # Test CLI Functionality
     # ----------------------------------------------------------------------------------------------------------
 
-    def test_update_config__(self, clean_project_name):
+    def test_update_config(self, clean_project_name):
         """
         See test_update_config in test_configs.py.
         """
@@ -288,7 +303,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-hello_world"]
 
         test_utils.run_cli(
-            f"""make_sub_dir --experiment_type all --sub_names "{self.to_cli_input(subs)}" --ses_names "{self.to_cli_input(ses)}" """,  # noqa
+            f"make_sub_dir --experiment_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)}",  # noqa
             setup_project.project_name,
         )
 
@@ -306,6 +321,7 @@ class TestCommandLineInterface:
         see test_filesystem_transfer.py
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
         test_utils.make_and_check_local_project(
             setup_project, "all", subs, sessions
         )
@@ -382,9 +398,7 @@ class TestCommandLineInterface:
         Check that error from API are propagated to CLI
         """
         __, stderr = test_utils.run_cli(
-            "make_config_file "
-            "--local_path test_local_path "
-            "--ssh_to_remote False",
+            "make_config_file " "test_local_path ",
             clean_project_name,
         )
 
@@ -401,8 +415,7 @@ class TestCommandLineInterface:
         """
         Convert list to cli input
         """
-        str_ = ",".join(list_)
-        return "<" + str_ + ">"
+        return " ".join(list_)
 
     def decode(self, stdout):
         """
@@ -415,10 +428,19 @@ class TestCommandLineInterface:
 
     def convert_kwargs_to_cli(self, kwargs):
         """ """
-        args_list = " ".join(
-            "--" + k + " " + str(v) for k, v in kwargs.items()
+        positionals = ["local_path"]
+
+        prepend_positionals = ""
+        if "local_path" in kwargs:
+            prepend_positionals += " " + kwargs["local_path"] + " "
+
+        kwargs_list = " ".join(
+            "--" + k + " " + str(v)
+            for k, v in kwargs.items()
+            if k not in positionals
         )
-        return args_list
+
+        return prepend_positionals + kwargs_list
 
     def check_kwargs(self, required_options, kwargs_):
 
@@ -434,8 +456,8 @@ class TestCommandLineInterface:
 
     def check_upload_download_args(self, args_, kwargs_, preview_is):
 
-        assert args_[0] == ["all"]
-        assert args_[1] == ["one"]
-        assert args_[2] == ["two"]
-        assert args_[3] is preview_is
-        assert kwargs_ == {}
+        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["sub_names"] == ["one"]
+        assert kwargs_["ses_names"] == ["two"]
+        assert kwargs_["preview"] is preview_is
+        assert args_ == []

@@ -156,7 +156,7 @@ class TestConfigs:
             required_arguments_only=True
         )
 
-        project.make_config_file(*required_options.values())
+        project.make_config_file(**required_options)
 
         self.check_config_reopen_and_check_config_again(
             project,
@@ -172,7 +172,7 @@ class TestConfigs:
             required_arguments_only=True
         )
 
-        project.make_config_file(*required_options.values())
+        project.make_config_file(**required_options)
 
         default_options = test_utils.get_test_config_arguments_dict(
             set_as_defaults=True
@@ -189,7 +189,7 @@ class TestConfigs:
             set_as_defaults=False
         )
 
-        project.make_config_file(*changed_configs.values())
+        project.make_config_file(**changed_configs)
         self.check_config_reopen_and_check_config_again(
             project, changed_configs
         )
@@ -204,7 +204,7 @@ class TestConfigs:
             set_as_defaults=True
         )
 
-        project.make_config_file(*default_configs.values())
+        project.make_config_file(**default_configs)
 
         not_set_configs = test_utils.get_not_set_config_args(project)
         for key, value in not_set_configs.items():
