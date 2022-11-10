@@ -33,19 +33,16 @@ def make_kwargs(args):
 
 
 def handle_bool(key, value):
-    if (
-        key
-        in [  # TODO: this needs to be reworked, currently explicitly set True or False, when it would be better to use flag.
-            "ssh_to_remote",  # However flag is not clear, want these to be on by default so store_false, we need to re-name to don't but then
-            "use_ephys",  # this breaks matching API. We will probably delete these when switching file structure so handle this then.
-            "use_ephys_behav",
-            "use_ephys_behav_camera",
-            "use_behav",
-            "use_behav_camera",
-            "use_imaging",
-            "use_histology",
-        ]
-    ):
+    if key in [
+        "ssh_to_remote",
+        "use_ephys",
+        "use_ephys_behav",
+        "use_ephys_behav_camera",
+        "use_behav",
+        "use_behav_camera",
+        "use_imaging",
+        "use_histology",
+    ]:
         if value is not None and value not in [
             "True",
             "False",
@@ -365,7 +362,7 @@ def upload_data(project, args):
     kwargs = make_kwargs(args)
 
     run_command(
-        project,  # TODO: dont need to pass this its global
+        project,
         project.upload_data,
         **kwargs,
     )
