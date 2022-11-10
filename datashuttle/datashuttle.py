@@ -59,6 +59,9 @@ class DataShuttle:
         self.cfg: Any = None
         self._ssh_key_path: Any = None
         self._ses_dirs: Any = None
+        self._top_level_dir_name = (
+            "rawdata"  # TODO: move to configs, make changable?
+        )
 
         self.attempt_load_configs(prompt_on_fail=True)
 
@@ -86,37 +89,24 @@ class DataShuttle:
 
         self._ses_dirs = {
             "ephys": Directory(
-                "ephys",
-                self.cfg["use_ephys"],
-                subdirs={
-                    "ephys_behav": Directory(
-                        "behav",
-                        self.cfg["use_ephys_behav"],
-                        subdirs={
-                            "ephys_behav_camera": Directory(
-                                "camera",
-                                self.cfg["use_ephys_behav_camera"],
-                            ),
-                        },
-                    ),
-                },
+                name="ephys",
+                used=self.cfg["use_ephys"],
+                level="ses",
             ),
             "behav": Directory(
-                "behav",
-                self.cfg["use_behav"],
-                subdirs={
-                    "behav_camera": Directory(
-                        "camera", self.cfg["use_behav_camera"]
-                    ),
-                },
+                name="behav",
+                used=self.cfg["use_behav"],
+                level="ses",
             ),
             "imaging": Directory(
-                "imaging",
-                self.cfg["use_imaging"],
+                name="imaging",
+                used=self.cfg["use_imaging"],
+                level="ses",
             ),
             "histology": Directory(
-                "histology",
-                self.cfg["use_histology"],
+                name="histology",
+                used=self.cfg["use_histology"],
+                level="sub",
             ),
         }
 
@@ -127,44 +117,37 @@ class DataShuttle:
     @check_configs_set
     def make_sub_dir(
         self,
-        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list] = None,
-        dont_make_ses_tree: bool = False,
+        experiment_type: str = "all",
     ):
         """
         Make a subject directory in the data type directory. By default,
         it will create the entire directory tree for this subject.
 
-        :param experiment_type: The experiment_type to make the directory
-                                in (e.g. "ephys", "behav", "histology"). If
-                                "all" is selected, directory will be created
-                                for all data type.
         :param sub_names:       subject name / list of subject names to make
                                 within the directory (if not already, these
                                 will be prefixed with sub/ses identifier)
         :param ses_names:       session names (same format as subject name).
                                 If no session is provided, defaults to
                                 "ses-001".
-        :param dont_make_ses_tree:   option to make the entire session tree under
-                                the subject directory. If True, the subject
-                                directory only will be created.
+        :param experiment_type: The experiment_type to make the directory
+                                in (e.g. "ephys", "behav", "histology"). If
+                                "all" is selected, directory will be created
+                                for all data type.
         """
         sub_names = self._process_names(sub_names, "sub")
 
         if ses_names is None:
-            if not dont_make_ses_tree:
-                ses_names = [self.cfg["ses_prefix"] + "001"]
-            else:
-                ses_names = []
+            ses_names = [self.cfg["ses_prefix"] + "001"]
+
         else:
             ses_names = self._process_names(ses_names, "ses")
 
         self._make_directory_trees(
-            experiment_type,
             sub_names,
             ses_names,
-            dont_make_ses_tree,
+            experiment_type,
             process_names=False,
         )
 
@@ -560,10 +543,9 @@ class DataShuttle:
 
     def _make_directory_trees(
         self,
-        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        dont_make_ses_tree: bool = False,
+        experiment_type: str,
         process_names: bool = True,
     ):
         """
@@ -576,11 +558,6 @@ class DataShuttle:
         subject and session names are first processed to
         ensure correct format.
 
-        :param experiment_type: The experiment_type to make the
-                                directory in (e.g. "ephys",
-                                "behav", "histology").
-                                If "all" is selected, directory
-                                will be created for all data type.
         :param sub_names:       subject name / list of subject names
                                 to make within the directory
                                 (if not already, these will be prefixed
@@ -593,10 +570,6 @@ class DataShuttle:
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 
-        :param dont_make_ses_tree:   option to make the entire session tree
-                                under the subject directory.
-                                If True, the subject directory only
-                                will be created.
         :param process_names:   option to process names or not (e.g.
                                 if names were processed already).
 
@@ -617,36 +590,55 @@ class DataShuttle:
         ):
             return
 
+        top_level_dir = self._top_level_dir_name
+
+        for sub in sub_names:
+
+            sub_path = self._join("local", [top_level_dir, sub])
+
+            utils.make_dirs(sub_path)
+
+            self.make_experiment_type_folders(experiment_type, sub_path, "sub")
+
+            for ses in ses_names:
+
+                ses_path = self._join("local", [top_level_dir, sub, ses])
+
+                utils.make_dirs(ses_path)
+
+                self.make_experiment_type_folders(
+                    experiment_type, ses_path, "ses"
+                )
+
+    def make_experiment_type_folders(
+        self,
+        experiment_type: Union[list, str],
+        sub_or_ses_level_path: str,
+        level: str,
+    ):
+        """ """
         experiment_type_items = self._get_experiment_type_items(
             experiment_type
         )
 
         for experiment_type_key, experiment_type_dir in experiment_type_items:
-            if experiment_type_dir.used:
-                utils.make_dirs(self._join("local", experiment_type_dir.name))
 
-                for sub in sub_names:
-                    utils.make_dirs(
-                        self._join("local", [experiment_type_dir.name, sub])
-                    )
+            if experiment_type_dir.used and experiment_type_dir.level == level:
 
-                    for ses in ses_names:
+                experiment_type_path = os.path.join(
+                    sub_or_ses_level_path, experiment_type_dir.name
+                )
 
-                        ses_path = self._join(
-                            "local", [experiment_type_dir.name, sub, ses]
-                        )
+                utils.make_dirs(experiment_type_path)
 
-                        utils.make_dirs(ses_path)
+                utils.make_datashuttle_metadata_folder(experiment_type_path)
 
-                        utils.make_datashuttle_metadata_folder(ses_path)
-
-                        if not dont_make_ses_tree:
-                            utils.make_ses_directory_tree(
-                                sub,
-                                ses,
-                                experiment_type_dir,
-                                base_path=self.cfg["local_path"],
-                            )
+            #            utils.make_ses_directory_tree(
+            #               sub,
+            #              ses,
+            #             experiment_type_dir,
+            #            base_path=self.cfg["local_path"] / top_level_dir,
+            #       )
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer

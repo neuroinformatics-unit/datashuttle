@@ -318,14 +318,6 @@ make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
 make_sub_dir_parser.set_defaults(func=make_sub_dir)
 
 make_sub_dir_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=True,
-    help="Required: (str, single or multiple) (selection of data types, or 'all')",
-    metavar="",
-)
-make_sub_dir_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
@@ -342,13 +334,13 @@ make_sub_dir_parser.add_argument(
     metavar="",
 )
 make_sub_dir_parser.add_argument(
-    "--dont_make_ses_tree",
-    required=False,
-    default=False,
-    action="store_true",
-    help="Optional: flag (default False)",
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help="Required: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
+    metavar="",
 )
-
 
 # ------------------------------------------------------------------------------------------
 # Transfer
@@ -384,7 +376,7 @@ upload_data_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple) (selection of data types, or 'all')",
+    help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
     metavar="",
 )
 upload_data_parser.add_argument(
