@@ -51,9 +51,13 @@ def setup_project_default_configs(
     return project
 
 
-def glob_basenames(search_path, recursive=False):
+def glob_basenames(search_path, recursive=False, exclude=None):
     paths_ = glob.glob(search_path, recursive=recursive)
     basenames = [os.path.basename(path_) for path_ in paths_]
+
+    if exclude:
+        basenames = [name for name in basenames if name not in exclude]
+
     return sorted(basenames)
 
 
@@ -213,52 +217,46 @@ def check_directory_tree_is_correct(
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
-    for key, directory in project._ses_dirs.items():
+    for sub in subs:
 
-        assert key in directory_used.keys(), (
-            "Key not found in directory_used. "
-            "Update directory used and hard-coded tests: "
-            "test_custom_directory_names(), test_explicitly_session_list()"
-        )
+        path_to_sub_folder = join(base_dir, sub)
+        check_and_cd_dir(path_to_sub_folder)
 
-        if check_directory_is_used(base_dir, directory, directory_used, key):
-            check_and_cd_dir(join(base_dir, directory.name))
+        for ses in sessions:
 
-            for sub in subs:
+            path_to_ses_folder = join(base_dir, sub, ses)
+            check_and_cd_dir(path_to_ses_folder)
 
-                check_and_cd_dir(join(base_dir, directory.name, sub))
+            for key, directory in project._ses_dirs.items():
 
-                for ses in sessions:
-                    path_to_folder = join(base_dir, directory.name, sub, ses)
-                    check_and_cd_dir(path_to_folder)
+                assert key in directory_used.keys(), (
+                    "Key not found in directory_used. "
+                    "Update directory used and hard-coded tests: "
+                    "test_custom_directory_names(), test_explicitly_session_list()"
+                )
 
-                    check_and_cd_dir(path_to_folder + "/.datashuttle_meta")
+                if check_directory_is_used(
+                    base_dir, directory, directory_used, key, sub, ses
+                ):
 
-                    recursive_check_subfolder_exists(
-                        path_to_folder, directory, directory_used
+                    if directory.level == "sub":
+                        experiment_type_path = join(
+                            path_to_sub_folder, directory.name
+                        )  # TODO: Remove directory to exp_type_path
+                    elif directory.level == "ses":
+                        experiment_type_path = join(
+                            path_to_ses_folder, directory.name
+                        )
+
+                    check_and_cd_dir(experiment_type_path)
+                    check_and_cd_dir(
+                        join(experiment_type_path, ".datashuttle_meta")
                     )
 
 
-def recursive_check_subfolder_exists(path_to_dir, upper_dir, directory_used):
-    """
-    Check each subdir in the subdirs field on the Directory class are
-    made, and that directory_used is as expected.
-    """
-    if upper_dir.subdirs:
-        for key, subdir in upper_dir.subdirs.items():
-
-            if check_directory_is_used(
-                path_to_dir, subdir, directory_used, key
-            ):
-                new_path_to_dir = join(path_to_dir, subdir.name)
-
-                check_and_cd_dir(new_path_to_dir)
-                recursive_check_subfolder_exists(
-                    new_path_to_dir, subdir, directory_used
-                )
-
-
-def check_directory_is_used(base_dir, directory, directory_used, key):
+def check_directory_is_used(
+    base_dir, directory, directory_used, key, sub, ses
+):
     """
     Test whether the .used flag on the Directory class matched the expected
     state (provided in directory_used dict). If directory is not used, check
@@ -271,9 +269,11 @@ def check_directory_is_used(base_dir, directory, directory_used, key):
     is_used = directory.used
 
     if not is_used:
-        print("Path was correctly not made: " + join(base_dir, directory.name))
-
-        assert not os.path.isdir(join(base_dir, directory.name))
+        print(
+            "Path was correctly not made: "
+            + join(base_dir, sub, ses, directory.name)
+        )
+        assert not os.path.isdir(join(base_dir, sub, ses, directory.name))
 
     return is_used
 
@@ -399,6 +399,10 @@ def check_config_file(config_path, *kwargs):
 # ----------------------------------------------------------------------------------------------------------
 # Test Helpers
 # ----------------------------------------------------------------------------------------------------------
+
+
+def get_rawdata_path(project):
+    return os.path.join(project.get_local_path(), project._top_level_dir_name)
 
 
 def handle_upload_or_download(project, upload_or_download):
