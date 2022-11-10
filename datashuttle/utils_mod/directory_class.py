@@ -1,6 +1,3 @@
-from typing import Union
-
-
 class Directory:
     """
     Directory class used to contain details of canonical
@@ -12,9 +9,7 @@ class Directory:
         name: str,
         used: bool,
         level: str,
-        subdirs: Union[None, dict] = None,
     ):
         self.name = name
         self.used = used
         self.level = level
-        self.subdirs = subdirs
