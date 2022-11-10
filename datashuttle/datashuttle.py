@@ -308,7 +308,7 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        ssh_to_remote: bool,
+        ssh_to_remote: bool = False,
         remote_path_local: str = None,
         remote_path_ssh: str = None,
         remote_host_id: str = None,

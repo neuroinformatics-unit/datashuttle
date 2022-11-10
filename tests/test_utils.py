@@ -32,7 +32,7 @@ def setup_project_default_configs(
     project._setup_remote_as_rclone_target("local")
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
-    project.make_config_file(*default_configs.values())
+    project.make_config_file(**default_configs)
 
     warnings.filterwarnings("default")
 
@@ -122,7 +122,6 @@ def get_test_config_arguments_dict(
     """
     dict_ = {
         "local_path": r"Not:/a/real/local/directory",
-        "ssh_to_remote": False,
         "remote_path_local": r"/Not/a/real/remote_local/directory",
         "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
     }
@@ -144,12 +143,12 @@ def get_test_config_arguments_dict(
                 "use_behav_camera": True,
                 "use_histology": True,
                 "use_imaging": True,
+                "ssh_to_remote": False,
             }
         )
     else:
         dict_.update(
             {
-                "ssh_to_remote": True,
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
                 "sub_prefix": "testsub-",
@@ -161,6 +160,7 @@ def get_test_config_arguments_dict(
                 "use_behav_camera": False,
                 "use_histology": False,
                 "use_imaging": False,
+                "ssh_to_remote": True,
             }
         )
     return dict_
@@ -347,12 +347,7 @@ def make_and_check_local_project(project, experiment_type, subs, sessions):
     Make a local project directory tree with the specified experiment_type,
     subs, sessions and check it is made successfully.
     """
-    project.make_sub_dir(
-        experiment_type,
-        subs,
-        sessions,
-        get_default_directory_used(),
-    )
+    project.make_sub_dir(experiment_type, subs, sessions)
 
     check_directory_tree_is_correct(
         project,
@@ -464,7 +459,8 @@ def run_cli(command, project_name=None):
         " ".join(["python -m datashuttle", name, command]),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-    )  # shell=True  TODO: https://stackoverflow.com/questions/2408650/why-does-python-subprocess-hang-after-proc-communicate see no use shell...
+        shell=True,
+    )
 
     stdout, stderr = result.communicate()
     return stdout.decode("utf8"), stderr.decode("utf8")
