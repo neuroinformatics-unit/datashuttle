@@ -13,13 +13,13 @@ PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 # ------------------------------------------------------------------------------------------
 
 
-def run_command(PROJECT, function, *args, **kwargs):
+def run_command(project, function, *args, **kwargs):
     """
     If project is protected test name, dump the variables to
     stdout so they can be checked. Otherwise, run the
     DataShuttle function.
     """
-    if PROJECT.project_name == PROTECTED_TEST_PROJECT_NAME:
+    if project.project_name == PROTECTED_TEST_PROJECT_NAME:
         print("TEST_OUT_START: ", simplejson.dumps([args, kwargs]))
     else:
         function(*args, **kwargs)
@@ -29,6 +29,43 @@ def make_kwargs(args):
     kwargs = vars(args)
     del kwargs["func"]
     del kwargs["project_name"]
+    return kwargs
+
+
+def handle_bool(key, value):
+    if (
+        key
+        in [  # TODO: this needs to be reworked, currently explicitly set True or False, when it would be better to use flag.
+            "ssh_to_remote",  # However flag is not clear, want these to be on by default so store_false, we need to re-name to don't but then
+            "use_ephys",  # this breaks matching API. We will probably delete these when switching file structure so handle this then.
+            "use_ephys_behav",
+            "use_ephys_behav_camera",
+            "use_behav",
+            "use_behav_camera",
+            "use_imaging",
+            "use_histology",
+        ]
+    ):
+        if value is not None and value not in [
+            "True",
+            "False",
+            "true",
+            "false",
+        ]:
+            utils.raise_error("Input value must be True or False")
+
+        value = value in ["True", "true"]
+
+    elif value in ["None", "none"]:
+        value = None
+
+    return value
+
+
+def handle_kwargs_bools(kwargs):
+    """"""
+    for key in kwargs.keys():
+        kwargs[key] = handle_bool(key, kwargs[key])
     return kwargs
 
 
@@ -75,15 +112,15 @@ subparsers = parser.add_subparsers(metavar="\ncommands:")
 # ------------------------------------------------------------------------------------------
 
 
-def make_config_file(args):
+def make_config_file(project, args):
     kwargs = make_kwargs(args)
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
     filtered_kwargs = handle_kwargs_bools(filtered_kwargs)
 
     run_command(
-        PROJECT,
-        PROJECT.make_config_file,
+        project,
+        project.make_config_file,
         **filtered_kwargs,
     )
 
@@ -204,44 +241,7 @@ make_config_file_parser.add_argument(
 # ------------------------------------------------------------------------------------------
 
 
-def handle_bool(key, value):
-    if (
-        key
-        in [  # TODO: this needs to be reworked, currently explicitly set True or False, when it would be better to use flag.
-            "ssh_to_remote",  # However flag is not clear, want these to be on by default so store_false, we need to re-name to don't but then
-            "use_ephys",  # this breaks matching API. We will probably delete these when switching file structure so handle this then.
-            "use_ephys_behav",
-            "use_ephys_behav_camera",
-            "use_behav",
-            "use_behav_camera",
-            "use_imaging",
-            "use_histology",
-        ]
-    ):
-        if value is not None and value not in [
-            "True",
-            "False",
-            "true",
-            "false",
-        ]:
-            utils.raise_error("Input value must be True or False")
-
-        value = value in ["True", "true"]
-
-    elif value in ["None", "none"]:
-        value = None
-
-    return value
-
-
-def handle_kwargs_bools(kwargs):
-    """"""
-    for key in kwargs.keys():
-        kwargs[key] = handle_bool(key, kwargs[key])
-    return kwargs
-
-
-def update_config(args):
+def update_config(project, args):
     """"""
     kwargs = make_kwargs(args)
     option_key = kwargs["option_key"]
@@ -250,8 +250,8 @@ def update_config(args):
     new_info = handle_bool(option_key, new_info)
 
     run_command(
-        PROJECT,
-        PROJECT.update_config,
+        project,
+        project.update_config,
         option_key,
         new_info,
     )
@@ -280,8 +280,8 @@ make_config_file_parser.add_argument(
 # ------------------------------------------------------------------------------------------
 
 
-def setup_ssh_connection_to_remote_server(args):
-    PROJECT.setup_ssh_connection_to_remote_server()
+def setup_ssh_connection_to_remote_server(project, args):
+    project.setup_ssh_connection_to_remote_server()
 
 
 setup_ssh_connection_to_remote_server_parser = subparsers.add_parser(
@@ -300,13 +300,13 @@ setup_ssh_connection_to_remote_server_parser.set_defaults(
 # ------------------------------------------------------------------------------------------
 
 
-def make_sub_dir(args):
+def make_sub_dir(project, args):
     """"""
     kwargs = make_kwargs(args)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
     print(filtered_kwargs)
-    run_command(PROJECT, PROJECT.make_sub_dir, **filtered_kwargs)
+    run_command(project, project.make_sub_dir, **filtered_kwargs)
 
 
 make_sub_dir_parser = subparsers.add_parser(
@@ -360,13 +360,13 @@ make_sub_dir_parser.add_argument(
 # Upload Data --------------------------------------------------------------------------
 
 
-def upload_data(args):
+def upload_data(project, args):
     """"""
     kwargs = make_kwargs(args)
 
     run_command(
-        PROJECT,  # TODO: dont need to pass this its global
-        PROJECT.upload_data,
+        project,  # TODO: dont need to pass this its global
+        project.upload_data,
         **kwargs,
     )
 
@@ -417,13 +417,13 @@ upload_data_parser.add_argument(
 # Download Data --------------------------------------------------------------------------
 
 
-def download_data(args):  # TODO: FIX DOC!
+def download_data(project, args):
     """"""
     kwargs = make_kwargs(args)
 
     run_command(
-        PROJECT,  # TODO: dont need to pass this its global
-        PROJECT.download_data,
+        project,
+        project.download_data,
         **kwargs,
     )
 
@@ -474,13 +474,13 @@ download_data_parser.add_argument(
 # Upload Project Dir or File -----------------------------------------------------------
 
 
-def upload_project_dir_or_file(args):
+def upload_project_dir_or_file(project, args):
     """"""
     kwargs = make_kwargs(args)
 
     run_command(
-        PROJECT,
-        PROJECT.upload_project_dir_or_file,
+        project,
+        project.upload_project_dir_or_file,
         kwargs.pop("filepath"),
         **kwargs,
     )
@@ -505,13 +505,13 @@ upload_project_dir_or_file_parser.add_argument(
 # Download Project Dir or File ---------------------------------------------------------
 
 
-def download_project_dir_or_file(args):
+def download_project_dir_or_file(project, args):
     """"""
     kwargs = make_kwargs(args)
 
     run_command(
-        PROJECT,
-        PROJECT.download_project_dir_or_file,
+        project,
+        project.download_project_dir_or_file,
         kwargs.pop("filepath"),
         **kwargs,
     )
@@ -544,9 +544,9 @@ download_project_dir_or_file_parser.add_argument(
 # Get Local Path --------------------------------------------------------------------------
 
 
-def get_local_path(args):
+def get_local_path(project, args):
     """"""
-    print(PROJECT.get_local_path())
+    print(project.get_local_path())
 
 
 get_local_path_parser = subparsers.add_parser(
@@ -559,9 +559,9 @@ get_local_path_parser.set_defaults(func=get_local_path)
 # Get Appdir Path --------------------------------------------------------------------------
 
 
-def get_appdir_path(args):
+def get_appdir_path(project, args):
     """"""
-    print(PROJECT.get_appdir_path())
+    print(project.get_appdir_path())
 
 
 get_appdir_path_parser = subparsers.add_parser(
@@ -574,9 +574,9 @@ get_appdir_path_parser.set_defaults(func=get_appdir_path)
 # Get Config Path --------------------------------------------------------------------------
 
 
-def get_config_path(args):
+def get_config_path(project, args):
     """"""
-    print(PROJECT.get_config_path())
+    print(project.get_config_path())
 
 
 get_config_path_parser = subparsers.add_parser(
@@ -589,9 +589,9 @@ get_config_path_parser.set_defaults(func=get_config_path)
 # Get Remote Path --------------------------------------------------------------------------
 
 
-def get_remote_path(args):
+def get_remote_path(project, args):
     """"""
-    print(PROJECT.get_remote_path())
+    print(project.get_remote_path())
 
 
 get_remote_path_parser = subparsers.add_parser(
@@ -604,9 +604,9 @@ get_remote_path_parser.set_defaults(func=get_remote_path)
 # Show Configs --------------------------------------------------------------------------
 
 
-def show_configs(args):
+def show_configs(project, args):
     """"""
-    PROJECT.show_configs()
+    project.show_configs()
 
 
 show_configs_parser = subparsers.add_parser(
@@ -619,6 +619,18 @@ show_configs_parser.set_defaults(func=show_configs)
 # Run
 # ------------------------------------------------------------------------------------------
 
-args = parser.parse_args()
-PROJECT = DataShuttle(args.project_name)
-args.func(args)
+
+def main():
+    args = parser.parse_args()
+    project = DataShuttle(args.project_name)
+
+    if len(vars(args)) > 1:
+        args.func(project, args)
+    else:
+        print(
+            f"Datashuttle project: {args.project_name}. Add additional commands, see --help for details"
+        )
+
+
+if __name__ == "__main__":
+    main()
