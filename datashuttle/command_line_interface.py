@@ -337,14 +337,6 @@ upload_data_parser = upload_data_parser.add_argument_group(
 upload_data_parser.set_defaults(func=upload_data)
 
 upload_data_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=True,
-    help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
-    metavar="",
-)
-upload_data_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
@@ -358,6 +350,14 @@ upload_data_parser.add_argument(
     nargs="+",
     required=True,
     help="Required: (str, single or multiple)",
+    metavar="",
+)
+upload_data_parser.add_argument(
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=False,
+    help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
     metavar="",
 )
 upload_data_parser.add_argument(
@@ -394,14 +394,6 @@ download_data_parser = download_data_parser.add_argument_group(
 download_data_parser.set_defaults(func=download_data)
 
 download_data_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=True,
-    help="Required: (str or list) (selection of data types, or 'all')",
-    metavar="",
-)
-download_data_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
@@ -415,6 +407,14 @@ download_data_parser.add_argument(
     nargs="+",
     required=True,
     help="Required: (str, single or multiple)",
+    metavar="",
+)
+download_data_parser.add_argument(
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=False,
+    help="Optional: (str or list) (selection of data types, or 'all') (default 'all')",
     metavar="",
 )
 download_data_parser.add_argument(
