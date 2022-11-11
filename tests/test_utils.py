@@ -299,41 +299,71 @@ def check_experiment_type_sub_ses_uploaded_correctly(
     check that the directories at each level match those that are
     expected (passed in experiment / sub / ses to upload). Dirs
     are searched with wildcard glob.
+
+    Note: might be easier to flatten entire path with glob(**)
+    then search...
     """
-    experiment_names = glob_basenames(join(base_path_to_check, "*"))
-    assert experiment_names == sorted(experiment_type_to_transfer)
-
     if subs_to_upload:
-        for experiment_type in experiment_type_to_transfer:
-            sub_names = glob_basenames(
-                join(base_path_to_check, experiment_type, "*")
-            )
-            assert sub_names == sorted(subs_to_upload)
+        sub_names = glob_basenames(join(base_path_to_check, "*"))
+        assert sub_names == sorted(subs_to_upload)
 
-            if ses_to_upload:
+        # Check ses are all upldoated + histology if transferred
+        if ses_to_upload:
 
-                for sub in subs_to_upload:
-                    ses_names = glob_basenames(
-                        join(
-                            base_path_to_check,
-                            experiment_type,
-                            sub,
-                            "*",
-                        )
+            for sub in subs_to_upload:
+                ses_names = glob_basenames(
+                    join(
+                        base_path_to_check,
+                        sub,
+                        "*",
                     )
-                    assert ses_names == sorted(ses_to_upload)
+                )
+                if experiment_type_to_transfer == ["histology"]:
+                    assert ses_names == ["histology"]
+                    return  # handle the case in which histolgoy only is transffered,
+                    # and there are no sessions to transfer.
+
+                copy_experiment_type_to_transfer = (
+                    check_and_strip_within_sub_experiment_dirs(
+                        ses_names, experiment_type_to_transfer
+                    )
+                )
+                assert ses_names == sorted(ses_to_upload)
+
+                # check experiment_type directories in session folder
+                if copy_experiment_type_to_transfer:
+                    for ses in ses_names:
+                        experiment_names = glob_basenames(
+                            join(base_path_to_check, sub, ses, "*")
+                        )
+                        assert experiment_names == sorted(
+                            copy_experiment_type_to_transfer
+                        )
 
 
-def make_and_check_local_project(project, experiment_type, subs, sessions):
+def check_and_strip_within_sub_experiment_dirs(
+    ses_names, experiment_type_to_transfer
+):
+    if "histology" in experiment_type_to_transfer:
+        assert "histology" in ses_names
+
+        ses_names.remove("histology")
+        copy_ = copy.deepcopy(experiment_type_to_transfer)
+        copy_.remove("histology")
+        return copy_
+    return experiment_type_to_transfer
+
+
+def make_and_check_local_project(project, subs, sessions, experiment_type):
     """
     Make a local project directory tree with the specified experiment_type,
     subs, sessions and check it is made successfully.
     """
-    project.make_sub_dir(experiment_type, subs, sessions)
+    project.make_sub_dir(subs, sessions, experiment_type)
 
     check_directory_tree_is_correct(
         project,
-        project.get_local_path(),
+        get_rawdata_path(project),
         subs,
         sessions,
         get_default_directory_used(),
@@ -401,8 +431,12 @@ def check_config_file(config_path, *kwargs):
 # ----------------------------------------------------------------------------------------------------------
 
 
-def get_rawdata_path(project):
-    return os.path.join(project.get_local_path(), project._top_level_dir_name)
+def get_rawdata_path(project, local_or_remote="local"):
+    if local_or_remote == "local":
+        base_path = project.get_local_path()
+    else:
+        base_path = project.get_remote_path()
+    return os.path.join(base_path, project._top_level_dir_name)
 
 
 def handle_upload_or_download(project, upload_or_download):

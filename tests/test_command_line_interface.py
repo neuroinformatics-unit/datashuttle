@@ -129,7 +129,6 @@ class TestCommandLineInterface:
             "--experiment_type all "
             "--sub_names one "
             "--ses_names two "
-            "--dont_make_ses_tree"
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -138,7 +137,6 @@ class TestCommandLineInterface:
         assert kwargs_["experiment_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
-        assert kwargs_["dont_make_ses_tree"] is True
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_upload_download_data_variables(self, upload_or_download):
@@ -309,7 +307,7 @@ class TestCommandLineInterface:
 
         test_utils.check_directory_tree_is_correct(
             setup_project,
-            base_dir=setup_project.get_local_path(),
+            base_dir=test_utils.get_rawdata_path(setup_project),
             subs=subs,
             sessions=ses,
             directory_used=test_utils.get_default_directory_used(),
@@ -323,7 +321,10 @@ class TestCommandLineInterface:
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project(
-            setup_project, "all", subs, sessions
+            setup_project,
+            subs,
+            sessions,
+            "all",
         )
 
         __, base_path_to_check = test_utils.handle_upload_or_download(
@@ -339,7 +340,9 @@ class TestCommandLineInterface:
         )
 
         test_utils.check_experiment_type_sub_ses_uploaded_correctly(
-            base_path_to_check=base_path_to_check,
+            base_path_to_check=os.path.join(
+                base_path_to_check, setup_project._top_level_dir_name
+            ),
             experiment_type_to_transfer=[
                 "behav",
                 "ephys",
@@ -360,7 +363,10 @@ class TestCommandLineInterface:
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project(
-            setup_project, "all", subs, sessions
+            setup_project,
+            subs,
+            sessions,
+            "all",
         )
 
         __, base_path_to_check = test_utils.handle_upload_or_download(
@@ -368,14 +374,12 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_dir_or_file ephys/"
-            f"{subs[1]}/"
-            f"{sessions[2]}",
+            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys",
             setup_project.project_name,
         )
 
         assert os.path.isdir(
-            base_path_to_check + f"/ephys/{subs[1]}/{sessions[2]}/behav/camera"
+            base_path_to_check + f"/rawdata/{subs[1]}/{sessions[0]}/ephys"
         )
 
     # ----------------------------------------------------------------------------------------------------------
