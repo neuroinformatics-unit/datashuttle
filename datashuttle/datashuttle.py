@@ -155,11 +155,11 @@ class DataShuttle:
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
 
-    def upload_data(  #######################################################
+    def upload_data(
         self,
-        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
+        experiment_type: str = "all",
         preview: bool = False,
     ):
         """
@@ -168,7 +168,6 @@ class DataShuttle:
         the remote and local, the local will not be overwritten
         even if the remote file is an older version.
 
-        :param experiment_type: see make_sub_dir()
         :param sub_names: a list of sub names as accepted in make_sub_dir().
                           "all" will search for all sub- directories in the
                           data type directory to upload.
@@ -177,16 +176,17 @@ class DataShuttle:
                           ses- directories and upload all.
         :param preview: perform a dry-run of upload, to see which files
                         are moved.
+        :param experiment_type: see make_sub_dir()
         """
         self._transfer_sub_ses_data(
-            "upload", experiment_type, sub_names, ses_names, preview
+            "upload", sub_names, ses_names, experiment_type, preview
         )
 
-    def download_data(  #######################################################
+    def download_data(
         self,
-        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
+        experiment_type: str = "all",
         preview: bool = False,
     ):
         """
@@ -200,12 +200,10 @@ class DataShuttle:
         search the remote project for sub / ses to download.
         """
         self._transfer_sub_ses_data(
-            "download", experiment_type, sub_names, ses_names, preview
+            "download", sub_names, ses_names, experiment_type, preview
         )
 
-    def upload_project_dir_or_file(
-        self, filepath: str, preview: bool = False
-    ):  #######################################################
+    def upload_project_dir_or_file(self, filepath: str, preview: bool = False):
         """
         Upload an entire directory (including all subdirectories
         and files) from the local to the remote machine
@@ -218,14 +216,15 @@ class DataShuttle:
 
         """
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("local"), Path(filepath)
+            self._get_base_dir("local") / self._top_level_dir_name,
+            Path(filepath),
         )
 
         self._move_dir_or_file(
             processed_filepath.as_posix(), "upload", preview
         )
 
-    def download_project_dir_or_file(  #######################################################
+    def download_project_dir_or_file(
         self, filepath: str, preview: bool = False
     ):
         """
@@ -239,7 +238,8 @@ class DataShuttle:
                          will be transferred without actually transferring)
         """
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("remote"), Path(filepath)
+            self._get_base_dir("remote") / self._top_level_dir_name,
+            Path(filepath),
         )
         self._move_dir_or_file(
             processed_filepath.as_posix(), "download", preview
@@ -460,7 +460,7 @@ class DataShuttle:
     # Setup RClone
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _move_dir_or_file(  #######################################################
+    def _move_dir_or_file(
         self, filepath: str, upload_or_download: str, preview: bool
     ):
         """
@@ -474,8 +474,12 @@ class DataShuttle:
         :param preview: do not actually move the files,
                         just report what would be moved.
         """
-        local_filepath = self._join("local", filepath)
-        remote_filepath = self._join("remote", filepath)
+        local_filepath = self._join(
+            "local", [self._top_level_dir_name, filepath]
+        )
+        remote_filepath = self._join(
+            "remote", [self._top_level_dir_name, filepath]
+        )
 
         local_or_ssh = "ssh" if self.cfg["ssh_to_remote"] else "local"
 
@@ -621,66 +625,137 @@ class DataShuttle:
     # File Transfer
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _transfer_sub_ses_data(  #######################################################
+    def _transfer_sub_ses_data(
         self,
         upload_or_download: str,
-        experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
+        experiment_type: str,
         preview: bool,
     ):
         """
         Iterate through all data type, sub, ses and transfer session directory.
 
         :param upload_or_download: "upload" or "download"
-        :param experiment_type: see make_sub_dir()
         :param sub_names: see make_sub_dir()
         :param ses_names: see make_sub_dir()
+        :param experiment_type: see make_sub_dir()
         :param preview: see upload_project_dir_or_file*(
         """
         local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
 
-        if experiment_type not in ["all", ["all"]]:
-            experiment_type_items = self._get_experiment_type_items(
-                experiment_type
-            )
+        # Find sub names to transfer
+        if sub_names not in ["all", ["all"]]:
+            sub_names = self._process_names(sub_names, "sub")
         else:
-            experiment_type_items = (
-                self._search_base_dir_for_experiment_directories(
-                    local_or_remote
-                )
+            sub_names = self._search_subs_from_project_dir(
+                local_or_remote,
+                self._top_level_dir_name,
             )
+
+        for sub in sub_names:
+
+            self.transfer_experiment_type(
+                upload_or_download,
+                local_or_remote,
+                experiment_type,
+                sub,
+                preview=preview,
+            )
+
+            # Find ses names  to transfer
+            if ses_names not in ["all", ["all"]]:
+                ses_names = self._process_names(ses_names, "ses")
+            else:
+                ses_names = self._search_ses_from_sub_dir(
+                    local_or_remote, self._top_level_dir_name, sub
+                )
+
+            for ses in ses_names:
+
+                self.transfer_experiment_type(
+                    upload_or_download,
+                    local_or_remote,
+                    experiment_type,
+                    sub,
+                    ses,
+                    preview,
+                )
+
+    def transfer_experiment_type(
+        self,
+        upload_or_download: str,
+        local_or_remote: str,
+        experiment_type: Union[list, str],
+        sub: str,
+        ses: str = None,
+        preview: bool = False,
+    ):
+        """
+        Transfer the experiment-level folder at the subject
+        or session level. experiment_type dirs are got either
+        directly from user input or if "all" is passed searched
+        for in the local / remote directory (for
+        upload / download respectively).
+
+        This can handle both cases of subject level dir (e.g. histology)
+        or session level dir (e.g. ephys).
+
+        Note that the use of upload_or_download / local_or_remote
+        is redundant as the value of local_or_remote is set by
+        upload_or_download, but kept for readability.
+        """
+        level = "ses" if ses else "sub"
+
+        experiment_type_items = self._items_from_experiment_type_input(
+            local_or_remote, experiment_type, sub, ses
+        )
 
         for experiment_type_key, experiment_type_dir in experiment_type_items:
 
-            if sub_names not in ["all", ["all"]]:
-                sub_names = self._process_names(sub_names, "sub")
-            else:
-                sub_names = self._search_subs_from_project_dir(
-                    local_or_remote, experiment_type_key
+            if experiment_type_dir.level == level:
+                if ses:
+                    filepath = os.path.join(sub, ses, experiment_type_dir.name)
+                else:
+                    filepath = os.path.join(sub, experiment_type_dir.name)
+
+                self._move_dir_or_file(
+                    filepath, upload_or_download, preview=preview
                 )
 
-            for sub in sub_names:
-                if ses_names not in ["all", ["all"]]:
-                    ses_names = self._process_names(ses_names, "ses")
-                else:
-                    ses_names = self._search_ses_from_sub_dir(
-                        local_or_remote, experiment_type_key, sub
-                    )
-
-                for ses in ses_names:
-                    filepath = os.path.join(experiment_type_dir.name, sub, ses)
-                    self._move_dir_or_file(
-                        filepath, upload_or_download, preview=preview
-                    )
+    def _items_from_experiment_type_input(
+        self,
+        local_or_remote: str,
+        experiment_type: Union[list, str],
+        sub: str,
+        ses: str = None,
+    ):
+        """
+        Get the list of experiment_types to transfer, either
+        directly from user input, or by searching
+        what is available if "all" is passed.
+        """
+        if experiment_type not in ["all", ["all"]]:
+            experiment_type_items = self._get_experiment_type_items(
+                experiment_type,
+            )
+        else:
+            experiment_type_items = (
+                self._search_experiment_dirs_sub_or_ses_level(
+                    local_or_remote,
+                    sub,
+                    ses,
+                )
+            )
+        return experiment_type_items
 
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _search_subs_from_project_dir(  #######################################################
+    def _search_subs_from_project_dir(
         self, local_or_remote: str, experiment_type: str
     ) -> list:
         """
@@ -690,27 +765,59 @@ class DataShuttle:
         :param local_or_remote: "local" or "remote"
         :param experiment_type: the data type (e.g. behav, cannot be "all")
         """
-        search_path = self._join(local_or_remote, experiment_type)
+        search_path = self._join(local_or_remote, [self._top_level_dir_name])
+
         search_prefix = self.cfg["sub_prefix"] + "*"
         return self._search_for_directories(
             local_or_remote, search_path, search_prefix
         )
 
-    def _search_ses_from_sub_dir(  #######################################################
+    def _search_ses_from_sub_dir(
         self, local_or_remote: str, experiment_type: str, sub: str
     ) -> list:
         """
         See _search_subs_from_project_dir(), same but for serching sessions
         within a sub directory.
         """
-        search_path = self._join(local_or_remote, [experiment_type, sub])
+        search_path = self._join(
+            local_or_remote, [self._top_level_dir_name, sub]
+        )
         search_prefix = self.cfg["ses_prefix"] + "*"
 
         return self._search_for_directories(
             local_or_remote, search_path, search_prefix
         )
 
-    def _search_for_directories(  #######################################################
+    def _search_experiment_dirs_sub_or_ses_level(
+        self, local_or_remote: str, sub: str, ses: str = None
+    ):
+        """
+        Find experiment type directories in the project base
+        directory (e.g. "ephys", "behav"), (by filtering the
+        names of all directories present).  Return these in the
+        same format as dict.items()
+
+        :param local_or_remote: "local" or "remote
+        """
+        base_dir = (
+            self._get_base_dir(local_or_remote)
+            / self._top_level_dir_name
+            / sub
+        )
+        if ses:
+            base_dir = base_dir / ses
+
+        directory_names = self._search_for_directories(
+            local_or_remote, base_dir.as_posix(), "*"
+        )
+
+        experiment_directories = (
+            self._process_glob_to_find_experiment_type_dirs(directory_names)
+        )
+
+        return experiment_directories
+
+    def _search_for_directories(
         self, local_or_remote: str, search_path: str, search_prefix: str
     ) -> list:
         """
@@ -736,26 +843,19 @@ class DataShuttle:
             )
         return all_dirnames
 
-    def _search_base_dir_for_experiment_directories(  #######################################################
-        self, local_or_remote: str
+    def _process_glob_to_find_experiment_type_dirs(  # TODO: could also get new directory.level param
+        self,
+        directory_names: list,
     ) -> zip:
         """
-        Find experiment type directories in the project base
-        directory (e.g. "ephys", "behav"), (by filtering the
-        names of all directories present).  Return these in the
-        same format as dict.items()
-
-        :param local_or_remote: "local" or "remote"
+        Process the results of glob on a sub or session level,
+        which could contain any kind of folder / file.
+        Find the experiment_type files and return in
+        a format that mirros dict.items()
         """
-        base_dir = self._get_base_dir(local_or_remote)
-
-        top_level_directory_names = self._search_for_directories(
-            local_or_remote, base_dir.as_posix(), "*"
-        )
-
         ses_dir_keys = []
         ses_dir_values = []
-        for dir_name in top_level_directory_names:
+        for dir_name in directory_names:
             experiment_type_key = [
                 key
                 for key, value in self._ses_dirs.items()
@@ -763,7 +863,7 @@ class DataShuttle:
             ]
 
             if len(experiment_type_key) > 1:
-                utils.raise_error(
+                utils.raise_error(  # TODO: is this even possible?
                     "There are matching experiment type names in "
                     "the tree specified at self._ses_dirs. Remove duplicates"
                 )
