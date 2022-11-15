@@ -58,7 +58,7 @@ class Configs(UserDict):
             self["remote_host_id"] or self["remote_host_username"]
         ):
             warnings.warn(
-                "SSH to remote is false, but remote_host_id or "
+                "ssh_to_remote is false, but remote_host_id or "
                 "remote_host_username provided."
             )
 
