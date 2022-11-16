@@ -123,11 +123,13 @@ def get_test_config_arguments_dict(
     (for project.make_config_file()), all configs (default)
     or non-default configs. Note that default configs here
     are the expected default arguments in project.make_config_file().
+
+    Include spaces in path so this case is always checked
     """
     dict_ = {
-        "local_path": r"Not:/a/real/local/directory",
-        "remote_path_local": r"/Not/a/real/remote_local/directory",
-        "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
+        "local_path": r"Not:/a/re al/local/directory",
+        "remote_path_local": r"/Not/a/re al/remote_ local/directory",
+        "remote_path_ssh": r"/not/a/re al/remote_ ssh/directory",
     }
 
     if required_arguments_only:
@@ -161,10 +163,13 @@ def get_test_config_arguments_dict(
 
 
 def get_not_set_config_args(project):
+    """
+    Include spaces in path so this case is always checked
+    """
     return {
-        "local_path": r"C:/test/test_local/test_edit",
-        "remote_path_local": r"/nfs/testdir/test_edit2",
-        "remote_path_ssh": r"/nfs/testdir/test_edit3",
+        "local_path": r"C:/test/test_ local/test_edit",
+        "remote_path_local": r"/nfs/test dir/test_edit2",
+        "remote_path_ssh": r"/nfs/test dir/test_edit3",
         "remote_host_id": "test_id",
         "remote_host_username": "test_host",
         "use_ephys": not project.cfg["use_ephys"],
