@@ -302,7 +302,7 @@ make_sub_dir_parser.add_argument(
     "--experiment_type",
     type=str,
     nargs="+",
-    required=True,
+    required=False,
     help="Required: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
     metavar="",
 )
