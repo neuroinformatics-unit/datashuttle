@@ -68,8 +68,12 @@ def handle_kwargs_bools(kwargs):
 
 def help(help_type):
     """ """
+
     if help_type == "flag_default_false":
         help_str = "flag (default False)"
+
+    elif help_type == "required_str":
+        help_str = "Required: (str)"
 
     elif help_type == "optional_flag_default_false":
         help_str = "Optional: flag (default False)"
@@ -148,7 +152,7 @@ make_config_file_parser = subparsers.add_parser(
 make_config_file_parser.set_defaults(func=make_config_file)
 
 make_config_file_parser.add_argument(
-    "local_path", type=str, help="Required: (str)"
+    "local_path", type=str, help=help("required_str")
 )
 
 make_config_file_parser = make_config_file_parser.add_argument_group(
@@ -517,7 +521,7 @@ upload_project_dir_or_file_parser = subparsers.add_parser(
 upload_project_dir_or_file_parser.set_defaults(func=upload_project_dir_or_file)
 
 upload_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help="Required: (str)"
+    "filepath", type=str, help=help("required_str")
 )
 upload_project_dir_or_file_parser.add_argument(
     "--preview", action="store_true", help=help("flag_default_false")
@@ -550,7 +554,7 @@ download_project_dir_or_file_parser.set_defaults(
 )
 
 download_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help="Required: (str)"
+    "filepath", type=str, help=help("required_str")
 )
 download_project_dir_or_file_parser.add_argument(
     "--preview", action="store_true", help=help("flag_default_false")
