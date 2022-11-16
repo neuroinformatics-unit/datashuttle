@@ -239,6 +239,9 @@ def process_names(
             "Ensure subject and session names are list of strings, or string"
         )
 
+    if any([" " in ele for ele in names]):
+        raise_error("sub or ses names cannot include spaces.")
+
     if isinstance(names, str):
         names = [names]
 
