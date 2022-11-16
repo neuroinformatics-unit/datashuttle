@@ -361,7 +361,7 @@ upload_data_parser.add_argument(
     metavar="",
 )
 upload_data_parser.add_argument(
-    "--preview",
+    "--dry_run",
     required=False,
     action="store_true",
     help="Optional: flag (default False)",
@@ -418,7 +418,7 @@ download_data_parser.add_argument(
     metavar="",
 )
 download_data_parser.add_argument(
-    "--preview",
+    "--dry_run",
     required=False,
     action="store_true",
     help="Optional: flag (default False)",
@@ -452,7 +452,7 @@ upload_project_dir_or_file_parser.add_argument(
     "filepath", type=str, help="Required: (str)"
 )
 upload_project_dir_or_file_parser.add_argument(
-    "--preview", action="store_true", help="flag (default False)"
+    "--dry_run", action="store_true", help="flag (default False)"
 )
 
 
@@ -485,7 +485,7 @@ download_project_dir_or_file_parser.add_argument(
     "filepath", type=str, help="Required: (str)"
 )
 download_project_dir_or_file_parser.add_argument(
-    "--preview", action="store_true", help="flag (default False)"
+    "--dry_run", action="store_true", help="flag (default False)"
 )
 
 
