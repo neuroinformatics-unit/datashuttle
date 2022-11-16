@@ -365,12 +365,10 @@ def make_and_check_local_project(project, experiment_type, subs, sessions):
 
 def check_configs(project, kwargs):
     """"""
-    config_path = (
-        project.get_appdir_path() + "/config.yaml"
-    )  # TODO: can use new get_config()
+    config_path = project.get_appdir_path() + "/config.yaml"
 
     if not os.path.isfile(config_path):
-        raise BaseException("Config file not found.")
+        raise FileNotFoundError("Config file not found.")
 
     check_project_configs(project, kwargs)
     check_config_file(config_path, kwargs)

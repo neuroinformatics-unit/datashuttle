@@ -398,7 +398,7 @@ class TestCommandLineInterface:
         Check that error from API are propagated to CLI
         """
         __, stderr = test_utils.run_cli(
-            "make_config_file " "test_local_path ",
+            "make_config_file test_local_path ",
             clean_project_name,
         )
 
