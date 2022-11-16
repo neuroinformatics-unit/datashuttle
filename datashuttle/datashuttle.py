@@ -52,6 +52,10 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str):
+
+        if " " in project_name:
+            utils.raise_error("project_name must not include spaces.")
+
         self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
@@ -59,9 +63,7 @@ class DataShuttle:
         self.cfg: Any = None
         self._ssh_key_path: Any = None
         self._ses_dirs: Any = None
-        self._top_level_dir_name = (
-            "rawdata"  # TODO: move to configs, make changable?
-        )
+        self._top_level_dir_name = "rawdata"
 
         self.attempt_load_configs(prompt_on_fail=True)
 
@@ -491,18 +493,18 @@ class DataShuttle:
 
             rclone_utils.call_rclone(
                 f"copy "
-                f"{local_filepath} "
-                f"{self.get_rclone_config_name(local_or_ssh)}:"
-                f"{remote_filepath} "
+                f'"{local_filepath}" '
+                f'"{self.get_rclone_config_name(local_or_ssh)}:'
+                f'{remote_filepath}" '
                 f"{extra_arguments}"
             )
 
         elif upload_or_download == "download":
             rclone_utils.call_rclone(
                 f"copy "
-                f"{self.get_rclone_config_name(local_or_ssh)}:"
-                f"{remote_filepath} "
-                f"{local_filepath}  "
+                f'"{self.get_rclone_config_name(local_or_ssh)}:'
+                f'{remote_filepath}" '
+                f'"{local_filepath}"  '
                 f"{extra_arguments}"
             )
 
