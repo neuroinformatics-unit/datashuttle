@@ -152,19 +152,19 @@ class TestCommandLineInterface:
         )
 
         args_, kwargs_ = self.decode(stdout)
-        self.check_upload_download_args(args_, kwargs_, preview_is=False)
+        self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_data "
             f"--experiment_type all "
             f"--sub_names one "
             f"--ses_names two "
-            f"--preview"
+            f"--dry_run"
         )
 
         args_, kwargs_ = self.decode(stdout)
 
-        self.check_upload_download_args(args_, kwargs_, preview_is=True)
+        self.check_upload_download_args(args_, kwargs_, dry_run_is=True)
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_upload_download_dir_or_file(self, upload_or_download):
@@ -177,16 +177,16 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
-        assert kwargs_["preview"] is False
+        assert kwargs_["dry_run"] is False
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_project_dir_or_file /fake/filepath "
-            f"--preview"
+            f"--dry_run"
         )
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
-        assert kwargs_["preview"] is True
+        assert kwargs_["dry_run"] is True
 
     @pytest.mark.parametrize(
         "command", ["make_sub_dir", "upload_data", "download_data"]
@@ -458,10 +458,10 @@ class TestCommandLineInterface:
         assert args_[0] == options.pop("local_path")
         assert args_[1] is options.pop("ssh_to_remote")
 
-    def check_upload_download_args(self, args_, kwargs_, preview_is):
+    def check_upload_download_args(self, args_, kwargs_, dry_run_is):
 
         assert kwargs_["experiment_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
-        assert kwargs_["preview"] is preview_is
+        assert kwargs_["dry_run"] is dry_run_is
         assert args_ == []
