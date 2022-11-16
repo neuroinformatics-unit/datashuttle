@@ -35,7 +35,7 @@ class TestUnit:
             )
 
         name_list = [name]
-        utils.update_ses_names_with_datetime(name_list)
+        utils.update_names_with_datetime(name_list)
 
         assert re.search(regex, name_list[0]) is not None
 
@@ -51,10 +51,9 @@ class TestUnit:
 
         prefix, names = prefix_and_names
         with pytest.raises(BaseException) as e:
-            utils.process_names(names)
+            utils.process_names(names, prefix)
 
-        breakpoint()
-        assert str(e.value) == ""
+        assert str(e.value) == "sub or ses names cannot include spaces."
 
     # ----------------------------------------------------------------------
     # Utlis
