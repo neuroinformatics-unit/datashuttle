@@ -257,21 +257,53 @@ def process_names(
 
 def update_ses_names_with_datetime(names: list):
     """
-    Replate @DATE and @DATETIME flag with date and datetime respectively.
-    Currently formats time as XXhXXh.
+    Replace @DATE and @DATETIME flag with date and datetime respectively.
 
-    Dont format datetime directly so we can keep timezone aware.
+    Format using key-value pair for bids, i.e. date-20221223_time-
     """
-    date = str(datetime.datetime.now().date())
-    date = date.replace("-", "")
-    time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
-    datetime_ = f"{date}-{time_}"
+    date = str(datetime.datetime.now().date().strftime("%Y%m%d"))
+    format_date = f"date-{date}"
 
-    for i, val in enumerate(names):
-        if "@DATETIME" in val:
-            names[i] = val.replace("@DATETIME", datetime_)
-        elif "@DATE" in val:
-            names[i] = val.replace("@DATE", date)
+    time_ = datetime.datetime.now().time().strftime("%H%M%S")
+    format_time = f"time-{time_}"
+
+    for i, name in enumerate(names):
+
+        if "@DATETIME" in name:  # must come first
+            name = add_underscore_before_after_if_not_there(name, "@DATETIME")
+            datetime_ = f"{format_date}_{format_time}"
+            names[i] = name.replace("@DATETIME", datetime_)
+
+        elif "@DATE" in name:
+            name = add_underscore_before_after_if_not_there(name, "@DATE")
+            names[i] = name.replace("@DATE", format_date)
+
+        elif "@TIME" in name:
+            name = add_underscore_before_after_if_not_there(name, "@TIME")
+            names[i] = name.replace("@TIME", format_time)
+
+
+def add_underscore_before_after_if_not_there(string, key):
+
+    key_len = len(key)
+    key_start_idx = string.index(key)
+
+    # Handle left edge
+    if string[key_start_idx - 1] != "_":
+        string_split = string.split(key)  # assumes key only in string once
+        assert (
+            len(string_split) == 2
+        ), f"{key} must not appear in string more than once."
+
+        string = f"{string_split[0]}_{key}{string_split[1]}"
+
+    updated_key_start_idx = string.index(key)
+    key_end_idx = updated_key_start_idx + key_len
+
+    if key_end_idx != len(string) and string[key_end_idx] != "_":
+        string = f"{string[:key_end_idx]}_{string[key_end_idx:]}"
+
+    return string
 
 
 def ensure_prefixes_on_list_of_names(
