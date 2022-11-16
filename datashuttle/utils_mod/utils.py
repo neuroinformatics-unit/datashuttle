@@ -246,7 +246,7 @@ def process_names(
     if any([" " in ele for ele in names]):
         raise_error("sub or ses names cannot include spaces.")
 
-    update_names_with_range_to_flag(names)
+    update_names_with_range_to_flag(names, prefix)
 
     update_names_with_datetime(names)
 
@@ -261,35 +261,38 @@ def process_names(
     return prefixed_names
 
 
-def update_names_with_range_to_flag(names):
-
+def update_names_with_range_to_flag(names, prefix):
+    """ """
     new_names = []
 
     for i, name in enumerate(names):
 
         if "@TO" in name:
 
-            left_number = find_number_next_to_key_in_str(name, "@TO", "left")
-            right_number = find_number_next_to_key_in_str(name, "@TO", "right")
+            prefix_tag = re.search(f"{prefix}-[0-9]+@TO[0-9]+", name)[0]
+            tag_number = prefix_tag.split(f"{prefix}-")[1]
+
+            name_start_str, name_end_str = name.split(tag_number)
+
+            if "@TO" not in tag_number:
+                raise_error(
+                    f"@TO flag must be between two numbers in the {prefix} tag."
+                )
+
+            left_number, right_number = tag_number.split("@TO")
 
             if int(left_number) >= int(right_number):
                 raise_error(
-                    "Number to the left of @TO flag must be bigger than number to the right."
+                    "Number of the subject to the  left of @TO flag "
+                    "must be small than number to the right."
                 )
 
-            max_leading_zeros = max(
-                num_leading_zeros(left_number), num_leading_zeros(left_number)
+            names_with_new_number_inserted = (
+                make_list_of_zero_padded_names_across_range(
+                    left_number, right_number, name_start_str, name_end_str
+                )
             )
-
-            all_numbers = [
-                *range(int(left_number), int(right_number) + 1)
-            ]  # TODO: doc upper bound inclusive
-
-            all_numbers_with_leading_zero = [
-                f"{number:0{max_leading_zeros}d}" for number in all_numbers
-            ]
-
-            new_names += all_numbers_with_leading_zero
+            new_names += names_with_new_number_inserted
 
         else:
             new_names.append(name)
@@ -297,25 +300,31 @@ def update_names_with_range_to_flag(names):
     return new_names
 
 
-def find_number_next_to_key_in_str(string, key, left_or_right):
+def make_list_of_zero_padded_names_across_range(
+    left_number, right_number, name_start_str, name_end_str
+):
+    """ """
+    max_leading_zeros = max(
+        num_leading_zeros(left_number), num_leading_zeros(right_number)
+    )
 
-    if left_or_right == "left":
-        indexes = re.search(f"[0-9]+{key}", string).span()
-        left_edge = indexes[0]
-        right_edge = indexes[1] - len(key)
+    all_numbers = [*range(int(left_number), int(right_number) + 1)]
 
-    elif left_or_right == "right":
-        indexes = re.search(f"{key}[0-9]+", string).span()
-        left_edge = indexes[0] + len(key)
-        right_edge = indexes[1]
+    all_numbers_with_leading_zero = [
+        str(number).zfill(max_leading_zeros + 1) for number in all_numbers
+    ]
 
-    return string[left_edge:right_edge]
+    names_with_new_number_inserted = [
+        f"{name_start_str}{number}{name_end_str}"
+        for number in all_numbers_with_leading_zero
+    ]
+
+    return names_with_new_number_inserted
 
 
 def num_leading_zeros(string):
-    return len(string) - len(
-        str(int(string))
-    )  # lol there must be a better way...
+    """int() strips leading zeros"""
+    return len(string) - len(str(int(string)))
 
 
 def update_names_with_datetime(names: list):
