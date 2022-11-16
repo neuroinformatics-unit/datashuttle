@@ -958,8 +958,7 @@ class DataShuttle:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        is_ses = True if sub_or_ses == "ses" else False
-        processed_names = utils.process_names(names, prefix, is_ses)
+        processed_names = utils.process_names(names, prefix)
 
         return processed_names
 

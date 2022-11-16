@@ -39,6 +39,27 @@ class TestUnit:
 
         assert re.search(regex, name_list[0]) is not None
 
+    @pytest.mark.parametrize(
+        "prefix_and_names",
+        [
+            ["sub", "sub 001"],
+            ["sub", ["sub 001"]],
+            ["ses", ["ses- 001", "ses-002"]],
+        ],
+    )
+    def test_spaces_in_process_names(self, prefix_and_names):
+
+        prefix, names = prefix_and_names
+        with pytest.raises(BaseException) as e:
+            utils.process_names(names)
+
+        breakpoint()
+        assert str(e.value) == ""
+
+    # ----------------------------------------------------------------------
+    # Utlis
+    # ----------------------------------------------------------------------
+
     def make_name(self, key, underscore_position, start, end):
         """
         Make name with / without underscore to test every

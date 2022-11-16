@@ -220,7 +220,8 @@ def get_appdir_path(project_name: str) -> Path:
 
 
 def process_names(
-    names: Union[list, str], prefix: str, is_ses=False
+    names: Union[list, str],
+    prefix: str,
 ) -> Union[list, str]:
     """
     Check a single or list of input session or subject names.
@@ -241,8 +242,7 @@ def process_names(
     if isinstance(names, str):
         names = [names]
 
-    if is_ses:
-        update_ses_names_with_datetime(names)
+    update_names_with_datetime(names)
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
@@ -255,7 +255,7 @@ def process_names(
     return prefixed_names
 
 
-def update_ses_names_with_datetime(names: list):
+def update_names_with_datetime(names: list):
     """
     Replace @DATE and @DATETIME flag with date and datetime respectively.
 
