@@ -1,3 +1,49 @@
+[project]
+name = "datashuttle"
+version = "0.0.0"
+description = "Organise and transfer scientific projects in BIDS format"
+readme = "README.md"
+requires-python = ">=3.9.0"
+
+authors = [
+    {name = "Joe Ziminski", email = "j.ziminski@ucl.ac.uk"},
+    {name = "Adam Tyson", email = "code@adamltyson.com"},
+    {name = "Niko Sirmpilatze", email = "niko.sirbiladze@gmail.com"},
+]
+
+
+dependencies = [
+    "appdirs",
+    "paramiko",
+    "PyYAML",
+    "requests",
+    "rich",
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pytest-cov",
+    "pytest",
+    "coverage",
+    "bump2version",
+    "pre-commit",
+    "flake8",
+    "isort",
+    "mypy",
+    "types-requests",
+    "types-PyYAML",
+    "types-appdirs",
+    "types-paramiko",
+]
+
+[tool.pytest.ini_options]
+addopts = "--cov=datashuttle"
+
+[tool.isort]
+profile = "black"
+
 [tool.black]
 target-version = ['py36', 'py37', 'py38']
 skip-string-normalization = false
@@ -18,3 +64,20 @@ exclude = '''
   )/
 )
 '''
+
+
+[tool.flake8]
+# Ignores - https://lintlyci.github.io/Flake8Rules
+# W291 trailing whitespace
+# E731 do not assign a lambda expression, use a def
+# W293 blank line contains whitespace
+# E203  Whitespace before ':'  (sometimes conflicts with black)
+# E501 line too long (84 > 79 characters)  (sometimes too annoying)
+# W503	Line break occurred before a binary operator
+# C901 McCabe complexity test. Would be nice to reenable, but takes work
+ignore = ["E203", "W503", "E501", "E731", "C901", "W291", "W293", "E402", "E722"]
+max-line-length = 79
+max-complexity = 18
+per-file-ignores = [
+    '__init__.py:F401',
+]

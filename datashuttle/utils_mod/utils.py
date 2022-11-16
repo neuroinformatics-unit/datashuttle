@@ -1,3 +1,4 @@
+import datetime
 import fnmatch
 import glob
 import os
@@ -8,8 +9,8 @@ from typing import Union
 
 import appdirs
 import paramiko
-from ftpsync.synchronizers import DownloadSynchronizer, UploadSynchronizer
-from utils.directory_class import Directory
+
+from datashuttle.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
@@ -23,35 +24,43 @@ def make_ses_directory_tree(
     base_path: str,
 ):
     """
-    Make the directory tree within a session. This is dependent on the experiment_type (e.g. "ephys")
-    dir and defined in the subdirs field on the Directory class, in self._ses_dirs.
+    Make the directory tree within a session. This is dependent on
+    the experiment_type (e.g. "ephys") dir and defined in the
+    subdirs field on the Directory class, in self._ses_dirs.
 
-    All subdirs will be made recursively, unless the .used attribute on the Directory class is
-    False. This will also stop and subdirs of the subdir been created.
+    All subdirs will be made recursively, unless the .used
+    attribute on the Directory class is False. This will also
+    stop and subdirs of the subdir been created.
 
-    :param sub:                    subject name to make directory tree in
+    :param sub:                    subject name to make
+                                   directory tree in
     :param ses:                    session name to make directory tree in
-    :param experiment_type_key:    experiment_type_key (e.g. "ephys") to make directory tree in.
-                                   Note this defines the subdirs created.
+    :param experiment_type_key:    experiment_type_key (e.g. "ephys") to
+                                   make directory tree in. Note this defines
+                                   the subdirs created.
     """
     if experiment_type_dir.used and experiment_type_dir.subdirs:
         recursive_make_subdirs(
             directory=experiment_type_dir,
-            path_to_dir=[experiment_type_dir.name, sub, ses],
-            base_path=base_path,
+            path_to_dir=[base_path, experiment_type_dir.name, sub, ses],
         )
 
 
 def recursive_make_subdirs(
-    directory: Directory, path_to_dir: list, base_path: Path
+    directory: Directory,
+    path_to_dir: list,
 ):
     """
-    Function to recursively create all directories in a Directory .subdirs field.
+    Function to recursively create all directories
+    in a Directory .subdirs field.
 
-    i.e. this will first create a directory based on the .name attribute. It will then
-    loop through all .subdirs, and do the same - recursively looping through subdirs
-    until the entire directory tree is made. If .used attribute on a directory is False,
-    that directory and all subdirs of the directory will not be made.
+    i.e. this will first create a directory based on
+    the .name attribute. It will then loop through all
+    .subdirs, and do the same - recursively looping
+    through subdirs  until the entire directory tree
+    is made. If .used attribute on a directory is False,
+    that directory and all subdirs of the directory will
+    not be made.
 
     :param directory:
     :param path_to_dir:
@@ -59,32 +68,39 @@ def recursive_make_subdirs(
     if directory.subdirs:
         for subdir in directory.subdirs.values():
             if subdir.used:
-                new_path_to_dir = (
-                    [os.fspath(base_path)] + path_to_dir + [subdir.name]
-                )
+                new_path_to_dir = path_to_dir + [subdir.name]
                 make_dirs(os.path.join(*new_path_to_dir))
-                recursive_make_subdirs(subdir, new_path_to_dir, base_path)
+                recursive_make_subdirs(subdir, new_path_to_dir)
 
 
 def make_dirs(paths: Union[str, list]):
     """
-    For path or list of path, make them if do not already exist.
+    For path or list of path, make them if
+    do not already exist.
     """
     if isinstance(paths, str):
         paths = [paths]
 
     for path_ in paths:
+        path_ = os.path.expanduser(path_)
         if not os.path.isdir(path_):
             os.makedirs(path_)
         else:
-            breakpoint()
             warnings.warn(
-                "The following directory was not made because it already exists"
+                "The following directory was not made "
+                "because it already exists"
                 f" {path_}"
             )
 
 
-def search_filesystem_path_for_directories(search_path_with_prefix: str):
+def make_datashuttle_metadata_folder(full_path: str):
+    meta_folder_path = full_path + "/.datashuttle_meta"
+    make_dirs(meta_folder_path)
+
+
+def search_filesystem_path_for_directories(
+    search_path_with_prefix: str,
+) -> list:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.
@@ -97,71 +113,8 @@ def search_filesystem_path_for_directories(search_path_with_prefix: str):
 
 
 # --------------------------------------------------------------------------------------------------------------------
-# Syncronizer Utils
+# SSH
 # --------------------------------------------------------------------------------------------------------------------
-
-
-def get_default_syncronizer_opts(preview: bool):
-    """
-    Retrieve the default options for upload and download. These
-    are very important as define the behaviour of file transfer
-    when there are conflicts (e.g. whether to delete remote
-    file if it is not found on the local filesystem).
-
-    Currently, all options are set so that no file is ever overwritten.
-    If there is a remote directory that is older than the local directory, it will not
-    be overwritten. The only 'overwrite' that occurs is if the remote
-    or local directory has been deleted - by default this will not be replaced as
-    pyftpsync metadata indicates the file has been deleted. Using the default
-    'force' option will force file transfer, but also has other effects e.g.
-    overwriting newer files with old, which we dont want. This option has been
-    edited to permit a "restore" argumnent, which acts Force=False except
-    in the case where the local / remote file has been deleted entirely, in which
-    case it will be replaced.
-
-    :param preview: run pyftpsync's "dry_run" option.
-    """
-    opts = {
-        "help": False,
-        "verbose": 5,
-        "quiet": 0,
-        "debug ": False,
-        "case": "strict",
-        "dry_run": preview,
-        "progress": False,
-        "no_color": True,
-        "ftp_active": False,
-        "migrate": False,
-        "no_verify_host_keys": False,
-        # "match": 3,
-        # "exclude": 3,
-        "prompt": False,
-        "no_prompt": False,
-        "no_keyring": True,
-        "no_netrc": True,
-        "store_password": False,
-        "force": "restore",
-        "resolve": "ask",
-        "delete": False,
-        "delete_unmatched": False,
-        "create_folder": True,
-        "report_problems": False,
-    }
-
-    return opts
-
-
-def get_syncronizer(upload_or_download: str):
-    """
-    Convenience function to get the pyftpsync syncronizer
-    """
-    if upload_or_download == "upload":
-        syncronizer = UploadSynchronizer
-
-    elif upload_or_download == "download":
-        syncronizer = DownloadSynchronizer
-
-    return syncronizer
 
 
 def connect_client(
@@ -187,14 +140,18 @@ def connect_client(
         )
     except Exception:
         raise_error(
-            "Could not connect to server. Ensure that \n1) You are on SWC network"
-            f" / VPN. \n2) The remote_host_id: {cfg['remote_host_id']} is"
-            " correct.\n3) The remote username:"
+            "Could not connect to server. Ensure that \n"
+            "1) You are on VPN network if required. \n"
+            "2) The remote_host_id: {cfg['remote_host_id']} is"
+            " correct.\n"
+            "3) The remote username:"
             f" {cfg['remote_host_username']}, and password are correct."
         )
 
 
-def add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key):
+def add_public_key_to_remote_authorized_keys(
+    cfg, hostkeys: str, password: str, key: paramiko.RSAKey
+):
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
@@ -204,23 +161,25 @@ def add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key):
         client.exec_command("mkdir -p ~/.ssh/")
         client.exec_command(
             # double >> for concatenate
-            f'echo "{key.get_name()} {key.get_base64()}" >> ~/.ssh/authorized_keys'
+            f'echo "{key.get_name()} {key.get_base64()}" '
+            f">> ~/.ssh/authorized_keys"
         )
         client.exec_command("chmod 644 ~/.ssh/authorized_keys")
         client.exec_command("chmod 700 ~/.ssh/")
 
 
-def verify_ssh_remote_host(remote_host_id, hostkeys):
-    """ """
+def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
+    """"""
     with paramiko.Transport(remote_host_id) as transport:
         transport.connect()
         key = transport.get_remote_server_key()
 
     message_user(
         "The host key is not cached for this server:"
-        f" {remote_host_id}.\nYou have no guarantee that the server is"
-        f" the computer you think it is.\nThe server's {key.get_name()} key"
-        f" fingerprint is: {key.get_base64()}\nIf you trust this host, to connect"
+        f" {remote_host_id}.\nYou have no guarantee "
+        f"that the server is the computer you think it is.\n"
+        f"The server's {key.get_name()} key fingerprint is: "
+        f"{key.get_base64()}\nIf you trust this host, to connect"
         " and cache the host key, press y: "
     )
     input_ = input()
@@ -237,7 +196,7 @@ def verify_ssh_remote_host(remote_host_id, hostkeys):
     return sucess
 
 
-def generate_and_write_ssh_key(ssh_key_path):
+def generate_and_write_ssh_key(ssh_key_path: str):
     key = paramiko.RSAKey.generate(4096)
     key.write_private_key_file(ssh_key_path)
 
@@ -246,9 +205,9 @@ def search_ssh_remote_for_directories(
     search_path: str,
     search_prefix: str,
     cfg,
-    hostkeys,
-    ssh_key_path,
-):
+    hostkeys: str,
+    ssh_key_path: str,
+) -> list:
     """
     Search for the search prefix in the search path over SSH.
     Returns the list of matching directories, files are filtered out.
@@ -265,7 +224,9 @@ def search_ssh_remote_for_directories(
     return all_dirnames
 
 
-def get_list_of_directory_names_over_sftp(sftp, search_path, search_prefix):
+def get_list_of_directory_names_over_sftp(
+    sftp, search_path: str, search_prefix: str
+) -> list:
 
     all_dirnames = []
     try:
@@ -286,7 +247,7 @@ def get_list_of_directory_names_over_sftp(sftp, search_path, search_prefix):
 
 def message_user(message: str):
     """
-    Temporary centralised way to message user.
+    Centralised way to send message.
     """
     print(message)
 
@@ -298,14 +259,16 @@ def raise_error(message: str):
     raise BaseException(message)
 
 
-def get_user_appdir_path(project_name):
+def get_appdir_path(project_name: str) -> Path:
     """
-    It is not possible to write to programfiles in windows from app without admin permissions
-    However if admin permission given drag and drop dont work, and it is not good practice.
-    Use appdirs module to get the AppData cross-platform and save / load all files form here .
+    It is not possible to write to programfiles in windows
+    from app without admin permissions. However if admin
+    permission given drag and drop dont work, and it is
+    not good practice. Use appdirs module to get the
+    AppData cross-platform and save / load all files form here .
     """
     base_path = Path(
-        os.path.join(appdirs.user_data_dir("ProjectManagerSWC"), project_name)
+        os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
     )
 
     if not os.path.isdir(base_path):
@@ -314,11 +277,14 @@ def get_user_appdir_path(project_name):
     return base_path
 
 
-def process_names(names: Union[list, str], prefix: str):
+def process_names(
+    names: Union[list, str], prefix: str, is_ses=False
+) -> Union[list, str]:
     """
-    Check a single or list of input session or subject names. First check the type is correct,
-    next prepend the prefix sub- or ses- to entries that do not have the relevant prefix. Finally,
-    check for duplicates.
+    Check a single or list of input session or subject names.
+    First check the type is correct, next prepend the prefix
+    sub- or ses- to entries that do not have the relevant prefix.
+    Finally, check for duplicates.
 
     :param names: str or list containing sub or ses names (e.g. to make dirs)
     :param prefix: "sub" or "ses" - this defines the prefix checks.
@@ -329,10 +295,12 @@ def process_names(names: Union[list, str], prefix: str):
         raise_error(
             "Ensure subject and session names are list of strings, or string"
         )
-        return False
 
     if isinstance(names, str):
         names = [names]
+
+    if is_ses:
+        update_ses_names_with_datetime(names)
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
@@ -345,7 +313,28 @@ def process_names(names: Union[list, str], prefix: str):
     return prefixed_names
 
 
-def ensure_prefixes_on_list_of_names(names, prefix):
+def update_ses_names_with_datetime(names: list):
+    """
+    Replate @DATE and @DATETIME flag with date and datetime respectively.
+    Currently formats time as XXhXXh.
+
+    Dont format datetime directly so we can keep timezone aware.
+    """
+    date = str(datetime.datetime.now().date())
+    date = date.replace("-", "")
+    time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
+    datetime_ = f"{date}-{time_}"
+
+    for i, val in enumerate(names):
+        if "@DATETIME" in val:
+            names[i] = val.replace("@DATETIME", datetime_)
+        elif "@DATE" in val:
+            names[i] = val.replace("@DATE", date)
+
+
+def ensure_prefixes_on_list_of_names(
+    names: Union[list, str], prefix: str
+) -> list:
     """ """
     n_chars = len(prefix)
     return [
@@ -353,5 +342,5 @@ def ensure_prefixes_on_list_of_names(names, prefix):
     ]
 
 
-def path_already_stars_with_base_dir(base_dir: Path, path_: Path):
+def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())
