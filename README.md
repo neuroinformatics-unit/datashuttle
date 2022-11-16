@@ -127,10 +127,9 @@ Each mouse directory is formatted as sub-XXX (e.g. sub-001) and eachs session is
         │   └── mouse/
         │       └── session/
         └── imaging/
-            └── mouse/
+        |   └── mouse/
         │       └── session/
         └── histology/
             └── mouse/
-        │       └── session/    
-```                      
+               └── session/    
 
