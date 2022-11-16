@@ -160,7 +160,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         experiment_type: str = "all",
-        preview: bool = False,
+        dry_run: bool = False,
     ):
         """
         Upload data from a local machine to the remote project
@@ -174,12 +174,12 @@ class DataShuttle:
         :param ses_names: a list of ses names as accepted in make_sub_dir().
                           "all" will search each sub- directory for
                           ses- directories and upload all.
-        :param preview: perform a dry-run of upload, to see which files
+        :param dry_run: perform a dry-run of upload, to see which files
                         are moved.
         :param experiment_type: see make_sub_dir()
         """
         self._transfer_sub_ses_data(
-            "upload", sub_names, ses_names, experiment_type, preview
+            "upload", sub_names, ses_names, experiment_type, dry_run
         )
 
     def download_data(
@@ -187,7 +187,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         experiment_type: str = "all",
-        preview: bool = False,
+        dry_run: bool = False,
     ):
         """
         Download data from the remote project dir to the
@@ -200,10 +200,10 @@ class DataShuttle:
         search the remote project for sub / ses to download.
         """
         self._transfer_sub_ses_data(
-            "download", sub_names, ses_names, experiment_type, preview
+            "download", sub_names, ses_names, experiment_type, dry_run
         )
 
-    def upload_project_dir_or_file(self, filepath: str, preview: bool = False):
+    def upload_project_dir_or_file(self, filepath: str, dry_run: bool = False):
         """
         Upload an entire directory (including all subdirectories
         and files) from the local to the remote machine
@@ -211,7 +211,7 @@ class DataShuttle:
         :param filepath: a string containing the filepath to
                          move, relative to the project directory or
                          full local path accepted.
-        :param preview: preview the transfer (see which files
+        :param dry_run: dry_run the transfer (see which files
                         will be transferred without actually transferring)
 
         """
@@ -221,11 +221,11 @@ class DataShuttle:
         )
 
         self._move_dir_or_file(
-            processed_filepath.as_posix(), "upload", preview
+            processed_filepath.as_posix(), "upload", dry_run
         )
 
     def download_project_dir_or_file(
-        self, filepath: str, preview: bool = False
+        self, filepath: str, dry_run: bool = False
     ):
         """
         Download an entire directory (including all subdirectories
@@ -234,7 +234,7 @@ class DataShuttle:
         :param filepath: a string containing the filepath to
                          move, relative to the project directory or
                          full remote path accepted.
-        :param preview: preview the transfer (see which files
+        :param dry_run: dry_run the transfer (see which files
                          will be transferred without actually transferring)
         """
         processed_filepath = utils.get_path_after_base_dir(
@@ -242,7 +242,7 @@ class DataShuttle:
             Path(filepath),
         )
         self._move_dir_or_file(
-            processed_filepath.as_posix(), "download", preview
+            processed_filepath.as_posix(), "download", dry_run
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -461,7 +461,7 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     def _move_dir_or_file(
-        self, filepath: str, upload_or_download: str, preview: bool
+        self, filepath: str, upload_or_download: str, dry_run: bool
     ):
         """
         Copy a directory or file with Rclone.
@@ -471,7 +471,7 @@ class DataShuttle:
         :param upload_or_download: upload goes local to
                                    remote, download goes
                                    remote to local
-        :param preview: do not actually move the files,
+        :param dry_run: do not actually move the files,
                         just report what would be moved.
         """
         local_filepath = self._join(
@@ -484,7 +484,7 @@ class DataShuttle:
         local_or_ssh = "ssh" if self.cfg["ssh_to_remote"] else "local"
 
         extra_arguments = "--create-empty-src-dirs"
-        if preview:
+        if dry_run:
             extra_arguments += " --dry-run"
 
         if upload_or_download == "upload":
@@ -631,7 +631,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         experiment_type: str,
-        preview: bool,
+        dry_run: bool,
     ):
         """
         Iterate through all data type, sub, ses and transfer session directory.
@@ -640,7 +640,7 @@ class DataShuttle:
         :param sub_names: see make_sub_dir()
         :param ses_names: see make_sub_dir()
         :param experiment_type: see make_sub_dir()
-        :param preview: see upload_project_dir_or_file*(
+        :param dry_run: see upload_project_dir_or_file*(
         """
         local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
@@ -662,7 +662,7 @@ class DataShuttle:
                 local_or_remote,
                 experiment_type,
                 sub,
-                preview=preview,
+                dry_run=dry_run,
             )
 
             # Find ses names  to transfer
@@ -681,7 +681,7 @@ class DataShuttle:
                     experiment_type,
                     sub,
                     ses,
-                    preview,
+                    dry_run,
                 )
 
     def transfer_experiment_type(
@@ -691,7 +691,7 @@ class DataShuttle:
         experiment_type: Union[list, str],
         sub: str,
         ses: str = None,
-        preview: bool = False,
+        dry_run: bool = False,
     ):
         """
         Transfer the experiment-level folder at the subject
@@ -722,7 +722,7 @@ class DataShuttle:
                     filepath = os.path.join(sub, experiment_type_dir.name)
 
                 self._move_dir_or_file(
-                    filepath, upload_or_download, preview=preview
+                    filepath, upload_or_download, dry_run=dry_run
                 )
 
     def _items_from_experiment_type_input(
