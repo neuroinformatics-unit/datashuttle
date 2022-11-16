@@ -2,6 +2,7 @@ import datetime
 import fnmatch
 import glob
 import os
+import re
 import stat
 import warnings
 from pathlib import Path
@@ -239,11 +240,13 @@ def process_names(
             "Ensure subject and session names are list of strings, or string"
         )
 
+    if isinstance(names, str):
+        names = [names]
+
     if any([" " in ele for ele in names]):
         raise_error("sub or ses names cannot include spaces.")
 
-    if isinstance(names, str):
-        names = [names]
+    update_names_with_range_to_flag(names)
 
     update_names_with_datetime(names)
 
@@ -256,6 +259,63 @@ def process_names(
         )
 
     return prefixed_names
+
+
+def update_names_with_range_to_flag(names):
+
+    new_names = []
+
+    for i, name in enumerate(names):
+
+        if "@TO" in name:
+
+            left_number = find_number_next_to_key_in_str(name, "@TO", "left")
+            right_number = find_number_next_to_key_in_str(name, "@TO", "right")
+
+            if int(left_number) >= int(right_number):
+                raise_error(
+                    "Number to the left of @TO flag must be bigger than number to the right."
+                )
+
+            max_leading_zeros = max(
+                num_leading_zeros(left_number), num_leading_zeros(left_number)
+            )
+
+            all_numbers = [
+                *range(int(left_number), int(right_number) + 1)
+            ]  # TODO: doc upper bound inclusive
+
+            all_numbers_with_leading_zero = [
+                f"{number:0{max_leading_zeros}d}" for number in all_numbers
+            ]
+
+            new_names += all_numbers_with_leading_zero
+
+        else:
+            new_names.append(name)
+
+    return new_names
+
+
+def find_number_next_to_key_in_str(string, key, left_or_right):
+
+    if left_or_right == "left":
+        indexes = re.search(f"[0-9]+{key}", string).span()
+        left_edge = indexes[0]
+        right_edge = indexes[1] - len(key)
+
+    elif left_or_right == "right":
+        indexes = re.search(f"{key}[0-9]+", string).span()
+        left_edge = indexes[0] + len(key)
+        right_edge = indexes[1]
+
+    return string[left_edge:right_edge]
+
+
+def num_leading_zeros(string):
+    return len(string) - len(
+        str(int(string))
+    )  # lol there must be a better way...
 
 
 def update_names_with_datetime(names: list):
