@@ -66,6 +66,27 @@ def handle_kwargs_bools(kwargs):
     return kwargs
 
 
+def help(help_type):
+    """ """
+
+    if help_type == "flag_default_false":
+        help_str = "flag (default False)"
+
+    elif help_type == "required_str":
+        help_str = "Required: (str)"
+
+    elif help_type == "optional_flag_default_false":
+        help_str = "Optional: flag (default False)"
+
+    elif help_type == "required_str_single_or_multiple":
+        help_str = "Required: (str, single or multiple)"
+
+    elif help_type == "required_str_single_or_multiple_or_all":
+        help_str = "Required: (str, single or multiple) ('all' for all)"
+
+    return help_str
+
+
 # ------------------------------------------------------------------------------------------
 # Entry
 # ------------------------------------------------------------------------------------------
@@ -131,7 +152,7 @@ make_config_file_parser = subparsers.add_parser(
 make_config_file_parser.set_defaults(func=make_config_file)
 
 make_config_file_parser.add_argument(
-    "local_path", type=str, help="Required: (str)"
+    "local_path", type=str, help=help("required_str")
 )
 
 make_config_file_parser = make_config_file_parser.add_argument_group(
@@ -142,59 +163,102 @@ make_config_file_parser.add_argument(
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--remote_path_local",
     required=False,
     type=str,
-    help="This or --remote_path_ssh must be set(str)",
     metavar="",
+    help="This or --remote_path_ssh must be set(str)",
 )
 make_config_file_parser.add_argument(
     "--remote_path_ssh",
     required=False,
     type=str,
-    help="This or --remote_path_local must be set(str)",
     metavar="",
+    help="This or --remote_path_local must be set(str)",
 )
 make_config_file_parser.add_argument(
     "--remote_host_id",
     required=False,
     type=str,
-    help="(str)",
     metavar="",
+    help="(str)",
 )
 make_config_file_parser.add_argument(
     "--remote_host_username", required=False, help="(str)", metavar=""
+)
+make_config_file_parser.add_argument(
+    "--sub_prefix",
+    required=False,
+    type=str,
+    metavar="",
+    help="(str) default: sub-",
+)
+make_config_file_parser.add_argument(
+    "--ses_prefix",
+    required=False,
+    type=str,
+    metavar="",
+    help="(str) default: ses-",
 )
 make_config_file_parser.add_argument(
     "--use_ephys",
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
+)
+make_config_file_parser.add_argument(
+    "--use_ephys_behav",
+    required=False,
+    default=None,
+    action="store",
+    metavar="",
+    help=help("flag_default_false"),
+)
+make_config_file_parser.add_argument(
+    "--use_ephys_behav_camera",
+    required=False,
+    default=None,
+    action="store",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--use_behav",
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
+)
+make_config_file_parser.add_argument(
+    "--use_behav_camera",
+    required=False,
+    default=None,
+    action="store",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--use_imaging",
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--use_histology",
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 
 
@@ -230,7 +294,7 @@ make_config_file_parser.set_defaults(func=update_config)
 make_config_file_parser.add_argument(
     "option_key",
     action="store",
-    help="(str) (see make_config_file --help",
+    help="(str) (see make_config_file --help)",
 )
 make_config_file_parser.add_argument(
     "new_info", action="store", help="(str or bool) depending on option key"
@@ -267,7 +331,7 @@ def make_sub_dir(project, args):
     kwargs = make_kwargs(args)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-
+    print(filtered_kwargs)
     run_command(project, project.make_sub_dir, **filtered_kwargs)
 
 
@@ -283,11 +347,19 @@ make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
 make_sub_dir_parser.set_defaults(func=make_sub_dir)
 
 make_sub_dir_parser.add_argument(
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help=help("required_str_single_or_multiple_or_all"),
+    metavar="",
+)
+make_sub_dir_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple) (selection of data types, or 'all')",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 make_sub_dir_parser.add_argument(
@@ -299,13 +371,13 @@ make_sub_dir_parser.add_argument(
     metavar="",
 )
 make_sub_dir_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
+    "--dont_make_ses_tree",
     required=False,
-    help="Required: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
-    metavar="",
+    default=False,
+    action="store_true",
+    help=help("optional_flag_default_false"),
 )
+
 
 # ------------------------------------------------------------------------------------------
 # Transfer
@@ -337,11 +409,19 @@ upload_data_parser = upload_data_parser.add_argument_group(
 upload_data_parser.set_defaults(func=upload_data)
 
 upload_data_parser.add_argument(
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help=help("required_str_single_or_multiple_or_all"),
+    metavar="",
+)
+upload_data_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 upload_data_parser.add_argument(
@@ -349,22 +429,14 @@ upload_data_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 upload_data_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=False,
-    help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
-    metavar="",
-)
-upload_data_parser.add_argument(
-    "--dry_run",
+    "--preview",
     required=False,
     action="store_true",
-    help="Optional: flag (default False)",
+    help=help("optional_flag_default_false"),
 )
 
 
@@ -394,11 +466,19 @@ download_data_parser = download_data_parser.add_argument_group(
 download_data_parser.set_defaults(func=download_data)
 
 download_data_parser.add_argument(
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help=help("required_str_single_or_multiple_or_all"),
+    metavar="",
+)
+download_data_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 download_data_parser.add_argument(
@@ -406,22 +486,14 @@ download_data_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 download_data_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=False,
-    help="Optional: (str or list) (selection of data types, or 'all') (default 'all')",
-    metavar="",
-)
-download_data_parser.add_argument(
-    "--dry_run",
+    "--preview",
     required=False,
     action="store_true",
-    help="Optional: flag (default False)",
+    help=help("optional_flag_default_false"),
 )
 
 
@@ -449,10 +521,10 @@ upload_project_dir_or_file_parser = subparsers.add_parser(
 upload_project_dir_or_file_parser.set_defaults(func=upload_project_dir_or_file)
 
 upload_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help="Required: (str)"
+    "filepath", type=str, help=help("required_str")
 )
 upload_project_dir_or_file_parser.add_argument(
-    "--dry_run", action="store_true", help="flag (default False)"
+    "--preview", action="store_true", help=help("flag_default_false")
 )
 
 
@@ -482,10 +554,10 @@ download_project_dir_or_file_parser.set_defaults(
 )
 
 download_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help="Required: (str)"
+    "filepath", type=str, help=help("required_str")
 )
 download_project_dir_or_file_parser.add_argument(
-    "--dry_run", action="store_true", help="flag (default False)"
+    "--preview", action="store_true", help=help("flag_default_false")
 )
 
 
