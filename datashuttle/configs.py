@@ -82,7 +82,7 @@ class Configs(UserDict):
 
         :param option_key: dictionary key of the option to change,
                            see make_config_file()
-        :param new_info: value to update the config too
+        :param new_info: value to update the config to
         """
         if option_key not in self:
             utils.raise_error(f"'{option_key}' is not a valid config.")
