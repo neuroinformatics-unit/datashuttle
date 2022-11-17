@@ -201,17 +201,16 @@ def check_directory_tree_is_correct(
 ):
     """
     Automated test that directories are made based
-    on the  structure specified on project itself.
+    on the structure specified on project itself.
 
     Cycle through all experiment type (defined in
     project._ses_dirs()), sub, sessions and check that
     the expected file exists. For  subdirs, recursively
     check all exist.
 
-    Directories in which directory_used[key] (where key
-    is the cannoincal dict key in project._ses_dirs())
-    is not used are expected  not to be made, and this
-     is checked.
+    directory_used is a dict with keys (e.g. "ephys"
+    from DataShuttle._ses_dirs()) where the value indicates
+    if the directory should have been made.
 
     The directory_used variable must be passed so we dont
     rely on project settings itself,

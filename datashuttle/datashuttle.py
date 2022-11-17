@@ -229,7 +229,7 @@ class DataShuttle:
     ):
         """
         Download an entire directory (including all subdirectories
-        and files) from the local to the remote machine.
+        and files) from the remote to the local machine.
 
         :param filepath: a string containing the filepath to
                          move, relative to the project directory or
