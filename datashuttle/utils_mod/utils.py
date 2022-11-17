@@ -248,7 +248,7 @@ def process_names(
 
     if len(prefixed_names) != len(set(prefixed_names)):
         raise_error(
-            "Subject and session names but all be unqiue (i.e. there are no"
+            "Subject and session names must all be unique (i.e. there are no"
             " duplicates in list input)"
         )
 
