@@ -59,9 +59,7 @@ class DataShuttle:
         self.cfg: Any = None
         self._ssh_key_path: Any = None
         self._ses_dirs: Any = None
-        self._top_level_dir_name = (
-            "rawdata"  # TODO: move to configs, make changable?
-        )
+        self._top_level_dir_name = "rawdata"
 
         self.attempt_load_configs(prompt_on_fail=True)
 
@@ -344,8 +342,8 @@ class DataShuttle:
                 "ssh_to_remote": ssh_to_remote,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
-                "sub_prefix": "sub-",  # TODO: move to configs
-                "ses_prefix": "ses-",  # TODO: move to configs
+                "sub_prefix": "sub-",
+                "ses_prefix": "ses-",
                 "use_ephys": use_ephys,
                 "use_behav": use_behav,
                 "use_imaging": use_imaging,
@@ -843,7 +841,7 @@ class DataShuttle:
             )
         return all_dirnames
 
-    def _process_glob_to_find_experiment_type_dirs(  # TODO: could also get new directory.level param
+    def _process_glob_to_find_experiment_type_dirs(
         self,
         directory_names: list,
     ) -> zip:
@@ -861,12 +859,6 @@ class DataShuttle:
                 for key, value in self._ses_dirs.items()
                 if value.name == dir_name
             ]
-
-            if len(experiment_type_key) > 1:
-                utils.raise_error(  # TODO: is this even possible?
-                    "There are matching experiment type names in "
-                    "the tree specified at self._ses_dirs. Remove duplicates"
-                )
 
             if experiment_type_key:
                 ses_dir_keys.append(experiment_type_key[0])
