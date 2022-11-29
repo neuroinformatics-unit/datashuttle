@@ -218,11 +218,11 @@ def check_directory_tree_is_correct(
     check all exist.
 
     Directories in which directory_used[key] (where key
-    is the cannoincal dict key in project._ses_dirs())
+    is the canonical dict key in project._ses_dirs())
     is not used are expected  not to be made, and this
      is checked.
 
-    The directory_used variable must be passed so we dont
+    The directory_used variable must be passed so we don't
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
@@ -304,7 +304,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
     ses_to_upload=None,
 ):
     """
-    Itereate through the project (experiment_type > ses > sub) and
+    Iterate through the project (experiment_type > ses > sub) and
     check that the directories at each level match those that are
     expected (passed in experiment / sub / ses to upload). Dirs
     are searched with wildcard glob.
@@ -316,7 +316,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
         sub_names = glob_basenames(join(base_path_to_check, "*"))
         assert sub_names == sorted(subs_to_upload)
 
-        # Check ses are all upldoated + histology if transferred
+        # Check ses are all uploaded + histology if transferred
         if ses_to_upload:
 
             for sub in subs_to_upload:
@@ -329,7 +329,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
                 )
                 if experiment_type_to_transfer == ["histology"]:
                     assert ses_names == ["histology"]
-                    return  # handle the case in which histolgoy only is transffered,
+                    return  # handle the case in which histology only is transferred,
                     # and there are no sessions to transfer.
 
                 copy_experiment_type_to_transfer = (
