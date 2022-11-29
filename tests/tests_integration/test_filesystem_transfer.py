@@ -1,4 +1,5 @@
 import os
+import re
 
 import pytest
 import test_utils
@@ -183,3 +184,50 @@ class TestFileTransfer:
             subs_to_upload,
             ses_to_upload,
         )
+
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_transfer_with_keyword_parameters(
+        self, project, upload_or_download
+    ):
+        """
+        Test the @TO keyword is accepted properly when making a session and
+        transferring it. First pass @TO-formatted sub and sessions to
+        make_sub_dir. Then transfer the files (upload or download).
+
+        Finally, check the expected formatting on the subject and session
+        is observed on the created and transferred file paths.
+        """
+        subs = ["001", "02@TO03"]
+        sessions = ["ses-01@TO003_@DATETIME"]
+
+        project.make_sub_dir(subs, sessions, "all")
+
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+
+        transfer_function(subs, sessions, "all")
+
+        for base_local in [
+            project.get_local_path(),
+            project.get_remote_path(),
+        ]:
+
+            for sub in ["sub-001", "sub-02", "sub-03"]:
+
+                sessions_in_path = test_utils.glob_basenames(
+                    os.path.join(base_local, "rawdata", sub, "ses*")
+                )
+
+                datetime_regexp = r"date-\d\d\d\d\d\d\d\d_time-\d\d\d\d\d\d"
+
+                assert re.match(
+                    "ses-001_" + datetime_regexp, sessions_in_path[0]
+                )
+                assert re.match(
+                    "ses-002_" + datetime_regexp, sessions_in_path[1]
+                )
+                assert re.match(
+                    "ses-003_" + datetime_regexp, sessions_in_path[2]
+                )
