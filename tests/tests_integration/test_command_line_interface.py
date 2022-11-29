@@ -415,7 +415,7 @@ class TestCommandLineInterface:
         Check that error from API are propagated to CLI
         """
         __, stderr = test_utils.run_cli(
-            "make_config_file " "test_local_path ",
+            "make_config_file test_local_path ",
             clean_project_name,
         )
 
@@ -423,6 +423,18 @@ class TestCommandLineInterface:
             "AssertionError: "
             "Must set either remote_path_ssh or remote_path_local" in stderr
         )
+
+    def test_check_process_names(self, clean_project_name):
+        """
+        Check that testing the process names function outputs the
+        properly processed names to stdout
+        """
+        stdout, __ = test_utils.run_cli(
+            "check_name_processing sub-001 1@TO02 --prefix sub-",
+            clean_project_name,
+        )
+
+        assert "['sub-001', 'sub-01', 'sub-02']" in stdout
 
     # ----------------------------------------------------------------------------------------------------------
     # Helpers
