@@ -188,7 +188,7 @@ def get_list_of_directory_names_over_sftp(
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def message_user(message: str):
+def message_user(message: Union[str, list]):
     """
     Centralised way to send message.
     """
@@ -246,19 +246,22 @@ def process_names(
     if any([" " in ele for ele in names]):
         raise_error("sub or ses names cannot include spaces.")
 
-    update_names_with_range_to_flag(names, prefix)
-
-    update_names_with_datetime(names)
-
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
     if len(prefixed_names) != len(set(prefixed_names)):
         raise_error(
-            "Subject and session names but all be unqiue (i.e. there are no"
+            "Subject and session names but all be unique (i.e. there are no"
             " duplicates in list input)"
         )
 
+    prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
+
+    update_names_with_datetime(prefixed_names)
+
     return prefixed_names
+
+
+# Handle @TO flags  -------------------------------------------------------
 
 
 def update_names_with_range_to_flag(names, prefix):
@@ -269,8 +272,10 @@ def update_names_with_range_to_flag(names, prefix):
 
         if "@TO" in name:
 
-            prefix_tag = re.search(f"{prefix}-[0-9]+@TO[0-9]+", name)[0]
-            tag_number = prefix_tag.split(f"{prefix}-")[1]
+            check_name_is_formatted_correctly(name, prefix)
+
+            prefix_tag = re.search(f"{prefix}[0-9]+@TO[0-9]+", name)[0]
+            tag_number = prefix_tag.split(f"{prefix}")[1]
 
             name_start_str, name_end_str = name.split(tag_number)
 
@@ -300,6 +305,18 @@ def update_names_with_range_to_flag(names, prefix):
     return new_names
 
 
+def check_name_is_formatted_correctly(name, prefix):
+
+    first_key_value_pair = name.split("_")[0]
+    expected_format = re.compile(f"{prefix}[0-9]+@TO[0-9]+")
+
+    if not re.fullmatch(expected_format, first_key_value_pair):
+        raise_error(
+            f"The name: {name} is not in required format for @TO keyword. "
+            f"The start must be  be {prefix}<NUMBER>@TO<NUMBER>)"
+        )
+
+
 def make_list_of_zero_padded_names_across_range(
     left_number, right_number, name_start_str, name_end_str
 ):
@@ -325,6 +342,9 @@ def make_list_of_zero_padded_names_across_range(
 def num_leading_zeros(string):
     """int() strips leading zeros"""
     return len(string) - len(str(int(string)))
+
+
+# Handle @DATE, @DATETIME, @TIME flags -------------------------------------------------
 
 
 def update_names_with_datetime(names: list):
