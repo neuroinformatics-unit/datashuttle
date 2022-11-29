@@ -113,9 +113,6 @@ class TestUnit:
             f"The start must be  be {prefix}<NUMBER>@TO<NUMBER>)"
         )
 
-    # check cli and command line process_names
-    # test create files, move files with @TO and @DATETIME
-
     # ----------------------------------------------------------------------
     # Utlis
     # ----------------------------------------------------------------------
