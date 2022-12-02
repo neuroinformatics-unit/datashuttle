@@ -66,18 +66,18 @@ system, so will be in your local (e.g. USA) format.
 ```
 └── project_name/
     └── raw_data/
-        ├── ephys/
-        │   └── sub-001/
-        │       ├── ses-001-02-11-22/
-        │       │   └── behav/
-        │       │       └── camera
-        │       └── ses-002-02-11-22-1h15m/
-        │           └── behav/
-        │               └── camera
-        └── behav/
-            └── sub-001/
-                ├── ses-001-02-11-22/
-                └── ses-002-02-11-22-1h15m/
+        ├── sub-001/
+        │   └── ses-001/
+        │       ├── ephys/
+        │       └── behav/
+        │   └── histology/
+        └── sub-002/
+            └── ses-001/
+                ├── behav/
+                └── imaging/
+            └── ses-002/
+                └── behav/
+            └── histology/
 ```
 
 ### Transfer Data
