@@ -68,15 +68,15 @@ system, so will be in your local (e.g. USA) format.
     └── raw_data/
         ├── sub-001/
         │   └── ses-001/
-        │       ├── ephys/
-        │       └── behav/
+        │   │   ├── ephys/
+        │   │   └── behav/
         │   └── histology/
         └── sub-002/
             └── ses-001/
-                ├── behav/
-                └── imaging/
+            │   ├── behav/
+            │   └── imaging/
             └── ses-002/
-                └── behav/
+            │   └── behav/
             └── histology/
 ```
 
@@ -114,22 +114,20 @@ first time running the software, run ```project.setup_ssh_connection_to_remote_s
 
 Below is an suggested folder structure based on the BIDS framework. BIDS is a data organisation format widely used in neuroimaging and human electrophysiology [[1]](https://www.nature.com/articles/s41597-019-0105-7) that has recently begun extending to animal electrophysiology [[2]](https://neurostars.org/t/towards-a-standard-organization-for-animal-electrophysiology-a-new-bids-extension-proposal/18588).
 
-Each mouse directory is formatted as sub-XXX (e.g. sub-001) and eachs session is formatted ses-XXX (e.g. ses-001).
+Each mouse directory is formatted as sub-XXX (e.g. sub-001) and each session is formatted ses-XXX (e.g. ses-001).
 ```
 └── project_name/
     └── raw_data/
-        ├── ephys/
-        │   └── mouse/
-        │       └── session/
-        │           └── behav/
-        │               └── camera
-        ├── behav/
-        │   └── mouse/
-        │       └── session/
-        └── imaging/
-        |   └── mouse/
-        │       └── session/
-        └── histology/
-            └── mouse/
-               └── session/    
-
+        ├── sub-001/
+        │   └── ses-001/
+        │   │   ├── ephys/
+        │   │   └── behav/
+        │   └── histology/
+        └── sub-002/
+            └── ses-001/
+            │   ├── behav/
+            │   └── imaging/
+            └── ses-002/
+            │   └── behav/
+            └── histology/
+```
