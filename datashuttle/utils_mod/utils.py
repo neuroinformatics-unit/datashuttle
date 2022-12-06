@@ -117,15 +117,14 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
         transport.connect()
         key = transport.get_remote_server_key()
 
-    message_user(
-        "The host key is not cached for this server:"
+    input_ = get_user_input(
+        f"The host key is not cached for this server:"
         f" {remote_host_id}.\nYou have no guarantee "
         f"that the server is the computer you think it is.\n"
         f"The server's {key.get_name()} key fingerprint is: "
         f"{key.get_base64()}\nIf you trust this host, to connect"
         " and cache the host key, press y: "
     )
-    input_ = input()
 
     if input_ == "y":
         client = paramiko.SSHClient()
@@ -195,6 +194,14 @@ def message_user(message: Union[str, list]):
     print(message)
 
 
+def get_user_input(message) -> str:
+    """
+    Centralised way to get user input
+    """
+    input_ = input(message)
+    return input_
+
+
 def raise_error(message: str):
     """
     Temporary centralized way to raise and error
@@ -204,9 +211,9 @@ def raise_error(message: str):
 
 def get_appdir_path(project_name: str) -> Path:
     """
-    It is not possible to write to programfiles in windows
-    from app without admin permissions. However if admin
-    permission given drag and drop dont work, and it is
+    It is not possible to write to program files in windows
+    from app without admin permissions. However, if admin
+    permission given drag and drop don't work, and it is
     not good practice. Use appdirs module to get the
     AppData cross-platform and save / load all files form here .
     """
