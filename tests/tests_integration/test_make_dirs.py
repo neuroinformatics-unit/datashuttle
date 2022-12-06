@@ -23,6 +23,8 @@ class TestMakeDirs:
         Ensure change dir at end of session otherwise
         it is not possible to delete project.
         """
+        tmp_path = tmp_path / "test with space"
+
         test_project_name = "test_make_dirs"
 
         project = test_utils.setup_project_default_configs(
@@ -64,7 +66,7 @@ class TestMakeDirs:
             utils.process_names(["1", "2", "3", "3", "4"], prefix)
 
         assert (
-            "Subject and session names must all be unique "
+            "Subject and session names but all be unique "
             "(i.e. there are no duplicates in list input)" == str(e.value)
         )
 
