@@ -32,3 +32,4 @@ repos:
                 - types-PyYAML
                 - types-appdirs
                 - types-paramiko
+                - types-simplejson

@@ -1,12 +1,20 @@
+import copy
 import glob
 import os
+import pathlib
 import shutil
+import subprocess
 import warnings
 from os.path import join
 
 import appdirs
+import yaml
 
 from datashuttle.datashuttle import DataShuttle
+
+# ----------------------------------------------------------------------------------------------------------
+# Setup and Teardown Test Project
+# ----------------------------------------------------------------------------------------------------------
 
 
 def setup_project_default_configs(
@@ -24,7 +32,7 @@ def setup_project_default_configs(
     project._setup_remote_as_rclone_target("local")
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
-    project.make_config_file(*default_configs.values())
+    project.make_config_file(**default_configs)
 
     warnings.filterwarnings("default")
 
@@ -34,10 +42,10 @@ def setup_project_default_configs(
 
     if local_path:
         project.update_config("local_path", local_path)
+        delete_all_dirs_in_local_path(project)
 
     if remote_path:
         project.update_config("remote_path_local", remote_path)
-
         delete_all_dirs_in_remote_path(project)
 
     return project
@@ -49,18 +57,22 @@ def glob_basenames(search_path, recursive=False):
     return sorted(basenames)
 
 
-def teardown_project(cwd, project):
+def teardown_project(
+    cwd, project
+):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
     os.chdir(cwd)
     delete_all_dirs_in_remote_path(project)
     delete_project_if_it_exists(project.project_name)
 
 
+def delete_all_dirs_in_local_path(project):
+    if os.path.isdir(project.get_local_path()):
+        shutil.rmtree(project.get_local_path())
+
+
 def delete_all_dirs_in_remote_path(project):
     """"""
-    #   if os.path.isdir(project.get_local_path()):
-    #      shutil.rmtree(project.get_local_path())
-
     if os.path.isdir(project.get_remote_path()):
         shutil.rmtree(project.get_remote_path())
 
@@ -78,6 +90,27 @@ def delete_project_if_it_exists(project_name):
         )
 
 
+def setup_project_fixture(tmp_path, test_project_name):
+
+    project = setup_project_default_configs(
+        test_project_name,
+        local_path=tmp_path / test_project_name / "local",
+        remote_path=tmp_path / test_project_name / "remote",
+    )
+
+    cwd = os.getcwd()
+    return project, cwd
+
+
+def get_protected_test_dir():
+    return "ds_protected_test_name"
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Test Configs
+# ----------------------------------------------------------------------------------------------------------
+
+
 def get_test_config_arguments_dict(
     set_as_defaults=None, required_arguments_only=None
 ):
@@ -89,7 +122,6 @@ def get_test_config_arguments_dict(
     """
     dict_ = {
         "local_path": r"Not:/a/real/local/directory",
-        "ssh_to_remote": False,
         "remote_path_local": r"/Not/a/real/remote_local/directory",
         "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
     }
@@ -111,12 +143,12 @@ def get_test_config_arguments_dict(
                 "use_behav_camera": True,
                 "use_histology": True,
                 "use_imaging": True,
+                "ssh_to_remote": False,
             }
         )
     else:
         dict_.update(
             {
-                "ssh_to_remote": True,
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
                 "sub_prefix": "testsub-",
@@ -128,14 +160,53 @@ def get_test_config_arguments_dict(
                 "use_behav_camera": False,
                 "use_histology": False,
                 "use_imaging": False,
+                "ssh_to_remote": True,
             }
         )
-
     return dict_
 
 
+def get_not_set_config_args(project):
+    return {
+        "local_path": r"C:/test/test_local/test_edit",
+        "remote_path_local": r"/nfs/testdir/test_edit2",
+        "remote_path_ssh": r"/nfs/testdir/test_edit3",
+        "remote_host_id": "test_id",
+        "remote_host_username": "test_host",
+        "sub_prefix": "sub-optional",
+        "ses_prefix": "ses-optional",
+        "use_ephys": not project.cfg["use_ephys"],
+        "use_ephys_behav": not project.cfg["use_ephys_behav"],
+        "use_ephys_behav_camera": not project.cfg["use_ephys_behav_camera"],
+        "use_behav": not project.cfg["use_behav"],
+        "use_behav_camera": not project.cfg["use_behav_camera"],
+        "use_histology": not project.cfg["use_histology"],
+        "use_imaging": not project.cfg["use_imaging"],
+        "ssh_to_remote": not project.cfg["ssh_to_remote"],
+        # ^test last so ssh items already set
+    }
+
+
+def get_default_directory_used():
+    return {
+        "ephys": True,
+        "ephys_behav": True,
+        "ephys_behav_camera": True,
+        "behav": True,
+        "behav_camera": True,
+        "imaging": True,
+        "histology": True,
+    }
+
+
+def get_config_path_with_cli(project_name=None):
+    stdout = run_cli(" get_config_path", project_name)
+    path_ = stdout[0].split(".yaml")[0] + ".yaml"
+    return path_
+
+
 # ----------------------------------------------------------------------------------------------------------
-# Test Helpers
+# Directory Checkers
 # ----------------------------------------------------------------------------------------------------------
 
 
@@ -172,6 +243,7 @@ def check_directory_tree_is_correct(
             check_and_cd_dir(join(base_dir, directory.name))
 
             for sub in subs:
+
                 check_and_cd_dir(join(base_dir, directory.name, sub))
 
                 for ses in sessions:
@@ -232,16 +304,161 @@ def check_and_cd_dir(path_):
     """
     assert os.path.isdir(path_)
     os.chdir(path_)
-    print(f"checked: {path_}")  # -s flag
 
 
-def get_default_directory_used():
-    return {
-        "ephys": True,
-        "ephys_behav": True,
-        "ephys_behav_camera": True,
-        "behav": True,
-        "behav_camera": True,
-        "imaging": True,
-        "histology": True,
-    }
+def check_experiment_type_sub_ses_uploaded_correctly(
+    base_path_to_check,
+    experiment_type_to_transfer,
+    subs_to_upload=None,
+    ses_to_upload=None,
+):
+    """
+    Itereate through the project (experiment_type > ses > sub) and
+    check that the directories at each level match those that are
+    expected (passed in experiment / sub / ses to upload). Dirs
+    are searched with wildcard glob.
+    """
+    experiment_names = glob_basenames(join(base_path_to_check, "*"))
+    assert experiment_names == sorted(experiment_type_to_transfer)
+
+    if subs_to_upload:
+        for experiment_type in experiment_type_to_transfer:
+            sub_names = glob_basenames(
+                join(base_path_to_check, experiment_type, "*")
+            )
+            assert sub_names == sorted(subs_to_upload)
+
+            if ses_to_upload:
+
+                for sub in subs_to_upload:
+                    ses_names = glob_basenames(
+                        join(
+                            base_path_to_check,
+                            experiment_type,
+                            sub,
+                            "*",
+                        )
+                    )
+                    assert ses_names == sorted(ses_to_upload)
+
+
+def make_and_check_local_project(project, experiment_type, subs, sessions):
+    """
+    Make a local project directory tree with the specified experiment_type,
+    subs, sessions and check it is made successfully.
+    """
+    project.make_sub_dir(experiment_type, subs, sessions)
+
+    check_directory_tree_is_correct(
+        project,
+        project.get_local_path(),
+        subs,
+        sessions,
+        get_default_directory_used(),
+    )
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Config Checkers
+# ----------------------------------------------------------------------------------------------------------
+
+
+def check_configs(project, kwargs):
+    """"""
+    config_path = project.get_appdir_path() + "/config.yaml"
+
+    if not os.path.isfile(config_path):
+        raise FileNotFoundError("Config file not found.")
+
+    check_project_configs(project, kwargs)
+    check_config_file(config_path, kwargs)
+
+
+def check_project_configs(
+    project,
+    *kwargs,
+):
+    """
+    Core function for checking the config against
+    provided configs (kwargs). Open the config.yaml file
+    and check the config values stored there,
+    and in project.cfg, against the provided configs.
+
+    Paths are stored as pathlib in the cfg but str in the .yaml
+    """
+    for arg_name, value in kwargs[0].items():
+
+        if arg_name in [
+            "local_path",
+            "remote_path_ssh",
+            "remote_path_local",
+        ]:
+            assert type(project.cfg[arg_name]) in [
+                pathlib.PosixPath,
+                pathlib.WindowsPath,
+            ]
+            assert value == project.cfg[arg_name].as_posix()
+
+        else:
+            assert value == project.cfg[arg_name], f"{arg_name}"
+
+
+def check_config_file(config_path, *kwargs):
+    """ """
+    with open(config_path, "r") as config_file:
+        config_yaml = yaml.full_load(config_file)
+
+        for name, value in kwargs[0].items():
+            assert value == config_yaml[name], f"{name}"
+
+
+# ----------------------------------------------------------------------------------------------------------
+# Test Helpers
+# ----------------------------------------------------------------------------------------------------------
+
+
+def handle_upload_or_download(project, upload_or_download):
+    """
+    To keep things consistent and avoid the pain of writing
+    files over SSH, to test download just swap the remote
+    and local server (so things are still transferred from
+    local machine to remote, but using the download function).
+    """
+    local_path = copy.deepcopy(project.get_local_path())
+    remote_path = copy.deepcopy(project.get_remote_path())
+
+    if upload_or_download == "download":
+
+        project.update_config("local_path", remote_path)
+        project.update_config("remote_path_local", local_path)
+
+        transfer_function = project.download_data
+
+    else:
+        transfer_function = project.upload_data
+
+    return transfer_function, remote_path
+
+
+def get_default_sub_sessions_to_test():
+    """
+    Canonical subs / sessions for these tests
+    """
+    subs = ["sub-001", "sub-002", "sub-003"]
+    sessions = ["ses-001-23092022-13h50s", "ses-002", "ses-003"]
+    return subs, sessions
+
+
+def run_cli(command, project_name=None):
+
+    name = get_protected_test_dir() if project_name is None else project_name
+
+    result = subprocess.Popen(
+        " ".join(["datashuttle", name, command]),
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        shell=True,
+    )
+
+    stdout, stderr = result.communicate()
+    return stdout.decode("utf8"), stderr.decode("utf8")

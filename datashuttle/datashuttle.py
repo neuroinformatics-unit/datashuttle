@@ -1,4 +1,6 @@
+import copy
 import getpass
+import json
 import os
 import pathlib
 import warnings
@@ -22,19 +24,22 @@ from datashuttle.utils_mod.directory_class import Directory
 
 class DataShuttle:
     """
-    Main datashuttle class for data organisation and transfer in
-    BIDS-style project directory. The expected organisation is a
-    central repository on a remote machine ('remote') that contains
-    all project data. This is connected to multiple local machines
-    ('local') which each contain a subset of the full project (e.g.
-    machine for electrophysiology collection, machine for behavioural
-    connection, machine for analysis for specific data etc.).
+    DataShuttle is a tool for convenient scientific
+    project management and transfer in BIDS format.
 
-    On first use on a new profile, show warning prompting to set
-    configurations with the function make_config_file().
+    The expected organisation is a central repository
+    on a remote machine  ('remote') that contains all
+    project data. This is connected to multiple local
+    machines ('local') which each contain a subset of
+    the full project (e.g. machine for electrophysiology
+    collection, machine for behavioural connection, machine
+    for analysis for specific data etc.).
 
-    For transferring data between a remote data storage with SSH,
-    use setup setup_ssh_connection_to_remote_server().
+    On first use on a new profile, show warning prompting
+    to set configurations with the function make_config_file().
+
+    For transferring data between a remote data storage
+    with SSH, use setup setup_ssh_connection_to_remote_server().
     This will allow you to check the server Key, add host key to
     profile if accepted, and setup ssh key pair.
 
@@ -125,7 +130,7 @@ class DataShuttle:
         experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list] = None,
-        make_ses_tree: bool = True,
+        dont_make_ses_tree: bool = False,
     ):
         """
         Make a subject directory in the data type directory. By default,
@@ -141,14 +146,14 @@ class DataShuttle:
         :param ses_names:       session names (same format as subject name).
                                 If no session is provided, defaults to
                                 "ses-001".
-        :param make_ses_tree:   option to make the entire session tree under
-                                the subject directory. If False, the subject
+        :param dont_make_ses_tree:   option to make the entire session tree under
+                                the subject directory. If True, the subject
                                 directory only will be created.
         """
         sub_names = self._process_names(sub_names, "sub")
 
         if ses_names is None:
-            if make_ses_tree:
+            if not dont_make_ses_tree:
                 ses_names = [self.cfg["ses_prefix"] + "001"]
             else:
                 ses_names = []
@@ -159,19 +164,8 @@ class DataShuttle:
             experiment_type,
             sub_names,
             ses_names,
-            make_ses_tree,
+            dont_make_ses_tree,
             process_names=False,
-        )
-
-    def make_empty_ses_dir(
-        self,
-        experiment_type: str,
-        sub_names: Union[str, list],
-        ses_names: Union[str, list],
-    ):
-        """"""
-        self._make_directory_trees(
-            experiment_type, sub_names, ses_names, make_ses_tree=False
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -232,12 +226,19 @@ class DataShuttle:
         and files) from the local to the remote machine
 
         :param filepath: a string containing the filepath to
-                         move, relative to the project directory
+                         move, relative to the project directory or
+                         full local path accepted.
         :param preview: preview the transfer (see which files
                         will be transferred without actually transferring)
 
         """
-        self._move_dir_or_file(filepath, "upload", preview)
+        processed_filepath = utils.get_path_after_base_dir(
+            self._get_base_dir("local"), Path(filepath)
+        )
+
+        self._move_dir_or_file(
+            processed_filepath.as_posix(), "upload", preview
+        )
 
     def download_project_dir_or_file(
         self, filepath: str, preview: bool = False
@@ -246,9 +247,18 @@ class DataShuttle:
         Download an entire directory (including all subdirectories
         and files) from the local to the remote machine.
 
-        see upload_project_dir_or_file() for inputs
+        :param filepath: a string containing the filepath to
+                         move, relative to the project directory or
+                         full remote path accepted.
+        :param preview: preview the transfer (see which files
+                         will be transferred without actually transferring)
         """
-        self._move_dir_or_file(filepath, "download", preview)
+        processed_filepath = utils.get_path_after_base_dir(
+            self._get_base_dir("remote"), Path(filepath)
+        )
+        self._move_dir_or_file(
+            processed_filepath.as_posix(), "download", preview
+        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
@@ -298,7 +308,7 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        ssh_to_remote: bool,
+        ssh_to_remote: bool = False,
         remote_path_local: str = None,
         remote_path_ssh: str = None,
         remote_host_id: str = None,
@@ -410,6 +420,7 @@ class DataShuttle:
                 "Configuration file has not been initialized. "
                 "Use make_config_file() to setup before continuing."
             )
+            return
 
         self.cfg = configs.Configs(self._config_path, None)
 
@@ -421,10 +432,10 @@ class DataShuttle:
 
             if prompt_on_fail:
                 utils.message_user(
-                    "Config file failed to load. Check file "
-                    "formatting at {self._config_path}. If "
-                    "cannot load, re-initialise configs with "
-                    "make_config_file()"
+                    f"Config file failed to load. Check file "
+                    f"formatting at {self._config_path}. If "
+                    f"cannot load, re-initialise configs with "
+                    f"make_config_file()"
                 )
 
     def update_config(self, option_key: str, new_info: Union[str, bool]):
@@ -444,18 +455,39 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     def get_local_path(self) -> str:
+        """
+        Return the project local path.
+        """
         return os.fspath(self.cfg["local_path"])
 
     def get_appdir_path(self) -> str:
+        """
+        Return the system appdirs path where
+        project settings are stored.
+        """
         appdir_path = utils.get_appdir_path(self.project_name)
         return os.fspath(appdir_path)
 
+    def get_config_path(self):
+        """
+        Return the full path to the DataShuttle config file.
+        """
+        return os.fspath(self._config_path)
+
     def get_remote_path(self) -> str:
         """
-        Force remote path to return as posix as if local filesystem
-        is windows and remote is unix this will break paths.
+        Return the project remote path.
+        This is always formatted to UNIX style.
         """
         return self.cfg.get_remote_path(for_user=True)
+
+    def show_configs(self):
+        """
+        Print the current configs to the terminal.
+        """
+        copy_dict = copy.deepcopy(self.cfg.data)
+        self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
+        utils.message_user(json.dumps(copy_dict, indent=4))
 
     # --------------------------------------------------------------------------------------------------------------------
     # Setup RClone
@@ -482,7 +514,7 @@ class DataShuttle:
 
         extra_arguments = "--create-empty-src-dirs"
         if preview:
-            extra_arguments += " --dry_run"
+            extra_arguments += " --dry-run"
 
         if upload_or_download == "upload":
 
@@ -531,7 +563,7 @@ class DataShuttle:
         experiment_type: str,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        make_ses_tree: bool = True,
+        dont_make_ses_tree: bool = False,
         process_names: bool = True,
     ):
         """
@@ -561,9 +593,9 @@ class DataShuttle:
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 
-        :param make_ses_tree:   option to make the entire session tree
+        :param dont_make_ses_tree:   option to make the entire session tree
                                 under the subject directory.
-                                If False, the subject directory only
+                                If True, the subject directory only
                                 will be created.
         :param process_names:   option to process names or not (e.g.
                                 if names were processed already).
@@ -608,7 +640,7 @@ class DataShuttle:
 
                         utils.make_datashuttle_metadata_folder(ses_path)
 
-                        if make_ses_tree:
+                        if not dont_make_ses_tree:
                             utils.make_ses_directory_tree(
                                 sub,
                                 ses,
@@ -903,15 +935,15 @@ class DataShuttle:
         Get the .items() structure of the data type, either all of
         them (stored in self._ses_dirs or a single item.
         """
-        if type(experiment_type) == list and "all" not in experiment_type:
+        if type(experiment_type) == str:
+            experiment_type = [experiment_type]
 
-            items = self._get_ses_dirs_items_from_list_of_keys(experiment_type)
-
+        if "all" in experiment_type:
+            items = self._ses_dirs.items()
         else:
-            items = (
-                zip([experiment_type], [self._ses_dirs[experiment_type]])
-                if experiment_type not in ["all", ["all"]]
-                else self._ses_dirs.items()
+            items = zip(
+                experiment_type,
+                [self._ses_dirs[key] for key in experiment_type],
             )
 
         return items
@@ -920,7 +952,7 @@ class DataShuttle:
         self, experiment_type: list
     ) -> zip:
         """
-        Key the items of specific keys from a dict in a form that mathes
+        Key the items of specific keys from a dict in a form that matches
         dict.items().
         """
         keys = []
