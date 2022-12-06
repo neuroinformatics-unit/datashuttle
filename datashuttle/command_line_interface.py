@@ -614,6 +614,36 @@ check_name_processing_parser.add_argument(
     help="Required: (str)",
 )
 
+
+# Supply Own Config ------------------------------------------------------------------------
+
+#
+def supply_config_file(project, args):
+
+    kwargs = make_kwargs(args)
+
+    run_command(
+        project,
+        project.supply_config_file,
+        kwargs["path_to_config"],
+    )
+
+
+supply_config_file_parser = subparsers.add_parser(
+    "supply_config_file",
+    description=DataShuttle.supply_config_file.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
+)
+supply_config_file_parser.set_defaults(func=supply_config_file)
+
+supply_config_file_parser.add_argument(
+    "path_to_config",
+    type=str,
+    help="Required: (str, single or multiple)",
+)
+
+
 # ------------------------------------------------------------------------------------------
 # Run
 # ------------------------------------------------------------------------------------------

@@ -457,7 +457,7 @@ class DataShuttle:
         self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         utils.message_user(json.dumps(copy_dict, indent=4))
 
-    def supply_own_config(self, path_to_config: Union[Path, str]):
+    def supply_config_file(self, path_to_config: Union[Path, str]):
 
         path_to_config = Path(path_to_config)
 
