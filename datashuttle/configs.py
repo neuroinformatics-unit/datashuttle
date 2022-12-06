@@ -62,6 +62,14 @@ class Configs(UserDict):
                 "remote_host_username provided."
             )
 
+        if type(self["sub_prefix"]) != str or type(self["ses_prefix"]) != str:
+            utils.raise_error(
+                "sub_prefix and ses_prefix must both be strings."
+            )
+
+        if type(self["ssh_to_remote"]) != bool:
+            utils.raise_error("ssh_to_remote must be a boolean.")
+
     def update_an_entry(self, option_key: str, new_info: Any):
         """
         Convenience function to update individual entry of configuration
@@ -76,6 +84,9 @@ class Configs(UserDict):
                            see make_config_file()
         :param new_info: value to update the config too
         """
+        if option_key not in self:
+            utils.raise_error(f"'{option_key}' is not a valid config.")
+
         original_value = copy.deepcopy(self[option_key])
 
         if option_key in [

@@ -342,5 +342,12 @@ def ensure_prefixes_on_list_of_names(
     ]
 
 
+def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
+    """"""
+    if path_already_stars_with_base_dir(base_dir, path_):
+        return path_.relative_to(base_dir)
+    return path_
+
+
 def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())

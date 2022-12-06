@@ -1,10 +1,7 @@
-import os
-import pathlib
 import warnings
 
 import pytest
 import test_utils
-import yaml
 
 from datashuttle.datashuttle import DataShuttle
 
@@ -159,7 +156,7 @@ class TestConfigs:
             required_arguments_only=True
         )
 
-        project.make_config_file(*required_options.values())
+        project.make_config_file(**required_options)
 
         self.check_config_reopen_and_check_config_again(
             project,
@@ -175,13 +172,13 @@ class TestConfigs:
             required_arguments_only=True
         )
 
-        project.make_config_file(*required_options.values())
+        project.make_config_file(**required_options)
 
         default_options = test_utils.get_test_config_arguments_dict(
             set_as_defaults=True
         )
 
-        self.check_configs(project, default_options)
+        test_utils.check_configs(project, default_options)
 
     def test_non_default_configs(self, project):
         """
@@ -192,7 +189,7 @@ class TestConfigs:
             set_as_defaults=False
         )
 
-        project.make_config_file(*changed_configs.values())
+        project.make_config_file(**changed_configs)
         self.check_config_reopen_and_check_config_again(
             project, changed_configs
         )
@@ -207,76 +204,15 @@ class TestConfigs:
             set_as_defaults=True
         )
 
-        project.make_config_file(*default_configs.values())
+        project.make_config_file(**default_configs)
 
-        for key, value in {
-            "local_path": r"C:/test/test_local/test_edit",
-            "remote_path_local": r"/nfs/testdir/test_edit2",
-            "remote_path_ssh": r"/nfs/testdir/test_edit3",
-            "remote_host_id": "test_id",
-            "remote_host_username": "test_host",
-            "sub_prefix": "sub-optional",
-            "ses_prefix": "ses-optional",
-            "use_ephys": not project.cfg["use_ephys"],
-            "use_ephys_behav": not project.cfg["use_ephys_behav"],
-            "use_ephys_behav_camera": not project.cfg[
-                "use_ephys_behav_camera"
-            ],
-            "use_behav": not project.cfg["use_behav"],
-            "use_behav_camera": not project.cfg["use_behav_camera"],
-            "use_histology": not project.cfg["use_histology"],
-            "use_imaging": not project.cfg["use_imaging"],
-            "ssh_to_remote": not project.cfg[
-                "ssh_to_remote"
-            ],  # test last so ssh items already set
-        }.items():
+        not_set_configs = test_utils.get_not_set_config_args(project)
+        for key, value in not_set_configs.items():
 
             project.update_config(key, value)
             default_configs[key] = value
 
-            self.check_configs(project, default_configs)
-
-    # --------------------------------------------------------------------------------------------------------------------
-    # Test Helpers
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def check_configs(
-        self,
-        project,
-        *kwargs,
-    ):
-        """
-        Core function for checking the config against
-        provided configs (kwargs). Open the config.yaml file
-        and check the config values stored there,
-        and in project.cfg, against the provided configs.
-
-        Paths are stored as pathlib in the cfg but str in the .yaml
-        """
-        config_path = project.get_appdir_path() + "/config.yaml"
-
-        if not os.path.isfile(config_path):
-            raise BaseException("Config file not found.")
-
-        with open(config_path, "r") as config_file:
-            config_yaml = yaml.full_load(config_file)
-
-        for arg_name, value in kwargs[0].items():
-
-            if arg_name in [
-                "local_path",
-                "remote_path_ssh",
-                "remote_path_local",
-            ]:
-                assert type(project.cfg[arg_name]) in [
-                    pathlib.PosixPath,
-                    pathlib.WindowsPath,
-                ]
-                assert value == project.cfg[arg_name].as_posix()
-
-            else:
-                assert value == project.cfg[arg_name], f"{arg_name}"
-                assert value == config_yaml[arg_name], f"{arg_name}"
+            test_utils.check_configs(project, default_configs)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
@@ -288,10 +224,10 @@ class TestConfigs:
         delete the project and setup the project againt,
         checking everything is loaded correctly.
         """
-        self.check_configs(project, kwargs[0])
+        test_utils.check_configs(project, kwargs[0])
 
         del project  # del project is almost certainly unecessary
 
         project = DataShuttle(TEST_PROJECT_NAME)
 
-        self.check_configs(project, kwargs[0])
+        test_utils.check_configs(project, kwargs[0])
