@@ -578,6 +578,41 @@ show_configs_parser = subparsers.add_parser(
 )
 show_configs_parser.set_defaults(func=show_configs)
 
+# Check Name Processing --------------------------------------------------------------------------
+
+
+def check_name_processing(project, args):
+
+    kwargs = make_kwargs(args)
+
+    run_command(
+        project,
+        project.check_name_processing,
+        kwargs.pop("names"),
+        **kwargs,
+    )
+
+
+check_name_processing_parser = subparsers.add_parser(
+    "check_name_processing",
+    description=DataShuttle.check_name_processing.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
+)
+check_name_processing_parser.set_defaults(func=check_name_processing)
+
+check_name_processing_parser.add_argument(
+    "names",
+    type=str,
+    nargs="+",
+    help="Required: (str, single or multiple)",
+)
+
+check_name_processing_parser.add_argument(
+    "--prefix",
+    type=str,
+    help="Required: (str)",
+)
 
 # ------------------------------------------------------------------------------------------
 # Run

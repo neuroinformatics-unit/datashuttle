@@ -52,6 +52,10 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str):
+
+        if " " in project_name:
+            utils.raise_error("project_name must not include spaces.")
+
         self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
@@ -454,6 +458,21 @@ class DataShuttle:
         self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         utils.message_user(json.dumps(copy_dict, indent=4))
 
+    @staticmethod
+    def check_name_processing(names: Union[str, list], prefix: str):
+        """
+        Pass list of names to check how these will be auto-formatted.
+        Useful for checking tags e.g. @TO, @DATE, @DATETIME, @DATE
+
+        :param A string or list of names to check how they will be processed
+        :param prefix, "sub-" or "ses-"
+        """
+        if prefix not in ["sub-", "ses-"]:
+            utils.raise_error("prefix: must be 'sub-' or 'ses-'")
+
+        processed_names = utils.process_names(names, prefix)
+        utils.message_user(processed_names)
+
     # --------------------------------------------------------------------------------------------------------------------
     # Setup RClone
     # --------------------------------------------------------------------------------------------------------------------
@@ -489,18 +508,18 @@ class DataShuttle:
 
             rclone_utils.call_rclone(
                 f"copy "
-                f"{local_filepath} "
-                f"{self.get_rclone_config_name(local_or_ssh)}:"
-                f"{remote_filepath} "
+                f'"{local_filepath}" '
+                f'"{self._get_rclone_config_name(local_or_ssh)}:'
+                f'{remote_filepath}" '
                 f"{extra_arguments}"
             )
 
         elif upload_or_download == "download":
             rclone_utils.call_rclone(
                 f"copy "
-                f"{self.get_rclone_config_name(local_or_ssh)}:"
-                f"{remote_filepath} "
-                f"{local_filepath}  "
+                f'"{self._get_rclone_config_name(local_or_ssh)}:'
+                f'{remote_filepath}" '
+                f'"{local_filepath}"  '
                 f"{extra_arguments}"
             )
 
@@ -510,13 +529,13 @@ class DataShuttle:
         new local and remote for all project
         :param local_or_ssh:
         """
-        rclone_config_name = self.get_rclone_config_name(local_or_ssh)
+        rclone_config_name = self._get_rclone_config_name(local_or_ssh)
 
         rclone_utils.setup_remote_as_rclone_target(
             self.cfg, local_or_ssh, rclone_config_name, self._ssh_key_path
         )
 
-    def get_rclone_config_name(self, local_or_ssh: str) -> str:
+    def _get_rclone_config_name(self, local_or_ssh: str) -> str:
         return f"remote_{self.project_name}_{local_or_ssh}"
 
     # ====================================================================================================================
@@ -950,8 +969,7 @@ class DataShuttle:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        is_ses = True if sub_or_ses == "ses" else False
-        processed_names = utils.process_names(names, prefix, is_ses)
+        processed_names = utils.process_names(names, prefix)
 
         return processed_names
 

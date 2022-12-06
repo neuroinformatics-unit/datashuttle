@@ -123,11 +123,13 @@ def get_test_config_arguments_dict(
     (for project.make_config_file()), all configs (default)
     or non-default configs. Note that default configs here
     are the expected default arguments in project.make_config_file().
+
+    Include spaces in path so this case is always checked
     """
     dict_ = {
-        "local_path": r"Not:/a/real/local/directory",
-        "remote_path_local": r"/Not/a/real/remote_local/directory",
-        "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
+        "local_path": r"Not:/a/re al/local/directory",
+        "remote_path_local": r"/Not/a/re al/remote_ local/directory",
+        "remote_path_ssh": r"/not/a/re al/remote_ ssh/directory",
     }
 
     if required_arguments_only:
@@ -161,10 +163,13 @@ def get_test_config_arguments_dict(
 
 
 def get_not_set_config_args(project):
+    """
+    Include spaces in path so this case is always checked
+    """
     return {
-        "local_path": r"C:/test/test_local/test_edit",
-        "remote_path_local": r"/nfs/testdir/test_edit2",
-        "remote_path_ssh": r"/nfs/testdir/test_edit3",
+        "local_path": r"C:/test/test_ local/test_edit",
+        "remote_path_local": r"/nfs/test dir/test_edit2",
+        "remote_path_ssh": r"/nfs/test dir/test_edit3",
         "remote_host_id": "test_id",
         "remote_host_username": "test_host",
         "use_ephys": not project.cfg["use_ephys"],
@@ -191,6 +196,10 @@ def get_config_path_with_cli(project_name=None):
     return path_
 
 
+def add_quotes(string: str):
+    return '"' + string + '"'
+
+
 # ----------------------------------------------------------------------------------------------------------
 # Directory Checkers
 # ----------------------------------------------------------------------------------------------------------
@@ -208,11 +217,12 @@ def check_directory_tree_is_correct(
     the expected file exists. For  subdirs, recursively
     check all exist.
 
-    directory_used is a dict with keys (e.g. "ephys"
-    from DataShuttle._ses_dirs()) where the value indicates
-    if the directory should have been made.
+    Directories in which directory_used[key] (where key
+    is the canonical dict key in project._ses_dirs())
+    is not used are expected  not to be made, and this
+     is checked.
 
-    The directory_used variable must be passed so we dont
+    The directory_used variable must be passed so we don't
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
@@ -294,7 +304,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
     ses_to_upload=None,
 ):
     """
-    Itereate through the project (experiment_type > ses > sub) and
+    Iterate through the project (experiment_type > ses > sub) and
     check that the directories at each level match those that are
     expected (passed in experiment / sub / ses to upload). Dirs
     are searched with wildcard glob.
@@ -306,7 +316,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
         sub_names = glob_basenames(join(base_path_to_check, "*"))
         assert sub_names == sorted(subs_to_upload)
 
-        # Check ses are all upldoated + histology if transferred
+        # Check ses are all uploaded + histology if transferred
         if ses_to_upload:
 
             for sub in subs_to_upload:
@@ -319,7 +329,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
                 )
                 if experiment_type_to_transfer == ["histology"]:
                     assert ses_names == ["histology"]
-                    return  # handle the case in which histolgoy only is transffered,
+                    return  # handle the case in which histology only is transferred,
                     # and there are no sessions to transfer.
 
                 copy_experiment_type_to_transfer = (
