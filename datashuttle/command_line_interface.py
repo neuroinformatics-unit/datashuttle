@@ -93,7 +93,7 @@ description = (
 
 parser = argparse.ArgumentParser(
     prog="datashuttle",
-    usage="%(prog)s [PROJECT NAME]",
+    usage="%(prog)s [PROJECT NAME]",  # old-style format required
     description=description,
     formatter_class=argparse.RawTextHelpFormatter,
 )
