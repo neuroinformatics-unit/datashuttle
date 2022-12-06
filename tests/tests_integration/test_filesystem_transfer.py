@@ -207,7 +207,7 @@ class TestFileTransfer:
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
-        transfer_function(subs, sessions, "all")
+        transfer_function(subs, "all", "all")
 
         for base_local in [
             project.get_local_path(),
