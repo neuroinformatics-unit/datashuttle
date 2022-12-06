@@ -77,12 +77,12 @@ description = (
     "datashuttle [PROJECT NAME] [COMMAND] [OPTIONS]"
     "\n\n"
     "To get detailed help for commands and their optional arguments, "
-    "\ntype python -m datashuttle [PROJECT NAME] [COMMAND] --help'"
+    "\ntype datashuttle [PROJECT NAME] [COMMAND] --help'"
     "\n\n"
     "On first use it is necessary to setup configurations. \ne.g."
-    "'python -m datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
+    "'datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
     "\n\n"
-    "see \n'python -m datashuttle <project_name> make_config_file --help'"
+    "see \n'datashuttle <project_name> make_config_file --help'"
     "\nfor full list of options."
     "\n\n"
     "All command and argument names are matched to the API "
@@ -221,7 +221,10 @@ def update_config(project, args):
 
 make_config_file_parser = subparsers.add_parser(
     "update_config",
-    description=DataShuttle.update_config.__doc__,
+    description=f"{DataShuttle.update_config.__doc__} "
+    f"\nThe option key should be in the form of config file keys"
+    f"(e.g. remote_path, local_path)\n"
+    f"EXAMPLE: datashuttle test update_config remote_path 'test_path'",
     formatter_class=argparse.RawTextHelpFormatter,
     help="",
 )
@@ -306,6 +309,7 @@ make_sub_dir_parser.add_argument(
     help="Required: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
     metavar="",
 )
+
 
 # ------------------------------------------------------------------------------------------
 # Transfer
@@ -573,6 +577,7 @@ show_configs_parser = subparsers.add_parser(
     description=DataShuttle.show_configs.__doc__,
 )
 show_configs_parser.set_defaults(func=show_configs)
+
 
 # ------------------------------------------------------------------------------------------
 # Run
