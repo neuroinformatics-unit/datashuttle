@@ -411,11 +411,7 @@ def check_project_configs(
     """
     for arg_name, value in kwargs[0].items():
 
-        if arg_name in [
-            "local_path",
-            "remote_path_ssh",
-            "remote_path_local",
-        ]:
+        if arg_name in project.cfg.keys_str_on_file_but_path_in_class:
             assert type(project.cfg[arg_name]) in [
                 pathlib.PosixPath,
                 pathlib.WindowsPath,
