@@ -1,7 +1,9 @@
 import warnings
+from pathlib import Path
 
 import pytest
 import test_utils
+import yaml
 
 from datashuttle.datashuttle import DataShuttle
 
@@ -22,6 +24,22 @@ class TestConfigs:
         warnings.filterwarnings("default")
 
         yield project
+
+    @pytest.fixture(scope="function")
+    def setup_project(self, tmp_path):
+        """
+        Setup a project with default configs to use
+        for testing.
+
+        # Note this fixture is a duplicate of project()
+        in test_filesystem_transfer.py fixture
+        """
+        test_project_name = "test_configs"
+        setup_project, cwd = test_utils.setup_project_fixture(
+            tmp_path, test_project_name
+        )
+        yield setup_project
+        test_utils.teardown_project(cwd, setup_project)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Tests
@@ -206,26 +224,160 @@ class TestConfigs:
 
         not_set_configs = test_utils.get_not_set_config_args(project)
         for key, value in not_set_configs.items():
-
             project.update_config(key, value)
             default_configs[key] = value
 
             test_utils.check_configs(project, default_configs)
 
+    def test_supplied_config_file_bad_path(self, project):
+
+        non_existant_path = Path(project.get_appdir_path() + "fake.file")
+
+        with pytest.raises(BaseException) as e:
+            project.supply_config_file(non_existant_path, warn=False)
+
+        assert str(e.value) == ""
+
+        wrong_filetype_path = project.get_appdir_path() + "file.yuml"
+
+        with open(wrong_filetype_path, "w"):
+            pass
+
+        with pytest.raises(BaseException) as e:
+            project.supply_config_file(non_existant_path, warn=False)
+
+        assert str(e.value) == ""
+
+    def dump_config(self, dict_, path_):
+        with open(path_, "w") as config_file:
+            yaml.dump(dict_, config_file, sort_keys=False)
+
+    def test_supplied_config_file_missing_key(self, setup_project):
+
+        bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
+        missing_key_configs = test_utils.get_test_config_arguments_dict(
+            add_sub_and_ses=True
+        )
+
+        del missing_key_configs["ssh_to_remote"]
+
+        self.dump_config(missing_key_configs, bad_configs_path)
+
+        with pytest.raises(BaseException) as e:
+            setup_project.supply_config_file(bad_configs_path, warn=False)
+
+        assert (
+            str(e.value) == "Loading Failed. The key ssh_to_remote was "
+            "not found in the supplied config. Config "
+            "file was not updated."
+        )
+
+    def test_supplied_config_file_extra_key(self, setup_project):
+
+        bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
+
+        wrong_key_configs = test_utils.get_test_config_arguments_dict(
+            add_sub_and_ses=True
+        )
+        wrong_key_configs["use_mismology"] = "wrong"
+        self.dump_config(wrong_key_configs, bad_configs_path)
+
+        with pytest.raises(BaseException) as e:
+            setup_project.supply_config_file(bad_configs_path, warn=False)
+
+        assert (
+            str(e.value) == "Loading Failed. The key sub_prefix was not "
+            "found in the supplied config. "
+            "Config file was not updated."
+        )
+
+    def test_supplied_config_file_bad_types(self, setup_project):
+        """ """
+        bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
+
+        for key in setup_project.cfg.keys():
+            if key in setup_project.cfg.keys_str_on_file_but_path_in_class:
+                continue
+
+            bad_type_configs = test_utils.get_test_config_arguments_dict(
+                add_sub_and_ses=True
+            )
+
+            bad_type_configs[key] = DataShuttle
+
+            self.dump_config(bad_type_configs, bad_configs_path)
+
+            with pytest.raises(BaseException) as e:
+                setup_project.supply_config_file(bad_configs_path, warn=False)
+
+            try:
+                assert f"The type of the value at {key} is incorrect" in str(
+                    e.value
+                )
+            except:
+                breakpoint()
+
+    # need to move sub / ses from config dict to config class.
+    # then can move sub
+    # then this should work
+
+    def test_supplied_config_file_updates(self, setup_project):
+        """
+        This will check everything
+        """
+        new_configs_path = (
+            setup_project.get_appdir_path() + "/new_configs.yaml"
+        )
+        new_configs = test_utils.get_test_config_arguments_dict(
+            add_sub_and_ses=True
+        )
+
+        new_configs["local_path"] = "new_fake_local"
+        new_configs["remote_path_local"] = "new_fake_remote_local"
+        new_configs["remote_path_ssh"] = "new_fake_remote_ssh"
+
+        self.dump_config(new_configs, new_configs_path)
+
+        setup_project.supply_config_file(new_configs_path, warn=False)
+
+        test_utils.check_configs(setup_project, new_configs)
+
+    def test_supplied_config_file_changes_wrong_order(self, setup_project):
+
+        bad_order_configs_path = (
+            setup_project.get_appdir_path() + "/new_configs.yaml"
+        )
+        good_order_configs = test_utils.get_test_config_arguments_dict(
+            add_sub_and_ses=True
+        )
+
+        bad_order_configs = dict(reversed(good_order_configs))
+
+        self.dump_config(bad_order_configs, bad_order_configs_path)
+
+        setup_project.supply_config_file(bad_order_configs_path, warn=False)
+
+        with pytest.raises(BaseException):
+            test_utils.check_configs(setup_project, bad_order_configs)
+
+        test_utils.check_configs(setup_project, good_order_configs)
+
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
     # --------------------------------------------------------------------------------------------------------------------
 
-    def check_config_reopen_and_check_config_again(self, project, *kwargs):
+    def check_config_reopen_and_check_config_again(
+        self, setup_project, *kwargs
+    ):
         """
         Check the config file and project.cfg against provided kwargs,
         delete the project and setup the project againt,
         checking everything is loaded correctly.
         """
-        test_utils.check_configs(project, kwargs[0])
+        test_utils.check_configs(setup_project, kwargs[0])
 
-        del project  # del project is almost certainly unecessary
+        del setup_project  # del project is almost certainly unecessary
 
-        project = DataShuttle(TEST_PROJECT_NAME)
+        setup_project = DataShuttle(TEST_PROJECT_NAME)
 
-        test_utils.check_configs(project, kwargs[0])
+        test_utils.check_configs(setup_project, kwargs[0])
