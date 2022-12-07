@@ -116,7 +116,9 @@ def get_protected_test_dir():
 
 
 def get_test_config_arguments_dict(
-    set_as_defaults=None, required_arguments_only=None
+    set_as_defaults=False,
+    required_arguments_only=False,
+    add_sub_and_ses=False,
 ):
     """
     Retrieve configs, either the required configs
@@ -159,6 +161,10 @@ def get_test_config_arguments_dict(
                 "ssh_to_remote": True,
             }
         )
+
+    if add_sub_and_ses:
+        dict_.update({"sub_prefix": "fake_sub", "ses_prefix": "fake_ses"})
+
     return dict_
 
 

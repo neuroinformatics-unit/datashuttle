@@ -3,7 +3,7 @@ import pathlib
 import warnings
 from collections import UserDict
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Union
 
 import yaml
 
@@ -193,100 +193,3 @@ class Configs(UserDict):
                     utils.raise_error(
                         "Option must be 'path_to_str' or 'str_to_path'"
                     )
-
-    # -----------------------------------------------------------------------------
-    # User Supplied Config
-    # -----------------------------------------------------------------------------
-
-    def try_to_load_user_config(
-        self,
-        supplied_cfg_path: Path,
-    ) -> Optional[UserDict]:
-        """
-        Check that the path points of a valid (yaml) file. Check
-        for confirmation using input() as this will overwrite the
-        existing configs. Try and load the config file, if successful,
-        set the file_path to the used config_path, so it is dumped
-        in the correct place
-        """
-        self.raise_error_not_exists_or_not_yaml(supplied_cfg_path)
-
-        input_ = utils.get_user_input(
-            "This will overwrite the existing datashuttle config file."
-            "If you wish to proceed, press y."
-        )
-
-        if input_ != "y":
-            return None
-
-        try:
-            new_cfg = Configs(supplied_cfg_path, None)
-            new_cfg.load_from_file()
-
-        except BaseException:
-            utils.message_user(
-                "Could not load config file. Please check that "
-                "the file is formatted correctly. "
-                "Config file was not updated."
-            )
-            return None
-
-        sorted_new_cfg = self.perform_checks_sort_raise_error_if_fails(new_cfg)
-
-        if not sorted_new_cfg:
-            return None
-
-        return sorted_new_cfg
-
-    def perform_checks_sort_raise_error_if_fails(self, new_cfg):
-        """
-        Check that all expected keys are in the new_cfg and
-        no unexpected keys are in new_cfg. using loops rather
-        than set() so informative error messages can be given.
-
-        The format of the existing config (i.e. instance of
-        this class on datashuttle) is assumed to be correct, and the
-        new config is tested against this.
-
-        Also check all types match between existing and new key.
-        Finally, sort the dict_ so it is in the expected
-        order (this shouldn't make a difference but is nice
-        to keep consistent).
-        """
-        for key in self.keys():
-            if key not in new_cfg.keys():
-                utils.raise_error(
-                    f"Loading Failed. The key {key} was not "
-                    f"found in the supplied config. "
-                    f"Config file was not updated."
-                )
-
-        for key in new_cfg.keys():
-            if key not in self.keys():
-                utils.raise_error(
-                    f"The supplied config contains an invalid key: {key}. "
-                    f"Config file was not updated."
-                )
-
-        for key in self.keys():
-            if not isinstance(new_cfg[key], type(self[key])):
-                utils.raise_error(
-                    f"The type of the value at {key} is incorrect,"
-                    f"it must be {type(self[key])}. "
-                    f"Config file was not updated."
-                )
-
-        sorted_new_cfg = copy.deepcopy(new_cfg)
-        sorted_new_cfg.data = {key: new_cfg[key] for key in self.keys()}
-
-        return sorted_new_cfg
-
-    def raise_error_not_exists_or_not_yaml(self, supplied_cfg_path: Path):
-
-        if not supplied_cfg_path.exists():
-            utils.raise_error(
-                f"No file found at supplied_cfg_path {supplied_cfg_path}"
-            )
-
-        if supplied_cfg_path.suffix not in [".yaml", ".yml"]:
-            utils.raise_error("The config file must be a YAML file")

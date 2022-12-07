@@ -10,7 +10,7 @@ from typing import Any, Union, cast
 import paramiko
 
 from datashuttle import configs
-from datashuttle.utils_mod import rclone_utils, utils
+from datashuttle.utils_mod import rclone_utils, supply_config_utils, utils
 from datashuttle.utils_mod.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
@@ -457,11 +457,15 @@ class DataShuttle:
         self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         utils.message_user(json.dumps(copy_dict, indent=4))
 
-    def supply_config_file(self, path_to_config: Union[Path, str]):
+    def supply_config_file(
+        self, path_to_config: Union[Path, str], warn: bool = True
+    ):
 
         path_to_config = Path(path_to_config)
 
-        new_cfg = self.cfg.try_to_load_user_config(path_to_config)
+        new_cfg = supply_config_utils.try_to_load_user_config(
+            path_to_config, self.cfg, warn
+        )
 
         if new_cfg:
             self.cfg = new_cfg
