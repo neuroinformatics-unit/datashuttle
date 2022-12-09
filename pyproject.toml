@@ -11,6 +11,14 @@ requires-python = ">=3.8.0"
 dynamic = ["version"]
 license = {text = "BSD-3-Clause"}
 
+dependencies = [
+    "appdirs",
+    "paramiko",
+    "PyYAML",
+    "requests",
+    "rich",
+]
+
 classifiers = [
     "Development Status :: 2 - Pre-Alpha",
     "Programming Language :: Python",
@@ -28,15 +36,6 @@ bug_tracker = "https://github.com/neuroinformatics-unit/datashuttle/issues"
 documentation = "https://github.com/neuroinformatics-unit/datashuttle"
 source_code = "https://github.com/neuroinformatics-unit/datashuttle"
 user_support = "https://github.com/neuroinformatics-unit/datashuttle/issues"
-
-dependencies = [
-    "appdirs",
-    "paramiko",
-    "PyYAML",
-    "requests",
-    "rich",
-]
-
 
 [project.optional-dependencies]
 dev = [
