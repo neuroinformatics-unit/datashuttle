@@ -14,13 +14,13 @@ Requires anaconda install of RClone.
 
 See [Miniconda](https://docs.conda.io/en/main/miniconda.html) for conda installation instructions. Then run:
 
-``` 
+```
 conda install -c conda-forge rclone
 ```
 
 ## Setup and Usage
 
-To get started, import DataShuttle and initialise the class with the name of your project. 
+To get started, import DataShuttle and initialise the class with the name of your project.
 
 ```
 from datashuttle.datashuttle import DataShuttle
@@ -43,20 +43,20 @@ local and remote filesystems.
 
 ### Make Directory Trees
 
-The function ```project.make_sub_dir()``` can be used to flexibly create a BIDS folder tree for a subject / session. 
+The function ```project.make_sub_dir()``` can be used to flexibly create a BIDS folder tree for a subject / session.
 All subject and session folders will be automatically prefixed with "sub-" or "ses-" respetively, if not specified.
 
-See ```project.make_config_file()``` 
+See ```project.make_config_file()```
 or ```project.update_config``` to set which exerpiment folders (e.g. "ephys") are created.
 
 ```
 project.make_sub_dir(experiment_type="all", sub_names=["001", "002", "003"], ses_names=["001", "002"])
 ```
-Will create folder trees for three subjects, each with two sessions, for ephys, behav, histology, and imaging.                    
+Will create folder trees for three subjects, each with two sessions, for ephys, behav, histology, and imaging.
 
 Mice or sessions can automatically include the date, or date and time, with the "@DATE" indicators.
 
-e.g. 
+e.g.
 ```
 project.make_sub_dir(experiment_type["ephys", "behav"], sub_names=["001"], ses_names=["001-@DATE", "002-@DATETIME"])
 ```
@@ -102,12 +102,12 @@ Will copy sessions 1 and 2 of behavioural and imaging data for all subjects from
 ```
 project.download_data(["histology"], ["001", "002", "003"], ["all"])
 ```
-Will transfer all histology sessions or subjects 1 to 3 from the remote to local project directory. 
+Will transfer all histology sessions or subjects 1 to 3 from the remote to local project directory.
 
 ### SSH to remote filesystem
 
 DataShuttle supports transfering to / from remote project folder that is connected via SSH. To do, this, simply enter the SSH
-details required when making the project file (see ```project.make_config_file```). To setup the connection, the 
+details required when making the project file (see ```project.make_config_file```). To setup the connection, the
 first time running the software, run ```project.setup_ssh_connection_to_remote_server()```.
 
 ### Directory Tree
