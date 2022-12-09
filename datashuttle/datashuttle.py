@@ -5,7 +5,7 @@ import os
 import pathlib
 import warnings
 from pathlib import Path
-from typing import Any, Union, cast
+from typing import Any, Optional, Union, cast
 
 import paramiko
 
@@ -129,7 +129,7 @@ class DataShuttle:
         self,
         experiment_type: str,
         sub_names: Union[str, list],
-        ses_names: Union[str, list] = None,
+        ses_names: Optional[Union[str, list]] = None,
         dont_make_ses_tree: bool = False,
     ):
         """
@@ -309,10 +309,10 @@ class DataShuttle:
         self,
         local_path: str,
         ssh_to_remote: bool = False,
-        remote_path_local: str = None,
-        remote_path_ssh: str = None,
-        remote_host_id: str = None,
-        remote_host_username: str = None,
+        remote_path_local: Optional[str] = None,
+        remote_path_ssh: Optional[str] = None,
+        remote_host_id: Optional[str] = None,
+        remote_host_username: Optional[str] = None,
         sub_prefix: str = "sub-",
         ses_prefix: str = "ses-",
         use_ephys: bool = True,
