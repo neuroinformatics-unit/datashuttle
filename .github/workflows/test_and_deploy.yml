@@ -1,39 +1,43 @@
 name: tests
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - '*'
+  pull_request:
 
 jobs:
-  lint:
+  linting:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
-        python-version: [ "3.9", "3.10" ]
+        os: [windows-latest, ubuntu-latest]
+        python-version: ["3.10" ]
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install .[dev]
-      - name: Lint
-        run: |
-          black ./ --check -l 79
-          flake8
-          isort
+      - uses: neuroinformatics-unit/actions/lint@main
+
+  manifest:
+    name: Check Manifest
+    runs-on: ubuntu-latest
+    steps:
+      - uses: neuroinformatics-unit/actions/check_manifest@main
+
   test:
-    needs: lint
+    needs: [linting, manifest]
+    name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
+
     defaults:
       run:
         shell: bash -l {0}
+
     strategy:
       matrix:
         os: [windows-latest, macos-latest, ubuntu-latest]
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.8", "3.9", "3.10"]
+
     steps:
       - uses: actions/checkout@v2
       - name: Set up Conda
