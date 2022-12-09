@@ -1,16 +1,33 @@
 [project]
 name = "datashuttle"
-version = "0.0.0"
-description = "Organise and transfer scientific projects in BIDS format"
-readme = "README.md"
-requires-python = ">=3.9.0"
-
 authors = [
     {name = "Joe Ziminski", email = "j.ziminski@ucl.ac.uk"},
     {name = "Adam Tyson", email = "code@adamltyson.com"},
     {name = "Niko Sirmpilatze", email = "niko.sirbiladze@gmail.com"},
 ]
+description = "Organise and transfer scientific projects in BIDS format"
+readme = "README.md"
+requires-python = ">=3.8.0"
+dynamic = ["version"]
+license = {text = "BSD-3-Clause"}
 
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: BSD License",
+]
+
+[project.urls]
+homepage = "https://github.com/neuroinformatics-unit/datashuttle"
+bug_tracker = "https://github.com/neuroinformatics-unit/datashuttle/issues"
+documentation = "https://github.com/neuroinformatics-unit/datashuttle"
+source_code = "https://github.com/neuroinformatics-unit/datashuttle"
+user_support = "https://github.com/neuroinformatics-unit/datashuttle/issues"
 
 dependencies = [
     "appdirs",
@@ -23,15 +40,16 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black",
-    "pytest-cov",
     "pytest",
+    "pytest-cov",
     "coverage",
-    "bump2version",
-    "pre-commit",
-    "flake8",
+    "tox",
+    "black",
     "isort",
     "mypy",
+    "pre-commit",
+    "flake8",
+    "setuptools_scm",
     "simplejson",
     "types-requests",
     "types-PyYAML",
@@ -41,20 +59,25 @@ dev = [
 ]
 
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = [
+    "setuptools>=45",
+    "wheel",
+    "setuptools_scm[toml]>=6.2",
+]
 build-backend = "setuptools.build_meta"
 
-[project.scripts]
-datashuttle = "datashuttle.command_line_interface:main"
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["datashuttle*"]
+exclude = ["tests*"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=datashuttle"
 
-[tool.isort]
-profile = "black"
-
 [tool.black]
-target-version = ['py36', 'py37', 'py38']
+target-version = ['py39']
 skip-string-normalization = false
 line-length = 79
 exclude = '''
@@ -70,6 +93,27 @@ exclude = '''
     | buck-out
     | build
     | dist
+    | examples
   )/
 )
 '''
+
+[tool.isort]
+profile = "black"
+line_length = 79
+
+[tool.setuptools_scm]
+
+[tool.check-manifest]
+ignore = [
+  "*.yaml",
+  ".bumpversion.cfg",
+  "tox.ini",
+  "tests/*",
+  "tests/test_unit/*",
+  "tests/test_integration/*",
+  ".flake8"
+]
+
+[project.scripts]
+datashuttle = "datashuttle.command_line_interface:main"
