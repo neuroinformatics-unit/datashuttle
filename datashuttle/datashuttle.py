@@ -142,7 +142,7 @@ class DataShuttle:
         sub_names = self._process_names(sub_names, "sub")
 
         if ses_names is None:
-            ses_names = [self.cfg["ses_prefix"] + "001"]
+            ses_names = [self.cfg.ses_prefix + "001"]
 
         else:
             ses_names = self._process_names(ses_names, "ses")
@@ -301,10 +301,10 @@ class DataShuttle:
         remote_path_ssh: Optional[str] = None,
         remote_host_id: Optional[str] = None,
         remote_host_username: Optional[str] = None,
-        use_ephys: bool = True,
-        use_behav: bool = True,
-        use_imaging: bool = True,
-        use_histology: bool = True,
+        use_ephys: bool = False,
+        use_behav: bool = False,
+        use_imaging: bool = False,
+        use_histology: bool = False,
     ):
         """
         Initialise a config file for using the datashuttle on the
@@ -842,7 +842,7 @@ class DataShuttle:
         search_path = self._join(
             local_or_remote, [self._top_level_dir_name, sub]
         )
-        search_prefix = self.cfg["ses_prefix"] + "*"
+        search_prefix = self.cfg.ses_prefix + "*"
 
         return self._search_for_directories(
             local_or_remote, search_path, search_prefix
@@ -1023,7 +1023,7 @@ class DataShuttle:
         if sub_or_ses == "sub":
             prefix = self.cfg.sub_prefix
         elif sub_or_ses == "ses":
-            prefix = self.cfg["ses_prefix"]
+            prefix = self.cfg.ses_prefix
         return prefix
 
     def _check_experiment_type_is_valid(

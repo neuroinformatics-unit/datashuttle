@@ -304,16 +304,14 @@ class TestConfigs:
             with pytest.raises(BaseException) as e:
                 setup_project.supply_config_file(bad_configs_path, warn=False)
 
-            try:
-                assert f"The type of the value at {key} is incorrect" in str(
-                    e.value
-                )
-            except:
-                breakpoint()
+            assert f"The type of the value at {key} is incorrect" in str(
+                e.value
+            )
 
     # need to move sub / ses from config dict to config class.
     # then can move sub
     # then this should work
+    # add some select experiment_tyoe to CLI test
 
     def test_supplied_config_file_updates(self, setup_project):
         """
