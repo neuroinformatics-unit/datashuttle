@@ -152,9 +152,9 @@ class TestConfigs:
                 assert len(w) == 2
 
                 assert (
-                    str(w[0].message)
-                    == "WARNING: ssh to remote set but no remote_host_id "
-                    "or remote_host_username not provided."
+                    str(w[0].message) == "WARNING: remote_host_id and "
+                    "remote_host_username are "
+                    "required if ssh_to_remote is True."
                 )
 
                 assert str(w[1].message) == "ssh_to_remote was not updated"

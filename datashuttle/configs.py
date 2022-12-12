@@ -22,6 +22,8 @@ class Configs(UserDict):
             "remote_path_ssh",
             "remote_path_local",
         ]
+        self.sub_prefix = "sub-"
+        self.ses_prefix = "ses-"
 
     def check_dict_values_and_inform_user(self):
         """
@@ -67,7 +69,7 @@ class Configs(UserDict):
                 "remote_host_username provided."
             )
 
-        if type(self["sub_prefix"]) != str or type(self["ses_prefix"]) != str:
+        if type(self.sub_prefix) != str or type(self.ses_prefix) != str:
             utils.raise_error(
                 "sub_prefix and ses_prefix must both be strings."
             )
@@ -149,7 +151,7 @@ class Configs(UserDict):
         self.data = config_dict
 
     def setup_after_load(self):
-        self.convert_str_and_pathlib_paths("str_to_path")
+        self.convert_str_and_pathlib_paths(self, "str_to_path")
         self.check_dict_values_and_inform_user()
 
     def get_remote_path(
