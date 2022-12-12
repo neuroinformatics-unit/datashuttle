@@ -285,6 +285,7 @@ make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
 )  # type: ignore
 make_sub_dir_parser.set_defaults(func=make_sub_dir)
 
+
 make_sub_dir_parser.add_argument(
     "--sub_names",
     type=str,
@@ -305,8 +306,8 @@ make_sub_dir_parser.add_argument(
     "--experiment_type",
     type=str,
     nargs="+",
-    required=False,
-    help="Required: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
+    required=True,
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 
@@ -456,7 +457,7 @@ upload_project_dir_or_file_parser.add_argument(
     "filepath", type=str, help="Required: (str)"
 )
 upload_project_dir_or_file_parser.add_argument(
-    "--dry_run", action="store_true", help="flag (default False)"
+    "--dry_run", action="store_true", help=help("flag_default_false")
 )
 
 
@@ -489,7 +490,7 @@ download_project_dir_or_file_parser.add_argument(
     "filepath", type=str, help="Required: (str)"
 )
 download_project_dir_or_file_parser.add_argument(
-    "--dry_run", action="store_true", help="flag (default False)"
+    "--dry_run", action="store_true", help=help("flag_default_false")
 )
 
 
