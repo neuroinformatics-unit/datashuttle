@@ -109,8 +109,8 @@ ignore = [
   ".bumpversion.cfg",
   "tox.ini",
   "tests/*",
-  "tests/test_unit/*",
-  "tests/test_integration/*",
+  "tests/tests_unit/*",
+  "tests/tests_integration/*",
   ".flake8"
 ]
 
