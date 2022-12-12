@@ -66,6 +66,27 @@ def handle_kwargs_bools(kwargs):
     return kwargs
 
 
+def help(help_type):
+    """ """
+
+    if help_type == "flag_default_false":
+        help_str = "flag (default False)"
+
+    elif help_type == "required_str":
+        help_str = "Required: (str)"
+
+    elif help_type == "optional_flag_default_false":
+        help_str = "Optional: flag (default False)"
+
+    elif help_type == "required_str_single_or_multiple":
+        help_str = "Required: (str, single or multiple)"
+
+    elif help_type == "required_str_single_or_multiple_or_all":
+        help_str = "Required: (str, single or multiple) ('all' for all)"
+
+    return help_str
+
+
 # ------------------------------------------------------------------------------------------
 # Entry
 # ------------------------------------------------------------------------------------------
@@ -77,12 +98,12 @@ description = (
     "datashuttle [PROJECT NAME] [COMMAND] [OPTIONS]"
     "\n\n"
     "To get detailed help for commands and their optional arguments, "
-    "\ntype datashuttle [PROJECT NAME] [COMMAND] --help'"
+    "\ntype python -m datashuttle [PROJECT NAME] [COMMAND] --help'"
     "\n\n"
     "On first use it is necessary to setup configurations. \ne.g."
-    "'datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
+    "'python -m datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
     "\n\n"
-    "see \n'datashuttle <project_name> make_config_file --help'"
+    "see \n'python -m datashuttle <project_name> make_config_file --help'"
     "\nfor full list of options."
     "\n\n"
     "All command and argument names are matched to the API "
@@ -131,7 +152,7 @@ make_config_file_parser = subparsers.add_parser(
 make_config_file_parser.set_defaults(func=make_config_file)
 
 make_config_file_parser.add_argument(
-    "local_path", type=str, help="Required: (str)"
+    "local_path", type=str, help=help("required_str")
 )
 
 make_config_file_parser = make_config_file_parser.add_argument_group(
@@ -142,28 +163,29 @@ make_config_file_parser.add_argument(
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--remote_path_local",
     required=False,
     type=str,
-    help="This or --remote_path_ssh must be set(str)",
     metavar="",
+    help="This or --remote_path_ssh must be set(str)",
 )
 make_config_file_parser.add_argument(
     "--remote_path_ssh",
     required=False,
     type=str,
-    help="This or --remote_path_local must be set(str)",
     metavar="",
+    help="This or --remote_path_local must be set(str)",
 )
 make_config_file_parser.add_argument(
     "--remote_host_id",
     required=False,
     type=str,
-    help="(str)",
     metavar="",
+    help="(str)",
 )
 make_config_file_parser.add_argument(
     "--remote_host_username", required=False, help="(str)", metavar=""
@@ -173,28 +195,32 @@ make_config_file_parser.add_argument(
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--use_behav",
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--use_imaging",
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
     "--use_histology",
     required=False,
     default=None,
     action="store",
-    help="flag (default False)",
+    metavar="",
+    help=help("flag_default_false"),
 )
 
 
@@ -221,10 +247,7 @@ def update_config(project, args):
 
 make_config_file_parser = subparsers.add_parser(
     "update_config",
-    description=f"{DataShuttle.update_config.__doc__} "
-    f"\nThe option key should be in the form of config file keys"
-    f"(e.g. remote_path, local_path)\n"
-    f"EXAMPLE: datashuttle test update_config remote_path 'test_path'",
+    description=DataShuttle.update_config.__doc__,
     formatter_class=argparse.RawTextHelpFormatter,
     help="",
 )
@@ -233,7 +256,7 @@ make_config_file_parser.set_defaults(func=update_config)
 make_config_file_parser.add_argument(
     "option_key",
     action="store",
-    help="(str) (see make_config_file --help",
+    help="(str) (see make_config_file --help)",
 )
 make_config_file_parser.add_argument(
     "new_info", action="store", help="(str or bool) depending on option key"
@@ -291,7 +314,7 @@ make_sub_dir_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple) (selection of data types, or 'all')",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 make_sub_dir_parser.add_argument(
@@ -346,7 +369,7 @@ upload_data_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 upload_data_parser.add_argument(
@@ -354,7 +377,7 @@ upload_data_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 upload_data_parser.add_argument(
@@ -369,7 +392,7 @@ upload_data_parser.add_argument(
     "--dry_run",
     required=False,
     action="store_true",
-    help="Optional: flag (default False)",
+    help=help("optional_flag_default_false"),
 )
 
 
@@ -403,7 +426,7 @@ download_data_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 download_data_parser.add_argument(
@@ -411,7 +434,7 @@ download_data_parser.add_argument(
     type=str,
     nargs="+",
     required=True,
-    help="Required: (str, single or multiple)",
+    help=help("required_str_single_or_multiple_or_all"),
     metavar="",
 )
 download_data_parser.add_argument(
@@ -426,7 +449,7 @@ download_data_parser.add_argument(
     "--dry_run",
     required=False,
     action="store_true",
-    help="Optional: flag (default False)",
+    help=help("optional_flag_default_false"),
 )
 
 
@@ -454,7 +477,7 @@ upload_project_dir_or_file_parser = subparsers.add_parser(
 upload_project_dir_or_file_parser.set_defaults(func=upload_project_dir_or_file)
 
 upload_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help="Required: (str)"
+    "filepath", type=str, help=help("required_str")
 )
 upload_project_dir_or_file_parser.add_argument(
     "--dry_run", action="store_true", help=help("flag_default_false")
@@ -487,7 +510,7 @@ download_project_dir_or_file_parser.set_defaults(
 )
 
 download_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help="Required: (str)"
+    "filepath", type=str, help=help("required_str")
 )
 download_project_dir_or_file_parser.add_argument(
     "--dry_run", action="store_true", help=help("flag_default_false")
@@ -614,36 +637,6 @@ check_name_processing_parser.add_argument(
     type=str,
     help="Required: (str)",
 )
-
-
-# Supply Own Config ------------------------------------------------------------------------
-
-#
-def supply_config_file(project, args):
-
-    kwargs = make_kwargs(args)
-
-    run_command(
-        project,
-        project.supply_config_file,
-        kwargs["path_to_config"],
-    )
-
-
-supply_config_file_parser = subparsers.add_parser(
-    "supply_config_file",
-    description=DataShuttle.supply_config_file.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-supply_config_file_parser.set_defaults(func=supply_config_file)
-
-supply_config_file_parser.add_argument(
-    "path_to_config",
-    type=str,
-    help="Required: (str, single or multiple)",
-)
-
 
 # ------------------------------------------------------------------------------------------
 # Run
