@@ -28,6 +28,8 @@ import test_utils
 
 from datashuttle.datashuttle import DataShuttle
 
+# TODO: check everything CLI is tested!
+
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 
@@ -64,7 +66,8 @@ class TestCommandLineInterface:
     # Test CLI Variables are read and passed correctly
     # ----------------------------------------------------------------------------------------------------------
 
-    def test_make_config_file_required_variables(self):
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_make_config_file_required_variables(self, sep):
         """
         Check the arguments passed to CLI make_config_file
         match those that are passed to wrapped API.
@@ -79,7 +82,8 @@ class TestCommandLineInterface:
         )
 
         stdout, __ = test_utils.run_cli(
-            " make_config_file " + self.convert_kwargs_to_cli(required_options)
+            f" make{sep}config{sep}file "
+            + self.convert_kwargs_to_cli(required_options)
         )
 
         __, kwargs_ = self.decode(stdout)
@@ -103,7 +107,8 @@ class TestCommandLineInterface:
 
         self.check_kwargs(changed_configs, kwargs_)
 
-    def test_update_config_variables(self):
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_update_config_variables(self, sep):
         """
         Check the variables passed to update_config
         are processed as expected. All arguments
@@ -120,7 +125,9 @@ class TestCommandLineInterface:
             if "path" in key:
                 value = test_utils.add_quotes(value)
 
-            stdout, __ = test_utils.run_cli(f" update_config {key} {value}")
+            stdout, __ = test_utils.run_cli(
+                f" update{sep}config {key} {value}"
+            )
 
             args_, __ = self.decode(stdout)
 
@@ -131,13 +138,14 @@ class TestCommandLineInterface:
             else:
                 assert value == args_[1]
 
-    def test_make_sub_dir_variable(self):  # TODO: test all with _ or -
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_make_sub_dir_variable(self, sep):
 
         stdout, __ = test_utils.run_cli(
-            " make_sub_dir "
-            "--experiment_type all "
-            "--sub_names one "
-            "--ses_names two "
+            f" make{sep}sub{sep}dir "
+            f"--experiment_type all "
+            f"--sub_names one "
+            f"--ses_names two "
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -148,16 +156,17 @@ class TestCommandLineInterface:
         assert kwargs_["ses_names"] == ["two"]
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_upload_download_data_variables(self, upload_or_download):
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_upload_download_data_variables(self, upload_or_download, sep):
         """
         As upload_data and download_data take identical args,
         test both together.
         """
         stdout, __ = test_utils.run_cli(
-            f" {upload_or_download}_data "
-            f"--experiment_type all "
-            f"--sub_names one "
-            f"--ses_names two"
+            f" {upload_or_download}{sep}data "
+            f"--experiment{sep}type all "
+            f"--sub{sep}names one "
+            f"--ses{sep}names two"
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -165,10 +174,10 @@ class TestCommandLineInterface:
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_data "
-            f"--experiment_type all "
-            f"--sub_names one "
-            f"--ses_names two "
-            f"--dry_run"
+            f"--experiment{sep}type all "
+            f"--sub{sep}names one "
+            f"--ses{sep}names two "
+            f"--dry{sep}run"
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -176,12 +185,13 @@ class TestCommandLineInterface:
         self.check_upload_download_args(args_, kwargs_, dry_run_is=True)
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_upload_download_dir_or_file(self, upload_or_download):
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_upload_download_dir_or_file(self, upload_or_download, sep):
         """
         As upload_data_dir_or_file and download_data_dir_or_file
         take identical args, test both together"""
         stdout, __ = test_utils.run_cli(
-            f" {upload_or_download}_project_dir_or_file /fake/filepath"
+            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file /fake/filepath"
         )
         args_, kwargs_ = self.decode(stdout)
 
@@ -189,8 +199,8 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is False
 
         stdout, __ = test_utils.run_cli(
-            f" {upload_or_download}_project_dir_or_file /fake/filepath "
-            f"--dry_run"
+            f" {upload_or_download}{sep}project_dir{sep}or{sep}file /fake/filepath "
+            f"--dry{sep}run"
         )
         args_, kwargs_ = self.decode(stdout)
 
@@ -424,13 +434,14 @@ class TestCommandLineInterface:
             "Must set either remote_path_ssh or remote_path_local" in stderr
         )
 
-    def test_check_process_names(self, clean_project_name):
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_check_process_names(self, clean_project_name, sep):
         """
         Check that testing the process names function outputs the
         properly processed names to stdout
         """
         stdout, __ = test_utils.run_cli(
-            "check_name_processing sub-001 1@TO02 --prefix sub-",
+            f"check{sep}name{sep}processing sub-001 1@TO02 --prefix sub-",
             clean_project_name,
         )
 
