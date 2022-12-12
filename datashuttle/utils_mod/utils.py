@@ -6,7 +6,7 @@ import re
 import stat
 import warnings
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import appdirs
 import paramiko
@@ -64,8 +64,8 @@ def connect_client(
     client: paramiko.SSHClient,
     cfg,  # cannot import Configs class due to circular import
     hostkeys: str,
-    password: str = None,
-    private_key_path: str = None,
+    password: Optional[str] = None,
+    private_key_path: Optional[str] = None,
 ):
     """
     Connect client to remote server using paramiko.
