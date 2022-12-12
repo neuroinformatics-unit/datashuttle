@@ -255,9 +255,7 @@ class TestConfigs:
     def test_supplied_config_file_missing_key(self, setup_project):
 
         bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
-        missing_key_configs = test_utils.get_test_config_arguments_dict(
-            add_sub_and_ses=True
-        )
+        missing_key_configs = test_utils.get_test_config_arguments_dict()
 
         del missing_key_configs["ssh_to_remote"]
 
@@ -276,9 +274,7 @@ class TestConfigs:
 
         bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
 
-        wrong_key_configs = test_utils.get_test_config_arguments_dict(
-            add_sub_and_ses=True
-        )
+        wrong_key_configs = test_utils.get_test_config_arguments_dict()
         wrong_key_configs["use_mismology"] = "wrong"
         self.dump_config(wrong_key_configs, bad_configs_path)
 
@@ -299,9 +295,7 @@ class TestConfigs:
             if key in setup_project.cfg.keys_str_on_file_but_path_in_class:
                 continue
 
-            bad_type_configs = test_utils.get_test_config_arguments_dict(
-                add_sub_and_ses=True
-            )
+            bad_type_configs = test_utils.get_test_config_arguments_dict()
 
             bad_type_configs[key] = DataShuttle
 
@@ -328,9 +322,7 @@ class TestConfigs:
         new_configs_path = (
             setup_project.get_appdir_path() + "/new_configs.yaml"
         )
-        new_configs = test_utils.get_test_config_arguments_dict(
-            add_sub_and_ses=True
-        )
+        new_configs = test_utils.get_test_config_arguments_dict()
 
         new_configs["local_path"] = "new_fake_local"
         new_configs["remote_path_local"] = "new_fake_remote_local"
@@ -347,9 +339,7 @@ class TestConfigs:
         bad_order_configs_path = (
             setup_project.get_appdir_path() + "/new_configs.yaml"
         )
-        good_order_configs = test_utils.get_test_config_arguments_dict(
-            add_sub_and_ses=True
-        )
+        good_order_configs = test_utils.get_test_config_arguments_dict()
 
         bad_order_configs = dict(reversed(good_order_configs))
 
