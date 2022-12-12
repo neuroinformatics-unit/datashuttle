@@ -1,7 +1,6 @@
 import copy
 import pathlib
 import traceback
-import warnings
 from collections import UserDict
 from pathlib import Path
 from typing import Any, Union
@@ -118,7 +117,7 @@ class Configs(UserDict):
                     )
         else:
             self[option_key] = original_value
-            warnings.warn(f"{option_key} was not updated")
+            utils.message_user(f"{option_key} was not updated")
             self[option_key] = original_value
 
     def safe_check_current_dict_is_valid(self) -> bool:
@@ -127,7 +126,7 @@ class Configs(UserDict):
             self.check_dict_values_and_inform_user()
             return True
         except BaseException:
-            traceback.format_exc()
+            utils.message_user(traceback.format_exc())
             return False
 
     # --------------------------------------------------------------------
