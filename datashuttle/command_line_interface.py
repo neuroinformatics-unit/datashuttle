@@ -693,7 +693,8 @@ def main():
         args.func(project, args)
     else:
         print(
-            f"Datashuttle project: {args.project_name}. Add additional commands, see --help for details"
+            f"Datashuttle project: {args.project_name}. "
+            f"Add additional commands, see --help for details"
         )
 
 
