@@ -3,6 +3,7 @@ import getpass
 import json
 import os
 import pathlib
+import traceback
 import warnings
 from pathlib import Path
 from typing import Any, Optional, Union, cast
@@ -10,7 +11,7 @@ from typing import Any, Optional, Union, cast
 import paramiko
 
 from datashuttle import configs
-from datashuttle.utils_mod import rclone_utils, supply_config_utils, utils
+from datashuttle.utils_mod import canonical_configs, rclone_utils, utils
 from datashuttle.utils_mod.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
@@ -413,6 +414,10 @@ class DataShuttle:
                            see make_config_file()
         :param new_info: value to update the config too
         """
+        if not self.cfg:
+            utils.raise_error(
+                "Must have a config loaded before updating configs."
+            )
         self.cfg.update_an_entry(option_key, new_info)
         self.set_attributes_after_config_load()
 
@@ -461,9 +466,33 @@ class DataShuttle:
 
         path_to_config = Path(path_to_config)
 
-        new_cfg = supply_config_utils.try_to_load_user_config(
-            path_to_config, self.cfg, warn
-        )
+        utils.raise_error_not_exists_or_not_yaml(path_to_config)
+
+        if warn:
+            input_ = utils.get_user_input(
+                "This will overwrite the existing datashuttle config file."
+                "If you wish to proceed, press y."
+            )
+
+            if input_ != "y":
+                return None
+
+        try:
+            new_cfg = configs.Configs(path_to_config, None)
+            new_cfg.load_from_file()
+            new_cfg = canonical_configs.handle_cli_or_supplied_config_bools(
+                new_cfg
+            )
+            new_cfg.check_dict_values_and_inform_user()
+
+        except BaseException:
+            utils.message_user(traceback.format_exc())
+            utils.message_user(
+                "Could not load config file. Please check that "
+                "the file is formatted correctly. "
+                "Config file was not updated."
+            )
+            return None
 
         if new_cfg:
             self.cfg = new_cfg

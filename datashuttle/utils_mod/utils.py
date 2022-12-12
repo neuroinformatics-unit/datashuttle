@@ -451,3 +451,11 @@ def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
 
 def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())
+
+
+def raise_error_not_exists_or_not_yaml(supplied_cfg_path: Path):
+    if not supplied_cfg_path.exists():
+        raise_error(f"No file found at supplied_cfg_path {supplied_cfg_path}")
+
+    if supplied_cfg_path.suffix not in [".yaml", ".yml"]:
+        raise_error("The config file must be a YAML file")

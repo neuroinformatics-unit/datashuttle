@@ -3,7 +3,7 @@ import argparse
 import simplejson
 
 from datashuttle.datashuttle import DataShuttle
-from datashuttle.utils_mod import utils
+from datashuttle.utils_mod import canonical_configs
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
@@ -29,40 +29,6 @@ def make_kwargs(args):
     kwargs = vars(args)
     del kwargs["func"]
     del kwargs["project_name"]
-    return kwargs
-
-
-def handle_bool(key, value):
-    if key in [
-        "ssh_to_remote",
-        "use_ephys",
-        "use_ephys_behav",
-        "use_ephys_behav_camera",
-        "use_behav",
-        "use_behav_camera",
-        "use_imaging",
-        "use_histology",
-    ]:
-        if value is not None and value not in [
-            "True",
-            "False",
-            "true",
-            "false",
-        ]:
-            utils.raise_error("Input value must be True or False")
-
-        value = value in ["True", "true"]
-
-    elif value in ["None", "none"]:
-        value = None
-
-    return value
-
-
-def handle_kwargs_bools(kwargs):
-    """"""
-    for key in kwargs.keys():
-        kwargs[key] = handle_bool(key, kwargs[key])
     return kwargs
 
 
@@ -134,7 +100,9 @@ def make_config_file(project, args):
     kwargs = make_kwargs(args)
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-    filtered_kwargs = handle_kwargs_bools(filtered_kwargs)
+    filtered_kwargs = canonical_configs.handle_cli_or_supplied_config_bools(
+        filtered_kwargs
+    )
 
     run_command(
         project,
@@ -161,7 +129,7 @@ make_config_file_parser = make_config_file_parser.add_argument_group(
 make_config_file_parser.add_argument(
     "--ssh_to_remote",
     required=False,
-    default=None,
+    default=False,
     action="store",
     metavar="",
     help=help("flag_default_false"),
@@ -193,7 +161,7 @@ make_config_file_parser.add_argument(
 make_config_file_parser.add_argument(
     "--use_ephys",
     required=False,
-    default=None,
+    default=True,
     action="store",
     metavar="",
     help=help("flag_default_false"),
@@ -201,7 +169,7 @@ make_config_file_parser.add_argument(
 make_config_file_parser.add_argument(
     "--use_behav",
     required=False,
-    default=None,
+    default=True,
     action="store",
     metavar="",
     help=help("flag_default_false"),
@@ -209,7 +177,7 @@ make_config_file_parser.add_argument(
 make_config_file_parser.add_argument(
     "--use_imaging",
     required=False,
-    default=None,
+    default=True,
     action="store",
     metavar="",
     help=help("flag_default_false"),
@@ -217,7 +185,7 @@ make_config_file_parser.add_argument(
 make_config_file_parser.add_argument(
     "--use_histology",
     required=False,
-    default=None,
+    default=True,
     action="store",
     metavar="",
     help=help("flag_default_false"),
@@ -235,7 +203,7 @@ def update_config(project, args):
     option_key = kwargs["option_key"]
     new_info = kwargs["new_info"]
 
-    new_info = handle_bool(option_key, new_info)
+    new_info = canonical_configs.handle_bool(option_key, new_info)
 
     run_command(
         project,

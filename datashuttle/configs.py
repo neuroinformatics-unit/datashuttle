@@ -1,5 +1,6 @@
 import copy
 import pathlib
+import traceback
 import warnings
 from collections import UserDict
 from pathlib import Path
@@ -7,11 +8,24 @@ from typing import Any, Union
 
 import yaml
 
-from datashuttle.utils_mod import utils
+from datashuttle.utils_mod import canonical_configs, utils
 
 
 class Configs(UserDict):
-    """ """
+    """
+    Class to hold the configs for DataShuttle operations.
+    The configs must match exactly the standard set
+    in utils.cannonical_configs. If updating these
+    configs, This should be done here. This is setup to be
+    make config settings explicit and provide easy checking
+    for user-set config files.
+
+    To generate a new config, pass the file_path to
+    the config file and a dict of config key-value pairs
+    to input dict. Next, check that the config dict
+    conforms to the canonical standard by calling
+    check_dict_values_and_inform_user()
+    """
 
     def __init__(self, file_path, input_dict):
         super(Configs, self).__init__(input_dict)
@@ -25,57 +39,41 @@ class Configs(UserDict):
         self.sub_prefix = "sub-"
         self.ses_prefix = "ses-"
 
+    def setup_after_load(self):
+        self.convert_str_and_pathlib_paths(self, "str_to_path")
+        self.check_dict_values_and_inform_user()
+
     def check_dict_values_and_inform_user(self):
         """
         Check the values of the current dictionary are set
         correctly and will not cause downstream errors.
         """
+        canonical_configs.check_dict_values_and_inform_user(self)
 
-        # Check relevant remote_path is set
-        if self["ssh_to_remote"]:
-            if not self["remote_path_ssh"]:
-                utils.raise_error(
-                    "ssh to remote is on but remote_path_ssh "
-                    "has not been set."
-                )
-        else:
-            if not self["remote_path_local"]:
-                utils.raise_error(
-                    "ssh to remote is off but remote_path_local "
-                    "has not been set."
-                )
+    # --------------------------------------------------------------------
+    # Save / Load from file
+    # --------------------------------------------------------------------
 
-        # Check bad remote path format
-        if self.get_remote_path().as_posix()[0] == "~":
-            utils.raise_error(
-                "remote_path must contain the full directory path "
-                "with no ~ syntax"
-            )
+    def dump_to_file(self):
+        """"""
+        cfg_to_save = copy.deepcopy(self.data)
+        self.convert_str_and_pathlib_paths(cfg_to_save, "path_to_str")
 
-        # Check SSH settings
-        if self["ssh_to_remote"] is True and (
-            not self["remote_host_id"] or not self["remote_host_username"]
-        ):
-            utils.raise_error(
-                "remote_host_id and remote_host_username are "
-                "required if ssh_to_remote is True."
-            )
+        with open(self.file_path, "w") as config_file:
+            yaml.dump(cfg_to_save, config_file, sort_keys=False)
 
-        if self["ssh_to_remote"] is False and (
-            self["remote_host_id"] or self["remote_host_username"]
-        ):
-            warnings.warn(
-                "ssh_to_remote is false, but remote_host_id or "
-                "remote_host_username provided."
-            )
+    def load_from_file(self):
+        """"""
+        with open(self.file_path, "r") as config_file:
+            config_dict = yaml.full_load(config_file)
 
-        if type(self.sub_prefix) != str or type(self.ses_prefix) != str:
-            utils.raise_error(
-                "sub_prefix and ses_prefix must both be strings."
-            )
+        self.convert_str_and_pathlib_paths(config_dict, "str_to_path")
 
-        if type(self["ssh_to_remote"]) != bool:
-            utils.raise_error("ssh_to_remote must be a boolean.")
+        self.data = config_dict
+
+    # --------------------------------------------------------------------
+    # Update Configs
+    # --------------------------------------------------------------------
 
     def update_an_entry(self, option_key: str, new_info: Any):
         """
@@ -128,31 +126,13 @@ class Configs(UserDict):
         try:
             self.check_dict_values_and_inform_user()
             return True
-
-        except BaseException as e:
-            warnings.warn(f"WARNING: {e}")
+        except BaseException:
+            traceback.format_exc()
             return False
 
-    def dump_to_file(self):
-        """"""
-        cfg_to_save = copy.deepcopy(self.data)
-        self.convert_str_and_pathlib_paths(cfg_to_save, "path_to_str")
-
-        with open(self.file_path, "w") as config_file:
-            yaml.dump(cfg_to_save, config_file, sort_keys=False)
-
-    def load_from_file(self):
-        """"""
-        with open(self.file_path, "r") as config_file:
-            config_dict = yaml.full_load(config_file)
-
-        self.convert_str_and_pathlib_paths(config_dict, "str_to_path")
-
-        self.data = config_dict
-
-    def setup_after_load(self):
-        self.convert_str_and_pathlib_paths(self, "str_to_path")
-        self.check_dict_values_and_inform_user()
+    # --------------------------------------------------------------------
+    # Utils
+    # --------------------------------------------------------------------
 
     def get_remote_path(
         self, for_user: bool = False
