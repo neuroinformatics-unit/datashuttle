@@ -50,15 +50,15 @@ class Configs(UserDict):
             not self["remote_host_id"] or not self["remote_host_username"]
         ):
             utils.raise_error(
-                "ssh to remote set but no remote_host_id or "
-                "remote_host_username not provided."
+                "remote_host_id and remote_host_username are "
+                "required if ssh_to_remote is True."
             )
 
         if self["ssh_to_remote"] is False and (
             self["remote_host_id"] or self["remote_host_username"]
         ):
             warnings.warn(
-                "SSH to remote is false, but remote_host_id or "
+                "ssh_to_remote is false, but remote_host_id or "
                 "remote_host_username provided."
             )
 
