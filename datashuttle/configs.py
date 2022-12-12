@@ -55,15 +55,15 @@ class Configs(UserDict):
             not self["remote_host_id"] or not self["remote_host_username"]
         ):
             utils.raise_error(
-                "ssh to remote set but no remote_host_id or "
-                "remote_host_username not provided."
+                "remote_host_id and remote_host_username are "
+                "required if ssh_to_remote is True."
             )
 
         if self["ssh_to_remote"] is False and (
             self["remote_host_id"] or self["remote_host_username"]
         ):
             warnings.warn(
-                "SSH to remote is false, but remote_host_id or "
+                "ssh_to_remote is false, but remote_host_id or "
                 "remote_host_username provided."
             )
 
@@ -87,7 +87,7 @@ class Configs(UserDict):
 
         :param option_key: dictionary key of the option to change,
                            see make_config_file()
-        :param new_info: value to update the config to
+        :param new_info: value to update the config too
         """
         if option_key not in self:
             utils.raise_error(f"'{option_key}' is not a valid config.")
@@ -149,7 +149,7 @@ class Configs(UserDict):
         self.data = config_dict
 
     def setup_after_load(self):
-        self.convert_str_and_pathlib_paths(self, "str_to_path")
+        self.convert_str_and_pathlib_paths("str_to_path")
         self.check_dict_values_and_inform_user()
 
     def get_remote_path(

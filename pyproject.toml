@@ -3,7 +3,7 @@ name = "datashuttle"
 authors = [
     {name = "Joe Ziminski", email = "j.ziminski@ucl.ac.uk"},
     {name = "Adam Tyson", email = "code@adamltyson.com"},
-    {name = "Niko Sirmpilatze", email = "n.sirmpilatze@ucl.ac.uk"},
+    {name = "Niko Sirmpilatze", email = "niko.sirbiladze@gmail.com"},
 ]
 description = "Organise and transfer scientific projects in BIDS format"
 readme = "README.md"
