@@ -98,12 +98,12 @@ description = (
     "datashuttle [PROJECT NAME] [COMMAND] [OPTIONS]"
     "\n\n"
     "To get detailed help for commands and their optional arguments, "
-    "\ntype python -m datashuttle [PROJECT NAME] [COMMAND] --help'"
+    "\ntype datashuttle [PROJECT NAME] [COMMAND] --help'"
     "\n\n"
     "On first use it is necessary to setup configurations. \ne.g."
-    "'python -m datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
+    "'datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
     "\n\n"
-    "see \n'python -m datashuttle <project_name> make_config_file --help'"
+    "see \n'datashuttle <project_name> make_config_file --help'"
     "\nfor full list of options."
     "\n\n"
     "All command and argument names are matched to the API "
@@ -247,7 +247,10 @@ def update_config(project, args):
 
 make_config_file_parser = subparsers.add_parser(
     "update_config",
-    description=DataShuttle.update_config.__doc__,
+    description=f"{DataShuttle.update_config.__doc__} "
+    f"\nThe option key should be in the form of config file keys"
+    f"(e.g. remote_path, local_path)\n"
+    f"EXAMPLE: datashuttle test update_config remote_path 'test_path'",
     formatter_class=argparse.RawTextHelpFormatter,
     help="",
 )
@@ -636,6 +639,35 @@ check_name_processing_parser.add_argument(
     "--prefix",
     type=str,
     help="Required: (str)",
+)
+
+
+# Supply Own Config ------------------------------------------------------------------------
+
+#
+def supply_config_file(project, args):
+
+    kwargs = make_kwargs(args)
+
+    run_command(
+        project,
+        project.supply_config_file,
+        kwargs["path_to_config"],
+    )
+
+
+supply_config_file_parser = subparsers.add_parser(
+    "supply_config_file",
+    description=DataShuttle.supply_config_file.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
+)
+supply_config_file_parser.set_defaults(func=supply_config_file)
+
+supply_config_file_parser.add_argument(
+    "path_to_config",
+    type=str,
+    help="Required: (str, single or multiple)",
 )
 
 # ------------------------------------------------------------------------------------------
