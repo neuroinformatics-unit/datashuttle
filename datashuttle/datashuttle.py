@@ -346,8 +346,6 @@ class DataShuttle:
                 "ssh_to_remote": ssh_to_remote,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
-                "sub_prefix": "sub-",
-                "ses_prefix": "ses-",
                 "use_ephys": use_ephys,
                 "use_behav": use_behav,
                 "use_imaging": use_imaging,
@@ -800,7 +798,7 @@ class DataShuttle:
         """
         search_path = self._join(local_or_remote, [self._top_level_dir_name])
 
-        search_prefix = self.cfg["sub_prefix"] + "*"
+        search_prefix = self.cfg.sub_prefix + "*"
         return self._search_for_directories(
             local_or_remote, search_path, search_prefix
         )
@@ -994,7 +992,7 @@ class DataShuttle:
         Get the sub / ses prefix (default is sub- and ses-") set in cfgs.
         """
         if sub_or_ses == "sub":
-            prefix = self.cfg["sub_prefix"]
+            prefix = self.cfg.sub_prefix
         elif sub_or_ses == "ses":
             prefix = self.cfg["ses_prefix"]
         return prefix
