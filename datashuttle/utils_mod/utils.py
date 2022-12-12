@@ -5,7 +5,7 @@ import os
 import stat
 import warnings
 from pathlib import Path
-from typing import Union
+from typing import Optional, Union
 
 import appdirs
 import paramiko
@@ -63,8 +63,8 @@ def connect_client(
     client: paramiko.SSHClient,
     cfg,  # cannot import Configs class due to circular import
     hostkeys: str,
-    password: str = None,
-    private_key_path: str = None,
+    password: Optional[str] = None,
+    private_key_path: Optional[str] = None,
 ):
     """
     Connect client to remote server using paramiko.
@@ -238,6 +238,9 @@ def process_names(
         raise_error(
             "Ensure subject and session names are list of strings, or string"
         )
+
+    if any([" " in ele for ele in names]):
+        raise_error("sub or ses names cannot include spaces.")
 
     if isinstance(names, str):
         names = [names]

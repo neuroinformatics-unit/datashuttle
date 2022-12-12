@@ -116,11 +116,20 @@ class TestCommandLineInterface:
         )
 
         for key, value in changed_configs.items():
+
+            if "path" in key:
+                value = test_utils.add_quotes(value)
+
             stdout, __ = test_utils.run_cli(f" update_config {key} {value}")
+
             args_, __ = self.decode(stdout)
 
             assert key == args_[0]
-            assert value == args_[1]
+
+            if "path" in key:
+                assert value == test_utils.add_quotes(args_[1])
+            else:
+                assert value == args_[1]
 
     def test_make_sub_dir_variable(self):
 
@@ -234,15 +243,19 @@ class TestCommandLineInterface:
         )
 
         not_set_configs = test_utils.get_not_set_config_args(
-            DataShuttle(clean_project_name),
+            DataShuttle(clean_project_name)
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
 
         for key, value in not_set_configs.items():
 
+            format_value = (
+                test_utils.add_quotes(value) if "path" in key else value
+            )
+
             test_utils.run_cli(
-                f" update_config {key} {value}", clean_project_name
+                f" update_config {key} {format_value}", clean_project_name
             )
             default_configs[key] = value
 
@@ -402,7 +415,7 @@ class TestCommandLineInterface:
         Check that error from API are propagated to CLI
         """
         __, stderr = test_utils.run_cli(
-            "make_config_file " "test_local_path ",
+            "make_config_file test_local_path ",
             clean_project_name,
         )
 
@@ -431,18 +444,35 @@ class TestCommandLineInterface:
         return args_, kwargs_
 
     def convert_kwargs_to_cli(self, kwargs):
-        """ """
+        """
+        Take a list of key-value pairs that make up
+        the arguments we want to pass to CLI, and
+        put them in correct format. This involves
+        pre-pending "--argument_name" for non-positional
+        arguments, and wrapping paths in quotes.
+        """
         positionals = ["local_path"]
 
         prepend_positionals = ""
         if "local_path" in kwargs:
-            prepend_positionals += " " + kwargs["local_path"] + " "
+            prepend_positionals += (
+                " " + test_utils.add_quotes(kwargs["local_path"]) + " "
+            )
 
-        kwargs_list = " ".join(
-            "--" + k + " " + str(v)
-            for k, v in kwargs.items()
-            if k not in positionals
-        )
+        kwargs_list = []
+        for key, value in kwargs.items():
+
+            if key not in positionals:
+
+                if "path" in key:
+                    value = test_utils.add_quotes(value)
+                else:
+                    value = str(value)
+
+                argument = f"--{key} {value}"
+                kwargs_list.append(argument)
+
+        kwargs_list = " ".join(kwargs_list)
 
         return prepend_positionals + kwargs_list
 
