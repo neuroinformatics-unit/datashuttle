@@ -1,3 +1,14 @@
+"""
+This module contains all information for the required
+format of the configs class. This is clearly defined
+as configs can be provided from file or input dynamically
+and so careful checks must be done.
+
+If adding a new config, first add the key to
+get_canonical_config_dict( and type to
+get_canonical_config_required_types()
+"""
+
 import warnings
 from pathlib import Path
 from typing import Union, get_args
@@ -6,7 +17,10 @@ from datashuttle.utils_mod import canonical_configs, utils
 
 
 def get_canonical_config_dict():
-    """ """
+    """
+    The only permitted keys in the
+    DataShuttle config.
+    """
     config_dict = {
         "local_path": None,
         "remote_path_local": None,
@@ -24,11 +38,8 @@ def get_canonical_config_dict():
 
 def get_canonical_config_required_types():
     """
-    The first value in Union must be the primary
-    input type accepted by the user. This is
-    fed back to the user in check_config_types().
-    All other types are for internal checks (e.g.
-    accepting default None argument).
+    The only permitted types for DataShuttle
+    config values.
     """
     required_types = {
         "local_path": Union[str, Path, None],
@@ -51,7 +62,14 @@ def get_canonical_config_required_types():
 
 
 def check_dict_values_and_inform_user(config_dict):
-    """ """
+    """
+    Central function for performing checks on a
+    DataShuttle Configs UserDict class. This should
+    be run after any change to the configs (e.g.
+    make_config_file, update_config, supply_config_file).
+
+    This will raise assert if condition is not met.
+    """
     canonical_dict = get_canonical_config_dict()
 
     for key in canonical_dict.keys():
@@ -117,7 +135,11 @@ def check_dict_values_and_inform_user(config_dict):
 
 
 def handle_cli_or_supplied_config_bools(dict_):
-    """"""
+    """
+    For supplied configs for CLI input args,
+    in some instances bools will as string type.
+    Handle this case here to cast to correct type.
+    """
     for key in dict_.keys():
         dict_[key] = canonical_configs.handle_bool(key, dict_[key])
     return dict_
