@@ -16,6 +16,8 @@ class TestFileTransfer:
         Ensure change dir at end of session otherwise it
         is not possible to delete project.
         """
+        tmp_path = tmp_path / "test with space"
+
         test_project_name = "test_filesystem_transfer"
         project, cwd = test_utils.setup_project_fixture(
             tmp_path, test_project_name

@@ -5,7 +5,7 @@ import os
 import pathlib
 import warnings
 from pathlib import Path
-from typing import Any, Union, cast
+from typing import Any, Optional, Union, cast
 
 import paramiko
 
@@ -52,6 +52,10 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str):
+
+        if " " in project_name:
+            utils.raise_error("project_name must not include spaces.")
+
         self.project_name = project_name
 
         self._config_path = self._join("appdir", "config.yaml")
@@ -59,9 +63,7 @@ class DataShuttle:
         self.cfg: Any = None
         self._ssh_key_path: Any = None
         self._ses_dirs: Any = None
-        self._top_level_dir_name = (
-            "rawdata"  # TODO: move to configs, make changable?
-        )
+        self._top_level_dir_name = "rawdata"
 
         self.attempt_load_configs(prompt_on_fail=True)
 
@@ -118,7 +120,7 @@ class DataShuttle:
     def make_sub_dir(
         self,
         sub_names: Union[str, list],
-        ses_names: Union[str, list] = None,
+        ses_names: Optional[Union[str, list]] = None,
         experiment_type: str = "all",
     ):
         """
@@ -294,10 +296,10 @@ class DataShuttle:
         self,
         local_path: str,
         ssh_to_remote: bool = False,
-        remote_path_local: str = None,
-        remote_path_ssh: str = None,
-        remote_host_id: str = None,
-        remote_host_username: str = None,
+        remote_path_local: Optional[str] = None,
+        remote_path_ssh: Optional[str] = None,
+        remote_host_id: Optional[str] = None,
+        remote_host_username: Optional[str] = None,
         use_ephys: bool = True,
         use_behav: bool = True,
         use_imaging: bool = True,
@@ -491,18 +493,18 @@ class DataShuttle:
 
             rclone_utils.call_rclone(
                 f"copy "
-                f"{local_filepath} "
-                f"{self.get_rclone_config_name(local_or_ssh)}:"
-                f"{remote_filepath} "
+                f'"{local_filepath}" '
+                f'"{self.get_rclone_config_name(local_or_ssh)}:'
+                f'{remote_filepath}" '
                 f"{extra_arguments}"
             )
 
         elif upload_or_download == "download":
             rclone_utils.call_rclone(
                 f"copy "
-                f"{self.get_rclone_config_name(local_or_ssh)}:"
-                f"{remote_filepath} "
-                f"{local_filepath}  "
+                f'"{self.get_rclone_config_name(local_or_ssh)}:'
+                f'{remote_filepath}" '
+                f'"{local_filepath}"  '
                 f"{extra_arguments}"
             )
 
@@ -690,7 +692,7 @@ class DataShuttle:
         local_or_remote: str,
         experiment_type: Union[list, str],
         sub: str,
-        ses: str = None,
+        ses: Optional[str] = None,
         dry_run: bool = False,
     ):
         """
@@ -730,7 +732,7 @@ class DataShuttle:
         local_or_remote: str,
         experiment_type: Union[list, str],
         sub: str,
-        ses: str = None,
+        ses: Optional[str] = None,
     ):
         """
         Get the list of experiment_types to transfer, either
@@ -789,7 +791,7 @@ class DataShuttle:
         )
 
     def _search_experiment_dirs_sub_or_ses_level(
-        self, local_or_remote: str, sub: str, ses: str = None
+        self, local_or_remote: str, sub: str, ses: Optional[str] = None
     ):
         """
         Find experiment type directories in the project base

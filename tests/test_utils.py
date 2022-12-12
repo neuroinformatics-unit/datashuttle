@@ -123,11 +123,13 @@ def get_test_config_arguments_dict(
     (for project.make_config_file()), all configs (default)
     or non-default configs. Note that default configs here
     are the expected default arguments in project.make_config_file().
+
+    Include spaces in path so this case is always checked
     """
     dict_ = {
-        "local_path": r"Not:/a/real/local/directory",
-        "remote_path_local": r"/Not/a/real/remote_local/directory",
-        "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
+        "local_path": r"Not:/a/re al/local/directory",
+        "remote_path_local": r"/Not/a/re al/remote_ local/directory",
+        "remote_path_ssh": r"/not/a/re al/remote_ ssh/directory",
     }
 
     if required_arguments_only:
@@ -161,10 +163,13 @@ def get_test_config_arguments_dict(
 
 
 def get_not_set_config_args(project):
+    """
+    Include spaces in path so this case is always checked
+    """
     return {
-        "local_path": r"C:/test/test_local/test_edit",
-        "remote_path_local": r"/nfs/testdir/test_edit2",
-        "remote_path_ssh": r"/nfs/testdir/test_edit3",
+        "local_path": r"C:/test/test_ local/test_edit",
+        "remote_path_local": r"/nfs/test dir/test_edit2",
+        "remote_path_ssh": r"/nfs/test dir/test_edit3",
         "remote_host_id": "test_id",
         "remote_host_username": "test_host",
         "use_ephys": not project.cfg["use_ephys"],
@@ -189,6 +194,10 @@ def get_config_path_with_cli(project_name=None):
     stdout = run_cli(" get_config_path", project_name)
     path_ = stdout[0].split(".yaml")[0] + ".yaml"
     return path_
+
+
+def add_quotes(string: str):
+    return '"' + string + '"'
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -377,12 +386,10 @@ def make_and_check_local_project(project, subs, sessions, experiment_type):
 
 def check_configs(project, kwargs):
     """"""
-    config_path = (
-        project.get_appdir_path() + "/config.yaml"
-    )  # TODO: can use new get_config()
+    config_path = project.get_appdir_path() + "/config.yaml"
 
     if not os.path.isfile(config_path):
-        raise BaseException("Config file not found.")
+        raise FileNotFoundError("Config file not found.")
 
     check_project_configs(project, kwargs)
     check_config_file(config_path, kwargs)
