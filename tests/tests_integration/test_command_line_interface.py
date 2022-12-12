@@ -131,7 +131,7 @@ class TestCommandLineInterface:
             else:
                 assert value == args_[1]
 
-    def test_make_sub_dir_variable(self):
+    def test_make_sub_dir_variable(self):  # TODO: test all with _ or -
 
         stdout, __ = test_utils.run_cli(
             " make_sub_dir "
