@@ -104,7 +104,7 @@ def setup_remote_as_rclone_target(
     For SSH, this contains information for
     connecting to remote with SSH.
     """
-    if connection_method == "local":
+    if connection_method == "local_filesystem":
         call_rclone(f"config create {rclone_config_name} local", silent=True)
 
     elif connection_method == "ssh":

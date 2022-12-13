@@ -30,7 +30,7 @@ def setup_project_default_configs(
 
     project = DataShuttle(project_name)
 
-    project._setup_remote_as_rclone_target("local")
+    project._setup_remote_as_rclone_target("local_filesystem")
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
 
@@ -135,7 +135,7 @@ def get_test_config_arguments_dict(
     dict_ = {
         "local_path": r"Not:/a/re al/local/directory",
         "remote_path": r"/Not/a/re al/remote_ local/directory",
-        "connection_method": "local",
+        "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
         # but at least 1 use_x is, so
         # for tests always set use_behav=True

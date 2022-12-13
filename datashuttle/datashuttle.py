@@ -312,7 +312,7 @@ class DataShuttle:
 
         :param local_path:          path to project dir on local machine
         :param remote_path:         Filepath to remote project. If this is local
-                                    (i.e. connection_method = "local", this is
+                                    (i.e. connection_method = "local_filesystem", this is
                                     the full path on the local filesystem
                                     (e.g. mounted drive)
                                     Otherwise, if this is via ssh
@@ -324,7 +324,7 @@ class DataShuttle:
                                     ~ home directory syntax, must contain
                                     the full path
                                     (e.g. /nfs/nhome/live/jziminski)
-        :param connection_method    "local" or "ssh"
+        :param connection_method    "local_filesystem" or "ssh"
         :param remote_host_id:      address for remote host for ssh connection
         :param remote_host_username:  username for which to login to
                                     remote host.
@@ -360,7 +360,9 @@ class DataShuttle:
             self.cfg.dump_to_file()
 
         self.set_attributes_after_config_load()
-        self._setup_remote_as_rclone_target("local")  # TODO: handle this!!
+        self._setup_remote_as_rclone_target(
+            "local_filesystem"
+        )  # TODO: handle this!!
 
         utils.message_user(
             "Configuration file has been saved and "
@@ -531,7 +533,7 @@ class DataShuttle:
                         just report what would be moved.
         """
         local_filepath = self._join(
-            "local", [self._top_level_dir_name, filepath]
+            "local_filesystem", [self._top_level_dir_name, filepath]
         )
         remote_filepath = self._join(
             "remote", [self._top_level_dir_name, filepath]
@@ -815,7 +817,7 @@ class DataShuttle:
         self, local_or_remote: str, experiment_type: str
     ) -> list:
         """
-        Search a datatype directory for all present sub- prefixed directories.
+        Search a datatype directory for all present sub-prefixed directories.
         If remote, ssh or filesystem will be used depending on config.
 
         :param local_or_remote: "local" or "remote"

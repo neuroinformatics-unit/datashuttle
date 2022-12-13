@@ -104,7 +104,7 @@ class TestConfigs:
         project.make_config_file(
             "test_local_path",
             "test_remote_path",
-            "local",
+            "local_filesystem",
             use_behav=True,
         )
 
@@ -123,7 +123,7 @@ class TestConfigs:
             else:
                 assert str(w[0].message) == "connection_method was not updated"
 
-                assert project.cfg["connection_method"] == "local"
+                assert project.cfg["connection_method"] == "local_filesystem"
 
     # Test Make Configs API
     # -------------------------------------------------------------
