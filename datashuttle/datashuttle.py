@@ -57,7 +57,7 @@ class DataShuttle:
             utils.raise_error("project_name must not include spaces.")
 
         self.project_name = project_name
-
+        self._appdir_path = utils.get_appdir_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
 
         self.cfg: Any = None
@@ -435,8 +435,7 @@ class DataShuttle:
         Return the system appdirs path where
         project settings are stored.
         """
-        appdir_path = utils.get_appdir_path(self.project_name)
-        utils.message_user(appdir_path.as_posix())
+        utils.message_user(self._appdir_path.as_posix())
 
     def get_config_path(self):
         """

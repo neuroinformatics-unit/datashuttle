@@ -41,9 +41,7 @@ def setup_project_default_configs(
 
     warnings.filterwarnings("default")
 
-    project.update_config(
-        "local_path", project.get_appdir_path() + "/base_dir"
-    )
+    project.update_config("local_path", project._appdir_path / "base_dir")
 
     if local_path:
         project.update_config("local_path", local_path)
@@ -76,14 +74,14 @@ def teardown_project(
 
 
 def delete_all_dirs_in_local_path(project):
-    if os.path.isdir(project.get_local_path()):
-        shutil.rmtree(project.get_local_path())
+    if project.cfg["local_path"].is_dir():
+        shutil.rmtree(project.cfg["local_path"])
 
 
 def delete_all_dirs_in_remote_path(project):
     """"""
-    if os.path.isdir(project.get_remote_path()):
-        shutil.rmtree(project.get_remote_path())
+    if project.cfg["remote_path"].is_dir():
+        shutil.rmtree(project.cfg["remote_path"])
 
 
 def delete_project_if_it_exists(project_name):
@@ -378,7 +376,7 @@ def make_and_check_local_project(project, subs, sessions, experiment_type):
 def check_configs(project, kwargs):
     """"""
     config_path = (
-        project.get_appdir_path() + "/config.yaml"
+        project._appdir_path / "config.yaml"
     )  # TODO: can use new get_config()
 
     if not os.path.isfile(config_path):
@@ -429,9 +427,9 @@ def check_config_file(config_path, *kwargs):
 
 def get_rawdata_path(project, local_or_remote="local"):
     if local_or_remote == "local":
-        base_path = project.get_local_path()
+        base_path = project.cfg["local_path"]
     else:
-        base_path = project.get_remote_path()
+        base_path = project.cfg["remote_path"]
     return os.path.join(base_path, project._top_level_dir_name)
 
 
@@ -442,8 +440,8 @@ def handle_upload_or_download(project, upload_or_download):
     and local server (so things are still transferred from
     local machine to remote, but using the download function).
     """
-    local_path = copy.deepcopy(project.get_local_path())
-    remote_path = copy.deepcopy(project.get_remote_path())
+    local_path = copy.deepcopy(project.cfg["local_path"])
+    remote_path = copy.deepcopy(project.cfg["remote_path"])
 
     if upload_or_download == "download":
 

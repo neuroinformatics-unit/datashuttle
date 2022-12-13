@@ -27,7 +27,7 @@ def make_dirs(paths: Union[Path, list]):
     for path_ in paths:
 
         if not path_.is_dir():
-            path_.mkdir()
+            path_.mkdir(parents=True)
         else:
             warnings.warn(
                 "The following directory was not made "
@@ -223,7 +223,7 @@ def get_appdir_path(project_name: str) -> Path:
     base_path = Path(appdirs.user_data_dir("DataShuttle")) / project_name
 
     if not base_path.is_dir():
-        base_path.mkdir()
+        make_dirs(base_path)
 
     return base_path
 

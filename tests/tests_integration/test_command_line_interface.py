@@ -408,9 +408,11 @@ class TestCommandLineInterface:
             setup_project.project_name,
         )
 
-        assert os.path.isdir(
-            base_path_to_check + f"/rawdata/{subs[1]}/{sessions[0]}/ephys"
+        path_to_check = (
+            base_path_to_check / f"rawdata/{subs[1]}/{sessions[0]}/ephys"
         )
+
+        assert path_to_check.is_dir()
 
     # ----------------------------------------------------------------------------------------------------------
     # Test Errors Propagate from API
