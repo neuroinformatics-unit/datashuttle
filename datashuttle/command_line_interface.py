@@ -124,32 +124,18 @@ make_config_file_parser.add_argument(
     "local_path", type=str, help=help("required_str")
 )
 
+make_config_file_parser.add_argument(
+    "remote_path", type=str, help=help("required_str")
+)
+
+make_config_file_parser.add_argument(
+    "connection_method", type=str, help=help("required_str")
+)
+
 make_config_file_parser = make_config_file_parser.add_argument_group(
     "named arguments:"
 )  # type: ignore
-make_config_file_parser.add_argument(
-    "--ssh-to-remote",
-    "--ssh_to_remote",
-    required=False,
-    action="store_true",
-    help=help("flag_default_false"),
-)
-make_config_file_parser.add_argument(
-    "--remote-path-local",
-    "--remote_path_local",
-    required=False,
-    type=str,
-    metavar="",
-    help="This or --remote_path_ssh must be set(str)",
-)
-make_config_file_parser.add_argument(
-    "--remote-path-ssh",
-    "--remote_path_ssh",
-    required=False,
-    type=str,
-    metavar="",
-    help="This or --remote_path_local must be set(str)",
-)
+
 make_config_file_parser.add_argument(
     "--remote-host-id",
     "--remote_host_id",
