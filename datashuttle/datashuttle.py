@@ -65,14 +65,14 @@ class DataShuttle:
         self._ses_dirs: Any = None
         self._top_level_dir_name = "rawdata"
 
-        self.attempt_load_configs(prompt_on_fail=True)
+        self._attempt_load_configs(prompt_on_fail=True)
 
         if self.cfg:
-            self.set_attributes_after_config_load()
+            self._set_attributes_after_config_load()
 
         rclone_utils.prompt_rclone_download_if_does_not_exist()
 
-    def set_attributes_after_config_load(self):
+    def _set_attributes_after_config_load(self):
         """
         Once config file is loaded, update all private attributes
         according to config contents.
@@ -360,7 +360,7 @@ class DataShuttle:
         if self.cfg:
             self.cfg.dump_to_file()
 
-        self.set_attributes_after_config_load()
+        self._set_attributes_after_config_load()
         self._setup_remote_as_rclone_target(
             "local_filesystem"
         )  # TODO: handle this!!
@@ -370,7 +370,23 @@ class DataShuttle:
             "options loaded into datashuttle."
         )
 
-    def attempt_load_configs(self, prompt_on_fail: bool):
+    def update_config(self, option_key: str, new_info: Union[str, bool]):
+        """
+        Convenience function to update individual entry of configuration file.
+        The config file, and currently loaded self.cfg will be updated.
+
+        :param option_key: dictionary key of the option to change,
+                           see make_config_file()
+        :param new_info: value to update the config too
+        """
+        if not self.cfg:
+            utils.raise_error(
+                "Must have a config loaded before updating configs."
+            )
+        self.cfg.update_an_entry(option_key, new_info)
+        self._set_attributes_after_config_load()
+
+    def _attempt_load_configs(self, prompt_on_fail: bool):
         """
         Attempt to load the config file. If it does not exist or crashes
         when attempt to load from file, return False.
@@ -403,22 +419,6 @@ class DataShuttle:
                     f"cannot load, re-initialise configs with "
                     f"make_config_file()"
                 )
-
-    def update_config(self, option_key: str, new_info: Union[str, bool]):
-        """
-        Convenience function to update individual entry of configuration file.
-        The config file, and currently loaded self.cfg will be updated.
-
-        :param option_key: dictionary key of the option to change,
-                           see make_config_file()
-        :param new_info: value to update the config too
-        """
-        if not self.cfg:
-            utils.raise_error(
-                "Must have a config loaded before updating configs."
-            )
-        self.cfg.update_an_entry(option_key, new_info)
-        self.set_attributes_after_config_load()
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
@@ -493,7 +493,7 @@ class DataShuttle:
 
         if new_cfg:
             self.cfg = new_cfg
-            self.set_attributes_after_config_load()
+            self._set_attributes_after_config_load()
             self.cfg.file_path = self._config_path
             self.cfg.dump_to_file()
             utils.message_user("Update successful.")
@@ -644,7 +644,9 @@ class DataShuttle:
 
             utils.make_dirs(sub_path)
 
-            self.make_experiment_type_folders(experiment_type, sub_path, "sub")
+            self._make_experiment_type_folders(
+                experiment_type, sub_path, "sub"
+            )
 
             for ses in ses_names:
 
@@ -652,11 +654,11 @@ class DataShuttle:
 
                 utils.make_dirs(ses_path)
 
-                self.make_experiment_type_folders(
+                self._make_experiment_type_folders(
                     experiment_type, ses_path, "ses"
                 )
 
-    def make_experiment_type_folders(
+    def _make_experiment_type_folders(
         self,
         experiment_type: Union[list, str],
         sub_or_ses_level_path: Path,
@@ -715,7 +717,7 @@ class DataShuttle:
 
         for sub in sub_names:
 
-            self.transfer_experiment_type(
+            self._transfer_experiment_type(
                 upload_or_download,
                 local_or_remote,
                 experiment_type,
@@ -733,7 +735,7 @@ class DataShuttle:
 
             for ses in ses_names:
 
-                self.transfer_experiment_type(
+                self._transfer_experiment_type(
                     upload_or_download,
                     local_or_remote,
                     experiment_type,
@@ -742,7 +744,7 @@ class DataShuttle:
                     dry_run,
                 )
 
-    def transfer_experiment_type(
+    def _transfer_experiment_type(
         self,
         upload_or_download: str,
         local_or_remote: str,
