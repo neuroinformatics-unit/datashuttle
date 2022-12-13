@@ -9,7 +9,6 @@ get_canonical_config_dict( and type to
 get_canonical_config_required_types()
 """
 
-import warnings
 from pathlib import Path
 from typing import Union, get_args
 
@@ -23,9 +22,8 @@ def get_canonical_config_dict():
     """
     config_dict = {
         "local_path": None,
-        "remote_path_local": None,
-        "remote_path_ssh": None,
-        "ssh_to_remote": None,
+        "remote_path": None,
+        "connection_method": None,
         "remote_host_id": None,
         "remote_host_username": None,
         "use_ephys": None,
@@ -36,16 +34,19 @@ def get_canonical_config_dict():
     return config_dict
 
 
+def get_experiment_types():
+    return ["use_ephys", "use_behav", "use_imaging", "use_histology"]
+
+
 def get_canonical_config_required_types():
     """
     The only permitted types for DataShuttle
     config values.
     """
     required_types = {
-        "local_path": Union[str, Path, None],
-        "ssh_to_remote": Union[bool, None],
-        "remote_path_local": Union[str, Path, None],
-        "remote_path_ssh": Union[str, Path, None],
+        "local_path": Union[str, Path],
+        "remote_path": Union[str, Path],
+        "connection_method": str,
         "remote_host_id": Union[str, None],
         "remote_host_username": Union[str, None],
         "use_ephys": bool,
@@ -95,42 +96,29 @@ def check_dict_values_and_inform_user(config_dict):
             f" order should be: {canonical_dict.keys()}"
         )
 
-    # Check relevant remote_path is set
-    if config_dict["ssh_to_remote"]:
-        if not config_dict["remote_path_ssh"]:
-            utils.raise_error(
-                "ssh to remote is on but remote_path_ssh " "has not been set."
-            )
-    else:
-        if not config_dict["remote_path_local"]:
-            utils.raise_error(
-                "ssh_to_remote is off but remote_path_local "
-                "has not been set."
-            )
+    if config_dict["connection_method"] not in ["ssh", "local"]:
+        utils.raise_error("connection method must be ssh or local")
 
-    # Check bad remote path format
-    if config_dict.get_remote_path().as_posix()[0] == "~":
+    if config_dict["remote_path"].as_posix()[0] == "~":
         utils.raise_error(
             "remote_path must contain the full directory path "
             "with no ~ syntax"
         )
 
+    if not any([config_dict[key] for key in get_experiment_types()]):
+        utils.raise_error(
+            f"At least one experiment_type must be True in "
+            f"configs, from: {' '.join(get_experiment_types())}"
+        )
+
     # Check SSH settings
-    if config_dict["ssh_to_remote"] is True and (
+    if config_dict["connection_method"] == "ssh" and (
         not config_dict["remote_host_id"]
         or not config_dict["remote_host_username"]
     ):
         utils.raise_error(
             "remote_host_id and remote_host_username are "
-            "required if ssh_to_remote is True."
-        )
-
-    if config_dict["ssh_to_remote"] is False and (
-        config_dict["remote_host_id"] or config_dict["remote_host_username"]
-    ):
-        warnings.warn(
-            "ssh_to_remote is false, but remote_host_id or "
-            "remote_host_username provided."
+            "required if connection_method is ssh."
         )
 
 
@@ -148,7 +136,6 @@ def handle_cli_or_supplied_config_bools(dict_):
 def handle_bool(key, value):
     """ """
     if key in [
-        "ssh_to_remote",
         "use_ephys",
         "use_behav",
         "use_imaging",

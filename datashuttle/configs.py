@@ -1,10 +1,9 @@
 import copy
-import pathlib
 import traceback
 import warnings
 from collections import UserDict
 from pathlib import Path
-from typing import Any, Union
+from typing import Any
 
 import yaml
 
@@ -33,8 +32,7 @@ class Configs(UserDict):
         self.file_path = file_path
         self.keys_str_on_file_but_path_in_class = [
             "local_path",
-            "remote_path_ssh",
-            "remote_path_local",
+            "remote_path",
         ]
         self.sub_prefix = "sub-"
         self.ses_prefix = "ses-"
@@ -90,9 +88,8 @@ class Configs(UserDict):
         file. The config file, and currently loaded self.cfg will be
         updated.
 
-        In case an update is breaking (e.g. use ssh_to_remote but
-        no remote_host_id), set to new value, test validity and
-        revert if breaking change.
+        In case an update is breaking, set to new value,
+        test validity and revert if breaking change.
 
         :param option_key: dictionary key of the option to change,
                            see make_config_file()
@@ -114,16 +111,15 @@ class Configs(UserDict):
             self.dump_to_file()
             utils.message_user(f"{option_key} has been updated to {new_info}")
 
-            if option_key == "ssh_to_remote":
-                if new_info:
+            if option_key in ["connection_method", "remote_path"]:
+                if self["connection_method"] == "ssh":
                     utils.message_user(
-                        f"SSH will be used to connect to project directory at:"
-                        f" {self.get_remote_path(for_user=True)}"
+                        f"SSH will be used to connect to project directory at: {self['remote_path']}"
                     )
-                else:
+                elif self["connection_method"] == "local":
                     utils.message_user(
-                        f"Local filesystem will be used for project "
-                        f"directory at: {self.get_remote_path(for_user=True)}"
+                        f"Local filesystem will be used to connect to project "
+                        f"directory at: {self['remote_path'].as_posix()}"
                     )
         else:
             self[option_key] = original_value
@@ -141,24 +137,6 @@ class Configs(UserDict):
     # --------------------------------------------------------------------
     # Utils
     # --------------------------------------------------------------------
-
-    def get_remote_path(
-        self, for_user: bool = False
-    ) -> Union[pathlib.Path, str]:
-        """
-        Interpath function to get pathlib remote path
-        based on using ssh or local filesystem.
-        """
-        remote_path = (
-            self["remote_path_ssh"]
-            if self["ssh_to_remote"]
-            else self["remote_path_local"]
-        )
-
-        if for_user:
-            return remote_path.as_posix()
-        else:
-            return remote_path
 
     def convert_str_and_pathlib_paths(self, config_dict: dict, direction: str):
         """
