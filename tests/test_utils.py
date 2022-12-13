@@ -50,7 +50,7 @@ def setup_project_default_configs(
         delete_all_dirs_in_local_path(project)
 
     if remote_path:
-        project.update_config("remote_path_local", remote_path)
+        project.update_config("remote_path", remote_path)
         delete_all_dirs_in_remote_path(project)
 
     return project
@@ -134,8 +134,11 @@ def get_test_config_arguments_dict(
     """
     dict_ = {
         "local_path": r"Not:/a/re al/local/directory",
-        "remote_path_local": r"/Not/a/re al/remote_ local/directory",
-        "remote_path_ssh": r"/not/a/re al/remote_ ssh/directory",
+        "remote_path": r"/Not/a/re al/remote_ local/directory",
+        "connection_method": "local",
+        "use_behav": True,  # This is not explicitly required,
+        # but at least 1 use_x is, so
+        # for tests always set use_behav=True
     }
 
     if required_arguments_only:
@@ -147,45 +150,26 @@ def get_test_config_arguments_dict(
                 "remote_host_id": None,
                 "remote_host_username": None,
                 "use_ephys": False,
-                "use_behav": False,
                 "use_histology": False,
                 "use_imaging": False,
-                "ssh_to_remote": False,
             }
         )
     else:
         dict_.update(
             {
+                "local_path": r"C:/test/test_ local/test_edit",
+                "remote_path": r"/nfs/test dir/test_edit2",
+                "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
                 "use_ephys": True,
-                "use_behav": True,
+                "use_behav": False,
                 "use_histology": True,
                 "use_imaging": True,
-                "ssh_to_remote": True,
             }
         )
 
     return dict_
-
-
-def get_not_set_config_args(project):
-    """
-    Include spaces in path so this case is always checked
-    """
-    return {
-        "local_path": r"C:/test/test_ local/test_edit",
-        "remote_path_local": r"/nfs/test dir/test_edit2",
-        "remote_path_ssh": r"/nfs/test dir/test_edit3",
-        "remote_host_id": "test_id",
-        "remote_host_username": "test_host",
-        "use_ephys": not project.cfg["use_ephys"],
-        "use_behav": not project.cfg["use_behav"],
-        "use_histology": not project.cfg["use_histology"],
-        "use_imaging": not project.cfg["use_imaging"],
-        "ssh_to_remote": not project.cfg["ssh_to_remote"],
-        # ^test last so ssh items already set
-    }
 
 
 def get_default_directory_used():
@@ -464,7 +448,7 @@ def handle_upload_or_download(project, upload_or_download):
     if upload_or_download == "download":
 
         project.update_config("local_path", remote_path)
-        project.update_config("remote_path_local", local_path)
+        project.update_config("remote_path", local_path)
 
         transfer_function = project.download_data
 
@@ -498,23 +482,30 @@ def run_cli(command, project_name=None):
     return stdout.decode("utf8"), stderr.decode("utf8")
 
 
-def get_flags(all_or_experiment_types):
-    experiment_types = [
+def get_flags():  # TODO: MOVE TO CANONICAL_CONFIGS
+    return [
         "use_ephys",
         "use_behav",
         "use_histology",
         "use_imaging",
     ]
-    if all_or_experiment_types == "experiment_types":
-        return experiment_types
-    else:
-        return experiment_types + ["ssh_to_remote"]
 
 
 def get_all_experiment_types_on(kwargs_or_flags):
     """ """
-    experiment_types = get_flags("experiment_types")
+    experiment_types = get_flags()
     if kwargs_or_flags == "flags":
         return f"{' '.join(['--' + flag for flag in experiment_types])}"
     else:
         return dict(zip(experiment_types, [True] * len(experiment_types)))
+
+
+def move_some_keys_to_end_of_dict(config):
+    """
+    Need to move connection method to the end
+    so ssh opts are already set before it is changed. Similarly,
+    use_behav must be turned off after at least one other use_
+    option is turned on.
+    """
+    config["connection_method"] = config.pop("connection_method")
+    config["use_behav"] = config.pop("use_behav")
