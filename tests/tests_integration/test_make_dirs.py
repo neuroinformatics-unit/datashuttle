@@ -70,7 +70,7 @@ class TestMakeDirs:
             "(i.e. there are no duplicates in list input)" == str(e.value)
         )
 
-    def test_process_names_prefix(self, project):
+    def test_process_names_prefix(self):
         """
         Check that process_names correctly prefixes input
         with default sub- or ses- prefix.
