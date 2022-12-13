@@ -17,16 +17,13 @@ this module and other tests.
 NOTE: when testing these functions with breakpoint(),
 the debugger is acting very strangely and breaks in
 1 level lower than usual, requires 'u' to go
-up a level. Cannot understand why yet,
-might be something to do with click.
+up a level. Cannot understand why yet.
 """
 import os
 
 import pytest
 import simplejson
 import test_utils
-
-# TODO: check everything CLI is tested!
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
