@@ -6,6 +6,7 @@ import test_utils
 import yaml
 
 from datashuttle.datashuttle import DataShuttle
+from datashuttle.utils_mod.canonical_configs import get_canonical_config_dict
 
 TEST_PROJECT_NAME = "test_configs"
 
@@ -41,9 +42,12 @@ class TestConfigs:
         yield setup_project
         test_utils.teardown_project(cwd, setup_project)
 
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------
     # Tests
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------
+
+    # Test Errors
+    # -------------------------------------------------------------
 
     def test_warning_on_startup(self):
         """
@@ -93,15 +97,7 @@ class TestConfigs:
         with pytest.warns() as w:
             project.update_config("ssh_to_remote", False)
 
-        assert len(w) == 2
-
-        assert (
-            str(w[0].message) == "WARNING: ssh to remote is off but "
-            "remote_path_local has not been set."
-        )
-
-        assert str(w[1].message) == "ssh_to_remote was not updated"
-
+        assert str(w[0].message) == "ssh_to_remote was not updated"
         assert project.cfg["ssh_to_remote"] is True
 
     def test_no_ssh_options_set_on_make_config_file(self, project):
@@ -149,17 +145,12 @@ class TestConfigs:
                 assert len(w) == 0
                 assert project.cfg["ssh_to_remote"] is True
             else:
-                assert len(w) == 2
-
-                assert (
-                    str(w[0].message) == "WARNING: remote_host_id and "
-                    "remote_host_username are "
-                    "required if ssh_to_remote is True."
-                )
-
-                assert str(w[1].message) == "ssh_to_remote was not updated"
+                assert str(w[0].message) == "ssh_to_remote was not updated"
 
                 assert project.cfg["ssh_to_remote"] is False
+
+    # Test Make Configs API
+    # -------------------------------------------------------------
 
     def test_required_configs(self, project):
         """
@@ -210,6 +201,9 @@ class TestConfigs:
             project, changed_configs
         )
 
+    # Test Update Configs
+    # -------------------------------------------------------------
+
     def test_update_configs(self, project):
         """
         Set the configs as default and then sequentially update
@@ -229,14 +223,21 @@ class TestConfigs:
 
             test_utils.check_configs(project, default_configs)
 
+    # Test Supplied Configs
+    # -------------------------------------------------------------
+
     def test_supplied_config_file_bad_path(self, project):
+
+        # Test path supplied that doesn't exist
 
         non_existant_path = Path(project.get_appdir_path() + "fake.file")
 
         with pytest.raises(BaseException) as e:
             project.supply_config_file(non_existant_path, warn=False)
 
-        assert str(e.value) == ""
+        assert str(e.value) == f"No file found at: {non_existant_path}"
+
+        # Test non-yaml file supplied
 
         wrong_filetype_path = project.get_appdir_path() + "file.yuml"
 
@@ -244,16 +245,14 @@ class TestConfigs:
             pass
 
         with pytest.raises(BaseException) as e:
-            project.supply_config_file(non_existant_path, warn=False)
+            project.supply_config_file(wrong_filetype_path, warn=False)
 
-        assert str(e.value) == ""
-
-    def dump_config(self, dict_, path_):
-        with open(path_, "w") as config_file:
-            yaml.dump(dict_, config_file, sort_keys=False)
+        assert str(e.value) == "The config file must be a YAML file"
 
     def test_supplied_config_file_missing_key(self, setup_project):
-
+        """
+        More informative traceback is also printed
+        """
         bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
         missing_key_configs = test_utils.get_test_config_arguments_dict()
 
@@ -265,13 +264,16 @@ class TestConfigs:
             setup_project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
-            str(e.value) == "Loading Failed. The key ssh_to_remote was "
-            "not found in the supplied config. Config "
-            "file was not updated."
+            str(e.value) == "Could not load config file. "
+            "Please check that the file is "
+            "formatted correctly. Config file "
+            "was not updated."
         )
 
     def test_supplied_config_file_extra_key(self, setup_project):
-
+        """
+        More informative traceback is also printed
+        """
         bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
 
         wrong_key_configs = test_utils.get_test_config_arguments_dict()
@@ -282,9 +284,10 @@ class TestConfigs:
             setup_project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
-            str(e.value) == "Loading Failed. The key sub_prefix was not "
-            "found in the supplied config. "
-            "Config file was not updated."
+            str(e.value) == "Could not load config file. "
+            "Please check that the file is "
+            "formatted correctly. Config file "
+            "was not updated."
         )
 
     def test_supplied_config_file_bad_types(self, setup_project):
@@ -304,14 +307,38 @@ class TestConfigs:
             with pytest.raises(BaseException) as e:
                 setup_project.supply_config_file(bad_configs_path, warn=False)
 
-            assert f"The type of the value at {key} is incorrect" in str(
-                e.value
+            assert (
+                str(e.value) == "Could not load config file. "
+                "Please check that the file is "
+                "formatted correctly. Config file "
+                "was not updated."
             )
 
-    # need to move sub / ses from config dict to config class.
-    # then can move sub
-    # then this should work
-    # add some select experiment_tyoe to CLI test
+    def test_supplied_config_file_changes_wrong_order(self, setup_project):
+
+        bad_order_configs_path = (
+            setup_project.get_appdir_path() + "/new_configs.yaml"
+        )
+        good_order_configs = test_utils.get_test_config_arguments_dict()
+
+        bad_order_configs = {
+            key: good_order_configs[key]
+            for key in reversed(good_order_configs.keys())
+        }
+
+        self.dump_config(bad_order_configs, bad_order_configs_path)
+
+        with pytest.raises(BaseException) as e:
+            setup_project.supply_config_file(
+                bad_order_configs_path, warn=False
+            )
+
+        assert (
+            str(e.value) == "Could not load config file. "
+            "Please check that the file is "
+            "formatted correctly. Config file "
+            "was not updated."
+        )
 
     def test_supplied_config_file_updates(self, setup_project):
         """
@@ -322,6 +349,9 @@ class TestConfigs:
         )
         new_configs = test_utils.get_test_config_arguments_dict()
 
+        canonical_config_dict = get_canonical_config_dict()
+        new_configs = {key: new_configs[key] for key in canonical_config_dict}
+
         new_configs["local_path"] = "new_fake_local"
         new_configs["remote_path_local"] = "new_fake_remote_local"
         new_configs["remote_path_ssh"] = "new_fake_remote_ssh"
@@ -331,24 +361,6 @@ class TestConfigs:
         setup_project.supply_config_file(new_configs_path, warn=False)
 
         test_utils.check_configs(setup_project, new_configs)
-
-    def test_supplied_config_file_changes_wrong_order(self, setup_project):
-
-        bad_order_configs_path = (
-            setup_project.get_appdir_path() + "/new_configs.yaml"
-        )
-        good_order_configs = test_utils.get_test_config_arguments_dict()
-
-        bad_order_configs = dict(reversed(good_order_configs))
-
-        self.dump_config(bad_order_configs, bad_order_configs_path)
-
-        setup_project.supply_config_file(bad_order_configs_path, warn=False)
-
-        with pytest.raises(BaseException):
-            test_utils.check_configs(setup_project, bad_order_configs)
-
-        test_utils.check_configs(setup_project, good_order_configs)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
@@ -369,3 +381,7 @@ class TestConfigs:
         setup_project = DataShuttle(TEST_PROJECT_NAME)
 
         test_utils.check_configs(setup_project, kwargs[0])
+
+    def dump_config(self, dict_, path_):
+        with open(path_, "w") as config_file:
+            yaml.dump(dict_, config_file, sort_keys=False)

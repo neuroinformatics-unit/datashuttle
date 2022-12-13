@@ -487,7 +487,7 @@ class DataShuttle:
 
         except BaseException:
             utils.message_user(traceback.format_exc())
-            utils.message_user(
+            utils.raise_error(
                 "Could not load config file. Please check that "
                 "the file is formatted correctly. "
                 "Config file was not updated."

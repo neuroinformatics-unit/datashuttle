@@ -1,6 +1,7 @@
 import copy
 import pathlib
 import traceback
+import warnings
 from collections import UserDict
 from pathlib import Path
 from typing import Any, Union
@@ -48,6 +49,15 @@ class Configs(UserDict):
         correctly and will not cause downstream errors.
         """
         canonical_configs.check_dict_values_and_inform_user(self)
+
+    def keys(self):
+        return self.data.keys()
+
+    def items(self):
+        return self.data.items()
+
+    def values(self):
+        return self.data.values()
 
     # --------------------------------------------------------------------
     # Save / Load from file
@@ -117,8 +127,7 @@ class Configs(UserDict):
                     )
         else:
             self[option_key] = original_value
-            utils.message_user(f"{option_key} was not updated")
-            self[option_key] = original_value
+            warnings.warn(f"{option_key} was not updated")
 
     def safe_check_current_dict_is_valid(self) -> bool:
         """ """
