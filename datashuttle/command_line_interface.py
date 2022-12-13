@@ -667,7 +667,6 @@ supply_config_file_parser = subparsers.add_parser(
 supply_config_file_parser.set_defaults(func=supply_config_file)
 
 supply_config_file_parser.add_argument(
-    "path-to-config",
     "path_to_config",
     type=str,
     help="Required: (str, single or multiple)",

@@ -75,7 +75,7 @@ class TestCommandLineInterface:
         First get default config arguments, run the
         CLI to make config file with defaults and check
         the internal arguments are ordered and in
-        the expected form.
+        the expected form. Strip flags that are always false.
         """
         required_options = test_utils.get_test_config_arguments_dict(
             required_arguments_only=True
@@ -83,10 +83,14 @@ class TestCommandLineInterface:
 
         stdout, __ = test_utils.run_cli(
             f" make{sep}config{sep}file "
-            + self.convert_kwargs_to_cli(required_options)
+            + self.convert_kwargs_to_cli(required_options, sep)
         )
 
         __, kwargs_ = self.decode(stdout)
+
+        # Update with flags that should always return false
+        flags = test_utils.get_flags("all")
+        required_options.update(dict(zip(flags, [False] * len(flags))))
 
         self.check_kwargs(required_options, kwargs_)
 
@@ -190,7 +194,7 @@ class TestCommandLineInterface:
         """
         As upload_data_dir_or_file and download_data_dir_or_file
         take identical args, test both together"""
-        stdout, __ = test_utils.run_cli(
+        stdout, stderr = test_utils.run_cli(
             f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file /fake/filepath"
         )
         args_, kwargs_ = self.decode(stdout)
@@ -198,10 +202,11 @@ class TestCommandLineInterface:
         assert args_[0] == "/fake/filepath"
         assert kwargs_["dry_run"] is False
 
-        stdout, __ = test_utils.run_cli(
-            f" {upload_or_download}{sep}project_dir{sep}or{sep}file /fake/filepath "
-            f"--dry{sep}run"
+        stdout, stderr = test_utils.run_cli(
+            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file "
+            f"/fake/filepath --dry{sep}run"
         )
+
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
@@ -324,7 +329,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-hello_world"]
 
         test_utils.run_cli(
-            f"make_sub_dir --experiment_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)}",  # noqa
+            f"make_sub_dir --experiment_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
             setup_project.project_name,
         )
 
@@ -461,12 +466,17 @@ class TestCommandLineInterface:
         """
         Read the simplejson.dumps() output from
         tested CLI.
+
+        Pass a list of keys to strip in strip_keys,
+        these are typically flag args that always
+        return False by default e.g. --use-ephys
         """
         dumped_json = stdout.split("TEST_OUT_START:")[1]
         args_, kwargs_ = simplejson.loads(dumped_json)
+
         return args_, kwargs_
 
-    def convert_kwargs_to_cli(self, kwargs):
+    def convert_kwargs_to_cli(self, kwargs, sep="-"):
         """
         Take a list of key-value pairs that make up
         the arguments we want to pass to CLI, and
@@ -492,7 +502,13 @@ class TestCommandLineInterface:
                 else:
                     value = str(value)
 
-                argument = f"--{key} {value}"
+                if key in test_utils.get_flags("all"):
+                    if value == "True":
+                        argument = f"--{key.replace('_', sep)}"
+                    else:
+                        continue
+                else:
+                    argument = f"--{key.replace('_', sep)} {value}"
                 kwargs_list.append(argument)
 
         kwargs_list = " ".join(kwargs_list)

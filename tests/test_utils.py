@@ -21,6 +21,7 @@ def setup_project_default_configs(
     project_name,
     local_path=False,
     remote_path=False,
+    all_experiment_type_on=True,
 ):
     """"""
     delete_project_if_it_exists(project_name)
@@ -32,6 +33,10 @@ def setup_project_default_configs(
     project._setup_remote_as_rclone_target("local")
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
+
+    if all_experiment_type_on:
+        default_configs.update(get_all_experiment_types_on("kwargs"))
+
     project.make_config_file(**default_configs)
 
     warnings.filterwarnings("default")
@@ -141,10 +146,10 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": None,
                 "remote_host_username": None,
-                "use_ephys": True,
-                "use_behav": True,
-                "use_histology": True,
-                "use_imaging": True,
+                "use_ephys": False,
+                "use_behav": False,
+                "use_histology": False,
+                "use_imaging": False,
                 "ssh_to_remote": False,
             }
         )
@@ -153,10 +158,10 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
-                "use_ephys": False,
-                "use_behav": False,
-                "use_histology": False,
-                "use_imaging": False,
+                "use_ephys": True,
+                "use_behav": True,
+                "use_histology": True,
+                "use_imaging": True,
                 "ssh_to_remote": True,
             }
         )
@@ -491,3 +496,25 @@ def run_cli(command, project_name=None):
 
     stdout, stderr = result.communicate()
     return stdout.decode("utf8"), stderr.decode("utf8")
+
+
+def get_flags(all_or_experiment_types):
+    experiment_types = [
+        "use_ephys",
+        "use_behav",
+        "use_histology",
+        "use_imaging",
+    ]
+    if all_or_experiment_types == "experiment_types":
+        return experiment_types
+    else:
+        return experiment_types + ["ssh_to_remote"]
+
+
+def get_all_experiment_types_on(kwargs_or_flags):
+    """ """
+    experiment_types = get_flags("experiment_types")
+    if kwargs_or_flags == "flags":
+        return f"{' '.join(['--' + flag for flag in experiment_types])}"
+    else:
+        return dict(zip(experiment_types, [True] * len(experiment_types)))

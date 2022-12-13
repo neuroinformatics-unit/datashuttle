@@ -89,10 +89,10 @@ def check_dict_values_and_inform_user(config_dict):
 
     check_config_types(config_dict)
 
-    if config_dict.keys() != canonical_dict.keys():
+    if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.raise_error(
             f"New config keys are in the wrong order. The"
-            f"order should be: {canonical_dict.keys()}"
+            f" order should be: {canonical_dict.keys()}"
         )
 
     # Check relevant remote_path is set
