@@ -298,9 +298,6 @@ class DataShuttle:
         local_path: str,
         remote_path: str,
         connection_method: str,
-        # ssh_to_remote: bool = False,
-        # remote_path_local: Optional[str] = None,
-        # remote_path_ssh: Optional[str] = None,
         remote_host_id: Optional[str] = None,
         remote_host_username: Optional[str] = None,
         use_ephys: bool = False,
@@ -314,18 +311,20 @@ class DataShuttle:
         used each time the datashuttle is opened.
 
         :param local_path:          path to project dir on local machine
-        :param remote_path_local:   Full filepath to local filesystem
-                                   (e.g. mounted drive) dir
-        :param remote_path_ssh:     path to project directory on remote
-                                    machine. If ssh_to_remote is true,
-                                    this should be a full path to remote
+        :param remote_path:         Filepath to remote project. If this is local
+                                    (i.e. connection_method = "local", this is
+                                    the full path on the local filesystem
+                                    (e.g. mounted drive)
+                                    Otherwise, if this is via ssh
+                                    (i.e. connection method = "ssh",
+                                    this is the path to the project
+                                    directory on remote machine.
+                                    This should be a full path to remote
                                     directory i.e. this cannot include
                                     ~ home directory syntax, must contain
                                     the full path
                                     (e.g. /nfs/nhome/live/jziminski)
-        :param ssh_to_remote        if true, ssh will be used to connect
-                                    to remote cluster and remote_host_id,
-                                    remote_host_username must be provided.
+        :param connection_method    "local" or "ssh"
         :param remote_host_id:      address for remote host for ssh connection
         :param remote_host_username:  username for which to login to
                                     remote host.
