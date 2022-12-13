@@ -533,7 +533,7 @@ class DataShuttle:
                         just report what would be moved.
         """
         local_filepath = self._join(
-            "local_filesystem", [self._top_level_dir_name, filepath]
+            "local", [self._top_level_dir_name, filepath]
         )
         remote_filepath = self._join(
             "remote", [self._top_level_dir_name, filepath]
