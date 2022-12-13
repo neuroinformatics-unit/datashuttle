@@ -16,40 +16,40 @@ import paramiko
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[str, list]):
+def make_dirs(paths: Union[Path, list]):
     """
     For path or list of path, make them if
-    do not already exist.
+    they do not already exist.
     """
-    if isinstance(paths, str):
+    if isinstance(paths, Path):
         paths = [paths]
 
     for path_ in paths:
-        path_ = os.path.expanduser(path_)
-        if not os.path.isdir(path_):
-            os.makedirs(path_)
+
+        if not path_.is_dir():
+            path_.mkdir()
         else:
             warnings.warn(
                 "The following directory was not made "
                 "because it already exists"
-                f" {path_}"
+                f" {path_.as_posix()}"
             )
 
 
-def make_datashuttle_metadata_folder(full_path: str):
-    meta_folder_path = full_path + "/.datashuttle_meta"
+def make_datashuttle_metadata_folder(full_path: Path):
+    meta_folder_path = full_path / ".datashuttle_meta"
     make_dirs(meta_folder_path)
 
 
 def search_filesystem_path_for_directories(
-    search_path_with_prefix: str,
+    search_path_with_prefix: Path,
 ) -> list:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.
     """
     all_dirnames = []
-    for file_or_dir in glob.glob(search_path_with_prefix):
+    for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
         if os.path.isdir(file_or_dir):
             all_dirnames.append(os.path.basename(file_or_dir))
     return all_dirnames
@@ -62,23 +62,26 @@ def search_filesystem_path_for_directories(
 
 def connect_client(
     client: paramiko.SSHClient,
-    cfg,  # cannot import Configs class due to circular import
-    hostkeys: str,
+    cfg,
+    hostkeys: Path,
     password: Optional[str] = None,
-    private_key_path: Optional[str] = None,
+    private_key_path: Optional[Path] = None,
 ):
     """
     Connect client to remote server using paramiko.
     Accept either password or path to private key, but not both.
+    Paramiko does not support pathlib.
     """
     try:
-        client.get_host_keys().load(hostkeys)
+        client.get_host_keys().load(hostkeys.as_posix())
         client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(
             cfg["remote_host_id"],
             username=cfg["remote_host_username"],
             password=password,
-            key_filename=private_key_path,
+            key_filename=private_key_path.as_posix()
+            if isinstance(private_key_path, Path)
+            else None,
             look_for_keys=True,
         )
     except Exception:
@@ -93,7 +96,7 @@ def connect_client(
 
 
 def add_public_key_to_remote_authorized_keys(
-    cfg, hostkeys: str, password: str, key: paramiko.RSAKey
+    cfg, hostkeys: Path, password: str, key: paramiko.RSAKey
 ):
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
@@ -111,7 +114,7 @@ def add_public_key_to_remote_authorized_keys(
         client.exec_command("chmod 700 ~/.ssh/")
 
 
-def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
+def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
     """"""
     with paramiko.Transport(remote_host_id) as transport:
         transport.connect()
@@ -129,7 +132,7 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
     if input_ == "y":
         client = paramiko.SSHClient()
         client.get_host_keys().add(remote_host_id, key.get_name(), key)
-        client.get_host_keys().save(hostkeys)
+        client.get_host_keys().save(hostkeys.as_posix())
         sucess = True
     else:
         message_user("Host not accepted. No connection made.")
@@ -138,17 +141,17 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
     return sucess
 
 
-def generate_and_write_ssh_key(ssh_key_path: str):
+def generate_and_write_ssh_key(ssh_key_path: Path):
     key = paramiko.RSAKey.generate(4096)
-    key.write_private_key_file(ssh_key_path)
+    key.write_private_key_file(ssh_key_path.as_posix())
 
 
 def search_ssh_remote_for_directories(
-    search_path: str,
+    search_path: Path,
     search_prefix: str,
     cfg,
-    hostkeys: str,
-    ssh_key_path: str,
+    hostkeys: Path,
+    ssh_key_path: Path,
 ) -> list:
     """
     Search for the search prefix in the search path over SSH.
@@ -167,17 +170,17 @@ def search_ssh_remote_for_directories(
 
 
 def get_list_of_directory_names_over_sftp(
-    sftp, search_path: str, search_prefix: str
+    sftp, search_path: Path, search_prefix: str
 ) -> list:
 
     all_dirnames = []
     try:
-        for file_or_dir in sftp.listdir_attr(search_path):
+        for file_or_dir in sftp.listdir_attr(search_path.as_posix()):
             if stat.S_ISDIR(file_or_dir.st_mode):
                 if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
                     all_dirnames.append(file_or_dir.filename)
     except FileNotFoundError:
-        raise_error(f"No file found at {search_path}")
+        raise_error(f"No file found at {search_path.as_posix()}")
 
     return all_dirnames
 
@@ -217,12 +220,10 @@ def get_appdir_path(project_name: str) -> Path:
     not good practice. Use appdirs module to get the
     AppData cross-platform and save / load all files form here .
     """
-    base_path = Path(
-        os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
-    )
+    base_path = Path(appdirs.user_data_dir("DataShuttle")) / project_name
 
-    if not os.path.isdir(base_path):
-        os.makedirs(base_path)
+    if not base_path.is_dir():
+        base_path.mkdir()
 
     return base_path
 

@@ -97,7 +97,7 @@ def check_dict_values_and_inform_user(config_dict):
         )
 
     if config_dict["connection_method"] not in ["ssh", "local_filesystem"]:
-        utils.raise_error("connection method must be ssh or local")
+        utils.raise_error("connection method must be ssh or local_filesystem")
 
     if config_dict["remote_path"].as_posix()[0] == "~":
         utils.raise_error(
