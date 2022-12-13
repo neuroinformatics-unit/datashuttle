@@ -26,8 +26,6 @@ import pytest
 import simplejson
 import test_utils
 
-from datashuttle.datashuttle import DataShuttle
-
 # TODO: check everything CLI is tested!
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
@@ -76,6 +74,8 @@ class TestCommandLineInterface:
         CLI to make config file with defaults and check
         the internal arguments are ordered and in
         the expected form. Strip flags that are always false.
+        Note use_behav is always on as a required argument,
+        as at least one use_x argument must be true.
         """
         required_options = test_utils.get_test_config_arguments_dict(
             required_arguments_only=True
@@ -89,7 +89,8 @@ class TestCommandLineInterface:
         __, kwargs_ = self.decode(stdout)
 
         # Update with flags that should always return false
-        flags = test_utils.get_flags("all")
+        flags = test_utils.get_flags()
+        flags.remove("use_behav")
         required_options.update(dict(zip(flags, [False] * len(flags))))
 
         self.check_kwargs(required_options, kwargs_)
@@ -257,11 +258,12 @@ class TestCommandLineInterface:
             clean_project_name,
         )
 
-        not_set_configs = test_utils.get_not_set_config_args(
-            DataShuttle(clean_project_name)
+        not_set_configs = test_utils.get_test_config_arguments_dict(
+            set_as_defaults=False
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
+        test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
         for key, value in not_set_configs.items():
 
@@ -274,7 +276,10 @@ class TestCommandLineInterface:
             )
             default_configs[key] = value
 
-            test_utils.check_config_file(config_path, default_configs)
+            try:
+                test_utils.check_config_file(config_path, default_configs)
+            except:
+                breakpoint()
 
     def test_make_config_file_defaults(
         self,
@@ -425,18 +430,18 @@ class TestCommandLineInterface:
             "Use make_config_file() to setup before continuing." in stderr
         )
 
-    def test_fail_to_pass_remote_path_cli(self, clean_project_name):
+    def test_use_ssh_but_pass_no_ssh_options(self, clean_project_name):
         """
         Check that error from API are propagated to CLI
         """
         __, stderr = test_utils.run_cli(
-            "make_config_file test_local_path ",
+            "make_config_file test_local_path test_remote_path ssh --use_behav",
             clean_project_name,
         )
 
         assert (
-            "AssertionError: "
-            "Must set either remote_path_ssh or remote_path_local" in stderr
+            "remote_host_id and remote_host_username are "
+            "required if connection_method is ssh." in stderr
         )
 
     @pytest.mark.parametrize("sep", ["-", "_"])
@@ -484,13 +489,11 @@ class TestCommandLineInterface:
         pre-pending "--argument_name" for non-positional
         arguments, and wrapping paths in quotes.
         """
-        positionals = ["local_path"]
+        positionals = ["local_path", "remote_path", "connection_method"]
 
         prepend_positionals = ""
-        if "local_path" in kwargs:
-            prepend_positionals += (
-                " " + test_utils.add_quotes(kwargs["local_path"]) + " "
-            )
+        for pos_arg in positionals:
+            prepend_positionals += test_utils.add_quotes(kwargs[pos_arg]) + " "
 
         kwargs_list = []
         for key, value in kwargs.items():
@@ -502,7 +505,7 @@ class TestCommandLineInterface:
                 else:
                     value = str(value)
 
-                if key in test_utils.get_flags("all"):
+                if key in test_utils.get_flags():
                     if value == "True":
                         argument = f"--{key.replace('_', sep)}"
                     else:

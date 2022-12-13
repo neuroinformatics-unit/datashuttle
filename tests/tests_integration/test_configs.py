@@ -39,6 +39,12 @@ class TestConfigs:
         setup_project, cwd = test_utils.setup_project_fixture(
             tmp_path, test_project_name
         )
+
+        default_configs = test_utils.get_test_config_arguments_dict(
+            set_as_defaults=True
+        )
+        setup_project.make_config_file(**default_configs)
+
         yield setup_project
         test_utils.teardown_project(cwd, setup_project)
 
@@ -67,39 +73,6 @@ class TestConfigs:
             "Use make_config_file() to setup before continuing."
         )
 
-    def test_fail_to_pass_remote_path(self, project):
-        """
-        Test that the make_config_file will assert if neither
-        remote_path_ssh or remote_path_local are passed.
-        """
-        with pytest.raises(AssertionError) as e:
-            project.make_config_file("test_local_path", False)
-
-        assert (
-            str(e.value)
-            == "Must set either remote_path_ssh or remote_path_local"
-        )
-
-    def test_no_remote_local_path_set(self, project):
-        """
-        Check that if the local path is not set and
-        then tries to turn off ssh_to_remote, it will
-        warn that the setting was not updated.
-        """
-        project.make_config_file(
-            "test_local_path",
-            True,
-            remote_path_ssh="random_path",
-            remote_host_id="fake_id",
-            remote_host_username="fake_user",
-        )
-
-        with pytest.warns() as w:
-            project.update_config("ssh_to_remote", False)
-
-        assert str(w[0].message) == "ssh_to_remote was not updated"
-        assert project.cfg["ssh_to_remote"] is True
-
     def test_no_ssh_options_set_on_make_config_file(self, project):
         """
         Check that program will assert if not all ssh options
@@ -107,12 +80,15 @@ class TestConfigs:
         """
         with pytest.raises(BaseException) as e:
             project.make_config_file(
-                "test_local_path", True, remote_path_local="local_path"
+                "test_local_path",
+                "test_remote_path",
+                "ssh",
+                use_behav=True,
             )
 
         assert (
-            str(e.value)
-            == "ssh to remote is on but remote_path_ssh has not been set."
+            str(e.value) == "remote_host_id and remote_host_username are "
+            "required if connection_method is ssh."
         )
 
     @pytest.mark.parametrize(
@@ -127,9 +103,9 @@ class TestConfigs:
         """
         project.make_config_file(
             "test_local_path",
-            False,
-            remote_path_local="local_path",
-            remote_path_ssh="ssh_path",
+            "test_remote_path",
+            "local",
+            use_behav=True,
         )
 
         if argument_type in ["remote_host_id", "both"]:
@@ -139,24 +115,23 @@ class TestConfigs:
             project.update_config("remote_host_username", "fake_username")
 
         with warnings.catch_warnings(record=True) as w:
-            project.update_config("ssh_to_remote", True)
+            project.update_config("connection_method", "ssh")
 
             if argument_type == "both":
                 assert len(w) == 0
-                assert project.cfg["ssh_to_remote"] is True
+                assert project.cfg["connection_method"] == "ssh"
             else:
-                assert str(w[0].message) == "ssh_to_remote was not updated"
+                assert str(w[0].message) == "connection_method was not updated"
 
-                assert project.cfg["ssh_to_remote"] is False
+                assert project.cfg["connection_method"] == "local"
 
     # Test Make Configs API
     # -------------------------------------------------------------
 
     def test_required_configs(self, project):
         """
-        Set the required arguments of the config (local_path, ssh_to_remote,
-        remote_path_ssh, remote_path_local (at least one of the last 2 are
-        required so both input) and check they are set correctly in both
+        Set the required arguments of the config (local_path, remote_path,
+        connection_method and check they are set correctly in both
         the project.cfg dict and config.yaml file.
         """
         required_options = test_utils.get_test_config_arguments_dict(
@@ -204,7 +179,7 @@ class TestConfigs:
     # Test Update Configs
     # -------------------------------------------------------------
 
-    def test_update_configs(self, project):
+    def test_update_config(self, project):
         """
         Set the configs as default and then sequentially update
         each entry with a different option. Check that
@@ -216,11 +191,15 @@ class TestConfigs:
 
         project.make_config_file(**default_configs)
 
-        not_set_configs = test_utils.get_not_set_config_args(project)
+        not_set_configs = test_utils.get_test_config_arguments_dict(
+            set_as_defaults=False
+        )
+
+        test_utils.move_some_keys_to_end_of_dict(not_set_configs)
+
         for key, value in not_set_configs.items():
             project.update_config(key, value)
             default_configs[key] = value
-
             test_utils.check_configs(project, default_configs)
 
     # Test Supplied Configs
@@ -256,7 +235,7 @@ class TestConfigs:
         bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
         missing_key_configs = test_utils.get_test_config_arguments_dict()
 
-        del missing_key_configs["ssh_to_remote"]
+        del missing_key_configs["use_histology"]
 
         self.dump_config(missing_key_configs, bad_configs_path)
 
@@ -352,10 +331,6 @@ class TestConfigs:
         canonical_config_dict = get_canonical_config_dict()
         new_configs = {key: new_configs[key] for key in canonical_config_dict}
 
-        new_configs["local_path"] = "new_fake_local"
-        new_configs["remote_path_local"] = "new_fake_remote_local"
-        new_configs["remote_path_ssh"] = "new_fake_remote_ssh"
-
         self.dump_config(new_configs, new_configs_path)
 
         setup_project.supply_config_file(new_configs_path, warn=False)
@@ -371,12 +346,12 @@ class TestConfigs:
     ):
         """
         Check the config file and project.cfg against provided kwargs,
-        delete the project and setup the project againt,
+        delete the project and setup the project again,
         checking everything is loaded correctly.
         """
         test_utils.check_configs(setup_project, kwargs[0])
 
-        del setup_project  # del project is almost certainly unecessary
+        del setup_project  # del project is almost certainly unnecessary
 
         setup_project = DataShuttle(TEST_PROJECT_NAME)
 
