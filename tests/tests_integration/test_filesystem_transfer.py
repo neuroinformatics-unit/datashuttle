@@ -210,14 +210,14 @@ class TestFileTransfer:
         transfer_function(subs, "all", "all")
 
         for base_local in [
-            project.get_local_path(),
-            project.get_remote_path(),
+            project.cfg["local_path"],
+            project.cfg["remote_path"],
         ]:
 
             for sub in ["sub-001", "sub-02", "sub-03"]:
 
                 sessions_in_path = test_utils.glob_basenames(
-                    os.path.join(base_local, "rawdata", sub, "ses*")
+                    (base_local / "rawdata" / sub / "ses*").as_posix()
                 )
 
                 datetime_regexp = r"date-\d\d\d\d\d\d\d\d_time-\d\d\d\d\d\d"

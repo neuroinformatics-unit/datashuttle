@@ -1,5 +1,4 @@
 import warnings
-from pathlib import Path
 
 import pytest
 import test_utils
@@ -209,7 +208,7 @@ class TestConfigs:
 
         # Test path supplied that doesn't exist
 
-        non_existant_path = Path(project.get_appdir_path() + "fake.file")
+        non_existant_path = project._appdir_path / "fake.file"
 
         with pytest.raises(BaseException) as e:
             project.supply_config_file(non_existant_path, warn=False)
@@ -218,7 +217,7 @@ class TestConfigs:
 
         # Test non-yaml file supplied
 
-        wrong_filetype_path = project.get_appdir_path() + "file.yuml"
+        wrong_filetype_path = project._appdir_path / "file.yuml"
 
         with open(wrong_filetype_path, "w"):
             pass
@@ -232,7 +231,7 @@ class TestConfigs:
         """
         More informative traceback is also printed
         """
-        bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
+        bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
         missing_key_configs = test_utils.get_test_config_arguments_dict()
 
         del missing_key_configs["use_histology"]
@@ -253,7 +252,7 @@ class TestConfigs:
         """
         More informative traceback is also printed
         """
-        bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
+        bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
 
         wrong_key_configs = test_utils.get_test_config_arguments_dict()
         wrong_key_configs["use_mismology"] = "wrong"
@@ -271,7 +270,7 @@ class TestConfigs:
 
     def test_supplied_config_file_bad_types(self, setup_project):
         """ """
-        bad_configs_path = setup_project.get_appdir_path() + "/bad_config.yaml"
+        bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
 
         for key in setup_project.cfg.keys():
             if key in setup_project.cfg.keys_str_on_file_but_path_in_class:
@@ -296,7 +295,7 @@ class TestConfigs:
     def test_supplied_config_file_changes_wrong_order(self, setup_project):
 
         bad_order_configs_path = (
-            setup_project.get_appdir_path() + "/new_configs.yaml"
+            setup_project._appdir_path / "new_configs.yaml"
         )
         good_order_configs = test_utils.get_test_config_arguments_dict()
 
@@ -323,9 +322,7 @@ class TestConfigs:
         """
         This will check everything
         """
-        new_configs_path = (
-            setup_project.get_appdir_path() + "/new_configs.yaml"
-        )
+        new_configs_path = setup_project._appdir_path / "new_configs.yaml"
         new_configs = test_utils.get_test_config_arguments_dict()
 
         canonical_config_dict = get_canonical_config_dict()
@@ -346,7 +343,7 @@ class TestConfigs:
     ):
         """
         Check the config file and project.cfg against provided kwargs,
-        delete the project and setup the project again,
+        delete the project and set up the project again,
         checking everything is loaded correctly.
         """
         test_utils.check_configs(setup_project, kwargs[0])
