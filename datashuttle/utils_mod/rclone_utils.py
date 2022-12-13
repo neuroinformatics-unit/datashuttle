@@ -91,7 +91,7 @@ def setup_remote_as_rclone_target(
     cfg: Configs,
     connection_method: str,
     rclone_config_name: str,
-    ssh_key_path: str,
+    ssh_key_path: Path,
 ):
     """
     RClone sets remote targets in a config file. When
@@ -116,6 +116,6 @@ def setup_remote_as_rclone_target(
             f"host {cfg['remote_host_id']} "
             f"user {cfg['remote_host_username']} "
             f"port 22 "
-            f"key_file {ssh_key_path}",
+            f"key_file {ssh_key_path.as_posix()}",
             silent=True,
         )

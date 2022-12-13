@@ -2,7 +2,6 @@ import copy
 import getpass
 import json
 import os
-import pathlib
 import traceback
 import warnings
 from pathlib import Path
@@ -59,7 +58,7 @@ class DataShuttle:
 
         self.project_name = project_name
 
-        self._config_path = self._join("appdir", "config.yaml")
+        self._config_path = self._make_path("appdir", "config.yaml")
 
         self.cfg: Any = None
         self._ssh_key_path: Any = None
@@ -85,10 +84,10 @@ class DataShuttle:
         in this project root, and all subdirs are created at the
         session level.
         """
-        self._ssh_key_path = self._join(
+        self._ssh_key_path = self._make_path(
             "appdir", self.project_name + "_ssh_key"
         )
-        self._hostkeys = self._join("appdir", "hostkeys")
+        self._hostkeys = self._make_path("appdir", "hostkeys")
 
         self._ses_dirs = {
             "ephys": Directory(
@@ -283,7 +282,9 @@ class DataShuttle:
         :param filepath: full filepath (inc filename) to write the
                          public key to.
         """
-        key = paramiko.RSAKey.from_private_key_file(self._ssh_key_path)
+        key = paramiko.RSAKey.from_private_key_file(
+            self._ssh_key_path.as_posix()
+        )
 
         with open(filepath, "w") as public:
             public.write(key.get_base64())
@@ -379,7 +380,7 @@ class DataShuttle:
 
         :return: loaded dictionary, or False if not loaded.
         """
-        exists = os.path.isfile(self._config_path)
+        exists = self._config_path.is_file()
 
         if not exists and prompt_on_fail:
             warnings.warn(
@@ -398,7 +399,7 @@ class DataShuttle:
             if prompt_on_fail:
                 utils.message_user(
                     f"Config file failed to load. Check file "
-                    f"formatting at {self._config_path}. If "
+                    f"formatting at {self._config_path.as_posix()}. If "
                     f"cannot load, re-initialise configs with "
                     f"make_config_file()"
                 )
@@ -423,32 +424,32 @@ class DataShuttle:
     # Public Getters
     # --------------------------------------------------------------------------------------------------------------------
 
-    def get_local_path(self) -> str:
+    def get_local_path(self):
         """
         Return the project local path.
         """
-        return os.fspath(self.cfg["local_path"])
+        utils.message_user(self.cfg["local_path"].as_posix())
 
-    def get_appdir_path(self) -> str:
+    def get_appdir_path(self):
         """
         Return the system appdirs path where
         project settings are stored.
         """
         appdir_path = utils.get_appdir_path(self.project_name)
-        return os.fspath(appdir_path)
+        utils.message_user(appdir_path.as_posix())
 
     def get_config_path(self):
         """
         Return the full path to the DataShuttle config file.
         """
-        return os.fspath(self._config_path)
+        utils.message_user(self._config_path.as_posix())
 
-    def get_remote_path(self) -> str:
+    def get_remote_path(self):
         """
         Return the project remote path.
         This is always formatted to UNIX style.
         """
-        return os.fspath(self.cfg["remote_path"])
+        utils.message_user(self.cfg["remote_path"].as_posix())
 
     def show_configs(self):
         """
@@ -458,11 +459,9 @@ class DataShuttle:
         self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         utils.message_user(json.dumps(copy_dict, indent=4))
 
-    def supply_config_file(
-        self, path_to_config: Union[Path, str], warn: bool = True
-    ):
+    def supply_config_file(self, input_path_to_config: str, warn: bool = True):
 
-        path_to_config = Path(path_to_config)
+        path_to_config = Path(input_path_to_config)
 
         utils.raise_error_not_exists_or_not_yaml(path_to_config)
 
@@ -495,7 +494,7 @@ class DataShuttle:
         if new_cfg:
             self.cfg = new_cfg
             self.set_attributes_after_config_load()
-            self.cfg.file_path = Path(self._config_path)
+            self.cfg.file_path = self._config_path
             self.cfg.dump_to_file()
             utils.message_user("Update successful.")
 
@@ -532,12 +531,13 @@ class DataShuttle:
         :param dry_run: do not actually move the files,
                         just report what would be moved.
         """
-        local_filepath = self._join(
+        local_filepath = self._make_path(
             "local", [self._top_level_dir_name, filepath]
-        )
-        remote_filepath = self._join(
+        ).as_posix()
+
+        remote_filepath = self._make_path(
             "remote", [self._top_level_dir_name, filepath]
-        )
+        ).as_posix()
 
         extra_arguments = "--create-empty-src-dirs"
         if dry_run:
@@ -640,7 +640,7 @@ class DataShuttle:
 
         for sub in sub_names:
 
-            sub_path = self._join("local", [top_level_dir, sub])
+            sub_path = self._make_path("local", [top_level_dir, sub])
 
             utils.make_dirs(sub_path)
 
@@ -648,7 +648,7 @@ class DataShuttle:
 
             for ses in ses_names:
 
-                ses_path = self._join("local", [top_level_dir, sub, ses])
+                ses_path = self._make_path("local", [top_level_dir, sub, ses])
 
                 utils.make_dirs(ses_path)
 
@@ -659,7 +659,7 @@ class DataShuttle:
     def make_experiment_type_folders(
         self,
         experiment_type: Union[list, str],
-        sub_or_ses_level_path: str,
+        sub_or_ses_level_path: Path,
         level: str,
     ):
         """ """
@@ -671,8 +671,8 @@ class DataShuttle:
 
             if experiment_type_dir.used and experiment_type_dir.level == level:
 
-                experiment_type_path = os.path.join(
-                    sub_or_ses_level_path, experiment_type_dir.name
+                experiment_type_path = (
+                    sub_or_ses_level_path / experiment_type_dir.name
                 )
 
                 utils.make_dirs(experiment_type_path)
@@ -823,7 +823,9 @@ class DataShuttle:
         :param local_or_remote: "local" or "remote"
         :param experiment_type: the data type (e.g. behav, cannot be "all")
         """
-        search_path = self._join(local_or_remote, [self._top_level_dir_name])
+        search_path = self._make_path(
+            local_or_remote, [self._top_level_dir_name]
+        )
 
         search_prefix = self.cfg.sub_prefix + "*"
         return self._search_for_directories(
@@ -834,10 +836,10 @@ class DataShuttle:
         self, local_or_remote: str, experiment_type: str, sub: str
     ) -> list:
         """
-        See _search_subs_from_project_dir(), same but for serching sessions
-        within a sub directory.
+        See _search_subs_from_project_dir(), same but for searching sessions
+        within a subdirectory.
         """
-        search_path = self._join(
+        search_path = self._make_path(
             local_or_remote, [self._top_level_dir_name, sub]
         )
         search_prefix = self.cfg.ses_prefix + "*"
@@ -866,7 +868,7 @@ class DataShuttle:
             base_dir = base_dir / ses
 
         directory_names = self._search_for_directories(
-            local_or_remote, base_dir.as_posix(), "*"
+            local_or_remote, base_dir, "*"
         )
 
         experiment_directories = (
@@ -876,14 +878,14 @@ class DataShuttle:
         return experiment_directories
 
     def _search_for_directories(
-        self, local_or_remote: str, search_path: str, search_prefix: str
+        self, local_or_remote: str, search_path: Path, search_prefix: str
     ) -> list:
         """
         Wrapper to determine the method used to search for search
         prefix directories in the search path.
 
         :param local_or_remote: "local" or "remote"
-        :param search_path: full filepath to search in0
+        :param search_path: full filepath to search in
         :param search_prefix: file / dirname to search (e.g. "sub-*")
         """
         if (
@@ -900,7 +902,7 @@ class DataShuttle:
             )
         else:
             all_dirnames = utils.search_filesystem_path_for_directories(
-                search_path + "/" + search_prefix
+                search_path / search_prefix
             )
         return all_dirnames
 
@@ -949,7 +951,9 @@ class DataShuttle:
             "You will not have to enter your password again."
         )
 
-        key = paramiko.RSAKey.from_private_key_file(self._ssh_key_path)
+        key = paramiko.RSAKey.from_private_key_file(
+            self._ssh_key_path.as_posix()
+        )
 
         utils.add_public_key_to_remote_authorized_keys(
             self.cfg, self._hostkeys, password, key
@@ -958,14 +962,14 @@ class DataShuttle:
         self._setup_remote_as_rclone_target("ssh")
         utils.message_user(
             f"SSH key pair setup successfully. "
-            f"Private key at: {self._ssh_key_path}"
+            f"Private key at: {self._ssh_key_path.as_posix()}"
         )
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _join(self, base: str, subdirs: Union[str, list]) -> str:
+    def _make_path(self, base: str, subdirs: Union[str, list]) -> Path:
         """
         Function for joining relative path to base dir.
         If path already starts with base dir, the base
@@ -990,9 +994,9 @@ class DataShuttle:
         else:
             joined_path = base_dir / subdirs_path
 
-        return joined_path.as_posix()
+        return joined_path
 
-    def _get_base_dir(self, base: str) -> pathlib.Path:
+    def _get_base_dir(self, base: str) -> Path:
         """
         Convenience function to return the full base path.
         """
