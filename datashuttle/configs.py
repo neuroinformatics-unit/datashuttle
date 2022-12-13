@@ -116,7 +116,7 @@ class Configs(UserDict):
                     utils.message_user(
                         f"SSH will be used to connect to project directory at: {self['remote_path']}"
                     )
-                elif self["connection_method"] == "local":
+                elif self["connection_method"] == "local_filesystem":
                     utils.message_user(
                         f"Local filesystem will be used to connect to project "
                         f"directory at: {self['remote_path'].as_posix()}"

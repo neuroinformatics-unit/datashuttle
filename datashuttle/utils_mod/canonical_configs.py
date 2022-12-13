@@ -96,7 +96,7 @@ def check_dict_values_and_inform_user(config_dict):
             f" order should be: {canonical_dict.keys()}"
         )
 
-    if config_dict["connection_method"] not in ["ssh", "local"]:
+    if config_dict["connection_method"] not in ["ssh", "local_filesystem"]:
         utils.raise_error("connection method must be ssh or local")
 
     if config_dict["remote_path"].as_posix()[0] == "~":
