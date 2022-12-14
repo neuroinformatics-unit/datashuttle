@@ -2,14 +2,14 @@ import glob
 import os
 import warnings
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, list[Path]]) -> None:
+def make_dirs(paths: Union[Path, List[Path]]) -> None:
     """
     For path or list of path, make them if
     they do not already exist.
@@ -36,7 +36,7 @@ def make_datashuttle_metadata_folder(full_path: Path) -> None:
 
 def search_filesystem_path_for_directories(
     search_path_with_prefix: Path,
-) -> list[str]:
+) -> List[str]:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.

@@ -1,7 +1,7 @@
 import fnmatch
 import stat
 from pathlib import Path
-from typing import Optional
+from typing import List, Optional
 
 import paramiko
 
@@ -106,7 +106,7 @@ def search_ssh_remote_for_directories(
     cfg: Configs,
     hostkeys: Path,
     ssh_key_path: Path,
-) -> list[str]:
+) -> List[str]:
     """
     Search for the search prefix in the search path over SSH.
     Returns the list of matching directories, files are filtered out.
@@ -125,7 +125,7 @@ def search_ssh_remote_for_directories(
 
 def get_list_of_directory_names_over_sftp(
     sftp, search_path: Path, search_prefix: str
-) -> list[str]:
+) -> List[str]:
 
     all_dirnames = []
     try:
