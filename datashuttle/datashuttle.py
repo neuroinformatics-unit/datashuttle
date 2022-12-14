@@ -12,7 +12,7 @@ import paramiko
 
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.configs import Configs
-from datashuttle.utils import rclone_utils, utils
+from datashuttle.utils import rclone, utils
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
@@ -72,7 +72,7 @@ class DataShuttle:
         if self.cfg:
             self._set_attributes_after_config_load()
 
-        rclone_utils.prompt_rclone_download_if_does_not_exist()
+        rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
         """
@@ -524,14 +524,14 @@ class DataShuttle:
         utils.message_user(processed_names)
 
     # --------------------------------------------------------------------------------------------------------------------
-    # Setup RClone
+    # Setup data
     # --------------------------------------------------------------------------------------------------------------------
 
     def _move_dir_or_file(
         self, filepath: str, upload_or_download: str, dry_run: bool
     ) -> None:
         """
-        Copy a directory or file with Rclone.
+        Copy a directory or file with data.
 
         :param filepath: filepath (not including local
                          or remote root) to copy
@@ -555,7 +555,7 @@ class DataShuttle:
 
         if upload_or_download == "upload":
 
-            rclone_utils.call_rclone(
+            rclone.call_rclone(
                 f"copy "
                 f'"{local_filepath}" '
                 f'"{self._get_rclone_config_name(self.cfg["connection_method"])}:'
@@ -564,7 +564,7 @@ class DataShuttle:
             )
 
         elif upload_or_download == "download":
-            rclone_utils.call_rclone(
+            rclone.call_rclone(
                 f"copy "
                 f'"{self._get_rclone_config_name(self.cfg["connection_method"])}:'
                 f'{remote_filepath}" '
@@ -574,7 +574,7 @@ class DataShuttle:
 
     def _setup_remote_as_rclone_target(self, connection_method: str) -> None:
         """
-        rclone shares config file so need to create
+        data shares config file so need to create
         new local and remote for all project
         :param local_or_ssh:
         """
@@ -582,7 +582,7 @@ class DataShuttle:
             connection_method,
         )
 
-        rclone_utils.setup_remote_as_rclone_target(
+        rclone.setup_remote_as_rclone_target(
             self.cfg, connection_method, rclone_config_name, self._ssh_key_path
         )
 
