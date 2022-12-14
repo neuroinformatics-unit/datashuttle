@@ -211,17 +211,18 @@ class DataShuttle:
     ) -> None:
         """
         Upload an entire directory (including all subdirectories
-        and files) from the local to the remote machine
+        and files) from the local to the remote machine.
 
         :param filepath: a string containing the filepath to
-                         move, relative to the project directory or
-                         full local path accepted.
+                         move, relative to the project directory "rawdata"
+                         or "derivatives" path (depending on which is currently
+                         set), or full local path accepted.
         :param dry_run: dry_run the transfer (see which files
                         will be transferred without actually transferring)
 
         """
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("local"),
+            self._get_base_dir("local") / self._top_level_dir_name,
             Path(filepath),
         )
 
@@ -237,13 +238,14 @@ class DataShuttle:
         and files) from the remote to the local machine.
 
         :param filepath: a string containing the filepath to
-                         move, relative to the project directory or
-                         full remote path accepted.
+                         move, relative to the project directory "rawdata"
+                         or "derivatives" path (depending on which is currently
+                         set), or full remote path accepted.
         :param dry_run: dry_run the transfer (see which files
                          will be transferred without actually transferring)
         """
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("remote"),
+            self._get_base_dir("remote") / self._top_level_dir_name,
             Path(filepath),
         )
         self._move_dir_or_file(
