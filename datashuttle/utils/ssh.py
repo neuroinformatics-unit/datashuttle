@@ -106,7 +106,11 @@ def add_public_key_to_remote_authorized_keys(
 
 
 def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
-    """"""
+    """
+    Similar to connecting with other SSH manager e.g. putty,
+    get the server key and present when connecting
+    for manual validation.
+    """
     with paramiko.Transport(remote_host_id) as transport:
         transport.connect()
         key = transport.get_remote_server_key()

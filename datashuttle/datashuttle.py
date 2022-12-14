@@ -413,7 +413,20 @@ class DataShuttle:
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
     ) -> None:
+        """
+        Supply own config by passing the path to .yaml config
+        file. The config file must contain exactly the
+        same keys as DataShuttle canonical config, with
+        values the same type. This config will be loaded
+        into datashuttle, and a copy saved in the DataShuttle
+        config folder for future use.
 
+        :param input_path_to_config: Path to the config to
+                                     use as DataShuttle config.
+        :param warn: prompt the user to confirm as supplying
+                     config will overwrite existing config.
+                     Turned off for testing.
+        """
         path_to_config = Path(input_path_to_config)
 
         new_cfg = (
@@ -510,7 +523,11 @@ class DataShuttle:
         sub_or_ses_level_path: Path,
         level: str,
     ) -> None:
-        """ """
+        """
+        Make data_type folder (e.g. behav) at the sub or ses
+        level. Checks directory_class.Directories attributes,
+        whether the data_type is used and at the current level.
+        """
         data_type_items = self._get_data_type_items(data_type)
 
         for data_type_key, data_type_dir in data_type_items:  # type: ignore
@@ -753,7 +770,10 @@ class DataShuttle:
 
     @requires_ssh_configs
     def _setup_ssh_key_and_rclone_config(self) -> None:
-
+        """
+        Setup ssh connection, key pair (see ssh.setup_ssh_key)
+        for details. Also, setup rclone config for ssh connection.
+        """
         ssh.setup_ssh_key(self._ssh_key_path, self._hostkeys, self.cfg)
 
         rclone.setup_remote_as_rclone_target(
@@ -874,7 +894,10 @@ class DataShuttle:
     def _get_rclone_config_name(
         self, connection_method: Optional[str] = None
     ) -> str:
-
+        """
+        Convenience function to get the rclone config
+        name (these configs are created by datashuttle)
+        """
         if connection_method is None:
             connection_method = self.cfg["connection_method"]
 

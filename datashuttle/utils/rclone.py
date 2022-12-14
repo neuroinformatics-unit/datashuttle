@@ -31,7 +31,10 @@ def transfer_data(
     upload_or_download: str,
     dry_run: bool,
 ) -> None:
-    """ """
+    """
+    Call Rclone copy command with appropriate
+    arguments to execute data transfer.
+    """
     extra_arguments = rclone_args("create_empty_src_dirs")
 
     if dry_run:
@@ -93,7 +96,9 @@ def setup_remote_as_rclone_target(
 
 
 def check_rclone_with_default_call() -> bool:
-    """"""
+    """
+    Check to see whether rclone is installed.
+    """
     try:
         return_code = call_rclone("-h", silent=True)
     except FileNotFoundError:

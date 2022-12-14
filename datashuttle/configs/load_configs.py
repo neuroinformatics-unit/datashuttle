@@ -5,6 +5,7 @@ from typing import Optional, Union, overload
 
 from datashuttle.utils import utils
 
+from . import canonical_configs
 from .configs import Configs
 
 ConfigValueTypes = Union[Path, str, bool, None]
@@ -15,7 +16,14 @@ ConfigValueTypes = Union[Path, str, bool, None]
 
 
 def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
-    """ """
+    """
+    Try to load an existing config file, that was previously
+    saved by Datashuttle. This should always work, unless
+    not already initialised (prompt) or these have been
+    changed manually. This function is very similar to
+    supplied_configs_confirm_overwrite_raise_on_fail()
+    but has different set of prompts and some different logic.
+    """
     exists = config_path.is_file()
 
     if not exists:
@@ -50,7 +58,9 @@ def supplied_configs_confirm_overwrite_raise_on_fail(
     path_to_config: Path,
     warn: bool,
 ) -> Union[Configs, None]:
-    """ """
+    """
+    Try and load a supplied config file.
+    """
     utils.raise_error_not_exists_or_not_yaml(path_to_config)
 
     if warn:
@@ -111,13 +121,12 @@ def handle_cli_or_supplied_config_bools(
 
 
 def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
-    """ """
-    if key in [
-        "use_ephys",
-        "use_behav",
-        "use_funcimg",
-        "use_histology",
-    ]:
+    """
+    In some instances (CLI call, supplied configs) the configs will
+    be in string format rather than bool or None. Parse these
+    here. This assumes bool are always passed as flags.
+    """
+    if key in [canonical_configs.get_flags()]:
 
         if value in ["None", "none", None]:
             value = False
