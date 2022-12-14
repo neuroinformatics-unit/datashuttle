@@ -24,13 +24,6 @@ def call_rclone(command: str, silent: bool = False) -> int:
     return return_code.returncode
 
 
-def check_rclone_exists() -> bool:
-    """
-    Check that the rclone executable exists in the root drive.
-    """
-    return check_rclone_with_default_call()
-
-
 def check_rclone_with_default_call() -> bool:
     """"""
     try:
