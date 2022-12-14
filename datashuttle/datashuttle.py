@@ -139,19 +139,19 @@ class DataShuttle:
                                 "all" is selected, directory will be created
                                 for all data type.
         """
-        sub_names = self._process_names(sub_names, "sub")
+        sub_names = self._format_names(sub_names, "sub")
 
         if ses_names is None:
             ses_names = [self.cfg.ses_prefix + "001"]
 
         else:
-            ses_names = self._process_names(ses_names, "ses")
+            ses_names = self._format_names(ses_names, "ses")
 
         self._make_directory_trees(
             sub_names,
             ses_names,
             experiment_type,
-            process_names=False,
+            format_names=False,
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -518,7 +518,7 @@ class DataShuttle:
         if prefix not in ["sub-", "ses-"]:
             utils.raise_error("prefix: must be 'sub-' or 'ses-'")
 
-        processed_names = utils.process_names(names, prefix)
+        processed_names = utils.format_names(names, prefix)
         utils.message_user(processed_names)
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -600,7 +600,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         experiment_type: str,
-        process_names: bool = True,
+        format_names: bool = True,
     ) -> None:
         """
         Entry method to make a full directory tree. It will
@@ -624,19 +624,15 @@ class DataShuttle:
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 
-        :param process_names:   option to process names or not (e.g.
+        :param format_names:   option to process names or not (e.g.
                                 if names were processed already).
 
         """
         sub_names = (
-            self._process_names(sub_names, "sub")
-            if process_names
-            else sub_names
+            self._format_names(sub_names, "sub") if format_names else sub_names
         )
         ses_names = (
-            self._process_names(ses_names, "ses")
-            if process_names
-            else ses_names
+            self._format_names(ses_names, "ses") if format_names else ses_names
         )
 
         if not self._check_experiment_type_is_valid(
@@ -716,7 +712,7 @@ class DataShuttle:
 
         # Find sub names to transfer
         if sub_names not in ["all", ["all"]]:
-            sub_names = self._process_names(sub_names, "sub")
+            sub_names = self._format_names(sub_names, "sub")
         else:
             sub_names = self._search_subs_from_project_dir(
                 local_or_remote,
@@ -735,7 +731,7 @@ class DataShuttle:
 
             # Find ses names  to transfer
             if ses_names not in ["all", ["all"]]:
-                ses_names = self._process_names(ses_names, "ses")
+                ses_names = self._format_names(ses_names, "ses")
             else:
                 ses_names = self._search_ses_from_sub_dir(
                     local_or_remote, self._top_level_dir_name, sub
@@ -1018,7 +1014,7 @@ class DataShuttle:
             base_dir = utils.get_appdir_path(self.project_name)
         return base_dir
 
-    def _process_names(
+    def _format_names(
         self, names: Union[list, str], sub_or_ses: str
     ) -> Union[str, list]:
         """
@@ -1027,7 +1023,7 @@ class DataShuttle:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        processed_names = utils.process_names(names, prefix)
+        processed_names = utils.format_names(names, prefix)
 
         return processed_names
 
