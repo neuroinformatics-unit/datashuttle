@@ -8,12 +8,17 @@ If adding a new config, first add the key to
 get_canonical_config_dict( and type to
 get_canonical_config_required_types()
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datashuttle.configs import Configs
 
 from pathlib import Path
 from typing import Union, get_args, overload
 
-from datashuttle.configs import Configs
-from datashuttle.utils_mod import canonical_configs, utils
+from datashuttle.utils_mod import utils
 
 ConfigValueTypes = Union[Path, str, bool, None]
 
@@ -145,7 +150,7 @@ def handle_cli_or_supplied_config_bools(
     Handle this case here to cast to correct type.
     """
     for key in dict_.keys():
-        dict_[key] = canonical_configs.handle_bool(key, dict_[key])
+        dict_[key] = handle_bool(key, dict_[key])
     return dict_
 
 
