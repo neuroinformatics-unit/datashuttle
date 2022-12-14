@@ -32,16 +32,32 @@ def get_canonical_config_dict() -> dict:
         "connection_method": None,
         "remote_host_id": None,
         "remote_host_username": None,
-        "use_ephys": None,
-        "use_behav": None,
-        "use_funcimg": None,
-        "use_histology": None,
     }
+
+    data_type_configs = get_data_types(as_dict=True)
+    config_dict.update(data_type_configs)
+
     return config_dict
 
 
-def get_data_types() -> List[str]:
-    return ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
+def get_data_types(as_dict: bool = False):
+    """
+    New data_types must be added here
+    """
+    keys = ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
+
+    if as_dict:
+        return dict(zip(keys, [None] * len(keys)))
+    else:
+        return keys
+
+
+def get_flags() -> List[str]:
+    """
+    Return all configs that are bool flags. This is used in
+    testing and type checking config inputs.
+    """
+    return get_data_types()
 
 
 def get_canonical_config_required_types() -> dict:

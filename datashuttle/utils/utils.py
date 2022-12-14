@@ -60,6 +60,7 @@ def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
 
 
 def raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
+    """"""
     if not path_to_config.exists():
         raise_error(f"No file found at: {path_to_config}")
 

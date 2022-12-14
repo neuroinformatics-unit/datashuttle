@@ -26,7 +26,11 @@ def requires_ssh_configs(func):
 
 
 def check_configs_set(func):
-    """ """
+    """
+    Check that configs have been loaded (i.e.
+    project.cfg is not None) before the
+    func is run.
+    """
 
     @wraps(func)
     def wrapper(*args, **kwargs):
