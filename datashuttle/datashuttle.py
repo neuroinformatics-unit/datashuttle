@@ -9,11 +9,10 @@ from pathlib import Path
 from typing import Any, Optional, Union, cast
 
 import paramiko
-from utils import directories, formatting
 
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.configs import Configs
-from datashuttle.utils import rclone, ssh, utils
+from datashuttle.utils import directories, formatting, rclone, ssh, utils
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
