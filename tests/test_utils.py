@@ -293,7 +293,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
     ses_to_upload=None,
 ):
     """
-    Iterate through the project (experiment_type > ses > sub) and
+    Iterate through the project (data_type > ses > sub) and
     check that the directories at each level match those that are
     expected (passed in experiment / sub / ses to upload). Dirs
     are searched with wildcard glob.
@@ -328,7 +328,7 @@ def check_experiment_type_sub_ses_uploaded_correctly(
                 )
                 assert ses_names == sorted(ses_to_upload)
 
-                # check experiment_type directories in session folder
+                # check data_type directories in session folder
                 if copy_experiment_type_to_transfer:
                     for ses in ses_names:
                         experiment_names = glob_basenames(
@@ -352,12 +352,12 @@ def check_and_strip_within_sub_experiment_dirs(
     return experiment_type_to_transfer
 
 
-def make_and_check_local_project(project, subs, sessions, experiment_type):
+def make_and_check_local_project(project, subs, sessions, data_type):
     """
-    Make a local project directory tree with the specified experiment_type,
+    Make a local project directory tree with the specified data_type,
     subs, sessions and check it is made successfully.
     """
-    project.make_sub_dir(subs, sessions, experiment_type)
+    project.make_sub_dir(subs, sessions, data_type)
 
     check_directory_tree_is_correct(
         project,

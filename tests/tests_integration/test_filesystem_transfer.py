@@ -77,8 +77,8 @@ class TestFileTransfer:
         self, project, upload_or_download, experiment_type_to_transfer
     ):
         """
-        For the combination of experiment_type directories, make a directory
-        tree with all experiment_type dirs then upload select ones,
+        For the combination of data_type directories, make a directory
+        tree with all data_type dirs then upload select ones,
         checking only the selected ones are uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()

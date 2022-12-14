@@ -145,7 +145,7 @@ class TestCommandLineInterface:
 
         stdout, __ = test_utils.run_cli(
             f" make{sep}sub{sep}dir "
-            f"--experiment_type all "
+            f"--data_type all "
             f"--sub_names one "
             f"--ses_names two "
         )
@@ -153,7 +153,7 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_ == []
-        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
 
@@ -221,14 +221,14 @@ class TestCommandLineInterface:
         """
         stdout, stderr = test_utils.run_cli(
             f"{command} "
-            f"--experiment_type all "
+            f"--data_type all "
             f"--sub_names one  two 3 sub-004 sub-w23@ "
             f"--ses_names 5 06 007"
         )
 
         __, kwargs_ = self.decode(stdout)
 
-        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == [
             "one",
             "two",
@@ -331,7 +331,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-hello_world"]
 
         test_utils.run_cli(
-            f"make_sub_dir --experiment_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_dir --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
             setup_project.project_name,
         )
 
@@ -363,7 +363,7 @@ class TestCommandLineInterface:
 
         test_utils.run_cli(
             f"{upload_or_download}_data "
-            f"--experiment_type all "
+            f"--data_type all "
             f"--sub_names all "
             f"--ses_names all",
             setup_project.project_name,
@@ -531,7 +531,7 @@ class TestCommandLineInterface:
 
     def check_upload_download_args(self, args_, kwargs_, dry_run_is):
 
-        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
         assert kwargs_["dry_run"] is dry_run_is

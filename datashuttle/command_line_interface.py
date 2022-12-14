@@ -297,8 +297,8 @@ make_sub_dir_parser.add_argument(
     metavar="",
 )
 make_sub_dir_parser.add_argument(
-    "--experiment-type",
-    "--experiment_type",
+    "--data-type",
+    "--data_type",
     type=str,
     nargs="+",
     required=True,
@@ -356,8 +356,8 @@ upload_data_parser.add_argument(
     metavar="",
 )
 upload_data_parser.add_argument(
-    "--experiment-type",
-    "--experiment_type",
+    "--data-type",
+    "--data_type",
     type=str,
     nargs="+",
     required=False,
@@ -418,8 +418,8 @@ download_data_parser.add_argument(
     metavar="",
 )
 download_data_parser.add_argument(
-    "--experiment-type",
-    "--experiment_type",
+    "--data-type",
+    "--data_type",
     type=str,
     nargs="+",
     required=False,

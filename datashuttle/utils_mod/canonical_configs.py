@@ -116,7 +116,7 @@ def check_dict_values_and_inform_user(config_dict: Configs) -> None:
 
     if not any([config_dict[key] for key in get_experiment_types()]):
         utils.raise_error(
-            f"At least one experiment_type must be True in "
+            f"At least one data_type must be True in "
             f"configs, from: {' '.join(get_experiment_types())}"
         )
 
