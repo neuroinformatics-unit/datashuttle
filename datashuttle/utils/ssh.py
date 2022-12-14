@@ -1,4 +1,5 @@
 import fnmatch
+import getpass
 import stat
 from pathlib import Path
 from typing import List, Optional
@@ -12,6 +13,42 @@ from . import utils
 # --------------------------------------------------------------------------------------------------------------------
 # SSH
 # --------------------------------------------------------------------------------------------------------------------
+
+
+def setup_ssh_key(
+    ssh_key_path: Path,
+    hostkeys: Path,
+    cfg: Configs,
+) -> None:
+    """
+    Set up an SSH private / public key pair with
+    remote server. First, a private key is generated
+    in the appdir. Next a connection requiring input
+    password made, and the public part of the key
+    added to ~/.ssh/authorized_keys.
+    """
+    """
+            Setup an SSH private / public key pair with
+            remote server. First, a private key is generated
+            in the appdir. Next a connection requiring input
+            password made, and the public part of the key
+            added to ~/.ssh/authorized_keys.
+            """
+    generate_and_write_ssh_key(ssh_key_path)
+
+    password = getpass.getpass(
+        "Please enter password to your remote host to add the public key. "
+        "You will not have to enter your password again."
+    )
+
+    key = paramiko.RSAKey.from_private_key_file(ssh_key_path.as_posix())
+
+    add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key)
+
+    utils.message_user(
+        f"SSH key pair setup successfully. "
+        f"Private key at: {ssh_key_path.as_posix()}"
+    )
 
 
 def connect_client(
