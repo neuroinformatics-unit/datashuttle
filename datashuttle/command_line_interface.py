@@ -169,8 +169,8 @@ make_config_file_parser.add_argument(
     help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
-    "--use-imaging",
-    "--use_imaging",
+    "--use-funcimg",
+    "--use_funcimg",
     required=False,
     action="store_true",
     help=help("flag_default_false"),

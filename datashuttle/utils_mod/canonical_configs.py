@@ -31,14 +31,14 @@ def get_canonical_config_dict() -> dict:
         "remote_host_username": None,
         "use_ephys": None,
         "use_behav": None,
-        "use_imaging": None,
+        "use_funcimg": None,
         "use_histology": None,
     }
     return config_dict
 
 
 def get_experiment_types() -> list[str]:
-    return ["use_ephys", "use_behav", "use_imaging", "use_histology"]
+    return ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
 
 
 def get_canonical_config_required_types() -> dict:
@@ -54,7 +54,7 @@ def get_canonical_config_required_types() -> dict:
         "remote_host_username": Union[str, None],
         "use_ephys": bool,
         "use_behav": bool,
-        "use_imaging": bool,
+        "use_funcimg": bool,
         "use_histology": bool,
     }
 
@@ -154,7 +154,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
     if key in [
         "use_ephys",
         "use_behav",
-        "use_imaging",
+        "use_funcimg",
         "use_histology",
     ]:
 

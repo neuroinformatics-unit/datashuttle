@@ -101,9 +101,9 @@ class DataShuttle:
                 used=self.cfg["use_behav"],
                 level="ses",
             ),
-            "imaging": Directory(
-                name="imaging",
-                used=self.cfg["use_imaging"],
+            "funcimg": Directory(
+                name="funcimg",
+                used=self.cfg["use_funcimg"],
                 level="ses",
             ),
             "histology": Directory(
@@ -306,7 +306,7 @@ class DataShuttle:
         remote_host_username: Optional[str] = None,
         use_ephys: bool = False,
         use_behav: bool = False,
-        use_imaging: bool = False,
+        use_funcimg: bool = False,
         use_histology: bool = False,
     ) -> None:
         """
@@ -334,7 +334,7 @@ class DataShuttle:
                                     remote host.
         :param use_ephys:           setting true will setup ephys directory
                                     tree on this machine
-        :param use_imaging:         create imaging directory tree
+        :param use_funcimg:         create funcimg directory tree
         :param use_histology:       create histology directory tree
                                     directory on this machine
         :param use_behav:           create behav directory
@@ -353,7 +353,7 @@ class DataShuttle:
                 "remote_host_username": remote_host_username,
                 "use_ephys": use_ephys,
                 "use_behav": use_behav,
-                "use_imaging": use_imaging,
+                "use_funcimg": use_funcimg,
                 "use_histology": use_histology,
             },
         )
