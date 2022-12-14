@@ -151,7 +151,6 @@ class DataShuttle:
             sub_names,
             ses_names,
             data_type,
-            format_names=False,
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -602,7 +601,6 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         data_type: str,
-        format_names: bool = True,
     ) -> None:
         """
         Entry method to make a full directory tree. It will
@@ -611,8 +609,8 @@ class DataShuttle:
         permits flexible creation of directories (e.g.
         to make subject only, do not pass session name.
 
-        subject and session names are first processed to
-        ensure correct format.
+        Ensure sub and ses names are already formatted
+        before use in this function.
 
         :param sub_names:       subject name / list of subject names
                                 to make within the directory
@@ -626,27 +624,17 @@ class DataShuttle:
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 
-        :param format_names:   option to process names or not (e.g.
-                                if names were processed already).
-
         """
-        sub_names = (
-            self._format_names(sub_names, "sub") if format_names else sub_names
-        )
-        ses_names = (
-            self._format_names(ses_names, "ses") if format_names else ses_names
-        )
-
         if not self._check_experiment_type_is_valid(
             data_type, prompt_on_fail=True
         ):
             return
 
-        top_level_dir = self._top_level_dir_name
-
         for sub in sub_names:
 
-            sub_path = self._make_path("local", [top_level_dir, sub])
+            sub_path = self._make_path(
+                "local", [self._top_level_dir_name, sub]
+            )
 
             utils.make_dirs(sub_path)
 
@@ -654,7 +642,9 @@ class DataShuttle:
 
             for ses in ses_names:
 
-                ses_path = self._make_path("local", [top_level_dir, sub, ses])
+                ses_path = self._make_path(
+                    "local", [self._top_level_dir_name, sub, ses]
+                )
 
                 utils.make_dirs(ses_path)
 
@@ -1079,15 +1069,3 @@ class DataShuttle:
             )
 
         return items
-
-    def _get_ses_dirs_items_from_list_of_keys(self, data_type: list) -> zip:
-        """
-        Key the items of specific keys from a dict in a form that matches
-        dict.items().
-        """
-        keys = []
-        values = []
-        for key in data_type:
-            keys.append(key)
-            values.append(self._data_type_dirs[key])
-        return zip(key, values)

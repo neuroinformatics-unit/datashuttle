@@ -523,12 +523,6 @@ class TestCommandLineInterface:
             assert kwargs_.pop(key) == required_options[key]
         assert kwargs_ == {}
 
-    def check_config_args(self, args_, options):
-
-        assert len(args_) == 2
-        assert args_[0] == options.pop("local_path")
-        assert args_[1] is options.pop("ssh_to_remote")
-
     def check_upload_download_args(self, args_, kwargs_, dry_run_is):
 
         assert kwargs_["data_type"] == ["all"]
