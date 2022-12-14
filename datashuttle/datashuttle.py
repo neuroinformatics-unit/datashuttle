@@ -752,7 +752,7 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     @requires_ssh_configs
-    def _setup_ssh_key_and_rclone_config(self):
+    def _setup_ssh_key_and_rclone_config(self) -> None:
 
         ssh.setup_ssh_key(self._ssh_key_path, self._hostkeys, self.cfg)
 
