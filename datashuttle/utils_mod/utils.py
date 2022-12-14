@@ -133,12 +133,12 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
         client = paramiko.SSHClient()
         client.get_host_keys().add(remote_host_id, key.get_name(), key)
         client.get_host_keys().save(hostkeys.as_posix())
-        sucess = True
+        success = True
     else:
         message_user("Host not accepted. No connection made.")
-        sucess = False
+        success = False
 
-    return sucess
+    return success
 
 
 def generate_and_write_ssh_key(ssh_key_path: Path):
