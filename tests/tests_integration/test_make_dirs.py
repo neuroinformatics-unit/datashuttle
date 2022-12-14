@@ -6,7 +6,7 @@ from os.path import join
 import pytest
 import test_utils
 
-from datashuttle.utils_mod import utils
+from datashuttle.utils import utils
 
 
 class TestMakeDirs:

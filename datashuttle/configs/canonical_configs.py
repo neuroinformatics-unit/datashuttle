@@ -13,12 +13,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from datashuttle.configs import Configs
+    from datashuttle.configs.configs import Configs
 
 from pathlib import Path
 from typing import Union, get_args, overload
 
-from datashuttle.utils_mod import utils
+from datashuttle.utils import utils
 
 ConfigValueTypes = Union[Path, str, bool, None]
 

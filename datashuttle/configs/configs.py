@@ -8,7 +8,8 @@ from typing import Any, Union
 
 import yaml
 
-from datashuttle.utils_mod import canonical_configs, utils
+from datashuttle.configs import canonical_configs
+from datashuttle.utils import utils
 
 
 class Configs(UserDict):

@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from datashuttle.utils_mod import utils
+from datashuttle.utils import utils
 
 
 class TestUnit:
