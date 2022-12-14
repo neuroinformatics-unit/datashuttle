@@ -1,6 +1,7 @@
 import traceback
+import warnings
 from pathlib import Path
-from typing import Union, overload
+from typing import Optional, Union, overload
 
 from datashuttle.utils import utils
 
@@ -13,7 +14,39 @@ ConfigValueTypes = Union[Path, str, bool, None]
 # -------------------------------------------------------------------
 
 
-def get_confirmation_raise_on_fail(
+def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
+    """ """
+    exists = config_path.is_file()
+
+    if not exists:
+        warnings.warn(
+            "Configuration file has not been initialized. "
+            "Use make_config_file() to setup before continuing."
+        )
+        return None
+
+    new_cfg: Optional[Configs]
+
+    new_cfg = Configs(config_path, None)
+
+    try:
+        new_cfg.load_from_file()
+
+    except Exception:
+
+        new_cfg = None
+
+        utils.message_user(
+            f"Config file failed to load. Check file "
+            f"formatting at {config_path.as_posix()}. If "
+            f"cannot load, re-initialise configs with "
+            f"make_config_file()"
+        )
+
+    return new_cfg
+
+
+def supplied_configs_confirm_overwrite_raise_on_fail(
     path_to_config: Path,
     warn: bool,
 ) -> Union[Configs, None]:

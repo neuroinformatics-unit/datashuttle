@@ -24,28 +24,35 @@ def call_rclone(command: str, silent: bool = False) -> int:
     return return_code.returncode
 
 
-def check_rclone_with_default_call() -> bool:
-    """"""
-    try:
-        return_code = call_rclone("-h", silent=True)
-    except FileNotFoundError:
-        return False
-    return True if return_code == 0 else False
+def transfer_data(
+    local_filepath: str,
+    remote_filepath: str,
+    rclone_config_name: str,
+    upload_or_download: str,
+    dry_run: bool,
+) -> None:
+    """ """
+    extra_arguments = "--create-empty-src-dirs"
+    if dry_run:
+        extra_arguments += " --dry-run"
 
+    if upload_or_download == "upload":
 
-def prompt_rclone_download_if_does_not_exist() -> None:
-    """
-    Check that rclone exists on the user appdir. If it does not
-    (e.g. first time using datashuttle) then download.
+        call_rclone(
+            f"copy "
+            f'"{local_filepath}" '
+            f'"{rclone_config_name}:'
+            f'{remote_filepath}" '
+            f"{extra_arguments}"
+        )
 
-    Also check that the rclone is not corrupted by
-    calling its --help. If it is corrupted, re-download.
-    """
-    if not check_rclone_with_default_call():
-        raise BaseException(
-            "RClone installation not found. Install by entering "
-            "the following into your terminal:\n"
-            " conda install -c conda-forge rclone"
+    elif upload_or_download == "download":
+        call_rclone(
+            f"copy "
+            f'"{rclone_config_name}:'
+            f'{remote_filepath}" '
+            f'"{local_filepath}"  '
+            f"{extra_arguments}"
         )
 
 
@@ -81,4 +88,29 @@ def setup_remote_as_rclone_target(
             f"port 22 "
             f"key_file {ssh_key_path.as_posix()}",
             silent=True,
+        )
+
+
+def check_rclone_with_default_call() -> bool:
+    """"""
+    try:
+        return_code = call_rclone("-h", silent=True)
+    except FileNotFoundError:
+        return False
+    return True if return_code == 0 else False
+
+
+def prompt_rclone_download_if_does_not_exist() -> None:
+    """
+    Check that rclone exists on the user appdir. If it does not
+    (e.g. first time using datashuttle) then download.
+
+    Also check that the rclone is not corrupted by
+    calling its --help. If it is corrupted, re-download.
+    """
+    if not check_rclone_with_default_call():
+        raise BaseException(
+            "RClone installation not found. Install by entering "
+            "the following into your terminal:\n"
+            " conda install -c conda-forge rclone"
         )
