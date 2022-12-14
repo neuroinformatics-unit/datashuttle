@@ -512,7 +512,7 @@ class DataShuttle:
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
         """
         Pass list of names to check how these will be auto-formatted.
-        Useful for checking tags e.g. @TO, @DATE, @DATETIME, @DATE
+        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@
 
         :param A string or list of names to check how they will be processed
         :param prefix, "sub-" or "ses-"
@@ -622,7 +622,7 @@ class DataShuttle:
                                 name). If no session is provided, defaults
                                 to "ses-001".
 
-                                Note if ses name contains @DATE or @DATETIME,
+                                Note if ses name contains @DATE@ or @DATETIME@,
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 

@@ -450,7 +450,7 @@ class TestCommandLineInterface:
         properly processed names to stdout
         """
         stdout, __ = test_utils.run_cli(
-            f"check{sep}name{sep}processing sub-001 1@TO02 --prefix sub-",
+            f"check{sep}name{sep}processing sub-001 1@TO@02 --prefix sub-",
             clean_project_name,
         )
 

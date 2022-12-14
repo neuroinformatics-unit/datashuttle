@@ -190,15 +190,15 @@ class TestFileTransfer:
         self, project, upload_or_download
     ):
         """
-        Test the @TO keyword is accepted properly when making a session and
-        transferring it. First pass @TO-formatted sub and sessions to
+        Test the @TO@ keyword is accepted properly when making a session and
+        transferring it. First pass @TO@-formatted sub and sessions to
         make_sub_dir. Then transfer the files (upload or download).
 
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
         """
-        subs = ["001", "02@TO03"]
-        sessions = ["ses-01@TO003_@DATETIME"]
+        subs = ["001", "02@TO@03"]
+        sessions = ["ses-01@TO@003_@DATETIME@"]
 
         project.make_sub_dir(subs, sessions, "all")
 

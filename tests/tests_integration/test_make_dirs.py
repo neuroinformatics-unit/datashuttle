@@ -252,13 +252,13 @@ class TestMakeDirs:
 
     def test_date_flags_in_session(self, project):
         """
-        Check that @DATE is converted into current date
+        Check that @DATE@ is converted into current date
         in generated directory names
         """
         date, time_ = self.get_formatted_date_and_time()
 
         project.make_sub_dir(
-            "ephys", ["sub-001", "sub-002"], ["ses-001-@DATE", "002-@DATE"]
+            "ephys", ["sub-001", "sub-002"], ["ses-001-@DATE@", "002-@DATE@"]
         )
 
         ses_names = test_utils.glob_basenames(
@@ -267,11 +267,11 @@ class TestMakeDirs:
         )
 
         assert all([date in name for name in ses_names])
-        assert all(["@DATE" not in name for name in ses_names])
+        assert all(["@DATE@" not in name for name in ses_names])
 
     def test_datetime_flag_in_session(self, project):
         """
-        Check that @DATETIME is converted to datetime
+        Check that @DATETIME@ is converted to datetime
         in generated directory names
         """
         date, time_ = self.get_formatted_date_and_time()
@@ -279,7 +279,7 @@ class TestMakeDirs:
         project.make_sub_dir(
             "ephys",
             ["sub-001", "sub-002"],
-            ["ses-001-@DATETIME", "002-@DATETIME"],
+            ["ses-001-@DATETIME@", "002-@DATETIME@"],
         )
 
         ses_names = test_utils.glob_basenames(
@@ -292,7 +292,7 @@ class TestMakeDirs:
         datetime_regexp = f"{date}-{regexp_time}"
 
         assert all([re.search(datetime_regexp, name) for name in ses_names])
-        assert all(["@DATETIME" not in name for name in ses_names])
+        assert all(["@DATETIME@" not in name for name in ses_names])
 
     # ----------------------------------------------------------------------------------------------------------
     # Test Helpers

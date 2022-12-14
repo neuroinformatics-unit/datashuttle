@@ -279,47 +279,47 @@ def format_names(
     return prefixed_names
 
 
-# Handle @TO flags  -------------------------------------------------------
+# Handle @TO@ flags  -------------------------------------------------------
 
 
 def update_names_with_range_to_flag(
     names: list[str], prefix: str
 ) -> list[str]:
     """
-    Given a list of names, check if they contain the @TO keyword.
-    If so, expand to a range of names. Names including the @TO
+    Given a list of names, check if they contain the @TO@ keyword.
+    If so, expand to a range of names. Names including the @TO@
     keyword must be in the form prefix-num1@num2. The maximum
     number of leading zeros are used to pad the output
     e.g.
     sub-01@003 becomes ["sub-001", "sub-002", "sub-003"]
 
     Input can also be a mixed list e.g.
-    names = ["sub-01", "sub-02@TO04", "sub-05@TO10"]
+    names = ["sub-01", "sub-02@TO@04", "sub-05@TO@10"]
     will output a list of ["sub-01", ..., "sub-10"]
     """
     new_names = []
 
     for i, name in enumerate(names):
 
-        if "@TO" in name:
+        if "@TO@" in name:
 
             check_name_is_formatted_correctly(name, prefix)
 
-            prefix_tag = re.search(f"{prefix}[0-9]+@TO[0-9]+", name)[0]  # type: ignore
+            prefix_tag = re.search(f"{prefix}[0-9]+@TO@[0-9]+", name)[0]  # type: ignore
             tag_number = prefix_tag.split(f"{prefix}")[1]
 
             name_start_str, name_end_str = name.split(tag_number)
 
-            if "@TO" not in tag_number:
+            if "@TO@" not in tag_number:
                 raise_error(
-                    f"@TO flag must be between two numbers in the {prefix} tag."
+                    f"@TO@ flag must be between two numbers in the {prefix} tag."
                 )
 
-            left_number, right_number = tag_number.split("@TO")
+            left_number, right_number = tag_number.split("@TO@")
 
             if int(left_number) >= int(right_number):
                 raise_error(
-                    "Number of the subject to the  left of @TO flag "
+                    "Number of the subject to the  left of @TO@ flag "
                     "must be small than number to the right."
                 )
 
@@ -338,16 +338,16 @@ def update_names_with_range_to_flag(
 
 def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     """
-    Check the input string is formatted with the @TO key
+    Check the input string is formatted with the @TO@ key
     as expected.
     """
     first_key_value_pair = name.split("_")[0]
-    expected_format = re.compile(f"{prefix}[0-9]+@TO[0-9]+")
+    expected_format = re.compile(f"{prefix}[0-9]+@TO@[0-9]+")
 
     if not re.fullmatch(expected_format, first_key_value_pair):
         raise_error(
-            f"The name: {name} is not in required format for @TO keyword. "
-            f"The start must be  be {prefix}<NUMBER>@TO<NUMBER>)"
+            f"The name: {name} is not in required format for @TO@ keyword. "
+            f"The start must be  be {prefix}<NUMBER>@TO@<NUMBER>)"
         )
 
 
@@ -355,7 +355,7 @@ def make_list_of_zero_padded_names_across_range(
     left_number: str, right_number: str, name_start_str: str, name_end_str: str
 ) -> list[str]:
     """
-    Numbers formatted with the @TO keyword need to have
+    Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
     the maximum number of leading zeros and apply or
     all numbers in the range.
@@ -383,12 +383,12 @@ def num_leading_zeros(string: str) -> int:
     return len(string) - len(str(int(string)))
 
 
-# Handle @DATE, @DATETIME, @TIME flags -------------------------------------------------
+# Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------------------
 
 
 def update_names_with_datetime(names: list[str]) -> None:
     """
-    Replace @DATE and @DATETIME flag with date and datetime respectively.
+    Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
 
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
@@ -400,25 +400,25 @@ def update_names_with_datetime(names: list[str]) -> None:
 
     for i, name in enumerate(names):
 
-        if "@DATETIME" in name:  # must come first
-            name = add_underscore_before_after_if_not_there(name, "@DATETIME")
+        if "@DATETIME@" in name:  # must come first
+            name = add_underscore_before_after_if_not_there(name, "@DATETIME@")
             datetime_ = f"{format_date}_{format_time}"
-            names[i] = name.replace("@DATETIME", datetime_)
+            names[i] = name.replace("@DATETIME@", datetime_)
 
-        elif "@DATE" in name:
-            name = add_underscore_before_after_if_not_there(name, "@DATE")
-            names[i] = name.replace("@DATE", format_date)
+        elif "@DATE@" in name:
+            name = add_underscore_before_after_if_not_there(name, "@DATE@")
+            names[i] = name.replace("@DATE@", format_date)
 
-        elif "@TIME" in name:
-            name = add_underscore_before_after_if_not_there(name, "@TIME")
-            names[i] = name.replace("@TIME", format_time)
+        elif "@TIME@" in name:
+            name = add_underscore_before_after_if_not_there(name, "@TIME@")
+            names[i] = name.replace("@TIME@", format_time)
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     """
-    If names are passed with @DATE, @TIME, or @DATETIME
+    If names are passed with @DATE@, @TIME@, or @DATETIME@
     but not surrounded by underscores, check and insert
-    if required. e.g. sub-001@DATE becomes sub-001_@DATE
+    if required. e.g. sub-001@DATE@ becomes sub-001_@DATE@
     or sub-001@DATEid-101 becomes sub-001_@DATE_id-101
     """
     key_len = len(key)
