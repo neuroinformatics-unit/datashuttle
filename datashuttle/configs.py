@@ -2,8 +2,9 @@ import copy
 import traceback
 import warnings
 from collections import UserDict
+from collections.abc import ItemsView, KeysView, ValuesView
 from pathlib import Path
-from typing import Any
+from typing import Any, Union
 
 import yaml
 
@@ -26,7 +27,7 @@ class Configs(UserDict):
     check_dict_values_and_inform_user()
     """
 
-    def __init__(self, file_path, input_dict):
+    def __init__(self, file_path: Path, input_dict: Union[dict, None]) -> None:
         super(Configs, self).__init__(input_dict)
 
         self.file_path = file_path
@@ -37,31 +38,31 @@ class Configs(UserDict):
         self.sub_prefix = "sub-"
         self.ses_prefix = "ses-"
 
-    def setup_after_load(self):
+    def setup_after_load(self) -> None:
         self.convert_str_and_pathlib_paths(self, "str_to_path")
         self.check_dict_values_and_inform_user()
 
-    def check_dict_values_and_inform_user(self):
+    def check_dict_values_and_inform_user(self) -> None:
         """
         Check the values of the current dictionary are set
         correctly and will not cause downstream errors.
         """
         canonical_configs.check_dict_values_and_inform_user(self)
 
-    def keys(self):
+    def keys(self) -> KeysView:
         return self.data.keys()
 
-    def items(self):
+    def items(self) -> ItemsView:
         return self.data.items()
 
-    def values(self):
+    def values(self) -> ValuesView:
         return self.data.values()
 
     # --------------------------------------------------------------------
     # Save / Load from file
     # --------------------------------------------------------------------
 
-    def dump_to_file(self):
+    def dump_to_file(self) -> None:
         """"""
         cfg_to_save = copy.deepcopy(self.data)
         self.convert_str_and_pathlib_paths(cfg_to_save, "path_to_str")
@@ -69,7 +70,7 @@ class Configs(UserDict):
         with open(self.file_path, "w") as config_file:
             yaml.dump(cfg_to_save, config_file, sort_keys=False)
 
-    def load_from_file(self):
+    def load_from_file(self) -> None:
         """"""
         with open(self.file_path, "r") as config_file:
             config_dict = yaml.full_load(config_file)
@@ -82,7 +83,7 @@ class Configs(UserDict):
     # Update Configs
     # --------------------------------------------------------------------
 
-    def update_an_entry(self, option_key: str, new_info: Any):
+    def update_an_entry(self, option_key: str, new_info: Any) -> None:
         """
         Convenience function to update individual entry of configuration
         file. The config file, and currently loaded self.cfg will be
@@ -138,7 +139,9 @@ class Configs(UserDict):
     # Utils
     # --------------------------------------------------------------------
 
-    def convert_str_and_pathlib_paths(self, config_dict: dict, direction: str):
+    def convert_str_and_pathlib_paths(
+        self, config_dict: Union["Configs", dict], direction: str
+    ) -> None:
         """
         Config paths are stored as str in the .yaml but used as Path
         in the module, so make the conversion here.
