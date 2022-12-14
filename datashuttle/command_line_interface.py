@@ -683,11 +683,10 @@ def main() -> None:
     """
     args = parser.parse_args()
 
-    warn = (
-        "ignore"
-        if str(args.func.__name__) == "make_config_file"
-        else "default"
-    )
+    if "func" in args and str(args.func.__name__) == "make_config_file":
+        warn = "ignore"
+    else:
+        warn = "default"
 
     warnings.filterwarnings(warn)  # type: ignore
     project = DataShuttle(args.project_name)

@@ -170,7 +170,7 @@ class TestCommandLineInterface:
             f"--sub{sep}names one "
             f"--ses{sep}names two"
         )
-        breakpoint()
+
         args_, kwargs_ = self.decode(stdout)
         self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
@@ -181,7 +181,7 @@ class TestCommandLineInterface:
             f"--ses{sep}names two "
             f"--dry{sep}run"
         )
-        breakpoint()
+
         args_, kwargs_ = self.decode(stdout)
 
         self.check_upload_download_args(args_, kwargs_, dry_run_is=True)
