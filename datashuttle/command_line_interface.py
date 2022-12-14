@@ -1,4 +1,5 @@
 import argparse
+import warnings
 from typing import Any, Callable
 
 import simplejson
@@ -674,10 +675,23 @@ def main() -> None:
     and pass the project and arguments to default function.
     Note these functions must all accept two arguments. In the
     case where only project is required, *args is used
-    (e.g. get_remote_path)
+    (e.g. get_remote_path).
+
+    Supress the warning that a config file must
+    be made on project initialisation when
+    a config is being made.
     """
     args = parser.parse_args()
+
+    warn = (
+        "ignore"
+        if str(args.func.__name__) == "make_config_file"
+        else "default"
+    )
+
+    warnings.filterwarnings(warn)  # type: ignore
     project = DataShuttle(args.project_name)
+    warnings.filterwarnings("default")
 
     if len(vars(args)) > 1:
         args.func(project, args)
