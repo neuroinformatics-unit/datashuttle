@@ -202,12 +202,12 @@ def check_directory_tree_is_correct(
     on the structure specified on project itself.
 
     Cycle through all experiment type (defined in
-    project._ses_dirs()), sub, sessions and check that
+    project._data_type_dirs()), sub, sessions and check that
     the expected file exists. For  subdirs, recursively
     check all exist.
 
     Directories in which directory_used[key] (where key
-    is the canonical dict key in project._ses_dirs())
+    is the canonical dict key in project._data_type_dirs())
     is not used are expected  not to be made, and this
      is checked.
 
@@ -225,7 +225,7 @@ def check_directory_tree_is_correct(
             path_to_ses_folder = join(base_dir, sub, ses)
             check_and_cd_dir(path_to_ses_folder)
 
-            for key, directory in project._ses_dirs.items():
+            for key, directory in project._data_type_dirs.items():
 
                 assert key in directory_used.keys(), (
                     "Key not found in directory_used. "

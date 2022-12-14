@@ -63,7 +63,7 @@ class DataShuttle:
 
         self.cfg: Any = None
         self._ssh_key_path: Any = None
-        self._ses_dirs: Any = None
+        self._data_type_dirs: Any = None
         self._top_level_dir_name = "rawdata"
 
         self._attempt_load_configs(prompt_on_fail=True)
@@ -78,7 +78,7 @@ class DataShuttle:
         Once config file is loaded, update all private attributes
         according to config contents.
 
-        The _ses_dirs contains the entire directory tree for each
+        The _data_type_dirs contains the entire directory tree for each
         data type. The structure is that the top-level directory
         (e.g. ephys, behav, microscopy) are found in
         the project root. Then sub- and ses- directory are created
@@ -90,7 +90,7 @@ class DataShuttle:
         )
         self._hostkeys = self._make_path("appdir", "hostkeys")
 
-        self._ses_dirs = {
+        self._data_type_dirs = {
             "ephys": Directory(
                 name="ephys",
                 used=self.cfg["use_ephys"],
@@ -923,13 +923,15 @@ class DataShuttle:
         for dir_name in directory_names:
             experiment_type_key = [
                 key
-                for key, value in self._ses_dirs.items()
+                for key, value in self._data_type_dirs.items()
                 if value.name == dir_name
             ]
 
             if experiment_type_key:
                 ses_dir_keys.append(experiment_type_key[0])
-                ses_dir_values.append(self._ses_dirs[experiment_type_key[0]])
+                ses_dir_values.append(
+                    self._data_type_dirs[experiment_type_key[0]]
+                )
 
         return zip(ses_dir_keys, ses_dir_values)
 
@@ -1041,16 +1043,18 @@ class DataShuttle:
         be a key on self.ses_dirs or "all")
         """
         if type(data_type) == list:
-            valid_keys = list(self._ses_dirs.keys()) + ["all"]
+            valid_keys = list(self._data_type_dirs.keys()) + ["all"]
             is_valid = all([type in valid_keys for type in data_type])
         else:
-            is_valid = data_type in self._ses_dirs.keys() or data_type == "all"
+            is_valid = (
+                data_type in self._data_type_dirs.keys() or data_type == "all"
+            )
 
         if prompt_on_fail and not is_valid:
             utils.message_user(
                 f"data_type: '{data_type}' "
                 f"is not valid. Must be one of"
-                f" {list(self._ses_dirs.keys())}. or 'all'"
+                f" {list(self._data_type_dirs.keys())}. or 'all'"
                 f" No directories were made."
             )
 
@@ -1061,17 +1065,17 @@ class DataShuttle:
     ) -> Union[ItemsView, zip]:
         """
         Get the .items() structure of the data type, either all of
-        them (stored in self._ses_dirs or a single item.
+        them (stored in self._data_type_dirs or a single item.
         """
         if type(data_type) == str:
             data_type = [data_type]
 
         if "all" in data_type:
-            items = self._ses_dirs.items()
+            items = self._data_type_dirs.items()
         else:
             items = zip(
                 data_type,
-                [self._ses_dirs[key] for key in data_type],
+                [self._data_type_dirs[key] for key in data_type],
             )
 
         return items
@@ -1085,5 +1089,5 @@ class DataShuttle:
         values = []
         for key in data_type:
             keys.append(key)
-            values.append(self._ses_dirs[key])
+            values.append(self._data_type_dirs[key])
         return zip(key, values)
