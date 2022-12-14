@@ -6,7 +6,7 @@ import traceback
 import warnings
 from collections.abc import ItemsView
 from pathlib import Path
-from typing import Any, Optional, Union, cast
+from typing import Any, List, Optional, Union, cast
 
 import paramiko
 
@@ -802,7 +802,7 @@ class DataShuttle:
 
     def _search_subs_from_project_dir(
         self, local_or_remote: str, data_type: str
-    ) -> list[str]:
+    ) -> List[str]:
         """
         Search a datatype directory for all present sub-prefixed directories.
         If remote, ssh or filesystem will be used depending on config.
@@ -821,7 +821,7 @@ class DataShuttle:
 
     def _search_ses_from_sub_dir(
         self, local_or_remote: str, data_type: str, sub: str
-    ) -> list[str]:
+    ) -> List[str]:
         """
         See _search_subs_from_project_dir(), same but for searching sessions
         within a subdirectory.
@@ -866,7 +866,7 @@ class DataShuttle:
 
     def _search_for_directories(
         self, local_or_remote: str, search_path: Path, search_prefix: str
-    ) -> list[str]:
+    ) -> List[str]:
         """
         Wrapper to determine the method used to search for search
         prefix directories in the search path.
