@@ -59,7 +59,7 @@ class TestFileTransfer:
         )
 
     @pytest.mark.parametrize(
-        "experiment_type_to_transfer",
+        "data_type_to_transfer",
         [
             ["behav"],
             ["ephys"],
@@ -73,8 +73,8 @@ class TestFileTransfer:
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload"])  # "download"
-    def test_transfer_empty_folder_specific_experimental_data(
-        self, project, upload_or_download, experiment_type_to_transfer
+    def test_transfer_empty_folder_specific_dataal_data(
+        self, project, upload_or_download, data_type_to_transfer
     ):
         """
         For the combination of data_type directories, make a directory
@@ -89,11 +89,11 @@ class TestFileTransfer:
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
-        transfer_function(subs, sessions, experiment_type_to_transfer)
+        transfer_function(subs, sessions, data_type_to_transfer)
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             os.path.join(base_path_to_check, project._top_level_dir_name),
-            experiment_type_to_transfer,
+            data_type_to_transfer,
             subs,
             sessions,
         )
@@ -102,7 +102,7 @@ class TestFileTransfer:
         "sub_idx_to_upload", [[0], [1], [2], [0, 1], [1, 2], [0, 2], [0, 1, 2]]
     )
     @pytest.mark.parametrize(
-        "experiment_type_to_transfer",
+        "data_type_to_transfer",
         [
             ["histology"],
             ["behav", "ephys"],
@@ -115,7 +115,7 @@ class TestFileTransfer:
         self,
         project,
         upload_or_download,
-        experiment_type_to_transfer,
+        data_type_to_transfer,
         sub_idx_to_upload,
     ):
         """
@@ -132,13 +132,11 @@ class TestFileTransfer:
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
-        transfer_function(
-            subs_to_upload, sessions, experiment_type_to_transfer
-        )
+        transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             os.path.join(base_path_to_check, project._top_level_dir_name),
-            experiment_type_to_transfer,
+            data_type_to_transfer,
             subs_to_upload,
         )
 
@@ -147,7 +145,7 @@ class TestFileTransfer:
     )
     @pytest.mark.parametrize("sub_idx_to_upload", [[0], [1, 2], [0, 1, 2]])
     @pytest.mark.parametrize(
-        "experiment_type_to_transfer",
+        "data_type_to_transfer",
         [["ephys"], ["funcimg", "histology", "behav"]],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -155,7 +153,7 @@ class TestFileTransfer:
         self,
         project,
         upload_or_download,
-        experiment_type_to_transfer,
+        data_type_to_transfer,
         sub_idx_to_upload,
         ses_idx_to_upload,
     ):
@@ -174,13 +172,11 @@ class TestFileTransfer:
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         ses_to_upload = [sessions[i] for i in ses_idx_to_upload]
 
-        transfer_function(
-            subs_to_upload, ses_to_upload, experiment_type_to_transfer
-        )
+        transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             os.path.join(base_path_to_check, project._top_level_dir_name),
-            experiment_type_to_transfer,
+            data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
         )

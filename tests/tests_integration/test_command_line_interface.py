@@ -164,24 +164,24 @@ class TestCommandLineInterface:
         As upload_data and download_data take identical args,
         test both together.
         """
-        stdout, __ = test_utils.run_cli(
+        stdout, stderr = test_utils.run_cli(
             f" {upload_or_download}{sep}data "
-            f"--experiment{sep}type all "
+            f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two"
         )
-
+        breakpoint()
         args_, kwargs_ = self.decode(stdout)
         self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_data "
-            f"--experiment{sep}type all "
+            f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two "
             f"--dry{sep}run"
         )
-
+        breakpoint()
         args_, kwargs_ = self.decode(stdout)
 
         self.check_upload_download_args(args_, kwargs_, dry_run_is=True)
@@ -369,11 +369,11 @@ class TestCommandLineInterface:
             setup_project.project_name,
         )
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
                 base_path_to_check, setup_project._top_level_dir_name
             ),
-            experiment_type_to_transfer=[
+            data_type_to_transfer=[
                 "behav",
                 "ephys",
                 "funcimg",

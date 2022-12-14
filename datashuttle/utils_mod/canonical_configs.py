@@ -42,7 +42,7 @@ def get_canonical_config_dict() -> dict:
     return config_dict
 
 
-def get_experiment_types() -> list[str]:
+def get_data_types() -> list[str]:
     return ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
 
 
@@ -114,10 +114,10 @@ def check_dict_values_and_inform_user(config_dict: Configs) -> None:
                 "with no ~ syntax"
             )
 
-    if not any([config_dict[key] for key in get_experiment_types()]):
+    if not any([config_dict[key] for key in get_data_types()]):
         utils.raise_error(
             f"At least one data_type must be True in "
-            f"configs, from: {' '.join(get_experiment_types())}"
+            f"configs, from: {' '.join(get_data_types())}"
         )
 
     # Check SSH settings
