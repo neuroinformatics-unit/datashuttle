@@ -625,9 +625,7 @@ class DataShuttle:
                                 datetime at the time of directory creation.
 
         """
-        if not self._check_experiment_type_is_valid(
-            data_type, prompt_on_fail=True
-        ):
+        if not self._check_data_type_is_valid(data_type, prompt_on_fail=True):
             return
 
         for sub in sub_names:
@@ -638,7 +636,7 @@ class DataShuttle:
 
             utils.make_dirs(sub_path)
 
-            self._make_experiment_type_folders(data_type, sub_path, "sub")
+            self._make_data_type_folders(data_type, sub_path, "sub")
 
             for ses in ses_names:
 
@@ -648,28 +646,26 @@ class DataShuttle:
 
                 utils.make_dirs(ses_path)
 
-                self._make_experiment_type_folders(data_type, ses_path, "ses")
+                self._make_data_type_folders(data_type, ses_path, "ses")
 
-    def _make_experiment_type_folders(
+    def _make_data_type_folders(
         self,
         data_type: Union[list, str],
         sub_or_ses_level_path: Path,
         level: str,
     ) -> None:
         """ """
-        experiment_type_items = self._get_experiment_type_items(data_type)
+        data_type_items = self._get_data_type_items(data_type)
 
-        for experiment_type_key, experiment_type_dir in experiment_type_items:  # type: ignore
+        for data_type_key, data_type_dir in data_type_items:  # type: ignore
 
-            if experiment_type_dir.used and experiment_type_dir.level == level:
+            if data_type_dir.used and data_type_dir.level == level:
 
-                experiment_type_path = (
-                    sub_or_ses_level_path / experiment_type_dir.name
-                )
+                data_type_path = sub_or_ses_level_path / data_type_dir.name
 
-                utils.make_dirs(experiment_type_path)
+                utils.make_dirs(data_type_path)
 
-                utils.make_datashuttle_metadata_folder(experiment_type_path)
+                utils.make_datashuttle_metadata_folder(data_type_path)
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
@@ -707,7 +703,7 @@ class DataShuttle:
 
         for sub in sub_names:
 
-            self._transfer_experiment_type(
+            self._transfer_data_type(
                 upload_or_download,
                 local_or_remote,
                 data_type,
@@ -725,7 +721,7 @@ class DataShuttle:
 
             for ses in ses_names:
 
-                self._transfer_experiment_type(
+                self._transfer_data_type(
                     upload_or_download,
                     local_or_remote,
                     data_type,
@@ -734,7 +730,7 @@ class DataShuttle:
                     dry_run,
                 )
 
-    def _transfer_experiment_type(
+    def _transfer_data_type(
         self,
         upload_or_download: str,
         local_or_remote: str,
@@ -744,7 +740,7 @@ class DataShuttle:
         dry_run: bool = False,
     ) -> None:
         """
-        Transfer the experiment-level folder at the subject
+        Transfer the data_type-level folder at the subject
         or session level. data_type dirs are got either
         directly from user input or if "all" is passed searched
         for in the local / remote directory (for
@@ -759,23 +755,23 @@ class DataShuttle:
         """
         level = "ses" if ses else "sub"
 
-        experiment_type_items = self._items_from_experiment_type_input(
+        data_type_items = self._items_from_data_type_input(
             local_or_remote, data_type, sub, ses
         )
 
-        for experiment_type_key, experiment_type_dir in experiment_type_items:  # type: ignore
+        for data_type_key, data_type_dir in data_type_items:  # type: ignore
 
-            if experiment_type_dir.level == level:
+            if data_type_dir.level == level:
                 if ses:
-                    filepath = os.path.join(sub, ses, experiment_type_dir.name)
+                    filepath = os.path.join(sub, ses, data_type_dir.name)
                 else:
-                    filepath = os.path.join(sub, experiment_type_dir.name)
+                    filepath = os.path.join(sub, data_type_dir.name)
 
                 self._move_dir_or_file(
                     filepath, upload_or_download, dry_run=dry_run
                 )
 
-    def _items_from_experiment_type_input(
+    def _items_from_data_type_input(
         self,
         local_or_remote: str,
         data_type: Union[list, str],
@@ -783,23 +779,21 @@ class DataShuttle:
         ses: Optional[str] = None,
     ) -> Union[ItemsView, zip]:
         """
-        Get the list of experiment_types to transfer, either
+        Get the list of data_types to transfer, either
         directly from user input, or by searching
         what is available if "all" is passed.
         """
         if data_type not in ["all", ["all"]]:
-            experiment_type_items = self._get_experiment_type_items(
+            data_type_items = self._get_data_type_items(
                 data_type,
             )
         else:
-            experiment_type_items = (
-                self._search_experiment_dirs_sub_or_ses_level(
-                    local_or_remote,
-                    sub,
-                    ses,
-                )
+            data_type_items = self._search_data_dirs_sub_or_ses_level(
+                local_or_remote,
+                sub,
+                ses,
             )
-        return experiment_type_items
+        return data_type_items
 
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
@@ -840,11 +834,11 @@ class DataShuttle:
             local_or_remote, search_path, search_prefix
         )
 
-    def _search_experiment_dirs_sub_or_ses_level(
+    def _search_data_dirs_sub_or_ses_level(
         self, local_or_remote: str, sub: str, ses: Optional[str] = None
     ) -> zip:
         """
-        Find experiment type directories in the project base
+        Find data_type type directories in the project base
         directory (e.g. "ephys", "behav"), (by filtering the
         names of all directories present).  Return these in the
         same format as dict.items()
@@ -863,11 +857,11 @@ class DataShuttle:
             local_or_remote, base_dir, "*"
         )
 
-        experiment_directories = (
-            self._process_glob_to_find_experiment_type_dirs(directory_names)
+        data_directories = self._process_glob_to_find_data_type_dirs(
+            directory_names
         )
 
-        return experiment_directories
+        return data_directories
 
     def _search_for_directories(
         self, local_or_remote: str, search_path: Path, search_prefix: str
@@ -898,7 +892,7 @@ class DataShuttle:
             )
         return all_dirnames
 
-    def _process_glob_to_find_experiment_type_dirs(
+    def _process_glob_to_find_data_type_dirs(
         self,
         directory_names: list,
     ) -> zip:
@@ -911,17 +905,15 @@ class DataShuttle:
         ses_dir_keys = []
         ses_dir_values = []
         for dir_name in directory_names:
-            experiment_type_key = [
+            data_type_key = [
                 key
                 for key, value in self._data_type_dirs.items()
                 if value.name == dir_name
             ]
 
-            if experiment_type_key:
-                ses_dir_keys.append(experiment_type_key[0])
-                ses_dir_values.append(
-                    self._data_type_dirs[experiment_type_key[0]]
-                )
+            if data_type_key:
+                ses_dir_keys.append(data_type_key[0])
+                ses_dir_values.append(self._data_type_dirs[data_type_key[0]])
 
         return zip(ses_dir_keys, ses_dir_values)
 
@@ -1025,7 +1017,7 @@ class DataShuttle:
             prefix = self.cfg.ses_prefix
         return prefix
 
-    def _check_experiment_type_is_valid(
+    def _check_data_type_is_valid(
         self, data_type: str, prompt_on_fail: bool
     ) -> bool:
         """
@@ -1050,7 +1042,7 @@ class DataShuttle:
 
         return is_valid
 
-    def _get_experiment_type_items(
+    def _get_data_type_items(
         self, data_type: Union[str, list]
     ) -> Union[ItemsView, zip]:
         """
