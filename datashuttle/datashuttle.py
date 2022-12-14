@@ -9,10 +9,11 @@ from pathlib import Path
 from typing import Any, Optional, Union, cast
 
 import paramiko
+from utils import directories, formatting
 
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.configs import Configs
-from datashuttle.utils import rclone, utils
+from datashuttle.utils import rclone, ssh, utils
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
@@ -271,7 +272,7 @@ class DataShuttle:
         cluster. Once input, SSH private / public key pair
         will be setup (see _setup_ssh_key() for details).
         """
-        verified = utils.verify_ssh_remote_host(
+        verified = ssh.verify_ssh_remote_host(
             self.cfg["remote_host_id"], self._hostkeys
         )
 
@@ -520,7 +521,7 @@ class DataShuttle:
         if prefix not in ["sub-", "ses-"]:
             utils.raise_error("prefix: must be 'sub-' or 'ses-'")
 
-        processed_names = utils.format_names(names, prefix)
+        processed_names = formatting.format_names(names, prefix)
         utils.message_user(processed_names)
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -635,7 +636,7 @@ class DataShuttle:
                 "local", [self._top_level_dir_name, sub]
             )
 
-            utils.make_dirs(sub_path)
+            directories.make_dirs(sub_path)
 
             self._make_data_type_folders(data_type, sub_path, "sub")
 
@@ -645,7 +646,7 @@ class DataShuttle:
                     "local", [self._top_level_dir_name, sub, ses]
                 )
 
-                utils.make_dirs(ses_path)
+                directories.make_dirs(ses_path)
 
                 self._make_data_type_folders(data_type, ses_path, "ses")
 
@@ -664,9 +665,9 @@ class DataShuttle:
 
                 data_type_path = sub_or_ses_level_path / data_type_dir.name
 
-                utils.make_dirs(data_type_path)
+                directories.make_dirs(data_type_path)
 
-                utils.make_datashuttle_metadata_folder(data_type_path)
+                directories.make_datashuttle_metadata_folder(data_type_path)
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
@@ -880,7 +881,7 @@ class DataShuttle:
             and self.cfg["connection_method"] == "ssh"
         ):
 
-            all_dirnames = utils.search_ssh_remote_for_directories(
+            all_dirnames = ssh.search_ssh_remote_for_directories(
                 search_path,
                 search_prefix,
                 self.cfg,
@@ -888,7 +889,7 @@ class DataShuttle:
                 self._ssh_key_path,
             )
         else:
-            all_dirnames = utils.search_filesystem_path_for_directories(
+            all_dirnames = directories.search_filesystem_path_for_directories(
                 search_path / search_prefix
             )
         return all_dirnames
@@ -931,7 +932,7 @@ class DataShuttle:
         password made, and the public part of the key
         added to ~/.ssh/authorized_keys.
         """
-        utils.generate_and_write_ssh_key(self._ssh_key_path)
+        ssh.generate_and_write_ssh_key(self._ssh_key_path)
 
         password = getpass.getpass(
             "Please enter password to your remote host to add the public key. "
@@ -942,7 +943,7 @@ class DataShuttle:
             self._ssh_key_path.as_posix()
         )
 
-        utils.add_public_key_to_remote_authorized_keys(
+        ssh.add_public_key_to_remote_authorized_keys(
             self.cfg, self._hostkeys, password, key
         )
 
@@ -1004,7 +1005,7 @@ class DataShuttle:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        processed_names = utils.format_names(names, prefix)
+        processed_names = formatting.format_names(names, prefix)
 
         return processed_names
 
