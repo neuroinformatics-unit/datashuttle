@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datashuttle.configs import Configs
+
 import datetime
 import fnmatch
 import glob
@@ -10,8 +17,6 @@ from typing import Optional, Union
 
 import appdirs
 import paramiko
-
-from datashuttle.configs import Configs
 
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
