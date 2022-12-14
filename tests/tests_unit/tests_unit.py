@@ -2,7 +2,7 @@ import re
 
 import pytest
 
-from datashuttle.utils import utils
+from datashuttle.utils import formatting, utils
 
 
 class TestUnit:
@@ -51,7 +51,7 @@ class TestUnit:
 
         prefix, names = prefix_and_names
         with pytest.raises(BaseException) as e:
-            utils.format_names(names, prefix)
+            formatting.format_names(names, prefix)
 
         assert str(e.value) == "sub or ses names cannot include spaces."
 
