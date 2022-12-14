@@ -10,7 +10,7 @@ get_canonical_config_required_types()
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from datashuttle.configs.configs import Configs
@@ -42,7 +42,7 @@ def get_canonical_config_dict() -> dict:
     return config_dict
 
 
-def get_data_types() -> list[str]:
+def get_data_types() -> List[str]:
     return ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
 
 

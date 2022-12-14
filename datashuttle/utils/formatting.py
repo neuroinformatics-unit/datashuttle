@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import Union
+from typing import List, Union
 
 from . import utils
 
@@ -10,7 +10,7 @@ from . import utils
 
 
 def format_names(
-    names: Union[list[str], str],
+    names: Union[List[str], str],
     prefix: str,
 ) -> Union[list, str]:
     """
@@ -54,8 +54,8 @@ def format_names(
 
 
 def update_names_with_range_to_flag(
-    names: list[str], prefix: str
-) -> list[str]:
+    names: List[str], prefix: str
+) -> List[str]:
     """
     Given a list of names, check if they contain the @TO@ keyword.
     If so, expand to a range of names. Names including the @TO@
@@ -124,7 +124,7 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
 
 def make_list_of_zero_padded_names_across_range(
     left_number: str, right_number: str, name_start_str: str, name_end_str: str
-) -> list[str]:
+) -> List[str]:
     """
     Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
@@ -157,7 +157,7 @@ def num_leading_zeros(string: str) -> int:
 # Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------------------
 
 
-def update_names_with_datetime(names: list[str]) -> None:
+def update_names_with_datetime(names: List[str]) -> None:
     """
     Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
 
@@ -214,8 +214,8 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
 
 
 def ensure_prefixes_on_list_of_names(
-    names: Union[list[str], str], prefix: str
-) -> list[str]:
+    names: Union[List[str], str], prefix: str
+) -> List[str]:
     """
     Make sure all elements in the list of names are
     prefixed with the prefix typically "sub-" or "ses-"
