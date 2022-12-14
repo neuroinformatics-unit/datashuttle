@@ -4,7 +4,7 @@ from typing import Any, Callable
 
 import simplejson
 
-from datashuttle.configs import canonical_configs
+from datashuttle.configs import load_configs
 from datashuttle.datashuttle import DataShuttle
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
@@ -104,7 +104,7 @@ def make_config_file(project: DataShuttle, args: Any) -> None:
     kwargs = make_kwargs(args)
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-    filtered_kwargs = canonical_configs.handle_cli_or_supplied_config_bools(
+    filtered_kwargs = load_configs.handle_cli_or_supplied_config_bools(
         filtered_kwargs
     )
 
@@ -196,7 +196,7 @@ def update_config(project: DataShuttle, args: Any) -> None:
     option_key = kwargs["option_key"]
     new_info = kwargs["new_info"]
 
-    new_info = canonical_configs.handle_bool(option_key, new_info)
+    new_info = load_configs.handle_bool(option_key, new_info)
 
     run_command(
         project,

@@ -16,11 +16,9 @@ if TYPE_CHECKING:
     from datashuttle.configs.configs import Configs
 
 from pathlib import Path
-from typing import Union, get_args, overload
+from typing import Union, get_args
 
 from datashuttle.utils import utils
-
-ConfigValueTypes = Union[Path, str, bool, None]
 
 
 def get_canonical_config_dict() -> dict:
@@ -68,6 +66,11 @@ def get_canonical_config_required_types() -> dict:
     ), "update get_canonical_config_required_types with required types."
 
     return required_types
+
+
+# -------------------------------------------------------------------
+# Check Configs
+# -------------------------------------------------------------------
 
 
 def check_dict_values_and_inform_user(config_dict: Configs) -> None:
@@ -129,55 +132,6 @@ def check_dict_values_and_inform_user(config_dict: Configs) -> None:
             "remote_host_id and remote_host_username are "
             "required if connection_method is ssh."
         )
-
-
-@overload
-def handle_cli_or_supplied_config_bools(dict_: Configs) -> Configs:
-    ...
-
-
-@overload
-def handle_cli_or_supplied_config_bools(dict_: dict) -> dict:
-    ...
-
-
-def handle_cli_or_supplied_config_bools(
-    dict_: Union[Configs, dict]
-) -> Union[Configs, dict]:
-    """
-    For supplied configs for CLI input args,
-    in some instances bools will as string type.
-    Handle this case here to cast to correct type.
-    """
-    for key in dict_.keys():
-        dict_[key] = handle_bool(key, dict_[key])
-    return dict_
-
-
-def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
-    """ """
-    if key in [
-        "use_ephys",
-        "use_behav",
-        "use_funcimg",
-        "use_histology",
-    ]:
-
-        if value in ["None", "none", None]:
-            value = False
-
-        if isinstance(value, str):
-            if value not in ["True", "False", "true", "false"]:
-                utils.raise_error(
-                    f"Input value for {key} " f"must be True or False"
-                )
-
-            value = value in ["True", "true"]
-
-    elif value in ["None", "none"]:
-        value = None
-
-    return value
 
 
 def check_config_types(config_dict: Configs) -> None:

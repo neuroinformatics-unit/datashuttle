@@ -2,7 +2,6 @@ import copy
 import getpass
 import json
 import os
-import traceback
 import warnings
 from collections.abc import ItemsView
 from pathlib import Path
@@ -10,7 +9,7 @@ from typing import Any, List, Optional, Union, cast
 
 import paramiko
 
-from datashuttle.configs import canonical_configs
+from datashuttle.configs import load_configs
 from datashuttle.configs.configs import Configs
 from datashuttle.utils import directories, formatting, rclone, ssh, utils
 from datashuttle.utils.decorators import (  # noqa
@@ -473,42 +472,16 @@ class DataShuttle:
 
         path_to_config = Path(input_path_to_config)
 
-        utils.raise_error_not_exists_or_not_yaml(path_to_config)
+        new_cfg = load_configs.get_confirmation_raise_on_fail(
+            path_to_config, warn
+        )
 
-        if warn:
-            input_ = utils.get_user_input(
-                "This will overwrite the existing datashuttle config file."
-                "If you wish to proceed, press y."
-            )
-
-            if input_ != "y":
-                return None
-
-        try:
-            new_cfg: Configs
-
-            new_cfg = Configs(path_to_config, None)
-            new_cfg.load_from_file()
-
-            new_cfg = canonical_configs.handle_cli_or_supplied_config_bools(
-                new_cfg
-            )
-            new_cfg.check_dict_values_and_inform_user()
-
-        except BaseException:
-            utils.message_user(traceback.format_exc())
-            utils.raise_error(
-                "Could not load config file. Please check that "
-                "the file is formatted correctly. "
-                "Config file was not updated."
-            )
-            return None
-
-        self.cfg = new_cfg
-        self._set_attributes_after_config_load()
-        self.cfg.file_path = self._config_path
-        self.cfg.dump_to_file()
-        utils.message_user("Update successful.")
+        if new_cfg:
+            self.cfg = new_cfg
+            self._set_attributes_after_config_load()
+            self.cfg.file_path = self._config_path
+            self.cfg.dump_to_file()
+            utils.message_user("Update successful.")
 
     @staticmethod
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
@@ -693,7 +666,6 @@ class DataShuttle:
         else:
             sub_names = self._search_subs_from_project_dir(
                 local_or_remote,
-                self._top_level_dir_name,
             )
 
         for sub in sub_names:
@@ -710,9 +682,7 @@ class DataShuttle:
             if ses_names not in ["all", ["all"]]:
                 ses_names = self._format_names(ses_names, "ses")
             else:
-                ses_names = self._search_ses_from_sub_dir(
-                    local_or_remote, self._top_level_dir_name, sub
-                )
+                ses_names = self._search_ses_from_sub_dir(local_or_remote, sub)
 
             for ses in ses_names:
 
@@ -795,26 +765,26 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     def _search_subs_from_project_dir(
-        self, local_or_remote: str, data_type: str
+        self,
+        local_or_remote: str,
     ) -> List[str]:
         """
         Search a datatype directory for all present sub-prefixed directories.
         If remote, ssh or filesystem will be used depending on config.
 
         :param local_or_remote: "local" or "remote"
-        :param data_type: the data type (e.g. behav, cannot be "all")
         """
         search_path = self._make_path(
             local_or_remote, [self._top_level_dir_name]
         )
 
         search_prefix = self.cfg.sub_prefix + "*"
-        return self._search_for_directories(
-            local_or_remote, search_path, search_prefix
+        return directories.search_for_directories(
+            self, local_or_remote, search_path, search_prefix
         )
 
     def _search_ses_from_sub_dir(
-        self, local_or_remote: str, data_type: str, sub: str
+        self, local_or_remote: str, sub: str
     ) -> List[str]:
         """
         See _search_subs_from_project_dir(), same but for searching sessions
@@ -825,8 +795,8 @@ class DataShuttle:
         )
         search_prefix = self.cfg.ses_prefix + "*"
 
-        return self._search_for_directories(
-            local_or_remote, search_path, search_prefix
+        return directories.search_for_directories(
+            self, local_or_remote, search_path, search_prefix
         )
 
     def _search_data_dirs_sub_or_ses_level(
@@ -848,69 +818,16 @@ class DataShuttle:
         if ses:
             base_dir = base_dir / ses
 
-        directory_names = self._search_for_directories(
-            local_or_remote, base_dir, "*"
+        directory_names = directories.search_for_directories(
+            self, local_or_remote, base_dir, "*"
         )
 
-        data_directories = self._process_glob_to_find_data_type_dirs(
-            directory_names
+        data_directories = directories.process_glob_to_find_data_type_dirs(
+            directory_names,
+            self._data_type_dirs,
         )
 
         return data_directories
-
-    def _search_for_directories(
-        self, local_or_remote: str, search_path: Path, search_prefix: str
-    ) -> List[str]:
-        """
-        Wrapper to determine the method used to search for search
-        prefix directories in the search path.
-
-        :param local_or_remote: "local" or "remote"
-        :param search_path: full filepath to search in
-        :param search_prefix: file / dirname to search (e.g. "sub-*")
-        """
-        if (
-            local_or_remote == "remote"
-            and self.cfg["connection_method"] == "ssh"
-        ):
-
-            all_dirnames = ssh.search_ssh_remote_for_directories(
-                search_path,
-                search_prefix,
-                self.cfg,
-                self._hostkeys,
-                self._ssh_key_path,
-            )
-        else:
-            all_dirnames = directories.search_filesystem_path_for_directories(
-                search_path / search_prefix
-            )
-        return all_dirnames
-
-    def _process_glob_to_find_data_type_dirs(
-        self,
-        directory_names: list,
-    ) -> zip:
-        """
-        Process the results of glob on a sub or session level,
-        which could contain any kind of folder / file.
-        Find the data_type files and return in
-        a format that mirros dict.items()
-        """
-        ses_dir_keys = []
-        ses_dir_values = []
-        for dir_name in directory_names:
-            data_type_key = [
-                key
-                for key, value in self._data_type_dirs.items()
-                if value.name == dir_name
-            ]
-
-            if data_type_key:
-                ses_dir_keys.append(data_type_key[0])
-                ses_dir_values.append(self._data_type_dirs[data_type_key[0]])
-
-        return zip(ses_dir_keys, ses_dir_values)
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH

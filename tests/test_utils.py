@@ -11,6 +11,7 @@ import appdirs
 import yaml
 
 from datashuttle.datashuttle import DataShuttle
+from datashuttle.utils import rclone
 
 # ----------------------------------------------------------------------------------------------------------
 # Setup and Teardown Test Project
@@ -30,14 +31,18 @@ def setup_project_default_configs(
 
     project = DataShuttle(project_name)
 
-    project._setup_remote_as_rclone_target("local_filesystem")
-
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
 
     if all_data_type_on:
         default_configs.update(get_all_data_types_on("kwargs"))
 
     project.make_config_file(**default_configs)
+
+    rclone.setup_remote_as_rclone_target(
+        project.cfg,
+        project._get_rclone_config_name("ssh"),
+        project._ssh_key_path,
+    )
 
     warnings.filterwarnings("default")
 
