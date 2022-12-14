@@ -366,10 +366,12 @@ class DataShuttle:
             self.cfg.dump_to_file()
 
         self._set_attributes_after_config_load()
-        self._setup_remote_as_rclone_target(
-            "local_filesystem"
-        )  # TODO: handle this!!
 
+        rclone.setup_remote_as_rclone_target(
+            self.cfg,
+            self._get_rclone_config_name("local_filesystem"),
+            self._ssh_key_path,
+        )
         utils.message_user(
             "Configuration file has been saved and "
             "options loaded into datashuttle."
@@ -558,7 +560,7 @@ class DataShuttle:
             rclone.call_rclone(
                 f"copy "
                 f'"{local_filepath}" '
-                f'"{self._get_rclone_config_name(self.cfg["connection_method"])}:'
+                f'"{self._get_rclone_config_name()}:'
                 f'{remote_filepath}" '
                 f"{extra_arguments}"
             )
@@ -566,27 +568,19 @@ class DataShuttle:
         elif upload_or_download == "download":
             rclone.call_rclone(
                 f"copy "
-                f'"{self._get_rclone_config_name(self.cfg["connection_method"])}:'
+                f'"{self._get_rclone_config_name()}:'
                 f'{remote_filepath}" '
                 f'"{local_filepath}"  '
                 f"{extra_arguments}"
             )
 
-    def _setup_remote_as_rclone_target(self, connection_method: str) -> None:
-        """
-        data shares config file so need to create
-        new local and remote for all project
-        :param local_or_ssh:
-        """
-        rclone_config_name = self._get_rclone_config_name(
-            connection_method,
-        )
+    def _get_rclone_config_name(
+        self, connection_method: Optional[str] = None
+    ) -> str:
 
-        rclone.setup_remote_as_rclone_target(
-            self.cfg, connection_method, rclone_config_name, self._ssh_key_path
-        )
+        if connection_method is None:
+            connection_method = self.cfg["connection_method"]
 
-    def _get_rclone_config_name(self, connection_method: str) -> str:
         return f"remote_{self.project_name}_{connection_method}"
 
     # ====================================================================================================================
@@ -946,7 +940,10 @@ class DataShuttle:
             self.cfg, self._hostkeys, password, key
         )
 
-        self._setup_remote_as_rclone_target("ssh")
+        rclone.setup_remote_as_rclone_target(
+            self.cfg, self._get_rclone_config_name("ssh"), self._ssh_key_path
+        )
+
         utils.message_user(
             f"SSH key pair setup successfully. "
             f"Private key at: {self._ssh_key_path.as_posix()}"

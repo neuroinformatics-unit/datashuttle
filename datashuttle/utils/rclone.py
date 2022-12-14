@@ -51,7 +51,6 @@ def prompt_rclone_download_if_does_not_exist() -> None:
 
 def setup_remote_as_rclone_target(
     cfg: Configs,
-    connection_method: str,
     rclone_config_name: str,
     ssh_key_path: Path,
 ) -> None:
@@ -66,6 +65,8 @@ def setup_remote_as_rclone_target(
     For SSH, this contains information for
     connecting to remote with SSH.
     """
+    connection_method = cfg["connection_method"]
+
     if connection_method == "local_filesystem":
         call_rclone(f"config create {rclone_config_name} local", silent=True)
 
