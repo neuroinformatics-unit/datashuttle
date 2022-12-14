@@ -233,7 +233,7 @@ def get_appdir_path(project_name: str) -> Path:
     return base_path
 
 
-def process_names(
+def format_names(
     names: Union[list[str], str],
     prefix: str,
 ) -> Union[list, str]:
