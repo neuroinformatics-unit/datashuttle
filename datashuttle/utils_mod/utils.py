@@ -11,12 +11,14 @@ from typing import Optional, Union
 import appdirs
 import paramiko
 
+from datashuttle.configs import Configs
+
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, list]):
+def make_dirs(paths: Union[Path, list[Path]]) -> None:
     """
     For path or list of path, make them if
     they do not already exist.
@@ -36,14 +38,14 @@ def make_dirs(paths: Union[Path, list]):
             )
 
 
-def make_datashuttle_metadata_folder(full_path: Path):
+def make_datashuttle_metadata_folder(full_path: Path) -> None:
     meta_folder_path = full_path / ".datashuttle_meta"
     make_dirs(meta_folder_path)
 
 
 def search_filesystem_path_for_directories(
     search_path_with_prefix: Path,
-) -> list:
+) -> list[str]:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.
@@ -62,11 +64,11 @@ def search_filesystem_path_for_directories(
 
 def connect_client(
     client: paramiko.SSHClient,
-    cfg,
+    cfg: Configs,
     hostkeys: Path,
     password: Optional[str] = None,
     private_key_path: Optional[Path] = None,
-):
+) -> None:
     """
     Connect client to remote server using paramiko.
     Accept either password or path to private key, but not both.
@@ -96,8 +98,8 @@ def connect_client(
 
 
 def add_public_key_to_remote_authorized_keys(
-    cfg, hostkeys: Path, password: str, key: paramiko.RSAKey
-):
+    cfg: Configs, hostkeys: Path, password: str, key: paramiko.RSAKey
+) -> None:
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
@@ -141,7 +143,7 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
     return success
 
 
-def generate_and_write_ssh_key(ssh_key_path: Path):
+def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
     key = paramiko.RSAKey.generate(4096)
     key.write_private_key_file(ssh_key_path.as_posix())
 
@@ -149,10 +151,10 @@ def generate_and_write_ssh_key(ssh_key_path: Path):
 def search_ssh_remote_for_directories(
     search_path: Path,
     search_prefix: str,
-    cfg,
+    cfg: Configs,
     hostkeys: Path,
     ssh_key_path: Path,
-) -> list:
+) -> list[str]:
     """
     Search for the search prefix in the search path over SSH.
     Returns the list of matching directories, files are filtered out.
@@ -171,14 +173,17 @@ def search_ssh_remote_for_directories(
 
 def get_list_of_directory_names_over_sftp(
     sftp, search_path: Path, search_prefix: str
-) -> list:
+) -> list[str]:
 
     all_dirnames = []
     try:
         for file_or_dir in sftp.listdir_attr(search_path.as_posix()):
+
             if stat.S_ISDIR(file_or_dir.st_mode):
+
                 if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
                     all_dirnames.append(file_or_dir.filename)
+
     except FileNotFoundError:
         raise_error(f"No file found at {search_path.as_posix()}")
 
@@ -190,14 +195,14 @@ def get_list_of_directory_names_over_sftp(
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def message_user(message: Union[str, list]):
+def message_user(message: Union[str, list]) -> None:
     """
     Centralised way to send message.
     """
     print(message)
 
 
-def get_user_input(message) -> str:
+def get_user_input(message: str) -> str:
     """
     Centralised way to get user input
     """
@@ -205,7 +210,7 @@ def get_user_input(message) -> str:
     return input_
 
 
-def raise_error(message: str):
+def raise_error(message: str) -> None:
     """
     Temporary centralized way to raise and error
     """
@@ -229,7 +234,7 @@ def get_appdir_path(project_name: str) -> Path:
 
 
 def process_names(
-    names: Union[list, str],
+    names: Union[list[str], str],
     prefix: str,
 ) -> Union[list, str]:
     """
@@ -272,7 +277,9 @@ def process_names(
 # Handle @TO flags  -------------------------------------------------------
 
 
-def update_names_with_range_to_flag(names: list, prefix: str) -> list:
+def update_names_with_range_to_flag(
+    names: list[str], prefix: str
+) -> list[str]:
     """
     Given a list of names, check if they contain the @TO keyword.
     If so, expand to a range of names. Names including the @TO
@@ -324,7 +331,7 @@ def update_names_with_range_to_flag(names: list, prefix: str) -> list:
     return new_names
 
 
-def check_name_is_formatted_correctly(name: str, prefix: str):
+def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     """
     Check the input string is formatted with the @TO key
     as expected.
@@ -341,7 +348,7 @@ def check_name_is_formatted_correctly(name: str, prefix: str):
 
 def make_list_of_zero_padded_names_across_range(
     left_number: str, right_number: str, name_start_str: str, name_end_str: str
-) -> list:
+) -> list[str]:
     """
     Numbers formatted with the @TO keyword need to have
     standardised leading zeros on the output. Here we take
@@ -366,7 +373,7 @@ def make_list_of_zero_padded_names_across_range(
     return names_with_new_number_inserted
 
 
-def num_leading_zeros(string: str):
+def num_leading_zeros(string: str) -> int:
     """int() strips leading zeros"""
     return len(string) - len(str(int(string)))
 
@@ -374,7 +381,7 @@ def num_leading_zeros(string: str):
 # Handle @DATE, @DATETIME, @TIME flags -------------------------------------------------
 
 
-def update_names_with_datetime(names: list):
+def update_names_with_datetime(names: list[str]) -> None:
     """
     Replace @DATE and @DATETIME flag with date and datetime respectively.
 
@@ -431,8 +438,8 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
 
 
 def ensure_prefixes_on_list_of_names(
-    names: Union[list, str], prefix: str
-) -> list:
+    names: Union[list[str], str], prefix: str
+) -> list[str]:
     """
     Make sure all elements in the list of names are
     prefixed with the prefix typically "sub-" or "ses-"
@@ -454,7 +461,7 @@ def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())
 
 
-def raise_error_not_exists_or_not_yaml(path_to_config: Path):
+def raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
     if not path_to_config.exists():
         raise_error(f"No file found at: {path_to_config}")
 

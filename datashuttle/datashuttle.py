@@ -4,12 +4,13 @@ import json
 import os
 import traceback
 import warnings
+from collections.abc import ItemsView
 from pathlib import Path
 from typing import Any, Optional, Union, cast
 
 import paramiko
 
-from datashuttle import configs
+from datashuttle.configs import Configs
 from datashuttle.utils_mod import canonical_configs, rclone_utils, utils
 from datashuttle.utils_mod.decorators import (  # noqa
     check_configs_set,
@@ -72,7 +73,7 @@ class DataShuttle:
 
         rclone_utils.prompt_rclone_download_if_does_not_exist()
 
-    def _set_attributes_after_config_load(self):
+    def _set_attributes_after_config_load(self) -> None:
         """
         Once config file is loaded, update all private attributes
         according to config contents.
@@ -122,7 +123,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
         experiment_type: str = "all",
-    ):
+    ) -> None:
         """
         Make a subject directory in the data type directory. By default,
         it will create the entire directory tree for this subject.
@@ -163,7 +164,7 @@ class DataShuttle:
         ses_names: Union[str, list],
         experiment_type: str = "all",
         dry_run: bool = False,
-    ):
+    ) -> None:
         """
         Upload data from a local machine to the remote project
         directory. In the case that a file / directory exists on
@@ -190,7 +191,7 @@ class DataShuttle:
         ses_names: Union[str, list],
         experiment_type: str = "all",
         dry_run: bool = False,
-    ):
+    ) -> None:
         """
         Download data from the remote project dir to the
         local computer. In the case that a file / dir
@@ -205,7 +206,9 @@ class DataShuttle:
             "download", sub_names, ses_names, experiment_type, dry_run
         )
 
-    def upload_project_dir_or_file(self, filepath: str, dry_run: bool = False):
+    def upload_project_dir_or_file(
+        self, filepath: str, dry_run: bool = False
+    ) -> None:
         """
         Upload an entire directory (including all subdirectories
         and files) from the local to the remote machine
@@ -228,7 +231,7 @@ class DataShuttle:
 
     def download_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
-    ):
+    ) -> None:
         """
         Download an entire directory (including all subdirectories
         and files) from the remote to the local machine.
@@ -252,7 +255,7 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     @requires_ssh_configs
-    def setup_ssh_connection_to_remote_server(self):
+    def setup_ssh_connection_to_remote_server(self) -> None:
         """
         Setup a connection to the remote server using SSH.
         Assumes the remote_host_id and remote_host_username
@@ -273,7 +276,7 @@ class DataShuttle:
         if verified:
             self._setup_ssh_key()
 
-    def write_public_key(self, filepath: str):
+    def write_public_key(self, filepath: str) -> None:
         """
         By default, the SSH private key only is stored on the local
         computer (in the Appdir directory). Use this function to generate
@@ -305,7 +308,7 @@ class DataShuttle:
         use_behav: bool = False,
         use_imaging: bool = False,
         use_histology: bool = False,
-    ):
+    ) -> None:
         """
         Initialise a config file for using the datashuttle on the
         local system. Once initialised, these settings will be
@@ -340,7 +343,7 @@ class DataShuttle:
               settings (e.g. if ephys_behav_camera=True
               and ephys_behav=False, ephys_behav_camera will not be made).
         """
-        self.cfg = configs.Configs(
+        self.cfg = Configs(
             self._config_path,
             {
                 "local_path": local_path,
@@ -370,7 +373,9 @@ class DataShuttle:
             "options loaded into datashuttle."
         )
 
-    def update_config(self, option_key: str, new_info: Union[str, bool]):
+    def update_config(
+        self, option_key: str, new_info: Union[str, bool]
+    ) -> None:
         """
         Convenience function to update individual entry of configuration file.
         The config file, and currently loaded self.cfg will be updated.
@@ -386,7 +391,7 @@ class DataShuttle:
         self.cfg.update_an_entry(option_key, new_info)
         self._set_attributes_after_config_load()
 
-    def _attempt_load_configs(self, prompt_on_fail: bool):
+    def _attempt_load_configs(self, prompt_on_fail: bool) -> None:
         """
         Attempt to load the config file. If it does not exist or crashes
         when attempt to load from file, return False.
@@ -405,7 +410,7 @@ class DataShuttle:
             )
             return
 
-        self.cfg = configs.Configs(self._config_path, None)
+        self.cfg = Configs(self._config_path, None)
 
         try:
             self.cfg.load_from_file()
@@ -424,33 +429,33 @@ class DataShuttle:
     # Public Getters
     # --------------------------------------------------------------------------------------------------------------------
 
-    def get_local_path(self):
+    def get_local_path(self) -> None:
         """
         Return the project local path.
         """
         utils.message_user(self.cfg["local_path"].as_posix())
 
-    def get_appdir_path(self):
+    def get_appdir_path(self) -> None:
         """
         Return the system appdirs path where
         project settings are stored.
         """
         utils.message_user(self._appdir_path.as_posix())
 
-    def get_config_path(self):
+    def get_config_path(self) -> None:
         """
         Return the full path to the DataShuttle config file.
         """
         utils.message_user(self._config_path.as_posix())
 
-    def get_remote_path(self):
+    def get_remote_path(self) -> None:
         """
         Return the project remote path.
         This is always formatted to UNIX style.
         """
         utils.message_user(self.cfg["remote_path"].as_posix())
 
-    def show_configs(self):
+    def show_configs(self) -> None:
         """
         Print the current configs to the terminal.
         """
@@ -458,7 +463,9 @@ class DataShuttle:
         self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         utils.message_user(json.dumps(copy_dict, indent=4))
 
-    def supply_config_file(self, input_path_to_config: str, warn: bool = True):
+    def supply_config_file(
+        self, input_path_to_config: str, warn: bool = True
+    ) -> None:
 
         path_to_config = Path(input_path_to_config)
 
@@ -474,8 +481,11 @@ class DataShuttle:
                 return None
 
         try:
-            new_cfg = configs.Configs(path_to_config, None)
+            new_cfg: Configs
+
+            new_cfg = Configs(path_to_config, None)
             new_cfg.load_from_file()
+
             new_cfg = canonical_configs.handle_cli_or_supplied_config_bools(
                 new_cfg
             )
@@ -490,15 +500,14 @@ class DataShuttle:
             )
             return None
 
-        if new_cfg:
-            self.cfg = new_cfg
-            self._set_attributes_after_config_load()
-            self.cfg.file_path = self._config_path
-            self.cfg.dump_to_file()
-            utils.message_user("Update successful.")
+        self.cfg = new_cfg
+        self._set_attributes_after_config_load()
+        self.cfg.file_path = self._config_path
+        self.cfg.dump_to_file()
+        utils.message_user("Update successful.")
 
     @staticmethod
-    def check_name_processing(names: Union[str, list], prefix: str):
+    def check_name_processing(names: Union[str, list], prefix: str) -> None:
         """
         Pass list of names to check how these will be auto-formatted.
         Useful for checking tags e.g. @TO, @DATE, @DATETIME, @DATE
@@ -518,7 +527,7 @@ class DataShuttle:
 
     def _move_dir_or_file(
         self, filepath: str, upload_or_download: str, dry_run: bool
-    ):
+    ) -> None:
         """
         Copy a directory or file with Rclone.
 
@@ -561,7 +570,7 @@ class DataShuttle:
                 f"{extra_arguments}"
             )
 
-    def _setup_remote_as_rclone_target(self, connection_method: str):
+    def _setup_remote_as_rclone_target(self, connection_method: str) -> None:
         """
         rclone shares config file so need to create
         new local and remote for all project
@@ -592,7 +601,7 @@ class DataShuttle:
         ses_names: Union[str, list],
         experiment_type: str,
         process_names: bool = True,
-    ):
+    ) -> None:
         """
         Entry method to make a full directory tree. It will
         iterate through all passed subjects, then sessions, then
@@ -662,13 +671,13 @@ class DataShuttle:
         experiment_type: Union[list, str],
         sub_or_ses_level_path: Path,
         level: str,
-    ):
+    ) -> None:
         """ """
         experiment_type_items = self._get_experiment_type_items(
             experiment_type
         )
 
-        for experiment_type_key, experiment_type_dir in experiment_type_items:
+        for experiment_type_key, experiment_type_dir in experiment_type_items:  # type: ignore
 
             if experiment_type_dir.used and experiment_type_dir.level == level:
 
@@ -691,7 +700,7 @@ class DataShuttle:
         ses_names: Union[str, list],
         experiment_type: str,
         dry_run: bool,
-    ):
+    ) -> None:
         """
         Iterate through all data type, sub, ses and transfer session directory.
 
@@ -751,7 +760,7 @@ class DataShuttle:
         sub: str,
         ses: Optional[str] = None,
         dry_run: bool = False,
-    ):
+    ) -> None:
         """
         Transfer the experiment-level folder at the subject
         or session level. experiment_type dirs are got either
@@ -772,7 +781,7 @@ class DataShuttle:
             local_or_remote, experiment_type, sub, ses
         )
 
-        for experiment_type_key, experiment_type_dir in experiment_type_items:
+        for experiment_type_key, experiment_type_dir in experiment_type_items:  # type: ignore
 
             if experiment_type_dir.level == level:
                 if ses:
@@ -790,7 +799,7 @@ class DataShuttle:
         experiment_type: Union[list, str],
         sub: str,
         ses: Optional[str] = None,
-    ):
+    ) -> Union[ItemsView, zip]:
         """
         Get the list of experiment_types to transfer, either
         directly from user input, or by searching
@@ -816,7 +825,7 @@ class DataShuttle:
 
     def _search_subs_from_project_dir(
         self, local_or_remote: str, experiment_type: str
-    ) -> list:
+    ) -> list[str]:
         """
         Search a datatype directory for all present sub-prefixed directories.
         If remote, ssh or filesystem will be used depending on config.
@@ -835,7 +844,7 @@ class DataShuttle:
 
     def _search_ses_from_sub_dir(
         self, local_or_remote: str, experiment_type: str, sub: str
-    ) -> list:
+    ) -> list[str]:
         """
         See _search_subs_from_project_dir(), same but for searching sessions
         within a subdirectory.
@@ -851,7 +860,7 @@ class DataShuttle:
 
     def _search_experiment_dirs_sub_or_ses_level(
         self, local_or_remote: str, sub: str, ses: Optional[str] = None
-    ):
+    ) -> zip:
         """
         Find experiment type directories in the project base
         directory (e.g. "ephys", "behav"), (by filtering the
@@ -880,7 +889,7 @@ class DataShuttle:
 
     def _search_for_directories(
         self, local_or_remote: str, search_path: Path, search_prefix: str
-    ) -> list:
+    ) -> list[str]:
         """
         Wrapper to determine the method used to search for search
         prefix directories in the search path.
@@ -937,7 +946,7 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     @requires_ssh_configs
-    def _setup_ssh_key(self):
+    def _setup_ssh_key(self) -> None:
         """
         Setup an SSH private / public key pair with
         remote server. First, a private key is generated
@@ -1058,7 +1067,9 @@ class DataShuttle:
 
         return is_valid
 
-    def _get_experiment_type_items(self, experiment_type: Union[str, list]):
+    def _get_experiment_type_items(
+        self, experiment_type: Union[str, list]
+    ) -> Union[ItemsView, zip]:
         """
         Get the .items() structure of the data type, either all of
         them (stored in self._ses_dirs or a single item.

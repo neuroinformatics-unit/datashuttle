@@ -10,12 +10,15 @@ get_canonical_config_required_types()
 """
 
 from pathlib import Path
-from typing import Union, get_args
+from typing import Union, get_args, overload
 
+from datashuttle.configs import Configs
 from datashuttle.utils_mod import canonical_configs, utils
 
+ConfigValueTypes = Union[Path, str, bool, None]
 
-def get_canonical_config_dict():
+
+def get_canonical_config_dict() -> dict:
     """
     The only permitted keys in the
     DataShuttle config.
@@ -34,11 +37,11 @@ def get_canonical_config_dict():
     return config_dict
 
 
-def get_experiment_types():
+def get_experiment_types() -> list[str]:
     return ["use_ephys", "use_behav", "use_imaging", "use_histology"]
 
 
-def get_canonical_config_required_types():
+def get_canonical_config_required_types() -> dict:
     """
     The only permitted types for DataShuttle
     config values.
@@ -62,7 +65,7 @@ def get_canonical_config_required_types():
     return required_types
 
 
-def check_dict_values_and_inform_user(config_dict):
+def check_dict_values_and_inform_user(config_dict: Configs) -> None:
     """
     Central function for performing checks on a
     DataShuttle Configs UserDict class. This should
@@ -123,7 +126,19 @@ def check_dict_values_and_inform_user(config_dict):
         )
 
 
-def handle_cli_or_supplied_config_bools(dict_):
+@overload
+def handle_cli_or_supplied_config_bools(dict_: Configs) -> Configs:
+    ...
+
+
+@overload
+def handle_cli_or_supplied_config_bools(dict_: dict) -> dict:
+    ...
+
+
+def handle_cli_or_supplied_config_bools(
+    dict_: Union[Configs, dict]
+) -> Union[Configs, dict]:
     """
     For supplied configs for CLI input args,
     in some instances bools will as string type.
@@ -134,7 +149,7 @@ def handle_cli_or_supplied_config_bools(dict_):
     return dict_
 
 
-def handle_bool(key, value):
+def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
     """ """
     if key in [
         "use_ephys",
@@ -160,7 +175,7 @@ def handle_bool(key, value):
     return value
 
 
-def check_config_types(config_dict):
+def check_config_types(config_dict: Configs) -> None:
     """
     Check the type of passed configs matched canonical types.
     This is a little awkward as testing types against
@@ -171,19 +186,22 @@ def check_config_types(config_dict):
     two cases explicitly.
     """
     required_types = get_canonical_config_required_types()
-    fail_type = False
+    fail = False
 
     for key in config_dict.keys():
-        if len(get_args(required_types[key])) == 0:
-            if not isinstance(config_dict[key], required_types[key]):
-                fail_type = required_types[key]
-        else:
-            if not isinstance(config_dict[key], get_args(required_types[key])):
-                fail_type = get_args(required_types[key])
 
-        if fail_type:
+        expected_type = required_types[key]
+
+        if len(get_args(required_types[key])) == 0:
+            if not isinstance(config_dict[key], expected_type):
+                fail = True
+        else:
+            if not isinstance(config_dict[key], get_args(expected_type)):
+                fail = True
+
+        if fail:
             utils.raise_error(
                 f"The type of the value at {key} is incorrect, "
-                f"it must be {fail_type}. "
+                f"it must be {expected_type}. "
                 f"Config file was not updated."
             )
