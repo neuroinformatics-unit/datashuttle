@@ -376,7 +376,7 @@ class TestCommandLineInterface:
             experiment_type_to_transfer=[
                 "behav",
                 "ephys",
-                "imaging",
+                "funcimg",
                 "histology",
             ],
             subs_to_upload=subs,
@@ -444,7 +444,7 @@ class TestCommandLineInterface:
         )
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_check_process_names(self, clean_project_name, sep):
+    def test_check_format_names(self, clean_project_name, sep):
         """
         Check that testing the process names function outputs the
         properly processed names to stdout

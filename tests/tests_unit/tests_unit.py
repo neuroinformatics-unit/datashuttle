@@ -47,11 +47,11 @@ class TestUnit:
             ["ses", ["ses- 001", "ses-002"]],
         ],
     )
-    def test_spaces_in_process_names(self, prefix_and_names):
+    def test_spaces_in_format_names(self, prefix_and_names):
 
         prefix, names = prefix_and_names
         with pytest.raises(BaseException) as e:
-            utils.process_names(names, prefix)
+            utils.format_names(names, prefix)
 
         assert str(e.value) == "sub or ses names cannot include spaces."
 

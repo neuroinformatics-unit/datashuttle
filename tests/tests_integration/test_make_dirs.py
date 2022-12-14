@@ -43,13 +43,13 @@ class TestMakeDirs:
     @pytest.mark.parametrize(
         "input", [1, {"test": "one"}, 1.0, ["1", "2", ["three"]]]
     )
-    def test_process_names_bad_input(self, input, prefix):
+    def test_format_names_bad_input(self, input, prefix):
         """
         Test that names passed in incorrect type
         (not str, list) raise appropriate error.
         """
         with pytest.raises(BaseException) as e:
-            utils.process_names(input, prefix)
+            utils.format_names(input, prefix)
 
         assert (
             "Ensure subject and session names are "
@@ -57,37 +57,37 @@ class TestMakeDirs:
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_process_names_duplicate_ele(self, prefix):
+    def test_format_names_duplicate_ele(self, prefix):
         """
         Test that appropriate error is raised when duplicate name
-        is passed to process_names().
+        is passed to format_names().
         """
         with pytest.raises(BaseException) as e:
-            utils.process_names(["1", "2", "3", "3", "4"], prefix)
+            utils.format_names(["1", "2", "3", "3", "4"], prefix)
 
         assert (
             "Subject and session names but all be unique "
             "(i.e. there are no duplicates in list input)" == str(e.value)
         )
 
-    def test_process_names_prefix(self):
+    def test_format_names_prefix(self):
         """
-        Check that process_names correctly prefixes input
+        Check that format_names correctly prefixes input
         with default sub- or ses- prefix.
         """
         prefix = "test_sub-"
 
         # check name is prefixed
-        processed_names = utils.process_names("1", prefix)
+        processed_names = utils.format_names("1", prefix)
         assert processed_names[0] == "test_sub-1"
 
         # check existing prefix is not duplicated
-        processed_names = utils.process_names("test_sub-1", prefix)
+        processed_names = utils.format_names("test_sub-1", prefix)
         assert processed_names[0] == "test_sub-1"
 
         # test mixed list of prefix and unprefixed are prefixed correctly.
         mixed_names = ["1", prefix + "four", "5", prefix + "6"]
-        processed_names = utils.process_names(mixed_names, prefix)
+        processed_names = utils.format_names(mixed_names, prefix)
         assert processed_names == [
             "test_sub-1",
             "test_sub-four",
@@ -142,7 +142,7 @@ class TestMakeDirs:
                     )
                 )
                 test_utils.check_and_cd_dir(
-                    join(base_dir, sub, ses, "imaging")
+                    join(base_dir, sub, ses, "funcimg")
                 )
                 test_utils.check_and_cd_dir(join(base_dir, sub, "histology"))
 
@@ -183,7 +183,7 @@ class TestMakeDirs:
         project._ses_dirs["ephys"].name = "change_ephys"
         project._ses_dirs["behav"].name = "change_behav"
         project._ses_dirs["histology"].name = "change_histology"
-        project._ses_dirs["imaging"].name = "change_imaging"
+        project._ses_dirs["funcimg"].name = "change_funcimg"
 
         # Make the directories
         sub = "sub-001"
@@ -201,7 +201,7 @@ class TestMakeDirs:
             )
         )
         test_utils.check_and_cd_dir(join(base_dir, sub, ses, "change_behav"))
-        test_utils.check_and_cd_dir(join(base_dir, sub, ses, "change_imaging"))
+        test_utils.check_and_cd_dir(join(base_dir, sub, ses, "change_funcimg"))
 
         test_utils.check_and_cd_dir(join(base_dir, sub, "change_histology"))
 
@@ -211,9 +211,9 @@ class TestMakeDirs:
             ["all"],
             ["ephys", "behav"],
             ["ephys", "behav", "histology"],
-            ["ephys", "behav", "histology", "imaging"],
-            ["imaging", "ephys"],
-            ["imaging"],
+            ["ephys", "behav", "histology", "funcimg"],
+            ["funcimg", "ephys"],
+            ["funcimg"],
         ],
     )
     def test_experimental_data_subsection(self, project, files_to_test):
@@ -246,7 +246,7 @@ class TestMakeDirs:
         )
 
         if files_to_test == ["all"]:
-            assert ses_file_names == sorted(["ephys", "behav", "imaging"])
+            assert ses_file_names == sorted(["ephys", "behav", "funcimg"])
         else:
             assert ses_file_names == sorted(files_to_test)
 

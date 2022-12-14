@@ -63,13 +63,13 @@ class TestFileTransfer:
         [
             ["behav"],
             ["ephys"],
-            ["imaging"],
+            ["funcimg"],
             ["histology"],
             ["behav", "ephys"],
             ["ephys", "histology"],
             ["behav", "ephys", "histology"],
-            ["imaging", "histology", "behav"],
-            ["behav", "ephys", "imaging", "histology"],
+            ["funcimg", "histology", "behav"],
+            ["behav", "ephys", "funcimg", "histology"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload"])  # "download"
@@ -106,8 +106,8 @@ class TestFileTransfer:
         [
             ["histology"],
             ["behav", "ephys"],
-            ["imaging", "histology", "behav"],
-            ["behav", "ephys", "imaging", "histology"],
+            ["funcimg", "histology", "behav"],
+            ["behav", "ephys", "funcimg", "histology"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload" "download"])
@@ -148,7 +148,7 @@ class TestFileTransfer:
     @pytest.mark.parametrize("sub_idx_to_upload", [[0], [1, 2], [0, 1, 2]])
     @pytest.mark.parametrize(
         "experiment_type_to_transfer",
-        [["ephys"], ["imaging", "histology", "behav"]],
+        [["ephys"], ["funcimg", "histology", "behav"]],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_specific_ses(
