@@ -32,14 +32,15 @@ def transfer_data(
     dry_run: bool,
 ) -> None:
     """ """
-    extra_arguments = "--create-empty-src-dirs"
+    extra_arguments = rclone_args("create_empty_src_dirs")
+
     if dry_run:
-        extra_arguments += " --dry-run"
+        extra_arguments += f" {rclone_args('dry_run')}"
 
     if upload_or_download == "upload":
 
         call_rclone(
-            f"copy "
+            f"{rclone_args('copy')} "
             f'"{local_filepath}" '
             f'"{rclone_config_name}:'
             f'{remote_filepath}" '
@@ -48,7 +49,7 @@ def transfer_data(
 
     elif upload_or_download == "download":
         call_rclone(
-            f"copy "
+            f"{rclone_args('copy')} "
             f'"{rclone_config_name}:'
             f'{remote_filepath}" '
             f'"{local_filepath}"  '
@@ -114,3 +115,19 @@ def prompt_rclone_download_if_does_not_exist() -> None:
             "the following into your terminal:\n"
             " conda install -c conda-forge rclone"
         )
+
+
+def rclone_args(name: str) -> str:
+    """
+    Central function to hold rclone commands
+    """
+    if name == "dry_run":
+        arg = "--dry-run"
+
+    if name == "create_empty_src_dirs":
+        arg = "--create-empty-src-dirs"
+
+    if name == "copy":
+        arg = "copy"
+
+    return arg
