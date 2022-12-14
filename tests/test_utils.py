@@ -149,7 +149,7 @@ def get_test_config_arguments_dict(
                 "remote_host_username": None,
                 "use_ephys": False,
                 "use_histology": False,
-                "use_imaging": False,
+                "use_funcimg": False,
             }
         )
     else:
@@ -163,7 +163,7 @@ def get_test_config_arguments_dict(
                 "use_ephys": True,
                 "use_behav": False,
                 "use_histology": True,
-                "use_imaging": True,
+                "use_funcimg": True,
             }
         )
 
@@ -174,7 +174,7 @@ def get_default_directory_used():
     return {
         "ephys": True,
         "behav": True,
-        "imaging": True,
+        "funcimg": True,
         "histology": True,
     }
 
@@ -485,7 +485,7 @@ def get_flags():  # TODO: MOVE TO CANONICAL_CONFIGS
         "use_ephys",
         "use_behav",
         "use_histology",
-        "use_imaging",
+        "use_funcimg",
     ]
 
 
