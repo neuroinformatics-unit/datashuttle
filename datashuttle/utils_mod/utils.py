@@ -13,7 +13,7 @@ import re
 import stat
 import warnings
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import appdirs
 import paramiko
@@ -23,7 +23,7 @@ import paramiko
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, list[Path]]) -> None:
+def make_dirs(paths: Union[Path, List[Path]]) -> None:
     """
     For path or list of path, make them if
     they do not already exist.
@@ -50,7 +50,7 @@ def make_datashuttle_metadata_folder(full_path: Path) -> None:
 
 def search_filesystem_path_for_directories(
     search_path_with_prefix: Path,
-) -> list[str]:
+) -> list:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.
@@ -159,7 +159,7 @@ def search_ssh_remote_for_directories(
     cfg: Configs,
     hostkeys: Path,
     ssh_key_path: Path,
-) -> list[str]:
+) -> list:
     """
     Search for the search prefix in the search path over SSH.
     Returns the list of matching directories, files are filtered out.
@@ -178,7 +178,7 @@ def search_ssh_remote_for_directories(
 
 def get_list_of_directory_names_over_sftp(
     sftp, search_path: Path, search_prefix: str
-) -> list[str]:
+) -> list:
 
     all_dirnames = []
     try:
@@ -239,7 +239,7 @@ def get_appdir_path(project_name: str) -> Path:
 
 
 def format_names(
-    names: Union[list[str], str],
+    names: Union[list, str],
     prefix: str,
 ) -> Union[list, str]:
     """
@@ -282,9 +282,7 @@ def format_names(
 # Handle @TO@ flags  -------------------------------------------------------
 
 
-def update_names_with_range_to_flag(
-    names: list[str], prefix: str
-) -> list[str]:
+def update_names_with_range_to_flag(names: list, prefix: str) -> list:
     """
     Given a list of names, check if they contain the @TO@ keyword.
     If so, expand to a range of names. Names including the @TO@
@@ -353,7 +351,7 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
 
 def make_list_of_zero_padded_names_across_range(
     left_number: str, right_number: str, name_start_str: str, name_end_str: str
-) -> list[str]:
+) -> list:
     """
     Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
@@ -386,7 +384,7 @@ def num_leading_zeros(string: str) -> int:
 # Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------------------
 
 
-def update_names_with_datetime(names: list[str]) -> None:
+def update_names_with_datetime(names: list) -> None:
     """
     Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
 
@@ -443,8 +441,8 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
 
 
 def ensure_prefixes_on_list_of_names(
-    names: Union[list[str], str], prefix: str
-) -> list[str]:
+    names: Union[list, str], prefix: str
+) -> list:
     """
     Make sure all elements in the list of names are
     prefixed with the prefix typically "sub-" or "ses-"
