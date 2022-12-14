@@ -221,7 +221,7 @@ class DataShuttle:
 
         """
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("local") / self._top_level_dir_name,
+            self._get_base_dir("local"),
             Path(filepath),
         )
 
@@ -243,7 +243,7 @@ class DataShuttle:
                          will be transferred without actually transferring)
         """
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("remote") / self._top_level_dir_name,
+            self._get_base_dir("remote"),
             Path(filepath),
         )
         self._move_dir_or_file(
