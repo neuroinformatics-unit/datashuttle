@@ -59,26 +59,26 @@ class TestFileTransfer:
         )
 
     @pytest.mark.parametrize(
-        "experiment_type_to_transfer",
+        "data_type_to_transfer",
         [
             ["behav"],
             ["ephys"],
-            ["imaging"],
+            ["funcimg"],
             ["histology"],
             ["behav", "ephys"],
             ["ephys", "histology"],
             ["behav", "ephys", "histology"],
-            ["imaging", "histology", "behav"],
-            ["behav", "ephys", "imaging", "histology"],
+            ["funcimg", "histology", "behav"],
+            ["behav", "ephys", "funcimg", "histology"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload"])  # "download"
-    def test_transfer_empty_folder_specific_experimental_data(
-        self, project, upload_or_download, experiment_type_to_transfer
+    def test_transfer_empty_folder_specific_dataal_data(
+        self, project, upload_or_download, data_type_to_transfer
     ):
         """
-        For the combination of experiment_type directories, make a directory
-        tree with all experiment_type dirs then upload select ones,
+        For the combination of data_type directories, make a directory
+        tree with all data_type dirs then upload select ones,
         checking only the selected ones are uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -89,11 +89,11 @@ class TestFileTransfer:
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
-        transfer_function(subs, sessions, experiment_type_to_transfer)
+        transfer_function(subs, sessions, data_type_to_transfer)
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             os.path.join(base_path_to_check, project._top_level_dir_name),
-            experiment_type_to_transfer,
+            data_type_to_transfer,
             subs,
             sessions,
         )
@@ -102,12 +102,12 @@ class TestFileTransfer:
         "sub_idx_to_upload", [[0], [1], [2], [0, 1], [1, 2], [0, 2], [0, 1, 2]]
     )
     @pytest.mark.parametrize(
-        "experiment_type_to_transfer",
+        "data_type_to_transfer",
         [
             ["histology"],
             ["behav", "ephys"],
-            ["imaging", "histology", "behav"],
-            ["behav", "ephys", "imaging", "histology"],
+            ["funcimg", "histology", "behav"],
+            ["behav", "ephys", "funcimg", "histology"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload" "download"])
@@ -115,7 +115,7 @@ class TestFileTransfer:
         self,
         project,
         upload_or_download,
-        experiment_type_to_transfer,
+        data_type_to_transfer,
         sub_idx_to_upload,
     ):
         """
@@ -132,13 +132,11 @@ class TestFileTransfer:
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
-        transfer_function(
-            subs_to_upload, sessions, experiment_type_to_transfer
-        )
+        transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             os.path.join(base_path_to_check, project._top_level_dir_name),
-            experiment_type_to_transfer,
+            data_type_to_transfer,
             subs_to_upload,
         )
 
@@ -147,15 +145,15 @@ class TestFileTransfer:
     )
     @pytest.mark.parametrize("sub_idx_to_upload", [[0], [1, 2], [0, 1, 2]])
     @pytest.mark.parametrize(
-        "experiment_type_to_transfer",
-        [["ephys"], ["imaging", "histology", "behav"]],
+        "data_type_to_transfer",
+        [["ephys"], ["funcimg", "histology", "behav"]],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_specific_ses(
         self,
         project,
         upload_or_download,
-        experiment_type_to_transfer,
+        data_type_to_transfer,
         sub_idx_to_upload,
         ses_idx_to_upload,
     ):
@@ -174,13 +172,11 @@ class TestFileTransfer:
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         ses_to_upload = [sessions[i] for i in ses_idx_to_upload]
 
-        transfer_function(
-            subs_to_upload, ses_to_upload, experiment_type_to_transfer
-        )
+        transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             os.path.join(base_path_to_check, project._top_level_dir_name),
-            experiment_type_to_transfer,
+            data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
         )
@@ -190,15 +186,15 @@ class TestFileTransfer:
         self, project, upload_or_download
     ):
         """
-        Test the @TO keyword is accepted properly when making a session and
-        transferring it. First pass @TO-formatted sub and sessions to
+        Test the @TO@ keyword is accepted properly when making a session and
+        transferring it. First pass @TO@-formatted sub and sessions to
         make_sub_dir. Then transfer the files (upload or download).
 
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
         """
-        subs = ["001", "02@TO03"]
-        sessions = ["ses-01@TO003_@DATETIME"]
+        subs = ["001", "02@TO@03"]
+        sessions = ["ses-01@TO@003_@DATETIME@"]
 
         project.make_sub_dir(subs, sessions, "all")
 
@@ -210,14 +206,14 @@ class TestFileTransfer:
         transfer_function(subs, "all", "all")
 
         for base_local in [
-            project.get_local_path(),
-            project.get_remote_path(),
+            project.cfg["local_path"],
+            project.cfg["remote_path"],
         ]:
 
             for sub in ["sub-001", "sub-02", "sub-03"]:
 
                 sessions_in_path = test_utils.glob_basenames(
-                    os.path.join(base_local, "rawdata", sub, "ses*")
+                    (base_local / "rawdata" / sub / "ses*").as_posix()
                 )
 
                 datetime_regexp = r"date-\d\d\d\d\d\d\d\d_time-\d\d\d\d\d\d"

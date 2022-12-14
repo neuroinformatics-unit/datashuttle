@@ -145,7 +145,7 @@ class TestCommandLineInterface:
 
         stdout, __ = test_utils.run_cli(
             f" make{sep}sub{sep}dir "
-            f"--experiment_type all "
+            f"--data_type all "
             f"--sub_names one "
             f"--ses_names two "
         )
@@ -153,7 +153,7 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_ == []
-        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
 
@@ -164,9 +164,9 @@ class TestCommandLineInterface:
         As upload_data and download_data take identical args,
         test both together.
         """
-        stdout, __ = test_utils.run_cli(
+        stdout, stderr = test_utils.run_cli(
             f" {upload_or_download}{sep}data "
-            f"--experiment{sep}type all "
+            f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two"
         )
@@ -176,7 +176,7 @@ class TestCommandLineInterface:
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_data "
-            f"--experiment{sep}type all "
+            f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two "
             f"--dry{sep}run"
@@ -221,14 +221,14 @@ class TestCommandLineInterface:
         """
         stdout, stderr = test_utils.run_cli(
             f"{command} "
-            f"--experiment_type all "
+            f"--data_type all "
             f"--sub_names one  two 3 sub-004 sub-w23@ "
             f"--ses_names 5 06 007"
         )
 
         __, kwargs_ = self.decode(stdout)
 
-        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == [
             "one",
             "two",
@@ -331,7 +331,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-hello_world"]
 
         test_utils.run_cli(
-            f"make_sub_dir --experiment_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_dir --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
             setup_project.project_name,
         )
 
@@ -363,20 +363,20 @@ class TestCommandLineInterface:
 
         test_utils.run_cli(
             f"{upload_or_download}_data "
-            f"--experiment_type all "
+            f"--data_type all "
             f"--sub_names all "
             f"--ses_names all",
             setup_project.project_name,
         )
 
-        test_utils.check_experiment_type_sub_ses_uploaded_correctly(
+        test_utils.check_data_type_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
                 base_path_to_check, setup_project._top_level_dir_name
             ),
-            experiment_type_to_transfer=[
+            data_type_to_transfer=[
                 "behav",
                 "ephys",
-                "imaging",
+                "funcimg",
                 "histology",
             ],
             subs_to_upload=subs,
@@ -408,9 +408,11 @@ class TestCommandLineInterface:
             setup_project.project_name,
         )
 
-        assert os.path.isdir(
-            base_path_to_check + f"/rawdata/{subs[1]}/{sessions[0]}/ephys"
+        path_to_check = (
+            base_path_to_check / f"rawdata/{subs[1]}/{sessions[0]}/ephys"
         )
+
+        assert path_to_check.is_dir()
 
     # ----------------------------------------------------------------------------------------------------------
     # Test Errors Propagate from API
@@ -442,13 +444,13 @@ class TestCommandLineInterface:
         )
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_check_process_names(self, clean_project_name, sep):
+    def test_check_format_names(self, clean_project_name, sep):
         """
         Check that testing the process names function outputs the
         properly processed names to stdout
         """
         stdout, __ = test_utils.run_cli(
-            f"check{sep}name{sep}processing sub-001 1@TO02 --prefix sub-",
+            f"check{sep}name{sep}processing sub-001 1@TO@02 --prefix sub-",
             clean_project_name,
         )
 
@@ -521,15 +523,9 @@ class TestCommandLineInterface:
             assert kwargs_.pop(key) == required_options[key]
         assert kwargs_ == {}
 
-    def check_config_args(self, args_, options):
-
-        assert len(args_) == 2
-        assert args_[0] == options.pop("local_path")
-        assert args_[1] is options.pop("ssh_to_remote")
-
     def check_upload_download_args(self, args_, kwargs_, dry_run_is):
 
-        assert kwargs_["experiment_type"] == ["all"]
+        assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
         assert kwargs_["dry_run"] is dry_run_is
