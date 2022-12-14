@@ -1,7 +1,9 @@
 from datashuttle.utils.directory_class import Directory
 
+from .configs import Configs
 
-def get_directories(cfg) -> dict:
+
+def get_directories(cfg: Configs) -> dict:
     return {
         "ephys": Directory(
             name="ephys",

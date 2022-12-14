@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datashuttle.datashuttle import DataShuttle
+
 import glob
 import os
 import warnings
@@ -77,7 +84,10 @@ def process_glob_to_find_data_type_dirs(
 
 
 def search_for_directories(
-    project, local_or_remote: str, search_path: Path, search_prefix: str
+    project: DataShuttle,
+    local_or_remote: str,
+    search_path: Path,
+    search_prefix: str,
 ) -> List[str]:
     """
     Wrapper to determine the method used to search for search
