@@ -10,13 +10,14 @@ from typing import Any, Optional, Union, cast
 
 import paramiko
 
-from datashuttle.configs import Configs
-from datashuttle.utils_mod import canonical_configs, rclone_utils, utils
-from datashuttle.utils_mod.decorators import (  # noqa
+from datashuttle.configs import canonical_configs
+from datashuttle.configs.configs import Configs
+from datashuttle.utils import rclone_utils, utils
+from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
 )
-from datashuttle.utils_mod.directory_class import Directory
+from datashuttle.utils.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class

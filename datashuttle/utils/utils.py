@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from datashuttle.configs import Configs
+    from datashuttle.configs.configs import Configs
 
 import datetime
 import fnmatch

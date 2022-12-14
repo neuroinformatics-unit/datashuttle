@@ -1,6 +1,6 @@
 from functools import wraps
 
-from datashuttle.utils_mod.utils import raise_error
+from datashuttle.utils.utils import raise_error
 
 
 def requires_ssh_configs(func):

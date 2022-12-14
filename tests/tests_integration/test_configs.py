@@ -4,8 +4,8 @@ import pytest
 import test_utils
 import yaml
 
+from datashuttle.configs.canonical_configs import get_canonical_config_dict
 from datashuttle.datashuttle import DataShuttle
-from datashuttle.utils_mod.canonical_configs import get_canonical_config_dict
 
 TEST_PROJECT_NAME = "test_configs"
 

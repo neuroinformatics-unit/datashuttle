@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 
-from datashuttle.configs import Configs
+from datashuttle.configs.configs import Configs
 
 
 def call_rclone(command: str, silent: bool = False) -> int:
