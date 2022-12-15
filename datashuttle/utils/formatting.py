@@ -12,7 +12,7 @@ from . import utils
 def format_names(
     names: Union[List[str], str],
     prefix: str,
-) -> Union[list, str]:
+) -> List[str]:
     """
     Check a single or list of input session or subject names.
     First check the type is correct, next prepend the prefix

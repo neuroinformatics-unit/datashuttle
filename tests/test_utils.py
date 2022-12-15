@@ -7,12 +7,11 @@ import subprocess
 import warnings
 from os.path import join
 
-import appdirs
 import yaml
 
 from datashuttle.configs import canonical_configs
 from datashuttle.datashuttle import DataShuttle
-from datashuttle.utils import rclone
+from datashuttle.utils import rclone, utils
 
 # ----------------------------------------------------------------------------------------------------------
 # Setup and Teardown Test Project
@@ -103,15 +102,10 @@ def delete_all_dirs_in_remote_path(project):
 
 def delete_project_if_it_exists(project_name):
     """"""
-    if os.path.isdir(
-        os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
-    ):
-        shutil.rmtree(
-            os.path.join(
-                appdirs.user_data_dir("DataShuttle"),
-                project_name,
-            )
-        )
+    config_path = utils.get_appdir_path(project_name)
+
+    if config_path.is_dir():
+        shutil.rmtree(config_path)
 
 
 def setup_project_fixture(tmp_path, test_project_name):

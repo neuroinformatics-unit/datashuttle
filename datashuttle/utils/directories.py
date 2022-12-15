@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 import glob
 import os
-import warnings
 from pathlib import Path
 from typing import List, Union
 
@@ -30,12 +29,6 @@ def make_dirs(paths: Union[Path, List[Path]]) -> None:
 
         if not path_.is_dir():
             path_.mkdir(parents=True)
-        else:
-            warnings.warn(
-                "The following directory was not made "
-                "because it already exists"
-                f" {path_.as_posix()}"
-            )
 
 
 def make_datashuttle_metadata_folder(full_path: Path) -> None:
