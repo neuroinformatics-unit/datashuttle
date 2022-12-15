@@ -125,11 +125,65 @@ class DataShuttle:
         else:
             ses_names = self._format_names(ses_names, "ses")
 
+        self._check_no_duplicate_sub_ses_key_values(sub_names, ses_names)
+
         self._make_directory_trees(
             sub_names,
             ses_names,
             data_type,
         )
+
+    def _check_no_duplicate_sub_ses_key_values(
+        self, new_sub_names: List[str], new_ses_names: List[str]
+    ) -> None:
+        """ """
+        base_dir = self._get_base_and_top_level_dir("local")
+
+        if new_ses_names is None:
+            existing_sub_names = self._search_sub_or_ses_level(
+                base_dir, "local"
+            )
+            existing_sub_values = self.get_first_sub_ses_keys(
+                existing_sub_names
+            )
+
+            for new_sub in self.get_first_sub_ses_keys(new_sub_names):
+                if new_sub in existing_sub_values:
+                    utils.raise_error(
+                        f"Cannot make directories. "
+                        f"The key sub-{new_sub} already exists in the project"
+                    )
+
+        # for each subject, check session level
+        for sub in new_sub_names:
+            existing_ses_names = self._search_sub_or_ses_level(
+                base_dir, "local", sub
+            )
+            existing_ses_values = self.get_first_sub_ses_keys(
+                existing_ses_names
+            )
+
+            for new_ses in self.get_first_sub_ses_keys(new_ses_names):
+
+                if new_ses in existing_ses_values:
+                    utils.raise_error(
+                        f"Cannot make directories. "
+                        f"The key ses-{new_ses} for {sub} already exists in the project"
+                    )
+
+    def get_first_sub_ses_keys(self, all_names: List[str]) -> List[str]:
+        """
+        Assumes sub / ses name is in standard form with sub/ses label
+        in the second position e.g. sub-001_id-...
+
+        Only look for folders / file with sub/ses in first key
+        to ignore all other files
+        """
+        return [
+            name.split("-")[1]
+            for name in all_names
+            if name.split("-")[0] in ["sub", "ses"]
+        ]
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
@@ -580,15 +634,18 @@ class DataShuttle:
         local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
+        base_dir = self._get_base_and_top_level_dir(local_or_remote)
 
         # Find sub names to transfer
         if sub_names in ["all", ["all"]]:
             sub_names = self._search_sub_or_ses_level(
-                local_or_remote, search_str=f"{self.cfg.sub_prefix}"
+                base_dir, local_or_remote, search_str=f"{self.cfg.sub_prefix}*"
             )
         else:
             sub_names = self._format_names(sub_names, "sub")
-            sub_names = self._search_for_wildcards(local_or_remote, sub_names)
+            sub_names = self._search_for_wildcards(
+                base_dir, local_or_remote, sub_names
+            )
 
         for sub in sub_names:
 
@@ -603,12 +660,15 @@ class DataShuttle:
             # Find ses names  to transfer
             if ses_names in ["all", ["all"]]:
                 ses_names = self._search_sub_or_ses_level(
-                    local_or_remote, sub, search_str=f"{self.cfg.ses_prefix}*"
+                    base_dir,
+                    local_or_remote,
+                    sub,
+                    search_str=f"{self.cfg.ses_prefix}*",
                 )
             else:
                 ses_names = self._format_names(ses_names, "ses")
                 ses_names = self._search_for_wildcards(
-                    local_or_remote, ses_names, sub=sub
+                    base_dir, local_or_remote, ses_names, sub=sub
                 )
 
             for ses in ses_names:
@@ -705,12 +765,15 @@ class DataShuttle:
         directly from user input, or by searching
         what is available if "all" is passed.
         """
+        base_dir = self._get_base_and_top_level_dir(local_or_remote)
+
         if data_type not in ["all", ["all"]]:
             data_type_items = self._get_data_type_items(
                 data_type,
             )
         else:
             data_type_items = self._search_data_dirs_sub_or_ses_level(
+                base_dir,
                 local_or_remote,
                 sub,
                 ses,
@@ -723,7 +786,7 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     def _search_for_wildcards(
-        self, local_or_remote, all_names, sub=None
+        self, base_dir, local_or_remote, all_names, sub=None
     ) -> List[str]:
         """"""
         new_all_names = []
@@ -733,11 +796,11 @@ class DataShuttle:
 
                 if sub:
                     matching_names = self._search_sub_or_ses_level(
-                        local_or_remote, sub, search_str=name
+                        base_dir, local_or_remote, sub, search_str=name
                     )
                 else:
                     matching_names = self._search_sub_or_ses_level(
-                        local_or_remote, search_str=name
+                        base_dir, local_or_remote, search_str=name
                     )
 
                 new_all_names += matching_names
@@ -748,19 +811,37 @@ class DataShuttle:
             set(new_all_names)
         )  # remove duplicate names in case of wildcard overlap
 
-        return new_all_names  # TODO: thing of more checks
+        return new_all_names
 
     def _search_sub_or_ses_level(
         self,
+        base_dir,
         local_or_remote: str,
-        sub=None,
+        sub: Optional[str] = None,
         ses: Optional[str] = None,
-        search_str="*",
-    ):
+        search_str: str = "*",
+    ) -> List[str]:
+        """
+        Search project folder at the subject or session level
 
-        base_dir = (
-            self._get_base_dir(local_or_remote) / self._top_level_dir_name
-        )
+        local_or_remote: search in local or remote project
+        sub: either a subject name (string) or None. If None, the search
+             is performed at the top_level_dir_name level
+        ses: either a session name (string) or None, This must not
+             be a session name if sub is None. If provided (with sub)
+             then the session dir is searched
+         str: glob-format search string to search at the
+              directory level.
+        """
+        if ses and not sub:
+            utils.raise_error(
+                "cannot pass session to "
+                "_search_sub_or_ses_level() without subject"
+            )
+
+        #   base_dir = (
+        #      self._get_base_dir(local_or_remote) / self._top_level_dir_name
+        # )
 
         if sub:
             base_dir = base_dir / sub
@@ -774,11 +855,19 @@ class DataShuttle:
         return search_results
 
     def _search_data_dirs_sub_or_ses_level(
-        self, local_or_remote, sub, ses=None
+        self, base_dir, local_or_remote, sub, ses=None
     ):
+        """
+        Search  a subject or session directory specifically
+        for data_types. First searches for all folders / files
+        in the directory, and then returns any dirs that
+        match data_type name.
+
+        see _search_sub_or_ses_level() for inputs.
+        """
 
         search_results = self._search_sub_or_ses_level(
-            local_or_remote, sub, ses
+            base_dir, local_or_remote, sub, ses
         )
 
         data_directories = directories.process_glob_to_find_data_type_dirs(
@@ -847,9 +936,16 @@ class DataShuttle:
             base_dir = utils.get_appdir_path(self.project_name)
         return base_dir
 
+    def _get_base_and_top_level_dir(self, local_or_remote: str) -> Path:
+        """"""
+        base_dir = (
+            self._get_base_dir(local_or_remote) / self._top_level_dir_name
+        )
+        return base_dir
+
     def _format_names(
         self, names: Union[list, str], sub_or_ses: str
-    ) -> Union[str, list]:
+    ) -> List[str]:
         """
         :param names: str or list containing sub or ses names
                       (e.g. to make dirs)
