@@ -1,3 +1,4 @@
+import logging
 import re
 from pathlib import Path
 from typing import List, Union
@@ -9,10 +10,24 @@ from . import directories
 # --------------------------------------------------------------------------------------------------------------------
 
 
+def log_and_message(message: str) -> None:
+    logging.info(f"{message}")
+    # message_user(message)
+
+
+def log_and_raise_error(message: str) -> None:
+    pass
+
+
+# logging.info(f"\n{message}\n")
+# raise_error(message)
+
+
 def message_user(message: Union[str, list]) -> None:
     """
     Centralised way to send message.
     """
+    # logging.info(str(message))
     print(message)
 
 
@@ -28,7 +43,7 @@ def raise_error(message: str) -> None:
     """
     Temporary centralized way to raise and error
     """
-    raise BaseException(message)
+    raise BaseException(f"{message}")
 
 
 def get_appdir_path(project_name: str) -> Path:

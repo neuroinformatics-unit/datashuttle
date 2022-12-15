@@ -1,11 +1,14 @@
 import copy
 import json
+import logging
 import os
 from collections.abc import ItemsView
 from pathlib import Path
 from typing import Any, List, Optional, Union, cast
 
+import fancylog as package
 import paramiko
+from fancylog import fancylog
 
 from datashuttle.configs import canonical_directories, load_configs
 from datashuttle.configs.configs import Configs
@@ -57,6 +60,7 @@ class DataShuttle:
         self.project_name = project_name
         self._appdir_path = utils.get_appdir_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
+        self._logging_path = self._appdir_path / "logs"
         self._top_level_dir_name = "rawdata"
 
         self.cfg: Any = None
@@ -71,6 +75,9 @@ class DataShuttle:
             self._set_attributes_after_config_load()
 
         rclone.prompt_rclone_download_if_does_not_exist()
+
+    def get_logging_dir(self):
+        return self._appdir_path / "logs"
 
     def _set_attributes_after_config_load(self) -> None:
         """
@@ -392,8 +399,47 @@ class DataShuttle:
             utils.raise_error(
                 "Must have a config loaded before updating configs."
             )
+
+        self.start_log("Update Config", None)
+
         self.cfg.update_an_entry(option_key, new_info)
         self._set_attributes_after_config_load()
+
+    def supply_config_file(
+        self, input_path_to_config: str, warn: bool = True
+    ) -> None:
+        """
+        Supply own config by passing the path to .yaml config
+        file. The config file must contain exactly the
+        same keys as DataShuttle canonical config, with
+        values the same type. This config will be loaded
+        into datashuttle, and a copy saved in the DataShuttle
+        config folder for future use.
+
+        :param input_path_to_config: Path to the config to
+                                     use as DataShuttle config.
+        :param warn: prompt the user to confirm as supplying
+                     config will overwrite existing config.
+                     Turned off for testing.
+        """
+        self.start_log("Supply Config File")
+
+        path_to_config = Path(input_path_to_config)
+
+        new_cfg = (
+            load_configs.supplied_configs_confirm_overwrite_raise_on_fail(
+                path_to_config, warn
+            )
+        )
+
+        if new_cfg:
+            self.cfg = new_cfg
+            self._set_attributes_after_config_load()
+            self.cfg.file_path = self._config_path
+            self.cfg.dump_to_file()
+            utils.log_and_message(
+                f"Update successful. New config file: \n {self._get_json_dumps_config()}"
+            )
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
@@ -429,41 +475,7 @@ class DataShuttle:
         """
         Print the current configs to the terminal.
         """
-        copy_dict = copy.deepcopy(self.cfg.data)
-        self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
-        utils.message_user(json.dumps(copy_dict, indent=4))
-
-    def supply_config_file(
-        self, input_path_to_config: str, warn: bool = True
-    ) -> None:
-        """
-        Supply own config by passing the path to .yaml config
-        file. The config file must contain exactly the
-        same keys as DataShuttle canonical config, with
-        values the same type. This config will be loaded
-        into datashuttle, and a copy saved in the DataShuttle
-        config folder for future use.
-
-        :param input_path_to_config: Path to the config to
-                                     use as DataShuttle config.
-        :param warn: prompt the user to confirm as supplying
-                     config will overwrite existing config.
-                     Turned off for testing.
-        """
-        path_to_config = Path(input_path_to_config)
-
-        new_cfg = (
-            load_configs.supplied_configs_confirm_overwrite_raise_on_fail(
-                path_to_config, warn
-            )
-        )
-
-        if new_cfg:
-            self.cfg = new_cfg
-            self._set_attributes_after_config_load()
-            self.cfg.file_path = self._config_path
-            self.cfg.dump_to_file()
-            utils.message_user("Update successful.")
+        utils.message_user(self._get_json_dumps_config())
 
     @staticmethod
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
@@ -885,3 +897,23 @@ class DataShuttle:
             connection_method = self.cfg["connection_method"]
 
         return f"remote_{self.project_name}_{connection_method}"
+
+    def start_log(self, command: str, variables: Optional[Any] = None):
+        """"""
+        if not self._logging_path.is_dir():
+            directories.make_dirs(self._logging_path)
+
+        fancylog.start_logging(
+            self.get_logging_dir(),
+            package,
+            variables=variables,
+            verbose=False,
+            timestamp=True,
+            file_log_level="INFO",
+        )
+        logging.info(f"Starting {command}")
+
+    def _get_json_dumps_config(self):
+        copy_dict = copy.deepcopy(self.cfg.data)
+        self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
+        return json.dumps(copy_dict, indent=4)

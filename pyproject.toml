@@ -16,6 +16,7 @@ dependencies = [
     "PyYAML",
     "requests",
     "rich",
+    "fancylog",
 ]
 
 classifiers = [

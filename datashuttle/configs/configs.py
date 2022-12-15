@@ -1,6 +1,5 @@
 import copy
 import traceback
-import warnings
 from collections import UserDict
 from collections.abc import ItemsView, KeysView, ValuesView
 from pathlib import Path
@@ -125,7 +124,7 @@ class Configs(UserDict):
                     )
         else:
             self[option_key] = original_value
-            warnings.warn(f"{option_key} was not updated")
+            utils.log_and_message(f"{option_key} was not updated")
 
     def safe_check_current_dict_is_valid(self) -> bool:
         """ """
@@ -133,7 +132,7 @@ class Configs(UserDict):
             self.check_dict_values_and_inform_user()
             return True
         except BaseException:
-            utils.message_user(traceback.format_exc())
+            utils.log_and_message(traceback.format_exc())
             return False
 
     # --------------------------------------------------------------------

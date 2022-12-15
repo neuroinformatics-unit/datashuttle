@@ -70,8 +70,8 @@ def supplied_configs_confirm_overwrite_raise_on_fail(
         )
 
         if input_ != "y":
+            utils.log_and_message("y not pressed. Configs not updated.")
             return None
-
     try:
 
         new_cfg = Configs(path_to_config, None)
@@ -83,8 +83,8 @@ def supplied_configs_confirm_overwrite_raise_on_fail(
         return new_cfg
 
     except BaseException:
-        utils.message_user(traceback.format_exc())
-        utils.raise_error(
+        utils.log_and_message(traceback.format_exc())
+        utils.log_and_message(
             "Could not load config file. Please check that "
             "the file is formatted correctly. "
             "Config file was not updated."
