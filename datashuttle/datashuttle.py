@@ -582,12 +582,11 @@ class DataShuttle:
         )
 
         # Find sub names to transfer
-        if sub_names not in ["all", ["all"]]:
-            sub_names = self._format_names(sub_names, "sub")
+        if sub_names in ["all", ["all"]]:
+            sub_names = self._search_sub_or_ses_level(local_or_remote, search_str=f"{self.cfg.sub_prefix}")
         else:
-            sub_names = self._search_subs_from_project_dir(
-                local_or_remote,
-            )
+            sub_names = self._format_names(sub_names, "sub")
+      #      sub_names = self._expand_wildcards(sub_names, "sub")
 
         for sub in sub_names:
 
@@ -600,10 +599,11 @@ class DataShuttle:
             )
 
             # Find ses names  to transfer
-            if ses_names not in ["all", ["all"]]:
-                ses_names = self._format_names(ses_names, "ses")
+            if ses_names in ["all", ["all"]]:
+                ses_names = self._search_sub_or_ses_level(local_or_remote, sub, search_str=f"{self.cfg.ses_prefix}*")
             else:
-                ses_names = self._search_ses_from_sub_dir(local_or_remote, sub)
+                ses_names = self._format_names(ses_names, "ses")
+     #           ses_names = self._exapand_wildcards(ses_names, "ses")
 
             for ses in ses_names:
 
@@ -709,76 +709,63 @@ class DataShuttle:
                 sub,
                 ses,
             )
+
         return data_type_items
 
     # --------------------------------------------------------------------------------------------------------------------
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _search_data_dirs_sub_or_ses_level(
-        self, local_or_remote: str, sub: str, ses: Optional[str] = None
-    ) -> zip:
-        """
-        Find data_type directories in the project base
-        directory (e.g. "ephys", "behav"), (by filtering the
-        names of all directories present).  Return these in the
-        same format as dict.items()
+    def _search_for_wildcards(self, local_or_remote, all_names, sub=None) -> List[str]:
+        """"""
 
-        :param local_or_remote: "local" or "remote
-        """
+        new_all_names = []
+        for name in all_names:
+            if "@*@" in name:
+
+                name.replace("@TO@", "*")
+
+                if sub:
+                    matching_names = self._search_sub_or_ses_level(local_or_remote,
+                                                                   sub,
+                                                                   name)
+                else:
+                    matching_names = self._search_sub_or_ses_level(local_or_remote,
+                                                                   name)
+
+                new_all_names += matching_names
+            else:
+                new_all_names += [name]
+
+    def _search_sub_or_ses_level(self,
+                                local_or_remote: str, sub=None, ses: Optional[str] = None, search_str="*"):
+
         base_dir = (
             self._get_base_dir(local_or_remote)
             / self._top_level_dir_name
-            / sub
         )
+
+        if sub:
+            base_dir = base_dir / sub
+
         if ses:
             base_dir = base_dir / ses
 
-        directory_names = directories.search_for_directories(
-            self, local_or_remote, base_dir, "*"
+        search_results = directories.search_for_directories(
+            self, local_or_remote, base_dir, search_str
         )
+        return search_results
+
+    def _search_data_dirs_sub_or_ses_level(self, local_or_remote, sub, ses=None):
+
+        search_results = self._search_sub_or_ses_level(local_or_remote, sub, ses)
 
         data_directories = directories.process_glob_to_find_data_type_dirs(
-            directory_names,
+            search_results,
             self._data_type_dirs,
         )
 
         return data_directories
-
-    def _search_subs_from_project_dir(
-        self,
-        local_or_remote: str,
-    ) -> List[str]:
-        """
-        Search a datatype directory for all present sub-prefixed directories.
-        If remote, ssh or filesystem will be used depending on config.
-
-        :param local_or_remote: "local" or "remote"
-        """
-        search_path = self._make_path(
-            local_or_remote, [self._top_level_dir_name]
-        )
-
-        search_prefix = self.cfg.sub_prefix + "*"
-        return directories.search_for_directories(
-            self, local_or_remote, search_path, search_prefix
-        )
-
-    def _search_ses_from_sub_dir(
-        self, local_or_remote: str, sub: str
-    ) -> List[str]:
-        """
-        See _search_subs_from_project_dir(), same but for searching sessions
-        within a subdirectory.
-        """
-        search_path = self._make_path(
-            local_or_remote, [self._top_level_dir_name, sub]
-        )
-        search_prefix = self.cfg.ses_prefix + "*"
-
-        return directories.search_for_directories(
-            self, local_or_remote, search_path, search_prefix
-        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
