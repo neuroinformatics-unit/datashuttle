@@ -6,6 +6,7 @@ import simplejson
 
 from datashuttle.configs import load_configs
 from datashuttle.datashuttle import DataShuttle
+from datashuttle.utils import utils
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
@@ -372,6 +373,22 @@ upload_data_parser.add_argument(
     help=help("optional_flag_default_false"),
 )
 
+# Upload All --------------------------------------------------------------------------
+
+
+def upload_all(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.upload_all()
+
+
+upload_all_parser = subparsers.add_parser(
+    "upload-all",
+    aliases=["upload_all"],
+    description=DataShuttle.upload_all.__doc__,
+)
+upload_all_parser.set_defaults(func=upload_all)
+
 
 # Download Data --------------------------------------------------------------------------
 
@@ -433,6 +450,22 @@ download_data_parser.add_argument(
     action="store_true",
     help=help("optional_flag_default_false"),
 )
+
+# Download All --------------------------------------------------------------------------
+
+
+def download_all(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.download_all()
+
+
+download_all_parser = subparsers.add_parser(
+    "download-all",
+    aliases=["download_all"],
+    description=DataShuttle.download_all.__doc__,
+)
+download_all_parser.set_defaults(func=download_all)
 
 
 # Upload Project Dir or File -----------------------------------------------------------
@@ -519,7 +552,7 @@ download_project_dir_or_file_parser.add_argument(
 def get_local_path(*args: Any) -> None:
     """"""
     project = args[0]
-    print(project.get_local_path())
+    project.get_local_path()
 
 
 get_local_path_parser = subparsers.add_parser(
@@ -536,7 +569,7 @@ get_local_path_parser.set_defaults(func=get_local_path)
 def get_appdir_path(*args: Any) -> None:
     """"""
     project = args[0]
-    print(project.get_appdir_path())
+    project.get_appdir_path()
 
 
 get_appdir_path_parser = subparsers.add_parser(
@@ -553,7 +586,7 @@ get_appdir_path_parser.set_defaults(func=get_appdir_path)
 def get_config_path(*args: Any) -> None:
     """"""
     project = args[0]
-    print(project.get_config_path())
+    project.get_config_path()
 
 
 get_config_path_parser = subparsers.add_parser(
@@ -570,7 +603,7 @@ get_config_path_parser.set_defaults(func=get_config_path)
 def get_remote_path(*args: Any) -> None:
     """"""
     project = args[0]
-    print(project.get_remote_path())
+    project.get_remote_path()
 
 
 get_remote_path_parser = subparsers.add_parser(
@@ -695,7 +728,7 @@ def main() -> None:
     if len(vars(args)) > 1:
         args.func(project, args)
     else:
-        print(
+        utils.message_user(
             f"Datashuttle project: {args.project_name}. "
             f"Add additional commands, see --help for details"
         )

@@ -448,7 +448,9 @@ def get_rawdata_path(project, local_or_remote="local"):
     return os.path.join(base_path, project._top_level_dir_name)
 
 
-def handle_upload_or_download(project, upload_or_download):
+def handle_upload_or_download(
+    project, upload_or_download, use_all_alias=False
+):
     """
     To keep things consistent and avoid the pain of writing
     files over SSH, to test download just swap the remote
@@ -463,10 +465,14 @@ def handle_upload_or_download(project, upload_or_download):
         project.update_config("local_path", remote_path)
         project.update_config("remote_path", local_path)
 
-        transfer_function = project.download_data
+        transfer_function = (
+            project.download_all if use_all_alias else project.download_data
+        )
 
     else:
-        transfer_function = project.upload_data
+        transfer_function = (
+            project.upload_all if use_all_alias else project.upload_data
+        )
 
     return transfer_function, remote_path
 
