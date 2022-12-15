@@ -136,7 +136,7 @@ class TestMakeDirs:
     def test_generate_dirs_default_ses(self, project):
         """
         Make a subject directories with full tree. Don't specify
-        session name (it will default to ses-001).
+        session name (it will default to no sessions).
 
         Check that the directory tree is created correctly. Pass
         a dict that indicates if each subdir is used (to avoid
@@ -150,7 +150,7 @@ class TestMakeDirs:
             project,
             base_dir=test_utils.get_rawdata_path(project),
             subs=["sub-1_1", "sub-two-2", "sub-3_3-3=3"],
-            sessions=["ses-001"],
+            sessions=[],
             directory_used=test_utils.get_default_directory_used(),
         )
 
