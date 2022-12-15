@@ -126,7 +126,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
     be in string format rather than bool or None. Parse these
     here. This assumes bool are always passed as flags.
     """
-    if key in [canonical_configs.get_flags()]:
+    if key in canonical_configs.get_flags():
 
         if value in ["None", "none", None]:
             value = False

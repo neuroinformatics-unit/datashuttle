@@ -25,6 +25,8 @@ import pytest
 import simplejson
 import test_utils
 
+from datashuttle.configs import canonical_configs
+
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 
@@ -86,7 +88,7 @@ class TestCommandLineInterface:
         __, kwargs_ = self.decode(stdout)
 
         # Update with flags that should always return false
-        flags = test_utils.get_flags()
+        flags = canonical_configs.get_flags()
         flags.remove("use_behav")
         required_options.update(dict(zip(flags, [False] * len(flags))))
 
@@ -273,10 +275,7 @@ class TestCommandLineInterface:
             )
             default_configs[key] = value
 
-            try:
-                test_utils.check_config_file(config_path, default_configs)
-            except:
-                breakpoint()
+            test_utils.check_config_file(config_path, default_configs)
 
     def test_make_config_file_defaults(
         self,
@@ -504,7 +503,7 @@ class TestCommandLineInterface:
                 else:
                     value = str(value)
 
-                if key in test_utils.get_flags():
+                if key in canonical_configs.get_flags():
                     if value == "True":
                         argument = f"--{key.replace('_', sep)}"
                     else:
