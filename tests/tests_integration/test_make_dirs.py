@@ -70,6 +70,44 @@ class TestMakeDirs:
             "(i.e. there are no duplicates in list input)" == str(e.value)
         )
 
+    def test_duplicate_ses_or_sub_key_value_pair(self, project):
+        """
+        Test the check that if a duplicate key is attempt to be made
+        when making a directory e.g. sub-001 exists, then make sub-001_id-123.
+        After this check, make a dir that can be made (e.g. sub-003)
+        just to make sure it does not raise error.
+
+        Then, within an already made subject, try and make a session
+        with a ses that already exists and check.
+        """
+        # Check trying to make sub only
+        subs = ["sub-001_id-123", "sub-002_id-124"]
+        project.make_sub_dir(subs)
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_dir("sub-001_id-125")
+
+        assert (
+            str(e.value) == "Cannot make directories. "
+            "The key sub-001 already exists in the project"
+        )
+
+        project.make_sub_dir("sub-003")
+
+        # check try and make ses within a sub
+        sessions = ["ses-001_date-1605", "ses-002_date-1606"]
+        project.make_sub_dir(subs, sessions)
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_dir("sub-001_id-123", "ses-002_date-1607")
+
+        assert (
+            str(e.value) == "Cannot make directories. "
+            "The key ses-002 for sub-001_id-123 already exists in the project"
+        )
+
+        project.make_sub_dir("sub-001", "ses-003")
+
     def test_format_names_prefix(self):
         """
         Check that format_names correctly prefixes input
@@ -98,7 +136,7 @@ class TestMakeDirs:
     def test_generate_dirs_default_ses(self, project):
         """
         Make a subject directories with full tree. Don't specify
-        session name (it will default to ses-001).
+        session name (it will default to no sessions).
 
         Check that the directory tree is created correctly. Pass
         a dict that indicates if each subdir is used (to avoid
@@ -112,7 +150,7 @@ class TestMakeDirs:
             project,
             base_dir=test_utils.get_rawdata_path(project),
             subs=["sub-1_1", "sub-two-2", "sub-3_3-3=3"],
-            sessions=["ses-001"],
+            sessions=[],
             directory_used=test_utils.get_default_directory_used(),
         )
 

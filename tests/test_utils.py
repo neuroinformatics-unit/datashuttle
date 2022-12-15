@@ -7,12 +7,11 @@ import subprocess
 import warnings
 from os.path import join
 
-import appdirs
 import yaml
 
 from datashuttle.configs import canonical_configs
 from datashuttle.datashuttle import DataShuttle
-from datashuttle.utils import rclone
+from datashuttle.utils import rclone, utils
 
 # ----------------------------------------------------------------------------------------------------------
 # Setup and Teardown Test Project
@@ -103,15 +102,10 @@ def delete_all_dirs_in_remote_path(project):
 
 def delete_project_if_it_exists(project_name):
     """"""
-    if os.path.isdir(
-        os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
-    ):
-        shutil.rmtree(
-            os.path.join(
-                appdirs.user_data_dir("DataShuttle"),
-                project_name,
-            )
-        )
+    config_path = utils.get_appdir_path(project_name)
+
+    if config_path.is_dir():
+        shutil.rmtree(config_path)
 
 
 def setup_project_fixture(tmp_path, test_project_name):
@@ -448,7 +442,9 @@ def get_rawdata_path(project, local_or_remote="local"):
     return os.path.join(base_path, project._top_level_dir_name)
 
 
-def handle_upload_or_download(project, upload_or_download):
+def handle_upload_or_download(
+    project, upload_or_download, use_all_alias=False
+):
     """
     To keep things consistent and avoid the pain of writing
     files over SSH, to test download just swap the remote
@@ -463,10 +459,14 @@ def handle_upload_or_download(project, upload_or_download):
         project.update_config("local_path", remote_path)
         project.update_config("remote_path", local_path)
 
-        transfer_function = project.download_data
+        transfer_function = (
+            project.download_all if use_all_alias else project.download_data
+        )
 
     else:
-        transfer_function = project.upload_data
+        transfer_function = (
+            project.upload_all if use_all_alias else project.upload_data
+        )
 
     return transfer_function, remote_path
 
