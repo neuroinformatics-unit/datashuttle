@@ -110,8 +110,8 @@ class DataShuttle:
                                 within the directory (if not already, these
                                 will be prefixed with sub/ses identifier)
         :param ses_names:       session names (same format as subject name).
-                                If no session is provided, defaults to
-                                "ses-001".
+                                If no session is provided, no session-level
+                                directories are made.
         :param data_type: The data_type to make the directory
                                 in (e.g. "ephys", "behav", "histology"). If
                                 "all" is selected, directory will be created
@@ -119,10 +119,7 @@ class DataShuttle:
         """
         sub_names = self._format_names(sub_names, "sub")
 
-        if ses_names is None:
-            ses_names = [self.cfg.ses_prefix + "001"]
-
-        else:
+        if ses_names is not None:
             ses_names = self._format_names(ses_names, "ses")
 
         directories.check_no_duplicate_sub_ses_key_values(
@@ -131,6 +128,9 @@ class DataShuttle:
             new_sub_names=sub_names,
             new_ses_names=ses_names,
         )
+
+        if ses_names is None:
+            ses_names = []
 
         self._make_directory_trees(
             sub_names,

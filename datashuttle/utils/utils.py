@@ -1,3 +1,4 @@
+import re
 from pathlib import Path
 from typing import List, Union
 
@@ -75,7 +76,7 @@ def get_first_sub_ses_keys(all_names: List[str]) -> List[str]:
     to ignore all other files
     """
     return [
-        name.split("-")[1]
+        re.split("-|_", name)[1]
         for name in all_names
-        if name.split("-")[0] in ["sub", "ses"]
+        if re.split("-|_", name)[0] in ["sub", "ses"]
     ]

@@ -197,7 +197,7 @@ def check_no_duplicate_sub_ses_key_values(
     project: DataShuttle,
     base_dir: Path,
     new_sub_names: List[str],
-    new_ses_names: List[str],
+    new_ses_names: Optional[List[str]] = None,
 ) -> None:
     """"""
     if new_ses_names is None:
@@ -212,21 +212,23 @@ def check_no_duplicate_sub_ses_key_values(
                     f"Cannot make directories. "
                     f"The key sub-{new_sub} already exists in the project"
                 )
+    else:
+        # for each subject, check session level
+        for sub in new_sub_names:
+            existing_ses_names = search_sub_or_ses_level(
+                project, base_dir, "local", sub
+            )
+            existing_ses_values = utils.get_first_sub_ses_keys(
+                existing_ses_names
+            )
 
-    # for each subject, check session level
-    for sub in new_sub_names:
-        existing_ses_names = search_sub_or_ses_level(
-            project, base_dir, "local", sub
-        )
-        existing_ses_values = utils.get_first_sub_ses_keys(existing_ses_names)
+            for new_ses in utils.get_first_sub_ses_keys(new_ses_names):
 
-        for new_ses in utils.get_first_sub_ses_keys(new_ses_names):
-
-            if new_ses in existing_ses_values:
-                utils.raise_error(
-                    f"Cannot make directories. "
-                    f"The key ses-{new_ses} for {sub} already exists in the project"
-                )
+                if new_ses in existing_ses_values:
+                    utils.raise_error(
+                        f"Cannot make directories. "
+                        f"The key ses-{new_ses} for {sub} already exists in the project"
+                    )
 
 
 def search_for_directories(
