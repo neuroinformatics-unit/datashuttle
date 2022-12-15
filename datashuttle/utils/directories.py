@@ -13,7 +13,7 @@ from typing import List, Optional, Union
 from . import ssh, utils
 
 # --------------------------------------------------------------------------------------------------------------------
-# Directory Utils
+# Make Dirs
 # --------------------------------------------------------------------------------------------------------------------
 
 
@@ -36,7 +36,50 @@ def make_datashuttle_metadata_folder(full_path: Path) -> None:
     make_dirs(meta_folder_path)
 
 
-# high level
+def check_no_duplicate_sub_ses_key_values(
+    project: DataShuttle,
+    base_dir: Path,
+    new_sub_names: List[str],
+    new_ses_names: Optional[List[str]] = None,
+) -> None:
+    """"""
+    if new_ses_names is None:
+        existing_sub_names = search_sub_or_ses_level(
+            project, base_dir, "local"
+        )
+        existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
+
+        for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
+            if new_sub in existing_sub_values:
+                utils.raise_error(
+                    f"Cannot make directories. "
+                    f"The key sub-{new_sub} already exists in the project"
+                )
+    else:
+        # for each subject, check session level
+        for sub in new_sub_names:
+            existing_ses_names = search_sub_or_ses_level(
+                project, base_dir, "local", sub
+            )
+            existing_ses_values = utils.get_first_sub_ses_keys(
+                existing_ses_names
+            )
+
+            for new_ses in utils.get_first_sub_ses_keys(new_ses_names):
+
+                if new_ses in existing_ses_values:
+                    utils.raise_error(
+                        f"Cannot make directories. "
+                        f"The key ses-{new_ses} for {sub} already exists in the project"
+                    )
+
+
+# --------------------------------------------------------------------
+# Search Existing Dirs
+# --------------------------------------------------------------------
+
+# Search Subjects / Sessions
+# --------------------------------------------------------------------
 
 
 def search_sub_or_ses_level(
@@ -106,47 +149,6 @@ def search_data_dirs_sub_or_ses_level(
     return data_directories
 
 
-# low level
-def search_filesystem_path_for_directories(
-    search_path_with_prefix: Path,
-) -> List[str]:
-    """
-    Use glob to search the full search path (including prefix) with glob.
-    Files are filtered out of results, returning directories only.
-    """
-    all_dirnames = []
-    for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
-        if os.path.isdir(file_or_dir):
-            all_dirnames.append(os.path.basename(file_or_dir))
-    return all_dirnames
-
-
-def process_glob_to_find_data_type_dirs(
-    directory_names: list,
-    data_type_dirs: dict,
-) -> zip:
-    """
-    Process the results of glob on a sub or session level,
-    which could contain any kind of folder / file.
-    Find the data_type files and return in
-    a format that mirros dict.items()
-    """
-    ses_dir_keys = []
-    ses_dir_values = []
-    for dir_name in directory_names:
-        data_type_key = [
-            key
-            for key, value in data_type_dirs.items()
-            if value.name == dir_name
-        ]
-
-        if data_type_key:
-            ses_dir_keys.append(data_type_key[0])
-            ses_dir_values.append(data_type_dirs[data_type_key[0]])
-
-    return zip(ses_dir_keys, ses_dir_values)
-
-
 def search_for_wildcards(
     project,
     base_dir: Path,
@@ -193,42 +195,38 @@ def search_for_wildcards(
     return new_all_names
 
 
-def check_no_duplicate_sub_ses_key_values(
-    project: DataShuttle,
-    base_dir: Path,
-    new_sub_names: List[str],
-    new_ses_names: Optional[List[str]] = None,
-) -> None:
-    """"""
-    if new_ses_names is None:
-        existing_sub_names = search_sub_or_ses_level(
-            project, base_dir, "local"
-        )
-        existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
+# Search Data Types
+# --------------------------------------------------------------------
 
-        for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
-            if new_sub in existing_sub_values:
-                utils.raise_error(
-                    f"Cannot make directories. "
-                    f"The key sub-{new_sub} already exists in the project"
-                )
-    else:
-        # for each subject, check session level
-        for sub in new_sub_names:
-            existing_ses_names = search_sub_or_ses_level(
-                project, base_dir, "local", sub
-            )
-            existing_ses_values = utils.get_first_sub_ses_keys(
-                existing_ses_names
-            )
 
-            for new_ses in utils.get_first_sub_ses_keys(new_ses_names):
+def process_glob_to_find_data_type_dirs(
+    directory_names: list,
+    data_type_dirs: dict,
+) -> zip:
+    """
+    Process the results of glob on a sub or session level,
+    which could contain any kind of folder / file.
+    Find the data_type files and return in
+    a format that mirros dict.items()
+    """
+    ses_dir_keys = []
+    ses_dir_values = []
+    for dir_name in directory_names:
+        data_type_key = [
+            key
+            for key, value in data_type_dirs.items()
+            if value.name == dir_name
+        ]
 
-                if new_ses in existing_ses_values:
-                    utils.raise_error(
-                        f"Cannot make directories. "
-                        f"The key ses-{new_ses} for {sub} already exists in the project"
-                    )
+        if data_type_key:
+            ses_dir_keys.append(data_type_key[0])
+            ses_dir_values.append(data_type_dirs[data_type_key[0]])
+
+    return zip(ses_dir_keys, ses_dir_values)
+
+
+# Low level search functions
+# --------------------------------------------------------------------
 
 
 def search_for_directories(
@@ -261,4 +259,18 @@ def search_for_directories(
         all_dirnames = search_filesystem_path_for_directories(
             search_path / search_prefix
         )
+    return all_dirnames
+
+
+def search_filesystem_path_for_directories(
+    search_path_with_prefix: Path,
+) -> List[str]:
+    """
+    Use glob to search the full search path (including prefix) with glob.
+    Files are filtered out of results, returning directories only.
+    """
+    all_dirnames = []
+    for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
+        if os.path.isdir(file_or_dir):
+            all_dirnames.append(os.path.basename(file_or_dir))
     return all_dirnames
