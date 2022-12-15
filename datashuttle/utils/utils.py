@@ -1,8 +1,6 @@
 from pathlib import Path
 from typing import Union
 
-import appdirs
-
 from . import directories
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -40,7 +38,7 @@ def get_appdir_path(project_name: str) -> Path:
     not good practice. Use appdirs module to get the
     AppData cross-platform and save / load all files form here .
     """
-    base_path = Path(appdirs.user_data_dir("DataShuttle")) / project_name
+    base_path = Path.home() / ".datashuttle" / project_name
 
     if not base_path.is_dir():
         directories.make_dirs(base_path)
