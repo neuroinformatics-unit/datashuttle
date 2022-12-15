@@ -583,10 +583,12 @@ class DataShuttle:
 
         # Find sub names to transfer
         if sub_names in ["all", ["all"]]:
-            sub_names = self._search_sub_or_ses_level(local_or_remote, search_str=f"{self.cfg.sub_prefix}")
+            sub_names = self._search_sub_or_ses_level(
+                local_or_remote, search_str=f"{self.cfg.sub_prefix}"
+            )
         else:
             sub_names = self._format_names(sub_names, "sub")
-      #      sub_names = self._expand_wildcards(sub_names, "sub")
+            sub_names = self._search_for_wildcards(local_or_remote, sub_names)
 
         for sub in sub_names:
 
@@ -600,10 +602,14 @@ class DataShuttle:
 
             # Find ses names  to transfer
             if ses_names in ["all", ["all"]]:
-                ses_names = self._search_sub_or_ses_level(local_or_remote, sub, search_str=f"{self.cfg.ses_prefix}*")
+                ses_names = self._search_sub_or_ses_level(
+                    local_or_remote, sub, search_str=f"{self.cfg.ses_prefix}*"
+                )
             else:
                 ses_names = self._format_names(ses_names, "ses")
-     #           ses_names = self._exapand_wildcards(ses_names, "ses")
+                ses_names = self._search_for_wildcards(
+                    local_or_remote, ses_names, sub=sub
+                )
 
             for ses in ses_names:
 
@@ -716,33 +722,44 @@ class DataShuttle:
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _search_for_wildcards(self, local_or_remote, all_names, sub=None) -> List[str]:
+    def _search_for_wildcards(
+        self, local_or_remote, all_names, sub=None
+    ) -> List[str]:
         """"""
-
         new_all_names = []
         for name in all_names:
             if "@*@" in name:
-
-                name.replace("@TO@", "*")
+                name = name.replace("@*@", "*")
 
                 if sub:
-                    matching_names = self._search_sub_or_ses_level(local_or_remote,
-                                                                   sub,
-                                                                   name)
+                    matching_names = self._search_sub_or_ses_level(
+                        local_or_remote, sub, search_str=name
+                    )
                 else:
-                    matching_names = self._search_sub_or_ses_level(local_or_remote,
-                                                                   name)
+                    matching_names = self._search_sub_or_ses_level(
+                        local_or_remote, search_str=name
+                    )
 
                 new_all_names += matching_names
             else:
                 new_all_names += [name]
 
-    def _search_sub_or_ses_level(self,
-                                local_or_remote: str, sub=None, ses: Optional[str] = None, search_str="*"):
+        new_all_names = list(
+            set(new_all_names)
+        )  # remove duplicate names in case of wildcard overlap
+
+        return new_all_names  # TODO: thing of more checks
+
+    def _search_sub_or_ses_level(
+        self,
+        local_or_remote: str,
+        sub=None,
+        ses: Optional[str] = None,
+        search_str="*",
+    ):
 
         base_dir = (
-            self._get_base_dir(local_or_remote)
-            / self._top_level_dir_name
+            self._get_base_dir(local_or_remote) / self._top_level_dir_name
         )
 
         if sub:
@@ -756,9 +773,13 @@ class DataShuttle:
         )
         return search_results
 
-    def _search_data_dirs_sub_or_ses_level(self, local_or_remote, sub, ses=None):
+    def _search_data_dirs_sub_or_ses_level(
+        self, local_or_remote, sub, ses=None
+    ):
 
-        search_results = self._search_sub_or_ses_level(local_or_remote, sub, ses)
+        search_results = self._search_sub_or_ses_level(
+            local_or_remote, sub, ses
+        )
 
         data_directories = directories.process_glob_to_find_data_type_dirs(
             search_results,
