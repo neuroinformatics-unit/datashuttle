@@ -31,8 +31,12 @@ class TestFileTransfer:
     # ----------------------------------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("use_all_alias", [True, False])
     def test_transfer_empty_folder_structure(
-        self, project, upload_or_download
+        self,
+        project,
+        upload_or_download,
+        use_all_alias,
     ):
         """
         First make a project (folders only) locally.
@@ -46,9 +50,14 @@ class TestFileTransfer:
         (
             transfer_function,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, use_all_alias=use_all_alias
+        )
 
-        transfer_function("all", "all", "all")
+        if use_all_alias:
+            transfer_function()
+        else:
+            transfer_function("all", "all", "all")
 
         test_utils.check_directory_tree_is_correct(
             project,

@@ -183,6 +183,22 @@ class DataShuttle:
             "download", sub_names, ses_names, data_type, dry_run
         )
 
+    def upload_all(self):
+        """
+        Convenience function to upload all data.
+        Alias for:
+            project.upload_data("all", "all", "all")
+        """
+        self.upload_data("all", "all", "all")
+
+    def download_all(self):
+        """
+        Convenience function to download all data.
+        Alias for:
+            project.download_data("all", "all", "all")
+        """
+        self.download_data("all", "all", "all")
+
     def upload_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:

@@ -166,7 +166,7 @@ class TestCommandLineInterface:
         As upload_data and download_data take identical args,
         test both together.
         """
-        stdout, stderr = test_utils.run_cli(
+        stdout, __ = test_utils.run_cli(
             f" {upload_or_download}{sep}data "
             f"--data{sep}type all "
             f"--sub{sep}names one "
@@ -187,6 +187,23 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         self.check_upload_download_args(args_, kwargs_, dry_run_is=True)
+
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_upload_download_all_variables(
+        self, setup_project, upload_or_download, sep
+    ):
+        """
+        To quickly check whether this runs with both seps by only
+        checking if no error is raised. This is also tested
+        more thoroughly in test_upload_and_download_data()
+        but without wasting time with seps.
+        """
+        stdout, stderr = test_utils.run_cli(
+            f"{upload_or_download}{sep}all", setup_project.project_name
+        )
+        assert stdout == ""
+        assert stderr == ""
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
@@ -343,7 +360,10 @@ class TestCommandLineInterface:
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_upload_and_download_data(self, setup_project, upload_or_download):
+    @pytest.mark.parametrize("use_all_alias", [True, False])
+    def test_upload_and_download_data(
+        self, setup_project, upload_or_download, use_all_alias
+    ):
         """
         see test_filesystem_transfer.py
         """
@@ -360,23 +380,27 @@ class TestCommandLineInterface:
             setup_project, upload_or_download
         )
 
-        test_utils.run_cli(
-            f"{upload_or_download}_data "
-            f"--data_type all "
-            f"--sub_names all "
-            f"--ses_names all",
-            setup_project.project_name,
-        )
+        if use_all_alias:
+            test_utils.run_cli(
+                f"{upload_or_download}-all",
+                setup_project.project_name,
+            )
+        else:
+            test_utils.run_cli(
+                f"{upload_or_download}_data "
+                f"--data_type all "
+                f"--sub_names all "
+                f"--ses_names all",
+                setup_project.project_name,
+            )
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
                 base_path_to_check, setup_project._top_level_dir_name
             ),
             data_type_to_transfer=[
-                "behav",
-                "ephys",
-                "funcimg",
-                "histology",
+                flag.split("use_")[1]
+                for flag in canonical_configs.get_data_types()
             ],
             subs_to_upload=subs,
             ses_to_upload=sessions,
