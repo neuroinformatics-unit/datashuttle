@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Union
+from typing import List, Union
 
 from . import directories
 
@@ -64,3 +64,18 @@ def raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
 
     if path_to_config.suffix not in [".yaml", ".yml"]:
         raise_error("The config file must be a YAML file")
+
+
+def get_first_sub_ses_keys(all_names: List[str]) -> List[str]:
+    """
+    Assumes sub / ses name is in standard form with sub/ses label
+    in the second position e.g. sub-001_id-...
+
+    Only look for folders / file with sub/ses in first key
+    to ignore all other files
+    """
+    return [
+        name.split("-")[1]
+        for name in all_names
+        if name.split("-")[0] in ["sub", "ses"]
+    ]
