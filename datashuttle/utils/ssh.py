@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datashuttle.configs.configs import Configs
+
 import fnmatch
 import getpass
 import stat
@@ -5,8 +12,6 @@ from pathlib import Path
 from typing import List, Optional
 
 import paramiko
-
-from datashuttle.configs.configs import Configs
 
 from . import utils
 
