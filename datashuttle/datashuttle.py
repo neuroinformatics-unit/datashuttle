@@ -497,8 +497,8 @@ class DataShuttle:
         if prefix not in ["sub-", "ses-"]:
             utils.log_and_raise_error("prefix: must be 'sub-' or 'ses-'")
 
-        processed_names = formatting.format_names(names, prefix)
-        utils.message_user(processed_names)
+        formatted_names = formatting.format_names(names, prefix)
+        utils.message_user(formatted_names)
 
     # ====================================================================================================================
     # Private Functions
@@ -834,10 +834,14 @@ class DataShuttle:
                       (e.g. to make dirs)
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
-        prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        processed_names = formatting.format_names(names, prefix)
+        utils.log(f"Names before formatting: {names}")
 
-        return processed_names
+        prefix = self._get_sub_or_ses_prefix(sub_or_ses)
+        formatted_names = formatting.format_names(names, prefix)
+
+        utils.log(f"Formatted names: {formatted_names}")
+
+        return formatted_names
 
     def _get_sub_or_ses_prefix(self, sub_or_ses: str) -> str:
         """
