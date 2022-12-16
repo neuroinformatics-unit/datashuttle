@@ -1,3 +1,4 @@
+import logging
 import warnings
 
 import pytest
@@ -7,6 +8,7 @@ import yaml
 from datashuttle.configs.canonical_configs import get_canonical_config_dict
 from datashuttle.datashuttle import DataShuttle
 
+logging.disable(logging.CRITICAL)
 TEST_PROJECT_NAME = "test_configs"
 
 
@@ -113,16 +115,20 @@ class TestConfigs:
         if argument_type in ["remote_host_username", "both"]:
             project.update_config("remote_host_username", "fake_username")
 
-        with warnings.catch_warnings(record=True) as w:
+        if argument_type == "both":
             project.update_config("connection_method", "ssh")
+            assert project.cfg["connection_method"] == "ssh"
+        else:
+            with pytest.raises(BaseException) as e:
+                project.update_config("connection_method", "ssh")
 
-            if argument_type == "both":
-                assert len(w) == 0
-                assert project.cfg["connection_method"] == "ssh"
-            else:
-                assert str(w[0].message) == "connection_method was not updated"
+            assert (
+                str(e.value)
+                == "\nremote_host_id and remote_host_username are required "
+                "if connection_method is ssh.\nconnection_method was not updated"
+            )
 
-                assert project.cfg["connection_method"] == "local_filesystem"
+            assert project.cfg["connection_method"] == "local_filesystem"
 
     # Test Make Configs API
     # -------------------------------------------------------------

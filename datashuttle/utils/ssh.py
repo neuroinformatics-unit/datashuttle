@@ -81,7 +81,7 @@ def connect_client(
             look_for_keys=True,
         )
     except Exception:
-        utils.raise_error(
+        utils.log_and_raise_error(
             "Could not connect to server. Ensure that \n"
             "1) You are on VPN network if required. \n"
             "2) The remote_host_id: {cfg['remote_host_id']} is"
@@ -183,6 +183,6 @@ def get_list_of_directory_names_over_sftp(
                     all_dirnames.append(file_or_dir.filename)
 
     except FileNotFoundError:
-        utils.raise_error(f"No file found at {search_path.as_posix()}")
+        utils.log_and_raise_error(f"No file found at {search_path.as_posix()}")
 
     return all_dirnames

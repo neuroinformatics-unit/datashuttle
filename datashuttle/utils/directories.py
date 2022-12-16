@@ -51,7 +51,7 @@ def check_no_duplicate_sub_ses_key_values(
 
         for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
             if new_sub in existing_sub_values:
-                utils.raise_error(
+                utils.log_and_raise_error(
                     f"Cannot make directories. "
                     f"The key sub-{new_sub} already exists in the project"
                 )
@@ -68,7 +68,7 @@ def check_no_duplicate_sub_ses_key_values(
             for new_ses in utils.get_first_sub_ses_keys(new_ses_names):
 
                 if new_ses in existing_ses_values:
-                    utils.raise_error(
+                    utils.log_and_raise_error(
                         f"Cannot make directories. "
                         f"The key ses-{new_ses} for {sub} already exists in the project"
                     )
@@ -109,7 +109,7 @@ def search_sub_or_ses_level(
           directory level.
     """
     if ses and not sub:
-        utils.raise_error(
+        utils.log_and_raise_error(
             "cannot pass session to "
             "_search_sub_or_ses_level() without subject"
         )

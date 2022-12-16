@@ -1,5 +1,6 @@
 import logging
 import re
+import traceback
 from pathlib import Path
 from typing import List, Union
 
@@ -10,24 +11,25 @@ from . import directories
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def log_and_message(message: str) -> None:
+def log(message: str) -> None:
     logging.info(f"{message}")
-    # message_user(message)
+
+
+def log_and_message(message: str) -> None:
+    log(message)
+    message_user(message)
 
 
 def log_and_raise_error(message: str) -> None:
-    pass
-
-
-# logging.info(f"\n{message}\n")
-# raise_error(message)
+    logging.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
+    logging.error(message)
+    raise_error(message)
 
 
 def message_user(message: Union[str, list]) -> None:
     """
     Centralised way to send message.
     """
-    # logging.info(str(message))
     print(message)
 
 
@@ -43,7 +45,7 @@ def raise_error(message: str) -> None:
     """
     Temporary centralized way to raise and error
     """
-    raise BaseException(f"{message}")
+    raise BaseException(message)
 
 
 def get_appdir_path(project_name: str) -> Path:
@@ -73,13 +75,13 @@ def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())
 
 
-def raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
+def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
     """"""
     if not path_to_config.exists():
-        raise_error(f"No file found at: {path_to_config}")
+        log_and_raise_error(f"No file found at: {path_to_config}")
 
     if path_to_config.suffix not in [".yaml", ".yml"]:
-        raise_error("The config file must be a YAML file")
+        log_and_raise_error("The config file must be a YAML file")
 
 
 def get_first_sub_ses_keys(all_names: List[str]) -> List[str]:

@@ -254,10 +254,10 @@ class TestMakeDirs:
             ["funcimg"],
         ],
     )
-    def test_dataal_data_subsection(self, project, files_to_test):
+    def test_data_types_subsection(self, project, files_to_test):
         """
         Check that combinations of data_types passed to make file dir
-        make the correct combination of epxeriment types.
+        make the correct combination of data types.
 
         Note this will fail when new top level dirs are added, and should be
         updated.

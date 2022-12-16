@@ -55,7 +55,7 @@ class DataShuttle:
     def __init__(self, project_name: str):
 
         if " " in project_name:
-            utils.raise_error("project_name must not include spaces.")
+            utils.log_and_raise_error("project_name must not include spaces.")
 
         self.project_name = project_name
         self._appdir_path = utils.get_appdir_path(self.project_name)
@@ -379,13 +379,13 @@ class DataShuttle:
             self._get_rclone_config_name("local_filesystem"),
             self._ssh_key_path,
         )
-        utils.message_user(
+        utils.log_and_message(
             "Configuration file has been saved and "
             "options loaded into datashuttle."
         )
 
     def update_config(
-        self, option_key: str, new_info: Union[str, bool]
+        self, option_key: str, new_info: Union[Path, str, bool, None]
     ) -> None:
         """
         Convenience function to update individual entry of configuration file.
@@ -396,14 +396,16 @@ class DataShuttle:
         :param new_info: value to update the config too
         """
         if not self.cfg:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 "Must have a config loaded before updating configs."
             )
+        self.start_log("update_config")
 
-        self.start_log("Update Config", None)
+        new_info = load_configs.handle_bool(option_key, new_info)
 
         self.cfg.update_an_entry(option_key, new_info)
         self._set_attributes_after_config_load()
+        self.log_successful_config_change()
 
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
@@ -437,9 +439,7 @@ class DataShuttle:
             self._set_attributes_after_config_load()
             self.cfg.file_path = self._config_path
             self.cfg.dump_to_file()
-            utils.log_and_message(
-                f"Update successful. New config file: \n {self._get_json_dumps_config()}"
-            )
+            self.log_successful_config_change()
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
@@ -487,7 +487,7 @@ class DataShuttle:
         :param prefix, "sub-" or "ses-"
         """
         if prefix not in ["sub-", "ses-"]:
-            utils.raise_error("prefix: must be 'sub-' or 'ses-'")
+            utils.log_and_raise_error("prefix: must be 'sub-' or 'ses-'")
 
         processed_names = formatting.format_names(names, prefix)
         utils.message_user(processed_names)
@@ -898,7 +898,7 @@ class DataShuttle:
 
         return f"remote_{self.project_name}_{connection_method}"
 
-    def start_log(self, command: str, variables: Optional[Any] = None):
+    def start_log(self, name: str, variables: Optional[Any] = None):
         """"""
         if not self._logging_path.is_dir():
             directories.make_dirs(self._logging_path)
@@ -906,12 +906,23 @@ class DataShuttle:
         fancylog.start_logging(
             self.get_logging_dir(),
             package,
+            filename=name,
             variables=variables,
             verbose=False,
             timestamp=True,
             file_log_level="INFO",
         )
-        logging.info(f"Starting {command}")
+        logging.info(f"Starting {name}")
+
+    def log_successful_config_change(self):
+        """
+        For logging, print the entire config
+        at the time of config change. We don't
+        want this is the stdout as confusing.
+        """
+        utils.log(
+            f"Update successful. New config file: \n {self._get_json_dumps_config()}"
+        )
 
     def _get_json_dumps_config(self):
         copy_dict = copy.deepcopy(self.cfg.data)
