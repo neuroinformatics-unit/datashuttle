@@ -5,11 +5,17 @@ import pytest
 import test_utils
 import yaml
 
-from datashuttle.configs.canonical_configs import get_canonical_config_dict
+from datashuttle.configs.canonical_configs import (
+    get_canonical_config_dict,
+    get_canonical_config_required_types,
+)
 from datashuttle.datashuttle import DataShuttle
 
 logging.disable(logging.CRITICAL)
 TEST_PROJECT_NAME = "test_configs"
+
+
+# TODO: is the issue pytest raises and using subprocess?
 
 
 class TestConfigs:
@@ -245,13 +251,13 @@ class TestConfigs:
         self.dump_config(missing_key_configs, bad_configs_path)
 
         with pytest.raises(BaseException) as e:
+
             setup_project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
-            str(e.value) == "Could not load config file. "
-            "Please check that the file is "
-            "formatted correctly. Config file "
-            "was not updated."
+            str(e.value) == "Loading Failed. "
+            "The key use_histology was not found in "
+            "the supplied config. Config file was not updated."
         )
 
     def test_supplied_config_file_extra_key(self, setup_project):
@@ -268,10 +274,9 @@ class TestConfigs:
             setup_project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
-            str(e.value) == "Could not load config file. "
-            "Please check that the file is "
-            "formatted correctly. Config file "
-            "was not updated."
+            str(e.value) == "The supplied config contains an "
+            "invalid key: use_mismology. "
+            "Config file was not updated."
         )
 
     def test_supplied_config_file_bad_types(self, setup_project):
@@ -284,18 +289,19 @@ class TestConfigs:
 
             bad_type_configs = test_utils.get_test_config_arguments_dict()
 
-            bad_type_configs[key] = DataShuttle
+            bad_type_configs[key] = DataShuttle  # arbitrary bad type
 
             self.dump_config(bad_type_configs, bad_configs_path)
 
             with pytest.raises(BaseException) as e:
                 setup_project.supply_config_file(bad_configs_path, warn=False)
 
+            required_types = get_canonical_config_required_types()
+
             assert (
-                str(e.value) == "Could not load config file. "
-                "Please check that the file is "
-                "formatted correctly. Config file "
-                "was not updated."
+                str(e.value) == f"The type of the value at {key} is "
+                f"incorrect, it must be {required_types[key]}. "
+                f"Config file was not updated."
             )
 
     def test_supplied_config_file_changes_wrong_order(self, setup_project):
@@ -318,10 +324,13 @@ class TestConfigs:
             )
 
         assert (
-            str(e.value) == "Could not load config file. "
-            "Please check that the file is "
-            "formatted correctly. Config file "
-            "was not updated."
+            str(e.value)
+            == "New config keys are in the wrong order. "  # TODO: use keys from cannonical dict
+            "The order should be: dict_keys(['local_path', "
+            "'remote_path', 'connection_method', "
+            "'remote_host_id', 'remote_host_username', "
+            "'use_ephys', 'use_behav', 'use_funcimg', "
+            "'use_histology'])"
         )
 
     def test_supplied_config_file_updates(self, setup_project):

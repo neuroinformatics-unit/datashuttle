@@ -1,13 +1,14 @@
 import logging
 from pathlib import Path
+from typing import Any, Optional
 
 import fancylog as package
 from fancylog import fancylog
+from rich import print as rich_print
 from rich.filesize import decimal
 from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
-from typimg import Any, Optional
 
 
 def start(
@@ -25,6 +26,11 @@ def start(
         write_git=False,
     )
     logging.info(f"Starting {name}")
+
+
+def print_tree(project_path: Path) -> None:
+    tree = get_rich_project_path_tree(project_path)
+    rich_print(tree)
 
 
 # -------------------------------------------------------------------
@@ -73,6 +79,6 @@ def walk_directory(
 
 def get_rich_project_path_tree(project_path: Path) -> Tree:
     """ """
-    tree = Tree(label="Project Folder Snapshot")
+    tree = Tree(label="")
     walk_directory(project_path, tree)
     return tree

@@ -89,7 +89,7 @@ def get_canonical_config_required_types() -> dict:
 # -------------------------------------------------------------------
 
 
-def check_dict_values_and_inform_user(config_dict: Configs) -> None:
+def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     """
     Central function for performing checks on a
     DataShuttle Configs UserDict class. This should

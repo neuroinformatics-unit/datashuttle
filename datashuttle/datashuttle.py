@@ -127,11 +127,6 @@ class DataShuttle:
         """
         self.start_log("make_sub_dir")
 
-        # tree_ = ds_logger.get_rich_directory_tree(self.cfg["local_path"])
-        # print(tree_)
-        # utils.log_and_message(tree_, rich)
-        # return
-
         sub_names = self._format_names(sub_names, "sub")
 
         if ses_names is not None:
@@ -487,13 +482,16 @@ class DataShuttle:
         """
         utils.message_user(self._get_json_dumps_config())
 
+    def show_local_tree(self):
+        ds_logger.print_tree(self.cfg["local_path"])
+
     @staticmethod
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
         """
         Pass list of names to check how these will be auto-formatted.
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@
 
-        :param A string or list of names to check how they will be processed
+        :param names, A string or list of names to check how they will be formatted
         :param prefix, "sub-" or "ses-"
         """
         if prefix not in ["sub-", "ses-"]:
