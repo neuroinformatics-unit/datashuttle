@@ -102,15 +102,14 @@ def check_dict_values_and_inform_user(config_dict: Configs) -> None:
 
     for key in canonical_dict.keys():
         if key not in config_dict.keys():
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"Loading Failed. The key {key} was not "
                 f"found in the supplied config. "
                 f"Config file was not updated."
             )
-
     for key in config_dict.keys():
         if key not in canonical_dict.keys():
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"The supplied config contains an invalid key: {key}. "
                 f"Config file was not updated."
             )
@@ -118,23 +117,25 @@ def check_dict_values_and_inform_user(config_dict: Configs) -> None:
     check_config_types(config_dict)
 
     if list(config_dict.keys()) != list(canonical_dict.keys()):
-        utils.raise_error(
+        utils.log_and_raise_error(
             f"New config keys are in the wrong order. The"
             f" order should be: {canonical_dict.keys()}"
         )
 
     if config_dict["connection_method"] not in ["ssh", "local_filesystem"]:
-        utils.raise_error("connection method must be ssh or local_filesystem")
+        utils.log_and_raise_error(
+            "connection method must be ssh or local_filesystem"
+        )
 
     for path_ in ["local_path", "remote_path"]:
         if config_dict[path_].as_posix()[0] == "~":
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"{path_} must contain the full directory path "
                 "with no ~ syntax"
             )
 
     if not any([config_dict[key] for key in get_data_types()]):
-        utils.raise_error(
+        utils.log_and_raise_error(
             f"At least one data_type must be True in "
             f"configs, from: {' '.join(get_data_types())}"
         )
@@ -144,7 +145,7 @@ def check_dict_values_and_inform_user(config_dict: Configs) -> None:
         not config_dict["remote_host_id"]
         or not config_dict["remote_host_username"]
     ):
-        utils.raise_error(
+        utils.log_and_raise_error(
             "remote_host_id and remote_host_username are "
             "required if connection_method is ssh."
         )
@@ -175,7 +176,7 @@ def check_config_types(config_dict: Configs) -> None:
                 fail = True
 
         if fail:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"The type of the value at {key} is incorrect, "
                 f"it must be {expected_type}. "
                 f"Config file was not updated."

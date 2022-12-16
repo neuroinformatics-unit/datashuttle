@@ -197,8 +197,6 @@ def update_config(project: DataShuttle, args: Any) -> None:
     option_key = kwargs["option_key"]
     new_info = kwargs["new_info"]
 
-    new_info = load_configs.handle_bool(option_key, new_info)
-
     run_command(
         project,
         project.update_config,

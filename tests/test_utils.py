@@ -1,5 +1,6 @@
 import copy
 import glob
+import logging
 import os
 import pathlib
 import shutil
@@ -105,6 +106,8 @@ def delete_project_if_it_exists(project_name):
     config_path = utils.get_appdir_path(project_name)
 
     if config_path.is_dir():
+        logger = logging.getLogger()
+        logger.handlers = []
         shutil.rmtree(config_path)
 
 

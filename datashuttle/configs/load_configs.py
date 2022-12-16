@@ -61,7 +61,7 @@ def supplied_configs_confirm_overwrite_raise_on_fail(
     """
     Try and load a supplied config file.
     """
-    utils.raise_error_not_exists_or_not_yaml(path_to_config)
+    utils.log_and_raise_error_not_exists_or_not_yaml(path_to_config)
 
     if warn:
         input_ = utils.get_user_input(
@@ -72,6 +72,7 @@ def supplied_configs_confirm_overwrite_raise_on_fail(
         if input_ != "y":
             utils.log_and_message("y not pressed. Configs not updated.")
             return None
+
     try:
 
         new_cfg = Configs(path_to_config, None)
@@ -83,8 +84,8 @@ def supplied_configs_confirm_overwrite_raise_on_fail(
         return new_cfg
 
     except BaseException:
-        utils.log_and_message(traceback.format_exc())
-        utils.log_and_message(
+        utils.message_user(traceback.format_exc())
+        utils.log_and_raise_error(
             "Could not load config file. Please check that "
             "the file is formatted correctly. "
             "Config file was not updated."
@@ -133,7 +134,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
 
         if isinstance(value, str):
             if value not in ["True", "False", "true", "false"]:
-                utils.raise_error(
+                utils.log_and_raise_error(
                     f"Input value for {key} " f"must be True or False"
                 )
 
