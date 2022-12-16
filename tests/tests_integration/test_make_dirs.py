@@ -116,17 +116,17 @@ class TestMakeDirs:
         prefix = "test_sub-"
 
         # check name is prefixed
-        processed_names = formatting.format_names("1", prefix)
-        assert processed_names[0] == "test_sub-1"
+        formatted_names = formatting.format_names("1", prefix)
+        assert formatted_names[0] == "test_sub-1"
 
         # check existing prefix is not duplicated
-        processed_names = formatting.format_names("test_sub-1", prefix)
-        assert processed_names[0] == "test_sub-1"
+        formatted_names = formatting.format_names("test_sub-1", prefix)
+        assert formatted_names[0] == "test_sub-1"
 
         # test mixed list of prefix and unprefixed are prefixed correctly.
         mixed_names = ["1", prefix + "four", "5", prefix + "6"]
-        processed_names = formatting.format_names(mixed_names, prefix)
-        assert processed_names == [
+        formatted_names = formatting.format_names(mixed_names, prefix)
+        assert formatted_names == [
             "test_sub-1",
             "test_sub-four",
             "test_sub-5",
