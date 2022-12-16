@@ -628,6 +628,24 @@ show_configs_parser = subparsers.add_parser(
 )
 show_configs_parser.set_defaults(func=show_configs)
 
+
+# Show Local Three --------------------------------------------------------------------------
+
+
+def show_local_tree(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.show_local_tree()
+
+
+show_local_tree_parser = subparsers.add_parser(
+    "show-local-tree",
+    aliases=["show_local_tree"],
+    description=DataShuttle.show_local_tree.__doc__,
+)
+show_local_tree_parser.set_defaults(func=show_local_tree)
+
+
 # Check Name Processing --------------------------------------------------------------------------
 
 

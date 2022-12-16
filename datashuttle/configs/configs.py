@@ -23,7 +23,7 @@ class Configs(UserDict):
     the config file and a dict of config key-value pairs
     to input dict. Next, check that the config dict
     conforms to the canonical standard by calling
-    check_dict_values_and_inform_user()
+    check_dict_values_raise_on_fail()
     """
 
     def __init__(self, file_path: Path, input_dict: Union[dict, None]) -> None:
@@ -39,14 +39,14 @@ class Configs(UserDict):
 
     def setup_after_load(self) -> None:
         self.convert_str_and_pathlib_paths(self, "str_to_path")
-        self.check_dict_values_and_inform_user()
+        self.check_dict_values_raise_on_fail()
 
-    def check_dict_values_and_inform_user(self) -> None:
+    def check_dict_values_raise_on_fail(self) -> None:
         """
         Check the values of the current dictionary are set
         correctly and will not cause downstream errors.
         """
-        canonical_configs.check_dict_values_and_inform_user(self)
+        canonical_configs.check_dict_values_raise_on_fail(self)
 
     def keys(self) -> KeysView:
         return self.data.keys()
@@ -138,7 +138,7 @@ class Configs(UserDict):
         shown later.
         """
         try:
-            self.check_dict_values_and_inform_user()
+            self.check_dict_values_raise_on_fail()
             return {"passed": True, "error": None}
         except BaseException as e:
             return {"passed": False, "error": str(e)}

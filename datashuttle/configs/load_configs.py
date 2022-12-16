@@ -1,4 +1,3 @@
-import traceback
 import warnings
 from pathlib import Path
 from typing import Optional, Union, overload
@@ -40,11 +39,11 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
     try:
         new_cfg.load_from_file()
 
-    except Exception:
+    except BaseException:
 
         new_cfg = None
 
-        utils.message_user(
+        utils.log_and_raise_error(
             f"Config file failed to load. Check file "
             f"formatting at {config_path.as_posix()}. If "
             f"cannot load, re-initialise configs with "
@@ -73,23 +72,13 @@ def supplied_configs_confirm_overwrite(
             utils.log_and_message("y not pressed. Configs not updated.")
             return None
 
-    try:
+    new_cfg = Configs(path_to_config, None)
+    new_cfg.load_from_file()
 
-        new_cfg = Configs(path_to_config, None)
-        new_cfg.load_from_file()
+    new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
+    new_cfg.check_dict_values_raise_on_fail()
 
-        new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
-        new_cfg.check_dict_values_and_inform_user()
-
-        return new_cfg
-
-    except BaseException:
-        utils.log_and_message(traceback.format_exc())
-        utils.log_and_message(
-            "Could not load config file. Please check that "
-            "the file is formatted correctly. "
-        )
-        return None
+    return new_cfg
 
 
 # -------------------------------------------------------------------
@@ -133,7 +122,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
 
         if isinstance(value, str):
             if value not in ["True", "False", "true", "false"]:
-                utils.log_and_raise_error(
+                utils.raise_error(
                     f"Input value for {key} " f"must be True or False"
                 )
 
