@@ -1,18 +1,22 @@
 import copy
 import json
-import logging
 import os
 from collections.abc import ItemsView
 from pathlib import Path
 from typing import Any, List, Optional, Union, cast
 
-import fancylog as package
 import paramiko
-from fancylog import fancylog
 
 from datashuttle.configs import canonical_directories, load_configs
 from datashuttle.configs.configs import Configs
-from datashuttle.utils import directories, formatting, rclone, ssh, utils
+from datashuttle.utils import (
+    directories,
+    ds_logger,
+    formatting,
+    rclone,
+    ssh,
+    utils,
+)
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
@@ -60,7 +64,7 @@ class DataShuttle:
         self.project_name = project_name
         self._appdir_path = utils.get_appdir_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
-        self._logging_path = self._appdir_path / "logs"
+        self._logging_path = utils.get_logging_path(self.project_name)
         self._top_level_dir_name = "rawdata"
 
         self.cfg: Any = None
@@ -75,9 +79,6 @@ class DataShuttle:
             self._set_attributes_after_config_load()
 
         rclone.prompt_rclone_download_if_does_not_exist()
-
-    def get_logging_dir(self):
-        return self._appdir_path / "logs"
 
     def _set_attributes_after_config_load(self) -> None:
         """
@@ -124,6 +125,13 @@ class DataShuttle:
                                 "all" is selected, directory will be created
                                 for all data type.
         """
+        self.start_log("make_sub_dir")
+
+        # tree_ = ds_logger.get_rich_directory_tree(self.cfg["local_path"])
+        # print(tree_)
+        # utils.log_and_message(tree_, rich)
+        # return
+
         sub_names = self._format_names(sub_names, "sub")
 
         if ses_names is not None:
@@ -352,6 +360,8 @@ class DataShuttle:
               settings (e.g. if ephys_behav_camera=True
               and ephys_behav=False, ephys_behav_camera will not be made).
         """
+        self.start_log("make_config_file")
+
         self.cfg = Configs(
             self._config_path,
             {
@@ -383,6 +393,7 @@ class DataShuttle:
             "Configuration file has been saved and "
             "options loaded into datashuttle."
         )
+        self.log_successful_config_change()
 
     def update_config(
         self, option_key: str, new_info: Union[Path, str, bool, None]
@@ -424,14 +435,12 @@ class DataShuttle:
                      config will overwrite existing config.
                      Turned off for testing.
         """
-        self.start_log("Supply Config File")
+        self.start_log("supply_config_file")
 
         path_to_config = Path(input_path_to_config)
 
-        new_cfg = (
-            load_configs.supplied_configs_confirm_overwrite_raise_on_fail(
-                path_to_config, warn
-            )
+        new_cfg = load_configs.supplied_configs_confirm_overwrite(
+            path_to_config, warn
         )
 
         if new_cfg:
@@ -439,7 +448,8 @@ class DataShuttle:
             self._set_attributes_after_config_load()
             self.cfg.file_path = self._config_path
             self.cfg.dump_to_file()
-            self.log_successful_config_change()
+
+            self.log_successful_config_change(message=True)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
@@ -898,28 +908,20 @@ class DataShuttle:
 
         return f"remote_{self.project_name}_{connection_method}"
 
-    def start_log(self, name: str, variables: Optional[Any] = None):
+    def start_log(
+        self, name: str, variables: Optional[List[Any]] = None
+    ) -> None:
         """"""
-        if not self._logging_path.is_dir():
-            directories.make_dirs(self._logging_path)
+        ds_logger.start(self._logging_path, name, variables)
 
-        fancylog.start_logging(
-            self.get_logging_dir(),
-            package,
-            filename=name,
-            variables=variables,
-            verbose=False,
-            timestamp=True,
-            file_log_level="INFO",
-        )
-        logging.info(f"Starting {name}")
-
-    def log_successful_config_change(self):
+    def log_successful_config_change(self, message=False):
         """
         For logging, print the entire config
         at the time of config change. We don't
         want this is the stdout as confusing.
         """
+        if message:
+            utils.message_user("Update successful.")
         utils.log(
             f"Update successful. New config file: \n {self._get_json_dumps_config()}"
         )
