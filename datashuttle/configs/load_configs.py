@@ -21,7 +21,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
     saved by Datashuttle. This should always work, unless
     not already initialised (prompt) or these have been
     changed manually. This function is very similar to
-    supplied_configs_confirm_overwrite_raise_on_fail()
+    supplied_configs_confirm_overwrite()
     but has different set of prompts and some different logic.
     """
     exists = config_path.is_file()
@@ -54,7 +54,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
     return new_cfg
 
 
-def supplied_configs_confirm_overwrite_raise_on_fail(
+def supplied_configs_confirm_overwrite(
     path_to_config: Path,
     warn: bool,
 ) -> Union[Configs, None]:
@@ -84,11 +84,10 @@ def supplied_configs_confirm_overwrite_raise_on_fail(
         return new_cfg
 
     except BaseException:
-        utils.message_user(traceback.format_exc())
-        utils.log_and_raise_error(
+        utils.log_and_message(traceback.format_exc())
+        utils.log_and_message(
             "Could not load config file. Please check that "
             "the file is formatted correctly. "
-            "Config file was not updated."
         )
         return None
 

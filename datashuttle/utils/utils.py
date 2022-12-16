@@ -4,6 +4,8 @@ import traceback
 from pathlib import Path
 from typing import List, Union
 
+from rich import print as rich_print
+
 from . import directories
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -15,9 +17,9 @@ def log(message: str) -> None:
     logging.info(f"{message}")
 
 
-def log_and_message(message: str) -> None:
+def log_and_message(message: str, use_rich: bool = False) -> None:
     log(message)
-    message_user(message)
+    message_user(message, use_rich)
 
 
 def log_and_raise_error(message: str) -> None:
@@ -26,11 +28,14 @@ def log_and_raise_error(message: str) -> None:
     raise_error(message)
 
 
-def message_user(message: Union[str, list]) -> None:
+def message_user(message: Union[str, list], use_rich=False) -> None:
     """
     Centralised way to send message.
     """
-    print(message)
+    if use_rich:
+        rich_print(message)
+    else:
+        print(message)
 
 
 def get_user_input(message: str) -> str:
@@ -58,10 +63,19 @@ def get_appdir_path(project_name: str) -> Path:
     """
     base_path = Path.home() / ".datashuttle" / project_name
 
-    if not base_path.is_dir():
-        directories.make_dirs(base_path)
+    directories.make_dirs(base_path)
 
     return base_path
+
+
+def get_logging_path(project_name: str) -> Path:
+    """
+    Currently logging is located in config path TODO: move to project
+    """
+    logging_path = get_appdir_path(project_name) / "logs"
+    directories.make_dirs(logging_path)
+
+    return logging_path
 
 
 def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
