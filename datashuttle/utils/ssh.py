@@ -22,7 +22,7 @@ from . import utils
 
 def setup_ssh_key(
     ssh_key_path: Path,
-    hostkeys: Path,
+    hostkeys_path: Path,
     cfg: Configs,
     log: bool = True,
 ) -> None:
@@ -42,7 +42,7 @@ def setup_ssh_key(
 
     key = paramiko.RSAKey.from_private_key_file(ssh_key_path.as_posix())
 
-    add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key)
+    add_public_key_to_remote_authorized_keys(cfg, hostkeys_path, password, key)
 
     success_message = (
         f"SSH key pair setup successfully. "
@@ -58,7 +58,7 @@ def setup_ssh_key(
 def connect_client(
     client: paramiko.SSHClient,
     cfg: Configs,
-    hostkeys: Path,
+    hostkeys_path: Path,
     password: Optional[str] = None,
     private_key_path: Optional[Path] = None,
 ) -> None:
@@ -68,7 +68,7 @@ def connect_client(
     Paramiko does not support pathlib.
     """
     try:
-        client.get_host_keys().load(hostkeys.as_posix())
+        client.get_host_keys().load(hostkeys_path.as_posix())
         client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(
             cfg["remote_host_id"],
@@ -91,13 +91,13 @@ def connect_client(
 
 
 def add_public_key_to_remote_authorized_keys(
-    cfg: Configs, hostkeys: Path, password: str, key: paramiko.RSAKey
+    cfg: Configs, hostkeys_path: Path, password: str, key: paramiko.RSAKey
 ) -> None:
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
     with paramiko.SSHClient() as client:
-        connect_client(client, cfg, hostkeys, password=password)
+        connect_client(client, cfg, hostkeys_path, password=password)
 
         client.exec_command("mkdir -p ~/.ssh/")
         client.exec_command(
@@ -110,7 +110,7 @@ def add_public_key_to_remote_authorized_keys(
 
 
 def verify_ssh_remote_host(
-    remote_host_id: str, hostkeys: Path, log: bool = False
+    remote_host_id: str, hostkeys_path: Path, log: bool = False
 ) -> bool:
     """
     Similar to connecting with other SSH manager e.g. putty,
@@ -134,7 +134,7 @@ def verify_ssh_remote_host(
     if input_ == "y":
         client = paramiko.SSHClient()
         client.get_host_keys().add(remote_host_id, key.get_name(), key)
-        client.get_host_keys().save(hostkeys.as_posix())
+        client.get_host_keys().save(hostkeys_path.as_posix())
         success = True
     else:
         utils.message_user("Host not accepted. No connection made.")
@@ -143,7 +143,7 @@ def verify_ssh_remote_host(
     if log:
         if success:
             utils.log(f"\n{message}")
-            utils.log(f"\nHostkeys saved at:{hostkeys.as_posix()}")
+            utils.log(f"\nHostkeys saved at:{hostkeys_path.as_posix()}")
         else:
             utils.log("\nHost not accepted. No connection made.")
 
@@ -159,7 +159,7 @@ def search_ssh_remote_for_directories(
     search_path: Path,
     search_prefix: str,
     cfg: Configs,
-    hostkeys: Path,
+    hostkeys_path: Path,
     ssh_key_path: Path,
 ) -> List[str]:
     """
@@ -167,7 +167,9 @@ def search_ssh_remote_for_directories(
     Returns the list of matching directories, files are filtered out.
     """
     with paramiko.SSHClient() as client:
-        connect_client(client, cfg, hostkeys, private_key_path=ssh_key_path)
+        connect_client(
+            client, cfg, hostkeys_path, private_key_path=ssh_key_path
+        )
 
         sftp = client.open_sftp()
 

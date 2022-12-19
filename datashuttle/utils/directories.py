@@ -256,7 +256,7 @@ def search_for_directories(
             search_path,
             search_prefix,
             project.cfg,
-            project._hostkeys,
+            project._hostkeys_path,
             project._ssh_key_path,
         )
     else:

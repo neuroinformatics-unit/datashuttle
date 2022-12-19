@@ -95,7 +95,7 @@ class DataShuttle:
         self._ssh_key_path = self._make_path(
             "appdir", self.project_name + "_ssh_key"
         )
-        self._hostkeys = self._make_path("appdir", "hostkeys")
+        self._hostkeys_path = self._make_path("appdir", "hostkeys")
 
         self._data_type_dirs = canonical_directories.get_directories(self.cfg)
 
@@ -332,7 +332,7 @@ class DataShuttle:
 
         verified = ssh.verify_ssh_remote_host(
             self.cfg["remote_host_id"],
-            self._hostkeys,
+            self._hostkeys_path,
             log=True,
         )
 
@@ -848,7 +848,7 @@ class DataShuttle:
         for details. Also, setup rclone config for ssh connection.
         """
         ssh.setup_ssh_key(
-            self._ssh_key_path, self._hostkeys, self.cfg, log=log
+            self._ssh_key_path, self._hostkeys_path, self.cfg, log=log
         )
 
         rclone.setup_remote_as_rclone_target(
