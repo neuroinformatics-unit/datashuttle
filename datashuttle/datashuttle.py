@@ -148,6 +148,9 @@ class DataShuttle:
             data_type,
         )
 
+        utils.log("Finished file creation. Local folder tree is now:\n")
+        ds_logger.log_tree(self.cfg["local_path"])
+
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
@@ -483,7 +486,7 @@ class DataShuttle:
         utils.message_user(self._get_json_dumps_config())
 
     def show_local_tree(self):
-        ds_logger.print_tree(self.cfg["local_path"])
+        ds_logger.print_tree(self.cfg["local_path"])  # TODO: test this!! and CLI! 
 
     @staticmethod
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
