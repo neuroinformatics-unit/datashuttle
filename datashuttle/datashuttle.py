@@ -331,11 +331,13 @@ class DataShuttle:
         self.start_log("setup_ssh_connection_to_remote_server")
 
         verified = ssh.verify_ssh_remote_host(
-            self.cfg["remote_host_id"], self._hostkeys
+            self.cfg["remote_host_id"],
+            self._hostkeys,
+            log=True,
         )
 
         if verified:
-            self._setup_ssh_key_and_rclone_config()
+            self._setup_ssh_key_and_rclone_config(log=True)
 
     def write_public_key(self, filepath: str) -> None:
         """
@@ -840,15 +842,20 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
 
     @requires_ssh_configs
-    def _setup_ssh_key_and_rclone_config(self) -> None:
+    def _setup_ssh_key_and_rclone_config(self, log: bool = True) -> None:
         """
         Setup ssh connection, key pair (see ssh.setup_ssh_key)
         for details. Also, setup rclone config for ssh connection.
         """
-        ssh.setup_ssh_key(self._ssh_key_path, self._hostkeys, self.cfg)
+        ssh.setup_ssh_key(
+            self._ssh_key_path, self._hostkeys, self.cfg, log=log
+        )
 
         rclone.setup_remote_as_rclone_target(
-            self.cfg, self._get_rclone_config_name("ssh"), self._ssh_key_path
+            self.cfg,
+            self._get_rclone_config_name("ssh"),
+            self._ssh_key_path,
+            log=log,
         )
 
     # --------------------------------------------------------------------------------------------------------------------
