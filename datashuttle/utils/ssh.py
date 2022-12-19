@@ -24,6 +24,7 @@ def setup_ssh_key(
     ssh_key_path: Path,
     hostkeys: Path,
     cfg: Configs,
+    log: bool = True,
 ) -> None:
     """
     Set up an SSH private / public key pair with
@@ -32,13 +33,6 @@ def setup_ssh_key(
     password made, and the public part of the key
     added to ~/.ssh/authorized_keys.
     """
-    """
-            Setup an SSH private / public key pair with
-            remote server. First, a private key is generated
-            in the appdir. Next a connection requiring input
-            password made, and the public part of the key
-            added to ~/.ssh/authorized_keys.
-            """
     generate_and_write_ssh_key(ssh_key_path)
 
     password = getpass.getpass(
@@ -50,10 +44,15 @@ def setup_ssh_key(
 
     add_public_key_to_remote_authorized_keys(cfg, hostkeys, password, key)
 
-    utils.message_user(
+    success_message = (
         f"SSH key pair setup successfully. "
         f"Private key at: {ssh_key_path.as_posix()}"
     )
+
+    utils.message_user(success_message)
+
+    if log:
+        utils.log(f"\n{success_message}")
 
 
 def connect_client(
@@ -110,7 +109,9 @@ def add_public_key_to_remote_authorized_keys(
         client.exec_command("chmod 700 ~/.ssh/")
 
 
-def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
+def verify_ssh_remote_host(
+    remote_host_id: str, hostkeys: Path, log: bool = False
+) -> bool:
     """
     Similar to connecting with other SSH manager e.g. putty,
     get the server key and present when connecting
@@ -120,14 +121,15 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
         transport.connect()
         key = transport.get_remote_server_key()
 
-    input_ = utils.get_user_input(
-        f"The host key is not cached for this server:"
-        f" {remote_host_id}.\nYou have no guarantee "
+    message = (
+        f"The host key is not cached for this server: "
+        f"{remote_host_id}.\nYou have no guarantee "
         f"that the server is the computer you think it is.\n"
         f"The server's {key.get_name()} key fingerprint is: "
         f"{key.get_base64()}\nIf you trust this host, to connect"
-        " and cache the host key, press y: "
+        f" and cache the host key, press y: "
     )
+    input_ = utils.get_user_input(message)
 
     if input_ == "y":
         client = paramiko.SSHClient()
@@ -137,6 +139,13 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
     else:
         utils.message_user("Host not accepted. No connection made.")
         success = False
+
+    if log:
+        if success:
+            utils.log(f"\n{message}")
+            utils.log(f"\nHostkeys saved at:{hostkeys.as_posix()}")
+        else:
+            utils.log("\nHost not accepted. No connection made.")
 
     return success
 
