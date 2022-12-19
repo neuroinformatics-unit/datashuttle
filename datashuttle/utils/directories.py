@@ -17,7 +17,7 @@ from . import ssh, utils
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, List[Path]]) -> None:
+def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
     """
     For path or list of path, make them if
     they do not already exist.
@@ -29,11 +29,15 @@ def make_dirs(paths: Union[Path, List[Path]]) -> None:
 
         if not path_.is_dir():
             path_.mkdir(parents=True)
-            utils.log(f"Made directory at path: {path_}")
+            if log:
+                utils.log(f"Made directory at path: {path_}")
 
-def make_datashuttle_metadata_folder(full_path: Path) -> None:
+
+def make_datashuttle_metadata_folder(
+    full_path: Path, log: bool = False
+) -> None:
     meta_folder_path = full_path / ".datashuttle_meta"
-    make_dirs(meta_folder_path)
+    make_dirs(meta_folder_path, log)
 
 
 def check_no_duplicate_sub_ses_key_values(

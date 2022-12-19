@@ -2,12 +2,9 @@ import logging
 from pathlib import Path
 from typing import Any, Optional
 
-from . import utils
-
 import fancylog as package
 from fancylog import fancylog
 from rich import print as rich_print
-from rich import get_console
 from rich.console import Console
 from rich.filesize import decimal
 from rich.markup import escape
@@ -36,17 +33,19 @@ def print_tree(project_path: Path) -> None:
     tree = get_rich_project_path_tree(project_path)
     rich_print(tree)
 
+
 def log_tree(project_path: Path) -> None:
     tree_ = get_rich_project_path_tree(project_path)
 
     console = Console(color_system="windows")
-    from ansimarkup import ansiprint
+
     with console.capture() as capture:
-        ansiprint(console.print(tree_, markup=True))
-    breakpoint()
-    # not currently parsing on windows CLI (works fine API, need to check macos and linux)
-    logging.info(capture.get())  # https://github.com/Textualize/rich/issues/2688
-    
+        console.print(tree_, markup=True)
+    logging.info(
+        capture.get()
+    )  # https://github.com/Textualize/rich/issues/2688
+
+
 # -------------------------------------------------------------------
 # File Snapshots
 # -------------------------------------------------------------------
@@ -76,14 +75,14 @@ def walk_directory(
         if path.is_dir():
             style = "dim" if path.name.startswith("__") else ""
             branch = tree.add(
-                f"[bold magenta]:open_file_folder: [link file://{path}]{escape(path.name)}",
+                f"[link file://{path}]{escape(path.name)}",
                 style=style,
                 guide_style=style,
             )
             walk_directory(path, branch)
         else:
             text_filename = Text(path.name, "green")
-            text_filename.highlight_regex(r"\..*$", "bold red")
+            #      text_filename.highlight_regex(r"\..*$", "bold red")
             text_filename.stylize(f"link file://{path}")
             file_size = path.stat().st_size
             text_filename.append(
@@ -94,6 +93,6 @@ def walk_directory(
 
 def get_rich_project_path_tree(project_path: Path) -> Tree:
     """ """
-    tree = Tree(label="Hello", encodings="utf-8")
+    tree = Tree(label=f"{project_path.as_posix()}/")
     walk_directory(project_path, tree)
     return tree
