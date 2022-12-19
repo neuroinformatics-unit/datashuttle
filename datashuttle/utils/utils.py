@@ -14,7 +14,7 @@ from . import directories
 
 
 def log(message: str) -> None:
-    logging.info(f"{message}")
+    logging.info(message)
 
 
 def log_and_message(message: str, use_rich: bool = False) -> None:

@@ -29,7 +29,7 @@ def make_dirs(paths: Union[Path, List[Path]]) -> None:
 
         if not path_.is_dir():
             path_.mkdir(parents=True)
-
+            utils.log(f"Made directory at path: {path_}")
 
 def make_datashuttle_metadata_folder(full_path: Path) -> None:
     meta_folder_path = full_path / ".datashuttle_meta"
