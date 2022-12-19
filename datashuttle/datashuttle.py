@@ -127,10 +127,18 @@ class DataShuttle:
         """
         self.start_log("make_sub_dir")
 
+        utils.log("\nFormatting Names...")
+        ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
+
         sub_names = self._format_names(sub_names, "sub")
 
         if ses_names is not None:
             ses_names = self._format_names(ses_names, "ses")
+
+        ds_logger.log_names(
+            ["formatted_sub_names", "formatted_ses_names"],
+            [sub_names, ses_names],
+        )
 
         directories.check_no_duplicate_sub_ses_key_values(
             self,
@@ -142,13 +150,15 @@ class DataShuttle:
         if ses_names is None:
             ses_names = []
 
+        utils.log("\nMaking directories...")
         self._make_directory_trees(
             sub_names,
             ses_names,
             data_type,
+            log=True,
         )
 
-        utils.log("Finished file creation. Local folder tree is now:\n")
+        utils.log("\nFinished file creation. Local folder tree is now:\n")
         ds_logger.log_tree(self.cfg["local_path"])
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -161,6 +171,7 @@ class DataShuttle:
         ses_names: Union[str, list],
         data_type: str = "all",
         dry_run: bool = False,
+        _init_log: bool = True,
     ) -> None:
         """
         Upload data from a local machine to the remote project
@@ -177,9 +188,19 @@ class DataShuttle:
         :param dry_run: perform a dry-run of upload, to see which files
                         are moved.
         :param data_type: see make_sub_dir()
+
+        :param _init_log: start the logger (False if started elsewhere
+                          e.g. upload_project_dir_or_file)
         """
+        self.start_log("upload_data")
+
         self._transfer_sub_ses_data(
-            "upload", sub_names, ses_names, data_type, dry_run
+            "upload",
+            sub_names,
+            ses_names,
+            data_type,
+            dry_run,
+            log=True,
         )
 
     def download_data(
@@ -188,6 +209,7 @@ class DataShuttle:
         ses_names: Union[str, list],
         data_type: str = "all",
         dry_run: bool = False,
+        _init_log: bool = True,
     ) -> None:
         """
         Download data from the remote project dir to the
@@ -199,8 +221,16 @@ class DataShuttle:
         see upload_data() for inputs. "all" arguments will
         search the remote project for sub / ses to download.
         """
+        if _init_log:
+            self.start_log("download_data")
+
         self._transfer_sub_ses_data(
-            "download", sub_names, ses_names, data_type, dry_run
+            "download",
+            sub_names,
+            ses_names,
+            data_type,
+            dry_run,
+            log=True,
         )
 
     def upload_all(self):
@@ -209,7 +239,9 @@ class DataShuttle:
         Alias for:
             project.upload_data("all", "all", "all")
         """
-        self.upload_data("all", "all", "all")
+        self.start_log("upload_all")
+
+        self.upload_data("all", "all", "all", _init_log=False)
 
     def download_all(self):
         """
@@ -217,7 +249,9 @@ class DataShuttle:
         Alias for:
             project.download_data("all", "all", "all")
         """
-        self.download_data("all", "all", "all")
+        self.start_log("download_all")
+
+        self.download_data("all", "all", "all", _init_log=False)
 
     def upload_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
@@ -234,13 +268,18 @@ class DataShuttle:
                         will be transferred without actually transferring)
 
         """
+        self.start_log("upload_project_dir_or_file")
+
         processed_filepath = utils.get_path_after_base_dir(
             self._get_base_dir("local") / self._top_level_dir_name,
             Path(filepath),
         )
 
         self._move_dir_or_file(
-            processed_filepath.as_posix(), "upload", dry_run
+            processed_filepath.as_posix(),
+            "upload",
+            dry_run,
+            log=True,
         )
 
     def download_project_dir_or_file(
@@ -257,12 +296,17 @@ class DataShuttle:
         :param dry_run: dry_run the transfer (see which files
                          will be transferred without actually transferring)
         """
+        self.start_log("download_project_dir_or_file")
+
         processed_filepath = utils.get_path_after_base_dir(
             self._get_base_dir("remote") / self._top_level_dir_name,
             Path(filepath),
         )
         self._move_dir_or_file(
-            processed_filepath.as_posix(), "download", dry_run
+            processed_filepath.as_posix(),
+            "download",
+            dry_run,
+            log=True,
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -284,6 +328,8 @@ class DataShuttle:
         cluster. Once input, SSH private / public key pair
         will be setup (see _setup_ssh_key_and_rclone_config() for details).
         """
+        self.start_log("setup_ssh_connection_to_remote_server")
+
         verified = ssh.verify_ssh_remote_host(
             self.cfg["remote_host_id"], self._hostkeys
         )
@@ -386,6 +432,7 @@ class DataShuttle:
             self.cfg,
             self._get_rclone_config_name("local_filesystem"),
             self._ssh_key_path,
+            log=True,
         )
         utils.log_and_message(
             "Configuration file has been saved and "
@@ -486,7 +533,9 @@ class DataShuttle:
         utils.message_user(self._get_json_dumps_config())
 
     def show_local_tree(self):
-        ds_logger.print_tree(self.cfg["local_path"])  # TODO: test this!! and CLI! 
+        ds_logger.print_tree(
+            self.cfg["local_path"]
+        )  # TODO: test this!! and CLI!
 
     @staticmethod
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
@@ -516,6 +565,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         data_type: str,
+        log: bool = False,
     ) -> None:
         """
         Entry method to make a full directory tree. It will
@@ -546,28 +596,33 @@ class DataShuttle:
         for sub in sub_names:
 
             sub_path = self._make_path(
-                "local", [self._top_level_dir_name, sub]
+                "local",
+                [self._top_level_dir_name, sub],
             )
 
-            directories.make_dirs(sub_path)
+            directories.make_dirs(sub_path, log)
 
             self._make_data_type_folders(data_type, sub_path, "sub")
 
             for ses in ses_names:
 
                 ses_path = self._make_path(
-                    "local", [self._top_level_dir_name, sub, ses]
+                    "local",
+                    [self._top_level_dir_name, sub, ses],
                 )
 
-                directories.make_dirs(ses_path)
+                directories.make_dirs(ses_path, log)
 
-                self._make_data_type_folders(data_type, ses_path, "ses")
+                self._make_data_type_folders(
+                    data_type, ses_path, "ses", log=log
+                )
 
     def _make_data_type_folders(
         self,
         data_type: Union[list, str],
         sub_or_ses_level_path: Path,
         level: str,
+        log: bool = False,
     ) -> None:
         """
         Make data_type folder (e.g. behav) at the sub or ses
@@ -582,9 +637,11 @@ class DataShuttle:
 
                 data_type_path = sub_or_ses_level_path / data_type_dir.name
 
-                directories.make_dirs(data_type_path)
+                directories.make_dirs(data_type_path, log)
 
-                directories.make_datashuttle_metadata_folder(data_type_path)
+                directories.make_datashuttle_metadata_folder(
+                    data_type_path, log
+                )
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
@@ -597,6 +654,7 @@ class DataShuttle:
         ses_names: Union[str, list],
         data_type: str,
         dry_run: bool,
+        log: bool = True,
     ) -> None:
         """
         Iterate through all data type, sub, ses and transfer session directory.
@@ -634,6 +692,7 @@ class DataShuttle:
                 data_type,
                 sub,
                 dry_run=dry_run,
+                log=log,
             )
 
             # Find ses names  to transfer
@@ -659,7 +718,8 @@ class DataShuttle:
                     data_type,
                     sub,
                     ses,
-                    dry_run,
+                    dry_run=dry_run,
+                    log=log,
                 )
 
     def _transfer_data_type(
@@ -670,6 +730,7 @@ class DataShuttle:
         sub: str,
         ses: Optional[str] = None,
         dry_run: bool = False,
+        log: bool = False,
     ) -> None:
         """
         Transfer the data_type-level folder at the subject
@@ -700,11 +761,18 @@ class DataShuttle:
                     filepath = os.path.join(sub, data_type_dir.name)
 
                 self._move_dir_or_file(
-                    filepath, upload_or_download, dry_run=dry_run
+                    filepath,
+                    upload_or_download,
+                    dry_run=dry_run,
+                    log=log,
                 )
 
     def _move_dir_or_file(
-        self, filepath: str, upload_or_download: str, dry_run: bool
+        self,
+        filepath: str,
+        upload_or_download: str,
+        dry_run: bool,
+        log: bool = False,
     ) -> None:
         """
         Copy a directory or file with data.
@@ -725,13 +793,17 @@ class DataShuttle:
             "remote", [self._top_level_dir_name, filepath]
         ).as_posix()
 
-        rclone.transfer_data(
+        output = rclone.transfer_data(
             local_filepath,
             remote_filepath,
             self._get_rclone_config_name(),
             upload_or_download,
             dry_run,
         )
+
+        if log:
+            utils.log(output.stderr.decode("utf-8"))
+        utils.message_user(output.stderr.decode("utf-8"))
 
     def _items_from_data_type_input(
         self,
@@ -837,12 +909,8 @@ class DataShuttle:
                       (e.g. to make dirs)
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
-        utils.log(f"Names before formatting: {names}")
-
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
         formatted_names = formatting.format_names(names, prefix)
-
-        utils.log(f"Formatted names: {formatted_names}")
 
         return formatted_names
 

@@ -12,13 +12,14 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     :param silent: if True, do not output anything to stdout.
     :return:
     """
-    command = "rclone " + command
+    command = "rclone -vv " + command
     if pipe_std:
         output = subprocess.run(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
         )
     else:
         output = subprocess.run(command, shell=True)
+
     return output
 
 
@@ -28,7 +29,7 @@ def transfer_data(
     rclone_config_name: str,
     upload_or_download: str,
     dry_run: bool,
-) -> None:
+) -> subprocess.CompletedProcess:
     """
     Call Rclone copy command with appropriate
     arguments to execute data transfer.
@@ -40,22 +41,26 @@ def transfer_data(
 
     if upload_or_download == "upload":
 
-        call_rclone(
+        output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" '
             f'"{rclone_config_name}:'
             f'{remote_filepath}" '
-            f"{extra_arguments}"
+            f"{extra_arguments}",
+            pipe_std=True,
         )
 
     elif upload_or_download == "download":
-        call_rclone(
+        output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{rclone_config_name}:'
             f'{remote_filepath}" '
             f'"{local_filepath}"  '
-            f"{extra_arguments}"
+            f"{extra_arguments}",
+            pipe_std=True,
         )
+
+    return output
 
 
 def setup_remote_as_rclone_target(
