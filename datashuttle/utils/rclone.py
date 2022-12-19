@@ -62,6 +62,7 @@ def setup_remote_as_rclone_target(
     cfg: Configs,
     rclone_config_name: str,
     ssh_key_path: Path,
+    log: bool = False,
 ) -> None:
     """
     RClone sets remote targets in a config file. When
@@ -94,10 +95,11 @@ def setup_remote_as_rclone_target(
 
     output = call_rclone("config file", pipe_std=True)
 
-    utils.log(
-        f"Successfully created rclone config. "
-        f"{output.stdout.decode('utf-8')}"
-    )
+    if log:
+        utils.log(
+            f"Successfully created rclone config. "
+            f"{output.stdout.decode('utf-8')}"
+        )
 
 
 def check_rclone_with_default_call() -> bool:
