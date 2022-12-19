@@ -11,6 +11,8 @@ from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
 
+from . import utils
+
 
 def start(
     path_to_log: Path, name: str, variables: Optional[list[Any]]
@@ -44,6 +46,12 @@ def log_tree(project_path: Path) -> None:
     logging.info(
         capture.get()
     )  # https://github.com/Textualize/rich/issues/2688
+
+
+def log_names(list_of_headers, list_of_names):
+    """"""
+    for header, names in zip(list_of_headers, list_of_names):
+        utils.log(f"{header}: {names}")
 
 
 # -------------------------------------------------------------------
