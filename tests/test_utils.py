@@ -108,7 +108,7 @@ def delete_project_if_it_exists(project_name):
     if config_path.is_dir():
         logger = logging.getLogger()
         logger.handlers = []
-        shutil.rmtree(config_path)
+    shutil.rmtree(config_path)
 
 
 def setup_project_fixture(tmp_path, test_project_name):
