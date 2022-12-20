@@ -64,7 +64,7 @@ class DataShuttle:
         self.project_name = project_name
         self._appdir_path = utils.get_appdir_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
-        self._logging_path = utils.get_logging_path(self.project_name)
+        self._logging_path = self.make_and_get_logging_path()
         self._top_level_dir_name = "rawdata"
 
         self.cfg: Any = None
@@ -77,6 +77,10 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
+            self._project_metadata_path = (
+                self.cfg["local_path"] / ".datashuttle"
+            )
+            self._make_project_metadata_if_does_not_exist()
 
         rclone.prompt_rclone_download_if_does_not_exist()
 
@@ -554,6 +558,18 @@ class DataShuttle:
 
         formatted_names = formatting.format_names(names, prefix)
         utils.message_user(formatted_names)
+
+    def _make_project_metadata_if_does_not_exist(self):
+        directories.make_dirs(self._project_metadata_path, log=False)
+
+    def make_and_get_logging_path(self) -> Path:
+        """
+        Currently logging is located in config path TODO: move to project
+        """
+        logging_path = self._project_metadata_path / "logs"
+        directories.make_dirs(logging_path)
+
+        return logging_path
 
     # ====================================================================================================================
     # Private Functions
