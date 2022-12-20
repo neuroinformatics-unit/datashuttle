@@ -2,10 +2,8 @@ import warnings
 
 import pytest
 import test_utils
-import yaml
 
 from datashuttle.configs.canonical_configs import (
-    get_canonical_config_dict,
     get_canonical_config_required_types,
 )
 from datashuttle.datashuttle import DataShuttle
@@ -243,7 +241,7 @@ class TestConfigs:
 
         del missing_key_configs["use_histology"]
 
-        self.dump_config(missing_key_configs, bad_configs_path)
+        test_utils.dump_config(missing_key_configs, bad_configs_path)
 
         with pytest.raises(BaseException) as e:
 
@@ -263,7 +261,7 @@ class TestConfigs:
 
         wrong_key_configs = test_utils.get_test_config_arguments_dict()
         wrong_key_configs["use_mismology"] = "wrong"
-        self.dump_config(wrong_key_configs, bad_configs_path)
+        test_utils.dump_config(wrong_key_configs, bad_configs_path)
 
         with pytest.raises(BaseException) as e:
             setup_project.supply_config_file(bad_configs_path, warn=False)
@@ -286,7 +284,7 @@ class TestConfigs:
 
             bad_type_configs[key] = DataShuttle  # arbitrary bad type
 
-            self.dump_config(bad_type_configs, bad_configs_path)
+            test_utils.dump_config(bad_type_configs, bad_configs_path)
 
             with pytest.raises(BaseException) as e:
                 setup_project.supply_config_file(bad_configs_path, warn=False)
@@ -311,7 +309,7 @@ class TestConfigs:
             for key in reversed(good_order_configs.keys())
         }
 
-        self.dump_config(bad_order_configs, bad_order_configs_path)
+        test_utils.dump_config(bad_order_configs, bad_order_configs_path)
 
         with pytest.raises(BaseException) as e:
             setup_project.supply_config_file(
@@ -332,13 +330,10 @@ class TestConfigs:
         """
         This will check everything
         """
-        new_configs_path = setup_project._appdir_path / "new_configs.yaml"
-        new_configs = test_utils.get_test_config_arguments_dict()
-
-        canonical_config_dict = get_canonical_config_dict()
-        new_configs = {key: new_configs[key] for key in canonical_config_dict}
-
-        self.dump_config(new_configs, new_configs_path)
+        (
+            new_configs_path,
+            new_configs,
+        ) = test_utils.make_correct_supply_config_file(setup_project)
 
         setup_project.supply_config_file(new_configs_path, warn=False)
 
@@ -363,7 +358,3 @@ class TestConfigs:
         setup_project = DataShuttle(TEST_PROJECT_NAME)
 
         test_utils.check_configs(setup_project, kwargs[0])
-
-    def dump_config(self, dict_, path_):
-        with open(path_, "w") as config_file:
-            yaml.dump(dict_, config_file, sort_keys=False)
