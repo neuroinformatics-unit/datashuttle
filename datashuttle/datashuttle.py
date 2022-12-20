@@ -64,7 +64,6 @@ class DataShuttle:
         self.project_name = project_name
         self._appdir_path = utils.get_appdir_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
-        self._logging_path = self.make_and_get_logging_path()
         self._top_level_dir_name = "rawdata"
 
         self.cfg: Any = None
@@ -81,6 +80,7 @@ class DataShuttle:
                 self.cfg["local_path"] / ".datashuttle"
             )
             self._make_project_metadata_if_does_not_exist()
+            self._logging_path = self.make_and_get_logging_path()
 
         rclone.prompt_rclone_download_if_does_not_exist()
 
