@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 import fancylog as package
 from fancylog import fancylog
@@ -15,7 +15,7 @@ from . import utils
 
 
 def start(
-    path_to_log: Path, name: str, variables: Optional[list[Any]]
+    path_to_log: Path, name: str, variables: Optional[List[Any]]
 ) -> None:
     """"""
     fancylog.start_logging(
