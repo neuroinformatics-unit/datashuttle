@@ -14,7 +14,8 @@ from . import directories
 
 
 def log(message: str) -> None:
-    logging.info(message)
+    logger = logging.getLogger("fancylog_")
+    logger.info(message)
 
 
 def log_and_message(message: str, use_rich: bool = False) -> None:
