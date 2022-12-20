@@ -296,7 +296,7 @@ class TestMakeDirs:
         date, time_ = self.get_formatted_date_and_time()
 
         project.make_sub_dir(
-            "ephys", ["sub-001", "sub-002"], ["ses-001-@DATE@", "002-@DATE@"]
+            ["sub-001", "sub-002"], ["ses-001-@DATE@", "002-@DATE@"], "ephys"
         )
 
         ses_names = test_utils.glob_basenames(
@@ -315,9 +315,9 @@ class TestMakeDirs:
         date, time_ = self.get_formatted_date_and_time()
 
         project.make_sub_dir(
-            "ephys",
             ["sub-001", "sub-002"],
             ["ses-001-@DATETIME@", "002-@DATETIME@"],
+            "ephys",
         )
 
         ses_names = test_utils.glob_basenames(
@@ -326,8 +326,8 @@ class TestMakeDirs:
         )
 
         # Convert the minutes to regexp as could change during test runtime
-        regexp_time = time_[:-3] + r"\d\dm"
-        datetime_regexp = f"{date}-{regexp_time}"
+        regexp_time = r"\d\d\d\d\d\d"
+        datetime_regexp = f"{date}_time-{regexp_time}"
 
         assert all([re.search(datetime_regexp, name) for name in ses_names])
         assert all(["@DATETIME@" not in name for name in ses_names])

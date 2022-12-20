@@ -106,9 +106,32 @@ def delete_project_if_it_exists(project_name):
     config_path = utils.get_appdir_path(project_name)
 
     if config_path.is_dir():
-        logger = logging.getLogger()
-        logger.handlers = []
+        unlink_log_filehandler()
+
     shutil.rmtree(config_path)
+
+
+def unlink_log_filehandler():
+    logger = logging.getLogger()
+    logger.handlers = []
+
+
+def make_correct_supply_config_file(setup_project):
+    """"""
+    new_configs_path = setup_project._appdir_path / "new_configs.yaml"
+    new_configs = get_test_config_arguments_dict()
+
+    canonical_config_dict = canonical_configs.get_canonical_config_dict()
+    new_configs = {key: new_configs[key] for key in canonical_config_dict}
+
+    dump_config(new_configs, new_configs_path)
+
+    return new_configs_path, new_configs
+
+
+def dump_config(dict_, path_):
+    with open(path_, "w") as config_file:
+        yaml.dump(dict_, config_file, sort_keys=False)
 
 
 def setup_project_fixture(tmp_path, test_project_name):

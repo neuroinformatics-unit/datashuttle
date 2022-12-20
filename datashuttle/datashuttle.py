@@ -192,7 +192,8 @@ class DataShuttle:
         :param _init_log: start the logger (False if started elsewhere
                           e.g. upload_project_dir_or_file)
         """
-        self.start_log("upload_data")
+        if _init_log:
+            self.start_log("upload_data")
 
         self._transfer_sub_ses_data(
             "upload",
@@ -592,8 +593,7 @@ class DataShuttle:
                                 datetime at the time of directory creation.
 
         """
-        if not self._check_data_type_is_valid(data_type, prompt_on_fail=True):
-            return
+        self._check_data_type_is_valid(data_type, error_on_fail=True)
 
         for sub in sub_names:
 
@@ -932,7 +932,7 @@ class DataShuttle:
         return prefix
 
     def _check_data_type_is_valid(
-        self, data_type: str, prompt_on_fail: bool
+        self, data_type: str, error_on_fail: bool
     ) -> bool:
         """
         Check the passed experiemnt_type is valid (must
@@ -946,8 +946,8 @@ class DataShuttle:
                 data_type in self._data_type_dirs.keys() or data_type == "all"
             )
 
-        if prompt_on_fail and not is_valid:
-            utils.message_user(
+        if error_on_fail and not is_valid:
+            utils.log_and_raise_error(
                 f"data_type: '{data_type}' "
                 f"is not valid. Must be one of"
                 f" {list(self._data_type_dirs.keys())}. or 'all'"

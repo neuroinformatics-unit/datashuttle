@@ -72,10 +72,14 @@ def walk_directory(
     features (e.g. icons) that were disabled for maximum
     cross-system use.
     """
-    paths = sorted(
-        project_path.iterdir(),
-        key=lambda path: (Path(path).is_file(), path.name.lower()),  # TODO
-    )
+    try:
+        paths = sorted(
+            project_path.iterdir(),
+            key=lambda path: (Path(path).is_file(), path.name.lower()),
+        )
+    except:
+        breakpoint()
+
     for path in paths:
         # Remove hidden files
         if path.name.startswith(".") and not show_hidden_folders:
