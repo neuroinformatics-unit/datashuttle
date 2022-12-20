@@ -17,7 +17,8 @@ this module and other tests.
 NOTE: when testing these functions with breakpoint(),
 the debugger is acting very strangely and breaks in
 1 level lower than usual, requires 'u' to go
-up a level. Cannot understand why yet.
+up a level. This is probably because testing in subprocess.
+Might be better to use mock.
 """
 import os
 

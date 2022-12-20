@@ -1,4 +1,3 @@
-import logging
 import warnings
 
 import pytest
@@ -11,11 +10,7 @@ from datashuttle.configs.canonical_configs import (
 )
 from datashuttle.datashuttle import DataShuttle
 
-logging.disable(logging.CRITICAL)
 TEST_PROJECT_NAME = "test_configs"
-
-
-# TODO: is the issue pytest raises and using subprocess?
 
 
 class TestConfigs:
