@@ -69,16 +69,6 @@ def get_appdir_path(project_name: str) -> Path:
     return base_path
 
 
-def get_logging_path(project_name: str) -> Path:
-    """
-    Currently logging is located in config path TODO: move to project
-    """
-    logging_path = get_appdir_path(project_name) / "logs"
-    directories.make_dirs(logging_path)
-
-    return logging_path
-
-
 def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
     """"""
     if path_already_stars_with_base_dir(base_dir, path_):
