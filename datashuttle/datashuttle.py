@@ -133,6 +133,15 @@ class DataShuttle:
                                 in (e.g. "ephys", "behav", "histology"). If
                                 "all" is selected, directory will be created
                                 for all data type.
+
+        sub_names or ses_names may contain certain formatting tags:
+            @TO@: used to make a range of sub/ses. Nubmer must be either side of the tag
+                  e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
+            @DATE@, @TIME@ @DATETIME@: will add date-<value>, time-<value> or
+                  date-<value>_time-<value> keys respectively. Only one per-name
+                  is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
+                  (on the 1st january, 2022).
+
         """
         self.start_log("make_sub_dir")
 
@@ -200,6 +209,17 @@ class DataShuttle:
 
         :param _init_log: start the logger (False if started elsewhere
                           e.g. upload_project_dir_or_file)
+
+        sub_names or ses_names may contain certain formatting tags:
+
+        @*@: wildcard search for subject names. e.g. ses-001_date-@*@
+             will transfer all session 001 collected on all dates.
+        @TO@: used to make a range of sub/ses. Nubmer must be either side of the tag
+              e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
+        @DATE@, @TIME@ @DATETIME@: will add date-<value>, time-<value> or
+              date-<value>_time-<value> keys respectively. Only one per-name
+              is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
+              (on the 1st january, 2022).
         """
         if _init_log:
             self.start_log("upload_data")
