@@ -43,11 +43,23 @@ def format_names(
             " duplicates in list input)"
         )
 
+    check_flags_are_all_uppercase(prefixed_names)
+
     prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
 
     update_names_with_datetime(prefixed_names)
 
     return prefixed_names
+
+
+def check_flags_are_all_uppercase(all_names):
+    """"""
+    for name in all_names:
+        for lower_case_flag in ["@date@", "@time@", "@datetime@", "@to@"]:
+            if lower_case_flag in name:
+                utils.log_and_raise_error(
+                    f"Cannot make subject or session name {name}, ensure flags (e.g. {lower_case_flag}) are uppercase."
+                )
 
 
 # Handle @TO@ flags  -------------------------------------------------------
