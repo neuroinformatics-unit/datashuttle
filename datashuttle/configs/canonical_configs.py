@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 from pathlib import Path
 from typing import Union, get_args
 
-from datashuttle.utils import utils
+from datashuttle.utils import directories, utils
 
 
 def get_canonical_config_dict() -> dict:
@@ -148,6 +148,17 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.log_and_raise_error(
             "remote_host_id and remote_host_username are "
             "required if connection_method is ssh."
+        )
+
+    try:
+        utils.message_user(
+            f"Making project directory at: {config_dict['local_path']}"
+        )
+        directories.make_dirs(config_dict["local_path"])
+    except OSError:
+        utils.log_and_raise_error(
+            f"Could not make project directory at: {config_dict['local_path']}."
+            f" Config file not updated."
         )
 
 

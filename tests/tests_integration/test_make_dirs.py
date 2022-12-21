@@ -28,7 +28,9 @@ class TestMakeDirs:
         test_project_name = "test_make_dirs"
 
         project = test_utils.setup_project_default_configs(
-            test_project_name, local_path=tmp_path / test_project_name
+            test_project_name,
+            tmp_path,
+            local_path=tmp_path / test_project_name,
         )
 
         cwd = os.getcwd()

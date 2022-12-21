@@ -1,10 +1,14 @@
 import glob
 import os
+from pathlib import Path
 
 import pytest
 import test_utils
 
 from datashuttle.datashuttle import DataShuttle
+from datashuttle.utils import ds_logger
+
+BAD_CHAR_DIRNAME = "#<>$%+!`|{}?"  # chars that will result in fails makedir
 
 
 class TestCommandLineInterface:
@@ -59,17 +63,17 @@ class TestCommandLineInterface:
         return log
 
     def delete_log_files(self, logging_path):
-        test_utils.unlink_log_filehandler()
+        ds_logger.close_log_filehandler()
         logs = glob.glob((str(logging_path / "*.log")))
         for log in logs:
             os.remove(log)
 
-    def test_logs_make_config_file(self, clean_project_name):
+    def test_logs_make_config_file(self, clean_project_name, tmp_path):
         """"""
         project = DataShuttle(clean_project_name)
 
         project.make_config_file(
-            "one", "two", "local_filesystem", use_behav=True
+            tmp_path, "two", "local_filesystem", use_behav=True
         )
 
         log = self.read_log_file(project._logging_path)
@@ -84,28 +88,33 @@ class TestCommandLineInterface:
 
     def test_logs_update_config(self, setup_project):
 
-        setup_project.update_config("local_path", "test_path")
+        setup_project.update_config("remote_path", "test_path")
 
         log = self.read_log_file(setup_project._logging_path)
 
         assert "Starting update_config" in log
-        assert "local_path has been updated to test_path" in log
+        assert "remote_path has been updated to test_path" in log
         assert "Update successful. New config file:" in log
-        assert """ "local_path": "test_path",\n """ in log
+        assert """ "remote_path": "test_path",\n """ in log
 
-    def test_logs_supply_config(self, setup_project):
+    def test_logs_supply_config(self, setup_project, tmp_path):
         """"""
-        new_configs_path = test_utils.make_correct_supply_config_file(
-            setup_project
+        new_configs_path, __ = test_utils.make_correct_supply_config_file(
+            setup_project, tmp_path
         )
+        self.delete_log_files(setup_project._logging_path)
+        orig_project_path = setup_project._logging_path
 
         setup_project.supply_config_file(new_configs_path, warn=False)
 
-        log = self.read_log_file(setup_project._logging_path)
+        log = self.read_log_file(orig_project_path)
 
         assert "supply_config_file" in log
         assert "Update successful. New config file: " in log
-        assert """ "local_path": "C:/test/test_ local/test_edit",\n """ in log
+        assert (
+            f""" "local_path": "{setup_project.cfg['local_path'].as_posix()}",\n """
+            in log
+        )
 
     def test_make_sub_dir__(self, setup_project):
 
@@ -276,3 +285,123 @@ class TestCommandLineInterface:
             "Cannot make directories. The key sub-001 already exists in the project"
             in log
         )
+
+    def test_temp_log_dir_made_make_config_file(
+        self, clean_project_name, tmp_path
+    ):
+        """"""
+        project = DataShuttle(clean_project_name)
+
+        configs = test_utils.get_test_config_arguments_dict(tmp_path)
+        configs["local_path"] = BAD_CHAR_DIRNAME
+
+        with pytest.raises(BaseException):
+            project.make_config_file(**configs)
+
+        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
+
+        assert len(tmp_path_logs) == 1
+        assert "make_config_file" in tmp_path_logs[0]
+
+    def test_temp_log_dir_moved_make_config_file(
+        self, clean_project_name, tmp_path
+    ):
+        """
+        Check the logs are moved to the new logging path
+        after project init for the first time.
+        """
+        project = DataShuttle(clean_project_name)
+
+        configs = test_utils.get_test_config_arguments_dict(tmp_path)
+        project.make_config_file(**configs)
+
+        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
+        project_path_logs = glob.glob(str(project._logging_path / "*.log"))
+
+        assert len(tmp_path_logs) == 0
+        assert len(project_path_logs) == 1
+        assert "make_config_file" in project_path_logs[0]
+
+    @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
+    def test_temp_log_dir_made_update_config(
+        self, setup_project, supply_or_update, tmp_path
+    ):
+        """"""
+        self.delete_log_files(setup_project._logging_path)
+
+        # Try to set local_path to a folder that cannot be made.
+        # The existing local project exists, so put the log there
+        with pytest.raises(BaseException):
+            #   setup_project.update_config("local_path", BAD_CHAR_DIRNAME)
+            self.run_supply_or_update_configs(
+                setup_project, supply_or_update, BAD_CHAR_DIRNAME, tmp_path
+            )
+
+        tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
+        orig_local_path_logs = glob.glob(
+            str(setup_project._logging_path / "*.log")
+        )
+
+        assert len(tmp_path_logs) == 0
+        assert len(orig_local_path_logs) == 1
+        self.delete_log_files(setup_project._logging_path)
+
+        # Now change the local_path to something that doesn't exist.
+        # Also, the new path cannot be made. In this case store the logs
+        # in the temp log file.
+        setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
+
+        with pytest.raises(BaseException):
+            #   setup_project.update_config("local_path", BAD_CHAR_DIRNAME)
+            self.run_supply_or_update_configs(
+                setup_project, supply_or_update, BAD_CHAR_DIRNAME, tmp_path
+            )
+
+        tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
+        orig_local_path_logs = glob.glob(
+            str(setup_project._logging_path / "*.log")
+        )
+
+        assert len(tmp_path_logs) == 1
+        assert len(orig_local_path_logs) == 0
+
+    @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
+    def test_temp_log_dir_moved(
+        self, setup_project, supply_or_update, tmp_path
+    ):
+        """
+        Now set the existing project path to one that does not
+        exist but the new one to a project that does - and check
+        logs are moved to new project.
+        """
+        setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
+        new_log_path = setup_project._logging_path / "new_logs"
+
+        self.run_supply_or_update_configs(
+            setup_project,
+            supply_or_update,
+            new_local_path=new_log_path.as_posix(),
+            tmp_path=tmp_path,
+        )
+
+        tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
+        new_path_logs = glob.glob(
+            str(new_log_path / ".datashuttle" / "logs" / "*.log")
+        )
+
+        assert len(tmp_path_logs) == 0
+        assert len(new_path_logs) == 1
+
+    def run_supply_or_update_configs(
+        self, project, supply_or_update, new_local_path, tmp_path
+    ):
+        """"""
+        if supply_or_update == "update":
+            project.update_config("local_path", new_local_path)
+        else:
+            new_configs_path, __ = test_utils.make_correct_supply_config_file(
+                project,
+                tmp_path,
+                update_configs={"key": "local_path", "value": new_local_path},
+            )
+            project.supply_config_file(new_configs_path, warn=False)
