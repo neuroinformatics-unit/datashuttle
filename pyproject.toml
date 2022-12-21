@@ -17,7 +17,7 @@ dependencies = [
     "requests",
     "rich",
     # "fancylog",
-    "fancylog @ git+ssh://git@github.com/JoeZiminski/fancylog",
+    "fancylog @ git+https://git@github.com/JoeZiminski/fancylog",
 ]
 
 classifiers = [
