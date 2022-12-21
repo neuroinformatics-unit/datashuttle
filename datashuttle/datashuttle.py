@@ -194,7 +194,7 @@ class DataShuttle:
         """
         Upload data from a local machine to the remote project
         directory. In the case that a file / directory exists on
-        the remote and local, the local will not be overwritten
+        the remote and local, the remote will not be overwritten
         even if the remote file is an older version.
 
         :param sub_names: a list of sub names as accepted in make_sub_dir().
