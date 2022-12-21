@@ -130,9 +130,9 @@ class DataShuttle:
                                 If no session is provided, no session-level
                                 directories are made.
         :param data_type: The data_type to make the directory
-                                in (e.g. "ephys", "behav", "histology"). If
-                                "all" is selected, directory will be created
-                                for all data type.
+                          in (e.g. "ephys", "behav", "histology"). If
+                          "all" is selected, directory will be created
+                          for all data_type enabled in config.
 
         sub_names or ses_names may contain certain formatting tags:
             @TO@: used to make a range of sub/ses. Nubmer must be either side of the tag
