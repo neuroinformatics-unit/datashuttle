@@ -8,8 +8,6 @@ import test_utils
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
-BAD_CHAR_DIRNAME = "#<>$%+!`|{/}?"  # chars that will result in fails makedir
-
 
 class TestCommandLineInterface:
     @pytest.fixture(scope="function")
@@ -293,7 +291,7 @@ class TestCommandLineInterface:
         project = DataShuttle(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(tmp_path)
-        configs["local_path"] = BAD_CHAR_DIRNAME
+        configs["local_path"] = ""
 
         with pytest.raises(BaseException):
             project.make_config_file(**configs)
@@ -332,9 +330,8 @@ class TestCommandLineInterface:
         # Try to set local_path to a folder that cannot be made.
         # The existing local project exists, so put the log there
         with pytest.raises(BaseException):
-            #   setup_project.update_config("local_path", BAD_CHAR_DIRNAME)
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, BAD_CHAR_DIRNAME, tmp_path
+                setup_project, supply_or_update, "", tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
@@ -352,9 +349,8 @@ class TestCommandLineInterface:
         setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
 
         with pytest.raises(BaseException):
-            #   setup_project.update_config("local_path", BAD_CHAR_DIRNAME)
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, BAD_CHAR_DIRNAME, tmp_path
+                setup_project, supply_or_update, "", tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
