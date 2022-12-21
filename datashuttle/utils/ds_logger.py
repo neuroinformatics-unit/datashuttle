@@ -95,9 +95,7 @@ def walk_directory(
             #      text_filename.highlight_regex(r"\..*$", "bold red")
             text_filename.stylize(f"link file://{path}")
             file_size = path.stat().st_size
-            text_filename.append(
-                f" ({decimal(file_size)})", "blue"
-            )  # TODO: these might be hard to see on dark background
+            text_filename.append(f" ({decimal(file_size)})", "blue")
             tree.add(text_filename)
 
 

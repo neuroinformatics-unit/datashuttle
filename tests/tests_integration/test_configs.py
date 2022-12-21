@@ -4,6 +4,7 @@ import pytest
 import test_utils
 
 from datashuttle.configs.canonical_configs import (
+    get_canonical_config_dict,
     get_canonical_config_required_types,
 )
 from datashuttle.datashuttle import DataShuttle
@@ -325,12 +326,7 @@ class TestConfigs:
 
         assert (
             str(e.value)
-            == "New config keys are in the wrong order. "  # TODO: use keys from cannonical dict
-            "The order should be: dict_keys(['local_path', "
-            "'remote_path', 'connection_method', "
-            "'remote_host_id', 'remote_host_username', "
-            "'use_ephys', 'use_behav', 'use_funcimg', "
-            "'use_histology'])"
+            == f"New config keys are in the wrong order. The order should be: {get_canonical_config_dict().keys()}"
         )
 
     def test_supplied_config_file_updates(self, setup_project, tmp_path):
