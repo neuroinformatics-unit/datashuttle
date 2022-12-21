@@ -741,7 +741,7 @@ class DataShuttle:
         :param upload_or_download: "upload" or "download"
         :param sub_names: see make_sub_dir()
         :param ses_names: see make_sub_dir()
-        :param data_type: see make_sub_dir()
+        :param data_type: e.g. ephys, behav, histology, funcimg, see make_sub_dir()
         :param dry_run: see upload_project_dir_or_file*(
         """
         local_or_remote = (
