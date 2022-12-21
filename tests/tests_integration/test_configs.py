@@ -41,7 +41,7 @@ class TestConfigs:
         )
 
         default_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
+            tmp_path, set_as_defaults=True
         )
         setup_project.make_config_file(**default_configs)
 
@@ -132,14 +132,14 @@ class TestConfigs:
     # Test Make Configs API
     # -------------------------------------------------------------
 
-    def test_required_configs(self, project):
+    def test_required_configs(self, project, tmp_path):
         """
         Set the required arguments of the config (local_path, remote_path,
         connection_method and check they are set correctly in both
         the project.cfg dict and config.yaml file.
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            required_arguments_only=True
+            tmp_path, required_arguments_only=True
         )
 
         project.make_config_file(**required_options)
@@ -149,30 +149,30 @@ class TestConfigs:
             required_options,
         )
 
-    def test_config_defaults(self, project):
+    def test_config_defaults(self, project, tmp_path):
         """
         Check the default configs are set as expected
         (see get_test_config_arguments_dict()) for tested defaults.
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            required_arguments_only=True
+            tmp_path, required_arguments_only=True
         )
 
         project.make_config_file(**required_options)
 
         default_options = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
+            tmp_path, set_as_defaults=True
         )
 
         test_utils.check_configs(project, default_options)
 
-    def test_non_default_configs(self, project):
+    def test_non_default_configs(self, project, tmp_path):
         """
         Set the configs to non-default options, make the
         config file and check file and project.cfg are set correctly.
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         project.make_config_file(**changed_configs)
@@ -183,20 +183,20 @@ class TestConfigs:
     # Test Update Configs
     # -------------------------------------------------------------
 
-    def test_update_config(self, project):
+    def test_update_config__(self, project, tmp_path):
         """
         Set the configs as default and then sequentially update
         each entry with a different option. Check that
         the option is updated at project.cfg and the yaml file.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
+            tmp_path, set_as_defaults=True
         )
 
         project.make_config_file(**default_configs)
 
         not_set_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
@@ -209,35 +209,36 @@ class TestConfigs:
     # Test Supplied Configs
     # -------------------------------------------------------------
 
-    def test_supplied_config_file_bad_path(self, project):
+    def test_supplied_config_file_bad_path(self, setup_project):
 
         # Test path supplied that doesn't exist
 
-        non_existant_path = project._appdir_path / "fake.file"
+        non_existant_path = setup_project._appdir_path / "fake.file"
 
         with pytest.raises(BaseException) as e:
-            project.supply_config_file(non_existant_path, warn=False)
+            setup_project.supply_config_file(non_existant_path, warn=False)
 
         assert str(e.value) == f"No file found at: {non_existant_path}"
 
         # Test non-yaml file supplied
-
-        wrong_filetype_path = project._appdir_path / "file.yuml"
+        wrong_filetype_path = setup_project._appdir_path / "file.yuml"
 
         with open(wrong_filetype_path, "w"):
             pass
 
         with pytest.raises(BaseException) as e:
-            project.supply_config_file(wrong_filetype_path, warn=False)
+            setup_project.supply_config_file(wrong_filetype_path, warn=False)
 
         assert str(e.value) == "The config file must be a YAML file"
 
-    def test_supplied_config_file_missing_key(self, setup_project):
+    def test_supplied_config_file_missing_key(self, setup_project, tmp_path):
         """
         More informative traceback is also printed
         """
         bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
-        missing_key_configs = test_utils.get_test_config_arguments_dict()
+        missing_key_configs = test_utils.get_test_config_arguments_dict(
+            tmp_path
+        )
 
         del missing_key_configs["use_histology"]
 
@@ -253,13 +254,13 @@ class TestConfigs:
             "the supplied config. Config file was not updated."
         )
 
-    def test_supplied_config_file_extra_key(self, setup_project):
+    def test_supplied_config_file_extra_key(self, setup_project, tmp_path):
         """
         More informative traceback is also printed
         """
         bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
 
-        wrong_key_configs = test_utils.get_test_config_arguments_dict()
+        wrong_key_configs = test_utils.get_test_config_arguments_dict(tmp_path)
         wrong_key_configs["use_mismology"] = "wrong"
         test_utils.dump_config(wrong_key_configs, bad_configs_path)
 
@@ -272,7 +273,7 @@ class TestConfigs:
             "Config file was not updated."
         )
 
-    def test_supplied_config_file_bad_types(self, setup_project):
+    def test_supplied_config_file_bad_types(self, setup_project, tmp_path):
         """ """
         bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
 
@@ -280,7 +281,9 @@ class TestConfigs:
             if key in setup_project.cfg.keys_str_on_file_but_path_in_class:
                 continue
 
-            bad_type_configs = test_utils.get_test_config_arguments_dict()
+            bad_type_configs = test_utils.get_test_config_arguments_dict(
+                tmp_path
+            )
 
             bad_type_configs[key] = DataShuttle  # arbitrary bad type
 
@@ -297,12 +300,16 @@ class TestConfigs:
                 f"Config file was not updated."
             )
 
-    def test_supplied_config_file_changes_wrong_order(self, setup_project):
+    def test_supplied_config_file_changes_wrong_order(
+        self, setup_project, tmp_path
+    ):
 
         bad_order_configs_path = (
             setup_project._appdir_path / "new_configs.yaml"
         )
-        good_order_configs = test_utils.get_test_config_arguments_dict()
+        good_order_configs = test_utils.get_test_config_arguments_dict(
+            tmp_path
+        )
 
         bad_order_configs = {
             key: good_order_configs[key]
@@ -326,14 +333,14 @@ class TestConfigs:
             "'use_histology'])"
         )
 
-    def test_supplied_config_file_updates(self, setup_project):
+    def test_supplied_config_file_updates(self, setup_project, tmp_path):
         """
         This will check everything
         """
         (
             new_configs_path,
             new_configs,
-        ) = test_utils.make_correct_supply_config_file(setup_project)
+        ) = test_utils.make_correct_supply_config_file(setup_project, tmp_path)
 
         setup_project.supply_config_file(new_configs_path, warn=False)
 

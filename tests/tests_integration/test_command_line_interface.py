@@ -65,7 +65,7 @@ class TestCommandLineInterface:
     # ----------------------------------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_config_file_required_variables(self, sep):
+    def test_make_config_file_required_variables(self, sep, tmp_path):
         """
         Check the arguments passed to CLI make_config_file
         match those that are passed to wrapped API.
@@ -78,7 +78,7 @@ class TestCommandLineInterface:
         as at least one use_x argument must be true.
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            required_arguments_only=True
+            tmp_path, required_arguments_only=True
         )
 
         stdout, __ = test_utils.run_cli(
@@ -95,13 +95,13 @@ class TestCommandLineInterface:
 
         self.check_kwargs(required_options, kwargs_)
 
-    def test_make_config_file_non_default_variables(self):
+    def test_make_config_file_non_default_variables(self, tmp_path):
         """
         Check the variables for all configs (not just default)
         are correctly processed.
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         stdout, __ = test_utils.run_cli(
@@ -232,7 +232,7 @@ class TestCommandLineInterface:
     # ----------------------------------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_update_config(self, clean_project_name, sep):
+    def test_update_config(self, clean_project_name, sep, tmp_path):
         """
         See test_update_config in test_configs.py.
 
@@ -245,7 +245,7 @@ class TestCommandLineInterface:
         workflow here, with both separators.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
+            tmp_path, set_as_defaults=True
         )
 
         test_utils.run_cli(
@@ -255,7 +255,7 @@ class TestCommandLineInterface:
         )
 
         not_set_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -277,12 +277,13 @@ class TestCommandLineInterface:
     def test_make_config_file_defaults(
         self,
         clean_project_name,
+        tmp_path,
     ):
         """
         See test_config_defaults in test_configs.py
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            required_arguments_only=True
+            tmp_path, required_arguments_only=True
         )
 
         test_utils.run_cli(
@@ -292,7 +293,7 @@ class TestCommandLineInterface:
         )
 
         default_options = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
+            tmp_path, set_as_defaults=True
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -302,12 +303,13 @@ class TestCommandLineInterface:
     def test_make_config_file_not_defaults(
         self,
         clean_project_name,
+        tmp_path,
     ):
         """
         see test_config_defaults in test_configs.py
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         test_utils.run_cli(

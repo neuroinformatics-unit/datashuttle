@@ -72,13 +72,10 @@ def walk_directory(
     features (e.g. icons) that were disabled for maximum
     cross-system use.
     """
-    try:
-        paths = sorted(
-            project_path.iterdir(),
-            key=lambda path: (Path(path).is_file(), path.name.lower()),
-        )
-    except:
-        breakpoint()
+    paths = sorted(
+        project_path.iterdir(),
+        key=lambda path: (Path(path).is_file(), path.name.lower()),
+    )
 
     for path in paths:
         # Remove hidden files
@@ -108,3 +105,11 @@ def get_rich_project_path_tree(project_path: Path) -> Tree:
     tree = Tree(label=f"{project_path.as_posix()}/")
     walk_directory(project_path, tree)
     return tree
+
+
+def close_log_filehandler():
+    logger = logging.getLogger()
+    handlers = logger.handlers[:]
+    for handler in handlers:
+        logger.removeHandler(handler)
+        handler.close()

@@ -1,18 +1,18 @@
 import copy
 import glob
-import logging
 import os
 import pathlib
 import shutil
 import subprocess
 import warnings
 from os.path import join
+from pathlib import Path
 
 import yaml
 
 from datashuttle.configs import canonical_configs
 from datashuttle.datashuttle import DataShuttle
-from datashuttle.utils import rclone, utils
+from datashuttle.utils import ds_logger, rclone, utils
 
 # ----------------------------------------------------------------------------------------------------------
 # Setup and Teardown Test Project
@@ -21,6 +21,7 @@ from datashuttle.utils import rclone, utils
 
 def setup_project_default_configs(
     project_name,
+    tmp_path,
     local_path=False,
     remote_path=False,
     all_data_type_on=True,
@@ -39,7 +40,9 @@ def setup_project_default_configs(
 
     project = DataShuttle(project_name)
 
-    default_configs = get_test_config_arguments_dict(set_as_defaults=True)
+    default_configs = get_test_config_arguments_dict(
+        tmp_path, set_as_defaults=True
+    )
 
     if all_data_type_on:
         default_configs.update(get_all_data_types_on("kwargs"))
@@ -59,10 +62,12 @@ def setup_project_default_configs(
     if local_path:
         project.update_config("local_path", local_path)
         delete_all_dirs_in_local_path(project)
+        project.make_and_get_logging_path()
 
     if remote_path:
         project.update_config("remote_path", remote_path)
         delete_all_dirs_in_remote_path(project)
+        project.make_and_get_logging_path()
 
     return project
 
@@ -91,42 +96,44 @@ def teardown_project(
 
 
 def delete_all_dirs_in_local_path(project):
+    ds_logger.close_log_filehandler()
     if project.cfg["local_path"].is_dir():
         shutil.rmtree(project.cfg["local_path"])
 
 
 def delete_all_dirs_in_remote_path(project):
     """"""
+    ds_logger.close_log_filehandler()
     if project.cfg["remote_path"].is_dir():
         shutil.rmtree(project.cfg["remote_path"])
 
 
 def delete_project_if_it_exists(project_name):
     """"""
-    config_path = utils.get_appdir_path(project_name)
+    config_path, __ = utils.get_appdir_path(project_name)
 
     if config_path.is_dir():
-        unlink_log_filehandler()
+        ds_logger.close_log_filehandler()
 
     shutil.rmtree(config_path)
 
 
-def unlink_log_filehandler():
-    logger = logging.getLogger()
-    logger.handlers = []
-
-
-def make_correct_supply_config_file(setup_project):
+def make_correct_supply_config_file(
+    setup_project, tmp_path, update_configs=False
+):
     """"""
     new_configs_path = setup_project._appdir_path / "new_configs.yaml"
-    new_configs = get_test_config_arguments_dict()
+    new_configs = get_test_config_arguments_dict(tmp_path)
 
     canonical_config_dict = canonical_configs.get_canonical_config_dict()
     new_configs = {key: new_configs[key] for key in canonical_config_dict}
 
+    if update_configs:
+        new_configs[update_configs["key"]] = update_configs["value"]
+
     dump_config(new_configs, new_configs_path)
 
-    return new_configs_path, new_configs
+    return new_configs_path.as_posix(), new_configs
 
 
 def dump_config(dict_, path_):
@@ -138,6 +145,7 @@ def setup_project_fixture(tmp_path, test_project_name):
     """"""
     project = setup_project_default_configs(
         test_project_name,
+        tmp_path,
         local_path=tmp_path / test_project_name / "local",
         remote_path=tmp_path / test_project_name / "remote",
     )
@@ -156,6 +164,7 @@ def get_protected_test_dir():
 
 
 def get_test_config_arguments_dict(
+    tmp_path,
     set_as_defaults=False,
     required_arguments_only=False,
 ):
@@ -167,9 +176,11 @@ def get_test_config_arguments_dict(
 
     Include spaces in path so this case is always checked
     """
+    tmp_path = Path(tmp_path).as_posix()
+
     dict_ = {
-        "local_path": r"Not:/a/re al/local/directory",
-        "remote_path": r"/Not/a/re al/remote_ local/directory",
+        "local_path": f"{tmp_path}/not/a/re al/local/directory",
+        "remote_path": f"{tmp_path}/a/re al/remote_ local/directory",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
         # but at least 1 use_x is, so
@@ -192,8 +203,8 @@ def get_test_config_arguments_dict(
     else:
         dict_.update(
             {
-                "local_path": r"C:/test/test_ local/test_edit",
-                "remote_path": r"/nfs/test dir/test_edit2",
+                "local_path": f"{tmp_path}/test/test_ local/test_edit",
+                "remote_path": f"{tmp_path}/nfs/test dir/test_edit2",
                 "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",

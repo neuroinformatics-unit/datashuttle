@@ -2,7 +2,7 @@ import logging
 import re
 import traceback
 from pathlib import Path
-from typing import List, Union
+from typing import List, Tuple, Union
 
 from rich import print as rich_print
 
@@ -54,7 +54,7 @@ def raise_error(message: str) -> None:
     raise BaseException(message)
 
 
-def get_appdir_path(project_name: str) -> Path:
+def get_appdir_path(project_name: str) -> Tuple[Path, Path]:
     """
     It is not possible to write to program files in windows
     from app without admin permissions. However, if admin
@@ -63,10 +63,12 @@ def get_appdir_path(project_name: str) -> Path:
     AppData cross-platform and save / load all files form here .
     """
     base_path = Path.home() / ".datashuttle" / project_name
+    temp_logs_path = base_path / "temp_logs"
 
     directories.make_dirs(base_path)
+    directories.make_dirs(temp_logs_path)
 
-    return base_path
+    return base_path, temp_logs_path
 
 
 def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:

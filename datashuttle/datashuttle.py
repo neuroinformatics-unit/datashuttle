@@ -1,6 +1,8 @@
 import copy
+import glob
 import json
 import os
+import shutil
 from collections.abc import ItemsView
 from pathlib import Path
 from typing import Any, List, Optional, Union, cast
@@ -62,7 +64,9 @@ class DataShuttle:
             utils.log_and_raise_error("project_name must not include spaces.")
 
         self.project_name = project_name
-        self._appdir_path = utils.get_appdir_path(self.project_name)
+        self._appdir_path, self._temp_log_path = utils.get_appdir_path(
+            self.project_name
+        )
         self._config_path = self._make_path("appdir", "config.yaml")
         self._top_level_dir_name = "rawdata"
 
@@ -76,11 +80,6 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
-            self._project_metadata_path = (
-                self.cfg["local_path"] / ".datashuttle"
-            )
-            self._make_project_metadata_if_does_not_exist()
-            self._logging_path = self.make_and_get_logging_path()
 
         rclone.prompt_rclone_download_if_does_not_exist()
 
@@ -96,6 +95,12 @@ class DataShuttle:
         in this project root, and all subdirs are created at the
         session level.
         """
+        self._project_metadata_path = self.cfg["local_path"] / ".datashuttle"
+
+        self._make_project_metadata_if_does_not_exist()
+
+        self._logging_path = self.make_and_get_logging_path()
+
         self._ssh_key_path = self._make_path(
             "appdir", self.project_name + "_ssh_key"
         )
@@ -411,7 +416,9 @@ class DataShuttle:
               settings (e.g. if ephys_behav_camera=True
               and ephys_behav=False, ephys_behav_camera will not be made).
         """
-        self.start_log("make_config_file")
+        self.start_log(
+            "make_config_file", store_in_temp_dir=True, temp_dir_path="default"
+        )
 
         self.cfg = Configs(
             self._config_path,
@@ -446,6 +453,7 @@ class DataShuttle:
             "options loaded into datashuttle."
         )
         self.log_successful_config_change()
+        self.move_logs_from_temp_dir()
 
     def update_config(
         self, option_key: str, new_info: Union[Path, str, bool, None]
@@ -454,21 +462,43 @@ class DataShuttle:
         Convenience function to update individual entry of configuration file.
         The config file, and currently loaded self.cfg will be updated.
 
+        If we are changing local path, there are a couple of possibilities.
+        If the local_path project already exists, just write
+        this config log there, and for future logs will go to the new
+        local_path. Otherwise, if a local_path does not exist,
+        move to a temp_dir and then move the logs to the new local_path
+        if successful.
+
         :param option_key: dictionary key of the option to change,
                            see make_config_file()
         :param new_info: value to update the config too
         """
+        store_logs_in_temp_dir = (
+            option_key == "local_path" and not self.local_path_exists()
+        )
+        if store_logs_in_temp_dir:
+            self.start_log(
+                "update_config",
+                store_in_temp_dir=True,
+                temp_dir_path="default",
+            )
+        else:
+            self.start_log("update_config", store_in_temp_dir=False)
+
         if not self.cfg:
             utils.log_and_raise_error(
                 "Must have a config loaded before updating configs."
             )
-        self.start_log("update_config")
 
         new_info = load_configs.handle_bool(option_key, new_info)
 
         self.cfg.update_an_entry(option_key, new_info)
         self._set_attributes_after_config_load()
+
         self.log_successful_config_change()
+
+        if store_logs_in_temp_dir:
+            self.move_logs_from_temp_dir()
 
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
@@ -481,13 +511,25 @@ class DataShuttle:
         into datashuttle, and a copy saved in the DataShuttle
         config folder for future use.
 
+        It is possible the local_path will be changed
+        with the new config file. see update_config()
+        for how this is handled.
+
         :param input_path_to_config: Path to the config to
                                      use as DataShuttle config.
         :param warn: prompt the user to confirm as supplying
                      config will overwrite existing config.
                      Turned off for testing.
         """
-        self.start_log("supply_config_file")
+        store_logs_in_temp_dir = not self.local_path_exists()
+        if store_logs_in_temp_dir:
+            self.start_log(
+                "supply_config_file",
+                store_in_temp_dir=True,
+                temp_dir_path="default",
+            )
+        else:
+            self.start_log("supply_config_file", store_in_temp_dir=False)
 
         path_to_config = Path(input_path_to_config)
 
@@ -502,6 +544,8 @@ class DataShuttle:
             self.cfg.dump_to_file()
 
             self.log_successful_config_change(message=True)
+            if store_logs_in_temp_dir:
+                self.move_logs_from_temp_dir()
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
@@ -564,11 +608,10 @@ class DataShuttle:
 
     def make_and_get_logging_path(self) -> Path:
         """
-        Currently logging is located in config path TODO: move to project
+        Currently logging is located in config path
         """
         logging_path = self._project_metadata_path / "logs"
         directories.make_dirs(logging_path)
-
         return logging_path
 
     # ====================================================================================================================
@@ -914,7 +957,7 @@ class DataShuttle:
         elif base == "remote":
             base_dir = self.cfg["remote_path"]
         elif base == "appdir":
-            base_dir = utils.get_appdir_path(self.project_name)
+            base_dir, __ = utils.get_appdir_path(self.project_name)
         return base_dir
 
     def _get_base_and_top_level_dir(self, local_or_remote: str) -> Path:
@@ -1005,10 +1048,52 @@ class DataShuttle:
         return f"remote_{self.project_name}_{connection_method}"
 
     def start_log(
-        self, name: str, variables: Optional[List[Any]] = None
+        self,
+        name: str,
+        variables: Optional[List[Any]] = None,
+        store_in_temp_dir: bool = False,
+        temp_dir_path: Union[str, Path] = "",
     ) -> None:
-        """"""
-        ds_logger.start(self._logging_path, name, variables)
+        """
+
+        store_in_temp_dir: if False, existing logging path will be used
+                           (local project .datashuttle). If "default"", the temp
+                           log backup will be used. Otherwise, expect a path / string
+                           to the new path to make the logs at.
+        """
+        if store_in_temp_dir:
+            path_to_save = (
+                self._temp_log_path
+                if temp_dir_path == "default"
+                else Path(temp_dir_path)
+            )
+        else:
+            path_to_save = self._logging_path
+
+        ds_logger.start(path_to_save, name, variables)
+
+    def move_logs_from_temp_dir(self):
+        """
+        Logs are stored within the project directory. Although
+        in some instances, when setting configs, we do not know what
+        the project directory is. In this case, make the logs
+        in a temp folder in the .datashuttle config dir,
+        and move them to the project folder once set.
+        """
+        if not self.cfg or not self.cfg["local_path"].is_dir():
+            utils.log_and_raise_error(
+                "Project folder does not exist. " "Logs were not moved."
+            )
+
+        ds_logger.close_log_filehandler()
+
+        log_files = glob.glob(str(self._temp_log_path / "*.log"))
+        for file_path in log_files:
+            file_name = os.path.basename(file_path)
+
+            shutil.move(
+                self._temp_log_path / file_name, self._logging_path / file_name
+            )
 
     def log_successful_config_change(self, message=False):
         """
@@ -1026,3 +1111,6 @@ class DataShuttle:
         copy_dict = copy.deepcopy(self.cfg.data)
         self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         return json.dumps(copy_dict, indent=4)
+
+    def local_path_exists(self):
+        return self.cfg and self.cfg["local_path"].is_dir()
