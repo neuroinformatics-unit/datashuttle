@@ -1,5 +1,6 @@
 import glob
 import os
+import platform
 from pathlib import Path
 
 import pytest
@@ -7,6 +8,8 @@ import test_utils
 
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
+
+BAD_FILECHAR = "?" if platform.system() == "Windows" else "/"
 
 
 class TestCommandLineInterface:
@@ -291,7 +294,7 @@ class TestCommandLineInterface:
         project = DataShuttle(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(tmp_path)
-        configs["local_path"] = ""
+        configs["local_path"] = BAD_FILECHAR
 
         with pytest.raises(BaseException):
             project.make_config_file(**configs)
@@ -331,7 +334,7 @@ class TestCommandLineInterface:
         # The existing local project exists, so put the log there
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, "", tmp_path
+                setup_project, supply_or_update, BAD_FILECHAR, tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
@@ -350,7 +353,7 @@ class TestCommandLineInterface:
 
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, "", tmp_path
+                setup_project, supply_or_update, BAD_FILECHAR, tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
