@@ -210,7 +210,7 @@ class TestCommandLineInterface:
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
-        assert "/test_logging/local/rawdata/sub-1_1/histology"
+        assert "/test_logging/local/rawdata/sub-1_1/histology" in log
         assert (
             "/test_logging/remote/rawdata/sub-1_1/histology: copied 1 directories"
             in log
@@ -248,8 +248,6 @@ class TestCommandLineInterface:
         assert f"Starting {upload_or_download}_project_dir_or_file" in log
         assert "/rawdata/sub-001/ses-001" in log
         assert "Using config file from" in log
-        assert "/rawdata/sub-001/ses-001" in log
-        assert "/rawdata/sub-001/ses-001" in log
         assert "Waiting for checks to finish" in log
         assert "behav/.datashuttle_meta: Making directory" in log
         assert "ephys/.datashuttle_meta: Making directory" in log

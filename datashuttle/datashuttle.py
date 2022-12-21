@@ -584,9 +584,7 @@ class DataShuttle:
         utils.message_user(self._get_json_dumps_config())
 
     def show_local_tree(self):
-        ds_logger.print_tree(
-            self.cfg["local_path"]
-        )  # TODO: test this!! and CLI!
+        ds_logger.print_tree(self.cfg["local_path"])
 
     @staticmethod
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
@@ -1082,7 +1080,7 @@ class DataShuttle:
         """
         if not self.cfg or not self.cfg["local_path"].is_dir():
             utils.log_and_raise_error(
-                "Project folder does not exist. " "Logs were not moved."
+                "Project folder does not exist. Logs were not moved."
             )
 
         ds_logger.close_log_filehandler()

@@ -126,7 +126,7 @@ class Configs(UserDict):
         else:
             self[option_key] = original_value
             utils.log_and_raise_error(
-                f"\n{check_change['error']}" f"\n{option_key} was not updated"
+                f"\n{check_change['error']}\n{option_key} was not updated"
             )
 
     def safe_check_current_dict_is_valid(self) -> dict:

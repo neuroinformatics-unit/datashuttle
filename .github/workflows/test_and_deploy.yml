@@ -42,7 +42,6 @@ jobs:
           auto-update-conda: true
           channels: conda-forge
           activate-environment: "true"
-          token: ${{ secrets.ACCESS_TOKEN }}
       - name: Install RClone
         run: |
           conda activate true
