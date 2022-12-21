@@ -27,6 +27,7 @@ def start(
         timestamp=True,
         file_log_level="INFO",
         write_git=False,
+        log_to_stderr=False,
     )
     logging.info(f"Starting {name}")
 
