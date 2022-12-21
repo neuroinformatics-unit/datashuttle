@@ -8,7 +8,7 @@ import test_utils
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
-BAD_CHAR_DIRNAME = "#<>$%+!`|{}?"  # chars that will result in fails makedir
+BAD_CHAR_DIRNAME = "#<>$%+!`|{/}?"  # chars that will result in fails makedir
 
 
 class TestCommandLineInterface:
