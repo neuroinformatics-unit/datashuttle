@@ -1,0 +1,6 @@
+linkify-it-py
+myst-parser
+nbsphinx
+numpydoc
+pydata-sphinx-theme
+setuptools_scm
