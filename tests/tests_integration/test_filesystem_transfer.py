@@ -4,6 +4,8 @@ import re
 import pytest
 import test_utils
 
+from datashuttle.configs.canonical_directories_and_tags import tags
+
 
 class TestFileTransfer:
     @pytest.fixture(scope="function")
@@ -202,8 +204,8 @@ class TestFileTransfer:
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
         """
-        subs = ["001", "02@TO@03"]
-        sessions = ["ses-01@TO@003_@DATETIME@"]
+        subs = ["001", f"02{tags('to')}03"]
+        sessions = [f"ses-01{tags('to')}003_{tags('datetime')}"]
 
         project.make_sub_dir(subs, sessions, "all")
 
@@ -258,8 +260,8 @@ class TestFileTransfer:
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
         transfer_function(
-            "sub-h@*@llo",
-            "ses-@*@_date-202205@*@",
+            f"sub-h{tags('*')}llo",
+            f"ses-{tags('*')}_date-202205{tags('*')}",
             ["ephys", "behav", "funcimg"],
         )
 

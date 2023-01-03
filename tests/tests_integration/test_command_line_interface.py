@@ -27,6 +27,7 @@ import simplejson
 import test_utils
 
 from datashuttle.configs import canonical_configs
+from datashuttle.configs.canonical_directories_and_tags import tags
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
@@ -455,7 +456,7 @@ class TestCommandLineInterface:
         properly processed names to stdout
         """
         stdout, __ = test_utils.run_cli(
-            f"check{sep}name{sep}processing sub-001 1@TO@02 --prefix sub-",
+            f"check{sep}name{sep}processing sub-001 1{tags('to')}02 --prefix sub-",
             clean_project_name,
         )
 

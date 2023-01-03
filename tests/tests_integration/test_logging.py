@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 import test_utils
 
+from datashuttle.configs.canonical_directories_and_tags import tags
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
@@ -119,7 +120,7 @@ class TestCommandLineInterface:
 
     def test_make_sub_dir__(self, setup_project):
 
-        subs = ["sub-1_1", "sub-002@TO@004"]
+        subs = ["sub-1_1", f"sub-002{tags('to')}004"]
         ses = ["ses-123", "ses-hello_world"]
 
         setup_project.make_sub_dir(subs, ses, data_type="all")
@@ -127,7 +128,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project._logging_path)
 
         assert "Formatting Names..." in log
-        assert "sub_names: ['sub-1_1', 'sub-002@TO@004']" in log
+        assert f"sub_names: ['sub-1_1', 'sub-002{tags('to')}004']" in log
         assert "ses_names: ['ses-123', 'ses-hello_world']" in log
         assert (
             "formatted_sub_names: ['sub-1_1', 'sub-002', 'sub-003', 'sub-004']"
