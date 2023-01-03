@@ -10,7 +10,7 @@ import os
 from pathlib import Path
 from typing import List, Optional, Union
 
-from datashuttle.configs.canonical_directories_and_tags import tags
+from datashuttle.configs.canonical_tags import tags
 
 from . import ssh, utils
 
