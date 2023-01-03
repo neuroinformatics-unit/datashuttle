@@ -669,6 +669,7 @@ class DataShuttle:
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 
+        data_type: e.g. ephys, behav, histology, funcimg, see make_sub_dir()
         """
         self._check_data_type_is_valid(data_type, error_on_fail=True)
 
