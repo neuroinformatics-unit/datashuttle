@@ -71,7 +71,7 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["datashuttle*"]
-exclude = ["tests*"]
+exclude = ["tests*", "docs*"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=datashuttle"
