@@ -181,6 +181,11 @@ class DataShuttle:
         utils.log("\nFinished file creation. Local folder tree is now:\n")
         ds_logger.log_tree(self.cfg["local_path"])
 
+        utils.message_user(
+            f"Finished making directories. For log of all created "
+            f"directories, pleasee see {self._logging_path}"
+        )
+
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
