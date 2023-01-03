@@ -8,7 +8,7 @@ to stdout where they are read and tested here.
 
 As a secondary check, functionality is tested for
 all commands once. This is much less thorough
-that API testing but as CLI is essenetially a
+that API testing but as CLI is essentially a
 wrapper for API this, along with checking
 variables, is sufficient. However, it does
 lead to some very similar logic tests between
@@ -17,7 +17,8 @@ this module and other tests.
 NOTE: when testing these functions with breakpoint(),
 the debugger is acting very strangely and breaks in
 1 level lower than usual, requires 'u' to go
-up a level. Cannot understand why yet.
+up a level. This is probably because testing in subprocess.
+Might be better to use mock.
 """
 import os
 
@@ -64,7 +65,7 @@ class TestCommandLineInterface:
     # ----------------------------------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_config_file_required_variables(self, sep):
+    def test_make_config_file_required_variables(self, sep, tmp_path):
         """
         Check the arguments passed to CLI make_config_file
         match those that are passed to wrapped API.
@@ -77,7 +78,7 @@ class TestCommandLineInterface:
         as at least one use_x argument must be true.
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            required_arguments_only=True
+            tmp_path, required_arguments_only=True
         )
 
         stdout, __ = test_utils.run_cli(
@@ -94,13 +95,13 @@ class TestCommandLineInterface:
 
         self.check_kwargs(required_options, kwargs_)
 
-    def test_make_config_file_non_default_variables(self):
+    def test_make_config_file_non_default_variables(self, tmp_path):
         """
         Check the variables for all configs (not just default)
         are correctly processed.
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         stdout, __ = test_utils.run_cli(
@@ -110,37 +111,6 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         self.check_kwargs(changed_configs, kwargs_)
-
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_update_config_variables(self, sep):
-        """
-        Check the variables passed to update_config
-        are processed as expected. All arguments
-        are passed as str and converted if
-        appropriate in the CLI function
-        (e.g. boolean, None)
-        """
-        changed_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
-        )
-
-        for key, value in changed_configs.items():
-
-            if "path" in key:
-                value = test_utils.add_quotes(value)
-
-            stdout, __ = test_utils.run_cli(
-                f" update{sep}config {key} {value}"
-            )
-
-            args_, __ = self.decode(stdout)
-
-            assert key == args_[0]
-
-            if "path" in key:
-                assert value == test_utils.add_quotes(args_[1])
-            else:
-                assert value == args_[1]
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_make_sub_dir_variable(self, sep):
@@ -261,21 +231,31 @@ class TestCommandLineInterface:
     # Test CLI Functionality
     # ----------------------------------------------------------------------------------------------------------
 
-    def test_update_config(self, clean_project_name):
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_update_config(self, clean_project_name, sep, tmp_path):
         """
         See test_update_config in test_configs.py.
+
+        There is not a _variables (above) test for update_config
+        because the arguments are converted to string
+        in the body of project.update_config(), so that logging
+        can capture everything. Thus, testing the variables
+        that are json.dumps() for the test environment are not
+        type-converted. As such, just test the whole
+        workflow here, with both separators.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
+            tmp_path, set_as_defaults=True
         )
 
         test_utils.run_cli(
-            " make_config_file " + self.convert_kwargs_to_cli(default_configs),
+            f" make{sep}config{sep}file "
+            + self.convert_kwargs_to_cli(default_configs),
             clean_project_name,
         )
 
         not_set_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -288,7 +268,7 @@ class TestCommandLineInterface:
             )
 
             test_utils.run_cli(
-                f" update_config {key} {format_value}", clean_project_name
+                f" update{sep}config {key} {format_value}", clean_project_name
             )
             default_configs[key] = value
 
@@ -297,12 +277,13 @@ class TestCommandLineInterface:
     def test_make_config_file_defaults(
         self,
         clean_project_name,
+        tmp_path,
     ):
         """
         See test_config_defaults in test_configs.py
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            required_arguments_only=True
+            tmp_path, required_arguments_only=True
         )
 
         test_utils.run_cli(
@@ -312,7 +293,7 @@ class TestCommandLineInterface:
         )
 
         default_options = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=True
+            tmp_path, set_as_defaults=True
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -322,12 +303,13 @@ class TestCommandLineInterface:
     def test_make_config_file_not_defaults(
         self,
         clean_project_name,
+        tmp_path,
     ):
         """
         see test_config_defaults in test_configs.py
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+            tmp_path, set_as_defaults=False
         )
 
         test_utils.run_cli(

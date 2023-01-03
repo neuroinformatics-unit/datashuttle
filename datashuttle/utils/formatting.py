@@ -25,7 +25,7 @@ def format_names(
     if type(names) not in [str, list] or any(
         [not isinstance(ele, str) for ele in names]
     ):
-        utils.raise_error(
+        utils.log_and_raise_error(
             "Ensure subject and session names are list of strings, or string"
         )
 
@@ -33,12 +33,12 @@ def format_names(
         names = [names]
 
     if any([" " in ele for ele in names]):
-        utils.raise_error("sub or ses names cannot include spaces.")
+        utils.log_and_raise_error("sub or ses names cannot include spaces.")
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
     if len(prefixed_names) != len(set(prefixed_names)):
-        utils.raise_error(
+        utils.log_and_raise_error(
             "Subject and session names but all be unique (i.e. there are no"
             " duplicates in list input)"
         )
@@ -82,14 +82,14 @@ def update_names_with_range_to_flag(
             name_start_str, name_end_str = name.split(tag_number)
 
             if "@TO@" not in tag_number:
-                utils.raise_error(
+                utils.log_and_raise_error(
                     f"@TO@ flag must be between two numbers in the {prefix} tag."
                 )
 
             left_number, right_number = tag_number.split("@TO@")
 
             if int(left_number) >= int(right_number):
-                utils.raise_error(
+                utils.log_and_raise_error(
                     "Number of the subject to the  left of @TO@ flag "
                     "must be small than number to the right."
                 )
@@ -116,7 +116,7 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     expected_format = re.compile(f"{prefix}[0-9]+@TO@[0-9]+")
 
     if not re.fullmatch(expected_format, first_key_value_pair):
-        utils.raise_error(
+        utils.log_and_raise_error(
             f"The name: {name} is not in required format for @TO@ keyword. "
             f"The start must be  be {prefix}<NUMBER>@TO@<NUMBER>)"
         )
