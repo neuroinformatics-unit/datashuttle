@@ -20,7 +20,7 @@ class TestMakeDirs:
         saved in the appdir path for platform independent
         and to avoid path setup on new machine.
 
-        Ensure change dir at end of session otherwise
+        Ensure change directory at end of session otherwise
         it is not possible to delete project.
         """
         tmp_path = tmp_path / "test with space"
