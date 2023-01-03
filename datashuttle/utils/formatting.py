@@ -2,6 +2,8 @@ import datetime
 import re
 from typing import List, Union
 
+from datashuttle.configs.canonical_directories_and_tags import tags
+
 from . import utils
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -43,23 +45,11 @@ def format_names(
             " duplicates in list input)"
         )
 
-    check_flags_are_all_uppercase(prefixed_names)
-
     prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
 
     update_names_with_datetime(prefixed_names)
 
     return prefixed_names
-
-
-def check_flags_are_all_uppercase(all_names):
-    """"""
-    for name in all_names:
-        for lower_case_flag in ["@date@", "@time@", "@datetime@", "@to@"]:
-            if lower_case_flag in name:
-                utils.log_and_raise_error(
-                    f"Cannot make subject or session name {name}, ensure flags (e.g. {lower_case_flag}) are uppercase."
-                )
 
 
 # Handle @TO@ flags  -------------------------------------------------------
@@ -84,26 +74,26 @@ def update_names_with_range_to_flag(
 
     for i, name in enumerate(names):
 
-        if "@TO@" in name:
+        if tags("to") in name:
 
             check_name_is_formatted_correctly(name, prefix)
 
-            prefix_tag = re.search(f"{prefix}[0-9]+@TO@[0-9]+", name)[0]  # type: ignore
+            prefix_tag = re.search(f"{prefix}[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
             tag_number = prefix_tag.split(f"{prefix}")[1]
 
             name_start_str, name_end_str = name.split(tag_number)
 
-            if "@TO@" not in tag_number:
+            if tags("to") not in tag_number:
                 utils.log_and_raise_error(
-                    f"@TO@ flag must be between two numbers in the {prefix} tag."
+                    f"{tags('to')} flag must be between two numbers in the {prefix} tag."
                 )
 
-            left_number, right_number = tag_number.split("@TO@")
+            left_number, right_number = tag_number.split(tags("to"))
 
             if int(left_number) >= int(right_number):
                 utils.log_and_raise_error(
-                    "Number of the subject to the  left of @TO@ flag "
-                    "must be small than number to the right."
+                    f"Number of the subject to the  left of {tags('to')} flag "
+                    f"must be small than number to the right."
                 )
 
             names_with_new_number_inserted = (
@@ -125,12 +115,12 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     as expected.
     """
     first_key_value_pair = name.split("_")[0]
-    expected_format = re.compile(f"{prefix}[0-9]+@TO@[0-9]+")
+    expected_format = re.compile(f"{prefix}[0-9]+{tags('to')}[0-9]+")
 
     if not re.fullmatch(expected_format, first_key_value_pair):
         utils.log_and_raise_error(
-            f"The name: {name} is not in required format for @TO@ keyword. "
-            f"The start must be  be {prefix}<NUMBER>@TO@<NUMBER>)"
+            f"The name: {name} is not in required format for {tags('to')} keyword. "
+            f"The start must be  be {prefix}<NUMBER>{tags('to')}<NUMBER>)"
         )
 
 
@@ -183,18 +173,20 @@ def update_names_with_datetime(names: List[str]) -> None:
 
     for i, name in enumerate(names):
 
-        if "@DATETIME@" in name:  # must come first
-            name = add_underscore_before_after_if_not_there(name, "@DATETIME@")
+        if tags("datetime") in name:  # must come first
+            name = add_underscore_before_after_if_not_there(
+                name, tags("datetime")
+            )
             datetime_ = f"{format_date}_{format_time}"
-            names[i] = name.replace("@DATETIME@", datetime_)
+            names[i] = name.replace(tags("datetime"), datetime_)
 
-        elif "@DATE@" in name:
-            name = add_underscore_before_after_if_not_there(name, "@DATE@")
-            names[i] = name.replace("@DATE@", format_date)
+        elif tags("date") in name:
+            name = add_underscore_before_after_if_not_there(name, tags("date"))
+            names[i] = name.replace(tags("date"), format_date)
 
-        elif "@TIME@" in name:
-            name = add_underscore_before_after_if_not_there(name, "@TIME@")
-            names[i] = name.replace("@TIME@", format_time)
+        elif tags("time") in name:
+            name = add_underscore_before_after_if_not_there(name, tags("time"))
+            names[i] = name.replace(tags("time"), format_time)
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:

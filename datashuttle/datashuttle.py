@@ -9,7 +9,7 @@ from typing import Any, List, Optional, Union, cast
 
 import paramiko
 
-from datashuttle.configs import canonical_directories, load_configs
+from datashuttle.configs import canonical_directories_and_tags, load_configs
 from datashuttle.configs.configs import Configs
 from datashuttle.utils import (
     directories,
@@ -106,7 +106,9 @@ class DataShuttle:
         )
         self._hostkeys_path = self._make_path("appdir", "hostkeys")
 
-        self._data_type_dirs = canonical_directories.get_directories(self.cfg)
+        self._data_type_dirs = canonical_directories_and_tags.get_directories(
+            self.cfg
+        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Directory Makers

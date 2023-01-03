@@ -6,6 +6,7 @@ from os.path import join
 import pytest
 import test_utils
 
+from datashuttle.configs.canonical_directories_and_tags import tags
 from datashuttle.utils import formatting
 
 
@@ -298,7 +299,9 @@ class TestMakeDirs:
         date, time_ = self.get_formatted_date_and_time()
 
         project.make_sub_dir(
-            ["sub-001", "sub-002"], ["ses-001-@DATE@", "002-@DATE@"], "ephys"
+            ["sub-001", "sub-002"],
+            [f"ses-001-{tags('date')}", f"002-{tags('date')}"],
+            "ephys",
         )
 
         ses_names = test_utils.glob_basenames(
@@ -307,7 +310,7 @@ class TestMakeDirs:
         )
 
         assert all([date in name for name in ses_names])
-        assert all(["@DATE@" not in name for name in ses_names])
+        assert all([tags("date") not in name for name in ses_names])
 
     def test_datetime_flag_in_session(self, project):
         """
@@ -318,7 +321,7 @@ class TestMakeDirs:
 
         project.make_sub_dir(
             ["sub-001", "sub-002"],
-            ["ses-001-@DATETIME@", "002-@DATETIME@"],
+            [f"ses-001-{tags('datetime')}", f"002-{tags('datetime')}"],
             "ephys",
         )
 
@@ -332,7 +335,7 @@ class TestMakeDirs:
         datetime_regexp = f"{date}_time-{regexp_time}"
 
         assert all([re.search(datetime_regexp, name) for name in ses_names])
-        assert all(["@DATETIME@" not in name for name in ses_names])
+        assert all([tags("time") not in name for name in ses_names])
 
     # ----------------------------------------------------------------------------------------------------------
     # Test Helpers
