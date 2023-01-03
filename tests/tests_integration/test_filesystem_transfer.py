@@ -4,7 +4,7 @@ import re
 import pytest
 import test_utils
 
-from datashuttle.configs.canonical_directories_and_tags import tags
+from datashuttle.configs.canonical_tags import tags
 
 
 class TestFileTransfer:

@@ -27,7 +27,7 @@ import simplejson
 import test_utils
 
 from datashuttle.configs import canonical_configs
-from datashuttle.configs.canonical_directories_and_tags import tags
+from datashuttle.configs.canonical_tags import tags
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 

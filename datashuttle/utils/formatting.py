@@ -2,7 +2,7 @@ import datetime
 import re
 from typing import List, Union
 
-from datashuttle.configs.canonical_directories_and_tags import tags
+from datashuttle.configs.canonical_tags import tags
 
 from . import utils
 

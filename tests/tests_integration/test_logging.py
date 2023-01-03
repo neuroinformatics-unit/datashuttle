@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import test_utils
 
-from datashuttle.configs.canonical_directories_and_tags import tags
+from datashuttle.configs.canonical_tags import tags
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
