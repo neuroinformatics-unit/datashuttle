@@ -40,7 +40,7 @@ def print_tree(project_path: Path) -> None:
 def log_tree(project_path: Path) -> None:
     tree_ = get_rich_project_path_tree(project_path)
 
-    console = Console(color_system="windows")
+    console = Console()
 
     with console.capture() as capture:
         console.print(tree_, markup=True)
