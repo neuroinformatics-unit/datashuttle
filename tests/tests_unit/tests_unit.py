@@ -2,6 +2,7 @@ import re
 
 import pytest
 
+from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import formatting, utils
 
 
@@ -13,7 +14,9 @@ class TestUnit:
     @pytest.mark.parametrize(
         "underscore_position", ["left", "right", "both", "none"]
     )
-    @pytest.mark.parametrize("key", ["@DATE@", "@TIME@", "@DATETIME@"])
+    @pytest.mark.parametrize(
+        "key", [tags("date"), tags("time"), tags("datetime")]
+    )
     def test_datetime_string_replacement(self, key, underscore_position):
         """
         Test the function that replaces @DATE, @TIME@ or @DATETIME@
@@ -25,11 +28,11 @@ class TestUnit:
         end = "other-tag"
         name = self.make_name(key, underscore_position, start, end)
 
-        if key == "@DATE":
+        if key == tags("date"):
             regex = re.compile(rf"{start}_date-\d\d\d\d\d\d\d\d_{end}")
-        elif key == "@TIME@":
+        elif key == tags("time"):
             regex = re.compile(rf"{start}_time-\d\d\d\d\d\d_{end}")
-        elif key == "@DATETIME@":
+        elif key == tags("datetime"):
             regex = re.compile(
                 rf"{start}_date-\d\d\d\d\d\d\d\d_time-\d\d\d\d\d\d_{end}"
             )
@@ -59,14 +62,14 @@ class TestUnit:
     def test_process_to_keyword_in_sub_input(self, prefix):
         """ """
         results = utils.update_names_with_range_to_flag(
-            [f"{prefix}-001", f"{prefix}-01@TO@123"], prefix
+            [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
         assert results == [f"{prefix}-001"] + [
             f"{prefix}-{str(num).zfill(2)}" for num in range(1, 124)
         ]
 
         results = utils.update_names_with_range_to_flag(
-            [f"{prefix}-1@TO@3_hello-world"], prefix
+            [f"{prefix}-1{tags('to')}3_hello-world"], prefix
         )
         assert results == [
             f"{prefix}-1_hello-world",
@@ -76,9 +79,9 @@ class TestUnit:
 
         results = utils.update_names_with_range_to_flag(
             [
-                f"{prefix}-01@TO@3_hello",
-                f"{prefix}-4@TO@005_goodbye",
-                f"{prefix}-006@TO@0007_hello",
+                f"{prefix}-01{tags('to')}3_hello",
+                f"{prefix}-4{tags('to')}005_goodbye",
+                f"{prefix}-006{tags('to')}0007_hello",
             ],
             prefix,
         )
@@ -97,10 +100,10 @@ class TestUnit:
     @pytest.mark.parametrize(
         "bad_input",
         [
-            "1@TO@2",
-            "prefix-1@TO@_date",
-            "prefix-@01@TO@02",
-            "prefix-01@TO@1M1",
+            f"1{tags('to')}2",
+            f"prefix-1{tags('to')}_date",
+            f"prefix-@01{tags('to')}02",
+            f"prefix-01{tags('to')}1M1",
         ],
     )
     def test_process_to_keyword_bad_input_raises_error(
@@ -114,8 +117,8 @@ class TestUnit:
 
         assert (
             str(e.value)
-            == f"The name: {bad_input} is not in required format for @TO@ keyword. "
-            f"The start must be  be {prefix}<NUMBER>@TO@<NUMBER>)"
+            == f"The name: {bad_input} is not in required format for {tags('to')} keyword. "
+            f"The start must be  be {prefix}<NUMBER>{tags('to')}<NUMBER>)"
         )
 
     # ----------------------------------------------------------------------
