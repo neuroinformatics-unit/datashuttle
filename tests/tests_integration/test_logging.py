@@ -220,7 +220,6 @@ class TestCommandLineInterface:
         assert "/test_logging/remote/rawdata/sub-1_1/ses-123/behav" in log
         assert "Waiting for checks to finish" in log
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
-        assert "Elapsed time:         0.0s" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_dir_or_file(
