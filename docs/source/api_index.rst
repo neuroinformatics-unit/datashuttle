@@ -1,13 +1,9 @@
 API
 ===
 
-datashuttle
-----
 
-.. currentmodule:: datashuttle
+DataShuttle
+-----------
 
-.. autosummary::
-    :toctree: api_generated
-    :template: class.rst
-
-	DataShuttle
+.. autoclass:: datashuttle.datashuttle.DataShuttle
+	:members: make_sub_dir, show_configs

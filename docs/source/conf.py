@@ -15,6 +15,7 @@ import setuptools_scm
 # If the directory is relative to the documentation root,
 # use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("../.."))
+sys.path.insert(0, os.path.abspath("../../datashuttle/utils/ssh"))
 
 project = "datashuttle"
 copyright = "2022, Neuroinformatics Unit"
@@ -64,8 +65,21 @@ myst_heading_anchors = 2
 templates_path = ["_templates"]
 
 # Automatically generate stub pages for API
-autosummary_generate = True
-autodoc_default_flags = ["members", "inherited-members"]
+# autosummary_generate = True
+# autodoc_default_flags = ["members", "inherited-members", ]
+
+# autosummary_member_order = 'bysource'
+
+# autodoc_default_options = {
+#'members': "",
+#  "inherited-members": True,
+#  'member-order': 'bysource',
+#  'special-members': '__init__',
+#'undoc-members': True,
+#'exclude-members': '__weakref__'
+# }
+
+extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

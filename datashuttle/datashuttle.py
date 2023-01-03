@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import copy
 import glob
 import json
@@ -31,31 +33,40 @@ from datashuttle.utils.decorators import (  # noqa
 
 class DataShuttle:
     """
-    DataShuttle is a tool for convenient scientific
-    project management and transfer in BIDS format.
+     DataShuttle is a tool for convenient scientific
+     project management and transfer in BIDS format.
 
-    The expected organisation is a central repository
-    on a remote machine  ('remote') that contains all
-    project data. This is connected to multiple local
-    machines ('local') which each contain a subset of
-    the full project (e.g. machine for electrophysiology
-    collection, machine for behavioural connection, machine
-    for analysis for specific data etc.).
+     The expected organisation is a central repository
+     on a remote machine  ('remote') that contains all
+     project data. This is connected to multiple local
+     machines ('local') which each contain a subset of
+     the full project (e.g. machine for electrophysiology
+     collection, machine for behavioural connection, machine
+     for analysis for specific data etc.).
 
-    On first use on a new profile, show warning prompting
-    to set configurations with the function make_config_file().
+     On first use on a new profile, show warning prompting
+     to set configurations with the function make_config_file().
 
-    For transferring data between a remote data storage
-    with SSH, use setup setup_ssh_connection_to_remote_server().
-    This will allow you to check the server Key, add host key to
-    profile if accepted, and setup ssh key pair.
+     For transferring data between a remote data storage
+     with SSH, use setup setup_ssh_connection_to_remote_server().
+     This will allow you to check the server Key, add host key to
+     profile if accepted, and setup ssh key pair.
 
-    INPUTS: project_name - The project name to use the software under.
-                           Each project has a root directory that is
-                           specified during initial setup. Profile files
-                           are stored in the Appdir directory
-                           (platform specific). Use get_appdir_path()
-                           to retrieve the path.
+     Parameters
+     ---------
+
+     project_name : The project name to use the software under.
+                    Each project has a root directory that is
+                    specified during initial setup. Profile files
+                    are stored in the Appdir directory
+                    (platform specific). Use get_appdir_path()
+                    to retrieve the path.
+
+     Methods
+    --------
+
+     make_sub_dir
+     show_configs
     """
 
     def __init__(self, project_name: str):
