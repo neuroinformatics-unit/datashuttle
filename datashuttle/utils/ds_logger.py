@@ -17,7 +17,9 @@ from . import utils
 def start(
     path_to_log: Path, name: str, variables: Optional[List[Any]]
 ) -> None:
-    """"""
+    """
+    Call fancylog to initialise logging.
+    """
     fancylog.start_logging(
         path_to_log,
         package,
@@ -33,11 +35,19 @@ def start(
 
 
 def print_tree(project_path: Path) -> None:
+    """
+    Print a schematic of the directory tree with files
+    at project_path to the console.
+    """
     tree = get_rich_project_path_tree(project_path)
     rich_print(tree)
 
 
 def log_tree(project_path: Path) -> None:
+    """
+    Log a schematic of the directory tree at
+    project_path.
+    """
     tree_ = get_rich_project_path_tree(project_path)
 
     console = Console()
@@ -50,7 +60,17 @@ def log_tree(project_path: Path) -> None:
 
 
 def log_names(list_of_headers, list_of_names):
-    """"""
+    """
+    Log a list of subject or session names.
+
+    Parameters
+    ----------
+
+    list_of_headers : a list of titles that the names
+    will be printed under, e.g. "sub_names", "ses_names"
+
+    list_of_names : list of names to print to log
+    """
     for header, names in zip(list_of_headers, list_of_names):
         utils.log(f"{header}: {names}")
 
@@ -72,6 +92,17 @@ def walk_directory(
     Note the original example contains some other cool
     features (e.g. icons) that were disabled for maximum
     cross-system use.
+
+    Parameters
+    ----------
+
+    project_path : path to generate Tree of, usually the
+    project local_path
+
+    tree : initialsied rich Tree() class
+
+    show_hidden_folders : Whether hidden folders will be shown in
+        the output tree
     """
     paths = sorted(
         project_path.iterdir(),
@@ -100,13 +131,18 @@ def walk_directory(
 
 
 def get_rich_project_path_tree(project_path: Path) -> Tree:
-    """ """
+    """
+    Get a rich tree class walked through the project_path directory.
+    """
     tree = Tree(label=f"{project_path.as_posix()}/")
     walk_directory(project_path, tree)
     return tree
 
 
 def close_log_filehandler():
+    """
+    Remove handlers from all loggers.
+    """
     logger = logging.getLogger()
     handlers = logger.handlers[:]
     for handler in handlers:
