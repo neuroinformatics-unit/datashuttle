@@ -118,7 +118,7 @@ html_theme_options = {
 # The default is the URL of the GitHub pages
 # https://www.sphinx-doc.org/en/master/usage/extensions/githubpages.html
 github_user = "JoeZiminski"
-html_baseurl = "http://datashuttle.neuroinformatics.dev/"  # f"http(s)://{github_user}.github.io/{project}"
+html_baseurl = "https://datashuttle.neuroinformatics.dev/"  # f"http(s)://{github_user}.github.io/{project}"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
