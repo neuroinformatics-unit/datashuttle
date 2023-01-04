@@ -9,8 +9,6 @@
 import os
 import sys
 
-from autoclasstoc import Section, is_method
-
 import setuptools_scm
 
 # Add the module path to sys.path here.
@@ -32,7 +30,6 @@ except LookupError:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'autoclasstoc',
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
