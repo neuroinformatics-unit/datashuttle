@@ -9,13 +9,33 @@
 import os
 import sys
 
+
+from autoclasstoc import Section, is_method
+
+class EventHandlers(Section):
+    key = 'event-handlers'
+    title = "Event Handlers:"
+
+    def predicate(self, name, attr, meta):
+        return is_method(name, attr) and name.startswith('show_')
+
+from autoclasstoc import PublicMethods
+
+class RemainingPublicMethods(PublicMethods):
+    exclude_section = EventHandlers
+
+autoclasstoc_sections = [
+        'event-handlers',
+  #      'public-methods',
+]
+
+
 import setuptools_scm
 
 # Add the module path to sys.path here.
 # If the directory is relative to the documentation root,
 # use os.path.abspath to make it absolute, like shown here.
 sys.path.insert(0, os.path.abspath("../.."))
-sys.path.insert(0, os.path.abspath("../../datashuttle/utils/ssh"))
 
 project = "datashuttle"
 copyright = "2022, Neuroinformatics Unit"
@@ -31,6 +51,7 @@ except LookupError:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    'autoclasstoc',
     "sphinx.ext.githubpages",
     "sphinx.ext.autodoc",
     "sphinx.ext.autosummary",
@@ -40,6 +61,7 @@ extensions = [
     "myst_parser",
     "numpydoc",
     "nbsphinx",
+    "sphinx_autodoc_typehints",
 ]
 
 # Configure the myst parser to enable cool markdown features
@@ -70,16 +92,16 @@ templates_path = ["_templates"]
 
 # autosummary_member_order = 'bysource'
 
-# autodoc_default_options = {
-#'members': "",
-#  "inherited-members": True,
-#  'member-order': 'bysource',
-#  'special-members': '__init__',
-#'undoc-members': True,
-#'exclude-members': '__weakref__'
-# }
-
-extensions = ["sphinx.ext.autodoc", "sphinx_autodoc_typehints"]
+autodoc_default_options = {
+    'members': True,
+    "member-order": "bysource",
+    'special-members': False,
+    'private-members': False,
+  #  'inherited-members': True,
+    'undoc-members': True,
+   # 'exclude-members': '__weakref__',
+}
+# toc_object_entries_show_parents = "all"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -127,3 +149,6 @@ html_baseurl = "http://datashuttle.neuroinformatics.dev/"  # f"http(s)://{github
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
+
+#Table of Contents Sections
+# https://autoclasstoc.readthedocs.io/en/latest/advanced_usage.html

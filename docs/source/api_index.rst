@@ -1,9 +1,10 @@
 API
 ===
 
-
-DataShuttle
+datashuttle
 -----------
+.. currentmodule:: datashuttle.datashuttle
 
-.. autoclass:: datashuttle.datashuttle.DataShuttle
-	:members: make_sub_dir, show_configs
+.. autoclass:: DataShuttle
+
+   .. autoclasstoc::
