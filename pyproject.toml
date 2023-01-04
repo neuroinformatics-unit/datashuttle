@@ -109,6 +109,7 @@ ignore = [
   "*.yaml",
   ".bumpversion.cfg",
   "tox.ini",
+  "docs/*",
   "tests/*",
   "tests/tests_unit/*",
   "tests/tests_integration/*",
