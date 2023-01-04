@@ -33,40 +33,39 @@ from datashuttle.utils.decorators import (  # noqa
 
 class DataShuttle:
     """
-     DataShuttle is a tool for convenient scientific
-     project management and transfer in BIDS format.
+    DataShuttle is a tool for convenient scientific
+    project management and data transfer in BIDS format.
 
-     The expected organisation is a central repository
-     on a remote machine  ('remote') that contains all
-     project data. This is connected to multiple local
-     machines ('local') which each contain a subset of
-     the full project (e.g. machine for electrophysiology
-     collection, machine for behavioural connection, machine
-     for analysis for specific data etc.).
+    The expected organisation is a central repository
+    on a remote machine  ('remote') that contains all
+    project data. This is connected to multiple local
+    machines ('local'). These can each contain a subset of
+    the full project (e.g. machine for electrophysiology
+    collection, machine for behavioural collection).
 
-     On first use on a new profile, show warning prompting
-     to set configurations with the function make_config_file().
+    On first use on a new profile, show warning prompting
+    to set configurations with the function make_config_file().
 
-     For transferring data between a remote data storage
-     with SSH, use setup setup_ssh_connection_to_remote_server().
-     This will allow you to check the server Key, add host key to
-     profile if accepted, and setup ssh key pair.
+    For transferring data between a remote data storage
+    with SSH, use setup setup_ssh_connection_to_remote_server().
+    This will allow you to check the server key, add host key to
+    profile if accepted, and setup ssh key pair.
 
-     Parameters
-     ---------
+    Parameters
+    ---------
 
-     project_name : The project name to use the software under.
-                    Each project has a root directory that is
-                    specified during initial setup. Profile files
-                    are stored in the Appdir directory
-                    (platform specific). Use get_appdir_path()
-                    to retrieve the path.
+    project_name : The project name to use the datashuttle
+                   Directories containing all project files
+                   and folderes are specified in make_config_file().
+                   Datashuttle-related files are stored in
+                   a .datashuttle directory in the user home
+                   directory.
+                   Each project has a root directory that is
+                   specified during initial setup. Profile files
+                   are stored in the Appdir directory
+                   (platform specific). Use get_datashuttle_config_path()
+                   to retrieve the path.
 
-     Methods
-    --------
-
-     make_sub_dir
-     show_configs
     """
 
     def __init__(self, project_name: str):
@@ -75,9 +74,10 @@ class DataShuttle:
             utils.log_and_raise_error("project_name must not include spaces.")
 
         self.project_name = project_name
-        self._appdir_path, self._temp_log_path = utils.get_appdir_path(
-            self.project_name
-        )
+        (
+            self._appdir_path,
+            self._temp_log_path,
+        ) = utils.get_datashuttle_config_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
         self._top_level_dir_name = "rawdata"
 
@@ -134,24 +134,36 @@ class DataShuttle:
         Make a subject directory in the data type directory. By default,
         it will create the entire directory tree for this subject.
 
-        :param sub_names:       subject name / list of subject names to make
-                                within the directory (if not already, these
-                                will be prefixed with sub/ses identifier)
-        :param ses_names:       session names (same format as subject name).
-                                If no session is provided, no session-level
-                                directories are made.
-        :param data_type: The data_type to make the directory
-                          in (e.g. "ephys", "behav", "histology"). If
-                          "all" is selected, directory will be created
-                          for all data_type enabled in config.
+        Parameters
+        ----------
+        sub_names :
+                subject name / list of subject names to make
+                within the directory (if not already, these
+                will be prefixed with sub/ses identifier)
+        ses_names :
+                session names (same format as subject name).
+                If no session is provided, no session-level
+                directories are made.
+        data_type :
+                The data_type to make the directory
+                in (e.g. "ephys", "behav", "histology"). If
+                "all" is selected, directory will be created
+                for all data_type enabled in config.
 
-        sub_names or ses_names may contain certain formatting tags:
-            @TO@: used to make a range of sub/ses. Nubmer must be either side of the tag
-                  e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
-            @DATE@, @TIME@ @DATETIME@: will add date-<value>, time-<value> or
-                  date-<value>_time-<value> keys respectively. Only one per-name
-                  is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
-                  (on the 1st january, 2022).
+        Notes
+        ------
+
+        sub_names or ses_names may contain certain formatting tags
+
+            @TO@ :
+                used to make a range of sub/ses. Nubmer must be either side of the tag
+                e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
+
+            @DATE@, @TIME@ @DATETIME@ :
+                will add date-<value>, time-<value> or
+                date-<value>_time-<value> keys respectively. Only one per-name
+                is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
+                (on the 1st january, 2022).
 
         """
         self.start_log("make_sub_dir")
@@ -292,8 +304,8 @@ class DataShuttle:
     def download_all(self):
         """
         Convenience function to download all data.
-        Alias for:
-            project.download_data("all", "all", "all")
+
+        Alias for : project.download_data("all", "all", "all")
         """
         self.start_log("download_all")
 
@@ -448,9 +460,12 @@ class DataShuttle:
                                     directory on this machine
         :param use_behav:           create behav directory
 
-        NOTE: higher level directory settings will override lower level
-              settings (e.g. if ephys_behav_camera=True
-              and ephys_behav=False, ephys_behav_camera will not be made).
+        Notes
+        -----
+        Higher level directory settings will override lower level
+        settings (e.g. if ephys_behav_camera=True
+        and ephys_behav=False, ephys_behav_camera will not be made).
+
         """
         self.start_log(
             "make_config_file", store_in_temp_dir=True, temp_dir_path="default"
@@ -593,7 +608,7 @@ class DataShuttle:
         """
         utils.message_user(self.cfg["local_path"].as_posix())
 
-    def get_appdir_path(self) -> None:
+    def get_datashuttle_config_path(self) -> None:
         """
         Return the system appdirs path where
         project settings are stored.
@@ -992,7 +1007,7 @@ class DataShuttle:
         elif base == "remote":
             base_dir = self.cfg["remote_path"]
         elif base == "appdir":
-            base_dir, __ = utils.get_appdir_path(self.project_name)
+            base_dir, __ = utils.get_datashuttle_config_path(self.project_name)
         return base_dir
 
     def _get_base_and_top_level_dir(self, local_or_remote: str) -> Path:
