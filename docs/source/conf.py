@@ -9,26 +9,7 @@
 import os
 import sys
 
-
 from autoclasstoc import Section, is_method
-
-class EventHandlers(Section):
-    key = 'event-handlers'
-    title = "Event Handlers:"
-
-    def predicate(self, name, attr, meta):
-        return is_method(name, attr) and name.startswith('show_')
-
-from autoclasstoc import PublicMethods
-
-class RemainingPublicMethods(PublicMethods):
-    exclude_section = EventHandlers
-
-autoclasstoc_sections = [
-        'event-handlers',
-  #      'public-methods',
-]
-
 
 import setuptools_scm
 
@@ -87,21 +68,18 @@ myst_heading_anchors = 2
 templates_path = ["_templates"]
 
 # Automatically generate stub pages for API
-# autosummary_generate = True
-# autodoc_default_flags = ["members", "inherited-members", ]
-
-# autosummary_member_order = 'bysource'
+autosummary_generate = True
+toc_object_entries_show_parents = "all"
 
 autodoc_default_options = {
     'members': True,
     "member-order": "bysource",
     'special-members': False,
     'private-members': False,
-  #  'inherited-members': True,
+    'inherited-members': False,
     'undoc-members': True,
-   # 'exclude-members': '__weakref__',
+    'exclude-members': "",
 }
-# toc_object_entries_show_parents = "all"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -149,6 +127,3 @@ html_baseurl = "http://datashuttle.neuroinformatics.dev/"  # f"http(s)://{github
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 # html_static_path = ['_static']
-
-#Table of Contents Sections
-# https://autoclasstoc.readthedocs.io/en/latest/advanced_usage.html
