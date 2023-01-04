@@ -20,9 +20,36 @@ def run_command(
     project: DataShuttle, function: Callable, *args: Any, **kwargs: Any
 ) -> None:
     """
-    If project is protected test name, dump the variables to
-    stdout so they can be checked. Otherwise, run the
-    DataShuttle function.
+    Central function for running any methods command. The CLI
+    interface works as a wrapper around datashuttle methods.
+    On CLI call, a project with passed project_name is initialised.
+    This is then passed to the CLI wrapper of the
+    particular function called (e.g. update_config) which calls this
+    function with the appropriate methods and arguments to call
+    datashuttle.
+
+    Note the arguments from the CLI are passed directly to the
+    datashuttle function and so CLI arguments MUST match exactly
+    the argument names on the datashuttle API. argparse will convert
+    dash to underscore for stored variable names.
+
+    If project is projected (see PROTECTED_TEST_PROJECT_NAME),
+    dump the variables to stdout, so they can be checked.
+    Otherwise, run the DataShuttle function.
+
+    Parameters
+    ----------
+
+    project : an initialised DataShuttle project
+        e.g. project = DataShuttle("project_name")
+
+    function : datashuttle function to call, e.g.
+        project.make_config_file. Note this is the
+        actual function object.
+
+    *args : positional args to call the function with
+
+    **kwargs : keyword arguments to call the function with.
     """
     if project.project_name == PROTECTED_TEST_PROJECT_NAME:
         print("TEST_OUT_START: ", simplejson.dumps([args, kwargs]))
@@ -31,6 +58,11 @@ def run_command(
 
 
 def make_kwargs(args: Any) -> dict:
+    """
+    Turn the list of arguments passed to the CLI
+    to keyword arguments. Remove the project name
+    and "func" args which are also included by default.
+    """
     kwargs = vars(args)
     del kwargs["func"]
     del kwargs["project_name"]
@@ -38,8 +70,10 @@ def make_kwargs(args: Any) -> dict:
 
 
 def help(help_type: str) -> str:
-    """ """
-
+    """
+    Convenience function to hold frequently used
+    argument help strings.
+    """
     if help_type == "flag_default_false":
         help_str = "flag (default False)"
 
@@ -59,7 +93,7 @@ def help(help_type: str) -> str:
 
 
 # ------------------------------------------------------------------------------------------
-# Entry
+# Entry Point to the CLI
 # ------------------------------------------------------------------------------------------
 
 description = (
@@ -102,6 +136,11 @@ subparsers = parser.add_subparsers(metavar="\ncommands:")
 
 
 def make_config_file(project: DataShuttle, args: Any) -> None:
+    """
+    Run make_config_file on datashuttle API after processing CLI
+    arguments. handle_cli_or_supplied_config_bools() will turn
+    string representation of bool and None into python datatypes.
+    """
     kwargs = make_kwargs(args)
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
@@ -720,15 +759,25 @@ supply_config_file_parser.add_argument(
 
 def main() -> None:
     """
-    Get the arguments, initialise the datashuttle project
-    and pass the project and arguments to default function.
-    Note these functions must all accept two arguments. In the
-    case where only project is required, *args is used
-    (e.g. get_remote_path).
+    All arguments from the CLI are collected and
+    the function to call determined from the func
+    properly on the CLI args. This command name
+    should match the datashuttle API function name.
 
+    Next, initialise a datashuttle project using the API.
     Supress the warning that a config file must
     be made on project initialisation when
     a config is being made.
+
+    Finally, call the function associated with the command
+    This is setup above, using the "set defaults" function
+    associated with created parsers, e.g.
+
+    supply_config_file_parser.set_defaults(func=supply_config_file)
+
+    These command functions (all defined above) will process
+    the CLI arguments and then call the appropriate API function
+    through run_command().
     """
     args = parser.parse_args()
 
