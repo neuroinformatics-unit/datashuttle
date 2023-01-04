@@ -4,9 +4,9 @@ name: 'publish docs'
 on:
   push:
     branches:
-      - main
-    tags:
-      - '*'
+      - add_docs
+#    tags:
+#      - '*'
 
 jobs:
   publish_sphinx_docs:
