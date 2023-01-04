@@ -564,20 +564,18 @@ get_local_path_parser.set_defaults(func=get_local_path)
 # Get Appdir Path --------------------------------------------------------------------------
 
 
-def get_datashuttle_config_path(*args: Any) -> None:
+def get_datashuttle_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_datashuttle_config_path()
+    project.get_datashuttle_path()
 
 
-get_datashuttle_config_path_parser = subparsers.add_parser(
-    "get-datashuttle-config-path",
-    aliases=["get_datashuttle_config_path"],
-    description=DataShuttle.get_datashuttle_config_path.__doc__,
+get_datashuttle_path_parser = subparsers.add_parser(
+    "get-datashuttle-path",
+    aliases=["get_datashuttle_path"],
+    description=DataShuttle.get_datashuttle_path.__doc__,
 )
-get_datashuttle_config_path_parser.set_defaults(
-    func=get_datashuttle_config_path
-)
+get_datashuttle_path_parser.set_defaults(func=get_datashuttle_path)
 
 
 # Get Config Path --------------------------------------------------------------------------

@@ -63,7 +63,7 @@ class DataShuttle:
                    Each project has a root directory that is
                    specified during initial setup. Profile files
                    are stored in the Appdir directory
-                   (platform specific). Use get_datashuttle_config_path()
+                   (platform specific). Use get_datashuttle_path()
                    to retrieve the path.
 
     """
@@ -77,7 +77,7 @@ class DataShuttle:
         (
             self._appdir_path,
             self._temp_log_path,
-        ) = utils.get_datashuttle_config_path(self.project_name)
+        ) = utils.get_datashuttle_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
         self._top_level_dir_name = "rawdata"
 
@@ -608,7 +608,7 @@ class DataShuttle:
         """
         utils.message_user(self.cfg["local_path"].as_posix())
 
-    def get_datashuttle_config_path(self) -> None:
+    def get_datashuttle_path(self) -> None:
         """
         Return the system appdirs path where
         project settings are stored.
@@ -1007,7 +1007,7 @@ class DataShuttle:
         elif base == "remote":
             base_dir = self.cfg["remote_path"]
         elif base == "appdir":
-            base_dir, __ = utils.get_datashuttle_config_path(self.project_name)
+            base_dir, __ = utils.get_datashuttle_path(self.project_name)
         return base_dir
 
     def _get_base_and_top_level_dir(self, local_or_remote: str) -> Path:

@@ -54,7 +54,7 @@ def raise_error(message: str) -> None:
     raise BaseException(message)
 
 
-def get_datashuttle_config_path(project_name: str) -> Tuple[Path, Path]:
+def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     """
     It is not possible to write to program files in windows
     from app without admin permissions. However, if admin
