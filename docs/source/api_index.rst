@@ -6,5 +6,3 @@ datashuttle
 .. currentmodule:: datashuttle.datashuttle
 
 .. autoclass:: DataShuttle
-
-   .. autoclasstoc::
