@@ -110,6 +110,7 @@ ignore = [
   ".bumpversion.cfg",
   "tox.ini",
   "docs/*",
+  "docs/source/*",
   "tests/*",
   "tests/tests_unit/*",
   "tests/tests_integration/*",
