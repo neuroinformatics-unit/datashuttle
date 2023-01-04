@@ -12,18 +12,24 @@ from datashuttle.utils import utils
 
 class Configs(UserDict):
     """
-    Class to hold the configs for DataShuttle operations.
-    The configs must match exactly the standard set
-    in utils.cannonical_configs. If updating these
-    configs, This should be done here. This is setup to be
-    make config settings explicit and provide easy checking
-    for user-set config files.
+    Class to hold the datashuttle configs.
 
-    To generate a new config, pass the file_path to
-    the config file and a dict of config key-value pairs
-    to input dict. Next, check that the config dict
-    conforms to the canonical standard by calling
-    check_dict_values_raise_on_fail()
+    The configs must match exactly the standard set
+    in canonical_configs.py. If updating these configs,
+    this should be done through changing canonical_configs.py
+
+    The input dict is checked that it conforms to the
+    canonical standard by calling check_dict_values_raise_on_fail()
+
+    Parameters
+    ----------
+
+    file_path :
+        full filepath to save the config .yaml file to.
+
+    input_dict :
+        a dict of config key-value pairs to input dict.
+        This must contain all canonical_config keys
     """
 
     def __init__(self, file_path: Path, input_dict: Union[dict, None]) -> None:
@@ -45,6 +51,9 @@ class Configs(UserDict):
         """
         Check the values of the current dictionary are set
         correctly and will not cause downstream errors.
+
+        This will raise an error if the dictionary
+        does not match the canonical keys and value types.
         """
         canonical_configs.check_dict_values_raise_on_fail(self)
 
@@ -62,7 +71,9 @@ class Configs(UserDict):
     # --------------------------------------------------------------------
 
     def dump_to_file(self) -> None:
-        """"""
+        """
+        Save the dictionary to .yaml file stored in self.file_path.
+        """
         cfg_to_save = copy.deepcopy(self.data)
         self.convert_str_and_pathlib_paths(cfg_to_save, "path_to_str")
 
@@ -70,7 +81,11 @@ class Configs(UserDict):
             yaml.dump(cfg_to_save, config_file, sort_keys=False)
 
     def load_from_file(self) -> None:
-        """"""
+        """
+        Load a config dict saved at .yaml file. Note this will
+        not automatically check the configs are valid, this
+        requires calling self.check_dict_values_raise_on_fail()
+        """
         with open(self.file_path, "r") as config_file:
             config_dict = yaml.full_load(config_file)
 
@@ -91,9 +106,13 @@ class Configs(UserDict):
         In case an update is breaking, set to new value,
         test validity and revert if breaking change.
 
-        :param option_key: dictionary key of the option to change,
-                           see make_config_file()
-        :param new_info: value to update the config too
+        Parameters
+        ----------
+
+        option_key : dictionary key of the option to change,
+            see make_config_file()
+
+        new_info : value to update the config too
         """
         if option_key not in self:
             utils.log_and_raise_error(f"'{option_key}' is not a valid config.")
@@ -134,6 +153,7 @@ class Configs(UserDict):
         Check the dict, but do not raise error as
         we need to set the putatively changed key
         back to the state before change attempt.
+
         Propagate the error message so it can be
         shown later.
         """
@@ -154,8 +174,11 @@ class Configs(UserDict):
         Config paths are stored as str in the .yaml but used as Path
         in the module, so make the conversion here.
 
-        :param config_dict:DataShuttle.cfg dict of configs
-        :param direction: "path_to_str" or "str_to_path"
+        Parameters
+        ----------
+
+        config_dict : DataShuttle.cfg dict of configs
+        direction : "path_to_str" or "str_to_path"
         """
         for path_key in self.keys_str_on_file_but_path_in_class:
             value = config_dict[path_key]

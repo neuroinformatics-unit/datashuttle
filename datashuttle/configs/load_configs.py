@@ -19,9 +19,16 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
     Try to load an existing config file, that was previously
     saved by Datashuttle. This should always work, unless
     not already initialised (prompt) or these have been
-    changed manually. This function is very similar to
+    changed manually.
+
+    This function is very similar to
     supplied_configs_confirm_overwrite()
     but has different set of prompts and some different logic.
+
+    Parameters
+    ----------
+
+    config_path : path to datashuttle config .yaml file
     """
     exists = config_path.is_file()
 
@@ -58,7 +65,21 @@ def supplied_configs_confirm_overwrite(
     warn: bool,
 ) -> Union[Configs, None]:
     """
-    Try and load a supplied config file.
+    Try and load a supplied config file. This will
+    check that the passed path is a true yaml file,
+    confirm that loading this will overwrite existing configs,
+
+    Load and check all configs and return the loaded configs
+    if successful. If unsuccessful, check_dict_values_raise_on_fail()
+    will raise an error.
+
+    Parameters
+    ----------
+
+    path_to_config : path to the datashuttle config .yaml file to load
+
+    warn : option to get confirmation after warning that new config will
+        overwrite old config.
     """
     utils.log_and_raise_error_not_exists_or_not_yaml(path_to_config)
 
