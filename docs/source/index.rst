@@ -13,7 +13,6 @@ Welcome to datashuttle's documentation!
    api_index
 
 
-
 Indices and tables
 ==================
 
