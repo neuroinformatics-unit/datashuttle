@@ -1,0 +1,1103 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>API &#8212; datashuttle</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'api_index';</script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/api_index.html" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Welcome to datashuttle’s documentation!" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">datashuttle v0.1.dev1+g0ab2955</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        API
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item current active">
+                      <a class="nav-link nav-internal" href="#">
+                        API
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section id="api">
+<h1>API<a class="headerlink" href="#api" title="Permalink to this heading">#</a></h1>
+<section id="datashuttle">
+<h2>datashuttle<a class="headerlink" href="#datashuttle" title="Permalink to this heading">#</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">datashuttle.datashuttle.</span></span><span class="sig-name descname"><span class="pre">DataShuttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle" title="Permalink to this definition">#</a></dt>
+<dd><p>DataShuttle is a tool for convenient scientific
+project management and data transfer in BIDS format.</p>
+<p>The expected organisation is a central repository
+on a remote machine  (‘remote’) that contains all
+project data. This is connected to multiple local
+machines (‘local’). These can each contain a subset of
+the full project (e.g. machine for electrophysiology
+collection, machine for behavioural collection).</p>
+<p>On first use on a new profile, show warning prompting
+to set configurations with the function make_config_file().</p>
+<p>Datashuttle will save logs to a .datashuttle folder
+in the main local project. These logs contain
+detailed information on directory creation / transfer.
+To get the path to datashuttle logs, use
+get_logging_path().</p>
+<p>For transferring data between a remote data storage
+with SSH, use setup setup_ssh_connection_to_remote_server().
+This will allow you to check the server key, add host key to
+profile if accepted, and setup ssh key pair.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>project_name</strong> (<em>The project name to use the datashuttle</em>) – Directories containing all project files
+and folderes are specified in make_config_file().
+Datashuttle-related files are stored in
+a .datashuttle directory in the user home
+directory. Use get_datashuttle_path() to
+see the path to this directory.</p>
+</dd>
+</dl>
+<p class="rubric">Methods</p>
+<table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.check_name_processing" title="datashuttle.datashuttle.DataShuttle.check_name_processing"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_name_processing</span></code></a>(names, prefix)</p></td>
+<td><p>Pass list of names to check how these will be auto-formatted, for example as when passed to make_sub_dir() or upload_data() or download_data()</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_all" title="datashuttle.datashuttle.DataShuttle.download_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_all</span></code></a>()</p></td>
+<td><p>Convenience function to download all data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_data" title="datashuttle.datashuttle.DataShuttle.download_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_data</span></code></a>(sub_names, ses_names[, ...])</p></td>
+<td><p>Download data from the remote project directory to the local project directory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file" title="datashuttle.datashuttle.DataShuttle.download_project_dir_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_project_dir_or_file</span></code></a>(filepath[, dry_run])</p></td>
+<td><p>Download an entire directory (including all subdirectories and files) from the remote to the local machine.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_config_path" title="datashuttle.datashuttle.DataShuttle.get_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config_path</span></code></a>()</p></td>
+<td><p>Print the full path to the DataShuttle config file.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_datashuttle_path" title="datashuttle.datashuttle.DataShuttle.get_datashuttle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datashuttle_path</span></code></a>()</p></td>
+<td><p>Print the path to the local datashuttle directory where configs another other datashuttle files are stored.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_local_path" title="datashuttle.datashuttle.DataShuttle.get_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_local_path</span></code></a>()</p></td>
+<td><p>Print the projects local path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_remote_path" title="datashuttle.datashuttle.DataShuttle.get_remote_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_remote_path</span></code></a>()</p></td>
+<td><p>Print the project remote path.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.make_and_get_logging_path" title="datashuttle.datashuttle.DataShuttle.make_and_get_logging_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_and_get_logging_path</span></code></a>()</p></td>
+<td><p>Currently logging is located in config path</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.make_config_file" title="datashuttle.datashuttle.DataShuttle.make_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_config_file</span></code></a>(local_path, remote_path, ...)</p></td>
+<td><p>Initialise the configurations for datashuttle to use on the local machine.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.make_sub_dir" title="datashuttle.datashuttle.DataShuttle.make_sub_dir"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_sub_dir</span></code></a>(sub_names[, ses_names, data_type])</p></td>
+<td><p>Create a subject / session directory tree in the project folder.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server" title="datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_ssh_connection_to_remote_server</span></code></a>()</p></td>
+<td><p>Setup a connection to the remote server using SSH.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_configs" title="datashuttle.datashuttle.DataShuttle.show_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_configs</span></code></a>()</p></td>
+<td><p>Print the current configs to the terminal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_tree" title="datashuttle.datashuttle.DataShuttle.show_local_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_tree</span></code></a>()</p></td>
+<td><p>Print a tree schematic of all files and directories in the local project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.supply_config_file" title="datashuttle.datashuttle.DataShuttle.supply_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">supply_config_file</span></code></a>(input_path_to_config[, warn])</p></td>
+<td><p>Supply an existing config by passing the path the config file (.yaml).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.update_config" title="datashuttle.datashuttle.DataShuttle.update_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config</span></code></a>(option_key, new_info)</p></td>
+<td><p>Update a single config entry.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_all" title="datashuttle.datashuttle.DataShuttle.upload_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_all</span></code></a>()</p></td>
+<td><p>Convenience function to upload all data.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_data" title="datashuttle.datashuttle.DataShuttle.upload_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_data</span></code></a>(sub_names, ses_names[, ...])</p></td>
+<td><p>Upload data from a local project to the remote project directory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file" title="datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_project_dir_or_file</span></code></a>(filepath[, dry_run])</p></td>
+<td><p>Upload a single, specified directory (including all subdirectories and files) from the local to the remote machine.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.write_public_key" title="datashuttle.datashuttle.DataShuttle.write_public_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_public_key</span></code></a>(filepath)</p></td>
+<td><p>By default, the SSH private key only is stored, in the datashuttle configs directory.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.make_sub_dir">
+<span class="sig-name descname"><span class="pre">make_sub_dir</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.make_sub_dir"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.make_sub_dir" title="Permalink to this definition">#</a></dt>
+<dd><p>Create a subject / session directory tree in the project
+folder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sub_names</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – subject name / list of subject names to make
+within the top-level project directory
+(if not already, these will be prefixed with
+“sub-“)</p></li>
+<li><p><strong>ses_names</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]) – (Optional). session name / list of session names.
+(if not already, these will be prefixed with
+“ses-“). If no session is provided, no session-level
+directories are made.</p></li>
+<li><p><strong>data_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The data_type to make in the sub / ses directories.
+(e.g. “ephys”, “behav”, “histology”). Only data_types
+that are enabled in the configs (e.g. use_behav) will be
+created. If “all” is selected, directories will be created
+for all data_type enabled in config.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>sub_names or ses_names may contain formatting tags</p>
+<blockquote>
+<div><dl class="simple">
+<dt>&#64;TO&#64; :</dt><dd><p>used to make a range of subjects / sessions.
+Boundaries of the range must be either side of the tag
+e.g. sub-001&#64;TO&#64;003 will generate [“sub-001”, “sub-002”, “sub-003”]</p>
+</dd>
+<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64; :</dt><dd><p>will add date-&lt;value&gt;, time-&lt;value&gt; or
+date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name
+is permitted. e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101
+(on the 1st january, 2022).</p>
+</dd>
+</dl>
+</div></blockquote>
+<p class="rubric">Examples</p>
+<p>project.make_sub_dir(“sub-001”, data_type=”all”)</p>
+<dl class="simple">
+<dt>project.make_sub_dir(“sub-002&#64;TO&#64;005”,</dt><dd><p>[“ses-001”, “ses-002”],
+[“ephys”, “behav”])</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload_data">
+<span class="sig-name descname"><span class="pre">upload_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.upload_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Upload data from a local project to the remote project
+directory. In the case that a file / directory exists on
+the remote and local, the remote will not be overwritten
+even if the remote file is an older version. Data
+transfer logs are saved to the logging directory (get_logging_path()).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sub_names</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – a subject name / list of subject names. These must
+be prefixed with “sub-”, or the prefix will be
+automatically added. “&#64;*&#64;” can be used as a wildcard.
+“all” will search for all subdirectories in the
+data type directory to upload.</p></li>
+<li><p><strong>ses_names</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – a session name / list of session names, similar to
+sub_names but requring a “ses-” prefix.</p></li>
+<li><p><strong>dry_run</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – perform a dry-run of upload. This will output as if file
+transfer was taking place, but no files will be moved. Useful
+to check which files will be moved on data transfer.</p></li>
+<li><p><strong>data_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – see make_sub_dir()</p></li>
+<li><p><strong>init_log</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (Optional). Whether to start the logger. This should
+always be True, unless logger has already been started
+(e.g. in a calling function).</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>sub_names or ses_names may contain certain formatting tags:</p>
+<dl class="simple">
+<dt>&#64;*&#64;: wildcard search for subject names. e.g. ses-001_date-&#64;*&#64;</dt><dd><p>will transfer all session 001 collected on all dates.</p>
+</dd>
+<dt>&#64;TO&#64;: used to transfer a range of sub/ses. Number must be either side of the tag</dt><dd><p>e.g. sub-001&#64;TO&#64;003 will generate [“sub-001”, “sub-002”, “sub-003”]</p>
+</dd>
+<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64;: will add date-&lt;value&gt;, time-&lt;value&gt; or</dt><dd><p>date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name
+is permitted. e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101
+(on the 1st january, 2022).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download_data">
+<span class="sig-name descname"><span class="pre">download_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.download_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download_data" title="Permalink to this definition">#</a></dt>
+<dd><p>Download data from the remote project directory to the
+local project directory. In the case that a file / directory
+exists on the remote and local, the local will
+not be overwritten even if the remote file is an
+older version.</p>
+<p>This function is identical to upload_data() but with the direction
+of data transfer reversed. Please see upload_data() for arguments.
+“all” arguments will search the remote project for sub / ses to download.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload_all">
+<span class="sig-name descname"><span class="pre">upload_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.upload_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Convenience function to upload all data.</p>
+<dl class="simple">
+<dt>Alias for:</dt><dd><p>project.upload_data(“all”, “all”, “all”)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download_all">
+<span class="sig-name descname"><span class="pre">download_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.download_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download_all" title="Permalink to this definition">#</a></dt>
+<dd><p>Convenience function to download all data.</p>
+<p>Alias for : project.download_data(“all”, “all”, “all”)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file">
+<span class="sig-name descname"><span class="pre">upload_project_dir_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.upload_project_dir_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Upload a single, specified directory (including all subdirectories
+and files) from the local to the remote machine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – a string containing the filepath to move,
+relative to the project directory “rawdata”
+or “derivatives” path (depending on which is currently
+set). Alternatively, the entire path is accepted.</p></li>
+<li><p><strong>dry_run</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – perform a dry-run of upload. This will output as if file
+transfer was taking place, but no files will be moved. Useful
+to check which files will be moved on data transfer.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download_project_dir_or_file">
+<span class="sig-name descname"><span class="pre">download_project_dir_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.download_project_dir_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Download an entire directory (including all subdirectories
+and files) from the remote to the local machine.</p>
+<p>This method is identical to upload_project_dir_or_file
+but with direction of transfer reversed. Please see
+upload_project_dir_or_file() for arguments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server">
+<span class="sig-name descname"><span class="pre">setup_ssh_connection_to_remote_server</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.setup_ssh_connection_to_remote_server"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server" title="Permalink to this definition">#</a></dt>
+<dd><p>Setup a connection to the remote server using SSH.
+Assumes the remote_host_id and remote_host_username
+are set in configs (see make_config_file() and update_config())</p>
+<p>First, the server key will be displayed, requiring
+verification of the server ID. This will store the
+hostkey for all future use.</p>
+<p>Next, prompt to input their password for the remote
+cluster. Once input, SSH private / public key pair
+will be setup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.write_public_key">
+<span class="sig-name descname"><span class="pre">write_public_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.write_public_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.write_public_key" title="Permalink to this definition">#</a></dt>
+<dd><p>By default, the SSH private key only is stored, in
+the datashuttle configs directory. Use this function
+to save the public key.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – full filepath (inc filename) to write the
+public key to.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.make_config_file">
+<span class="sig-name descname"><span class="pre">make_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">remote_host_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ephys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_behav</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_funcimg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_histology</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.make_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.make_config_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Initialise the configurations for datashuttle to use on the
+local machine. Once initialised, these settings will be
+used each time the datashuttle is opened. This method
+can also be used to completely overwrite existing configs.</p>
+<p>These settings are stored in a config file on the
+datashuttle path (not in the project directory)
+on the local machine. Use get_config_path() to
+get the full path to the saved config file.</p>
+<p>Use update_config() to update a single config, and
+supply_config() to use an existing config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>local_path</strong> (<em>path to project dir on local machine</em>) – </p></li>
+<li><p><strong>remote_path</strong> (<em>Filepath to remote project.</em>) – If this is local (i.e. connection_method = “local_filesystem”),
+this is the full path on the local filesystem (e.g. mounted drive)
+Otherwise, if this is via ssh (i.e. connection method = “ssh”),
+this is the path to the project directory on remote machine.
+This should be a full path to remote directory i.e. this cannot
+include ~ home directory syntax, must contain the full path
+(e.g. /nfs/nhome/live/jziminski)</p></li>
+<li><p><strong>connection_method</strong> (<em>&quot;local_filesystem&quot;</em><em> or </em><em>&quot;ssh&quot;</em>) – </p></li>
+<li><p><strong>remote_host_id</strong> (<em>address for remote host for ssh connection</em>) – </p></li>
+<li><p><strong>remote_host_username</strong> (<em>username for which to log in to remote host.</em>) – </p></li>
+<li><p><strong>use_ephys</strong> (<em>will allow ephys directory creation</em>) – </p></li>
+<li><p><strong>use_funcimg</strong> (<em>will allow funcimg directory creation</em>) – </p></li>
+<li><p><strong>use_histology</strong> (<em>will allow histology directory creation</em>) – </p></li>
+<li><p><strong>use_behav</strong> (<em>will allow behav directory creation</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.update_config">
+<span class="sig-name descname"><span class="pre">update_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option_key</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_info</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.update_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.update_config" title="Permalink to this definition">#</a></dt>
+<dd><p>Update a single config entry. This will overwrite the existing
+entry in the saved configs file and be used for all future
+datashuttle sessions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option_key</strong> (<em>dictionary key</em><em> of </em><em>the option to change</em><em>,</em>) – see make_config_file() for available keys.</p></li>
+<li><p><strong>new_info</strong> (<em>value to update the config too</em>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>If the local path is changed with update_config(),
+there are a couple of possibilities for where logs are stored.
+If the local_path project already exists, the config log will be
+written to the original local_path, and future logs will
+be written to the new local path. However, if a local_path does
+not exist, move to a temp_dir and then move the logs to the
+new local_path if successful.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.supply_config_file">
+<span class="sig-name descname"><span class="pre">supply_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_path_to_config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">warn</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.supply_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.supply_config_file" title="Permalink to this definition">#</a></dt>
+<dd><p>Supply an existing config by passing the path the config
+file (.yaml). The config file must contain exactly the
+same keys as the dataShuttle config, with
+values the same type, or will result in an error.</p>
+<p>If successful, the config will be loaded into datashuttle,
+and a copy saved in the DataShuttle config folder for future use.</p>
+<p>To check the format of a datashuttle config, one can be generated
+with make_config_file() or look in configs/canonical_configs.py.</p>
+<p>It is possible the local_path will be changed
+with the new config file. see update_config()
+for how this is handled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_path_to_config</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – Path to the config to use as DataShuttle config.</p></li>
+<li><p><strong>warn</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – prompt the user to confirm as supplying
+config will overwrite existing config.
+Turned off for testing.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_local_path">
+<span class="sig-name descname"><span class="pre">get_local_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.get_local_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_local_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Print the projects local path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_datashuttle_path">
+<span class="sig-name descname"><span class="pre">get_datashuttle_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.get_datashuttle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_datashuttle_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Print the path to the local datashuttle
+directory where configs another other
+datashuttle files are stored.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_config_path">
+<span class="sig-name descname"><span class="pre">get_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.get_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_config_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Print the full path to the DataShuttle config file.
+This is always formatted to UNIX style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_remote_path">
+<span class="sig-name descname"><span class="pre">get_remote_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.get_remote_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_remote_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Print the project remote path.
+This is always formatted to UNIX style.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.show_configs">
+<span class="sig-name descname"><span class="pre">show_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.show_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.show_configs" title="Permalink to this definition">#</a></dt>
+<dd><p>Print the current configs to the terminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.show_local_tree">
+<span class="sig-name descname"><span class="pre">show_local_tree</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.show_local_tree"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.show_local_tree" title="Permalink to this definition">#</a></dt>
+<dd><p>Print a tree schematic of all files and directories
+in the local project.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.check_name_processing">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_name_processing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.check_name_processing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.check_name_processing" title="Permalink to this definition">#</a></dt>
+<dd><p>Pass list of names to check how these will be auto-formatted,
+for example as when passed to make_sub_dir() or upload_data() or
+download_data()</p>
+<p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
+This method will print the formatted list of names,</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>names</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – A string or list of subject or session names.</p></li>
+<li><p><strong>prefix</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The relevant subject or session prefix,
+e.g. “sub-” or “ses-”</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.make_and_get_logging_path">
+<span class="sig-name descname"><span class="pre">make_and_get_logging_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/datashuttle/datashuttle.html#DataShuttle.make_and_get_logging_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.make_and_get_logging_path" title="Permalink to this definition">#</a></dt>
+<dd><p>Currently logging is located in config path</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+  <a class='left-prev' id="prev-link" href="index.html" title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+          <p class="prev-next-subtitle">previous</p>
+          <p class="prev-next-title">Welcome to datashuttle’s documentation!</p>
+      </div>
+  </a>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#datashuttle">
+   datashuttle
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle">
+     <code class="docutils literal notranslate">
+      <span class="pre">
+       datashuttle.datashuttle.DataShuttle
+      </span>
+     </code>
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_sub_dir">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.make_sub_dir()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_data">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.upload_data()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_data">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.download_data()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_all">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.upload_all()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_all">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.download_all()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.download_project_dir_or_file()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.write_public_key">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.write_public_key()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_config_file">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.make_config_file()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.update_config">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.update_config()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.supply_config_file">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.supply_config_file()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_local_path">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.get_local_path()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_datashuttle_path">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.get_datashuttle_path()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_config_path">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.get_config_path()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_remote_path">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.get_remote_path()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_configs">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.show_configs()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_local_tree">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.show_local_tree()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.check_name_processing">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.check_name_processing()
+        </span>
+       </code>
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_and_get_logging_path">
+       <code class="docutils literal notranslate">
+        <span class="pre">
+         datashuttle.datashuttle.DataShuttle.make_and_get_logging_path()
+        </span>
+       </code>
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+<div class="tocsection sourcelink">
+    <a href="_sources/api_index.rst.txt">
+        <i class="fa-solid fa-file-lines"></i> Show Source
+    </a>
+</div>
+
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Neuroinformatics Unit.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

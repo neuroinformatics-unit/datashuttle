@@ -1,0 +1,1699 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>datashuttle.datashuttle &#8212; datashuttle</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/sphinx_highlight.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/datashuttle/datashuttle';</script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/_modules/datashuttle/datashuttle.html" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">datashuttle v0.1.dev1+g0ab2955</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api_index.html">
+                        API
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../api_index.html">
+                        API
+                      </a>
+                    </li>
+                
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <h1>Source code for datashuttle.datashuttle</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">shutil</span>
+<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">ItemsView</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+
+<span class="kn">import</span> <span class="nn">paramiko</span>
+
+<span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">canonical_directories</span><span class="p">,</span> <span class="n">load_configs</span>
+<span class="kn">from</span> <span class="nn">datashuttle.configs.configs</span> <span class="kn">import</span> <span class="n">Configs</span>
+<span class="kn">from</span> <span class="nn">datashuttle.utils</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">directories</span><span class="p">,</span>
+    <span class="n">ds_logger</span><span class="p">,</span>
+    <span class="n">formatting</span><span class="p">,</span>
+    <span class="n">rclone</span><span class="p">,</span>
+    <span class="n">ssh</span><span class="p">,</span>
+    <span class="n">utils</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">datashuttle.utils.decorators</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa</span>
+    <span class="n">check_configs_set</span><span class="p">,</span>
+    <span class="n">requires_ssh_configs</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># Project Manager Class</span>
+<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="DataShuttle"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle">[docs]</a><span class="k">class</span> <span class="nc">DataShuttle</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    DataShuttle is a tool for convenient scientific</span>
+<span class="sd">    project management and data transfer in BIDS format.</span>
+
+<span class="sd">    The expected organisation is a central repository</span>
+<span class="sd">    on a remote machine  (&#39;remote&#39;) that contains all</span>
+<span class="sd">    project data. This is connected to multiple local</span>
+<span class="sd">    machines (&#39;local&#39;). These can each contain a subset of</span>
+<span class="sd">    the full project (e.g. machine for electrophysiology</span>
+<span class="sd">    collection, machine for behavioural collection).</span>
+
+<span class="sd">    On first use on a new profile, show warning prompting</span>
+<span class="sd">    to set configurations with the function make_config_file().</span>
+
+<span class="sd">    Datashuttle will save logs to a .datashuttle folder</span>
+<span class="sd">    in the main local project. These logs contain</span>
+<span class="sd">    detailed information on directory creation / transfer.</span>
+<span class="sd">    To get the path to datashuttle logs, use</span>
+<span class="sd">    get_logging_path().</span>
+
+<span class="sd">    For transferring data between a remote data storage</span>
+<span class="sd">    with SSH, use setup setup_ssh_connection_to_remote_server().</span>
+<span class="sd">    This will allow you to check the server key, add host key to</span>
+<span class="sd">    profile if accepted, and setup ssh key pair.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ---------</span>
+
+<span class="sd">    project_name : The project name to use the datashuttle</span>
+<span class="sd">                   Directories containing all project files</span>
+<span class="sd">                   and folderes are specified in make_config_file().</span>
+<span class="sd">                   Datashuttle-related files are stored in</span>
+<span class="sd">                   a .datashuttle directory in the user home</span>
+<span class="sd">                   directory. Use get_datashuttle_path() to</span>
+<span class="sd">                   see the path to this directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">project_name</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span><span class="s2">&quot;project_name must not include spaces.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span> <span class="o">=</span> <span class="n">project_name</span>
+        <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_appdir_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span><span class="p">,</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span><span class="s2">&quot;datashuttle&quot;</span><span class="p">,</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span> <span class="o">=</span> <span class="s2">&quot;rawdata&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="o">.</span><span class="n">make_config_file_attempt_load</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
+
+        <span class="n">rclone</span><span class="o">.</span><span class="n">prompt_rclone_download_if_does_not_exist</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_attributes_after_config_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Once config file is loaded, update all private attributes</span>
+<span class="sd">        according to config contents.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;.datashuttle&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_make_project_metadata_if_does_not_exist</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_and_get_logging_path</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
+            <span class="s2">&quot;datashuttle&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span> <span class="o">+</span> <span class="s2">&quot;_ssh_key&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_hostkeys_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span><span class="s2">&quot;datashuttle&quot;</span><span class="p">,</span> <span class="s2">&quot;hostkeys&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span> <span class="o">=</span> <span class="n">canonical_directories</span><span class="o">.</span><span class="n">get_directories</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Public Directory Makers</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DataShuttle.make_sub_dir"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_dir">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">make_sub_dir</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">ses_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a subject / session directory tree in the project</span>
+<span class="sd">        folder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        sub_names :</span>
+<span class="sd">                subject name / list of subject names to make</span>
+<span class="sd">                within the top-level project directory</span>
+<span class="sd">                (if not already, these will be prefixed with</span>
+<span class="sd">                &quot;sub-&quot;)</span>
+<span class="sd">        ses_names :</span>
+<span class="sd">                (Optional). session name / list of session names.</span>
+<span class="sd">                (if not already, these will be prefixed with</span>
+<span class="sd">                &quot;ses-&quot;). If no session is provided, no session-level</span>
+<span class="sd">                directories are made.</span>
+<span class="sd">        data_type :</span>
+<span class="sd">                The data_type to make in the sub / ses directories.</span>
+<span class="sd">                (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;histology&quot;). Only data_types</span>
+<span class="sd">                that are enabled in the configs (e.g. use_behav) will be</span>
+<span class="sd">                created. If &quot;all&quot; is selected, directories will be created</span>
+<span class="sd">                for all data_type enabled in config.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        ------</span>
+
+<span class="sd">        sub_names or ses_names may contain formatting tags</span>
+
+<span class="sd">            @TO@ :</span>
+<span class="sd">                used to make a range of subjects / sessions.</span>
+<span class="sd">                Boundaries of the range must be either side of the tag</span>
+<span class="sd">                e.g. sub-001@TO@003 will generate [&quot;sub-001&quot;, &quot;sub-002&quot;, &quot;sub-003&quot;]</span>
+
+<span class="sd">            @DATE@, @TIME@ @DATETIME@ :</span>
+<span class="sd">                will add date-&lt;value&gt;, time-&lt;value&gt; or</span>
+<span class="sd">                date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name</span>
+<span class="sd">                is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101</span>
+<span class="sd">                (on the 1st january, 2022).</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        project.make_sub_dir(&quot;sub-001&quot;, data_type=&quot;all&quot;)</span>
+
+<span class="sd">        project.make_sub_dir(&quot;sub-002@TO@005&quot;,</span>
+<span class="sd">                             [&quot;ses-001&quot;, &quot;ses-002&quot;],</span>
+<span class="sd">                             [&quot;ephys&quot;, &quot;behav&quot;])</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;make_sub_dir&quot;</span><span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Formatting Names...&quot;</span><span class="p">)</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">([</span><span class="s2">&quot;sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;ses_names&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">])</span>
+
+        <span class="n">sub_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ses_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">)</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">(</span>
+            <span class="p">[</span><span class="s2">&quot;formatted_sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;formatted_ses_names&quot;</span><span class="p">],</span>
+            <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">directories</span><span class="o">.</span><span class="n">check_no_duplicate_sub_ses_key_values</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_base_and_top_level_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
+            <span class="n">new_sub_names</span><span class="o">=</span><span class="n">sub_names</span><span class="p">,</span>
+            <span class="n">new_ses_names</span><span class="o">=</span><span class="n">ses_names</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ses_names</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Making directories...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_make_directory_trees</span><span class="p">(</span>
+            <span class="n">sub_names</span><span class="p">,</span>
+            <span class="n">ses_names</span><span class="p">,</span>
+            <span class="n">data_type</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Finished file creation. Local folder tree is now:</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Finished making directories. For log of all created &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;directories, pleasee see </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Public File Transfer</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DataShuttle.upload_data"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.upload_data">[docs]</a>    <span class="k">def</span> <span class="nf">upload_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upload data from a local project to the remote project</span>
+<span class="sd">        directory. In the case that a file / directory exists on</span>
+<span class="sd">        the remote and local, the remote will not be overwritten</span>
+<span class="sd">        even if the remote file is an older version. Data</span>
+<span class="sd">        transfer logs are saved to the logging directory (get_logging_path()).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        sub_names :</span>
+<span class="sd">            a subject name / list of subject names. These must</span>
+<span class="sd">            be prefixed with &quot;sub-&quot;, or the prefix will be</span>
+<span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
+<span class="sd">            &quot;all&quot; will search for all subdirectories in the</span>
+<span class="sd">            data type directory to upload.</span>
+<span class="sd">        ses_names :</span>
+<span class="sd">            a session name / list of session names, similar to</span>
+<span class="sd">            sub_names but requring a &quot;ses-&quot; prefix.</span>
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of upload. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        data_type :</span>
+<span class="sd">            see make_sub_dir()</span>
+
+<span class="sd">        init_log :</span>
+<span class="sd">            (Optional). Whether to start the logger. This should</span>
+<span class="sd">            always be True, unless logger has already been started</span>
+<span class="sd">            (e.g. in a calling function).</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+
+<span class="sd">        sub_names or ses_names may contain certain formatting tags:</span>
+
+<span class="sd">        @*@: wildcard search for subject names. e.g. ses-001_date-@*@</span>
+<span class="sd">             will transfer all session 001 collected on all dates.</span>
+<span class="sd">        @TO@: used to transfer a range of sub/ses. Number must be either side of the tag</span>
+<span class="sd">              e.g. sub-001@TO@003 will generate [&quot;sub-001&quot;, &quot;sub-002&quot;, &quot;sub-003&quot;]</span>
+<span class="sd">        @DATE@, @TIME@ @DATETIME@: will add date-&lt;value&gt;, time-&lt;value&gt; or</span>
+<span class="sd">              date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name</span>
+<span class="sd">              is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101</span>
+<span class="sd">              (on the 1st january, 2022).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_data&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_sub_ses_data</span><span class="p">(</span>
+            <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
+            <span class="n">sub_names</span><span class="p">,</span>
+            <span class="n">ses_names</span><span class="p">,</span>
+            <span class="n">data_type</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.download_data"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.download_data">[docs]</a>    <span class="k">def</span> <span class="nf">download_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download data from the remote project directory to the</span>
+<span class="sd">        local project directory. In the case that a file / directory</span>
+<span class="sd">        exists on the remote and local, the local will</span>
+<span class="sd">        not be overwritten even if the remote file is an</span>
+<span class="sd">        older version.</span>
+
+<span class="sd">        This function is identical to upload_data() but with the direction</span>
+<span class="sd">        of data transfer reversed. Please see upload_data() for arguments.</span>
+<span class="sd">        &quot;all&quot; arguments will search the remote project for sub / ses to download.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_data&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_sub_ses_data</span><span class="p">(</span>
+            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
+            <span class="n">sub_names</span><span class="p">,</span>
+            <span class="n">ses_names</span><span class="p">,</span>
+            <span class="n">data_type</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function to upload all data.</span>
+
+<span class="sd">        Alias for:</span>
+<span class="sd">            project.upload_data(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_all&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function to download all data.</span>
+
+<span class="sd">        Alias for : project.download_data(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_all&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.upload_project_dir_or_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_dir_or_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upload a single, specified directory (including all subdirectories</span>
+<span class="sd">        and files) from the local to the remote machine.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        filepath :</span>
+<span class="sd">            a string containing the filepath to move,</span>
+<span class="sd">            relative to the project directory &quot;rawdata&quot;</span>
+<span class="sd">            or &quot;derivatives&quot; path (depending on which is currently</span>
+<span class="sd">            set). Alternatively, the entire path is accepted.</span>
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of upload. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_project_dir_or_file&quot;</span><span class="p">)</span>
+
+        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_dir</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_move_dir_or_file</span><span class="p">(</span>
+            <span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span>
+            <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.download_project_dir_or_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_project_dir_or_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download an entire directory (including all subdirectories</span>
+<span class="sd">        and files) from the remote to the local machine.</span>
+
+<span class="sd">        This method is identical to upload_project_dir_or_file</span>
+<span class="sd">        but with direction of transfer reversed. Please see</span>
+<span class="sd">        upload_project_dir_or_file() for arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_project_dir_or_file&quot;</span><span class="p">)</span>
+
+        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_dir</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="s2">&quot;remote&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_move_dir_or_file</span><span class="p">(</span>
+            <span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span>
+            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># SSH</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DataShuttle.setup_ssh_connection_to_remote_server"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
+    <span class="k">def</span> <span class="nf">setup_ssh_connection_to_remote_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup a connection to the remote server using SSH.</span>
+<span class="sd">        Assumes the remote_host_id and remote_host_username</span>
+<span class="sd">        are set in configs (see make_config_file() and update_config())</span>
+
+<span class="sd">        First, the server key will be displayed, requiring</span>
+<span class="sd">        verification of the server ID. This will store the</span>
+<span class="sd">        hostkey for all future use.</span>
+
+<span class="sd">        Next, prompt to input their password for the remote</span>
+<span class="sd">        cluster. Once input, SSH private / public key pair</span>
+<span class="sd">        will be setup.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;setup_ssh_connection_to_remote_server&quot;</span><span class="p">)</span>
+
+        <span class="n">verified</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">verify_ssh_remote_host</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_host_id&quot;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_hostkeys_path</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">verified</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_ssh_key_and_rclone_config</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.write_public_key"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.write_public_key">[docs]</a>    <span class="k">def</span> <span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        By default, the SSH private key only is stored, in</span>
+<span class="sd">        the datashuttle configs directory. Use this function</span>
+<span class="sd">        to save the public key.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        filepath :</span>
+<span class="sd">            full filepath (inc filename) to write the</span>
+<span class="sd">            public key to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">RSAKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">public</span><span class="p">:</span>
+            <span class="n">public</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">get_base64</span><span class="p">())</span>
+        <span class="n">public</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Configs</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DataShuttle.make_config_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.make_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_config_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">remote_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">connection_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">remote_host_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">remote_host_username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_ephys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_behav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_funcimg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">use_histology</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the configurations for datashuttle to use on the</span>
+<span class="sd">        local machine. Once initialised, these settings will be</span>
+<span class="sd">        used each time the datashuttle is opened. This method</span>
+<span class="sd">        can also be used to completely overwrite existing configs.</span>
+
+<span class="sd">        These settings are stored in a config file on the</span>
+<span class="sd">        datashuttle path (not in the project directory)</span>
+<span class="sd">        on the local machine. Use get_config_path() to</span>
+<span class="sd">        get the full path to the saved config file.</span>
+
+<span class="sd">        Use update_config() to update a single config, and</span>
+<span class="sd">        supply_config() to use an existing config file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        local_path : path to project dir on local machine</span>
+
+<span class="sd">        remote_path : Filepath to remote project.</span>
+<span class="sd">            If this is local (i.e. connection_method = &quot;local_filesystem&quot;),</span>
+<span class="sd">            this is the full path on the local filesystem (e.g. mounted drive)</span>
+<span class="sd">            Otherwise, if this is via ssh (i.e. connection method = &quot;ssh&quot;),</span>
+<span class="sd">            this is the path to the project directory on remote machine.</span>
+<span class="sd">            This should be a full path to remote directory i.e. this cannot</span>
+<span class="sd">            include ~ home directory syntax, must contain the full path</span>
+<span class="sd">            (e.g. /nfs/nhome/live/jziminski)</span>
+
+<span class="sd">        connection_method : &quot;local_filesystem&quot; or &quot;ssh&quot;</span>
+
+<span class="sd">        remote_host_id : address for remote host for ssh connection</span>
+
+<span class="sd">        remote_host_username : username for which to log in to remote host.</span>
+
+<span class="sd">        use_ephys : will allow ephys directory creation</span>
+
+<span class="sd">        use_funcimg : will allow funcimg directory creation</span>
+
+<span class="sd">        use_histology : will allow histology directory creation</span>
+
+<span class="sd">        use_behav : will allow behav directory creation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+            <span class="s2">&quot;make_config_file&quot;</span><span class="p">,</span> <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">temp_dir_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">Configs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="p">,</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;local_path&quot;</span><span class="p">:</span> <span class="n">local_path</span><span class="p">,</span>
+                <span class="s2">&quot;remote_path&quot;</span><span class="p">:</span> <span class="n">remote_path</span><span class="p">,</span>
+                <span class="s2">&quot;connection_method&quot;</span><span class="p">:</span> <span class="n">connection_method</span><span class="p">,</span>
+                <span class="s2">&quot;remote_host_id&quot;</span><span class="p">:</span> <span class="n">remote_host_id</span><span class="p">,</span>
+                <span class="s2">&quot;remote_host_username&quot;</span><span class="p">:</span> <span class="n">remote_host_username</span><span class="p">,</span>
+                <span class="s2">&quot;use_ephys&quot;</span><span class="p">:</span> <span class="n">use_ephys</span><span class="p">,</span>
+                <span class="s2">&quot;use_behav&quot;</span><span class="p">:</span> <span class="n">use_behav</span><span class="p">,</span>
+                <span class="s2">&quot;use_funcimg&quot;</span><span class="p">:</span> <span class="n">use_funcimg</span><span class="p">,</span>
+                <span class="s2">&quot;use_histology&quot;</span><span class="p">:</span> <span class="n">use_histology</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">setup_after_load</span><span class="p">()</span>  <span class="c1"># will raise if fails</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dump_to_file</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
+
+        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span>
+            <span class="s2">&quot;Configuration file has been saved and &quot;</span>
+            <span class="s2">&quot;options loaded into datashuttle.&quot;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataShuttle.update_config"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">option_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_info</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Update a single config entry. This will overwrite the existing</span>
+<span class="sd">        entry in the saved configs file and be used for all future</span>
+<span class="sd">        datashuttle sessions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        option_key : dictionary key of the option to change,</span>
+<span class="sd">            see make_config_file() for available keys.</span>
+
+<span class="sd">        new_info : value to update the config too</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        If the local path is changed with update_config(),</span>
+<span class="sd">        there are a couple of possibilities for where logs are stored.</span>
+<span class="sd">        If the local_path project already exists, the config log will be</span>
+<span class="sd">        written to the original local_path, and future logs will</span>
+<span class="sd">        be written to the new local path. However, if a local_path does</span>
+<span class="sd">        not exist, move to a temp_dir and then move the logs to the</span>
+<span class="sd">        new local_path if successful.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">store_logs_in_temp_dir</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">option_key</span> <span class="o">==</span> <span class="s2">&quot;local_path&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_path_exists</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+                <span class="s2">&quot;update_config&quot;</span><span class="p">,</span>
+                <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">temp_dir_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;update_config&quot;</span><span class="p">,</span> <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
+                <span class="s2">&quot;Must have a config loaded before updating configs.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">new_info</span> <span class="o">=</span> <span class="n">load_configs</span><span class="o">.</span><span class="n">handle_bool</span><span class="p">(</span><span class="n">option_key</span><span class="p">,</span> <span class="n">new_info</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">update_an_entry</span><span class="p">(</span><span class="n">option_key</span><span class="p">,</span> <span class="n">new_info</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataShuttle.supply_config_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.supply_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">supply_config_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">input_path_to_config</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Supply an existing config by passing the path the config</span>
+<span class="sd">        file (.yaml). The config file must contain exactly the</span>
+<span class="sd">        same keys as the dataShuttle config, with</span>
+<span class="sd">        values the same type, or will result in an error.</span>
+
+<span class="sd">        If successful, the config will be loaded into datashuttle,</span>
+<span class="sd">        and a copy saved in the DataShuttle config folder for future use.</span>
+
+<span class="sd">        To check the format of a datashuttle config, one can be generated</span>
+<span class="sd">        with make_config_file() or look in configs/canonical_configs.py.</span>
+
+<span class="sd">        It is possible the local_path will be changed</span>
+<span class="sd">        with the new config file. see update_config()</span>
+<span class="sd">        for how this is handled.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        input_path_to_config :</span>
+<span class="sd">            Path to the config to use as DataShuttle config.</span>
+
+<span class="sd">        warn :</span>
+<span class="sd">            prompt the user to confirm as supplying</span>
+<span class="sd">            config will overwrite existing config.</span>
+<span class="sd">            Turned off for testing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">store_logs_in_temp_dir</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_path_exists</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+                <span class="s2">&quot;supply_config_file&quot;</span><span class="p">,</span>
+                <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">temp_dir_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;supply_config_file&quot;</span><span class="p">,</span> <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">path_to_config</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">input_path_to_config</span><span class="p">)</span>
+
+        <span class="n">new_cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="o">.</span><span class="n">supplied_configs_confirm_overwrite</span><span class="p">(</span>
+            <span class="n">path_to_config</span><span class="p">,</span> <span class="n">warn</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">new_cfg</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">new_cfg</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">file_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dump_to_file</span><span class="p">()</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Public Getters</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DataShuttle.get_local_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_local_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the projects local path.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DataShuttle.get_datashuttle_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_datashuttle_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the path to the local datashuttle</span>
+<span class="sd">        directory where configs another other</span>
+<span class="sd">        datashuttle files are stored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_appdir_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DataShuttle.get_config_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the full path to the DataShuttle config file.</span>
+<span class="sd">        This is always formatted to UNIX style.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DataShuttle.get_remote_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_remote_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_remote_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the project remote path.</span>
+<span class="sd">        This is always formatted to UNIX style.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DataShuttle.show_configs"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.show_configs">[docs]</a>    <span class="k">def</span> <span class="nf">show_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the current configs to the terminal.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DataShuttle.show_local_tree"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.show_local_tree">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print a tree schematic of all files and directories</span>
+<span class="sd">        in the local project.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DataShuttle.check_name_processing"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.check_name_processing">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_name_processing</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
+<span class="sd">        for example as when passed to make_sub_dir() or upload_data() or</span>
+<span class="sd">        download_data()</span>
+
+<span class="sd">        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.</span>
+<span class="sd">        This method will print the formatted list of names,</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        names :</span>
+<span class="sd">            A string or list of subject or session names.</span>
+<span class="sd">        prefix:</span>
+<span class="sd">            The relevant subject or session prefix,</span>
+<span class="sd">            e.g. &quot;sub-&quot; or &quot;ses-&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sub-&quot;</span><span class="p">,</span> <span class="s2">&quot;ses-&quot;</span><span class="p">]:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span><span class="s2">&quot;prefix: must be &#39;sub-&#39; or &#39;ses-&#39;&quot;</span><span class="p">)</span>
+
+        <span class="n">formatted_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">format_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">formatted_names</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.make_and_get_logging_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.make_and_get_logging_path">[docs]</a>    <span class="k">def</span> <span class="nf">make_and_get_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Currently logging is located in config path</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">logging_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span> <span class="o">/</span> <span class="s2">&quot;logs&quot;</span>
+        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">logging_path</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logging_path</span></div>
+
+    <span class="c1"># ====================================================================================================================</span>
+    <span class="c1"># Private Functions</span>
+    <span class="c1"># ====================================================================================================================</span>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Make Directory Trees</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_make_directory_trees</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Entry method to make a full directory tree. It will</span>
+<span class="sd">        iterate through all passed subjects, then sessions, then</span>
+<span class="sd">        subdirs within a data_type directory. This</span>
+<span class="sd">        permits flexible creation of directories (e.g.</span>
+<span class="sd">        to make subject only, do not pass session name.</span>
+
+<span class="sd">        Ensure sub and ses names are already formatted</span>
+<span class="sd">        before use in this function (see _start_log())</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        sub_names, ses_names, data_type : see make_sub_dir()</span>
+
+<span class="sd">        log : whether to log or not. If True, logging must</span>
+<span class="sd">            already be initialised.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_type_is_valid</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">error_on_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">sub_names</span><span class="p">:</span>
+
+            <span class="n">sub_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
+                <span class="s2">&quot;local&quot;</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">sub</span><span class="p">],</span>
+            <span class="p">)</span>
+
+            <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">sub_path</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_make_data_type_directories</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">sub_path</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">ses</span> <span class="ow">in</span> <span class="n">ses_names</span><span class="p">:</span>
+
+                <span class="n">ses_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
+                    <span class="s2">&quot;local&quot;</span><span class="p">,</span>
+                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">],</span>
+                <span class="p">)</span>
+
+                <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">ses_path</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_make_data_type_directories</span><span class="p">(</span>
+                    <span class="n">data_type</span><span class="p">,</span> <span class="n">ses_path</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_make_data_type_directories</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">sub_or_ses_level_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Make data_type folder (e.g. behav) at the sub or ses</span>
+<span class="sd">        level. Checks directory_class.Directories attributes,</span>
+<span class="sd">        whether the data_type is used and at the current level.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        data_type : data type (e.g. &quot;behav&quot;, &quot;all&quot;) to use</span>
+
+<span class="sd">        sub_or_ses_level_path : Full path to the subject</span>
+<span class="sd">            or session directory where the new directory</span>
+<span class="sd">            will be written.</span>
+
+<span class="sd">        level : The directory level that the</span>
+<span class="sd">            directory will be made at, &quot;sub&quot; or &quot;ses&quot;</span>
+
+<span class="sd">        log : whether to log on or not (if True, logging must</span>
+<span class="sd">            already be initialised).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data_type_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_type_items</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">data_type_key</span><span class="p">,</span> <span class="n">data_type_dir</span> <span class="ow">in</span> <span class="n">data_type_items</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+
+            <span class="k">if</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">used</span> <span class="ow">and</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">level</span><span class="p">:</span>
+
+                <span class="n">data_type_path</span> <span class="o">=</span> <span class="n">sub_or_ses_level_path</span> <span class="o">/</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">name</span>
+
+                <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">data_type_path</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
+
+                <span class="n">directories</span><span class="o">.</span><span class="n">make_datashuttle_metadata_folder</span><span class="p">(</span>
+                    <span class="n">data_type_path</span><span class="p">,</span> <span class="n">log</span>
+                <span class="p">)</span>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># File Transfer</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_transfer_sub_ses_data</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">upload_or_download</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Iterate through all data type, sub, ses and transfer directory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        upload_or_download : &quot;upload&quot; or &quot;download&quot;</span>
+
+<span class="sd">        sub_names : see make_sub_dir()</span>
+
+<span class="sd">        ses_names : see make_sub_dir()</span>
+
+<span class="sd">        data_type : e.g. ephys, behav, histology, funcimg, see make_sub_dir()</span>
+
+<span class="sd">        dry_run : see upload_project_dir_or_file()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">local_or_remote</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="s2">&quot;local&quot;</span> <span class="k">if</span> <span class="n">upload_or_download</span> <span class="o">==</span> <span class="s2">&quot;upload&quot;</span> <span class="k">else</span> <span class="s2">&quot;remote&quot;</span>
+        <span class="p">)</span>
+        <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_and_top_level_dir</span><span class="p">(</span><span class="n">local_or_remote</span><span class="p">)</span>
+
+        <span class="c1"># Find sub names to transfer</span>
+        <span class="k">if</span> <span class="n">sub_names</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]]:</span>
+            <span class="n">sub_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_sub_or_ses_level</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">base_dir</span><span class="p">,</span>
+                <span class="n">local_or_remote</span><span class="p">,</span>
+                <span class="n">search_str</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sub_prefix</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sub_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
+            <span class="n">sub_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_for_wildcards</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">local_or_remote</span><span class="p">,</span> <span class="n">sub_names</span>
+            <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">sub_names</span><span class="p">:</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_data_type</span><span class="p">(</span>
+                <span class="n">upload_or_download</span><span class="p">,</span>
+                <span class="n">local_or_remote</span><span class="p">,</span>
+                <span class="n">data_type</span><span class="p">,</span>
+                <span class="n">sub</span><span class="p">,</span>
+                <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
+                <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="c1"># Find ses names  to transfer</span>
+            <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]]:</span>
+                <span class="n">ses_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_sub_or_ses_level</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span>
+                    <span class="n">base_dir</span><span class="p">,</span>
+                    <span class="n">local_or_remote</span><span class="p">,</span>
+                    <span class="n">sub</span><span class="p">,</span>
+                    <span class="n">search_str</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ses_prefix</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ses_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">)</span>
+                <span class="n">ses_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_for_wildcards</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">local_or_remote</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span>
+                <span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">ses</span> <span class="ow">in</span> <span class="n">ses_names</span><span class="p">:</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_data_type</span><span class="p">(</span>
+                    <span class="n">upload_or_download</span><span class="p">,</span>
+                    <span class="n">local_or_remote</span><span class="p">,</span>
+                    <span class="n">data_type</span><span class="p">,</span>
+                    <span class="n">sub</span><span class="p">,</span>
+                    <span class="n">ses</span><span class="p">,</span>
+                    <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
+                    <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_transfer_data_type</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">upload_or_download</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">local_or_remote</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">sub</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transfer the data_type-level folder at the subject</span>
+<span class="sd">        or session level. data_type dirs are got either</span>
+<span class="sd">        directly from user input or if &quot;all&quot; is passed searched</span>
+<span class="sd">        for in the local / remote directory (for</span>
+<span class="sd">        upload / download respectively).</span>
+
+<span class="sd">        This can handle both cases of subject level dir (e.g. histology)</span>
+<span class="sd">        or session level dir (e.g. ephys).</span>
+
+<span class="sd">        Note that the use of upload_or_download / local_or_remote</span>
+<span class="sd">        is redundant as the value of local_or_remote is set by</span>
+<span class="sd">        upload_or_download, but kept for readability.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        upload_or_download : &quot;upload&quot; or &quot;download&quot;</span>
+
+<span class="sd">        local_or_remote : &quot;local&quot; or &quot;remote&quot;</span>
+
+<span class="sd">        data_type : e.g. &quot;behav&quot;, &quot;all&quot;</span>
+
+<span class="sd">        sub : subject name</span>
+
+<span class="sd">        ses : Optional session name. If False, directory</span>
+<span class="sd">            to transfer will be assumed to be at the</span>
+<span class="sd">            subject level.</span>
+
+<span class="sd">        dry_run : Show data transfer output but do not</span>
+<span class="sd">            actually transfer the data.</span>
+
+<span class="sd">        log : Whether to log, if True logging must already</span>
+<span class="sd">            be initialsied</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">level</span> <span class="o">=</span> <span class="s2">&quot;ses&quot;</span> <span class="k">if</span> <span class="n">ses</span> <span class="k">else</span> <span class="s2">&quot;sub&quot;</span>
+
+        <span class="n">data_type_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items_from_data_type_input</span><span class="p">(</span>
+            <span class="n">local_or_remote</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">data_type_key</span><span class="p">,</span> <span class="n">data_type_dir</span> <span class="ow">in</span> <span class="n">data_type_items</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
+
+            <span class="k">if</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">level</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ses</span><span class="p">:</span>
+                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">,</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">_move_dir_or_file</span><span class="p">(</span>
+                    <span class="n">filepath</span><span class="p">,</span>
+                    <span class="n">upload_or_download</span><span class="p">,</span>
+                    <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
+                    <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+                <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_move_dir_or_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">upload_or_download</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Low-level function to transfer a directory or file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        filepath : filepath (not including local</span>
+<span class="sd">            or remote root) to copy</span>
+
+<span class="sd">        upload_or_download : &quot;upload&quot; or &quot;download&quot;.</span>
+<span class="sd">            upload goes local to remote, download goes</span>
+<span class="sd">            remote to local</span>
+
+<span class="sd">        dry_run : do not actually move the files,</span>
+<span class="sd">            just report what would be moved.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">local_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
+            <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">filepath</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+
+        <span class="n">remote_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
+            <span class="s2">&quot;remote&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">filepath</span><span class="p">]</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="n">rclone</span><span class="o">.</span><span class="n">transfer_data</span><span class="p">(</span>
+            <span class="n">local_filepath</span><span class="p">,</span>
+            <span class="n">remote_filepath</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(),</span>
+            <span class="n">upload_or_download</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">_items_from_data_type_input</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">local_or_remote</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
+        <span class="n">sub</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">ses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemsView</span><span class="p">,</span> <span class="nb">zip</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the list of data_types to transfer, either</span>
+<span class="sd">        directly from user input, or by searching</span>
+<span class="sd">        what is available if &quot;all&quot; is passed.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        see _transfer_data_type() for parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_and_top_level_dir</span><span class="p">(</span><span class="n">local_or_remote</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]]:</span>
+            <span class="n">data_type_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_type_items</span><span class="p">(</span>
+                <span class="n">data_type</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">data_type_items</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_data_dirs_sub_or_ses_level</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="p">,</span>
+                <span class="n">base_dir</span><span class="p">,</span>
+                <span class="n">local_or_remote</span><span class="p">,</span>
+                <span class="n">sub</span><span class="p">,</span>
+                <span class="n">ses</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">data_type_items</span>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># SSH</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_setup_ssh_key_and_rclone_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Setup ssh connection, key pair (see ssh.setup_ssh_key)</span>
+<span class="sd">        for details. Also setup rclone config for ssh connection.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">setup_ssh_key</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hostkeys_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span>
+        <span class="p">)</span>
+
+        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># Utils</span>
+    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_make_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subdirs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function for joining relative path to base dir.</span>
+<span class="sd">        If path already starts with base dir, the base</span>
+<span class="sd">        dir will not be joined.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        base: &quot;local&quot;, &quot;remote&quot; or &quot;datashuttle&quot;</span>
+
+<span class="sd">        subdirs: a list (or string for 1) of</span>
+<span class="sd">            directory names to be joined into a path.</span>
+<span class="sd">            If file included, must be last entry (with ext).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subdirs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">subdirs_str</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subdirs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">subdirs_str</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">subdirs</span><span class="p">)</span>
+
+        <span class="n">subdirs_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">subdirs_str</span><span class="p">)</span>
+
+        <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">path_already_stars_with_base_dir</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">subdirs_path</span><span class="p">):</span>
+            <span class="n">joined_path</span> <span class="o">=</span> <span class="n">subdirs_path</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">joined_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="n">subdirs_path</span>
+
+        <span class="k">return</span> <span class="n">joined_path</span>
+
+    <span class="k">def</span> <span class="nf">_get_base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function to return the full base path.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        base : base path, &quot;local&quot;, &quot;remote&quot; or &quot;datashuttle&quot;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;local&quot;</span><span class="p">:</span>
+            <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span><span class="p">:</span>
+            <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_path&quot;</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;datashuttle&quot;</span><span class="p">:</span>
+            <span class="n">base_dir</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">base_dir</span>
+
+    <span class="k">def</span> <span class="nf">_get_base_and_top_level_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_or_remote</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the base project directory with the top level directory,</span>
+<span class="sd">        i.e. &quot;rawdata&quot; or &quot;derivatives&quot;.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        local_or_remote : &quot;local&quot; or &quot;remote&quot;</span>
+
+<span class="sd">        Examples</span>
+<span class="sd">        --------</span>
+<span class="sd">        e.g. if local_path = &quot;/my/local/path and the</span>
+<span class="sd">        top level directory is set to rawdata, this method will return</span>
+<span class="sd">        &quot;/my/local/path/rawdata&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base_dir</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="n">local_or_remote</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">base_dir</span>
+
+    <span class="k">def</span> <span class="nf">_format_names</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">sub_or_ses</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Format a list of subject or session names, e.g.</span>
+<span class="sd">        by ensuring all have sub- or ses- prefix, checking</span>
+<span class="sd">        for tags, that names do not include spaces and that</span>
+<span class="sd">        there are not duplicates.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        names: str or list containing sub or ses names</span>
+<span class="sd">                      (e.g. to make dirs)</span>
+
+<span class="sd">        sub_or_ses: &quot;sub&quot; or &quot;ses&quot; - this defines the prefix checks.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sub_or_ses_prefix</span><span class="p">(</span><span class="n">sub_or_ses</span><span class="p">)</span>
+        <span class="n">formatted_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">format_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">formatted_names</span>
+
+    <span class="k">def</span> <span class="nf">_get_sub_or_ses_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_or_ses</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the sub / ses prefix (default is &quot;sub-&quot; and &quot;ses-&quot;) set in cfgs.</span>
+<span class="sd">        These should always be &quot;sub-&quot; or &quot;ses-&quot; by SWC-BIDS.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">sub_or_ses</span> <span class="o">==</span> <span class="s2">&quot;sub&quot;</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sub_prefix</span>
+        <span class="k">elif</span> <span class="n">sub_or_ses</span> <span class="o">==</span> <span class="s2">&quot;ses&quot;</span><span class="p">:</span>
+            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ses_prefix</span>
+        <span class="k">return</span> <span class="n">prefix</span>
+
+    <span class="k">def</span> <span class="nf">_check_data_type_is_valid</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">error_on_fail</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the passed data_type is valid (must</span>
+<span class="sd">        be a key on self.ses_dirs e.g. &quot;behav&quot;, or &quot;all&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
+            <span class="n">valid_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span>
+            <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="nb">type</span> <span class="ow">in</span> <span class="n">valid_keys</span> <span class="k">for</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">is_valid</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">data_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">error_on_fail</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;data_type: &#39;</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;is not valid. Must be one of&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">. or &#39;all&#39;&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; No directories were made.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">is_valid</span>
+
+    <span class="k">def</span> <span class="nf">_get_data_type_items</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemsView</span><span class="p">,</span> <span class="nb">zip</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the .items() structure of the data type, either all of</span>
+<span class="sd">        them (stored in self._data_type_dirs) or as a single item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+            <span class="n">data_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_type</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
+                <span class="n">data_type</span><span class="p">,</span>
+                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">],</span>
+            <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">items</span>
+
+    <span class="k">def</span> <span class="nf">_get_rclone_config_name</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">connection_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function to get the rclone config</span>
+<span class="sd">        name (these configs are created by datashuttle</span>
+<span class="sd">        but managed and stored by rclone).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">connection_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">connection_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;remote_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">connection_method</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_start_log</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">variables</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">store_in_temp_dir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">temp_dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the logger. This is typically called at</span>
+<span class="sd">        the start of public methods to initialize logging</span>
+<span class="sd">        for a specific function call.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        name : name of the log output files. Typically, the</span>
+<span class="sd">            name of the function logged e.g. &quot;update_config&quot;</span>
+
+<span class="sd">        variables : variables are passed to fancylog variables argument.</span>
+
+<span class="sd">        store_in_temp_dir :</span>
+<span class="sd">            if False, existing logging path will be used</span>
+<span class="sd">            (local project .datashuttle). If &quot;default&quot;&quot;, the temp</span>
+<span class="sd">            log backup will be used. Otherwise, expect a path / string</span>
+<span class="sd">            to the new path to make the logs at.</span>
+
+<span class="sd">        temp_dir_path :</span>
+<span class="sd">            if &quot;default&quot;, use the default temp dir path stored at</span>
+<span class="sd">            self._temp_log_path otherwise a full path to save the log at.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">store_in_temp_dir</span><span class="p">:</span>
+            <span class="n">path_to_save</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span>
+                <span class="k">if</span> <span class="n">temp_dir_path</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span>
+                <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir_path</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">path_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_move_logs_from_temp_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Logs are stored within the project directory. Although</span>
+<span class="sd">        in some instances, when setting configs, we do not know what</span>
+<span class="sd">        the project directory is. In this case, make the logs</span>
+<span class="sd">        in a temp folder in the .datashuttle config dir,</span>
+<span class="sd">        and move them to the project folder once set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
+                <span class="s2">&quot;Project folder does not exist. Logs were not moved.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="n">log_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span> <span class="o">/</span> <span class="s2">&quot;*.log&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">file_path</span> <span class="ow">in</span> <span class="n">log_files</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+
+            <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span> <span class="o">/</span> <span class="n">file_name</span>
+            <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_log_successful_config_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Log the entire config at the time of config change.</span>
+<span class="sd">        If messaged, just message &quot;update successful&quot; rather than</span>
+<span class="sd">        print the entire configs as it becomes confusing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="s2">&quot;Update successful.&quot;</span><span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Update successful. New config file: </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_json_dumps_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the config dictionary formatted as json.dumps()</span>
+<span class="sd">        which allows well formatted printing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copy_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">convert_str_and_pathlib_paths</span><span class="p">(</span><span class="n">copy_dict</span><span class="p">,</span> <span class="s2">&quot;path_to_str&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">copy_dict</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_local_path_exists</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the local_path for the project exists.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_make_project_metadata_if_does_not_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Within the project local_path is also a .datashuttle</span>
+<span class="sd">        folder that contains additional information, e.g. logs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+</pre></div>
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Neuroinformatics Unit.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>
