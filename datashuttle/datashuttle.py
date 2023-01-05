@@ -477,28 +477,39 @@ class DataShuttle:
 
         local_path : path to project dir on local machine
 
-        remote_path : Filepath to remote project.
+        remote_path :
+            Filepath to remote project.
             If this is local (i.e. connection_method = "local_filesystem"),
-            this is the full path on the local filesystem (e.g. mounted drive)
+            this is the full path on the local filesystem
             Otherwise, if this is via ssh (i.e. connection method = "ssh"),
             this is the path to the project directory on remote machine.
             This should be a full path to remote directory i.e. this cannot
             include ~ home directory syntax, must contain the full path
             (e.g. /nfs/nhome/live/jziminski)
 
-        connection_method : "local_filesystem" or "ssh"
+        connection_method :
+            The method used to connect to the remote project filesystem,
+            e.g. "local_filesystem" (e.g. mounted drive) or "ssh"
 
-        remote_host_id : address for remote host for ssh connection
+        remote_host_id :
+            server address for remote host for ssh connection
+            e.g. "ssh.swc.ucl.ac.uk"
 
-        remote_host_username : username for which to log in to remote host.
+        remote_host_username :
+            username for which to log in to remote host.
+            e.g. "jziminski"
 
-        use_ephys : will allow ephys directory creation
+        use_ephys :
+            if True, will allow ephys directory creation
 
-        use_funcimg : will allow funcimg directory creation
+        use_funcimg :
+            if True, will allow funcimg directory creation
 
-        use_histology : will allow histology directory creation
+        use_histology :
+            if True, will allow histology directory creation
 
-        use_behav : will allow behav directory creation
+        use_behav :
+            if True, will allow behav directory creation
         """
         self._start_log(
             "make_config_file", store_in_temp_dir=True, temp_dir_path="default"
