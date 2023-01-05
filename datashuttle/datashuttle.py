@@ -315,6 +315,7 @@ class DataShuttle:
     def upload_all(self):
         """
         Convenience function to upload all data.
+
         Alias for:
             project.upload_data("all", "all", "all")
         """
