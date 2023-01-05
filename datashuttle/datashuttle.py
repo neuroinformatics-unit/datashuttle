@@ -561,10 +561,12 @@ class DataShuttle:
         Parameters
         ----------
 
-        option_key : dictionary key of the option to change,
+        option_key :
+            dictionary key of the option to change,
             see make_config_file() for available keys.
 
-        new_info : value to update the config too
+        new_info :
+            value to update the config too
 
         Notes
         -----
