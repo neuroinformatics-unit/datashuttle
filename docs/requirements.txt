@@ -1,7 +1,13 @@
+fancylog
 linkify-it-py
 myst-parser
 nbsphinx
 numpydoc
+
+paramiko
 pydata-sphinx-theme
+PyYAML
+requests
+rich
 setuptools_scm
 sphinx_autodoc_typehints
