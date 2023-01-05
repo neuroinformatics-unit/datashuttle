@@ -16,8 +16,7 @@ dependencies = [
     "PyYAML",
     "requests",
     "rich",
-    # "fancylog",
-    "fancylog @ git+https://git@github.com/JoeZiminski/fancylog",
+    "fancylog",
 ]
 
 classifiers = [
