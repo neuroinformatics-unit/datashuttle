@@ -66,6 +66,7 @@ templates_path = ["_templates"]
 
 # Automatically generate stub pages for API
 autosummary_generate = True
+numpydoc_class_members_toctree = False
 toc_object_entries_show_parents = "all"
 
 autodoc_default_options = {
