@@ -1,88 +1,95 @@
-# Get Started
+# Full Documentation
 
 Datashuttle is a work in progress as has not been officially released. It is not ready for use
 as documented, please await first official release.
 
 DataShuttle helps to manage and transfer a project with many "local" machines all connected to a central "remote" machine.
 DataShuttle has functions to help:
-* Generare BIDS-formatted directory structures
+* Generate BIDS-formatted directory structures
 * Transfer data between remote and local machines
 
 On first setup, it is necessary to specify the project name, paths to the local project folder (typically empty on first use, on a
 local filesystem), and paths to remote project directory and the connection method.
 
+This documentation gives examples both using the API (in the python console) or using the command line interface (in system terminal).
+
 ## DataShuttle Configs
 
 ### Configuration File
 
-To get started, import DataShuttle and initialise the class with the project name
+To get started, import DataShuttle and initialise the class with the project name. If using the command
+line this step is not necessary.
 
 ```
 from datashuttle.datashuttle import DataShuttle
 
 project = DataShuttle("my_project")
 ```
-The first time you use Data Shuttle, you will be prompted to make a config file containing project information.
+The first time you use DataShuttle, you will be prompted to make a configuration file containing project information.
 
 To setup the configuration, use the "make_config_file" function.
 
 The "local_path" argument is required to specify the top-level path to your project. This will typically be empty
-on first use. e.g. if the local_path="/path/to/project", when making a new subject (e.g. sub-001) this will be
-made at /path/to/project/rawdata/sub-001.
+on first use, and should include the name of the project.
+
+e.g. if the local_path="/path/to/my_project", when making a new subject (e.g. sub-001) this will be
+made at /path/to/my_project/rawdata/sub-001.
 
 Next, the "remote_path" argument gives the path to the central remote project. This may be on a local
-filesystem (e.g. if a HPC or network drive is mounted) or using SSH. on Linux systems, ~ syntax is
+filesystem (e.g. if a HPC or network drive is mounted) or using SSH. On Linux systems, ~ syntax is
 not supported and the full filepath must be input.
 
 Also required is the "connection_method". This can either be "local_filesystem" or "ssh". If "ssh",
 then the "remote_host_id" and "remote_host_username" options are also required (see example below).
 
 Finally, the options "use_ephys", "use_behav"... are used to set the data types used on the local PC.
-If these are not set to True, it will not be possible to make data_type directories of this type, even
-if specified directly. This option is useful if there are dedicated machines for collection of
-different data types.
+If these are not set to True, it will not be possible to make data_type directories of this type.
+This option is useful if there are dedicated machines for collection of different data types.
 
 An example call may look like:
 
 ```
 project.make_config_file(
-local_path="/path/to/my/project",
+local_path="/path/to/my_project",
 remote_path="/nfs/nhome/live/username/",
 connection_method="ssh",
 remote_host_id="ssh.swc.ucl.ac.uk",
 remote_host_username="username",
 use_ephys=True,
-use_funcimg=True
+use_behav=True,
+use_histology=True
+)
 ```
 or equivalently using the command-line interface
+
 
 ```
 datashuttle \
 my_project \
 make_config_file \
---local-path /path/to/my/project \
---remote-path /nfs/nhome/live/username/ \
---connection-method ssh \
+/path/to/my/project \
+/nfs/nhome/live/username/ \
+ssh \
 --remote_host_id ssh.swc.ucl.ac.uk \
 --remote_host_username username \
---use_ephys --use_funcimg
+--use-ephys --use-behav --use-histology
 ```
 
 Individual settings can be updated using update_config(), and an existing config file can be used instead using supply_config()
 
-### setup_ssh_connection_to_remote_server()
+### Setting up an SSH Connection
 
 Once configurations are set, if the "connection_method" is "ssh", the function setup_ssh_connection_to_remote_server() must be run to setup
 the ssh connection to the remote server. This will allow visual confirmation of the server key, and setup a SSH key pair. This means
-your password will have to be enterred only once, to setup this connection.
+your password will have to be enterred only once, when setting up this connection.
 
 ## Making Project Directories
 
-Subject and session project directories can be make using the function make_sub_dir(). This function accepts a subject name (or list
+Subject and session project directories can be made using the function make_sub_dir(). This function accepts a subject name (or list
 of subject names), with optional session name and data type inputs. If no session or data type name is provided,
 an empty subject directory will be made at the top directory level.
 
-The full path of all created directories are logged (see "Logging" below).
+The full paths of all created directories are logged (see "Logging" below).
 
 e.g.
 `project.make_sub_dir(sub_names="sub-001")` or equivalently `datashuttle my_project make_sub_dir --sub_names sub-001`
@@ -96,13 +103,13 @@ will make the folder tree
         └── sub-001
 ```
 
-Adding a "ses_names" argument will make the specified sessions for each subject input. Similarly, for each subject / session,
+Adding a "ses_names" argument will make the specified sessions for all input subjects. Similarly, for each subject or session,
 all data_types will be made. The data_type argument can be a single data_type (e.g. "behav"), a list of data_types or "all",
 that will make all data_types. Note that in all cases, only data_types that are flagged to use in the configs (e.g. use_behav=True)
 will be made.
 
-All subject / session names must be prefixed with "sub-" or "ses-" respectively, according to SWC-BIDS. If these prefixes
-are not input, they will be automatically added. This method will also raise an error the session number already exists,
+All subject or session names must be prefixed with "sub-" or "ses-" respectively, as according to SWC-BIDS. If these prefixes
+are not input, they will be automatically added. This method will also raise an error if the session number already exists,
 and any duplicate inputs will be removed. Finally, subject and session names must not contain spaces and should be
 formatted according to SWC-BIDS.
 e.g.
@@ -111,6 +118,7 @@ project.make_sub_dir(
 sub_names=["001", "002"],
 ses_names=["ses-001", "002"],
 data_type=["ephys", "behav", "histology"]
+)
 ```
 or equivalently
 
@@ -150,7 +158,7 @@ will create the folder structure:
 
 ### Convenience Tags
 
-Tags can be added to easily format subject or session names. These tags include @TO@, @DATE@, @TIME@, @DATETIME.
+Tags can be added to easily format subject or session names. These tags include @TO@, @DATE@, @TIME@, @DATETIME@.
 
 The @TO@ tag can be used to create a range of subjects or sessions. Where the subject or session number is
 usually written, a range can be created by placing boundaries on the range either side of the @TO@ tag.
@@ -163,7 +171,9 @@ names, depending on the current system date / time. For example:
 ```
 project.make_sub_dir(
 sub_names="sub-001@TO@002",
-ses_names="ses-001_@DATE@")
+ses_names="ses-001_@DATE@",
+data_type=""
+)
 ```
 or equivalently
 
@@ -172,7 +182,8 @@ datashuttle \
 my_project \
 make_sub_dir \
 --sub_names sub-001@TO@002 \
---ses_names ses-001_@DATE@
+--ses_names ses-001_@DATE@ \
+--data_type ""
 ```
 
 would create the directory tree (assuming it is 01/02/2022)
@@ -190,18 +201,16 @@ only one @DATE@, @TIME@ or @DATETIME@ flag can be used per subject / session nam
 
 ## Data Transfer
 
-Data transfer can be local project to remote ("upload") or remote to local project ("download"). Data
+Data transfer can be either from the local project to the remote project ("upload") or from the remote to local project("download"). Data
 transfers are primarily managed using the upload_data() and download_data() functions.
 
-By default, data upload or download will never overwrite files when transferring data. If an
+By default, uploading or downloading data will never overwrite files when transferring data. If an
 existing file with the same name is found in the target directory, even if it is older, it will not be overwritten.
 All transfer activity is printed to the console and logged (see "Logging" below), which can be used to
 determine if any files were not transferred for this reason.
 
 To transfer all data, the keyword "all" can be used for sub_names, ses_names and data_type arguments. Note that
 any existing data_type will be transferred, even if the flag use_<data_type> (e.g. use_behav) is False.
-
-> CHECK THIS <
 
 For example, `project.upload_data(sub_names="all", ses_names="all", data_type="all")`
 
@@ -224,6 +233,7 @@ project.download_data(
 sub_names=["all"],
 ses_names=["ses-001", "ses-005"],
 data_type="behav"
+)
 ```
 
 or equivalently
@@ -248,7 +258,7 @@ The wildcard flag can be used to avoid specifying particular parts of subject / 
 to tbe transferred. This is particularly useful for skipping the `date_xxxxxx` flag that might differ across sessions or subjects.
 
 For example,
-`project.upload_data(sub_names=sub-@*@, ses_names=ses-001_date-@*@, data_type="all"` or
+`project.upload_data(sub_names="sub-@*@", ses_names="ses-001_date-@*@", data_type="all")` or
 equivalently `datashuttle my_project upload_data --sub_names sub-@*@ --ses_names ses-001_date-@*@ --data_type all`
 
 would transfer all any first session, irregardless of date, or all subjects and all data types.

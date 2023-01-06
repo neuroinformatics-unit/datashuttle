@@ -67,8 +67,8 @@ myst_heading_anchors = 3
 templates_path = ["_templates"]
 
 # Automatically generate stub pages for API
-autosummary_generate = False
-#numpydoc_class_members_toctree = False
+autosummary_generate = True
+numpydoc_class_members_toctree = False  # stops stubs warning
 #toc_object_entries_show_parents = "all"
 html_show_sourcelink = False
 
