@@ -100,7 +100,7 @@
 
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gf3f6356</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g08cc0ec</p>
   
 </a>
     
@@ -264,6 +264,577 @@
               
   <section id="cli-documentation">
 <h1>CLI Documentation<a class="headerlink" href="#cli-documentation" title="Permalink to this heading">#</a></h1>
+<p><p>DataShuttle command line interface.</p>
+<p>datashuttle [PROJECT NAME] [COMMAND] [OPTIONS]</p>
+<p>To get detailed help for commands and their optional arguments, 
+type datashuttle [PROJECT NAME] [COMMAND] –help’</p>
+<p>On first use it is necessary to setup configurations. 
+e.g.’datashuttle [PROJECT NAME] make_config_file [OPTIONS]’</p>
+<p>see 
+‘datashuttle &lt;project_name&gt; make_config_file –help’
+for full list of options.</p>
+<p>All command and argument names are matched to the API documentation.</p>
+</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">usage</span><span class="p">:</span> <span class="n">datashuttle</span> <span class="p">[</span><span class="n">PROJECT</span> <span class="n">NAME</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="positional-arguments">
+<h2>Positional Arguments<a class="headerlink" href="#positional-arguments" title="Permalink to this heading">#</a></h2>
+<dl class="option-list">
+<dt><kbd>project_name</kbd></dt>
+<dd></dd>
+</dl>
+</section>
+<section id="Sub-commands">
+<h2>Sub-commands<a class="headerlink" href="#Sub-commands" title="Permalink to this heading">#</a></h2>
+<section id="make-config-file (make_config_file)">
+<h3>make-config-file (make_config_file)<a class="headerlink" href="#make-config-file (make_config_file)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Initialise the configurations for datashuttle to use on the
+local machine. Once initialised, these settings will be
+used each time the datashuttle is opened. This method
+can also be used to completely overwrite existing configs.</p>
+<p>These settings are stored in a config file on the
+datashuttle path (not in the project directory)
+on the local machine. Use get_config_path() to
+get the full path to the saved config file.</p>
+<p>Use update_config() to update a single config, and
+supply_config() to use an existing config file.</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>local_path :</dt><dd><p>path to project dir on local machine</p>
+</dd>
+<dt>remote_path :</dt><dd><p>Filepath to remote project.
+If this is local (i.e. connection_method = “local_filesystem”),
+this is the full path on the local filesystem
+Otherwise, if this is via ssh (i.e. connection method = “ssh”),
+this is the path to the project directory on remote machine.
+This should be a full path to remote directory i.e. this cannot
+include ~ home directory syntax, must contain the full path
+(e.g. /nfs/nhome/live/jziminski)</p>
+</dd>
+<dt>connection_method :</dt><dd><p>The method used to connect to the remote project filesystem,
+e.g. “local_filesystem” (e.g. mounted drive) or “ssh”</p>
+</dd>
+<dt>remote_host_id :</dt><dd><p>server address for remote host for ssh connection
+e.g. “ssh.swc.ucl.ac.uk”</p>
+</dd>
+<dt>remote_host_username :</dt><dd><p>username for which to log in to remote host.
+e.g. “jziminski”</p>
+</dd>
+<dt>use_ephys :</dt><dd><p>if True, will allow ephys directory creation</p>
+</dd>
+<dt>use_funcimg :</dt><dd><p>if True, will allow funcimg directory creation</p>
+</dd>
+<dt>use_histology :</dt><dd><p>if True, will allow histology directory creation</p>
+</dd>
+<dt>use_behav :</dt><dd><p>if True, will allow behav directory creation</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">make</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="nb">id</span> <span class="n">REMOTE_HOST_ID</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="n">username</span> <span class="n">REMOTE_HOST_USERNAME</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">funcimg</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span><span class="p">]</span>
+                             <span class="n">local_path</span> <span class="n">remote_path</span> <span class="n">connection_method</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat1">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>local_path</kbd></dt>
+<dd><p>Required: (str)</p>
+</dd>
+<dt><kbd>remote_path</kbd></dt>
+<dd><p>Required: (str)</p>
+</dd>
+<dt><kbd>connection_method</kbd></dt>
+<dd><p>Required: (str)</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments:">
+<h4>named arguments:<a class="headerlink" href="#named-arguments:" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--remote-host-id, --remote_host_id</kbd></dt>
+<dd><p>(str)</p>
+</dd>
+<dt><kbd>--remote-host-username, --remote_host_username</kbd></dt>
+<dd><p>(str)</p>
+</dd>
+<dt><kbd>--use-ephys, --use_ephys</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--use-behav, --use_behav</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--use-funcimg, --use_funcimg</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--use-histology, --use_histology</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="update-config (update_config)">
+<h3>update-config (update_config)<a class="headerlink" href="#update-config (update_config)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Update a single config entry. This will overwrite the existing
+entry in the saved configs file and be used for all future
+datashuttle sessions.</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>option_key :</dt><dd><p>dictionary key of the option to change,
+see make_config_file() for available keys.</p>
+</dd>
+<dt>new_info :</dt><dd><p>value to update the config too</p>
+</dd>
+</dl>
+<p>Notes</p>
+<p>If the local path is changed with update_config(),
+there are a couple of possibilities for where logs are stored.
+If the local_path project already exists, the config log will be
+written to the original local_path, and future logs will
+be written to the new local path. However, if a local_path does
+not exist, move to a temp_dir and then move the logs to the
+new local_path if successful.</p>
+</div></blockquote>
+<p>The option key should be in the form of config file keys(e.g. remote_path, local_path)
+EXAMPLE: datashuttle test update_config remote_path ‘test_path’</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">update</span><span class="o">-</span><span class="n">config</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">option_key</span> <span class="n">new_info</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat2">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>option_key</kbd></dt>
+<dd><p>(str) (see make_config_file –help)</p>
+</dd>
+<dt><kbd>new_info</kbd></dt>
+<dd><p>(str or bool) depending on option key</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)">
+<h3>setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)<a class="headerlink" href="#setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Setup a connection to the remote server using SSH.
+Assumes the remote_host_id and remote_host_username
+are set in configs (see make_config_file() and update_config())</p>
+<p>First, the server key will be displayed, requiring
+verification of the server ID. This will store the
+hostkey for all future use.</p>
+<p>Next, prompt to input their password for the remote
+cluster. Once input, SSH private / public key pair
+will be setup.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">setup</span><span class="o">-</span><span class="n">ssh</span><span class="o">-</span><span class="n">connection</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="make-sub-dir (make_sub_dir)">
+<h3>make-sub-dir (make_sub_dir)<a class="headerlink" href="#make-sub-dir (make_sub_dir)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Create a subject / session directory tree in the project
+folder.</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>sub_names :</dt><dd><p>subject name / list of subject names to make
+within the toplevel project directory
+(if not already, these will be prefixed with
+“sub”)</p>
+</dd>
+<dt>ses_names :</dt><dd><p>(Optional). session name / list of session names.
+(if not already, these will be prefixed with
+“ses”). If no session is provided, no sessionlevel
+directories are made.</p>
+</dd>
+<dt>data_type :</dt><dd><p>The data_type to make in the sub / ses directories.
+(e.g. “ephys”, “behav”, “histology”). Only data_types
+that are enabled in the configs (e.g. use_behav) will be
+created. If “all” is selected, directories will be created
+for all data_type enabled in config. Use empty string “” for
+none.</p>
+</dd>
+</dl>
+<p>Notes</p>
+<p>sub_names or ses_names may contain formatting tags</p>
+<blockquote>
+<div><dl class="simple">
+<dt>&#64;TO&#64; :</dt><dd><p>used to make a range of subjects / sessions.
+Boundaries of the range must be either side of the tag
+e.g. sub001&#64;TO&#64;003 will generate [“sub001”, “sub002”, “sub003”]</p>
+</dd>
+<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64; :</dt><dd><p>will add date&lt;value&gt;, time&lt;value&gt; or
+date&lt;value&gt;_time&lt;value&gt; keys respectively. Only one pername
+is permitted. e.g. sub001_&#64;DATE&#64; will generate sub001_date20220101
+(on the 1st january, 2022).</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>Examples</p>
+<p>project.make_sub_dir(“sub001”, data_type=”all”)</p>
+<dl class="simple">
+<dt>project.make_sub_dir(“sub002&#64;TO&#64;005”,</dt><dd><p>[“ses001”, “ses002”],
+[“ephys”, “behav”])</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">make</span><span class="o">-</span><span class="n">sub</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span> <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]]</span>
+                         <span class="p">[</span><span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">DATA_TYPE</span> <span class="p">[</span><span class="n">DATA_TYPE</span> <span class="o">...</span><span class="p">]]</span>
+</pre></div>
+</div>
+<section id="named-arguments:_repeat1">
+<h4>named arguments:<a class="headerlink" href="#named-arguments:_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--sub-names, --sub_names</kbd></dt>
+<dd><p>Required: (str, single or multiple) (‘all’ for all)</p>
+</dd>
+<dt><kbd>--ses-names, --ses_names</kbd></dt>
+<dd><p>Optional: (str, single or multiple) (selection of data types, or ‘all’)</p>
+</dd>
+<dt><kbd>--data-type, --data_type</kbd></dt>
+<dd><p>Required: (str, single or multiple) (‘all’ for all)</p>
+<p>Default: “all”</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="upload-data (upload_data)">
+<h3>upload-data (upload_data)<a class="headerlink" href="#upload-data (upload_data)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Upload data from a local project to the remote project
+directory. In the case that a file / directory exists on
+the remote and local, the remote will not be overwritten
+even if the remote file is an older version. Data
+transfer logs are saved to the logging directory (get_logging_path()).</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>sub_names :</dt><dd><p>a subject name / list of subject names. These must
+be prefixed with “sub”, or the prefix will be
+automatically added. “&#64;*&#64;” can be used as a wildcard.
+“all” will search for all subdirectories in the
+data type directory to upload.</p>
+</dd>
+<dt>ses_names :</dt><dd><p>a session name / list of session names, similar to
+sub_names but requring a “ses” prefix.</p>
+</dd>
+<dt>dry_run :</dt><dd><p>perform a dryrun of upload. This will output as if file
+transfer was taking place, but no files will be moved. Useful
+to check which files will be moved on data transfer.</p>
+</dd>
+<dt>data_type :</dt><dd><p>see make_sub_dir()</p>
+</dd>
+<dt>init_log :</dt><dd><p>(Optional). Whether to start the logger. This should
+always be True, unless logger has already been started
+(e.g. in a calling function).</p>
+</dd>
+</dl>
+<p>Notes</p>
+<p>sub_names or ses_names may contain certain formatting tags:</p>
+<dl class="simple">
+<dt>&#64;*&#64;: wildcard search for subject names. e.g. ses001_date&#64;*&#64;</dt><dd><p>will transfer all session 001 collected on all dates.</p>
+</dd>
+<dt>&#64;TO&#64;: used to transfer a range of sub/ses. Number must be either side of the tag</dt><dd><p>e.g. sub001&#64;TO&#64;003 will generate [“sub001”, “sub002”, “sub003”]</p>
+</dd>
+<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64;: will add date&lt;value&gt;, time&lt;value&gt; or</dt><dd><p>date&lt;value&gt;_time&lt;value&gt; keys respectively. Only one pername
+is permitted. e.g. sub001_&#64;DATE&#64; will generate sub001_date20220101
+(on the 1st january, 2022).</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">data</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span>
+                        <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
+                        <span class="p">[</span><span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">DATA_TYPE</span> <span class="p">[</span><span class="n">DATA_TYPE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="named-arguments:_repeat2">
+<h4>named arguments:<a class="headerlink" href="#named-arguments:_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--sub-names, --sub_names</kbd></dt>
+<dd><p>Required: (str, single or multiple) (‘all’ for all)</p>
+</dd>
+<dt><kbd>--ses-names, --ses_names</kbd></dt>
+<dd><p>Required: (str, single or multiple) (‘all’ for all)</p>
+</dd>
+<dt><kbd>--data-type, --data_type</kbd></dt>
+<dd><p>Optional: (str, single or multiple) (selection of data types, or ‘all’) (default ‘all’)</p>
+</dd>
+<dt><kbd>--dry-run, --dry_run</kbd></dt>
+<dd><p>Optional: flag (default False)</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="upload-all (upload_all)">
+<h3>upload-all (upload_all)<a class="headerlink" href="#upload-all (upload_all)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Convenience function to upload all data.</p>
+<dl class="simple">
+<dt>Alias for:</dt><dd><p>project.upload_data(“all”, “all”, “all”)</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="nb">all</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="download-data (download_data)">
+<h3>download-data (download_data)<a class="headerlink" href="#download-data (download_data)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Download data from the remote project directory to the
+local project directory. In the case that a file / directory
+exists on the remote and local, the local will
+not be overwritten even if the remote file is an
+older version.</p>
+<p>This function is identical to upload_data() but with the direction
+of data transfer reversed. Please see upload_data() for arguments.
+“all” arguments will search the remote project for sub / ses to download.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">data</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span>
+                          <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span> <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
+                          <span class="p">[</span><span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">DATA_TYPE</span> <span class="p">[</span><span class="n">DATA_TYPE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="named-arguments:_repeat3">
+<h4>named arguments:<a class="headerlink" href="#named-arguments:_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--sub-names, --sub_names</kbd></dt>
+<dd><p>Required: (str, single or multiple) (‘all’ for all)</p>
+</dd>
+<dt><kbd>--ses-names, --ses_names</kbd></dt>
+<dd><p>Required: (str, single or multiple) (‘all’ for all)</p>
+</dd>
+<dt><kbd>--data-type, --data_type</kbd></dt>
+<dd><p>Optional: (str or list) (selection of data types, or ‘all’) (default ‘all’)</p>
+</dd>
+<dt><kbd>--dry-run, --dry_run</kbd></dt>
+<dd><p>Optional: flag (default False)</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="download-all (download_all)">
+<h3>download-all (download_all)<a class="headerlink" href="#download-all (download_all)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Convenience function to download all data.</p>
+<p>Alias for : project.download_data(“all”, “all”, “all”)</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="nb">all</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="upload-project-dir-or-file (upload_project_dir_or_file)">
+<h3>upload-project-dir-or-file (upload_project_dir_or_file)<a class="headerlink" href="#upload-project-dir-or-file (upload_project_dir_or_file)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Upload a single, specified directory (including all subdirectories
+and files) from the local to the remote machine.</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>filepath :</dt><dd><p>a string containing the filepath to move,
+relative to the project directory “rawdata”
+or “derivatives” path (depending on which is currently
+set). Alternatively, the entire path is accepted.</p>
+</dd>
+<dt>dry_run :</dt><dd><p>perform a dryrun of upload. This will output as if file
+transfer was taking place, but no files will be moved. Useful
+to check which files will be moved on data transfer.</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="nb">dir</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat3">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat3" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>filepath</kbd></dt>
+<dd><p>Required: (str)</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--dry-run, --dry_run</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="download-project-dir-or-file (download_project_dir_or_file)">
+<h3>download-project-dir-or-file (download_project_dir_or_file)<a class="headerlink" href="#download-project-dir-or-file (download_project_dir_or_file)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Download an entire directory (including all subdirectories
+and files) from the remote to the local machine.</p>
+<p>This method is identical to upload_project_dir_or_file
+but with direction of transfer reversed. Please see
+upload_project_dir_or_file() for arguments.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="nb">dir</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat4">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat4" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>filepath</kbd></dt>
+<dd><p>Required: (str)</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments_repeat1">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat1" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--dry-run, --dry_run</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="get-local-path (get_local_path)">
+<h3>get-local-path (get_local_path)<a class="headerlink" href="#get-local-path (get_local_path)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Print the projects local path.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">get</span><span class="o">-</span><span class="n">local</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="get-datashuttle-path (get_datashuttle_path)">
+<h3>get-datashuttle-path (get_datashuttle_path)<a class="headerlink" href="#get-datashuttle-path (get_datashuttle_path)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Print the path to the local datashuttle
+directory where configs another other
+datashuttle files are stored.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">get</span><span class="o">-</span><span class="n">datashuttle</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="get-config-path (get_config_path)">
+<h3>get-config-path (get_config_path)<a class="headerlink" href="#get-config-path (get_config_path)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Print the full path to the DataShuttle config file.
+This is always formatted to UNIX style.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">get</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="get-remote-path (get_remote_path)">
+<h3>get-remote-path (get_remote_path)<a class="headerlink" href="#get-remote-path (get_remote_path)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Print the project remote path.
+This is always formatted to UNIX style.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">get</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="show-configs (show_configs)">
+<h3>show-configs (show_configs)<a class="headerlink" href="#show-configs (show_configs)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Print the current configs to the terminal.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">show</span><span class="o">-</span><span class="n">configs</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="show-local-tree (show_local_tree)">
+<h3>show-local-tree (show_local_tree)<a class="headerlink" href="#show-local-tree (show_local_tree)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Print a tree schematic of all files and directories
+in the local project.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">show</span><span class="o">-</span><span class="n">local</span><span class="o">-</span><span class="n">tree</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="check-name-formatting (check_name_formatting)">
+<h3>check-name-formatting (check_name_formatting)<a class="headerlink" href="#check-name-formatting (check_name_formatting)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Pass list of names to check how these will be autoformatted,
+for example as when passed to make_sub_dir() or upload_data() or
+download_data()</p>
+<p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
+This method will print the formatted list of names,</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>names :</dt><dd><p>A string or list of subject or session names.</p>
+</dd>
+<dt>prefix:</dt><dd><p>The relevant subject or session prefix,
+e.g. “sub” or “ses”</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">check</span><span class="o">-</span><span class="n">name</span><span class="o">-</span><span class="n">formatting</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">prefix</span> <span class="n">PREFIX</span><span class="p">]</span> <span class="n">names</span> <span class="p">[</span><span class="n">names</span> <span class="o">...</span><span class="p">]</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>names</kbd></dt>
+<dd><p>Required: (str, single or multiple)</p>
+</dd>
+</dl>
+</section>
+<section id="named-arguments_repeat2">
+<h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat2" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>--prefix</kbd></dt>
+<dd><p>Required: (str)</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="supply-config-file (supply_config_file)">
+<h3>supply-config-file (supply_config_file)<a class="headerlink" href="#supply-config-file (supply_config_file)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Supply an existing config by passing the path the config
+file (.yaml). The config file must contain exactly the
+same keys as the dataShuttle config, with
+values the same type, or will result in an error.</p>
+<p>If successful, the config will be loaded into datashuttle,
+and a copy saved in the DataShuttle config folder for future use.</p>
+<p>To check the format of a datashuttle config, one can be generated
+with make_config_file() or look in configs/canonical_configs.py.</p>
+<p>It is possible the local_path will be changed
+with the new config file. see update_config()
+for how this is handled.</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>input_path_to_config :</dt><dd><p>Path to the config to use as DataShuttle config.</p>
+</dd>
+<dt>warn :</dt><dd><p>prompt the user to confirm as supplying
+config will overwrite existing config.
+Turned off for testing.</p>
+</dd>
+</dl>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">supply</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">path_to_config</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat6">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat6" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>path_to_config</kbd></dt>
+<dd><p>Required: (str, single or multiple)</p>
+</dd>
+</dl>
+</section>
+</section>
+</section>
 </section>
 
 
@@ -283,6 +854,203 @@
           
             <div class="bd-sidebar-secondary bd-toc">
               
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#positional-arguments">
+   Positional Arguments
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#Sub-commands">
+   Sub-commands
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#make-config-file (make_config_file)">
+     make-config-file (make_config_file)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#positional-arguments_repeat1">
+       Positional Arguments
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#named-arguments:">
+       named arguments:
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#update-config (update_config)">
+     update-config (update_config)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#positional-arguments_repeat2">
+       Positional Arguments
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)">
+     setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#make-sub-dir (make_sub_dir)">
+     make-sub-dir (make_sub_dir)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#named-arguments:_repeat1">
+       named arguments:
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#upload-data (upload_data)">
+     upload-data (upload_data)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#named-arguments:_repeat2">
+       named arguments:
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#upload-all (upload_all)">
+     upload-all (upload_all)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#download-data (download_data)">
+     download-data (download_data)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#named-arguments:_repeat3">
+       named arguments:
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#download-all (download_all)">
+     download-all (download_all)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#upload-project-dir-or-file (upload_project_dir_or_file)">
+     upload-project-dir-or-file (upload_project_dir_or_file)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#positional-arguments_repeat3">
+       Positional Arguments
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#named-arguments">
+       Named Arguments
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#download-project-dir-or-file (download_project_dir_or_file)">
+     download-project-dir-or-file (download_project_dir_or_file)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#positional-arguments_repeat4">
+       Positional Arguments
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#named-arguments_repeat1">
+       Named Arguments
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#get-local-path (get_local_path)">
+     get-local-path (get_local_path)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#get-datashuttle-path (get_datashuttle_path)">
+     get-datashuttle-path (get_datashuttle_path)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#get-config-path (get_config_path)">
+     get-config-path (get_config_path)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#get-remote-path (get_remote_path)">
+     get-remote-path (get_remote_path)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#show-configs (show_configs)">
+     show-configs (show_configs)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#show-local-tree (show_local_tree)">
+     show-local-tree (show_local_tree)
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#check-name-formatting (check_name_formatting)">
+     check-name-formatting (check_name_formatting)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#positional-arguments_repeat5">
+       Positional Arguments
+      </a>
+     </li>
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#named-arguments_repeat2">
+       Named Arguments
+      </a>
+     </li>
+    </ul>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#supply-config-file (supply_config_file)">
+     supply-config-file (supply_config_file)
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#positional-arguments_repeat6">
+       Positional Arguments
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+</ul>
+
+</nav>
+</div>
+
 <div class="toc-item">
   
 <div id="searchbox"></div>
