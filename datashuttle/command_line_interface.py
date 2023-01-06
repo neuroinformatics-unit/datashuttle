@@ -381,7 +381,7 @@ def construct_parser():
     parser.add_argument(
         dest="project_name",
     )
-    subparsers = parser.add_subparsers(metavar="\ncommands:")
+    subparsers = parser.add_subparsers()
 
     # Make Config File
     # ----------------------------------------------------------------------
@@ -416,7 +416,6 @@ def construct_parser():
         "--remote_host_id",
         required=False,
         type=str,
-        metavar="",
         help="(str)",
     )
     make_config_file_parser.add_argument(
@@ -424,7 +423,6 @@ def construct_parser():
         "--remote_host_username",
         required=False,
         help="(str)",
-        metavar="",
     )
     make_config_file_parser.add_argument(
         "--use-ephys",
@@ -516,7 +514,6 @@ def construct_parser():
         nargs="+",
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
-        metavar="",
     )
     make_sub_dir_parser.add_argument(
         "--ses-names",
@@ -525,7 +522,6 @@ def construct_parser():
         type=str,
         required=False,
         help="Optional: (str, single or multiple) (selection of data types, or 'all')",
-        metavar="",
     )
     make_sub_dir_parser.add_argument(
         "--data-type",
@@ -535,7 +531,6 @@ def construct_parser():
         required=False,
         default="all",
         help=help("required_str_single_or_multiple_or_all"),
-        metavar="",
     )
 
     # Upload Data
@@ -560,7 +555,6 @@ def construct_parser():
         nargs="+",
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
-        metavar="",
     )
     upload_data_parser.add_argument(
         "--ses-names",
@@ -569,7 +563,6 @@ def construct_parser():
         nargs="+",
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
-        metavar="",
     )
     upload_data_parser.add_argument(
         "--data-type",
@@ -578,7 +571,6 @@ def construct_parser():
         nargs="+",
         required=False,
         help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
-        metavar="",
     )
     upload_data_parser.add_argument(
         "--dry-run",
@@ -620,7 +612,6 @@ def construct_parser():
         nargs="+",
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
-        metavar="",
     )
     download_data_parser.add_argument(
         "--ses-names",
@@ -629,7 +620,6 @@ def construct_parser():
         nargs="+",
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
-        metavar="",
     )
     download_data_parser.add_argument(
         "--data-type",
@@ -638,7 +628,6 @@ def construct_parser():
         nargs="+",
         required=False,
         help="Optional: (str or list) (selection of data types, or 'all') (default 'all')",
-        metavar="",
     )
     download_data_parser.add_argument(
         "--dry-run",
