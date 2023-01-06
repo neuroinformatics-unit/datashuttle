@@ -10,67 +10,9 @@ from typing import Optional, Union
 import appdirs
 import paramiko
 
-from datashuttle.utils_mod.directory_class import Directory
-
 # --------------------------------------------------------------------------------------------------------------------
 # Directory Utils
 # --------------------------------------------------------------------------------------------------------------------
-
-
-def make_ses_directory_tree(
-    sub: str,
-    ses: str,
-    experiment_type_dir: Directory,
-    base_path: str,
-):
-    """
-    Make the directory tree within a session. This is dependent on
-    the experiment_type (e.g. "ephys") dir and defined in the
-    subdirs field on the Directory class, in self._ses_dirs.
-
-    All subdirs will be made recursively, unless the .used
-    attribute on the Directory class is False. This will also
-    stop and subdirs of the subdir been created.
-
-    :param sub:                    subject name to make
-                                   directory tree in
-    :param ses:                    session name to make directory tree in
-    :param experiment_type_key:    experiment_type_key (e.g. "ephys") to
-                                   make directory tree in. Note this defines
-                                   the subdirs created.
-    """
-    if experiment_type_dir.used and experiment_type_dir.subdirs:
-        recursive_make_subdirs(
-            directory=experiment_type_dir,
-            path_to_dir=[base_path, experiment_type_dir.name, sub, ses],
-        )
-
-
-def recursive_make_subdirs(
-    directory: Directory,
-    path_to_dir: list,
-):
-    """
-    Function to recursively create all directories
-    in a Directory .subdirs field.
-
-    i.e. this will first create a directory based on
-    the .name attribute. It will then loop through all
-    .subdirs, and do the same - recursively looping
-    through subdirs  until the entire directory tree
-    is made. If .used attribute on a directory is False,
-    that directory and all subdirs of the directory will
-    not be made.
-
-    :param directory:
-    :param path_to_dir:
-    """
-    if directory.subdirs:
-        for subdir in directory.subdirs.values():
-            if subdir.used:
-                new_path_to_dir = path_to_dir + [subdir.name]
-                make_dirs(os.path.join(*new_path_to_dir))
-                recursive_make_subdirs(subdir, new_path_to_dir)
 
 
 def make_dirs(paths: Union[str, list]):
@@ -278,7 +220,8 @@ def get_appdir_path(project_name: str) -> Path:
 
 
 def process_names(
-    names: Union[list, str], prefix: str, is_ses=False
+    names: Union[list, str],
+    prefix: str,
 ) -> Union[list, str]:
     """
     Check a single or list of input session or subject names.
@@ -296,11 +239,13 @@ def process_names(
             "Ensure subject and session names are list of strings, or string"
         )
 
+    if any([" " in ele for ele in names]):
+        raise_error("sub or ses names cannot include spaces.")
+
     if isinstance(names, str):
         names = [names]
 
-    if is_ses:
-        update_ses_names_with_datetime(names)
+    update_names_with_datetime(names)
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
@@ -313,23 +258,55 @@ def process_names(
     return prefixed_names
 
 
-def update_ses_names_with_datetime(names: list):
+def update_names_with_datetime(names: list):
     """
-    Replate @DATE and @DATETIME flag with date and datetime respectively.
-    Currently formats time as XXhXXh.
+    Replace @DATE and @DATETIME flag with date and datetime respectively.
 
-    Dont format datetime directly so we can keep timezone aware.
+    Format using key-value pair for bids, i.e. date-20221223_time-
     """
-    date = str(datetime.datetime.now().date())
-    date = date.replace("-", "")
-    time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
-    datetime_ = f"{date}-{time_}"
+    date = str(datetime.datetime.now().date().strftime("%Y%m%d"))
+    format_date = f"date-{date}"
 
-    for i, val in enumerate(names):
-        if "@DATETIME" in val:
-            names[i] = val.replace("@DATETIME", datetime_)
-        elif "@DATE" in val:
-            names[i] = val.replace("@DATE", date)
+    time_ = datetime.datetime.now().time().strftime("%H%M%S")
+    format_time = f"time-{time_}"
+
+    for i, name in enumerate(names):
+
+        if "@DATETIME" in name:  # must come first
+            name = add_underscore_before_after_if_not_there(name, "@DATETIME")
+            datetime_ = f"{format_date}_{format_time}"
+            names[i] = name.replace("@DATETIME", datetime_)
+
+        elif "@DATE" in name:
+            name = add_underscore_before_after_if_not_there(name, "@DATE")
+            names[i] = name.replace("@DATE", format_date)
+
+        elif "@TIME" in name:
+            name = add_underscore_before_after_if_not_there(name, "@TIME")
+            names[i] = name.replace("@TIME", format_time)
+
+
+def add_underscore_before_after_if_not_there(string, key):
+
+    key_len = len(key)
+    key_start_idx = string.index(key)
+
+    # Handle left edge
+    if string[key_start_idx - 1] != "_":
+        string_split = string.split(key)  # assumes key only in string once
+        assert (
+            len(string_split) == 2
+        ), f"{key} must not appear in string more than once."
+
+        string = f"{string_split[0]}_{key}{string_split[1]}"
+
+    updated_key_start_idx = string.index(key)
+    key_end_idx = updated_key_start_idx + key_len
+
+    if key_end_idx != len(string) and string[key_end_idx] != "_":
+        string = f"{string[:key_end_idx]}_{string[key_end_idx:]}"
+
+    return string
 
 
 def ensure_prefixes_on_list_of_names(

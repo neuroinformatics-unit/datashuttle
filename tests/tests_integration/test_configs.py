@@ -91,9 +91,7 @@ class TestConfigs:
         Check that program will assert if not all ssh options
         are set on make_config_file
         """
-        with pytest.raises(
-            BaseException
-        ) as e:  # TODO: checkk what the original exceptions were
+        with pytest.raises(BaseException) as e:
             project.make_config_file(
                 "test_local_path", True, remote_path_local="local_path"
             )

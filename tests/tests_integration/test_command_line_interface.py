@@ -116,11 +116,20 @@ class TestCommandLineInterface:
         )
 
         for key, value in changed_configs.items():
+
+            if "path" in key:
+                value = test_utils.add_quotes(value)
+
             stdout, __ = test_utils.run_cli(f" update_config {key} {value}")
+
             args_, __ = self.decode(stdout)
 
             assert key == args_[0]
-            assert value == args_[1]
+
+            if "path" in key:
+                assert value == test_utils.add_quotes(args_[1])
+            else:
+                assert value == args_[1]
 
     def test_make_sub_dir_variable(self):
 
@@ -129,7 +138,6 @@ class TestCommandLineInterface:
             "--experiment_type all "
             "--sub_names one "
             "--ses_names two "
-            "--dont_make_ses_tree"
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -138,7 +146,6 @@ class TestCommandLineInterface:
         assert kwargs_["experiment_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
-        assert kwargs_["dont_make_ses_tree"] is True
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_upload_download_data_variables(self, upload_or_download):
@@ -154,19 +161,19 @@ class TestCommandLineInterface:
         )
 
         args_, kwargs_ = self.decode(stdout)
-        self.check_upload_download_args(args_, kwargs_, preview_is=False)
+        self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_data "
             f"--experiment_type all "
             f"--sub_names one "
             f"--ses_names two "
-            f"--preview"
+            f"--dry_run"
         )
 
         args_, kwargs_ = self.decode(stdout)
 
-        self.check_upload_download_args(args_, kwargs_, preview_is=True)
+        self.check_upload_download_args(args_, kwargs_, dry_run_is=True)
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_upload_download_dir_or_file(self, upload_or_download):
@@ -179,16 +186,16 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
-        assert kwargs_["preview"] is False
+        assert kwargs_["dry_run"] is False
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_project_dir_or_file /fake/filepath "
-            f"--preview"
+            f"--dry_run"
         )
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
-        assert kwargs_["preview"] is True
+        assert kwargs_["dry_run"] is True
 
     @pytest.mark.parametrize(
         "command", ["make_sub_dir", "upload_data", "download_data"]
@@ -236,15 +243,19 @@ class TestCommandLineInterface:
         )
 
         not_set_configs = test_utils.get_not_set_config_args(
-            DataShuttle(clean_project_name),
+            DataShuttle(clean_project_name)
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
 
         for key, value in not_set_configs.items():
 
+            format_value = (
+                test_utils.add_quotes(value) if "path" in key else value
+            )
+
             test_utils.run_cli(
-                f" update_config {key} {value}", clean_project_name
+                f" update_config {key} {format_value}", clean_project_name
             )
             default_configs[key] = value
 
@@ -309,7 +320,7 @@ class TestCommandLineInterface:
 
         test_utils.check_directory_tree_is_correct(
             setup_project,
-            base_dir=setup_project.get_local_path(),
+            base_dir=test_utils.get_rawdata_path(setup_project),
             subs=subs,
             sessions=ses,
             directory_used=test_utils.get_default_directory_used(),
@@ -323,7 +334,10 @@ class TestCommandLineInterface:
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project(
-            setup_project, "all", subs, sessions
+            setup_project,
+            subs,
+            sessions,
+            "all",
         )
 
         __, base_path_to_check = test_utils.handle_upload_or_download(
@@ -339,7 +353,9 @@ class TestCommandLineInterface:
         )
 
         test_utils.check_experiment_type_sub_ses_uploaded_correctly(
-            base_path_to_check=base_path_to_check,
+            base_path_to_check=os.path.join(
+                base_path_to_check, setup_project._top_level_dir_name
+            ),
             experiment_type_to_transfer=[
                 "behav",
                 "ephys",
@@ -360,7 +376,10 @@ class TestCommandLineInterface:
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project(
-            setup_project, "all", subs, sessions
+            setup_project,
+            subs,
+            sessions,
+            "all",
         )
 
         __, base_path_to_check = test_utils.handle_upload_or_download(
@@ -368,14 +387,12 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_dir_or_file ephys/"
-            f"{subs[1]}/"
-            f"{sessions[2]}",
+            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys",
             setup_project.project_name,
         )
 
         assert os.path.isdir(
-            base_path_to_check + f"/ephys/{subs[1]}/{sessions[2]}/behav/camera"
+            base_path_to_check + f"/rawdata/{subs[1]}/{sessions[0]}/ephys"
         )
 
     # ----------------------------------------------------------------------------------------------------------
@@ -427,18 +444,35 @@ class TestCommandLineInterface:
         return args_, kwargs_
 
     def convert_kwargs_to_cli(self, kwargs):
-        """ """
+        """
+        Take a list of key-value pairs that make up
+        the arguments we want to pass to CLI, and
+        put them in correct format. This involves
+        pre-pending "--argument_name" for non-positional
+        arguments, and wrapping paths in quotes.
+        """
         positionals = ["local_path"]
 
         prepend_positionals = ""
         if "local_path" in kwargs:
-            prepend_positionals += " " + kwargs["local_path"] + " "
+            prepend_positionals += (
+                " " + test_utils.add_quotes(kwargs["local_path"]) + " "
+            )
 
-        kwargs_list = " ".join(
-            "--" + k + " " + str(v)
-            for k, v in kwargs.items()
-            if k not in positionals
-        )
+        kwargs_list = []
+        for key, value in kwargs.items():
+
+            if key not in positionals:
+
+                if "path" in key:
+                    value = test_utils.add_quotes(value)
+                else:
+                    value = str(value)
+
+                argument = f"--{key} {value}"
+                kwargs_list.append(argument)
+
+        kwargs_list = " ".join(kwargs_list)
 
         return prepend_positionals + kwargs_list
 
@@ -454,10 +488,10 @@ class TestCommandLineInterface:
         assert args_[0] == options.pop("local_path")
         assert args_[1] is options.pop("ssh_to_remote")
 
-    def check_upload_download_args(self, args_, kwargs_, preview_is):
+    def check_upload_download_args(self, args_, kwargs_, dry_run_is):
 
         assert kwargs_["experiment_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
-        assert kwargs_["preview"] is preview_is
+        assert kwargs_["dry_run"] is dry_run_is
         assert args_ == []

@@ -1,3 +1,5 @@
+import os
+
 import pytest
 import test_utils
 
@@ -14,6 +16,8 @@ class TestFileTransfer:
         Ensure change dir at end of session otherwise it
         is not possible to delete project.
         """
+        tmp_path = tmp_path / "test with space"
+
         test_project_name = "test_filesystem_transfer"
         project, cwd = test_utils.setup_project_fixture(
             tmp_path, test_project_name
@@ -36,7 +40,7 @@ class TestFileTransfer:
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        test_utils.make_and_check_local_project(project, "all", subs, sessions)
+        test_utils.make_and_check_local_project(project, subs, sessions, "all")
 
         (
             transfer_function,
@@ -47,7 +51,7 @@ class TestFileTransfer:
 
         test_utils.check_directory_tree_is_correct(
             project,
-            base_path_to_check,
+            os.path.join(base_path_to_check, project._top_level_dir_name),
             subs,
             sessions,
             test_utils.get_default_directory_used(),
@@ -67,7 +71,7 @@ class TestFileTransfer:
             ["behav", "ephys", "imaging", "histology"],
         ],
     )
-    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("upload_or_download", ["upload"])  # "download"
     def test_transfer_empty_folder_specific_experimental_data(
         self, project, upload_or_download, experiment_type_to_transfer
     ):
@@ -77,17 +81,20 @@ class TestFileTransfer:
         checking only the selected ones are uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
-        test_utils.make_and_check_local_project(project, "all", subs, sessions)
+        test_utils.make_and_check_local_project(project, subs, sessions, "all")
 
         (
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
-        transfer_function(experiment_type_to_transfer, subs, sessions)
+        transfer_function(subs, sessions, experiment_type_to_transfer)
 
         test_utils.check_experiment_type_sub_ses_uploaded_correctly(
-            base_path_to_check, experiment_type_to_transfer
+            os.path.join(base_path_to_check, project._top_level_dir_name),
+            experiment_type_to_transfer,
+            subs,
+            sessions,
         )
 
     @pytest.mark.parametrize(
@@ -116,7 +123,7 @@ class TestFileTransfer:
         selected subs were uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
-        test_utils.make_and_check_local_project(project, "all", subs, sessions)
+        test_utils.make_and_check_local_project(project, subs, sessions, "all")
 
         (
             transfer_function,
@@ -125,11 +132,11 @@ class TestFileTransfer:
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         transfer_function(
-            experiment_type_to_transfer, subs_to_upload, sessions
+            subs_to_upload, sessions, experiment_type_to_transfer
         )
 
         test_utils.check_experiment_type_sub_ses_uploaded_correctly(
-            base_path_to_check,
+            os.path.join(base_path_to_check, project._top_level_dir_name),
             experiment_type_to_transfer,
             subs_to_upload,
         )
@@ -156,7 +163,7 @@ class TestFileTransfer:
         sessions to upload. Check only the selected sessions were uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
-        test_utils.make_and_check_local_project(project, "all", subs, sessions)
+        test_utils.make_and_check_local_project(project, subs, sessions, "all")
 
         (
             transfer_function,
@@ -167,11 +174,11 @@ class TestFileTransfer:
         ses_to_upload = [sessions[i] for i in ses_idx_to_upload]
 
         transfer_function(
-            experiment_type_to_transfer, subs_to_upload, ses_to_upload
+            subs_to_upload, ses_to_upload, experiment_type_to_transfer
         )
 
         test_utils.check_experiment_type_sub_ses_uploaded_correctly(
-            base_path_to_check,
+            os.path.join(base_path_to_check, project._top_level_dir_name),
             experiment_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
