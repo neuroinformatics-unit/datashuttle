@@ -1,5 +1,4 @@
 name: 'Sphinx Docs Publish'
-description: 'Builds sphinx docs and publishes them to GitHub Pages'
 
 # Publish when a git tag is pushed to main
 on:
@@ -14,7 +13,6 @@ jobs:
 
     runs-on:
       ubuntu-latest
-    using: 'composite'
     steps:
     - uses: actions/checkout@v3
 
