@@ -16,6 +16,16 @@ PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 # ------------------------------------------------------------------------------------------
 
 
+def process_docstring(message):
+    """
+    Sphinx is quite specific about the docstrings allowed
+    """
+    #  message = message.replace("Parameters", "Arguments")
+    # message = message.replace("Notes", "Note")
+    message = message.replace("-", "")
+    return message
+
+
 def run_command(
     project: DataShuttle, function: Callable, *args: Any, **kwargs: Any
 ) -> None:
@@ -117,19 +127,6 @@ description = (
     "----------------------------------------------------------------------"
 )
 
-parser = argparse.ArgumentParser(
-    prog="datashuttle",
-    usage="%(prog)s [PROJECT NAME]",  # old-style format required
-    description=description,
-    formatter_class=argparse.RawTextHelpFormatter,
-)
-
-project_name_argument = parser.add_argument(
-    dest="project_name",
-)
-subparsers = parser.add_subparsers(metavar="\ncommands:")
-
-
 # ------------------------------------------------------------------------------------------
 # Setup
 # ------------------------------------------------------------------------------------------
@@ -155,76 +152,6 @@ def make_config_file(project: DataShuttle, args: Any) -> None:
     )
 
 
-make_config_file_parser = subparsers.add_parser(
-    "make-config-file",
-    aliases=["make_config_file"],
-    description=DataShuttle.make_config_file.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-make_config_file_parser.set_defaults(func=make_config_file)
-
-make_config_file_parser.add_argument(
-    "local_path", type=str, help=help("required_str")
-)
-
-make_config_file_parser.add_argument(
-    "remote_path", type=str, help=help("required_str")
-)
-
-make_config_file_parser.add_argument(
-    "connection_method", type=str, help=help("required_str")
-)
-
-make_config_file_parser = make_config_file_parser.add_argument_group(
-    "named arguments:"
-)  # type: ignore
-
-make_config_file_parser.add_argument(
-    "--remote-host-id",
-    "--remote_host_id",
-    required=False,
-    type=str,
-    metavar="",
-    help="(str)",
-)
-make_config_file_parser.add_argument(
-    "--remote-host-username",
-    "--remote_host_username",
-    required=False,
-    help="(str)",
-    metavar="",
-)
-make_config_file_parser.add_argument(
-    "--use-ephys",
-    "--use_ephys",
-    required=False,
-    action="store_true",
-    help=help("flag_default_false"),
-)
-make_config_file_parser.add_argument(
-    "--use-behav",
-    "--use_behav",
-    required=False,
-    action="store_true",
-    help=help("flag_default_false"),
-)
-make_config_file_parser.add_argument(
-    "--use-funcimg",
-    "--use_funcimg",
-    required=False,
-    action="store_true",
-    help=help("flag_default_false"),
-)
-make_config_file_parser.add_argument(
-    "--use-histology",
-    "--use_histology",
-    required=False,
-    action="store_true",
-    help=help("flag_default_false"),
-)
-
-
 # ------------------------------------------------------------------------------------------
 # Update Config
 # ------------------------------------------------------------------------------------------
@@ -244,28 +171,6 @@ def update_config(project: DataShuttle, args: Any) -> None:
     )
 
 
-make_config_file_parser = subparsers.add_parser(
-    "update-config",
-    aliases=["update_config"],
-    description=f"{DataShuttle.update_config.__doc__} "
-    f"\nThe option key should be in the form of config file keys"
-    f"(e.g. remote_path, local_path)\n"
-    f"EXAMPLE: datashuttle test update_config remote_path 'test_path'",
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-make_config_file_parser.set_defaults(func=update_config)
-
-make_config_file_parser.add_argument(
-    "option_key",
-    action="store",
-    help="(str) (see make_config_file --help)",
-)
-make_config_file_parser.add_argument(
-    "new_info", action="store", help="(str or bool) depending on option key"
-)
-
-
 # ------------------------------------------------------------------------------------------
 # Setup SSH
 # ------------------------------------------------------------------------------------------
@@ -275,18 +180,6 @@ def setup_ssh_connection_to_remote_server(*args: Any) -> None:
     """"""
     project = args[0]
     project.setup_ssh_connection_to_remote_server()
-
-
-setup_ssh_connection_to_remote_server_parser = subparsers.add_parser(
-    "setup-ssh-connection-to-remote-server",
-    aliases=["setup_ssh_connection_to_remote_server"],
-    description=DataShuttle.setup_ssh_connection_to_remote_server.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-setup_ssh_connection_to_remote_server_parser.set_defaults(
-    func=setup_ssh_connection_to_remote_server
-)
 
 
 # ------------------------------------------------------------------------------------------
@@ -301,48 +194,6 @@ def make_sub_dir(project: DataShuttle, args: Any) -> None:
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
     run_command(project, project.make_sub_dir, **filtered_kwargs)
-
-
-make_sub_dir_parser = subparsers.add_parser(
-    "make-sub-dir",
-    aliases=["make_sub_dir"],
-    description=DataShuttle.make_sub_dir.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
-    "named arguments:"
-)  # type: ignore
-make_sub_dir_parser.set_defaults(func=make_sub_dir)
-
-
-make_sub_dir_parser.add_argument(
-    "--sub-names",
-    "--sub_names",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
-make_sub_dir_parser.add_argument(
-    "--ses-names",
-    "--ses_names",
-    nargs="+",
-    type=str,
-    required=False,
-    help="Optional: (str, single or multiple) (selection of data types, or 'all')",
-    metavar="",
-)
-make_sub_dir_parser.add_argument(
-    "--data-type",
-    "--data_type",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
 
 
 # ------------------------------------------------------------------------------------------
@@ -363,53 +214,6 @@ def upload_data(project: DataShuttle, args: Any) -> None:
     )
 
 
-upload_data_parser = subparsers.add_parser(
-    "upload-data",
-    aliases=["upload_data"],
-    description=DataShuttle.upload_data.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-upload_data_parser = upload_data_parser.add_argument_group(
-    "named arguments:"
-)  # type: ignore
-upload_data_parser.set_defaults(func=upload_data)
-
-upload_data_parser.add_argument(
-    "--sub-names",
-    "--sub_names",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
-upload_data_parser.add_argument(
-    "--ses-names",
-    "--ses_names",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
-upload_data_parser.add_argument(
-    "--data-type",
-    "--data_type",
-    type=str,
-    nargs="+",
-    required=False,
-    help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
-    metavar="",
-)
-upload_data_parser.add_argument(
-    "--dry-run",
-    "--dry_run",
-    required=False,
-    action="store_true",
-    help=help("optional_flag_default_false"),
-)
-
 # Upload All --------------------------------------------------------------------------
 
 
@@ -417,14 +221,6 @@ def upload_all(*args: Any) -> None:
     """"""
     project = args[0]
     project.upload_all()
-
-
-upload_all_parser = subparsers.add_parser(
-    "upload-all",
-    aliases=["upload_all"],
-    description=DataShuttle.upload_all.__doc__,
-)
-upload_all_parser.set_defaults(func=upload_all)
 
 
 # Download Data --------------------------------------------------------------------------
@@ -441,53 +237,6 @@ def download_data(project: DataShuttle, args: Any) -> None:
     )
 
 
-download_data_parser = subparsers.add_parser(
-    "download-data",
-    aliases=["download_data"],
-    description=DataShuttle.download_data.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-download_data_parser = download_data_parser.add_argument_group(
-    "named arguments:"  # type: ignore
-)
-download_data_parser.set_defaults(func=download_data)
-
-download_data_parser.add_argument(
-    "--sub-names",
-    "--sub_names",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
-download_data_parser.add_argument(
-    "--ses-names",
-    "--ses_names",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
-download_data_parser.add_argument(
-    "--data-type",
-    "--data_type",
-    type=str,
-    nargs="+",
-    required=False,
-    help="Optional: (str or list) (selection of data types, or 'all') (default 'all')",
-    metavar="",
-)
-download_data_parser.add_argument(
-    "--dry-run",
-    "--dry_run",
-    required=False,
-    action="store_true",
-    help=help("optional_flag_default_false"),
-)
-
 # Download All --------------------------------------------------------------------------
 
 
@@ -495,14 +244,6 @@ def download_all(*args: Any) -> None:
     """"""
     project = args[0]
     project.download_all()
-
-
-download_all_parser = subparsers.add_parser(
-    "download-all",
-    aliases=["download_all"],
-    description=DataShuttle.download_all.__doc__,
-)
-download_all_parser.set_defaults(func=download_all)
 
 
 # Upload Project Dir or File -----------------------------------------------------------
@@ -520,26 +261,6 @@ def upload_project_dir_or_file(project: DataShuttle, args: Any) -> None:
     )
 
 
-upload_project_dir_or_file_parser = subparsers.add_parser(
-    "upload-project-dir-or-file",
-    aliases=["upload_project_dir_or_file"],
-    description=DataShuttle.upload_project_dir_or_file.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-upload_project_dir_or_file_parser.set_defaults(func=upload_project_dir_or_file)
-
-upload_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help=help("required_str")
-)
-upload_project_dir_or_file_parser.add_argument(
-    "--dry-run",
-    "--dry_run",
-    action="store_true",
-    help=help("flag_default_false"),
-)
-
-
 # Download Project Dir or File ---------------------------------------------------------
 
 
@@ -553,28 +274,6 @@ def download_project_dir_or_file(project: DataShuttle, args: Any) -> None:
         kwargs.pop("filepath"),
         **kwargs,
     )
-
-
-download_project_dir_or_file_parser = subparsers.add_parser(
-    "download-project-dir-or-file",
-    aliases=["download_project_dir_or_file"],
-    description=DataShuttle.download_project_dir_or_file.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-download_project_dir_or_file_parser.set_defaults(
-    func=download_project_dir_or_file
-)
-
-download_project_dir_or_file_parser.add_argument(
-    "filepath", type=str, help=help("required_str")
-)
-download_project_dir_or_file_parser.add_argument(
-    "--dry-run",
-    "--dry_run",
-    action="store_true",
-    help=help("flag_default_false"),
-)
 
 
 # ------------------------------------------------------------------------------------------
@@ -592,14 +291,6 @@ def get_local_path(*args: Any) -> None:
     project.get_local_path()
 
 
-get_local_path_parser = subparsers.add_parser(
-    "get-local-path",
-    aliases=["get_local_path"],
-    description=DataShuttle.get_local_path.__doc__,
-)
-get_local_path_parser.set_defaults(func=get_local_path)
-
-
 # Get Appdir Path --------------------------------------------------------------------------
 
 
@@ -607,14 +298,6 @@ def get_datashuttle_path(*args: Any) -> None:
     """"""
     project = args[0]
     project.get_datashuttle_path()
-
-
-get_datashuttle_path_parser = subparsers.add_parser(
-    "get-datashuttle-path",
-    aliases=["get_datashuttle_path"],
-    description=DataShuttle.get_datashuttle_path.__doc__,
-)
-get_datashuttle_path_parser.set_defaults(func=get_datashuttle_path)
 
 
 # Get Config Path --------------------------------------------------------------------------
@@ -626,14 +309,6 @@ def get_config_path(*args: Any) -> None:
     project.get_config_path()
 
 
-get_config_path_parser = subparsers.add_parser(
-    "get-config-path",
-    aliases=["get_config_path"],
-    description=DataShuttle.get_config_path.__doc__,
-)
-get_config_path_parser.set_defaults(func=get_config_path)
-
-
 # Get Remote Path --------------------------------------------------------------------------
 
 
@@ -641,14 +316,6 @@ def get_remote_path(*args: Any) -> None:
     """"""
     project = args[0]
     project.get_remote_path()
-
-
-get_remote_path_parser = subparsers.add_parser(
-    "get-remote-path",
-    aliases=["get_remote_path"],
-    description=DataShuttle.get_remote_path.__doc__,
-)
-get_remote_path_parser.set_defaults(func=get_remote_path)
 
 
 # Show Configs --------------------------------------------------------------------------
@@ -660,14 +327,6 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-show_configs_parser = subparsers.add_parser(
-    "show-configs",
-    aliases=["show_configs"],
-    description=DataShuttle.show_configs.__doc__,
-)
-show_configs_parser.set_defaults(func=show_configs)
-
-
 # Show Local Three --------------------------------------------------------------------------
 
 
@@ -677,50 +336,19 @@ def show_local_tree(*args: Any) -> None:
     project.show_local_tree()
 
 
-show_local_tree_parser = subparsers.add_parser(
-    "show-local-tree",
-    aliases=["show_local_tree"],
-    description=DataShuttle.show_local_tree.__doc__,
-)
-show_local_tree_parser.set_defaults(func=show_local_tree)
-
-
 # Check Name Processing --------------------------------------------------------------------------
 
 
-def check_name_processing(project: DataShuttle, args: Any) -> None:
+def check_name_formatting(project: DataShuttle, args: Any) -> None:
 
     kwargs = make_kwargs(args)
 
     run_command(
         project,
-        project.check_name_processing,
+        project.check_name_formatting,
         kwargs.pop("names"),
         **kwargs,
     )
-
-
-check_name_processing_parser = subparsers.add_parser(
-    "check-name-processing",
-    aliases=["check_name_processing"],
-    description=DataShuttle.check_name_processing.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-check_name_processing_parser.set_defaults(func=check_name_processing)
-
-check_name_processing_parser.add_argument(
-    "names",
-    type=str,
-    nargs="+",
-    help="Required: (str, single or multiple)",
-)
-
-check_name_processing_parser.add_argument(
-    "--prefix",
-    type=str,
-    help="Required: (str)",
-)
 
 
 # Supply Own Config ------------------------------------------------------------------------
@@ -737,20 +365,458 @@ def supply_config_file(project: DataShuttle, args: Any) -> None:
     )
 
 
-supply_config_file_parser = subparsers.add_parser(
-    "supply-config-file",
-    aliases=["supply_config_file"],
-    description=DataShuttle.supply_config_file.__doc__,
-    formatter_class=argparse.RawTextHelpFormatter,
-    help="",
-)
-supply_config_file_parser.set_defaults(func=supply_config_file)
+def construct_parser():
+    """
+    Return the argparse argument parser. This
+    is required to be a function for docs building
+    with sphinx-argparse.
+    """
+    parser = argparse.ArgumentParser(
+        prog="datashuttle",
+        usage="%(prog)s [PROJECT NAME]",  # old-style format required
+        description=description,
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
 
-supply_config_file_parser.add_argument(
-    "path_to_config",
-    type=str,
-    help="Required: (str, single or multiple)",
-)
+    parser.add_argument(
+        dest="project_name",
+    )
+    subparsers = parser.add_subparsers(metavar="\ncommands:")
+
+    # Make Config File
+    # ----------------------------------------------------------------------
+
+    make_config_file_parser = subparsers.add_parser(
+        "make-config-file",
+        aliases=["make_config_file"],
+        description=process_docstring(DataShuttle.make_config_file.__doc__),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    make_config_file_parser.set_defaults(func=make_config_file)
+
+    make_config_file_parser.add_argument(
+        "local_path", type=str, help=help("required_str")
+    )
+
+    make_config_file_parser.add_argument(
+        "remote_path", type=str, help=help("required_str")
+    )
+
+    make_config_file_parser.add_argument(
+        "connection_method", type=str, help=help("required_str")
+    )
+
+    make_config_file_parser = make_config_file_parser.add_argument_group(
+        "named arguments:"
+    )  # type: ignore
+
+    make_config_file_parser.add_argument(
+        "--remote-host-id",
+        "--remote_host_id",
+        required=False,
+        type=str,
+        metavar="",
+        help="(str)",
+    )
+    make_config_file_parser.add_argument(
+        "--remote-host-username",
+        "--remote_host_username",
+        required=False,
+        help="(str)",
+        metavar="",
+    )
+    make_config_file_parser.add_argument(
+        "--use-ephys",
+        "--use_ephys",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+    make_config_file_parser.add_argument(
+        "--use-behav",
+        "--use_behav",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+    make_config_file_parser.add_argument(
+        "--use-funcimg",
+        "--use_funcimg",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+    make_config_file_parser.add_argument(
+        "--use-histology",
+        "--use_histology",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+
+    make_config_file_parser = subparsers.add_parser(
+        "update-config",
+        aliases=["update_config"],
+        description=f"{process_docstring(DataShuttle.update_config.__doc__)} "
+        f"\nThe option key should be in the form of config file keys"
+        f"(e.g. remote_path, local_path)\n"
+        f"EXAMPLE: datashuttle test update_config remote_path 'test_path'",
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    make_config_file_parser.set_defaults(func=update_config)
+
+    make_config_file_parser.add_argument(
+        "option_key",
+        action="store",
+        help="(str) (see make_config_file --help)",
+    )
+    make_config_file_parser.add_argument(
+        "new_info",
+        action="store",
+        help="(str or bool) depending on option key",
+    )
+
+    # SSH connection to remote server
+    # ----------------------------------------------------------------------
+
+    setup_ssh_connection_to_remote_server_parser = subparsers.add_parser(
+        "setup-ssh-connection-to-remote-server",
+        aliases=["setup_ssh_connection_to_remote_server"],
+        description=process_docstring(
+            DataShuttle.setup_ssh_connection_to_remote_server.__doc__
+        ),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    setup_ssh_connection_to_remote_server_parser.set_defaults(
+        func=setup_ssh_connection_to_remote_server
+    )
+
+    # Make Sub Dir
+    # ----------------------------------------------------------------------
+
+    make_sub_dir_parser = subparsers.add_parser(
+        "make-sub-dir",
+        aliases=["make_sub_dir"],
+        description=process_docstring(DataShuttle.make_sub_dir.__doc__),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
+        "named arguments:"
+    )  # type: ignore
+    make_sub_dir_parser.set_defaults(func=make_sub_dir)
+
+    make_sub_dir_parser.add_argument(
+        "--sub-names",
+        "--sub_names",
+        type=str,
+        nargs="+",
+        required=True,
+        help=help("required_str_single_or_multiple_or_all"),
+        metavar="",
+    )
+    make_sub_dir_parser.add_argument(
+        "--ses-names",
+        "--ses_names",
+        nargs="+",
+        type=str,
+        required=False,
+        help="Optional: (str, single or multiple) (selection of data types, or 'all')",
+        metavar="",
+    )
+    make_sub_dir_parser.add_argument(
+        "--data-type",
+        "--data_type",
+        type=str,
+        nargs="+",
+        required=True,
+        help=help("required_str_single_or_multiple_or_all"),
+        metavar="",
+    )
+
+    # Upload Data
+    # ----------------------------------------------------------------------
+
+    upload_data_parser = subparsers.add_parser(
+        "upload-data",
+        aliases=["upload_data"],
+        description=process_docstring(DataShuttle.upload_data.__doc__),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    upload_data_parser = upload_data_parser.add_argument_group(
+        "named arguments:"
+    )  # type: ignore
+    upload_data_parser.set_defaults(func=upload_data)
+
+    upload_data_parser.add_argument(
+        "--sub-names",
+        "--sub_names",
+        type=str,
+        nargs="+",
+        required=True,
+        help=help("required_str_single_or_multiple_or_all"),
+        metavar="",
+    )
+    upload_data_parser.add_argument(
+        "--ses-names",
+        "--ses_names",
+        type=str,
+        nargs="+",
+        required=True,
+        help=help("required_str_single_or_multiple_or_all"),
+        metavar="",
+    )
+    upload_data_parser.add_argument(
+        "--data-type",
+        "--data_type",
+        type=str,
+        nargs="+",
+        required=False,
+        help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
+        metavar="",
+    )
+    upload_data_parser.add_argument(
+        "--dry-run",
+        "--dry_run",
+        required=False,
+        action="store_true",
+        help=help("optional_flag_default_false"),
+    )
+
+    # Upload All
+    # ----------------------------------------------------------------------
+
+    upload_all_parser = subparsers.add_parser(
+        "upload-all",
+        aliases=["upload_all"],
+        description=process_docstring(DataShuttle.upload_all.__doc__),
+    )
+    upload_all_parser.set_defaults(func=upload_all)
+
+    # Download Data
+    # ----------------------------------------------------------------------
+
+    download_data_parser = subparsers.add_parser(
+        "download-data",
+        aliases=["download_data"],
+        description=process_docstring(DataShuttle.download_data.__doc__),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    download_data_parser = download_data_parser.add_argument_group(
+        "named arguments:"  # type: ignore
+    )
+    download_data_parser.set_defaults(func=download_data)
+
+    download_data_parser.add_argument(
+        "--sub-names",
+        "--sub_names",
+        type=str,
+        nargs="+",
+        required=True,
+        help=help("required_str_single_or_multiple_or_all"),
+        metavar="",
+    )
+    download_data_parser.add_argument(
+        "--ses-names",
+        "--ses_names",
+        type=str,
+        nargs="+",
+        required=True,
+        help=help("required_str_single_or_multiple_or_all"),
+        metavar="",
+    )
+    download_data_parser.add_argument(
+        "--data-type",
+        "--data_type",
+        type=str,
+        nargs="+",
+        required=False,
+        help="Optional: (str or list) (selection of data types, or 'all') (default 'all')",
+        metavar="",
+    )
+    download_data_parser.add_argument(
+        "--dry-run",
+        "--dry_run",
+        required=False,
+        action="store_true",
+        help=help("optional_flag_default_false"),
+    )
+
+    # Download All
+    # ----------------------------------------------------------------------
+
+    download_all_parser = subparsers.add_parser(
+        "download-all",
+        aliases=["download_all"],
+        description=process_docstring(DataShuttle.download_all.__doc__),
+    )
+    download_all_parser.set_defaults(func=download_all)
+
+    # Upload project dir or file
+    # ----------------------------------------------------------------------
+
+    upload_project_dir_or_file_parser = subparsers.add_parser(
+        "upload-project-dir-or-file",
+        aliases=["upload_project_dir_or_file"],
+        description=process_docstring(
+            DataShuttle.upload_project_dir_or_file.__doc__
+        ),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    upload_project_dir_or_file_parser.set_defaults(
+        func=upload_project_dir_or_file
+    )
+
+    upload_project_dir_or_file_parser.add_argument(
+        "filepath", type=str, help=help("required_str")
+    )
+    upload_project_dir_or_file_parser.add_argument(
+        "--dry-run",
+        "--dry_run",
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+
+    # Download project dir or file
+    # ----------------------------------------------------------------------
+
+    download_project_dir_or_file_parser = subparsers.add_parser(
+        "download-project-dir-or-file",
+        aliases=["download_project_dir_or_file"],
+        description=process_docstring(
+            DataShuttle.download_project_dir_or_file.__doc__
+        ),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    download_project_dir_or_file_parser.set_defaults(
+        func=download_project_dir_or_file
+    )
+
+    download_project_dir_or_file_parser.add_argument(
+        "filepath", type=str, help=help("required_str")
+    )
+    download_project_dir_or_file_parser.add_argument(
+        "--dry-run",
+        "--dry_run",
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+
+    # Get Local Path
+    # ----------------------------------------------------------------------
+
+    get_local_path_parser = subparsers.add_parser(
+        "get-local-path",
+        aliases=["get_local_path"],
+        description=process_docstring(DataShuttle.get_local_path.__doc__),
+    )
+    get_local_path_parser.set_defaults(func=get_local_path)
+
+    get_datashuttle_path_parser = subparsers.add_parser(
+        "get-datashuttle-path",
+        aliases=["get_datashuttle_path"],
+        description=process_docstring(
+            DataShuttle.get_datashuttle_path.__doc__
+        ),
+    )
+    get_datashuttle_path_parser.set_defaults(func=get_datashuttle_path)
+
+    # Get Config Path
+    # ----------------------------------------------------------------------
+
+    get_config_path_parser = subparsers.add_parser(
+        "get-config-path",
+        aliases=["get_config_path"],
+        description=process_docstring(DataShuttle.get_config_path.__doc__),
+    )
+    get_config_path_parser.set_defaults(func=get_config_path)
+
+    # Get Remote Path
+    # ----------------------------------------------------------------------
+
+    get_remote_path_parser = subparsers.add_parser(
+        "get-remote-path",
+        aliases=["get_remote_path"],
+        description=process_docstring(DataShuttle.get_remote_path.__doc__),
+    )
+    get_remote_path_parser.set_defaults(func=get_remote_path)
+
+    # Show Configs
+    # ----------------------------------------------------------------------
+
+    show_configs_parser = subparsers.add_parser(
+        "show-configs",
+        aliases=["show_configs"],
+        description=process_docstring(DataShuttle.show_configs.__doc__),
+    )
+    show_configs_parser.set_defaults(func=show_configs)
+
+    # Show Local tree
+    # ----------------------------------------------------------------------
+
+    show_local_tree_parser = subparsers.add_parser(
+        "show-local-tree",
+        aliases=["show_local_tree"],
+        description=process_docstring(DataShuttle.show_local_tree.__doc__),
+    )
+    show_local_tree_parser.set_defaults(func=show_local_tree)
+
+    # Check Name Processing
+    # ----------------------------------------------------------------------
+
+    check_name_formatting_parser = subparsers.add_parser(
+        "check-name-formatting",
+        aliases=["check_name_formatting"],
+        description=process_docstring(
+            DataShuttle.check_name_formatting.__doc__
+        ),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    check_name_formatting_parser.set_defaults(func=check_name_formatting)
+
+    check_name_formatting_parser.add_argument(
+        "names",
+        type=str,
+        nargs="+",
+        help="Required: (str, single or multiple)",
+    )
+
+    check_name_formatting_parser.add_argument(
+        "--prefix",
+        type=str,
+        help="Required: (str)",
+    )
+
+    # Supply Config
+    # ----------------------------------------------------------------------
+
+    supply_config_file_parser = subparsers.add_parser(
+        "supply-config-file",
+        aliases=["supply_config_file"],
+        description=process_docstring(DataShuttle.supply_config_file.__doc__),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    supply_config_file_parser.set_defaults(func=supply_config_file)
+
+    supply_config_file_parser.add_argument(
+        "path_to_config",
+        type=str,
+        help="Required: (str, single or multiple)",
+    )
+
+    return parser
+
+
+parser = construct_parser()
 
 # ------------------------------------------------------------------------------------------
 # Run
