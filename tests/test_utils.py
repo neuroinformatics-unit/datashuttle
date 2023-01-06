@@ -51,9 +51,13 @@ def setup_project_default_configs(
     return project
 
 
-def glob_basenames(search_path, recursive=False):
+def glob_basenames(search_path, recursive=False, exclude=None):
     paths_ = glob.glob(search_path, recursive=recursive)
     basenames = [os.path.basename(path_) for path_ in paths_]
+
+    if exclude:
+        basenames = [name for name in basenames if name not in exclude]
+
     return sorted(basenames)
 
 
@@ -119,11 +123,13 @@ def get_test_config_arguments_dict(
     (for project.make_config_file()), all configs (default)
     or non-default configs. Note that default configs here
     are the expected default arguments in project.make_config_file().
+
+    Include spaces in path so this case is always checked
     """
     dict_ = {
-        "local_path": r"Not:/a/real/local/directory",
-        "remote_path_local": r"/Not/a/real/remote_local/directory",
-        "remote_path_ssh": r"/not/a/real/remote_ssh/directory",
+        "local_path": r"Not:/a/re al/local/directory",
+        "remote_path_local": r"/Not/a/re al/remote_ local/directory",
+        "remote_path_ssh": r"/not/a/re al/remote_ ssh/directory",
     }
 
     if required_arguments_only:
@@ -134,13 +140,8 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": None,
                 "remote_host_username": None,
-                "sub_prefix": "sub-",
-                "ses_prefix": "ses-",
                 "use_ephys": True,
-                "use_ephys_behav": True,
-                "use_ephys_behav_camera": True,
                 "use_behav": True,
-                "use_behav_camera": True,
                 "use_histology": True,
                 "use_imaging": True,
                 "ssh_to_remote": False,
@@ -151,13 +152,8 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
-                "sub_prefix": "testsub-",
-                "ses_prefix": "testses-",
                 "use_ephys": False,
-                "use_ephys_behav": False,
-                "use_ephys_behav_camera": False,
                 "use_behav": False,
-                "use_behav_camera": False,
                 "use_histology": False,
                 "use_imaging": False,
                 "ssh_to_remote": True,
@@ -167,19 +163,17 @@ def get_test_config_arguments_dict(
 
 
 def get_not_set_config_args(project):
+    """
+    Include spaces in path so this case is always checked
+    """
     return {
-        "local_path": r"C:/test/test_local/test_edit",
-        "remote_path_local": r"/nfs/testdir/test_edit2",
-        "remote_path_ssh": r"/nfs/testdir/test_edit3",
+        "local_path": r"C:/test/test_ local/test_edit",
+        "remote_path_local": r"/nfs/test dir/test_edit2",
+        "remote_path_ssh": r"/nfs/test dir/test_edit3",
         "remote_host_id": "test_id",
         "remote_host_username": "test_host",
-        "sub_prefix": "sub-optional",
-        "ses_prefix": "ses-optional",
         "use_ephys": not project.cfg["use_ephys"],
-        "use_ephys_behav": not project.cfg["use_ephys_behav"],
-        "use_ephys_behav_camera": not project.cfg["use_ephys_behav_camera"],
         "use_behav": not project.cfg["use_behav"],
-        "use_behav_camera": not project.cfg["use_behav_camera"],
         "use_histology": not project.cfg["use_histology"],
         "use_imaging": not project.cfg["use_imaging"],
         "ssh_to_remote": not project.cfg["ssh_to_remote"],
@@ -190,10 +184,7 @@ def get_not_set_config_args(project):
 def get_default_directory_used():
     return {
         "ephys": True,
-        "ephys_behav": True,
-        "ephys_behav_camera": True,
         "behav": True,
-        "behav_camera": True,
         "imaging": True,
         "histology": True,
     }
@@ -203,6 +194,10 @@ def get_config_path_with_cli(project_name=None):
     stdout = run_cli(" get_config_path", project_name)
     path_ = stdout[0].split(".yaml")[0] + ".yaml"
     return path_
+
+
+def add_quotes(string: str):
+    return '"' + string + '"'
 
 
 # ----------------------------------------------------------------------------------------------------------
@@ -231,52 +226,46 @@ def check_directory_tree_is_correct(
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
-    for key, directory in project._ses_dirs.items():
+    for sub in subs:
 
-        assert key in directory_used.keys(), (
-            "Key not found in directory_used. "
-            "Update directory used and hard-coded tests: "
-            "test_custom_directory_names(), test_explicitly_session_list()"
-        )
+        path_to_sub_folder = join(base_dir, sub)
+        check_and_cd_dir(path_to_sub_folder)
 
-        if check_directory_is_used(base_dir, directory, directory_used, key):
-            check_and_cd_dir(join(base_dir, directory.name))
+        for ses in sessions:
 
-            for sub in subs:
+            path_to_ses_folder = join(base_dir, sub, ses)
+            check_and_cd_dir(path_to_ses_folder)
 
-                check_and_cd_dir(join(base_dir, directory.name, sub))
+            for key, directory in project._ses_dirs.items():
 
-                for ses in sessions:
-                    path_to_folder = join(base_dir, directory.name, sub, ses)
-                    check_and_cd_dir(path_to_folder)
+                assert key in directory_used.keys(), (
+                    "Key not found in directory_used. "
+                    "Update directory used and hard-coded tests: "
+                    "test_custom_directory_names(), test_explicitly_session_list()"
+                )
 
-                    check_and_cd_dir(path_to_folder + "/.datashuttle_meta")
+                if check_directory_is_used(
+                    base_dir, directory, directory_used, key, sub, ses
+                ):
 
-                    recursive_check_subfolder_exists(
-                        path_to_folder, directory, directory_used
+                    if directory.level == "sub":
+                        experiment_type_path = join(
+                            path_to_sub_folder, directory.name
+                        )  # TODO: Remove directory to exp_type_path
+                    elif directory.level == "ses":
+                        experiment_type_path = join(
+                            path_to_ses_folder, directory.name
+                        )
+
+                    check_and_cd_dir(experiment_type_path)
+                    check_and_cd_dir(
+                        join(experiment_type_path, ".datashuttle_meta")
                     )
 
 
-def recursive_check_subfolder_exists(path_to_dir, upper_dir, directory_used):
-    """
-    Check each subdir in the subdirs field on the Directory class are
-    made, and that directory_used is as expected.
-    """
-    if upper_dir.subdirs:
-        for key, subdir in upper_dir.subdirs.items():
-
-            if check_directory_is_used(
-                path_to_dir, subdir, directory_used, key
-            ):
-                new_path_to_dir = join(path_to_dir, subdir.name)
-
-                check_and_cd_dir(new_path_to_dir)
-                recursive_check_subfolder_exists(
-                    new_path_to_dir, subdir, directory_used
-                )
-
-
-def check_directory_is_used(base_dir, directory, directory_used, key):
+def check_directory_is_used(
+    base_dir, directory, directory_used, key, sub, ses
+):
     """
     Test whether the .used flag on the Directory class matched the expected
     state (provided in directory_used dict). If directory is not used, check
@@ -289,9 +278,11 @@ def check_directory_is_used(base_dir, directory, directory_used, key):
     is_used = directory.used
 
     if not is_used:
-        print("Path was correctly not made: " + join(base_dir, directory.name))
-
-        assert not os.path.isdir(join(base_dir, directory.name))
+        print(
+            "Path was correctly not made: "
+            + join(base_dir, sub, ses, directory.name)
+        )
+        assert not os.path.isdir(join(base_dir, sub, ses, directory.name))
 
     return is_used
 
@@ -317,41 +308,71 @@ def check_experiment_type_sub_ses_uploaded_correctly(
     check that the directories at each level match those that are
     expected (passed in experiment / sub / ses to upload). Dirs
     are searched with wildcard glob.
+
+    Note: might be easier to flatten entire path with glob(**)
+    then search...
     """
-    experiment_names = glob_basenames(join(base_path_to_check, "*"))
-    assert experiment_names == sorted(experiment_type_to_transfer)
-
     if subs_to_upload:
-        for experiment_type in experiment_type_to_transfer:
-            sub_names = glob_basenames(
-                join(base_path_to_check, experiment_type, "*")
-            )
-            assert sub_names == sorted(subs_to_upload)
+        sub_names = glob_basenames(join(base_path_to_check, "*"))
+        assert sub_names == sorted(subs_to_upload)
 
-            if ses_to_upload:
+        # Check ses are all upldoated + histology if transferred
+        if ses_to_upload:
 
-                for sub in subs_to_upload:
-                    ses_names = glob_basenames(
-                        join(
-                            base_path_to_check,
-                            experiment_type,
-                            sub,
-                            "*",
-                        )
+            for sub in subs_to_upload:
+                ses_names = glob_basenames(
+                    join(
+                        base_path_to_check,
+                        sub,
+                        "*",
                     )
-                    assert ses_names == sorted(ses_to_upload)
+                )
+                if experiment_type_to_transfer == ["histology"]:
+                    assert ses_names == ["histology"]
+                    return  # handle the case in which histolgoy only is transffered,
+                    # and there are no sessions to transfer.
+
+                copy_experiment_type_to_transfer = (
+                    check_and_strip_within_sub_experiment_dirs(
+                        ses_names, experiment_type_to_transfer
+                    )
+                )
+                assert ses_names == sorted(ses_to_upload)
+
+                # check experiment_type directories in session folder
+                if copy_experiment_type_to_transfer:
+                    for ses in ses_names:
+                        experiment_names = glob_basenames(
+                            join(base_path_to_check, sub, ses, "*")
+                        )
+                        assert experiment_names == sorted(
+                            copy_experiment_type_to_transfer
+                        )
 
 
-def make_and_check_local_project(project, experiment_type, subs, sessions):
+def check_and_strip_within_sub_experiment_dirs(
+    ses_names, experiment_type_to_transfer
+):
+    if "histology" in experiment_type_to_transfer:
+        assert "histology" in ses_names
+
+        ses_names.remove("histology")
+        copy_ = copy.deepcopy(experiment_type_to_transfer)
+        copy_.remove("histology")
+        return copy_
+    return experiment_type_to_transfer
+
+
+def make_and_check_local_project(project, subs, sessions, experiment_type):
     """
     Make a local project directory tree with the specified experiment_type,
     subs, sessions and check it is made successfully.
     """
-    project.make_sub_dir(experiment_type, subs, sessions)
+    project.make_sub_dir(subs, sessions, experiment_type)
 
     check_directory_tree_is_correct(
         project,
-        project.get_local_path(),
+        get_rawdata_path(project),
         subs,
         sessions,
         get_default_directory_used(),
@@ -415,6 +436,14 @@ def check_config_file(config_path, *kwargs):
 # ----------------------------------------------------------------------------------------------------------
 # Test Helpers
 # ----------------------------------------------------------------------------------------------------------
+
+
+def get_rawdata_path(project, local_or_remote="local"):
+    if local_or_remote == "local":
+        base_path = project.get_local_path()
+    else:
+        base_path = project.get_remote_path()
+    return os.path.join(base_path, project._top_level_dir_name)
 
 
 def handle_upload_or_download(project, upload_or_download):

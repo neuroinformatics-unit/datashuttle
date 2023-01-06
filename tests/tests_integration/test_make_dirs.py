@@ -1,5 +1,4 @@
 import datetime
-import glob
 import os.path
 import re
 from os.path import join
@@ -24,6 +23,8 @@ class TestMakeDirs:
         Ensure change dir at end of session otherwise
         it is not possible to delete project.
         """
+        tmp_path = tmp_path / "test with space"
+
         test_project_name = "test_make_dirs"
 
         project = test_utils.setup_project_default_configs(
@@ -105,11 +106,11 @@ class TestMakeDirs:
         """
         subs = ["1_1", "sub-two-2", "3_3-3=3"]
 
-        project.make_sub_dir("all", subs)
+        project.make_sub_dir(subs)
 
         test_utils.check_directory_tree_is_correct(
             project,
-            base_dir=project.get_local_path(),
+            base_dir=test_utils.get_rawdata_path(project),
             subs=["sub-1_1", "sub-two-2", "sub-3_3-3=3"],
             sessions=["ses-001"],
             directory_used=test_utils.get_default_directory_used(),
@@ -126,23 +127,24 @@ class TestMakeDirs:
         """
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "="]
-        project.make_sub_dir("all", subs, sessions)
-        base_dir = project.get_local_path()
+        project.make_sub_dir(subs, sessions)
+        base_dir = test_utils.get_rawdata_path(project)
 
         for sub in subs:
             for ses in ["ses-001", "ses-="]:
+                test_utils.check_and_cd_dir(join(base_dir, sub, ses, "ephys"))
                 test_utils.check_and_cd_dir(
-                    join(base_dir, "behav", sub, ses, "camera")
+                    join(
+                        base_dir,
+                        sub,
+                        ses,
+                        "behav",
+                    )
                 )
                 test_utils.check_and_cd_dir(
-                    join(base_dir, "ephys", sub, ses, "behav", "camera")
+                    join(base_dir, sub, ses, "imaging")
                 )
-                test_utils.check_and_cd_dir(
-                    join(base_dir, "histology", sub, ses)
-                )
-                test_utils.check_and_cd_dir(
-                    join(base_dir, "imaging", sub, ses)
-                )
+                test_utils.check_and_cd_dir(join(base_dir, sub, "histology"))
 
     @pytest.mark.parametrize(
         "dir_key", test_utils.get_default_directory_used().keys()
@@ -161,12 +163,12 @@ class TestMakeDirs:
         # Make dir tree
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
-        project.make_sub_dir("all", subs, sessions)
+        project.make_sub_dir(subs, sessions)
 
         # Check dir tree is not made but all others are
         test_utils.check_directory_tree_is_correct(
             project,
-            base_dir=project.get_local_path(),
+            base_dir=test_utils.get_rawdata_path(project),
             subs=subs,
             sessions=sessions,
             directory_used=directory_used,
@@ -179,90 +181,32 @@ class TestMakeDirs:
         """
         # Change directory names to custom names
         project._ses_dirs["ephys"].name = "change_ephys"
-        project._ses_dirs["ephys"].subdirs[
-            "ephys_behav"
-        ].name = "change_ephys_behav"
-        project._ses_dirs["ephys"].subdirs["ephys_behav"].subdirs[
-            "ephys_behav_camera"
-        ].name = "change_ephys_behav_camera"
-
         project._ses_dirs["behav"].name = "change_behav"
-        project._ses_dirs["behav"].subdirs[
-            "behav_camera"
-        ].name = "change_behav_camera"
-
         project._ses_dirs["histology"].name = "change_histology"
         project._ses_dirs["imaging"].name = "change_imaging"
 
         # Make the directories
         sub = "sub-001"
         ses = "ses-001"
-        project.make_sub_dir("all", sub, ses)
+        project.make_sub_dir(sub, ses)
 
         # Check the directories were not made / made.
-        base_dir = project.get_local_path()
+        base_dir = test_utils.get_rawdata_path(project)
         test_utils.check_and_cd_dir(
             join(
                 base_dir,
-                "change_ephys",
                 sub,
                 ses,
-                "change_ephys_behav",
-                "change_ephys_behav_camera",
+                "change_ephys",
             )
         )
-        test_utils.check_and_cd_dir(
-            join(base_dir, "change_behav", sub, ses, "change_behav_camera")
-        )
-        test_utils.check_and_cd_dir(
-            join(base_dir, "change_histology", sub, ses)
-        )
-        test_utils.check_and_cd_dir(join(base_dir, "change_imaging", sub, ses))
+        test_utils.check_and_cd_dir(join(base_dir, sub, ses, "change_behav"))
+        test_utils.check_and_cd_dir(join(base_dir, sub, ses, "change_imaging"))
 
-    def test_make_sub_dir_no_tree(self, project):
-        """
-        Make sub directory only, check it is made and no lower level dirs exist
-        """
-        project.make_sub_dir("ephys", "001", dont_make_ses_tree=True)
-        sub_path = join(project.get_local_path(), "ephys", "sub-001")
-        test_utils.check_and_cd_dir(sub_path)
-        assert glob.glob(join(sub_path, "*")) == []
-
-    def test_make_sub_dir_with_ses_no_tree(self, project):
-        """
-        Make ses directory (in a sub dir) only, and check no
-        lower level dirs exist
-        """
-        project.make_sub_dir("ephys", "001", "001", dont_make_ses_tree=True)
-        ses_path = join(
-            project.get_local_path(), "ephys", "sub-001", "ses-001"
-        )
-        test_utils.check_and_cd_dir(ses_path)
-        assert glob.glob(join(ses_path, "*")) == []
-
-    def test_default_sub_prefix(self, project):
-        """
-        Change the default subject prefix and check dirs are
-        created correctly. Note this is very similar to
-        test_default_ses_prefix(), but trying to combine
-        made the tests very difficult to follow.
-        """
-        project.update_config("sub_prefix", "edited_sub_prefix_")
-        project.make_sub_dir(
-            "ephys",
-            ["sub-001", "001", "edited_sub_prefix_1"],
-            dont_make_ses_tree=True,
-        )
-
-        base_path = join(project.get_local_path(), "ephys")
-        test_utils.check_and_cd_dir(
-            join(base_path, "edited_sub_prefix_sub-001")
-        )
-        test_utils.check_and_cd_dir(join(base_path, "edited_sub_prefix_001"))
-        test_utils.check_and_cd_dir(join(base_path, "edited_sub_prefix_1"))
+        test_utils.check_and_cd_dir(join(base_dir, sub, "change_histology"))
 
     @pytest.mark.parametrize(
-        "file_info",
+        "files_to_test",
         [
             ["all"],
             ["ephys", "behav"],
@@ -272,7 +216,7 @@ class TestMakeDirs:
             ["imaging"],
         ],
     )
-    def test_experimental_data_subsection(self, project, file_info):
+    def test_experimental_data_subsection(self, project, files_to_test):
         """
         Check that combinations of experiment_types passed to make file dir
         make the correct combination of epxeriment types.
@@ -280,18 +224,31 @@ class TestMakeDirs:
         Note this will fail when new top level dirs are added, and should be
         updated.
         """
-        project.make_sub_dir(file_info, "sub-001", dont_make_ses_tree=True)
+        sub = "sub-001"
+        ses = "ses-001"
+        project.make_sub_dir(sub, ses, files_to_test)
 
-        file_names = test_utils.glob_basenames(
-            join(project.get_local_path(), "*")
+        base_dir = test_utils.get_rawdata_path(project)
+
+        # Check at the subject level
+        sub_file_names = test_utils.glob_basenames(
+            join(base_dir, sub, "*"),
+            exclude=ses,
+        )
+        if "histology" in files_to_test:
+            assert "histology" in sub_file_names
+            files_to_test.remove("histology")
+
+        # Check at the session level
+        ses_file_names = test_utils.glob_basenames(
+            join(base_dir, sub, ses, "*"),
+            exclude=ses,
         )
 
-        if file_info == ["all"]:
-            assert file_names == sorted(
-                ["ephys", "behav", "histology", "imaging"]
-            )
+        if files_to_test == ["all"]:
+            assert ses_file_names == sorted(["ephys", "behav", "imaging"])
         else:
-            assert file_names == sorted(file_info)
+            assert ses_file_names == sorted(files_to_test)
 
     def test_date_flags_in_session(self, project):
         """
@@ -305,7 +262,8 @@ class TestMakeDirs:
         )
 
         ses_names = test_utils.glob_basenames(
-            join(project.get_local_path(), "**", "ses-*"), recursive=True
+            join(test_utils.get_rawdata_path(project), "**", "ses-*"),
+            recursive=True,
         )
 
         assert all([date in name for name in ses_names])
@@ -325,7 +283,8 @@ class TestMakeDirs:
         )
 
         ses_names = test_utils.glob_basenames(
-            join(project.get_local_path(), "**", "ses-*"), recursive=True
+            join(test_utils.get_rawdata_path(project), "**", "ses-*"),
+            recursive=True,
         )
 
         # Convert the minutes to regexp as could change during test runtime

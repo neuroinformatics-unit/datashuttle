@@ -191,20 +191,6 @@ make_config_file_parser.add_argument(
     "--remote_host_username", required=False, help="(str)", metavar=""
 )
 make_config_file_parser.add_argument(
-    "--sub_prefix",
-    required=False,
-    type=str,
-    metavar="",
-    help="(str) default: sub-",
-)
-make_config_file_parser.add_argument(
-    "--ses_prefix",
-    required=False,
-    type=str,
-    metavar="",
-    help="(str) default: ses-",
-)
-make_config_file_parser.add_argument(
     "--use_ephys",
     required=False,
     default=None,
@@ -213,31 +199,7 @@ make_config_file_parser.add_argument(
     help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
-    "--use_ephys_behav",
-    required=False,
-    default=None,
-    action="store",
-    metavar="",
-    help=help("flag_default_false"),
-)
-make_config_file_parser.add_argument(
-    "--use_ephys_behav_camera",
-    required=False,
-    default=None,
-    action="store",
-    metavar="",
-    help=help("flag_default_false"),
-)
-make_config_file_parser.add_argument(
     "--use_behav",
-    required=False,
-    default=None,
-    action="store",
-    metavar="",
-    help=help("flag_default_false"),
-)
-make_config_file_parser.add_argument(
-    "--use_behav_camera",
     required=False,
     default=None,
     action="store",
@@ -331,7 +293,7 @@ def make_sub_dir(project, args):
     kwargs = make_kwargs(args)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
-    print(filtered_kwargs)
+
     run_command(project, project.make_sub_dir, **filtered_kwargs)
 
 
@@ -346,14 +308,7 @@ make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
 )  # type: ignore
 make_sub_dir_parser.set_defaults(func=make_sub_dir)
 
-make_sub_dir_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
+
 make_sub_dir_parser.add_argument(
     "--sub_names",
     type=str,
@@ -371,11 +326,12 @@ make_sub_dir_parser.add_argument(
     metavar="",
 )
 make_sub_dir_parser.add_argument(
-    "--dont_make_ses_tree",
-    required=False,
-    default=False,
-    action="store_true",
-    help=help("optional_flag_default_false"),
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=True,
+    help=help("required_str_single_or_multiple_or_all"),
+    metavar="",
 )
 
 
@@ -409,14 +365,6 @@ upload_data_parser = upload_data_parser.add_argument_group(
 upload_data_parser.set_defaults(func=upload_data)
 
 upload_data_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
-upload_data_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
@@ -433,7 +381,15 @@ upload_data_parser.add_argument(
     metavar="",
 )
 upload_data_parser.add_argument(
-    "--preview",
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=False,
+    help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
+    metavar="",
+)
+upload_data_parser.add_argument(
+    "--dry_run",
     required=False,
     action="store_true",
     help=help("optional_flag_default_false"),
@@ -466,14 +422,6 @@ download_data_parser = download_data_parser.add_argument_group(
 download_data_parser.set_defaults(func=download_data)
 
 download_data_parser.add_argument(
-    "--experiment_type",
-    type=str,
-    nargs="+",
-    required=True,
-    help=help("required_str_single_or_multiple_or_all"),
-    metavar="",
-)
-download_data_parser.add_argument(
     "--sub_names",
     type=str,
     nargs="+",
@@ -490,7 +438,15 @@ download_data_parser.add_argument(
     metavar="",
 )
 download_data_parser.add_argument(
-    "--preview",
+    "--experiment_type",
+    type=str,
+    nargs="+",
+    required=False,
+    help="Optional: (str or list) (selection of data types, or 'all') (default 'all')",
+    metavar="",
+)
+download_data_parser.add_argument(
+    "--dry_run",
     required=False,
     action="store_true",
     help=help("optional_flag_default_false"),
@@ -524,7 +480,7 @@ upload_project_dir_or_file_parser.add_argument(
     "filepath", type=str, help=help("required_str")
 )
 upload_project_dir_or_file_parser.add_argument(
-    "--preview", action="store_true", help=help("flag_default_false")
+    "--dry_run", action="store_true", help=help("flag_default_false")
 )
 
 
@@ -557,7 +513,7 @@ download_project_dir_or_file_parser.add_argument(
     "filepath", type=str, help=help("required_str")
 )
 download_project_dir_or_file_parser.add_argument(
-    "--preview", action="store_true", help=help("flag_default_false")
+    "--dry_run", action="store_true", help=help("flag_default_false")
 )
 
 
