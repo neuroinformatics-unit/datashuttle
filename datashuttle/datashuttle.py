@@ -58,7 +58,7 @@ class DataShuttle:
     profile if accepted, and setup ssh key pair.
 
     Parameters
-    ---------
+    ----------
 
     project_name : The project name to use the datashuttle
                    Directories containing all project files
@@ -130,6 +130,7 @@ class DataShuttle:
 
         Parameters
         ----------
+
         sub_names :
                 subject name / list of subject names to make
                 within the top-level project directory
@@ -148,7 +149,7 @@ class DataShuttle:
                 for all data_type enabled in config.
 
         Notes
-        ------
+        -----
 
         sub_names or ses_names may contain formatting tags
 
@@ -475,7 +476,8 @@ class DataShuttle:
         Parameters
         ----------
 
-        local_path : path to project dir on local machine
+        local_path :
+            path to project dir on local machine
 
         remote_path :
             Filepath to remote project.
@@ -708,7 +710,7 @@ class DataShuttle:
         ds_logger.print_tree(self.cfg["local_path"])
 
     @staticmethod
-    def check_name_processing(names: Union[str, list], prefix: str) -> None:
+    def check_name_formatting(names: Union[str, list], prefix: str) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
         for example as when passed to make_sub_dir() or upload_data() or
