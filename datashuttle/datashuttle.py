@@ -540,12 +540,8 @@ class DataShuttle:
 
         self._set_attributes_after_config_load()
 
-        rclone.setup_remote_as_rclone_target(
-            self.cfg,
-            self._get_rclone_config_name("local_filesystem"),
-            self._ssh_key_path,
-            log=True,
-        )
+        self._setup_rclone_remote_local_filesystem_config()
+
         utils.log_and_message(
             "Configuration file has been saved and "
             "options loaded into datashuttle."
@@ -1090,12 +1086,7 @@ class DataShuttle:
             self._ssh_key_path, self._hostkeys_path, self.cfg, log=log
         )
 
-        rclone.setup_remote_as_rclone_target(
-            self.cfg,
-            self._get_rclone_config_name("ssh"),
-            self._ssh_key_path,
-            log=log,
-        )
+        self._setup_rclone_remote_ssh_config(log)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
@@ -1359,3 +1350,21 @@ class DataShuttle:
         folder that contains additional information, e.g. logs.
         """
         directories.make_dirs(self._project_metadata_path, log=False)
+
+    def _setup_rclone_remote_ssh_config(self, log):
+        rclone.setup_remote_as_rclone_target(
+            "ssh",
+            self.cfg,
+            self._get_rclone_config_name("ssh"),
+            self._ssh_key_path,
+            log=log,
+        )
+
+    def _setup_rclone_remote_local_filesystem_config(self):
+        rclone.setup_remote_as_rclone_target(
+            "local_filesystem",
+            self.cfg,
+            self._get_rclone_config_name("local_filesystem"),
+            self._ssh_key_path,
+            log=True,
+        )

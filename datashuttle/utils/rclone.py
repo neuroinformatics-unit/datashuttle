@@ -89,6 +89,7 @@ def transfer_data(
 
 
 def setup_remote_as_rclone_target(
+    connection_method: str,
     cfg: Configs,
     rclone_config_name: str,
     ssh_key_path: Path,
@@ -118,8 +119,6 @@ def setup_remote_as_rclone_target(
 
     log : whether to log, if True logger must already be initialised.
     """
-    connection_method = cfg["connection_method"]
-
     if connection_method == "local_filesystem":
         call_rclone(f"config create {rclone_config_name} local", pipe_std=True)
 

@@ -96,10 +96,11 @@ def connect_client(
     except Exception:
         utils.log_and_raise_error(
             "Could not connect to server. Ensure that \n"
-            "1) You are on VPN network if required. \n"
-            "2) The remote_host_id: {cfg['remote_host_id']} is"
+            "1) You have run setup_ssh_connection_to_remote_server() \n"
+            "2) You are on VPN network if required. \n"
+            "3) The remote_host_id: {cfg['remote_host_id']} is"
             " correct.\n"
-            "3) The remote username:"
+            "4) The remote username:"
             f" {cfg['remote_host_username']}, and password are correct."
         )
 
