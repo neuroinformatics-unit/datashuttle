@@ -110,7 +110,7 @@ def delete_all_dirs_in_remote_path(project):
 
 def delete_project_if_it_exists(project_name):
     """"""
-    config_path, __ = utils.get_appdir_path(project_name)
+    config_path, __ = utils.get_datashuttle_path(project_name)
 
     if config_path.is_dir():
         ds_logger.close_log_filehandler()

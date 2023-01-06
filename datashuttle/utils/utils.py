@@ -14,16 +14,27 @@ from . import directories
 
 
 def log(message: str) -> None:
-    logger = logging.getLogger("fancylog_")
+    """
+    Log the message to the main initialised
+    logger.
+    """
+    logger = logging.getLogger()
     logger.info(message)
 
 
 def log_and_message(message: str, use_rich: bool = False) -> None:
+    """
+    Log the message and send it to user.
+    If use_rich, use rich's print() function
+    """
     log(message)
     message_user(message, use_rich)
 
 
 def log_and_raise_error(message: str) -> None:
+    """
+    Log the message before raising the same message as an error.
+    """
     logging.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
     logging.error(message)
     raise_error(message)
@@ -31,7 +42,8 @@ def log_and_raise_error(message: str) -> None:
 
 def message_user(message: Union[str, list], use_rich=False) -> None:
     """
-    Centralised way to send message.
+    Centralised way to send message. if use_rich, use rich's
+    print() function.
     """
     if use_rich:
         rich_print(message)
@@ -54,13 +66,14 @@ def raise_error(message: str) -> None:
     raise BaseException(message)
 
 
-def get_appdir_path(project_name: str) -> Tuple[Path, Path]:
+def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     """
-    It is not possible to write to program files in windows
-    from app without admin permissions. However, if admin
-    permission given drag and drop don't work, and it is
-    not good practice. Use appdirs module to get the
-    AppData cross-platform and save / load all files form here .
+    Get the datashuttle path where configuration files are stored.
+    Also, return a temporary path in this for logging in
+    some cases where local_path location is not clear.
+
+    The datashuttle configuration path is stored in the user home
+    directory.
     """
     base_path = Path.home() / ".datashuttle" / project_name
     temp_logs_path = base_path / "temp_logs"
@@ -72,7 +85,18 @@ def get_appdir_path(project_name: str) -> Tuple[Path, Path]:
 
 
 def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
-    """"""
+    """
+    Get path relative to hte base dir, used in case user has
+    passed entire path including local_path or remove_path.
+
+    Parameters
+    ----------
+
+    base_dir : base dir that should be removed, usually
+        local_path or remote_path
+
+    path_ : path after base_dir that should be isolated
+    """
     if path_already_stars_with_base_dir(base_dir, path_):
         return path_.relative_to(base_dir)
     return path_
@@ -83,7 +107,10 @@ def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
 
 
 def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
-    """"""
+    """
+    Supplied config path must be a .yaml - use this function to check if the
+    supplied config path is indeed .yaml.
+    """
     if not path_to_config.exists():
         log_and_raise_error(f"No file found at: {path_to_config}")
 

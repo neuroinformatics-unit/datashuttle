@@ -17,12 +17,17 @@ def format_names(
 ) -> List[str]:
     """
     Check a single or list of input session or subject names.
+
     First check the type is correct, next prepend the prefix
     sub- or ses- to entries that do not have the relevant prefix.
-    Finally, check for duplicates.
+    Finally, check for duplicates and replace any tags
+    with required inputs e.g. date, time
 
-    :param names: str or list containing sub or ses names (e.g. to make dirs)
-    :param prefix: "sub" or "ses" - this defines the prefix checks.
+    Parameters
+    -----------
+    names: str or list containing sub or ses names (e.g. to make dirs)
+
+    prefix: "sub" or "ses" - this defines the prefix checks.
     """
     if type(names) not in [str, list] or any(
         [not isinstance(ele, str) for ele in names]
@@ -131,7 +136,20 @@ def make_list_of_zero_padded_names_across_range(
     Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
     the maximum number of leading zeros and apply or
-    all numbers in the range.
+    all numbers in the range. Note int() will strip
+    all leading zeros.
+
+    Parameters
+    ----------
+
+    left_number : left (start) number from the range, e.g. "001"
+
+    right_number : right (end) number from the range, e.g. "005"
+
+    name_start_str : part of the name before the flag, usually "sub-"
+
+    name_end_str : rest of the name after the flag, i.e. all other
+        key-value pairs.
     """
     max_leading_zeros = max(
         num_leading_zeros(left_number), num_leading_zeros(right_number)

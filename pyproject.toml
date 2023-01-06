@@ -16,8 +16,7 @@ dependencies = [
     "PyYAML",
     "requests",
     "rich",
-    # "fancylog",
-    "fancylog @ git+https://git@github.com/JoeZiminski/fancylog",
+    "fancylog",
 ]
 
 classifiers = [
@@ -71,7 +70,7 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 include = ["datashuttle*"]
-exclude = ["tests*"]
+exclude = ["tests*", "docs*"]
 
 [tool.pytest.ini_options]
 addopts = "--cov=datashuttle"
@@ -109,6 +108,9 @@ ignore = [
   "*.yaml",
   ".bumpversion.cfg",
   "tox.ini",
+  "docs/*",
+  "docs/source/*",
+  "docs/source/pages/*",
   "tests/*",
   "tests/tests_unit/*",
   "tests/tests_integration/*",

@@ -8,6 +8,7 @@ If adding a new config, first add the key to
 get_canonical_config_dict( and type to
 get_canonical_config_required_types()
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, List
@@ -23,8 +24,8 @@ from datashuttle.utils import directories, utils
 
 def get_canonical_config_dict() -> dict:
     """
-    The only permitted keys in the
-    DataShuttle config.
+    Canonical list of required keys
+    in the datashuttle configs
     """
     config_dict = {
         "local_path": None,
@@ -42,7 +43,9 @@ def get_canonical_config_dict() -> dict:
 
 def get_data_types(as_dict: bool = False):
     """
-    New data_types must be added here
+    Canonical list of data_type flags. This is used
+    to define get_canonical_config_dict() as well
+    as in testing.
     """
     keys = ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
 
@@ -97,6 +100,11 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     make_config_file, update_config, supply_config_file).
 
     This will raise assert if condition is not met.
+
+    Parameters
+    ----------
+
+    config_dict : datashuttle config UserDict
     """
     canonical_dict = get_canonical_config_dict()
 
@@ -165,6 +173,11 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 def check_config_types(config_dict: Configs) -> None:
     """
     Check the type of passed configs matched canonical types.
+    This is a sub-function of check_dict_values_raise_on_fail()
+
+    Notes
+    ------
+
     This is a little awkward as testing types against
     Union is not neat. To do this you can use
     isinstance(type, get_args(Union[types])).
