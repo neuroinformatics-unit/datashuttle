@@ -110,6 +110,7 @@ ignore = [
   "tox.ini",
   "docs/*",
   "docs/source/*",
+  "docs/source/pages/*",
   "tests/*",
   "tests/tests_unit/*",
   "tests/tests_integration/*",
