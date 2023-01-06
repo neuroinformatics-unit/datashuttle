@@ -1,0 +1,665 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+    <title>Full Documentation &#8212; datashuttle</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "light";
+  </script>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/bootstrap.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+
+  
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=796348d33e8b1d947c94" rel="stylesheet">
+  <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2">
+<link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+  
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94">
+
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/design-tabs.js"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/documentation';</script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/documentation.html" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="docsearch:language" content="en">
+  </head>
+  
+  
+  <body data-spy="scroll" data-target="#bd-toc-nav" data-offset="180" data-default-mode="">
+
+  
+  
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__primary" id="__primary">
+  <label class="overlay overlay-primary" for="__primary"></label>
+
+  
+  <input type="checkbox" class="sidebar-toggle" name="__secondary" id="__secondary">
+  <label class="overlay overlay-secondary" for="__secondary"></label>
+
+  
+  <div class="search-button__wrapper">
+    <div class="search-button__overlay"></div>
+    <div class="search-button__search-container">
+      
+<form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search" class="form-control" name="q" id="search-input" placeholder="Search the docs ..." aria-label="Search the docs ..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+    </div>
+  </div>
+
+  
+  <nav class="bd-header navbar navbar-expand-lg bd-navbar" id="navbar-main"><div class="bd-header__inner bd-page-width">
+  <label class="sidebar-toggle primary-toggle" for="__primary">
+      <span class="fa-solid fa-bars"></span>
+  </label>
+  <div id="navbar-start">
+    
+    
+  
+
+
+<a class="navbar-brand logo" href="../index.html">
+
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gf3f6356</p>
+  
+</a>
+    
+  </div>
+
+  
+  <div class="col-lg-9 navbar-header-items">
+    <div id="navbar-center" class="mr-auto">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+    </ul>
+</nav>
+      </div>
+      
+    </div>
+
+    <div id="navbar-end">
+      
+        <div class="navbar-end-item navbar-persistent--container">
+          
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+        </div>
+      
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+  </div>
+
+
+  
+  
+    <div class="navbar-persistent--mobile">
+<button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-toggle="tooltip">
+  <i class="fa-solid fa-magnifying-glass"></i>
+</button>
+    </div>
+  
+
+  
+  <label class="sidebar-toggle secondary-toggle" for="__secondary">
+      <span class="fa-solid fa-outdent"></span>
+  </label>
+  
+
+</div>
+  </nav>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+      
+      <div class="navbar-center-item">
+        <nav class="navbar-nav">
+    <p class="sidebar-header-items__title" role="heading" aria-level="1" aria-label="Site Navigation">
+        Site Navigation
+    </p>
+    <ul id="navbar-main-elements" class="navbar-nav">
+        
+    </ul>
+</nav>
+      </div>
+      
+      </div>
+    
+
+    
+    
+    <div class="sidebar-header-items__end">
+      
+      <div class="navbar-end-item">
+        <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-toggle="tooltip">
+    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
+    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
+    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+</button>
+      </div>
+      
+      <div class="navbar-end-item">
+        <ul id="navbar-icon-links" class="navbar-nav" aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-toggle="tooltip"><span><i class="fa-brands fa-github"></i></span>
+            <label class="sr-only">GitHub</label></a>
+        </li>
+      </ul>
+      </div>
+      
+    </div>
+    
+  </div>
+
+  
+
+  
+  <div class="sidebar-end-items sidebar-primary__section">
+    <div class="sidebar-end-items__item">
+    </div>
+  </div>
+
+  
+  <div id="rtd-footer-container"></div>
+
+      </div>
+      <main id="main-content" class="bd-main">
+        
+        
+        <div class="bd-content">
+          <div class="bd-article-container">
+            
+            <div class="bd-header-article">
+                
+            </div>
+            
+            
+            <article class="bd-article" role="main">
+              
+  <section class="tex2jax_ignore mathjax_ignore" id="full-documentation">
+<h1>Full Documentation<a class="headerlink" href="#full-documentation" title="Permalink to this heading">#</a></h1>
+<p>Datashuttle is a work in progress as has not been officially released. It is not ready for use
+as documented, please await first official release.</p>
+<p>DataShuttle helps to manage and transfer a project with many “local” machines all connected to a central “remote” machine.
+DataShuttle has functions to help:</p>
+<ul class="simple">
+<li><p>Generate BIDS-formatted directory structures</p></li>
+<li><p>Transfer data between remote and local machines</p></li>
+</ul>
+<p>On first setup, it is necessary to specify the project name, paths to the local project folder (typically empty on first use, on a
+local filesystem), and paths to remote project directory and the connection method.</p>
+<p>This documentation gives examples both using the API (in the python console) or using the command line interface (in system terminal).</p>
+<section id="datashuttle-configs">
+<h2>DataShuttle Configs<a class="headerlink" href="#datashuttle-configs" title="Permalink to this heading">#</a></h2>
+<section id="configuration-file">
+<h3>Configuration File<a class="headerlink" href="#configuration-file" title="Permalink to this heading">#</a></h3>
+<p>To get started, import DataShuttle and initialise the class with the project name. If using the command
+line this step is not necessary.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datashuttle.datashuttle</span> <span class="kn">import</span> <span class="n">DataShuttle</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_project&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The first time you use DataShuttle, you will be prompted to make a configuration file containing project information.</p>
+<p>To setup the configuration, use the “make_config_file” function.</p>
+<p>The “local_path” argument is required to specify the top-level path to your project. This will typically be empty
+on first use, and should include the name of the project.</p>
+<p>e.g. if the local_path=“/path/to/my_project”, when making a new subject (e.g. sub-001) this will be
+made at /path/to/my_project/rawdata/sub-001.</p>
+<p>Next, the “remote_path” argument gives the path to the central remote project. This may be on a local
+filesystem (e.g. if a HPC or network drive is mounted) or using SSH. On Linux systems, ~ syntax is
+not supported and the full filepath must be input.</p>
+<p>Also required is the “connection_method”. This can either be “local_filesystem” or “ssh”. If “ssh”,
+then the “remote_host_id” and “remote_host_username” options are also required (see example below).</p>
+<p>Finally, the options “use_ephys”, “use_behav”… are used to set the data types used on the local PC.
+If these are not set to True, it will not be possible to make data_type directories of this type.
+This option is useful if there are dedicated machines for collection of different data types.</p>
+<p>An example call may look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+<span class="n">local_path</span><span class="o">=</span><span class="s2">&quot;/path/to/my_project&quot;</span><span class="p">,</span>
+<span class="n">remote_path</span><span class="o">=</span><span class="s2">&quot;/nfs/nhome/live/username/&quot;</span><span class="p">,</span>
+<span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
+<span class="n">remote_host_id</span><span class="o">=</span><span class="s2">&quot;ssh.swc.ucl.ac.uk&quot;</span><span class="p">,</span>
+<span class="n">remote_host_username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
+<span class="n">use_ephys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="n">use_behav</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="n">use_histology</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>or equivalently using the command-line interface</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
+<span class="n">my_project</span> \
+<span class="n">make_config_file</span> \
+<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">project</span> \
+<span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">nhome</span><span class="o">/</span><span class="n">live</span><span class="o">/</span><span class="n">username</span><span class="o">/</span> \
+<span class="n">ssh</span> \
+<span class="o">--</span><span class="n">remote_host_id</span> <span class="n">ssh</span><span class="o">.</span><span class="n">swc</span><span class="o">.</span><span class="n">ucl</span><span class="o">.</span><span class="n">ac</span><span class="o">.</span><span class="n">uk</span> \
+<span class="o">--</span><span class="n">remote_host_username</span> <span class="n">username</span> \
+<span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span>
+</pre></div>
+</div>
+<p>Individual settings can be updated using update_config(), and an existing config file can be used instead using supply_config()</p>
+</section>
+<section id="setting-up-an-ssh-connection">
+<h3>Setting up an SSH Connection<a class="headerlink" href="#setting-up-an-ssh-connection" title="Permalink to this heading">#</a></h3>
+<p>Once configurations are set, if the “connection_method” is “ssh”, the function setup_ssh_connection_to_remote_server() must be run to setup
+the ssh connection to the remote server. This will allow visual confirmation of the server key, and setup a SSH key pair. This means
+your password will have to be enterred only once, when setting up this connection.</p>
+</section>
+</section>
+<section id="making-project-directories">
+<h2>Making Project Directories<a class="headerlink" href="#making-project-directories" title="Permalink to this heading">#</a></h2>
+<p>Subject and session project directories can be made using the function make_sub_dir(). This function accepts a subject name (or list
+of subject names), with optional session name and data type inputs. If no session or data type name is provided,
+an empty subject directory will be made at the top directory level.</p>
+<p>The full paths of all created directories are logged (see “Logging” below).</p>
+<p>e.g.
+<code class="docutils literal notranslate"><span class="pre">project.make_sub_dir(sub_names=&quot;sub-001&quot;)</span></code> or equivalently <code class="docutils literal notranslate"><span class="pre">datashuttle</span> <span class="pre">my_project</span> <span class="pre">make_sub_dir</span> <span class="pre">--sub_names</span> <span class="pre">sub-001</span></code></p>
+<p>will make the folder tree</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+└── my_project/
+    └── rawdata/
+        └── sub-001
+</pre></div>
+</div>
+<p>Adding a “ses_names” argument will make the specified sessions for all input subjects. Similarly, for each subject or session,
+all data_types will be made. The data_type argument can be a single data_type (e.g. “behav”), a list of data_types or “all”,
+that will make all data_types. Note that in all cases, only data_types that are flagged to use in the configs (e.g. use_behav=True)
+will be made.</p>
+<p>All subject or session names must be prefixed with “sub-” or “ses-” respectively, as according to SWC-BIDS. If these prefixes
+are not input, they will be automatically added. This method will also raise an error if the session number already exists,
+and any duplicate inputs will be removed. Finally, subject and session names must not contain spaces and should be
+formatted according to SWC-BIDS.
+e.g.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_sub_dir</span><span class="p">(</span>
+<span class="n">sub_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;002&quot;</span><span class="p">],</span>
+<span class="n">ses_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ses-001&quot;</span><span class="p">,</span> <span class="s2">&quot;002&quot;</span><span class="p">],</span>
+<span class="n">data_type</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ephys&quot;</span><span class="p">,</span> <span class="s2">&quot;behav&quot;</span><span class="p">,</span> <span class="s2">&quot;histology&quot;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>or equivalently</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
+<span class="n">my_project</span> \
+<span class="n">make_sub_dir</span> \
+<span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="mi">001</span> <span class="mi">002</span> \
+<span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span> <span class="n">ses</span><span class="o">-</span><span class="mi">001</span> <span class="mi">002</span>
+<span class="o">--</span><span class="n">data_type</span> <span class="n">ephys</span> <span class="n">behav</span> <span class="n">histology</span>
+</pre></div>
+</div>
+<p>will create the folder structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+└── my_project/
+    └── rawdata/
+        ├── sub-001/
+        │   ├── ses-001/
+        │   │   ├── ephys
+        │   │   └── behav
+        │   ├── ses-002/
+        │   │   ├── ephys
+        │   │   └── behav
+        │   └── histology
+        └── sub-002/
+            ├── ses-001/
+            │   ├── ephys
+            │   └── behav
+            ├── ses-002/
+            │   ├── ephys
+            │   └── behav
+            └── histology
+</pre></div>
+</div>
+<section id="convenience-tags">
+<h3>Convenience Tags<a class="headerlink" href="#convenience-tags" title="Permalink to this heading">#</a></h3>
+<p>Tags can be added to easily format subject or session names. These tags include &#64;TO&#64;, &#64;DATE&#64;, &#64;TIME&#64;, &#64;DATETIME&#64;.</p>
+<p>The &#64;TO&#64; tag can be used to create a range of subjects or sessions. Where the subject or session number is
+usually written, a range can be created by placing boundaries on the range either side of the &#64;TO&#64; tag.
+e.g. using sub_names=<code class="docutils literal notranslate"><span class="pre">sub-001&#64;TO&#64;003_task-retinotopy</span></code> would create three subject directories:
+<code class="docutils literal notranslate"><span class="pre">sub-001_task-retinotopy,</span> <span class="pre">sub-002_task-retinotopy</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-003_task-retinotopy</span></code>.</p>
+<p>The &#64;DATE&#64;, &#64;TIME&#64; or &#64;DATETIME&#64; flags can be used to create date, time or datetime key-value pairs in subject or session
+names, depending on the current system date / time. For example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_sub_dir</span><span class="p">(</span>
+<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;sub-001@TO@002&quot;</span><span class="p">,</span>
+<span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;ses-001_@DATE@&quot;</span><span class="p">,</span>
+<span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>or equivalently</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
+<span class="n">my_project</span> \
+<span class="n">make_sub_dir</span> \
+<span class="o">--</span><span class="n">sub_names</span> <span class="n">sub</span><span class="o">-</span><span class="mi">001</span><span class="nd">@TO</span><span class="o">@</span><span class="mi">002</span> \
+<span class="o">--</span><span class="n">ses_names</span> <span class="n">ses</span><span class="o">-</span><span class="mi">001</span><span class="n">_</span><span class="nd">@DATE</span><span class="o">@</span> \
+<span class="o">--</span><span class="n">data_type</span> <span class="s2">&quot;&quot;</span>
+</pre></div>
+</div>
+<p>would create the directory tree (assuming it is 01/02/2022)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+└── my_project/
+    └── rawdata/
+        ├── sub-001/
+        │   └── ses-001_date-01022022
+        └── sub-002/
+            └── ses-001_date-01022022
+</pre></div>
+</div>
+<p>only one &#64;DATE&#64;, &#64;TIME&#64; or &#64;DATETIME&#64; flag can be used per subject / session name.</p>
+</section>
+</section>
+<section id="data-transfer">
+<h2>Data Transfer<a class="headerlink" href="#data-transfer" title="Permalink to this heading">#</a></h2>
+<p>Data transfer can be either from the local project to the remote project (“upload”) or from the remote to local project(“download”). Data
+transfers are primarily managed using the upload_data() and download_data() functions.</p>
+<p>By default, uploading or downloading data will never overwrite files when transferring data. If an
+existing file with the same name is found in the target directory, even if it is older, it will not be overwritten.
+All transfer activity is printed to the console and logged (see “Logging” below), which can be used to
+determine if any files were not transferred for this reason.</p>
+<p>To transfer all data, the keyword “all” can be used for sub_names, ses_names and data_type arguments. Note that
+any existing data_type will be transferred, even if the flag use_&lt;data_type&gt; (e.g. use_behav) is False.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">project.upload_data(sub_names=&quot;all&quot;,</span> <span class="pre">ses_names=&quot;all&quot;,</span> <span class="pre">data_type=&quot;all&quot;)</span></code></p>
+<p>or equivalently
+<code class="docutils literal notranslate"><span class="pre">datashuttle</span> <span class="pre">my_project</span> <span class="pre">upload_data</span> <span class="pre">--sub_names</span> <span class="pre">all</span> <span class="pre">--ses_names</span> <span class="pre">all</span> <span class="pre">--data_type</span> <span class="pre">all</span></code></p>
+<p>will transfer everything in the local project director to the remote. The convenience functions upload_all()
+and download_all() can be used as shortcuts for this.</p>
+<section id="filtering-directories-to-transfer-and-using-convenience-tags">
+<h3>Filtering directories to transfer and using convenience tags<a class="headerlink" href="#filtering-directories-to-transfer-and-using-convenience-tags" title="Permalink to this heading">#</a></h3>
+<p>Similarly, specific subject and sessions to transfer can be selected with sub_names, ses_names and data_type
+arguments. Similarly to make_sub_dir(), subject / session names must be prefixed with “sub-” or “ses-” and if this prefix
+is not found, it will be added.</p>
+<p>For example,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span>
+<span class="n">sub_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">],</span>
+<span class="n">ses_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;ses-001&quot;</span><span class="p">,</span> <span class="s2">&quot;ses-005&quot;</span><span class="p">],</span>
+<span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;behav&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>or equivalently</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
+<span class="n">my_project</span> \
+<span class="n">download_data</span> \
+<span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="nb">all</span>
+<span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span> <span class="n">ses</span><span class="o">-</span><span class="mi">001</span> <span class="n">ses</span><span class="o">-</span><span class="mi">005</span>
+<span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">behav</span>
+</pre></div>
+</div>
+<p>will only transfer behavioral data type folders, for sessions 1 and 5 from all subjects.</p>
+<section id="id1">
+<h4>Convenience Tags<a class="headerlink" href="#id1" title="Permalink to this heading">#</a></h4>
+<p>Similarly to make_sub_dir(), convenience tags can be used to simplfy transfers. For data transfer,
+the most useful are the wildcard tag, &#64;*&#64; and the &#64;TO&#64; flag.</p>
+<p>The wildcard flag can be used to avoid specifying particular parts of subject / session names that are wanted to
+to tbe transferred. This is particularly useful for skipping the <code class="docutils literal notranslate"><span class="pre">date_xxxxxx</span></code> flag that might differ across sessions or subjects.</p>
+<p>For example,
+<code class="docutils literal notranslate"><span class="pre">project.upload_data(sub_names=&quot;sub-&#64;*&#64;&quot;,</span> <span class="pre">ses_names=&quot;ses-001_date-&#64;*&#64;&quot;,</span> <span class="pre">data_type=&quot;all&quot;)</span></code> or
+equivalently <code class="docutils literal notranslate"><span class="pre">datashuttle</span> <span class="pre">my_project</span> <span class="pre">upload_data</span> <span class="pre">--sub_names</span> <span class="pre">sub-&#64;*&#64;</span> <span class="pre">--ses_names</span> <span class="pre">ses-001_date-&#64;*&#64;</span> <span class="pre">--data_type</span> <span class="pre">all</span></code></p>
+<p>would transfer all any first session, irregardless of date, or all subjects and all data types.</p>
+</section>
+</section>
+</section>
+<section id="transferring-a-specific-file-or-folder">
+<h2>Transferring a specific file or folder<a class="headerlink" href="#transferring-a-specific-file-or-folder" title="Permalink to this heading">#</a></h2>
+<p>The functions upload_project_dir_or_file() or download_project_dir_or_file() can be used to
+transfer a particular, individual file or folder. The path to the file / folder, either full
+or relative to the project top level directory, should be input.</p>
+</section>
+<section id="logging">
+<h2>Logging<a class="headerlink" href="#logging" title="Permalink to this heading">#</a></h2>
+<p>Detailed logs of all configuration changes, directory creation and data transfers are logged
+to a .datashuttle directory in the local project directory. These logs are named
+with the command (e.g. make_config_file), date and time of creation.</p>
+</section>
+<section id="convenience-functions">
+<h2>Convenience Functions<a class="headerlink" href="#convenience-functions" title="Permalink to this heading">#</a></h2>
+<p>Convenience functions can be used to quickly get relevant project information. See the API or CLI documentation
+for more information.</p>
+</section>
+</section>
+
+
+            </article>
+            
+            
+            
+            <footer class="bd-footer-article">
+                <!-- Previous / next buttons -->
+<div class='prev-next-area'>
+</div>
+            </footer>
+            
+          </div>
+          
+          
+          
+            <div class="bd-sidebar-secondary bd-toc">
+              
+<div class="toc-item">
+  
+<div class="tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+</div>
+<nav id="bd-toc-nav" class="page-toc">
+    <ul class="visible nav section-nav flex-column">
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#datashuttle-configs">
+   DataShuttle Configs
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#configuration-file">
+     Configuration File
+    </a>
+   </li>
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#setting-up-an-ssh-connection">
+     Setting up an SSH Connection
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#making-project-directories">
+   Making Project Directories
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#convenience-tags">
+     Convenience Tags
+    </a>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#data-transfer">
+   Data Transfer
+  </a>
+  <ul class="nav section-nav flex-column">
+   <li class="toc-h3 nav-item toc-entry">
+    <a class="reference internal nav-link" href="#filtering-directories-to-transfer-and-using-convenience-tags">
+     Filtering directories to transfer and using convenience tags
+    </a>
+    <ul class="nav section-nav flex-column">
+     <li class="toc-h4 nav-item toc-entry">
+      <a class="reference internal nav-link" href="#id1">
+       Convenience Tags
+      </a>
+     </li>
+    </ul>
+   </li>
+  </ul>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#transferring-a-specific-file-or-folder">
+   Transferring a specific file or folder
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#logging">
+   Logging
+  </a>
+ </li>
+ <li class="toc-h2 nav-item toc-entry">
+  <a class="reference internal nav-link" href="#convenience-functions">
+   Convenience Functions
+  </a>
+ </li>
+</ul>
+
+</nav>
+</div>
+
+<div class="toc-item">
+  
+<div id="searchbox"></div>
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+<div class="toc-item">
+  
+</div>
+
+            </div>
+          
+          
+        </div>
+        <footer class="bd-footer-content">
+          <div class="bd-footer-content__inner">
+            
+          </div>
+        </footer>
+        
+      </main>
+    </div>
+  </div>
+
+  
+    
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script src="../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=796348d33e8b1d947c94"></script>
+
+  <footer class="bd-footer"><div class="bd-footer__inner container">
+  
+  <div class="footer-item">
+    
+<p class="copyright">
+
+    &copy; Copyright 2022, Neuroinformatics Unit.<br>
+
+</p>
+
+  </div>
+  
+  <div class="footer-item">
+    <p class="theme-version">
+    Built with the
+    <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">
+        PyData Sphinx Theme
+    </a>
+    0.12.0.
+</p>
+  </div>
+  
+  <div class="footer-item">
+    
+<p class="sphinx-version">
+Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.3.0.<br>
+</p>
+
+  </div>
+  
+</div>
+  </footer>
+  </body>
+</html>

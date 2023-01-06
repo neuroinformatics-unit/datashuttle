@@ -26,6 +26,7 @@
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2">
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=796348d33e8b1d947c94">
@@ -37,6 +38,7 @@
     <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="../../_static/doctools.js"></script>
     <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/design-tabs.js"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/datashuttle/datashuttle';</script>
     <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/_modules/datashuttle/datashuttle.html" />
@@ -97,7 +99,7 @@
 
   
   
-    <p class="title logo__title">datashuttle v0.1.dev1+g0ab2955</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gf3f6356</p>
   
 </a>
     
@@ -114,12 +116,6 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../api_index.html">
-                        API
-                      </a>
-                    </li>
-                
     </ul>
 </nav>
       </div>
@@ -201,12 +197,6 @@
     </p>
     <ul id="navbar-main-elements" class="navbar-nav">
         
-                    <li class="nav-item">
-                      <a class="nav-link nav-internal" href="../../api_index.html">
-                        API
-                      </a>
-                    </li>
-                
     </ul>
 </nav>
       </div>
@@ -305,7 +295,7 @@
 <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="DataShuttle"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle">[docs]</a><span class="k">class</span> <span class="nc">DataShuttle</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle">[docs]</a><span class="k">class</span> <span class="nc">DataShuttle</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    DataShuttle is a tool for convenient scientific</span>
 <span class="sd">    project management and data transfer in BIDS format.</span>
@@ -332,7 +322,7 @@
 <span class="sd">    profile if accepted, and setup ssh key pair.</span>
 
 <span class="sd">    Parameters</span>
-<span class="sd">    ---------</span>
+<span class="sd">    ----------</span>
 
 <span class="sd">    project_name : The project name to use the datashuttle</span>
 <span class="sd">                   Directories containing all project files</span>
@@ -391,7 +381,7 @@
     <span class="c1"># Public Directory Makers</span>
     <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.make_sub_dir"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_dir">[docs]</a>    <span class="nd">@check_configs_set</span>
+<div class="viewcode-block" id="DataShuttle.make_sub_dir"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_dir">[docs]</a>    <span class="nd">@check_configs_set</span>
     <span class="k">def</span> <span class="nf">make_sub_dir</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
@@ -404,6 +394,7 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+
 <span class="sd">        sub_names :</span>
 <span class="sd">                subject name / list of subject names to make</span>
 <span class="sd">                within the top-level project directory</span>
@@ -419,10 +410,11 @@
 <span class="sd">                (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;histology&quot;). Only data_types</span>
 <span class="sd">                that are enabled in the configs (e.g. use_behav) will be</span>
 <span class="sd">                created. If &quot;all&quot; is selected, directories will be created</span>
-<span class="sd">                for all data_type enabled in config.</span>
+<span class="sd">                for all data_type enabled in config. Use empty string &quot;&quot; for</span>
+<span class="sd">                none.</span>
 
 <span class="sd">        Notes</span>
-<span class="sd">        ------</span>
+<span class="sd">        -----</span>
 
 <span class="sd">        sub_names or ses_names may contain formatting tags</span>
 
@@ -490,7 +482,7 @@
     <span class="c1"># Public File Transfer</span>
     <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.upload_data"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.upload_data">[docs]</a>    <span class="k">def</span> <span class="nf">upload_data</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_data">[docs]</a>    <span class="k">def</span> <span class="nf">upload_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
@@ -555,7 +547,7 @@
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_data"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.download_data">[docs]</a>    <span class="k">def</span> <span class="nf">download_data</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_data">[docs]</a>    <span class="k">def</span> <span class="nf">download_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
@@ -586,7 +578,7 @@
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function to upload all data.</span>
 
@@ -597,7 +589,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">upload_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function to download all data.</span>
 
@@ -607,7 +599,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_project_dir_or_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_dir_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_project_dir_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_dir_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -641,7 +633,7 @@
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_project_dir_or_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_project_dir_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download_project_dir_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_project_dir_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -669,7 +661,7 @@
     <span class="c1"># SSH</span>
     <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.setup_ssh_connection_to_remote_server"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
+<div class="viewcode-block" id="DataShuttle.setup_ssh_connection_to_remote_server"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
     <span class="k">def</span> <span class="nf">setup_ssh_connection_to_remote_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup a connection to the remote server using SSH.</span>
@@ -695,7 +687,7 @@
         <span class="k">if</span> <span class="n">verified</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup_ssh_key_and_rclone_config</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.write_public_key"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.write_public_key">[docs]</a>    <span class="k">def</span> <span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.write_public_key"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.write_public_key">[docs]</a>    <span class="k">def</span> <span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        By default, the SSH private key only is stored, in</span>
 <span class="sd">        the datashuttle configs directory. Use this function</span>
@@ -720,7 +712,7 @@
     <span class="c1"># Configs</span>
     <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.make_config_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.make_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_config_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.make_config_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_config_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">remote_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -749,30 +741,42 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 
-<span class="sd">        local_path : path to project dir on local machine</span>
+<span class="sd">        local_path :</span>
+<span class="sd">            path to project dir on local machine</span>
 
-<span class="sd">        remote_path : Filepath to remote project.</span>
+<span class="sd">        remote_path :</span>
+<span class="sd">            Filepath to remote project.</span>
 <span class="sd">            If this is local (i.e. connection_method = &quot;local_filesystem&quot;),</span>
-<span class="sd">            this is the full path on the local filesystem (e.g. mounted drive)</span>
+<span class="sd">            this is the full path on the local filesystem</span>
 <span class="sd">            Otherwise, if this is via ssh (i.e. connection method = &quot;ssh&quot;),</span>
 <span class="sd">            this is the path to the project directory on remote machine.</span>
 <span class="sd">            This should be a full path to remote directory i.e. this cannot</span>
 <span class="sd">            include ~ home directory syntax, must contain the full path</span>
 <span class="sd">            (e.g. /nfs/nhome/live/jziminski)</span>
 
-<span class="sd">        connection_method : &quot;local_filesystem&quot; or &quot;ssh&quot;</span>
+<span class="sd">        connection_method :</span>
+<span class="sd">            The method used to connect to the remote project filesystem,</span>
+<span class="sd">            e.g. &quot;local_filesystem&quot; (e.g. mounted drive) or &quot;ssh&quot;</span>
 
-<span class="sd">        remote_host_id : address for remote host for ssh connection</span>
+<span class="sd">        remote_host_id :</span>
+<span class="sd">            server address for remote host for ssh connection</span>
+<span class="sd">            e.g. &quot;ssh.swc.ucl.ac.uk&quot;</span>
 
-<span class="sd">        remote_host_username : username for which to log in to remote host.</span>
+<span class="sd">        remote_host_username :</span>
+<span class="sd">            username for which to log in to remote host.</span>
+<span class="sd">            e.g. &quot;jziminski&quot;</span>
 
-<span class="sd">        use_ephys : will allow ephys directory creation</span>
+<span class="sd">        use_ephys :</span>
+<span class="sd">            if True, will allow ephys directory creation</span>
 
-<span class="sd">        use_funcimg : will allow funcimg directory creation</span>
+<span class="sd">        use_funcimg :</span>
+<span class="sd">            if True, will allow funcimg directory creation</span>
 
-<span class="sd">        use_histology : will allow histology directory creation</span>
+<span class="sd">        use_histology :</span>
+<span class="sd">            if True, will allow histology directory creation</span>
 
-<span class="sd">        use_behav : will allow behav directory creation</span>
+<span class="sd">        use_behav :</span>
+<span class="sd">            if True, will allow behav directory creation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;make_config_file&quot;</span><span class="p">,</span> <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">temp_dir_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span>
@@ -800,12 +804,8 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
 
-        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
-            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_remote_local_filesystem_config</span><span class="p">()</span>
+
         <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span>
             <span class="s2">&quot;Configuration file has been saved and &quot;</span>
             <span class="s2">&quot;options loaded into datashuttle.&quot;</span>
@@ -813,7 +813,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.update_config"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.update_config"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">option_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_info</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -824,10 +824,12 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 
-<span class="sd">        option_key : dictionary key of the option to change,</span>
+<span class="sd">        option_key :</span>
+<span class="sd">            dictionary key of the option to change,</span>
 <span class="sd">            see make_config_file() for available keys.</span>
 
-<span class="sd">        new_info : value to update the config too</span>
+<span class="sd">        new_info :</span>
+<span class="sd">            value to update the config too</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -867,7 +869,7 @@
         <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.supply_config_file"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.supply_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">supply_config_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.supply_config_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.supply_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">supply_config_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">input_path_to_config</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -927,13 +929,13 @@
     <span class="c1"># Public Getters</span>
     <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.get_local_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_local_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.get_local_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_local_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the projects local path.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_datashuttle_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_datashuttle_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.get_datashuttle_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_datashuttle_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the path to the local datashuttle</span>
 <span class="sd">        directory where configs another other</span>
@@ -941,35 +943,35 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_appdir_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_config_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.get_config_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the full path to the DataShuttle config file.</span>
 <span class="sd">        This is always formatted to UNIX style.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_remote_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.get_remote_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_remote_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.get_remote_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_remote_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_remote_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the project remote path.</span>
 <span class="sd">        This is always formatted to UNIX style.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_configs"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.show_configs">[docs]</a>    <span class="k">def</span> <span class="nf">show_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_configs"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_configs">[docs]</a>    <span class="k">def</span> <span class="nf">show_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the current configs to the terminal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_local_tree"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.show_local_tree">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.show_local_tree"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_tree">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print a tree schematic of all files and directories</span>
 <span class="sd">        in the local project.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="DataShuttle.check_name_processing"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.check_name_processing">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">check_name_processing</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.check_name_formatting"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.check_name_formatting">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
 <span class="sd">        for example as when passed to make_sub_dir() or upload_data() or</span>
@@ -993,7 +995,7 @@
         <span class="n">formatted_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">format_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">formatted_names</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.make_and_get_logging_path"><a class="viewcode-back" href="../../api_index.html#datashuttle.datashuttle.DataShuttle.make_and_get_logging_path">[docs]</a>    <span class="k">def</span> <span class="nf">make_and_get_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.make_and_get_logging_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_and_get_logging_path">[docs]</a>    <span class="k">def</span> <span class="nf">make_and_get_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Currently logging is located in config path</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1034,7 +1036,8 @@
 <span class="sd">        log : whether to log or not. If True, logging must</span>
 <span class="sd">            already be initialised.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_type_is_valid</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">error_on_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_type_is_valid</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">error_on_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">sub_names</span><span class="p">:</span>
 
@@ -1074,7 +1077,8 @@
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        data_type : data type (e.g. &quot;behav&quot;, &quot;all&quot;) to use</span>
+<span class="sd">        data_type : data type (e.g. &quot;behav&quot;, &quot;all&quot;) to use. Use</span>
+<span class="sd">            empty string (&quot;&quot;) for none.</span>
 
 <span class="sd">        sub_or_ses_level_path : Full path to the subject</span>
 <span class="sd">            or session directory where the new directory</span>
@@ -1086,6 +1090,9 @@
 <span class="sd">        log : whether to log on or not (if True, logging must</span>
 <span class="sd">            already be initialised).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">]:</span>
+            <span class="k">return</span>
+
         <span class="n">data_type_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_type_items</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">data_type_key</span><span class="p">,</span> <span class="n">data_type_dir</span> <span class="ow">in</span> <span class="n">data_type_items</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
@@ -1343,12 +1350,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hostkeys_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span>
         <span class="p">)</span>
 
-        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
-            <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_remote_ssh_config</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
 
     <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
     <span class="c1"># Utils</span>
@@ -1611,7 +1613,25 @@
 <span class="sd">        Within the project local_path is also a .datashuttle</span>
 <span class="sd">        folder that contains additional information, e.g. logs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_rclone_remote_ssh_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
+            <span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_rclone_remote_local_filesystem_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
+            <span class="s2">&quot;local_filesystem&quot;</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span></div>
 </pre></div>
 
             </article>
