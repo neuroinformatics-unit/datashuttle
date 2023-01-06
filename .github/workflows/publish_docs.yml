@@ -44,24 +44,3 @@ runs:
     with:
       github_token: ${{ env.GITHUB_TOKEN }}
       publish_dir: ./docs/build
-
-"""
-name: 'publish docs'
-
-# Publish when a git tag is pushed to main
-on:
-  push:
-    branches:
-      - add_docs
-#    tags:
-#      - '*'
-
-jobs:
-  publish_sphinx_docs:
-    name: Publish Sphinx Docs
-    runs-on: ubuntu-latest
-    steps:
-    - uses: neuroinformatics-unit/actions/publish_sphinx_docs@v1
-      with:
-        secret_input: ${{ secrets.GITHUB_TOKEN }}
-"""
