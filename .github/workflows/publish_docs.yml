@@ -12,46 +12,47 @@ on:
 jobs:
   publish:
 
-    runs:
-      using: 'composite'
-      steps:
-      - uses: actions/checkout@v3
+    runs-on:
+      ubuntu-latest
+    using: 'composite'
+    steps:
+    - uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.x'
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
 
-      - name: Upgrade pip
-        shell: bash
-        run: |
-          # install pip=>20.1 to use "pip cache dir"
-          python3 -m pip install --upgrade pip
-      - name: Get pip cache dir
-        shell: bash
-        id: pip-cache
-        run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+    - name: Upgrade pip
+      shell: bash
+      run: |
+        # install pip=>20.1 to use "pip cache dir"
+        python3 -m pip install --upgrade pip
+    - name: Get pip cache dir
+      shell: bash
+      id: pip-cache
+      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
 
-      - name: Cache dependencies
-        uses: actions/cache@v3
-        with:
-          path: ${{ steps.pip-cache.outputs.dir }}
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-      - name: Install dependencies
-        shell: bash
-        run: python3 -m pip install -r ./docs/requirements.txt
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Install dependencies
+      shell: bash
+      run: python3 -m pip install -r ./docs/requirements.txt
 
-      # needs to have sphinx.ext.githubpages in conf.py extensions list
-      - name: Building documentation
-        shell: bash
-        run: |
-          sphinx-build docs/source docs/build -W -T -b html
-      - name: Deploy
-        env:
-          GITHUB_TOKEN: ${{ inputs.secret_input }}
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ env.GITHUB_TOKEN }}
-          publish_dir: ./docs/build
+    # needs to have sphinx.ext.githubpages in conf.py extensions list
+    - name: Building documentation
+      shell: bash
+      run: |
+        sphinx-build docs/source docs/build -W -T -b html
+    - name: Deploy
+      env:
+        GITHUB_TOKEN: ${{ inputs.secret_input }}
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ env.GITHUB_TOKEN }}
+        publish_dir: ./docs/build
