@@ -9,6 +9,7 @@ pydata-sphinx-theme
 PyYAML
 requests
 rich
+setuptools_scm
 sphinx>=5.0,<6.0
 sphinx-argparse
 sphinx-design
