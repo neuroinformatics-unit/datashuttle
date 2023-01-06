@@ -532,7 +532,8 @@ def construct_parser():
         "--data_type",
         type=str,
         nargs="+",
-        required=True,
+        required=False,
+        default="all",
         help=help("required_str_single_or_multiple_or_all"),
         metavar="",
     )

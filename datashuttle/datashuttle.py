@@ -146,7 +146,8 @@ class DataShuttle:
                 (e.g. "ephys", "behav", "histology"). Only data_types
                 that are enabled in the configs (e.g. use_behav) will be
                 created. If "all" is selected, directories will be created
-                for all data_type enabled in config.
+                for all data_type enabled in config. Use empty string "" for
+                none.
 
         Notes
         -----
@@ -775,7 +776,8 @@ class DataShuttle:
         log : whether to log or not. If True, logging must
             already be initialised.
         """
-        self._check_data_type_is_valid(data_type, error_on_fail=True)
+        if data_type not in [[""], ""]:
+            self._check_data_type_is_valid(data_type, error_on_fail=True)
 
         for sub in sub_names:
 
@@ -815,7 +817,8 @@ class DataShuttle:
 
         Parameters
         ----------
-        data_type : data type (e.g. "behav", "all") to use
+        data_type : data type (e.g. "behav", "all") to use. Use
+            empty string ("") for none.
 
         sub_or_ses_level_path : Full path to the subject
             or session directory where the new directory
@@ -827,6 +830,9 @@ class DataShuttle:
         log : whether to log on or not (if True, logging must
             already be initialised).
         """
+        if data_type in [[""], ""]:
+            return
+
         data_type_items = self._get_data_type_items(data_type)
 
         for data_type_key, data_type_dir in data_type_items:  # type: ignore
