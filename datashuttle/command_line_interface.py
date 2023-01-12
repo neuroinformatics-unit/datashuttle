@@ -782,7 +782,8 @@ def construct_parser():
     check_name_formatting_parser.add_argument(
         "--prefix",
         type=str,
-        help="Required: (str)",
+        required=True,
+        help="Required: (str) (sub- or ses-)",
     )
 
     # Supply Config

@@ -46,3 +46,21 @@ See the SWC-BIDS [specification](https://swc-bids.neuroinformatics.dev/) for mor
             │   └── behav/
             └── histology/
 ```
+
+
+```+
+└── project_name/
+    └── rawdata/
+        ├── sub-001  /
+        │   ├── ses-001/
+        │   │   ├── ephys
+        │   │   └── behav
+        │   └── histology
+        └── sub-002/
+            ├── ses-001/
+            │   ├── behav
+            │   └── imaging
+            ├── ses-002/
+            │   └── behav
+            └── histology
+```
