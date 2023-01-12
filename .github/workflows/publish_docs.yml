@@ -5,8 +5,8 @@ on:
   push:
     branches:
       - add_docs
-#    tags:
-#      - '*'
+    tags:
+      - '*'
 
 jobs:
   publish_sphinx_docs:
