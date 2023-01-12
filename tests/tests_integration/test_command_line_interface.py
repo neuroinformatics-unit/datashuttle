@@ -455,8 +455,8 @@ class TestCommandLineInterface:
         Check that testing the process names function outputs the
         properly processed names to stdout
         """
-        stdout, __ = test_utils.run_cli(
-            f"check{sep}name{sep}processing sub-001 1{tags('to')}02 --prefix sub-",
+        stdout, stderr = test_utils.run_cli(
+            f"check{sep}name{sep}formatting sub-001 1{tags('to')}02 --prefix sub-",
             clean_project_name,
         )
 
