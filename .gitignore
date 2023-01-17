@@ -1,3 +1,6 @@
+# datashuttle testing
+test_ssh_password.txt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
