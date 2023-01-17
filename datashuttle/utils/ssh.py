@@ -151,6 +151,7 @@ def verify_ssh_remote_host(
         client.get_host_keys().add(remote_host_id, key.get_name(), key)
         client.get_host_keys().save(hostkeys_path.as_posix())
         success = True
+        utils.message_user("Host accepted.")
     else:
         utils.message_user("Host not accepted. No connection made.")
         success = False
