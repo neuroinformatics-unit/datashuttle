@@ -58,7 +58,7 @@ def setup_project_default_configs(
 
     warnings.filterwarnings("default")
 
-    project.update_config("local_path", project._appdir_path / "base_dir")
+    project.update_config("local_path", project._datashuttle_path / "base_dir")
 
     if local_path:
         project.update_config("local_path", local_path)
@@ -123,7 +123,7 @@ def make_correct_supply_config_file(
     setup_project, tmp_path, update_configs=False
 ):
     """"""
-    new_configs_path = setup_project._appdir_path / "new_configs.yaml"
+    new_configs_path = setup_project._datashuttle_path / "new_configs.yaml"
     new_configs = get_test_config_arguments_dict(tmp_path)
 
     canonical_config_dict = canonical_configs.get_canonical_config_dict()

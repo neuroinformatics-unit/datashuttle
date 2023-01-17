@@ -76,7 +76,7 @@ class DataShuttle:
 
         self.project_name = project_name
         (
-            self._appdir_path,
+            self._datashuttle_path,
             self._temp_log_path,
         ) = utils.get_datashuttle_path(self.project_name)
         self._config_path = self._make_path("datashuttle", "config.yaml")
@@ -677,7 +677,7 @@ class DataShuttle:
         directory where configs another other
         datashuttle files are stored.
         """
-        utils.message_user(self._appdir_path.as_posix())
+        utils.message_user(self._datashuttle_path.as_posix())
 
     def get_config_path(self) -> None:
         """
