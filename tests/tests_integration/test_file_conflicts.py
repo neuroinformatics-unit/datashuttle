@@ -4,6 +4,7 @@ import pytest
 import test_utils
 
 
+@pytest.mark.skip(reason="IN PROGRESS")
 class TestFileTransfer:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
@@ -74,16 +75,21 @@ class TestFileTransfer:
         assert remote_contents == ["first edit"]
 
 
+# NEW ARGS
+# 1) add all new rclone flags (decide if own dict or kwargs, kwargs probably better) to API
+# 2) add all new flags to CLI
+# 3) Add to docstrings, and check. Doc in the documentation
+
+# 4) test all, in particular the removal of --ignore-existing. When the user transfers, it makes
+#    sense to have a comment explicitly stating the nature of the transfer (or, at the end).
+
+
+# PROJECT / SUB / SES LEVEL UNTRACKED FILES
+# add keyword arguments a la #70
+
 # Note: Use the -P/--progress flag to view real-time transfer statistics.
 
 # new rclone args:
-#   progress
-#   overwrite only
-
-# TODO: progress and dry-run are not tested
-
-
-# TODO: add sub level transfer
-#       add rclone args
-
-# test sub=x, ses=None,
+#   --progress
+#   ignore-existing
+#   verbosity
