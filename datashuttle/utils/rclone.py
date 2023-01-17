@@ -59,10 +59,15 @@ def transfer_data(
     dry_run : if True, output will be as usual but no
         file will be transferred.
     """
-    extra_arguments = rclone_args("create_empty_src_dirs")
+    extra_arguments_list = [
+        rclone_args("create_empty_src_dirs"),
+        rclone_args("ignore_existing"),
+    ]
 
     if dry_run:
-        extra_arguments += f" {rclone_args('dry_run')}"
+        extra_arguments_list += [rclone_args("dry_run")]
+
+    extra_arguments = " ".join(extra_arguments_list)
 
     if upload_or_download == "upload":
 
@@ -180,5 +185,8 @@ def rclone_args(name: str) -> str:
 
     if name == "copy":
         arg = "copy"
+
+    if name == "ignore_existing":
+        arg = "--ignore-existing"
 
     return arg
