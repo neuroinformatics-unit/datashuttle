@@ -45,9 +45,9 @@ REMOTE_HOST_ID = "ssh.swc.ucl.ac.uk"
 REMOTE_HOST_USERNAME = "jziminski"
 
 
-@pytest.mark.skip(
-    reason="SSH tests require SWC VPC. " "These cannot be run using CI"
-)
+# @pytest.mark.skip(
+#   reason="SSH tests require SWC VPC. " "These cannot be run using CI" ####################### SORT THIS OUT #############################################################################################
+# )
 class TestSSH:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
@@ -113,13 +113,6 @@ class TestSSH:
         """
         builtins.input = orig_builtin
 
-    def clear_capsys(self, capsys):
-        """
-        read from capsys clears it, so new
-        print statements are clearer to read.
-        """
-        capsys.readouterr()
-
     def setup_hostkeys(self, project):
         """
         Convenience function to verify the server hostkey.
@@ -161,7 +154,7 @@ class TestSSH:
         User is asked to accept the server hostkey. Mock this here
         and check hostkey is successfully accepted and written to configs.
         """
-        self.clear_capsys(capsys)
+        test_utils.clear_capsys(capsys)
         orig_builtin = self.setup_mock_input(input_="y")
 
         verified = ssh.verify_ssh_remote_host(
@@ -219,7 +212,7 @@ class TestSSH:
             f"Private key at:" in capsys.readouterr().out
         )
 
-        self.clear_capsys(capsys)
+        test_utils.clear_capsys(capsys)
         with paramiko.SSHClient() as client:
             ssh.connect_client(
                 client,

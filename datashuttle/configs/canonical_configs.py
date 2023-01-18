@@ -33,6 +33,9 @@ def get_canonical_config_dict() -> dict:
         "connection_method": None,
         "remote_host_id": None,
         "remote_host_username": None,
+        "overwrite_old_files_on_transfer": None,
+        "transfer_verbosity": None,
+        "show_transfer_progress": None,
     }
 
     data_type_configs = get_data_types(as_dict=True)
@@ -60,7 +63,10 @@ def get_flags() -> List[str]:
     Return all configs that are bool flags. This is used in
     testing and type checking config inputs.
     """
-    return get_data_types()
+    return get_data_types() + [
+        "overwrite_old_files_on_transfer",
+        "show_transfer_progress",
+    ]
 
 
 def get_canonical_config_required_types() -> dict:
@@ -74,6 +80,9 @@ def get_canonical_config_required_types() -> dict:
         "connection_method": str,
         "remote_host_id": Union[str, None],
         "remote_host_username": Union[str, None],
+        "overwrite_old_files_on_transfer": bool,
+        "transfer_verbosity": str,
+        "show_transfer_progress": bool,
         "use_ephys": bool,
         "use_behav": bool,
         "use_funcimg": bool,
@@ -158,6 +167,13 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             "required if connection_method is ssh."
         )
 
+    # Transfer settings
+    if config_dict["transfer_verbosity"] not in ["v", "vv"]:
+        utils.log_and_raise_error(
+            "transfer_verbosity must be either v or vv. " "Config not updated."
+        )
+
+    # Initialise the local project directory
     try:
         utils.message_user(
             f"Making project directory at: {config_dict['local_path']}"

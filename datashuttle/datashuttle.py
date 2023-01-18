@@ -260,6 +260,10 @@ class DataShuttle:
         Notes
         -----
 
+        The configs "overwrite_old_files_on_transfer", "transfer_verbosity"
+        and "show_transfer_progress" pertain to data-transfer settings.
+        See make_config_file() for more information.
+
         sub_names or ses_names may contain certain formatting tags:
 
         @*@: wildcard search for subject names. e.g. ses-001_date-@*@
@@ -314,7 +318,7 @@ class DataShuttle:
             log=True,
         )
 
-    def upload_all(self):
+    def upload_all(self, dry_run: bool = False):
         """
         Convenience function to upload all data.
 
@@ -323,9 +327,9 @@ class DataShuttle:
         """
         self._start_log("upload_all")
 
-        self.upload_data("all", "all", "all", init_log=False)
+        self.upload_data("all", "all", "all", dry_run=dry_run, init_log=False)
 
-    def download_all(self):
+    def download_all(self, dry_run: bool = False):
         """
         Convenience function to download all data.
 
@@ -333,7 +337,9 @@ class DataShuttle:
         """
         self._start_log("download_all")
 
-        self.download_data("all", "all", "all", init_log=False)
+        self.download_data(
+            "all", "all", "all", dry_run=dry_run, init_log=False
+        )
 
     def upload_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
@@ -455,6 +461,9 @@ class DataShuttle:
         connection_method: str,
         remote_host_id: Optional[str] = None,
         remote_host_username: Optional[str] = None,
+        overwrite_old_files_on_transfer: bool = False,
+        transfer_verbosity: str = "v",
+        show_transfer_progress: bool = False,
         use_ephys: bool = False,
         use_behav: bool = False,
         use_funcimg: bool = False,
@@ -502,6 +511,24 @@ class DataShuttle:
             username for which to log in to remote host.
             e.g. "jziminski"
 
+        overwrite_old_files_on_transfer :
+            If True, when copying data (upload or download) files
+            will be overwritten if the timestamp of the copied
+            version is later than the target directory version
+            of the file i.e. edits made to a file in the source
+            machine will be copied to the target machine. If False,
+            a file will be copied if it does not exist on the target
+            directory, otherwise it will never be copied, even if
+            the source version of the file has a later timestamp.
+
+        transfer_verbosity :
+            "v" will tell you about each file that is transferred and
+            significant events, "vv" will be very verbose and inform
+            on all events.
+
+        show_transfer_progress :
+            If true, the real-time progress of file transfers will be printed.
+
         use_ephys :
             if True, will allow ephys directory creation
 
@@ -526,6 +553,9 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
+                "overwrite_old_files_on_transfer": overwrite_old_files_on_transfer,
+                "transfer_verbosity": transfer_verbosity,
+                "show_transfer_progress": show_transfer_progress,
                 "use_ephys": use_ephys,
                 "use_behav": use_behav,
                 "use_funcimg": use_funcimg,
@@ -1031,7 +1061,14 @@ class DataShuttle:
             remote_filepath,
             self._get_rclone_config_name(),
             upload_or_download,
-            dry_run,
+            rclone_options={  # TODO: this is stupid
+                "overwrite_old_files_on_transfer": self.cfg[
+                    "overwrite_old_files_on_transfer"
+                ],
+                "transfer_verbosity": self.cfg["transfer_verbosity"],
+                "show_transfer_progress": self.cfg["show_transfer_progress"],
+                "dry_run": dry_run,
+            },
         )
 
         if log:

@@ -77,6 +77,16 @@ class TestCommandLineInterface:
         the expected form. Strip flags that are always false.
         Note use_behav is always on as a required argument,
         as at least one use_x argument must be true.
+
+        Note any bool option is automatically included in the kwargs
+        output from the CLI and passed to API. This is because initially
+        any non-required argument defaulted to None. None is then
+        stripped from the kwargs_ in the CLI code so these are not
+        passed to the API and the default is used. However, for flags
+        this is not possible, so the default value (False) is
+        passed to the API. Here we need to delete the options
+        that do not default to None on the CLI from the dictionary
+        that is tested again (because, these are stripped in the CLI code)
         """
         required_options = test_utils.get_test_config_arguments_dict(
             tmp_path, required_arguments_only=True
@@ -89,12 +99,16 @@ class TestCommandLineInterface:
 
         __, kwargs_ = self.decode(stdout)
 
-        # Update with flags that should always return false
-        flags = canonical_configs.get_flags()
-        flags.remove("use_behav")
-        required_options.update(dict(zip(flags, [False] * len(flags))))
+        # Remove items that are stripped from configs because they
+        # default to None on the CLI
+        default_options = test_utils.get_test_config_arguments_dict(
+            tmp_path, set_as_defaults=True
+        )
+        del default_options["remote_host_id"]
+        del default_options["remote_host_username"]
+        del default_options["transfer_verbosity"]
 
-        self.check_kwargs(required_options, kwargs_)
+        self.check_kwargs(default_options, kwargs_)
 
     def test_make_config_file_non_default_variables(self, tmp_path):
         """
@@ -105,7 +119,7 @@ class TestCommandLineInterface:
             tmp_path, set_as_defaults=False
         )
 
-        stdout, __ = test_utils.run_cli(
+        stdout, stderr = test_utils.run_cli(
             " make_config_file " + self.convert_kwargs_to_cli(changed_configs)
         )
 

@@ -279,3 +279,72 @@ class TestFileTransfer:
                 "ses-001_date-20220501",
                 "ses-002_date-20220516",
             ]
+
+    @pytest.mark.parametrize("overwrite_old_files_on_transfer", [True, False])
+    @pytest.mark.parametrize("show_transfer_progress", [True, False])
+    @pytest.mark.parametrize("dry_run", [True, False])
+    def test_rclone_options(
+        self,
+        project,
+        overwrite_old_files_on_transfer,
+        show_transfer_progress,
+        dry_run,
+        capsys,
+    ):
+        """
+        When verbosity is --vv, rclone itself will output
+        a list of all called arguments. Use this to check
+        rclone is called with the arguments set in configs
+        as expected. verbosity itself is tested in another method.
+        """
+        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+
+        project.update_config(
+            "overwrite_old_files_on_transfer", overwrite_old_files_on_transfer
+        )
+        project.update_config("transfer_verbosity", "vv")
+        project.update_config("show_transfer_progress", show_transfer_progress)
+
+        test_utils.clear_capsys(capsys)
+        project.upload_all(dry_run=dry_run)
+
+        log = capsys.readouterr().out
+
+        assert "--create-empty-src-dirs" in log
+
+        if overwrite_old_files_on_transfer:
+            assert "--ignore-existing" not in log
+        else:
+            assert "--ignore-existing" in log
+
+        if show_transfer_progress:
+            assert "--progress" in log
+        else:
+            assert "--progress" not in log
+
+        if dry_run:
+            assert "--dry-run" in log
+        else:
+            assert "--dry-run" not in log
+
+    @pytest.mark.parametrize("transfer_verbosity", ["v", "vv"])
+    def test_rclone_transfer_verbosity(
+        self, project, transfer_verbosity, capsys
+    ):
+        """
+        see test_rclone_options()
+        """
+        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+        project.update_config("transfer_verbosity", transfer_verbosity)
+
+        test_utils.clear_capsys(capsys)
+        project.upload_all()
+
+        log = capsys.readouterr().out
+
+        if transfer_verbosity == "vv":
+            assert "-vv" in log
+        elif transfer_verbosity == "v":
+            assert "starting with parameters [" not in log and "-vv" not in log
+        else:
+            raise BaseException("wrong parameter passed as transfer_verbosity")

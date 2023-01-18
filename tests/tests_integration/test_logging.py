@@ -179,6 +179,10 @@ class TestCommandLineInterface:
     def test_logs_upload_and_download_data(
         self, setup_project, upload_or_download, use_all_alias
     ):
+        """
+        Set transfer verbosity and progress settings so
+        maximum output is produced to test against.
+        """
         subs = ["sub-1_1"]
         sessions = ["ses-123"]
 
@@ -188,6 +192,9 @@ class TestCommandLineInterface:
             sessions,
             "all",
         )
+
+        setup_project.update_config("show_transfer_progress", False)
+        setup_project.update_config("transfer_verbosity", "vv")
 
         (
             transfer_function,
@@ -211,6 +218,7 @@ class TestCommandLineInterface:
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
+
         assert "/test_logging/local/rawdata/sub-1_1/histology" in log
         assert (
             "/test_logging/remote/rawdata/sub-1_1/histology: copied 1 directories"
@@ -225,13 +233,20 @@ class TestCommandLineInterface:
     def test_logs_upload_and_download_dir_or_file(
         self, setup_project, upload_or_download
     ):
-        """ """
+        """
+        Set transfer verbosity and progress settings so
+        maximum output is produced to test against.
+        """
         test_utils.make_and_check_local_project(
             setup_project,
             subs=["sub-001"],
             sessions=["ses-001"],
             data_type="all",
         )
+
+        setup_project.update_config("show_transfer_progress", False)
+        setup_project.update_config("transfer_verbosity", "vv")
+
         test_utils.handle_upload_or_download(
             setup_project,
             upload_or_download,

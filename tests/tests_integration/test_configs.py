@@ -279,6 +279,7 @@ class TestConfigs:
         bad_configs_path = setup_project._datashuttle_path / "bad_config.yaml"
 
         for key in setup_project.cfg.keys():
+
             if key in setup_project.cfg.keys_str_on_file_but_path_in_class:
                 continue
 

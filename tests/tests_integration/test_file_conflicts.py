@@ -36,7 +36,10 @@ class TestFileTransfer:
             contents = file.readlines()
         return contents
 
-    def test_rclone_overwrite_modified_file(self, project):
+    @pytest.mark.parametrize("overwrite_old_files_on_transfer", [True, False])
+    def test_rclone_overwrite_modified_file(
+        self, project, overwrite_old_files_on_transfer
+    ):
         """"""
         project.make_sub_dir("sub-001")
         local_test_file_path = (
@@ -59,12 +62,15 @@ class TestFileTransfer:
 
         time_written = os.path.getatime(local_test_file_path)
 
+        if overwrite_old_files_on_transfer:
+            project.update_config("overwrite_old_files_on_transfer", True)
+
         project.upload_all()
 
         # Update the file and transfer, the remote file should not be
         # ovewritten.
 
-        self.write_file(local_test_file_path, "second edit", append=True)
+        self.write_file(local_test_file_path, " second edit", append=True)
 
         assert time_written < os.path.getatime(local_test_file_path)
 
@@ -72,17 +78,16 @@ class TestFileTransfer:
 
         remote_contents = self.read_file(remote_test_file_path)
 
-        assert remote_contents == ["first edit"]
+        if overwrite_old_files_on_transfer:
+            assert remote_contents == ["first edit second edit"]
+        else:
+            assert remote_contents == ["first_edit"]
 
 
-# NEW ARGS
-# 1) add all new rclone flags (decide if own dict or kwargs, kwargs probably better) to API
-# 2) add all new flags to CLI
 # 3) Add to docstrings, and check. Doc in the documentation
 
 # 4) test all, in particular the removal of --ignore-existing. When the user transfers, it makes
 #    sense to have a comment explicitly stating the nature of the transfer (or, at the end).
-
 
 # PROJECT / SUB / SES LEVEL UNTRACKED FILES
 # add keyword arguments a la #70

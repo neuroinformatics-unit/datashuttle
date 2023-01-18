@@ -184,7 +184,7 @@ def get_test_config_arguments_dict(
         "remote_path": f"{tmp_path}/a/re al/remote_ local/directory",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
-        # but at least 1 use_x is, so
+        # but at least 1 use_x must be true, so
         # for tests always set use_behav=True
     }
 
@@ -196,6 +196,9 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": None,
                 "remote_host_username": None,
+                "overwrite_old_files_on_transfer": False,
+                "transfer_verbosity": "v",
+                "show_transfer_progress": False,
                 "use_ephys": False,
                 "use_histology": False,
                 "use_funcimg": False,
@@ -209,6 +212,9 @@ def get_test_config_arguments_dict(
                 "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
+                "overwrite_old_files_on_transfer": True,
+                "transfer_verbosity": "vv",
+                "show_transfer_progress": True,
                 "use_ephys": True,
                 "use_behav": False,
                 "use_histology": True,
@@ -555,3 +561,11 @@ def move_some_keys_to_end_of_dict(config):
     """
     config["connection_method"] = config.pop("connection_method")
     config["use_behav"] = config.pop("use_behav")
+
+
+def clear_capsys(capsys):
+    """
+    read from capsys clears it, so new
+    print statements are clearer to read.
+    """
+    capsys.readouterr()

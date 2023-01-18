@@ -425,6 +425,26 @@ def construct_parser():
         help="(str)",
     )
     make_config_file_parser.add_argument(
+        "--overwrite-old-files-on-transfer",
+        "--overwrite_old_files_on_transfer",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+    make_config_file_parser.add_argument(
+        "--transfer-verbosity",
+        "--transfer_verbosity",
+        required=False,
+        help="(str)",
+    )
+    make_config_file_parser.add_argument(
+        "--show-transfer-progress",
+        "--show_transfer_progress",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+    make_config_file_parser.add_argument(
         "--use-ephys",
         "--use_ephys",
         required=False,
@@ -529,7 +549,7 @@ def construct_parser():
         type=str,
         nargs="+",
         required=False,
-        default="all",
+        default="all",  # TODO: this is not nice, should read the default from API NOT duplicate in CLI
         help=help("required_str_single_or_multiple_or_all"),
     )
 
