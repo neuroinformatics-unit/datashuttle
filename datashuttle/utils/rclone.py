@@ -46,6 +46,14 @@ def handle_rclone_arguments(rclone_options):
     if rclone_options["dry_run"]:
         extra_arguments_list += [rclone_args("dry_run")]
 
+    if rclone_options["exclude_list"]:
+        exclude_text = " --exclude "
+        full_exclude_paths = [
+            path_ + "/**" for path_ in rclone_options["exclude_list"]
+        ]
+        exclude_flags = f"{exclude_text}{exclude_text.join(full_exclude_paths)}"  # TODO: handle at rclone level
+        extra_arguments_list += [exclude_flags]
+
     extra_arguments = " ".join(extra_arguments_list)
 
     return extra_arguments
@@ -85,6 +93,7 @@ def transfer_data(
     extra_arguments = handle_rclone_arguments(rclone_options)
 
     if upload_or_download == "upload":
+
         output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{rclone_config_name}:{remote_filepath}" {extra_arguments}',
@@ -92,6 +101,7 @@ def transfer_data(
         )
 
     elif upload_or_download == "download":
+
         output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{rclone_config_name}:'

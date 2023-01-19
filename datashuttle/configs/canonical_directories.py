@@ -3,7 +3,21 @@ from datashuttle.utils.directory_class import Directory
 from .configs import Configs
 
 
-def get_directories(cfg: Configs) -> dict:
+def get_reserved_filetransfer_keywords(level: str) -> list:
+    """ """
+    if level == "sub":
+        keywords = ["all_sub", "all_non_sub"]
+
+    elif level == "ses":
+        keywords = ["all_ses", "all_non_ses"]
+
+    elif level == "data_type":
+        keywords = ["all_data_type", "all_ses_level_non_data_type"]
+
+    return keywords
+
+
+def get_data_type_directories(cfg: Configs) -> dict:
     """
     This function holds the canonical directories
     managed by datashuttle.
@@ -65,3 +79,22 @@ def get_directories(cfg: Configs) -> dict:
             level="sub",
         ),
     }
+
+
+def get_data_type_directories_by_level(
+    level: str, used_only: bool, as_str: bool, cfg: Configs
+):  # TODO: DOC!
+
+    directories = [
+        dir
+        for dir in get_data_type_directories(cfg).values()
+        if dir.level == level
+    ]
+
+    if used_only:
+        directories = [dir for dir in directories if dir.used]
+
+    if as_str:
+        directories = [dir.name for dir in directories]
+
+    return directories

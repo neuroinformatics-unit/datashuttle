@@ -87,6 +87,30 @@ class TestFileTransfer:
             assert remote_contents == ["first edit"]
 
 
+# dont forget to type everything!
+
+# possible inputs
+# ---------------
+
+# sub_names: "all", "all_sub", "all_non_sub", [some sub names]
+
+# ses_names: "all", "all_ses", "all_non_ses", [some ses_names]
+
+# data_type: "all", "all_data_type", "all_ses_level_non_data_type", [some data type names]
+
+# path table
+# ---------------
+
+# Path : full path to file
+# is_dir : True if directory, False if file
+# level : "project", "sub" or "ses" (i.e. it is in the top level folder (e.g. rawdata), subject levle, or session level.
+# parent_sub : if ses file or other, name of the parent subject (otherwise None)
+# parent_ses : if data type or other file, name of the parent session folder
+# is_data_type : the data type if True, otherwise None
+
+# def test_all_data_transfer_options()
+
+
 # https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
 # but these drop python access to internet NOT entire internet (at least some of them)
 

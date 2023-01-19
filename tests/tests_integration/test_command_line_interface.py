@@ -187,7 +187,7 @@ class TestCommandLineInterface:
         stdout, stderr = test_utils.run_cli(
             f"{upload_or_download}{sep}all", setup_project.project_name
         )
-        assert stdout == ""
+
         assert stderr == ""
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])

@@ -244,5 +244,12 @@ def ensure_prefixes_on_list_of_names(
     """
     n_chars = len(prefix)
     return [
-        prefix + name if name[:n_chars] != prefix else name for name in names
+        prefix + name
+        if (
+            name[:n_chars] != prefix
+            and name
+            not in ["all_sub", "all_ses", "all_non_sub", "all_non_ses"]
+        )
+        else name
+        for name in names  # TODO LOL FIX
     ]

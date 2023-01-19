@@ -7,7 +7,7 @@ import os
 import shutil
 from collections.abc import ItemsView
 from pathlib import Path
-from typing import Any, List, Optional, Union, cast
+from typing import Any, List, Optional, Tuple, Union, cast
 
 import paramiko
 
@@ -111,7 +111,9 @@ class DataShuttle:
         )
         self._hostkeys_path = self._make_path("datashuttle", "hostkeys")
 
-        self._data_type_dirs = canonical_directories.get_directories(self.cfg)
+        self._data_type_dirs = canonical_directories.get_data_type_directories(
+            self.cfg
+        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Directory Makers
@@ -877,11 +879,47 @@ class DataShuttle:
     # File Transfer
     # --------------------------------------------------------------------------------------------------------------------
 
+    def check_transfer_sub_ses_input(
+        self, sub_names, ses_names, data_type
+    ) -> Tuple[List[str], List[str], List[str]]:
+
+        if type(sub_names) == str:
+            sub_names = [sub_names]
+
+        if type(ses_names) == str:
+            ses_names = [ses_names]
+
+        if type(data_type) == str:
+            data_type = [data_type]
+
+        if len(sub_names) > 1 and any(
+            [name in ["all", "all_sub"] for name in sub_names]
+        ):
+            utils.log_and_raise_error(
+                "sub_names must only include 'all' or 'all_subs' if these options are used"
+            )  # TODO: if you pass something that doesn't exist, there is no warning
+
+        if len(ses_names) > 1 and any(
+            [name in ["all", "all_ses"] for name in ses_names]
+        ):
+            utils.log_and_raise_error(
+                "ses_names must only include 'all' or 'all_ses' if these options are used"
+            )
+
+        if len(data_type) > 1 and any(
+            [name in ["all", "all_data_type"] for name in data_type]
+        ):
+            utils.log_and_raise_error(
+                "data_type must only include 'all' or 'all_data_type' if these options are used"
+            )
+
+        return sub_names, ses_names, data_type
+
     def _transfer_sub_ses_data(
         self,
         upload_or_download: str,
-        sub_names: Union[str, list],
-        ses_names: Union[str, list],
+        sub_names: Union[str, List[str]],
+        ses_names: Union[str, List[str]],
         data_type: str,
         dry_run: bool,
         log: bool = True,
@@ -902,68 +940,175 @@ class DataShuttle:
 
         dry_run : see upload_project_dir_or_file()
         """
+        (
+            sub_names_checked,
+            ses_names_checked,
+            data_type_checked,
+        ) = self.check_transfer_sub_ses_input(sub_names, ses_names, data_type)
+
         local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
         base_dir = self._get_base_and_top_level_dir(local_or_remote)
 
         # Find sub names to transfer
-        if sub_names in ["all", ["all"]]:
-            sub_names = directories.search_sub_or_ses_level(
+        if sub_names_checked in [["all"], ["all_sub"]]:
+            processed_sub_names = directories.search_sub_or_ses_level(
                 self,
                 base_dir,
                 local_or_remote,
                 search_str=f"{self.cfg.sub_prefix}*",
             )
+            if sub_names_checked == [
+                "all"
+            ]:  # TODO: just made these list sinitially so can stop al lthese stupid checks
+                processed_sub_names += ["all_non_sub"]
+
         else:
-            sub_names = self._format_names(sub_names, "sub")
-            sub_names = directories.search_for_wildcards(
-                self, base_dir, local_or_remote, sub_names
+            processed_sub_names = self._format_names(
+                sub_names_checked, "sub"
+            )  # TODO: will need to ignore keywords # TODO: save somewhere?
+            processed_sub_names = directories.search_for_wildcards(
+                self, base_dir, local_or_remote, processed_sub_names
             )
 
-        for sub in sub_names:
+        for sub in processed_sub_names:
+
+            if sub == "all_non_sub":  # all_sub is handled above
+                self._transfer_all_non_sub_ses_data_type_(
+                    upload_or_download,
+                    local_or_remote,
+                    "all_non_sub",
+                    None,
+                    None,
+                    dry_run,
+                    log,
+                )
+                continue
 
             self._transfer_data_type(
                 upload_or_download,
                 local_or_remote,
-                data_type,
+                data_type_checked,
                 sub,
                 dry_run=dry_run,
                 log=log,
             )
 
             # Find ses names  to transfer
-            if ses_names in ["all", ["all"]]:
-                ses_names = directories.search_sub_or_ses_level(
+            if ses_names_checked in [
+                ["all"],
+                ["all_ses"],
+            ]:  # TODO: save somewhere?
+                processed_ses_names = directories.search_sub_or_ses_level(
                     self,
                     base_dir,
                     local_or_remote,
                     sub,
                     search_str=f"{self.cfg.ses_prefix}*",
                 )
+                if ses_names_checked == [
+                    "all"
+                ]:  # TODO: just made these list sinitially so can stop al lthese stupid checks
+                    processed_ses_names += ["all_non_ses"]
             else:
-                ses_names = self._format_names(ses_names, "ses")
-                ses_names = directories.search_for_wildcards(
-                    self, base_dir, local_or_remote, ses_names, sub=sub
+                processed_ses_names = self._format_names(ses_names, "ses")
+                processed_ses_names = directories.search_for_wildcards(
+                    self,
+                    base_dir,
+                    local_or_remote,
+                    processed_ses_names,
+                    sub=sub,
                 )
 
-            for ses in ses_names:
+            for ses in processed_ses_names:
+
+                if ses == "all_non_ses":  # all_ses is handled above
+                    self._transfer_all_non_sub_ses_data_type_(
+                        upload_or_download,
+                        local_or_remote,
+                        "all_non_ses",
+                        sub,
+                        None,
+                        dry_run,
+                        log,
+                    )  # TODO: fix
+                    continue
 
                 self._transfer_data_type(
                     upload_or_download,
                     local_or_remote,
-                    data_type,
+                    data_type_checked,
                     sub,
                     ses,
                     dry_run=dry_run,
                     log=log,
                 )
 
+    def _transfer_all_non_sub_ses_data_type_(
+        self,
+        upload_or_download,
+        local_or_remote,
+        type_,
+        sub,
+        ses,
+        dry_run,
+        log,
+    ):  # TODO: add typing!!, make sub and ses optional
+        """"""
+        data_type_names = [
+            dir.name
+            for dir in canonical_directories.get_data_type_directories(
+                self.cfg
+            ).values()
+        ]
+
+        if type_ == "all_non_sub":  # TODO type is builtin!
+
+            relative_path = ""  # TODO!!!
+
+            sub_names = directories.search_sub_or_ses_level(
+                self,
+                self._get_base_and_top_level_dir(local_or_remote),
+                local_or_remote,
+                search_str=f"{self.cfg.sub_prefix}*",
+            )
+
+            exclude_list = sub_names
+
+        elif type_ == "all_non_ses":
+
+            relative_path = sub
+
+            ses_names = directories.search_sub_or_ses_level(
+                self,
+                self._get_base_and_top_level_dir(local_or_remote)
+                / relative_path,  # TODO: this is not clean
+                local_or_remote,
+                search_str=f"{self.cfg.ses_prefix}*",
+            )
+
+            exclude_list = ses_names + data_type_names
+
+        elif type_ == "all_ses_level_non_data_type":
+
+            relative_path = sub + "/" + "/" + ses  # TODO fix
+
+            exclude_list = data_type_names
+
+        self._move_dir_or_file(
+            filepath=relative_path,
+            upload_or_download=upload_or_download,
+            dry_run=dry_run,
+            log=log,
+            exclude_list=exclude_list,
+        )
+
     def _transfer_data_type(
         self,
         upload_or_download: str,
         local_or_remote: str,
-        data_type: Union[list, str],
+        data_type: List[str],
         sub: str,
         ses: Optional[str] = None,
         dry_run: bool = False,
@@ -1002,9 +1147,43 @@ class DataShuttle:
             actually transfer the data.
 
         log : Whether to log, if True logging must already
-            be initialsied
+            be initialized
         """
         level = "ses" if ses else "sub"
+        data_type = copy.deepcopy(data_type)
+
+        if (
+            level == "sub" and "all_ses_level_non_data_type" in data_type
+        ):  # this way of handling is confusing
+            del data_type[
+                data_type.index("all_ses_level_non_data_type")
+            ]  ################################################### OMD this is horrible!
+
+        if level == "ses":
+            if any(
+                [
+                    name in ["all_ses_level_non_data_type", "all"]
+                    for name in data_type
+                ]
+            ):  #################### own function!
+                self._transfer_all_non_sub_ses_data_type_(
+                    upload_or_download,
+                    local_or_remote,
+                    "all_ses_level_non_data_type",
+                    sub,
+                    ses,
+                    dry_run,
+                    log,
+                )
+                if data_type == "all_ses_level_non_data_type":  # HANDLE THIS!
+                    return
+                else:
+                    if data_type != [
+                        "all"
+                    ]:  # TODO: make sure only these are allowed if all specified. Don't forget to enforce - ppl will definately write e.g. sub_001!
+                        del data_type[
+                            data_type.index("all_ses_level_non_data_type")
+                        ]  ################################################### OMD this is horrible!
 
         data_type_items = self._items_from_data_type_input(
             local_or_remote, data_type, sub, ses
@@ -1031,6 +1210,7 @@ class DataShuttle:
         upload_or_download: str,
         dry_run: bool,
         log: bool = False,
+        exclude_list: Optional[List[str]] = None,
     ) -> None:
         """
         Low-level function to transfer a directory or file.
@@ -1050,7 +1230,7 @@ class DataShuttle:
         """
         local_filepath = self._make_path(
             "local", [self._top_level_dir_name, filepath]
-        ).as_posix()
+        ).as_posix()  # TODO: use new getter for top levle dir
 
         remote_filepath = self._make_path(
             "remote", [self._top_level_dir_name, filepath]
@@ -1068,6 +1248,7 @@ class DataShuttle:
                 "transfer_verbosity": self.cfg["transfer_verbosity"],
                 "show_transfer_progress": self.cfg["show_transfer_progress"],
                 "dry_run": dry_run,
+                "exclude_list": exclude_list,
             },
         )
 
@@ -1094,7 +1275,12 @@ class DataShuttle:
         """
         base_dir = self._get_base_and_top_level_dir(local_or_remote)
 
-        if data_type not in ["all", ["all"]]:
+        if data_type not in [
+            "all",
+            ["all"],
+            "all_data_type",
+            ["all_data_type"],
+        ]:  # TODO: make this better
             data_type_items = self._get_data_type_items(
                 data_type,
             )
@@ -1117,7 +1303,7 @@ class DataShuttle:
     def _setup_ssh_key_and_rclone_config(self, log: bool = True) -> None:
         """
         Setup ssh connection, key pair (see ssh.setup_ssh_key)
-        for details. Also setup rclone config for ssh connection.
+        for details. Also, setup rclone config for ssh connection.
         """
         ssh.setup_ssh_key(
             self._ssh_key_path, self._hostkeys_path, self.cfg, log=log
@@ -1216,6 +1402,38 @@ class DataShuttle:
 
         sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
+        if sub_or_ses == "sub":
+            non_sub_names = [
+                "all_ses",
+                "all_non_ses",
+                "all_data_type",
+                "all_ses_level_non_data_type",
+            ]  # TODO: put these somewhere! TEST THIS
+            if any(
+                [names in non_sub_names]
+                + [name in non_sub_names for name in names]
+            ):
+                utils.log_and_raise_error(
+                    f"Cannot use a reserved session or data_type keyword argument (e.g. {non_sub_names}) "
+                    f"as a subject name"
+                )
+
+        else:
+            non_ses_names = [
+                "all_sub",
+                "all_non_sub",
+                "all_data_type",
+                "all_ses_level_non_data_type",
+            ]  # TODO: put these somewhere!
+            if any(
+                [names in non_ses_names]
+                + [name in non_ses_names for name in names]
+            ):
+                utils.log_and_raise_error(
+                    f"Cannot use a reserved session or data_type keyword argument (e.g. {non_ses_names}) "
+                    f"as a subject name"
+                )
+
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
         formatted_names = formatting.format_names(names, prefix)
 

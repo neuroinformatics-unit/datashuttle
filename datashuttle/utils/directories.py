@@ -131,7 +131,8 @@ def search_sub_or_ses_level(
     search_str: str = "*",
 ) -> List[str]:
     """
-    Search project folder at the subject or session level
+    Search project folder at the subject or session level.
+    Only returns directories
 
     Parameters
     ----------
