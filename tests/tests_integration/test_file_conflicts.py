@@ -7,6 +7,7 @@
 import os
 from pathlib import Path
 
+import pandas as pd
 import pytest
 import test_utils
 
@@ -108,8 +109,104 @@ class TestFileTransfer:
 # parent_ses : if data type or other file, name of the parent session folder
 # is_data_type : the data type if True, otherwise None
 
-# def test_all_data_transfer_options()
+    def test_all_data_transfer_options(self, project):
+        """
+        └── my_project/
+            └── rawdata/
+                ├── sub-001/
+                │   ├── ses-001
+                │   ├── ses-002_random-key
+                │   ├── ses-003_date-20231901/
+                │   │   ├── behav/
+                │   │   │   └── behav.csv
+                │   │   ├── ephys/
+                │   │   │   └── ephys.bin
+                │   │   ├── non_data_type_level_dir
+                │   │   └── nondata_type_level_file.csv
+                │   ├── random-ses_level_file.mp4
+                │   └── histology
+                ├── sub-002_random-value/
+                │   └── ses-001/
+                │       └── non_data_type_level_dir
+                ├── sub-003_date-20231901/
+                │   ├── ses-001/
+                │   │   └── funcimg
+                │   ├── ses-003_date-20231901/
+                │   │   ├── nondata_type_level_file.csv
+                │   │   └── funcimg
+                │   ├── seslevel_non-prefix_dir
+                │   ├── sub-ses-level_file.txt
+                │   └── histology
+                ├── project_level_file.txt
+                └── sublevel_non_sub-prefix_dir
+        """
 
+        base_dir = project.cfg["local_path"]
+
+        # fmt: off
+
+        columns = ["path", "is_dir", "is_sub", "is_ses", "is_data_type", "parent_sub", "parent_ses", "parent_data_type"] # TODO: think about 'not' tests                               (is_sub is_ses is_data_type probably redundant)
+
+                # path                                                                                                     is_dir   is_sub                   is_ses     is_data_type    parent_sub                 parent_ses                 parent_data_type
+        data = [[base_dir / "rawdata",                                                                                     True,    False,                   False,     False,          None,                      None,                      None],
+                [base_dir / "rawdata" / "sub-001",                                                                         True,    "sub-001",               False,     False,          None,                      None,                      None],
+                [base_dir / "rawdata" / "sub-001" / "ses-001",                                                             True,    False,                   "ses-001", False,          "sub-001",                 None,                      None],
+                [base_dir / "rawdata" / "sub-001" / "ses-001" / ".datashuttle",                                            True,    False,                   False,     False,          "sub-001",                 "ses-001",                 None],
+                [base_dir / "rawdata" / "sub-001" / "ses-002_random-key",                                                  True,    False,                   "ses-002", False,          "sub-001",                 None,                      None],
+                [base_dir / "rawdata" / "sub-001" / "ses-002_random-key" / "random-key-file.mp4",                          False,   False,                   False,     False,          "sub-001",                 "ses-002",                 None],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901",                                               True,    False,                   "ses-003", False,          "sub-001",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901" / "behav",                                     True,    False,                   False,     "behav",        "sub-001",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901" / "behav" / "behav.csv",                       False,   False,                   False,     False,          "sub-001",                 "ses-003",                 "behav"],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901" / "ephys",                                     True,    False,                   False,     "ephys",        "sub-001",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901" / "ephys" / "ephys.bin",                       False,   False,                   False,     False,          "sub-001",                 "ses-003",                 "ephys"],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901" / "non_data_type_level_dir",                   True,    False,                   False,     False,          "sub-001",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901" / "non_data_type_level_dir" / ".datashuttle",  True,    False,                   False,     False,          "sub-001",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-001" / "ses-003_date-20231901" / "nondata_type_level_file.csv",               False,   False,                   False,     False,          "sub-001",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-001" / "random-ses_level_file.mp4",                                           False,   False,                   False,     False,          "sub-001",                 None,                      None],
+                [base_dir / "rawdata" / "sub-001" / "histology",                                                           True,    False,                   False,     "histology",    "sub-001",                 None,                      None],
+                [base_dir / "rawdata" / "sub-001" / "histology" / ".datashuttle",                                          True,    False,                   False,     False,          "sub-001",                 None,                      "histology"],
+                [base_dir / "rawdata" / "sub-002_random-value",                                                            True,    "sub-002",               False,     False,          None,                      "ses-001",                 None],
+                [base_dir / "rawdata" / "sub-002_random-value" / "ses-001",                                                True,    False,                   "ses-001", False,          "sub-002",                 "ses-001",                 None],
+                [base_dir / "rawdata" / "sub-002_random-value" / "ses-001" / "non_data_type_level_dir",                    True,    False,                   False,     False,          "sub-002",                 "ses-001",                 None],
+                [base_dir / "rawdata" / "sub-002_random-value" / "ses-001" / "non_data_type_level_dir" / ".datashuttle",   True,    False,                   False,     False,          "sub-002",                 "ses-001",                 None],
+                [base_dir / "rawdata" / "sub-003_date-20231901",                                                           True,    "sub-003",               False,     False,          None,                      None,                      None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "ses-001",                                               True,    False,                   "ses-001", False,          "sub-003",                 None,                      None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "ses-001" / "funcimg",                                   True,    False,                   False,     "funcimg",      "sub-003",                 "ses-001",                 None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "ses-001" / "funcimg" / ".datashuttle",                  True,    False,                   False,     False,          "sub-003",                 "ses-001",                 "funcimg"],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "ses-003_date-20231901",                                 True,    False,                   "ses-003", False,          "sub-003",                 None,                      None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "ses-003_date-20231901" / "nondata_type_level_file.csv", False,   False,                   False,     False,          "sub-003",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "ses-003_date-20231901" / "funcimg",                     True,    False,                   False,     "funcimg",      "sub-003",                 "ses-003",                 None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "ses-003_date-20231901" / "funcimg" / ".datashuttle",    True,    False,                   False,     False,          "sub-003",                 "ses-003",                 "funcimg"],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "seslevel_non-prefix_dir",                               True,    False,                   False,     False,          "sub-003",                 None,                      None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "seslevel_non-prefix_dir" / ".datashuttle",              True,    False,                   False,     False,          "sub-003",                 "seslevel_non-prefix_dir", None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "sub-ses-level_file.txt",                                False,   False,                   False,     False,          "sub-003",                 None,                      None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "histology",                                             True,    False,                   False,     "histology",    "sub-003",                 None,                      None],
+                [base_dir / "rawdata" / "sub-003_date-20231901" / "histology" / ".datashuttle",                            True,    False,                   False,     False,          "sub-003",                 None,                      "histology"],
+                [base_dir / "rawdata" / "project_level_file.txt",                                                          False,   False,                   False,     False,          None,                      None,                      None],
+                [base_dir / "rawdata" / "sublevel_non_sub-prefix_dir",                                                     True,    False,                   False,     False,          None,                      None,                      None],
+                [base_dir / "rawdata" / "sublevel_non_sub-prefix_dir" / ".datashuttle",                                    True,    False,                   False,     False,          None,                      None,                      None],
+                ]
+
+        pathtable = pd.DataFrame(data, columns=columns)
+
+        for i in range(pathtable.shape[0]):
+            filepath = pathtable["path"][i]
+            if pathtable["is_dir"][i]:
+               os.makedirs(filepath)
+            else:
+                try:
+                    self.write_file(filepath, "test_entry")
+                except:
+                    breakpoint()
+
+        breakpoint()
+
+
+
+
+
+
+        # fmt: on
 
 # https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
 # but these drop python access to internet NOT entire internet (at least some of them)
