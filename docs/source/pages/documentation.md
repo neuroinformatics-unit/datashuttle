@@ -42,19 +42,25 @@ not supported and the full filepath must be input.
 Also required is the "connection_method". This can either be "local_filesystem" or "ssh". If "ssh",
 then the "remote_host_id" and "remote_host_username" options are also required (see example below).
 
-Finally, the options "use_ephys", "use_behav"... are used to set the data types used on the local PC.
+The options "use_ephys", "use_behav"... are used to set the data types used on the local PC.
 If these are not set to True, it will not be possible to make data_type directories of this type.
 This option is useful if there are dedicated machines for collection of different data types.
+
+Finally, the settings "overwrite_old_files_on_transfer", "transfer_verbosity" and "show_transfer_progress" determine
+the behaviour during file transfer. Please see the Data Transfer section for more information.
 
 An example call may look like:
 
 ```
 project.make_config_file(
-local_path="/path/to/my_project",
+local_path="/path/to/my/my_project",
 remote_path="/nfs/nhome/live/username/",
 connection_method="ssh",
 remote_host_id="ssh.swc.ucl.ac.uk",
 remote_host_username="username",
+overwrite_old_files_on_transfer=True,
+transfer_verbosity="v",
+show_transfer_progress=False,
 use_ephys=True,
 use_behav=True,
 use_histology=True
@@ -72,7 +78,8 @@ make_config_file \
 ssh \
 --remote_host_id ssh.swc.ucl.ac.uk \
 --remote_host_username username \
---use-ephys --use-behav --use-histology
+--transfer_verbosity v \
+--use-ephys --use-behav --use-histology --overwrite_old_files_on_transfer
 ```
 
 Individual settings can be updated using update_config(), and an existing config file can be used instead using supply_config()
@@ -219,6 +226,29 @@ or equivalently
 
 will transfer everything in the local project director to the remote. The convenience functions upload_all()
 and download_all() can be used as shortcuts for this.
+
+A number of configuration settings define the behaviour of datashuttle during file transfer (see make_config_file). Datashuttle
+uses [Rclone](https://rclone.org/) for data transfer, and these options are aliases for RClone configurations.
+
+#### overwrite_old_files_on_transfer
+
+By default, datashuttle will never overwrite files in the target project directories (i.e. the
+directories the data is being transferred to). This is the case even if the version of the
+file in the source project directory (i.e. the directory the data is being transferred from)
+is newer (as indicated by the file modification timestamp.)
+
+When "overwrite_old_files_on_transfer"
+this behaviour is changed, and target directory files that are older than source directory
+will be overwritten.
+
+#### transfer_verbosity
+
+When set to vv, the console and log output will become very verbose and report all defaults. When
+v (default) these will report each file that is transferred and a small number of significant events.
+
+#### show_transfer_progress
+
+When true, real-time transfer statistics will be reported and logged.
 
 ### Filtering directories to transfer and using convenience tags
 
