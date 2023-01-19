@@ -545,7 +545,7 @@ def get_all_data_types_on(kwargs_or_flags):
     either as kwargs for API or str of flags for
     CLI.
     """
-    data_types = canonical_configs.get_flags()
+    data_types = canonical_configs.get_data_types()
     if kwargs_or_flags == "flags":
         return f"{' '.join(['--' + flag for flag in data_types])}"
     else:

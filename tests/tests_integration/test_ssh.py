@@ -45,9 +45,9 @@ REMOTE_HOST_ID = "ssh.swc.ucl.ac.uk"
 REMOTE_HOST_USERNAME = "jziminski"
 
 
-# @pytest.mark.skip(
-#   reason="SSH tests require SWC VPC. " "These cannot be run using CI" ####################### SORT THIS OUT #############################################################################################
-# )
+@pytest.mark.skip(
+    reason="SSH tests require SWC VPC. " "These cannot be run using CI"
+)
 class TestSSH:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
