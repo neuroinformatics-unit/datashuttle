@@ -1,3 +1,9 @@
+"""
+# Still need to do more of this.
+# 4) test all, in particular the removal of --ignore-existing. When the user transfers, it makes
+#    sense to have a comment explicitly stating the nature of the transfer (or, at the end).
+
+"""
 import os
 from pathlib import Path
 
@@ -5,7 +11,6 @@ import pytest
 import test_utils
 
 
-# @pytest.mark.skip(reason="IN PROGRESS")
 class TestFileTransfer:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
@@ -84,13 +89,6 @@ class TestFileTransfer:
 
 # https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
 # but these drop python access to internet NOT entire internet (at least some of them)
-
-
-# 3) Add to docstrings, and check. Doc in the documentation
-
-# 4) test all, in particular the removal of --ignore-existing. When the user transfers, it makes
-#    sense to have a comment explicitly stating the nature of the transfer (or, at the end).
-
 
 # PROJECT / SUB / SES LEVEL UNTRACKED FILES
 # add keyword arguments a la #70
