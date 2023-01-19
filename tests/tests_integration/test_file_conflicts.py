@@ -4,6 +4,7 @@
 #    sense to have a comment explicitly stating the nature of the transfer (or, at the end).
 
 """
+import copy
 import os
 from pathlib import Path
 
@@ -87,29 +88,56 @@ class TestFileTransfer:
         else:
             assert remote_contents == ["first edit"]
 
+    # dont forget to type everything!
 
-# dont forget to type everything!
+    # possible inputs
+    # ---------------
 
-# possible inputs
-# ---------------
+    # sub_names: "all", "all_sub", "all_non_sub", [some sub names]
 
-# sub_names: "all", "all_sub", "all_non_sub", [some sub names]
+    # ses_names: "all", "all_ses", "all_non_ses", [some ses_names]
 
-# ses_names: "all", "all_ses", "all_non_ses", [some ses_names]
+    # data_type: "all", "all_data_type", "all_ses_level_non_data_type", [some data type names]
 
-# data_type: "all", "all_data_type", "all_ses_level_non_data_type", [some data type names]
+    # path table
+    # ---------------
 
-# path table
-# ---------------
+    # Path : full path to file
+    # is_dir : True if directory, False if file
+    # level : "project", "sub" or "ses" (i.e. it is in the top level folder (e.g. rawdata), subject levle, or session level.
+    # parent_sub : if ses file or other, name of the parent subject (otherwise None)
+    # parent_ses : if data type or other file, name of the parent session folder
+    # is_data_type : the data type if True, otherwise None
 
-# Path : full path to file
-# is_dir : True if directory, False if file
-# level : "project", "sub" or "ses" (i.e. it is in the top level folder (e.g. rawdata), subject levle, or session level.
-# parent_sub : if ses file or other, name of the parent subject (otherwise None)
-# parent_ses : if data type or other file, name of the parent session folder
-# is_data_type : the data type if True, otherwise None
-
-    def test_all_data_transfer_options(self, project):
+    @pytest.mark.parametrize(
+        "sub_names",
+        [
+            ["all"],
+            ["all_sub"],
+            ["all_non_sub"],
+            ["sub-001"],
+            ["sub-003_date-20231901"],
+            ["sub-002", "all_non_sub"],
+        ],
+    )  # TODO: could use @*@ flag
+    @pytest.mark.parametrize(
+        "ses_names", [["all"], ["all_ses"], ["all_non_ses"], ["ses_002"]]
+    )
+    @pytest.mark.parametrize(
+        "data_type",
+        [
+            ["all"],
+            ["all_ses_level_non_data_type"],
+            ["behav"],
+            ["ephys"],
+            ["histology"],
+            ["funcimg"],
+            ["histology", "behav", "all_ses_level_non_data_type"],
+        ],
+    )
+    def test_all_data_transfer_options(
+        self, project, sub_names, ses_names, data_type
+    ):
         """
         └── my_project/
             └── rawdata/
@@ -140,7 +168,6 @@ class TestFileTransfer:
                 ├── project_level_file.txt
                 └── sublevel_non_sub-prefix_dir
         """
-
         base_dir = project.cfg["local_path"]
 
         # fmt: off
@@ -187,6 +214,8 @@ class TestFileTransfer:
                 [base_dir / "rawdata" / "sublevel_non_sub-prefix_dir" / ".datashuttle",                                    True,    False,                   False,     False,          None,                      None,                      None],
                 ]
 
+        # fmt: on  # todo: Move to dedicated file
+
         pathtable = pd.DataFrame(data, columns=columns)
 
         for i in range(pathtable.shape[0]):
@@ -194,19 +223,38 @@ class TestFileTransfer:
             if pathtable["is_dir"][i]:
                os.makedirs(filepath)
             else:
-                try:
-                    self.write_file(filepath, "test_entry")
-                except:
-                    breakpoint()
+                self.write_file(filepath, "test_entry")
 
+        project.upload_data("all", "all", "all")
         breakpoint()
 
+        # Filter table
+        filtered_table = copy.deepcopy(pathtable)
+        if "all" in sub_names:
+            pass
+
+        elif "all_sub" in sub_names:
+            pass
+
+        elif "all_non_sub" in sub_names:
+            pass
+
+        elif "sub-001" in sub_names:
+            pass
+
+        elif "sub-003_date-20231901" in sub_names:
+            pass
+
+        elif "sub-002" in sub_names:
+            pass
 
 
+            ["all_sub"], ["all_non_sub"], ["sub-001"], ["sub-003_date-20231901"], ["sub-002", "all_non_sub"]
 
+        # 1) make table of everything that should be moved
+        # 2) check this is there in the target directory
+        # 3) check nothing else is there!
 
-
-        # fmt: on
 
 # https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
 # but these drop python access to internet NOT entire internet (at least some of them)
