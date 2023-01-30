@@ -74,7 +74,7 @@ class TestSSH:
             "ssh",
             project.cfg,
             project.cfg.get_rclone_config_name("ssh"),
-            project._ssh_key_path,
+            project.cfg.ssh_key_path,
         )
 
         yield project
@@ -119,7 +119,7 @@ class TestSSH:
         """
         orig_builtin = self.setup_mock_input(input_="y")
         ssh.verify_ssh_remote_host(
-            project.cfg["remote_host_id"], project._hostkeys_path, log=True
+            project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
         )
         self.restore_mock_input(orig_builtin)
 
@@ -158,7 +158,7 @@ class TestSSH:
         orig_builtin = self.setup_mock_input(input_="y")
 
         verified = ssh.verify_ssh_remote_host(
-            project.cfg["remote_host_id"], project._hostkeys_path, log=True
+            project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
         )
 
         self.restore_mock_input(orig_builtin)
@@ -167,7 +167,7 @@ class TestSSH:
         captured = capsys.readouterr()
         assert captured.out == "Host accepted.\n"
 
-        with open(project._hostkeys_path, "r") as file:
+        with open(project.cfg.hostkeys_path, "r") as file:
             hostkey = file.readlines()[0]
 
         assert f"{project.cfg['remote_host_id']} ssh-ed25519 " in hostkey
@@ -199,8 +199,8 @@ class TestSSH:
 
         getpass.getpass = lambda _: self.get_password()  # type: ignore
         ssh.setup_ssh_key(
-            project._ssh_key_path,
-            project._hostkeys_path,
+            project.cfg.ssh_key_path,
+            project.cfg.hostkeys_path,
             project.cfg,
             log=False,
         )
@@ -217,8 +217,8 @@ class TestSSH:
             ssh.connect_client(
                 client,
                 project.cfg,
-                project._hostkeys_path,
-                ssh_key_path=project._ssh_key_path,
+                project.cfg.hostkeys_path,
+                ssh_key_path=project.cfg.ssh_key_path,
             )
 
         assert (
@@ -236,8 +236,8 @@ class TestSSH:
 
         with pytest.raises(BaseException) as e:
             ssh.setup_ssh_key(
-                project._ssh_key_path,
-                project._hostkeys_path,
+                project.cfg.ssh_key_path,
+                project.cfg.hostkeys_path,
                 project.cfg,
                 log=False,
             )

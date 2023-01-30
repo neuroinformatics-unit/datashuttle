@@ -325,7 +325,7 @@ def search_for_directories(
             search_prefix,
             project.cfg,
             project._hostkeys_path,
-            project._ssh_key_path,
+            project.cfg.ssh_key_path,
         )
     else:
         all_dirnames = search_filesystem_path_for_directories(

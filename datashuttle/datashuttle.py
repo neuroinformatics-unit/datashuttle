@@ -51,7 +51,7 @@ class DataShuttle:
     in the main local project. These logs contain
     detailed information on directory creation / transfer.
     To get the path to datashuttle logs, use
-    get_logging_path().
+    cfgs.make_and_get_logging_path().
 
     For transferring data between a remote data storage
     with SSH, use setup setup_ssh_connection_to_remote_server().
@@ -85,8 +85,7 @@ class DataShuttle:
             utils.get_datashuttle_path(project_name)[0] / "config.yaml"
         )  # some duplication here, could put as cls method
 
-        self.cfg: Any = None
-        self._ssh_key_path: Any = None
+        self.cfg: Any = None  # TODO: add type hints
         self._data_type_dirs: Any = None
 
         self.cfg = load_configs.make_config_file_attempt_load(
@@ -110,16 +109,9 @@ class DataShuttle:
             "rawdata"  # TODO: move this as a proper config!
         )
 
-        self._project_metadata_path = self.cfg["local_path"] / ".datashuttle"
+        self.cfg.init_paths()
 
         self._make_project_metadata_if_does_not_exist()
-
-        self._logging_path = self.make_and_get_logging_path()
-
-        self._ssh_key_path = self.cfg.make_path(
-            "datashuttle", self.cfg.project_name + "_ssh_key"
-        )
-        self._hostkeys_path = self.cfg.make_path("datashuttle", "hostkeys")
 
         self._data_type_dirs = canonical_directories.get_data_type_directories(
             self.cfg
@@ -223,7 +215,7 @@ class DataShuttle:
 
         utils.message_user(
             f"Finished making directories. For log of all created "
-            f"directories, pleasee see {self._logging_path}"
+            f"directories, pleasee see {self.cfg.logging_path}"
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -243,7 +235,7 @@ class DataShuttle:
         directory. In the case that a file / directory exists on
         the remote and local, the remote will not be overwritten
         even if the remote file is an older version. Data
-        transfer logs are saved to the logging directory (get_logging_path()).
+        transfer logs are saved to the logging directory).
 
         Parameters
         ----------
@@ -436,7 +428,7 @@ class DataShuttle:
 
         verified = ssh.verify_ssh_remote_host(
             self.cfg["remote_host_id"],
-            self._hostkeys_path,
+            self.cfg.hostkeys_path,
             log=True,
         )
 
@@ -457,7 +449,7 @@ class DataShuttle:
             public key to.
         """
         key = paramiko.RSAKey.from_private_key_file(
-            self._ssh_key_path.as_posix()
+            self.cfg.ssh_key_path.as_posix()
         )
 
         with open(filepath, "w") as public:
@@ -774,14 +766,6 @@ class DataShuttle:
 
         formatted_names = formatting.format_names(names, prefix)
         utils.message_user(formatted_names)
-
-    def make_and_get_logging_path(self) -> Path:
-        """
-        Currently logging is located in config path
-        """
-        logging_path = self._project_metadata_path / "logs"
-        directories.make_dirs(logging_path)
-        return logging_path
 
     # ====================================================================================================================
     # Private Functions
@@ -1208,7 +1192,7 @@ class DataShuttle:
         for details. Also, setup rclone config for ssh connection.
         """
         ssh.setup_ssh_key(
-            self._ssh_key_path, self._hostkeys_path, self.cfg, log=log
+            self.cfg.ssh_key_path, self.cfg.hostkeys_path, self.cfg, log=log
         )
 
         self._setup_rclone_remote_ssh_config(log)
@@ -1377,7 +1361,7 @@ class DataShuttle:
                 else Path(temp_dir_path)
             )
         else:
-            path_to_save = self._logging_path
+            path_to_save = self.cfg.logging_path
 
         ds_logger.start(path_to_save, name, variables)
 
@@ -1401,7 +1385,8 @@ class DataShuttle:
             file_name = os.path.basename(file_path)
 
             shutil.move(
-                self._temp_log_path / file_name, self._logging_path / file_name
+                self._temp_log_path / file_name,
+                self.cfg.logging_path / file_name,
             )
 
     def _log_successful_config_change(self, message=False):
@@ -1436,14 +1421,14 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        directories.make_dirs(self._project_metadata_path, log=False)
+        directories.make_dirs(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_remote_ssh_config(self, log):
         rclone.setup_remote_as_rclone_target(
             "ssh",
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
-            self._ssh_key_path,
+            self.cfg.ssh_key_path,
             log=log,
         )
 
@@ -1452,6 +1437,6 @@ class DataShuttle:
             "local_filesystem",
             self.cfg,
             self.cfg.get_rclone_config_name("local_filesystem"),
-            self._ssh_key_path,
+            self.cfg.ssh_key_path,
             log=True,
         )

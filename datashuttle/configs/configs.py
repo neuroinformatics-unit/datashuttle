@@ -7,7 +7,9 @@ from typing import Any, Optional, Union, cast
 import yaml
 
 from datashuttle.configs import canonical_configs
-from datashuttle.utils import utils
+from datashuttle.utils import directories, utils
+
+# TODO: split this into configs and paths - these are distinct!
 
 
 class Configs(UserDict):
@@ -45,6 +47,11 @@ class Configs(UserDict):
 
         self.top_level_dir_name = None  # TODO: filled in later, should be passed directly or set as configs!
         self.project_name = None
+
+        self.logging_path: Optional[str] = None  # set in self.init_paths()
+        self.hostkeys_path: Optional[str] = None
+        self.ssh_key_path: Optional[str] = None
+        self.project_metadata_path: Optional[str] = None
 
     def setup_after_load(self) -> None:
         self.convert_str_and_pathlib_paths(self, "str_to_path")
@@ -265,12 +272,30 @@ class Configs(UserDict):
         return f"remote_{self.project_name}_{connection_method}"
 
     def make_rclone_transfer_options(self, dry_run: bool, exclude_list: str):
-        return (
-            {
-                "overwrite_old_files": self["overwrite_old_files"],
-                "transfer_verbosity": self["transfer_verbosity"],
-                "show_transfer_progress": self["show_transfer_progress"],
-                "dry_run": dry_run,
-                "exclude_list": exclude_list,
-            },
+        return {
+            "overwrite_old_files": self["overwrite_old_files"],
+            "transfer_verbosity": self["transfer_verbosity"],
+            "show_transfer_progress": self["show_transfer_progress"],
+            "dry_run": dry_run,
+            "exclude_list": exclude_list,
+        }
+
+    def init_paths(self):
+
+        self.project_metadata_path = self["local_path"] / ".datashuttle"
+
+        self.ssh_key_path = self.make_path(
+            "datashuttle", self.project_name + "_ssh_key"
         )
+
+        self.hostkeys_path = self.make_path("datashuttle", "hostkeys")
+
+        self.logging_path = self.make_and_get_logging_path()
+
+    def make_and_get_logging_path(self) -> Path:
+        """
+        Currently logging is located in config path
+        """
+        logging_path = self.project_metadata_path / "logs"
+        directories.make_dirs(logging_path)
+        return logging_path

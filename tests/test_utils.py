@@ -53,7 +53,7 @@ def setup_project_default_configs(
         "ssh",
         project.cfg,
         project.cfg.get_rclone_config_name("ssh"),
-        project._ssh_key_path,
+        project.cfg.ssh_key_path,
     )
 
     warnings.filterwarnings("default")
@@ -63,12 +63,12 @@ def setup_project_default_configs(
     if local_path:
         project.update_config("local_path", local_path)
         delete_all_dirs_in_local_path(project)
-        project.make_and_get_logging_path()
+        project.cfg.make_and_get_logging_path()
 
     if remote_path:
         project.update_config("remote_path", remote_path)
         delete_all_dirs_in_remote_path(project)
-        project.make_and_get_logging_path()
+        project.cfg.make_and_get_logging_path()
 
     return project
 
