@@ -192,7 +192,7 @@ class DataShuttle:
 
         directories.check_no_duplicate_sub_ses_key_values(
             self,
-            base_dir=self._get_base_and_top_level_dir("local"),
+            base_dir=self._get_base_dir("local"),
             new_sub_names=sub_names,
             new_ses_names=ses_names,
         )
@@ -366,12 +366,14 @@ class DataShuttle:
         self._start_log("upload_project_dir_or_file")
 
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("local") / self._top_level_dir_name,
+            self._get_base_dir("local"),
             Path(filepath),
         )
 
-        self._move_dir_or_file(
-            processed_filepath.as_posix(),
+        data_transfer.move_dir_or_file(
+            self._make_path("local", processed_filepath),
+            self._make_path("remote", processed_filepath),
+            self._get_rclone_config_name(),
             "upload",
             dry_run,
             log=True,
@@ -391,11 +393,13 @@ class DataShuttle:
         self._start_log("download_project_dir_or_file")
 
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("remote") / self._top_level_dir_name,
+            self._get_base_dir("remote"),
             Path(filepath),
         )
-        self._move_dir_or_file(
-            processed_filepath.as_posix(),
+        data_transfer.move_dir_or_file(
+            self._make_path("local", processed_filepath),
+            self._make_path("remote", processed_filepath),
+            self._get_rclone_config_name(),
             "download",
             dry_run,
             log=True,
@@ -811,7 +815,7 @@ class DataShuttle:
 
             sub_path = self._make_path(
                 "local",
-                [self._top_level_dir_name, sub],
+                sub,
             )
 
             directories.make_dirs(sub_path, log)
@@ -822,7 +826,7 @@ class DataShuttle:
 
                 ses_path = self._make_path(
                     "local",
-                    [self._top_level_dir_name, sub, ses],
+                    [sub, ses],
                 )
 
                 directories.make_dirs(ses_path, log)
@@ -949,7 +953,7 @@ class DataShuttle:
         local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
-        base_dir = self._get_base_and_top_level_dir(local_or_remote)
+        base_dir = self._get_base_dir(local_or_remote)
 
         # Find sub names to transfer
         if sub_names_checked in [["all"], ["all_sub"]]:
@@ -1069,7 +1073,7 @@ class DataShuttle:
 
             sub_names = directories.search_sub_or_ses_level(
                 self,
-                self._get_base_and_top_level_dir(local_or_remote),
+                self._get_base_dir(local_or_remote),
                 local_or_remote,
                 search_str=f"{self.cfg.sub_prefix}*",
             )
@@ -1082,7 +1086,7 @@ class DataShuttle:
 
             ses_names = directories.search_sub_or_ses_level(
                 self,
-                self._get_base_and_top_level_dir(local_or_remote)
+                self._get_base_dir(local_or_remote)
                 / relative_path,  # TODO: this is not clean
                 local_or_remote,
                 search_str=f"{self.cfg.ses_prefix}*",
@@ -1096,8 +1100,10 @@ class DataShuttle:
 
             exclude_list = data_type_names
 
-        self._move_dir_or_file(
-            filepath=relative_path,
+        data_transfer.move_dir_or_file(
+            self._make_path("local", relative_path),
+            self._make_path("remote", relative_path),
+            self._get_rclone_config_name(),
             upload_or_download=upload_or_download,
             dry_run=dry_run,
             log=log,
@@ -1197,13 +1203,15 @@ class DataShuttle:
                 else:
                     filepath = os.path.join(sub, data_type_dir.name)
 
-                self._move_dir_or_file(
-                    filepath,
+                data_transfer.move_dir_or_file(
+                    self._make_path("local", filepath),
+                    self._make_path("remote", filepath),
+                    self._get_rclone_config_name(),
                     upload_or_download,
                     dry_run=dry_run,
                     log=log,
                 )
-
+    """
     def _move_dir_or_file(
         self,
         filepath: str,
@@ -1212,22 +1220,7 @@ class DataShuttle:
         log: bool = False,
         exclude_list: Optional[List[str]] = None,
     ) -> None:
-        """
-        Low-level function to transfer a directory or file.
-
-        Parameters
-        ----------
-
-        filepath : filepath (not including local
-            or remote root) to copy
-
-        upload_or_download : "upload" or "download".
-            upload goes local to remote, download goes
-            remote to local
-
-        dry_run : do not actually move the files,
-            just report what would be moved.
-        """
+        
         local_filepath = self._make_path(
             "local", [self._top_level_dir_name, filepath]
         ).as_posix()  # TODO: use new getter for top levle dir
@@ -1255,6 +1248,7 @@ class DataShuttle:
         if log:
             utils.log(output.stderr.decode("utf-8"))
         utils.message_user(output.stderr.decode("utf-8"))
+    """
 
     def _items_from_data_type_input(
         self,
@@ -1273,7 +1267,7 @@ class DataShuttle:
 
         see _transfer_data_type() for parameters.
         """
-        base_dir = self._get_base_and_top_level_dir(local_or_remote)
+        base_dir = self._get_base_dir(local_or_remote)
 
         if data_type not in [
             "all",
@@ -1357,33 +1351,13 @@ class DataShuttle:
 
         """
         if base == "local":
-            base_dir = self.cfg["local_path"]
+            base_dir = self.cfg["local_path"] / self._top_level_dir_name
         elif base == "remote":
-            base_dir = self.cfg["remote_path"]
+            base_dir = self.cfg["remote_path"] / self._top_level_dir_name
         elif base == "datashuttle":
             base_dir, __ = utils.get_datashuttle_path(self.project_name)
         return base_dir
 
-    def _get_base_and_top_level_dir(self, local_or_remote: str) -> Path:
-        """
-        Get the base project directory with the top level directory,
-        i.e. "rawdata" or "derivatives".
-
-        Parameters
-        ----------
-
-        local_or_remote : "local" or "remote"
-
-        Examples
-        --------
-        e.g. if local_path = "/my/local/path and the
-        top level directory is set to rawdata, this method will return
-        "/my/local/path/rawdata"
-        """
-        base_dir = (
-            self._get_base_dir(local_or_remote) / self._top_level_dir_name
-        )
-        return base_dir
 
     def _format_names(
         self, names: Union[list, str], sub_or_ses: str
