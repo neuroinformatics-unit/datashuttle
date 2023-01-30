@@ -93,7 +93,6 @@ exclude = '''
     | build
     | dist
     | examples
-    | tests/test_integration/test_file_conflicts_pathtable.py
   )/
 )
 '''
