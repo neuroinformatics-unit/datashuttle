@@ -950,7 +950,7 @@ class DataShuttle:
         # Find sub names to transfer
         if sub_names_checked in [["all"], ["all_sub"]]:
             processed_sub_names = directories.search_sub_or_ses_level(
-                self,
+                self.cfg,
                 base_dir,
                 local_or_remote,
                 search_str=f"{self.cfg.sub_prefix}*",
@@ -997,7 +997,7 @@ class DataShuttle:
                 ["all_ses"],
             ]:  # TODO: save somewhere?
                 processed_ses_names = directories.search_sub_or_ses_level(
-                    self,
+                    self.cfg,
                     base_dir,
                     local_or_remote,
                     sub,
@@ -1192,7 +1192,7 @@ class DataShuttle:
         for details. Also, setup rclone config for ssh connection.
         """
         ssh.setup_ssh_key(
-            self.cfg.ssh_key_path, self.cfg.hostkeys_path, self.cfg, log=log
+            self.cfg, log=log
         )
 
         self._setup_rclone_remote_ssh_config(log)

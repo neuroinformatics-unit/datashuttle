@@ -27,7 +27,7 @@ def _transfer_all_non_sub_ses_data_type_(
         relative_path = ""  # TODO!!!
 
         sub_names = directories.search_sub_or_ses_level(
-            self,
+            self.cfg,
             self.cfg.get_base_dir(local_or_remote),
             local_or_remote,
             search_str=f"{self.cfg.sub_prefix}*",
@@ -40,7 +40,7 @@ def _transfer_all_non_sub_ses_data_type_(
         relative_path = sub
 
         ses_names = directories.search_sub_or_ses_level(
-            self,
+            self.cfg,
             self.cfg.get_base_dir(local_or_remote) / relative_path,
             local_or_remote,
             search_str=f"{self.cfg.ses_prefix}*",

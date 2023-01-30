@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from datashuttle.datashuttle import DataShuttle
+    from datashuttle.configs import configs
 
 import glob
 import os
@@ -85,7 +86,7 @@ def check_no_duplicate_sub_ses_key_values(
     """
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
-            project, base_dir, "local"
+            project.cfg, base_dir, "local"
         )
         existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
 
@@ -99,7 +100,7 @@ def check_no_duplicate_sub_ses_key_values(
         # for each subject, check session level
         for sub in new_sub_names:
             existing_ses_names = search_sub_or_ses_level(
-                project, base_dir, "local", sub
+                project.cfg, base_dir, "local", sub
             )
             existing_ses_values = utils.get_first_sub_ses_keys(
                 existing_ses_names
@@ -123,7 +124,7 @@ def check_no_duplicate_sub_ses_key_values(
 
 
 def search_sub_or_ses_level(
-    project: DataShuttle,
+    cfg: configs.Configs,
     base_dir: Path,
     local_or_remote: str,
     sub: Optional[str] = None,
@@ -137,8 +138,8 @@ def search_sub_or_ses_level(
     Parameters
     ----------
 
-    project : datashuttle project. Currently, this is used
-        as a holder for some ssh configs to avoid too many
+    cfg : datashuttle project cfg. Currently, this is used
+        as a holder for  ssh configs to avoid too many
         arguments, but this is not nice and breaks the
         general rule that these functions should operate
         project-agnostic.
@@ -168,7 +169,7 @@ def search_sub_or_ses_level(
         base_dir = base_dir / ses
 
     search_results = search_for_directories(
-        project, base_dir, local_or_remote, search_str
+        cfg, base_dir, local_or_remote, search_str
     )
     return search_results
 
@@ -185,7 +186,7 @@ def search_data_dirs_sub_or_ses_level(
     see project._search_sub_or_ses_level() for inputs.
     """
     search_results = search_sub_or_ses_level(
-        project, base_dir, local_or_remote, sub, ses
+        project.cfg, base_dir, local_or_remote, sub, ses
     )
 
     data_directories = process_glob_to_find_data_type_dirs(
@@ -243,11 +244,11 @@ def search_for_wildcards(
 
             if sub:
                 matching_names = search_sub_or_ses_level(
-                    project, base_dir, local_or_remote, sub, search_str=name
+                    project.cfg, base_dir, local_or_remote, sub, search_str=name
                 )
             else:
                 matching_names = search_sub_or_ses_level(
-                    project, base_dir, local_or_remote, search_str=name
+                    project.cfg, base_dir, local_or_remote, search_str=name
                 )
 
             new_all_names += matching_names
@@ -299,7 +300,7 @@ def process_glob_to_find_data_type_dirs(
 
 
 def search_for_directories(
-    project: DataShuttle,
+    cfg: configs.Configs,
     search_path: Path,
     local_or_remote: str,
     search_prefix: str,
@@ -317,15 +318,13 @@ def search_for_directories(
     """
     if (
         local_or_remote == "remote"
-        and project.cfg["connection_method"] == "ssh"
+        and cfg["connection_method"] == "ssh"
     ):
 
         all_dirnames = ssh.search_ssh_remote_for_directories(
             search_path,
             search_prefix,
-            project.cfg,
-            project._hostkeys_path,
-            project.cfg.ssh_key_path,
+            cfg,
         )
     else:
         all_dirnames = search_filesystem_path_for_directories(

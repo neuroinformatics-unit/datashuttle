@@ -199,8 +199,6 @@ class TestSSH:
 
         getpass.getpass = lambda _: self.get_password()  # type: ignore
         ssh.setup_ssh_key(
-            project.cfg.ssh_key_path,
-            project.cfg.hostkeys_path,
             project.cfg,
             log=False,
         )
@@ -217,8 +215,6 @@ class TestSSH:
             ssh.connect_client(
                 client,
                 project.cfg,
-                project.cfg.hostkeys_path,
-                ssh_key_path=project.cfg.ssh_key_path,
             )
 
         assert (
@@ -236,8 +232,6 @@ class TestSSH:
 
         with pytest.raises(BaseException) as e:
             ssh.setup_ssh_key(
-                project.cfg.ssh_key_path,
-                project.cfg.hostkeys_path,
                 project.cfg,
                 log=False,
             )

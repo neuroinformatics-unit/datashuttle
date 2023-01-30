@@ -21,8 +21,6 @@ from . import utils
 
 
 def setup_ssh_key(
-    ssh_key_path: Path,
-    hostkeys_path: Path,
     cfg: Configs,
     log: bool = True,
 ) -> None:
@@ -47,7 +45,7 @@ def setup_ssh_key(
 
     log : log if True, logger must already be initialised.
     """
-    generate_and_write_ssh_key(ssh_key_path)
+    generate_and_write_ssh_key(cfg.ssh_key_path)
 
     password = getpass.getpass(
         "Please enter password to your remote host to add the public key. "
@@ -56,7 +54,7 @@ def setup_ssh_key(
 
     key = paramiko.RSAKey.from_private_key_file(ssh_key_path.as_posix())
 
-    add_public_key_to_remote_authorized_keys(cfg, hostkeys_path, password, key)
+    add_public_key_to_remote_authorized_keys(cfg, password, key)
 
     success_message = (
         f"SSH key pair setup successfully. "
@@ -72,9 +70,7 @@ def setup_ssh_key(
 def connect_client(
     client: paramiko.SSHClient,
     cfg: Configs,
-    hostkeys_path: Path,
     password: Optional[str] = None,
-    ssh_key_path: Optional[Path] = None,
 ) -> None:
     """
     Connect client to remote server using paramiko.
@@ -82,14 +78,14 @@ def connect_client(
     Paramiko does not support pathlib.
     """
     try:
-        client.get_host_keys().load(hostkeys_path.as_posix())
+        client.get_host_keys().load(cfg.hostkeys_path.as_posix())
         client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(
             cfg["remote_host_id"],
             username=cfg["remote_host_username"],
             password=password,
-            key_filename=ssh_key_path.as_posix()
-            if isinstance(ssh_key_path, Path)
+            key_filename=cfg.ssh_key_path.as_posix()
+            if isinstance(cfg.ssh_key_path, Path)
             else None,
             look_for_keys=True,
         )
@@ -110,13 +106,13 @@ def connect_client(
 
 
 def add_public_key_to_remote_authorized_keys(
-    cfg: Configs, hostkeys_path: Path, password: str, key: paramiko.RSAKey
+    cfg: Configs, password: str, key: paramiko.RSAKey
 ) -> None:
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
     with paramiko.SSHClient() as client:
-        connect_client(client, cfg, hostkeys_path, password=password)
+        connect_client(client, cfg, password=password)
 
         client.exec_command("mkdir -p ~/.ssh/")
         client.exec_command(
@@ -179,8 +175,6 @@ def search_ssh_remote_for_directories(
     search_path: Path,
     search_prefix: str,
     cfg: Configs,
-    hostkeys_path: Path,
-    ssh_key_path: Path,
 ) -> List[str]:
     """
     Search for the search prefix in the search path over SSH.
@@ -193,10 +187,10 @@ def search_ssh_remote_for_directories(
 
     search_prefix : search prefix for directory names e.g. "sub-*"
 
-    cfg, hostkeys_path, ssh_key_path : see connect_client()
+    cfg : see connect_client()
     """
     with paramiko.SSHClient() as client:
-        connect_client(client, cfg, hostkeys_path, ssh_key_path=ssh_key_path)
+        connect_client(client, cfg)
 
         sftp = client.open_sftp()
 
