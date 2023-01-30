@@ -1,6 +1,11 @@
 # flake8: noqa
 # fmt: off
 
+from pathlib import Path
+
+import pandas as pd
+
+
 def get_pathtable(base_dir):
 
     columns = ["base_dir", "path", "is_non_sub", "is_non_ses", "is_ses_level_non_data_type", "parent_sub", "parent_ses", "parent_data_type"]

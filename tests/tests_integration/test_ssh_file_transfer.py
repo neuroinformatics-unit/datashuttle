@@ -45,6 +45,10 @@
 # this would work for data_type and all other files. But didn't work well for testing, so just use the files.
 # TODO: fix naming
 
+# how to handle this, because this should be tested as a normal file transfer without SSH. Maybe call these extended
+# tests, and test with SSH only if set!
+
+# manualyl check this test is doing what I think it is and check all edge cases
 """
 
 import os
@@ -78,15 +82,9 @@ class TestFileTransfer:
         yield project
         test_utils.teardown_project(cwd, project)
 
-    def write_file(self, path_, contents, append=False):
-        key = "a" if append else "w"
-        with open(path_, key) as file:
-            file.write(contents)
-
-    def read_file(self, path_):
-        with open(path_, "r") as file:
-            contents = file.readlines()
-        return contents
+    # ---------------------------------------------------------------------------------------------------------------
+    # Test Rclone File Overwrite
+    # ---------------------------------------------------------------------------------------------------------------
 
     @pytest.mark.skip
     @pytest.mark.parametrize("overwrite_old_files_on_transfer", [True, False])
@@ -134,6 +132,10 @@ class TestFileTransfer:
         else:
             assert remote_contents == ["first edit"]
 
+    # ---------------------------------------------------------------------------------------------------------------
+    # Test File Transfer - All Options
+    # ---------------------------------------------------------------------------------------------------------------
+
     @pytest.mark.parametrize(
         "sub_names",
         [
@@ -166,58 +168,99 @@ class TestFileTransfer:
         """ """
         pathtable = get_pathtable(project.cfg["local_path"])
 
+        # Make and transfer all files in the pathtable,
+        # then upload a subset according to the passed arguments
+        self.create_all_pathtable_files(pathtable)
+
+        project.upload_data(sub_names, ses_names, data_type)
+
+        # Parse the arguments to filter the pathtable, getting
+        # the files expected to be transferred pased on the arguments
+        # Note files in sub/ses/datatype folders must be handled
+        # separately to those in non-sub, non-ses, non-data-type folders
+        sub_names = self.parse_arguments(pathtable, sub_names, "sub")
+        ses_names = self.parse_arguments(pathtable, ses_names, "ses")
+        data_type = self.parse_arguments(pathtable, data_type, "data_type")
+
+        (
+            sub_ses_dtype_arguments,
+            extra_arguments,
+        ) = self.make_pathtable_search_filter(sub_names, ses_names, data_type)
+
+        data_type_folders = self.query_table(
+            pathtable, sub_ses_dtype_arguments
+        )
+        extra_folders = self.query_table(pathtable, extra_arguments)
+
+        expected_paths = pd.concat([data_type_folders, extra_folders])
+        expected_paths = expected_paths.drop_duplicates(subset="path")
+
+        remote_base_paths = expected_paths.base_dir.map(
+            lambda x: str(x).replace("local", "remote")
+        )
+        expected_transferred_paths = remote_base_paths / expected_paths.path
+
+        # Check what paths were actually moved, and test
+        all_transferred = project.cfg["remote_path"].glob("**/*")
+        paths_to_transferred_files = filter(Path.is_file, all_transferred)
+
+        assert sorted(paths_to_transferred_files) == sorted(
+            expected_transferred_paths
+        )
+
+    # ---------------------------------------------------------------------------------------------------------------
+    # Utils
+    # ---------------------------------------------------------------------------------------------------------------
+
+    def write_file(self, path_, contents, append=False):
+        key = "a" if append else "w"
+        with open(path_, key) as file:
+            file.write(contents)
+
+    def read_file(self, path_):
+        with open(path_, "r") as file:
+            contents = file.readlines()
+        return contents
+
+    def query_table(self, pathtable, arguments):
+        if any(arguments):
+            folders = pathtable.query(" | ".join(arguments))
+        else:
+            folders = pd.DataFrame()
+        return folders
+
+    def parse_arguments(self, pathtable, list_of_names, field):
+        # field - "sub", "ses", or "data_type"
+        if list_of_names in [["all"], [f"all_{field}"]]:
+            entries = pathtable.query(f"parent_{field} != False")[
+                f"parent_{field}"
+            ]
+            entries = list(set(entries))
+            if list_of_names == ["all"]:
+                entries += (
+                    [f"all_non_{field}"]
+                    if field != "data_type"
+                    else ["all_ses_level_non_data_type"]
+                )
+            list_of_names = entries
+        return list_of_names
+
+    def create_all_pathtable_files(self, pathtable):
+        """"""
         for i in range(pathtable.shape[0]):
             filepath = pathtable["base_dir"][i] / pathtable["path"][i]
             filepath.parents[0].mkdir(parents=True, exist_ok=True)
             self.write_file(filepath, contents="test_entry")
 
-        project.upload_data(sub_names, ses_names, data_type)
-
-        if sub_names == ["all"]:  # TODO: fix
-            sub_names = list(
-                set(pathtable.query("parent_sub != False")["parent_sub"])
-            ) + [
-                "all_non_sub"
-            ]  # can fix this, one function one name,
-        elif sub_names == ["all_sub"]:
-            sub_names = list(
-                set(pathtable.query("parent_sub != False")["parent_sub"])
-            )
-
-        if ses_names == ["all"]:
-            ses_names = list(
-                set(pathtable.query("parent_ses != False")["parent_ses"])
-            ) + ["all_non_ses"]
-        elif ses_names == ["all_ses"]:
-            ses_names = list(
-                set(pathtable.query("parent_ses != False")["parent_ses"])
-            )
-
-        if data_type == ["all"]:
-            data_type = list(
-                set(
-                    pathtable.query("parent_data_type != False")[
-                        "parent_data_type"
-                    ]
-                )
-            ) + ["all_ses_level_non_data_type"]
-        elif data_type == ["all_data_type"]:
-            data_type = list(
-                set(
-                    pathtable.query("parent_data_type != False")[
-                        "parent_data_type"
-                    ]
-                )
-            )
-
-        extra_arguments = []
+    def make_pathtable_search_filter(self, sub_names, ses_names, data_type):
+        """ """
         sub_ses_dtype_arguments = []
+        extra_arguments = []
 
         for sub in sub_names:
 
             if sub == "all_non_sub":
                 extra_arguments += ["is_non_sub == True"]
-
             else:
                 if "histology" in data_type:
                     sub_ses_dtype_arguments += [
@@ -230,7 +273,6 @@ class TestFileTransfer:
                         extra_arguments += [
                             f"(parent_sub == '{sub}' & is_non_ses == True)"
                         ]
-
                     else:
 
                         for dtype in data_type:
@@ -238,42 +280,9 @@ class TestFileTransfer:
                                 extra_arguments += [
                                     f"(parent_sub == '{sub}' & parent_ses == '{ses}' & is_ses_level_non_data_type == True)"
                                 ]
-
                             else:
                                 sub_ses_dtype_arguments += [
                                     f"(parent_sub == '{sub}' & parent_ses == '{ses}' & (parent_data_type == '{dtype}' | parent_data_type == '{dtype}'))"
                                 ]
 
-        if any(sub_ses_dtype_arguments):
-            try:
-                data_type_folders = pathtable.query(
-                    " | ".join(sub_ses_dtype_arguments)
-                )
-            except:
-                breakpoint()
-        else:
-            data_type_folders = pd.DataFrame()
-
-        if any(extra_arguments):
-            extra_folders = pathtable.query(" | ".join(extra_arguments))
-        else:
-            extra_folders = pd.DataFrame()
-
-        result = pd.concat([data_type_folders, extra_folders])
-
-        result = result.drop_duplicates(subset="path")
-
-        get_every_path = project.cfg["remote_path"].glob("**/*")
-        get_every_path = [
-            Path(path_).as_posix()
-            for path_ in get_every_path
-            if path_.is_file()
-        ]
-
-        test_move_paths = result.base_dir / result.path
-        test_move_paths = [
-            path_.as_posix().replace("local", "remote")
-            for path_ in test_move_paths
-        ]  # this will be slow
-
-        assert sorted(get_every_path) == sorted(test_move_paths)
+        return sub_ses_dtype_arguments, extra_arguments
