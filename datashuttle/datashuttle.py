@@ -971,7 +971,8 @@ class DataShuttle:
         for sub in processed_sub_names:
 
             if sub == "all_non_sub":  # all_sub is handled above
-                self._transfer_all_non_sub_ses_data_type_(
+                data_transfer.transfer_all_non_sub_ses_data_type(
+                    self.cfg,
                     upload_or_download,
                     local_or_remote,
                     "all_non_sub",
@@ -1020,7 +1021,8 @@ class DataShuttle:
             for ses in processed_ses_names:
 
                 if ses == "all_non_ses":  # all_ses is handled above
-                    self._transfer_all_non_sub_ses_data_type_(
+                    data_transfer.transfer_all_non_sub_ses_data_type(
+                        self.cfg,
                         upload_or_download,
                         local_or_remote,
                         "all_non_ses",
@@ -1030,6 +1032,24 @@ class DataShuttle:
                         log,
                     )  # TODO: fix
                     continue
+
+                if any(
+                    [
+                        name in ["all_ses_level_non_data_type", "all"]
+                        for name in data_type_checked
+                    ]
+                ):
+
+                    data_transfer.transfer_all_non_sub_ses_data_type(
+                        self.cfg,
+                        upload_or_download,
+                        local_or_remote,
+                        "all_ses_level_non_data_type",
+                        sub,
+                        ses,
+                        dry_run,
+                        log,
+                    )
 
                 self._transfer_data_type(
                     upload_or_download,
@@ -1086,45 +1106,17 @@ class DataShuttle:
         log : Whether to log, if True logging must already
             be initialized
         """
-        level = "ses" if ses else "sub"
-        data_type = copy.deepcopy(data_type)
-
-        if (
-            level == "sub" and "all_ses_level_non_data_type" in data_type
-        ):  # this way of handling is confusing
-            del data_type[
-                data_type.index("all_ses_level_non_data_type")
-            ]  ################################################### OMD this is horrible!
-
-        if level == "ses":
-            if any(
-                [
-                    name in ["all_ses_level_non_data_type", "all"]
-                    for name in data_type
-                ]
-            ):  #################### own function!
-                self._transfer_all_non_sub_ses_data_type_(
-                    upload_or_download,
-                    local_or_remote,
-                    "all_ses_level_non_data_type",
-                    sub,
-                    ses,
-                    dry_run,
-                    log,
-                )
-                if data_type == "all_ses_level_non_data_type":  # HANDLE THIS!
-                    return
-                else:
-                    if data_type != [
-                        "all"
-                    ]:  # TODO: make sure only these are allowed if all specified. Don't forget to enforce - ppl will definately write e.g. sub_001!
-                        del data_type[
-                            data_type.index("all_ses_level_non_data_type")
-                        ]  ################################################### OMD this is horrible!
+        data_type = [
+            dtype
+            for dtype in data_type
+            if dtype != "all_ses_level_non_data_type"
+        ]
 
         data_type_items = self._items_from_data_type_input(
             local_or_remote, data_type, sub, ses
         )
+
+        level = "ses" if ses else "sub"
 
         for data_type_key, data_type_dir in data_type_items:  # type: ignore
 
@@ -1191,9 +1183,7 @@ class DataShuttle:
         Setup ssh connection, key pair (see ssh.setup_ssh_key)
         for details. Also, setup rclone config for ssh connection.
         """
-        ssh.setup_ssh_key(
-            self.cfg, log=log
-        )
+        ssh.setup_ssh_key(self.cfg, log=log)
 
         self._setup_rclone_remote_ssh_config(log)
 
@@ -1230,7 +1220,8 @@ class DataShuttle:
                 + [name in non_sub_names for name in names]
             ):
                 utils.log_and_raise_error(
-                    f"Cannot use a reserved session or data_type keyword argument (e.g. {non_sub_names}) "
+                    f"Cannot use a reserved session or data_type keyword "
+                    f"argument (e.g. {non_sub_names}) "
                     f"as a subject name"
                 )
 
@@ -1246,7 +1237,8 @@ class DataShuttle:
                 + [name in non_ses_names for name in names]
             ):
                 utils.log_and_raise_error(
-                    f"Cannot use a reserved session or data_type keyword argument (e.g. {non_ses_names}) "
+                    f"Cannot use a reserved session or data_type "
+                    f"keyword argument (e.g. {non_ses_names}) "
                     f"as a subject name"
                 )
 

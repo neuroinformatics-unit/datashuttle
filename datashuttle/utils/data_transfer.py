@@ -1,38 +1,38 @@
+"""
+Explain. Explain why it is horrible.
+"""
 from pathlib import Path
 from typing import List, Optional
 
-from . import rclone, utils
+from datashuttle.configs import canonical_directories, configs
+
+from . import directories, rclone, utils
 
 
-def _transfer_all_non_sub_ses_data_type_(
-    self,
-    upload_or_download,
-    local_or_remote,
-    type_,
-    sub,
-    ses,
-    dry_run,
-    log,
-):  # TODO: add typing!!, make sub and ses optional
+def transfer_all_non_sub_ses_data_type(
+    cfg: configs.Configs,
+    upload_or_download: str,
+    local_or_remote: str,
+    type_: str,
+    sub: str,
+    ses: str,
+    dry_run: bool,
+    log: bool,
+):
     """"""
-    data_type_names = [
-        dir.name
-        for dir in canonical_directories.get_data_type_directories(
-            self.cfg
-        ).values()
-    ]
+    data_type_dirs = canonical_directories.get_data_type_directories(cfg)
+    data_type_names = [dir.name for dir in data_type_dirs.values()]
 
-    if type_ == "all_non_sub":  # TODO type is builtin!
+    if type_ == "all_non_sub":
 
-        relative_path = ""  # TODO!!!
+        relative_path = ""
 
         sub_names = directories.search_sub_or_ses_level(
-            self.cfg,
-            self.cfg.get_base_dir(local_or_remote),
+            cfg,
+            cfg.get_base_dir(local_or_remote),
             local_or_remote,
-            search_str=f"{self.cfg.sub_prefix}*",
+            search_str=f"{cfg.sub_prefix}*",
         )
-
         exclude_list = sub_names
 
     elif type_ == "all_non_ses":
@@ -40,23 +40,23 @@ def _transfer_all_non_sub_ses_data_type_(
         relative_path = sub
 
         ses_names = directories.search_sub_or_ses_level(
-            self.cfg,
-            self.cfg.get_base_dir(local_or_remote) / relative_path,
+            cfg,
+            cfg.get_base_dir(local_or_remote) / relative_path,
             local_or_remote,
-            search_str=f"{self.cfg.ses_prefix}*",
-        )  # TODO: this is not clean
+            search_str=f"{cfg.ses_prefix}*",
+        )
 
         exclude_list = ses_names + data_type_names
 
     elif type_ == "all_ses_level_non_data_type":
 
-        relative_path = sub + "/" + "/" + ses  # TODO fix
+        relative_path = sub + "/" + "/" + ses
 
         exclude_list = data_type_names
 
-    data_transfer.move_dir_or_file(
+    move_dir_or_file(
         relative_path,
-        self.cfg,
+        cfg,
         upload_or_download=upload_or_download,
         dry_run=dry_run,
         log=log,
