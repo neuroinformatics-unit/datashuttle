@@ -86,7 +86,6 @@ class DataShuttle:
         )  # some duplication here, could put as cls method
 
         self.cfg: Any = None  # TODO: add type hints
-        self._data_type_dirs: Any = None
 
         self.cfg = load_configs.make_config_file_attempt_load(
             self._config_path
@@ -113,9 +112,7 @@ class DataShuttle:
 
         self._make_project_metadata_if_does_not_exist()
 
-        self._data_type_dirs = canonical_directories.get_data_type_directories(
-            self.cfg
-        )
+        self.cfg.init_data_type_dirs()
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Directory Makers
@@ -1165,7 +1162,7 @@ class DataShuttle:
         else:
             data_type_items = directories.search_data_dirs_sub_or_ses_level(
                 self,
-                self._data_type_dirs,
+                self.cfg.data_type_dirs,
                 base_dir,
                 local_or_remote,
                 sub,
@@ -1266,18 +1263,19 @@ class DataShuttle:
         be a key on self.ses_dirs e.g. "behav", or "all")
         """
         if type(data_type) == list:
-            valid_keys = list(self._data_type_dirs.keys()) + ["all"]
+            valid_keys = list(self.cfg.data_type_dirs.keys()) + ["all"]
             is_valid = all([type in valid_keys for type in data_type])
         else:
             is_valid = (
-                data_type in self._data_type_dirs.keys() or data_type == "all"
+                data_type in self.cfg.data_type_dirs.keys()
+                or data_type == "all"
             )
 
         if error_on_fail and not is_valid:
             utils.log_and_raise_error(
                 f"data_type: '{data_type}' "
                 f"is not valid. Must be one of"
-                f" {list(self._data_type_dirs.keys())}. or 'all'"
+                f" {list(self.cfg.data_type_dirs.keys())}. or 'all'"
                 f" No directories were made."
             )
 
@@ -1288,17 +1286,17 @@ class DataShuttle:
     ) -> Union[ItemsView, zip]:
         """
         Get the .items() structure of the data type, either all of
-        them (stored in self._data_type_dirs) or as a single item.
+        them (stored in self.cfg.data_type_dirs) or as a single item.
         """
         if type(data_type) == str:
             data_type = [data_type]
 
         if "all" in data_type:
-            items = self._data_type_dirs.items()
+            items = self.cfg.data_type_dirs.items()
         else:
             items = zip(
                 data_type,
-                [self._data_type_dirs[key] for key in data_type],
+                [self.cfg.data_type_dirs[key] for key in data_type],
             )
 
         return items

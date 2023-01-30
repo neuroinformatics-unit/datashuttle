@@ -193,7 +193,7 @@ class TestMakeDirs:
     def test_turn_off_specific_directory_used(self, project, dir_key):
         """
         Whether or not a directory is made is held in the .used key of the
-        Directory class (stored in project._data_type_dirs).
+        Directory class (stored in project.cfg.data_type_dirs).
         """
 
         # Overwrite configs to make specified directory not used.
@@ -221,10 +221,10 @@ class TestMakeDirs:
         ensure they are made correctly.
         """
         # Change directory names to custom names
-        project._data_type_dirs["ephys"].name = "change_ephys"
-        project._data_type_dirs["behav"].name = "change_behav"
-        project._data_type_dirs["histology"].name = "change_histology"
-        project._data_type_dirs["funcimg"].name = "change_funcimg"
+        project.cfg.data_type_dirs["ephys"].name = "change_ephys"
+        project.cfg.data_type_dirs["behav"].name = "change_behav"
+        project.cfg.data_type_dirs["histology"].name = "change_histology"
+        project.cfg.data_type_dirs["funcimg"].name = "change_funcimg"
 
         # Make the directories
         sub = "sub-001"

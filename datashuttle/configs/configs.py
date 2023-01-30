@@ -6,10 +6,11 @@ from typing import Any, Optional, Union, cast
 
 import yaml
 
-from datashuttle.configs import canonical_configs
+from datashuttle.configs import canonical_configs, canonical_directories
 from datashuttle.utils import directories, utils
 
 # TODO: split this into configs and paths - these are distinct!
+# Initialisation here is now very messy, after factoring some out from datashuttle
 
 
 class Configs(UserDict):
@@ -47,6 +48,8 @@ class Configs(UserDict):
 
         self.top_level_dir_name = None  # TODO: filled in later, should be passed directly or set as configs!
         self.project_name = None
+
+        self.data_type_dirs = None  # self.init_data_type_dirs
 
         self.logging_path: Optional[str] = None  # set in self.init_paths()
         self.hostkeys_path: Optional[str] = None
@@ -281,7 +284,7 @@ class Configs(UserDict):
         }
 
     def init_paths(self):
-
+        """"""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
         self.ssh_key_path = self.make_path(
@@ -291,6 +294,12 @@ class Configs(UserDict):
         self.hostkeys_path = self.make_path("datashuttle", "hostkeys")
 
         self.logging_path = self.make_and_get_logging_path()
+
+    def init_data_type_dirs(self):
+        """"""
+        self.data_type_dirs = canonical_directories.get_data_type_directories(
+            self
+        )
 
     def make_and_get_logging_path(self) -> Path:
         """
