@@ -33,7 +33,7 @@ def get_canonical_config_dict() -> dict:
         "connection_method": None,
         "remote_host_id": None,
         "remote_host_username": None,
-        "overwrite_old_files_on_transfer": None,
+        "overwrite_old_files": None,
         "transfer_verbosity": None,
         "show_transfer_progress": None,
     }
@@ -64,7 +64,7 @@ def get_flags() -> List[str]:
     testing and type checking config inputs.
     """
     return get_data_types() + [
-        "overwrite_old_files_on_transfer",
+        "overwrite_old_files",
         "show_transfer_progress",
     ]
 
@@ -80,7 +80,7 @@ def get_canonical_config_required_types() -> dict:
         "connection_method": str,
         "remote_host_id": Union[str, None],
         "remote_host_username": Union[str, None],
-        "overwrite_old_files_on_transfer": bool,
+        "overwrite_old_files": bool,
         "transfer_verbosity": str,
         "show_transfer_progress": bool,
         "use_ephys": bool,

@@ -73,7 +73,7 @@ class TestSSH:
         rclone.setup_remote_as_rclone_target(
             "ssh",
             project.cfg,
-            project._get_rclone_config_name("ssh"),
+            project.cfg.get_rclone_config_name("ssh"),
             project._ssh_key_path,
         )
 

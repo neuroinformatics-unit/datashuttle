@@ -14,6 +14,7 @@ import paramiko
 from datashuttle.configs import canonical_directories, load_configs
 from datashuttle.configs.configs import Configs
 from datashuttle.utils import (
+    data_transfer,
     directories,
     ds_logger,
     formatting,
@@ -79,8 +80,10 @@ class DataShuttle:
             self._datashuttle_path,
             self._temp_log_path,
         ) = utils.get_datashuttle_path(self.project_name)
-        self._config_path = self._make_path("datashuttle", "config.yaml")
-        self._top_level_dir_name = "rawdata"
+
+        self._config_path = (
+            utils.get_datashuttle_path(project_name)[0] / "config.yaml"
+        )  # some duplication here, could put as cls method
 
         self.cfg: Any = None
         self._ssh_key_path: Any = None
@@ -100,16 +103,23 @@ class DataShuttle:
         Once config file is loaded, update all private attributes
         according to config contents.
         """
+        self.cfg.project_name = self.project_name  # TODO FIX THIS!
+        # self.project_name = None  # yes this too! TODO
+
+        self.cfg.top_level_dir_name = (
+            "rawdata"  # TODO: move this as a proper config!
+        )
+
         self._project_metadata_path = self.cfg["local_path"] / ".datashuttle"
 
         self._make_project_metadata_if_does_not_exist()
 
         self._logging_path = self.make_and_get_logging_path()
 
-        self._ssh_key_path = self._make_path(
-            "datashuttle", self.project_name + "_ssh_key"
+        self._ssh_key_path = self.cfg.make_path(
+            "datashuttle", self.cfg.project_name + "_ssh_key"
         )
-        self._hostkeys_path = self._make_path("datashuttle", "hostkeys")
+        self._hostkeys_path = self.cfg.make_path("datashuttle", "hostkeys")
 
         self._data_type_dirs = canonical_directories.get_data_type_directories(
             self.cfg
@@ -192,7 +202,7 @@ class DataShuttle:
 
         directories.check_no_duplicate_sub_ses_key_values(
             self,
-            base_dir=self._get_base_dir("local"),
+            base_dir=self.cfg.get_base_dir("local"),
             new_sub_names=sub_names,
             new_ses_names=ses_names,
         )
@@ -262,7 +272,7 @@ class DataShuttle:
         Notes
         -----
 
-        The configs "overwrite_old_files_on_transfer", "transfer_verbosity"
+        The configs "overwrite_old_files", "transfer_verbosity"
         and "show_transfer_progress" pertain to data-transfer settings.
         See make_config_file() for more information.
 
@@ -366,14 +376,13 @@ class DataShuttle:
         self._start_log("upload_project_dir_or_file")
 
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("local"),
+            self.cfg.get_base_dir("local"),
             Path(filepath),
         )
 
         data_transfer.move_dir_or_file(
-            self._make_path("local", processed_filepath),
-            self._make_path("remote", processed_filepath),
-            self._get_rclone_config_name(),
+            processed_filepath,
+            self.cfg,
             "upload",
             dry_run,
             log=True,
@@ -393,13 +402,12 @@ class DataShuttle:
         self._start_log("download_project_dir_or_file")
 
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("remote"),
+            self.cfg.get_base_dir("remote"),
             Path(filepath),
         )
         data_transfer.move_dir_or_file(
-            self._make_path("local", processed_filepath),
-            self._make_path("remote", processed_filepath),
-            self._get_rclone_config_name(),
+            processed_filepath,
+            self.cfg,
             "download",
             dry_run,
             log=True,
@@ -467,7 +475,7 @@ class DataShuttle:
         connection_method: str,
         remote_host_id: Optional[str] = None,
         remote_host_username: Optional[str] = None,
-        overwrite_old_files_on_transfer: bool = False,
+        overwrite_old_files: bool = False,
         transfer_verbosity: str = "v",
         show_transfer_progress: bool = False,
         use_ephys: bool = False,
@@ -517,7 +525,7 @@ class DataShuttle:
             username for which to log in to remote host.
             e.g. "jziminski"
 
-        overwrite_old_files_on_transfer :
+        overwrite_old_files :
             If True, when copying data (upload or download) files
             will be overwritten if the timestamp of the copied
             version is later than the target directory version
@@ -559,7 +567,7 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
-                "overwrite_old_files_on_transfer": overwrite_old_files_on_transfer,
+                "overwrite_old_files": overwrite_old_files,
                 "transfer_verbosity": transfer_verbosity,
                 "show_transfer_progress": show_transfer_progress,
                 "use_ephys": use_ephys,
@@ -813,7 +821,7 @@ class DataShuttle:
 
         for sub in sub_names:
 
-            sub_path = self._make_path(
+            sub_path = self.cfg.make_path(
                 "local",
                 sub,
             )
@@ -824,7 +832,7 @@ class DataShuttle:
 
             for ses in ses_names:
 
-                ses_path = self._make_path(
+                ses_path = self.cfg.make_path(
                     "local",
                     [sub, ses],
                 )
@@ -953,7 +961,7 @@ class DataShuttle:
         local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
-        base_dir = self._get_base_dir(local_or_remote)
+        base_dir = self.cfg.get_base_dir(local_or_remote)
 
         # Find sub names to transfer
         if sub_names_checked in [["all"], ["all_sub"]]:
@@ -1049,67 +1057,6 @@ class DataShuttle:
                     log=log,
                 )
 
-    def _transfer_all_non_sub_ses_data_type_(
-        self,
-        upload_or_download,
-        local_or_remote,
-        type_,
-        sub,
-        ses,
-        dry_run,
-        log,
-    ):  # TODO: add typing!!, make sub and ses optional
-        """"""
-        data_type_names = [
-            dir.name
-            for dir in canonical_directories.get_data_type_directories(
-                self.cfg
-            ).values()
-        ]
-
-        if type_ == "all_non_sub":  # TODO type is builtin!
-
-            relative_path = ""  # TODO!!!
-
-            sub_names = directories.search_sub_or_ses_level(
-                self,
-                self._get_base_dir(local_or_remote),
-                local_or_remote,
-                search_str=f"{self.cfg.sub_prefix}*",
-            )
-
-            exclude_list = sub_names
-
-        elif type_ == "all_non_ses":
-
-            relative_path = sub
-
-            ses_names = directories.search_sub_or_ses_level(
-                self,
-                self._get_base_dir(local_or_remote)
-                / relative_path,  # TODO: this is not clean
-                local_or_remote,
-                search_str=f"{self.cfg.ses_prefix}*",
-            )
-
-            exclude_list = ses_names + data_type_names
-
-        elif type_ == "all_ses_level_non_data_type":
-
-            relative_path = sub + "/" + "/" + ses  # TODO fix
-
-            exclude_list = data_type_names
-
-        data_transfer.move_dir_or_file(
-            self._make_path("local", relative_path),
-            self._make_path("remote", relative_path),
-            self._get_rclone_config_name(),
-            upload_or_download=upload_or_download,
-            dry_run=dry_run,
-            log=log,
-            exclude_list=exclude_list,
-        )
-
     def _transfer_data_type(
         self,
         upload_or_download: str,
@@ -1204,51 +1151,12 @@ class DataShuttle:
                     filepath = os.path.join(sub, data_type_dir.name)
 
                 data_transfer.move_dir_or_file(
-                    self._make_path("local", filepath),
-                    self._make_path("remote", filepath),
-                    self._get_rclone_config_name(),
+                    filepath,
+                    self.cfg,
                     upload_or_download,
                     dry_run=dry_run,
                     log=log,
                 )
-    """
-    def _move_dir_or_file(
-        self,
-        filepath: str,
-        upload_or_download: str,
-        dry_run: bool,
-        log: bool = False,
-        exclude_list: Optional[List[str]] = None,
-    ) -> None:
-        
-        local_filepath = self._make_path(
-            "local", [self._top_level_dir_name, filepath]
-        ).as_posix()  # TODO: use new getter for top levle dir
-
-        remote_filepath = self._make_path(
-            "remote", [self._top_level_dir_name, filepath]
-        ).as_posix()
-
-        output = rclone.transfer_data(
-            local_filepath,
-            remote_filepath,
-            self._get_rclone_config_name(),
-            upload_or_download,
-            rclone_options={  # TODO: this is stupid
-                "overwrite_old_files_on_transfer": self.cfg[
-                    "overwrite_old_files_on_transfer"
-                ],
-                "transfer_verbosity": self.cfg["transfer_verbosity"],
-                "show_transfer_progress": self.cfg["show_transfer_progress"],
-                "dry_run": dry_run,
-                "exclude_list": exclude_list,
-            },
-        )
-
-        if log:
-            utils.log(output.stderr.decode("utf-8"))
-        utils.message_user(output.stderr.decode("utf-8"))
-    """
 
     def _items_from_data_type_input(
         self,
@@ -1267,7 +1175,7 @@ class DataShuttle:
 
         see _transfer_data_type() for parameters.
         """
-        base_dir = self._get_base_dir(local_or_remote)
+        base_dir = self.cfg.get_base_dir(local_or_remote)
 
         if data_type not in [
             "all",
@@ -1308,56 +1216,6 @@ class DataShuttle:
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
     # --------------------------------------------------------------------------------------------------------------------
-
-    def _make_path(self, base: str, subdirs: Union[str, list]) -> Path:
-        """
-        Function for joining relative path to base dir.
-        If path already starts with base dir, the base
-        dir will not be joined.
-
-        Parameters
-        ----------
-
-        base: "local", "remote" or "datashuttle"
-
-        subdirs: a list (or string for 1) of
-            directory names to be joined into a path.
-            If file included, must be last entry (with ext).
-        """
-        if isinstance(subdirs, list):
-            subdirs_str = "/".join(subdirs)
-        else:
-            subdirs_str = cast(str, subdirs)
-
-        subdirs_path = Path(subdirs_str)
-
-        base_dir = self._get_base_dir(base)
-
-        if utils.path_already_stars_with_base_dir(base_dir, subdirs_path):
-            joined_path = subdirs_path
-        else:
-            joined_path = base_dir / subdirs_path
-
-        return joined_path
-
-    def _get_base_dir(self, base: str) -> Path:
-        """
-        Convenience function to return the full base path.
-
-        Parameters
-        ----------
-
-        base : base path, "local", "remote" or "datashuttle"
-
-        """
-        if base == "local":
-            base_dir = self.cfg["local_path"] / self._top_level_dir_name
-        elif base == "remote":
-            base_dir = self.cfg["remote_path"] / self._top_level_dir_name
-        elif base == "datashuttle":
-            base_dir, __ = utils.get_datashuttle_path(self.project_name)
-        return base_dir
-
 
     def _format_names(
         self, names: Union[list, str], sub_or_ses: str
@@ -1480,7 +1338,7 @@ class DataShuttle:
         if connection_method is None:
             connection_method = self.cfg["connection_method"]
 
-        return f"remote_{self.project_name}_{connection_method}"
+        return f"remote_{self.cfg.project_name}_{connection_method}"
 
     def _start_log(
         self,
@@ -1584,7 +1442,7 @@ class DataShuttle:
         rclone.setup_remote_as_rclone_target(
             "ssh",
             self.cfg,
-            self._get_rclone_config_name("ssh"),
+            self.cfg.get_rclone_config_name("ssh"),
             self._ssh_key_path,
             log=log,
         )
@@ -1593,7 +1451,7 @@ class DataShuttle:
         rclone.setup_remote_as_rclone_target(
             "local_filesystem",
             self.cfg,
-            self._get_rclone_config_name("local_filesystem"),
+            self.cfg.get_rclone_config_name("local_filesystem"),
             self._ssh_key_path,
             log=True,
         )

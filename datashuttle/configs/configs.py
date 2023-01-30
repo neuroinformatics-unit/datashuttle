@@ -2,7 +2,7 @@ import copy
 from collections import UserDict
 from collections.abc import ItemsView, KeysView, ValuesView
 from pathlib import Path
-from typing import Any, Union
+from typing import Any, Optional, Union, cast
 
 import yaml
 
@@ -42,6 +42,9 @@ class Configs(UserDict):
         ]
         self.sub_prefix = "sub-"
         self.ses_prefix = "ses-"
+
+        self.top_level_dir_name = None  # TODO: filled in later, should be passed directly or set as configs!
+        self.project_name = None
 
     def setup_after_load(self) -> None:
         self.convert_str_and_pathlib_paths(self, "str_to_path")
@@ -195,3 +198,79 @@ class Configs(UserDict):
                     utils.log_and_raise_error(
                         "Option must be 'path_to_str' or 'str_to_path'"
                     )
+
+    def make_path(self, base: str, subdirs: Union[str, list]) -> Path:
+        """
+        Function for joining relative path to base dir.
+        If path already starts with base dir, the base
+        dir will not be joined.
+
+        Parameters
+        ----------
+
+        base: "local", "remote" or "datashuttle"
+
+        subdirs: a list (or string for 1) of
+            directory names to be joined into a path.
+            If file included, must be last entry (with ext).
+        """
+        if isinstance(subdirs, list):
+            subdirs_str = "/".join(subdirs)
+        else:
+            subdirs_str = cast(str, subdirs)
+
+        subdirs_path = Path(subdirs_str)
+
+        base_dir = self.get_base_dir(base)
+
+        if utils.path_already_stars_with_base_dir(base_dir, subdirs_path):
+            joined_path = subdirs_path
+        else:
+            joined_path = base_dir / subdirs_path
+
+        return joined_path
+
+    def get_base_dir(self, base: str) -> Path:
+        """
+        Convenience function to return the full base path.
+
+        Parameters
+        ----------
+
+        base : base path, "local", "remote" or "datashuttle"
+
+        """
+        # 1) fully move project name
+        # 2) move _top_level_dir_name
+
+        if base == "local":
+            base_dir = self["local_path"] / self.top_level_dir_name
+        elif base == "remote":
+            base_dir = self["remote_path"] / self.top_level_dir_name
+        elif base == "datashuttle":
+            base_dir, __ = utils.get_datashuttle_path(self.project_name)
+        return base_dir
+
+    def get_rclone_config_name(
+        self, connection_method: Optional[str] = None
+    ) -> str:
+        """
+        Convenience function to get the rclone config
+        name (these configs are created by datashuttle
+        but managed and stored by rclone).
+        """
+        if connection_method is None:
+            connection_method = self["connection_method"]
+
+        return f"remote_{self.project_name}_{connection_method}"
+
+    def make_rclone_transfer_options(self, dry_run: bool, exclude_list: str):
+        return (
+            {
+                "overwrite_old_files": self["overwrite_old_files"],
+                "transfer_verbosity": self["transfer_verbosity"],
+                "show_transfer_progress": self["show_transfer_progress"],
+                "dry_run": dry_run,
+                "exclude_list": exclude_list,
+            },
+        )

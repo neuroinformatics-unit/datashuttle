@@ -52,7 +52,7 @@ def setup_project_default_configs(
     rclone.setup_remote_as_rclone_target(
         "ssh",
         project.cfg,
-        project._get_rclone_config_name("ssh"),
+        project.cfg.get_rclone_config_name("ssh"),
         project._ssh_key_path,
     )
 
@@ -196,7 +196,7 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": None,
                 "remote_host_username": None,
-                "overwrite_old_files_on_transfer": False,
+                "overwrite_old_files": False,
                 "transfer_verbosity": "v",
                 "show_transfer_progress": False,
                 "use_ephys": False,
@@ -212,7 +212,7 @@ def get_test_config_arguments_dict(
                 "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
-                "overwrite_old_files_on_transfer": True,
+                "overwrite_old_files": True,
                 "transfer_verbosity": "vv",
                 "show_transfer_progress": True,
                 "use_ephys": True,
@@ -483,7 +483,7 @@ def get_rawdata_path(project, local_or_remote="local"):
         base_path = project.cfg["local_path"]
     else:
         base_path = project.cfg["remote_path"]
-    return os.path.join(base_path, project._top_level_dir_name)
+    return os.path.join(base_path, project.cfg.top_level_dir_name)
 
 
 def handle_upload_or_download(

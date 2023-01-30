@@ -426,7 +426,7 @@ def construct_parser():
     )
     make_config_file_parser.add_argument(
         "--overwrite-old-files-on-transfer",
-        "--overwrite_old_files_on_transfer",
+        "--overwrite_old_files",
         required=False,
         action="store_true",
         help=help("flag_default_false"),

@@ -63,7 +63,7 @@ class TestFileTransfer:
 
         test_utils.check_directory_tree_is_correct(
             project,
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             subs,
             sessions,
             test_utils.get_default_directory_used(),
@@ -103,7 +103,7 @@ class TestFileTransfer:
         transfer_function(subs, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             data_type_to_transfer,
             subs,
             sessions,
@@ -146,7 +146,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             data_type_to_transfer,
             subs_to_upload,
         )
@@ -186,7 +186,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
@@ -280,13 +280,13 @@ class TestFileTransfer:
                 "ses-002_date-20220516",
             ]
 
-    @pytest.mark.parametrize("overwrite_old_files_on_transfer", [True, False])
+    @pytest.mark.parametrize("overwrite_old_files", [True, False])
     @pytest.mark.parametrize("show_transfer_progress", [True, False])
     @pytest.mark.parametrize("dry_run", [True, False])
     def test_rclone_options(
         self,
         project,
-        overwrite_old_files_on_transfer,
+        overwrite_old_files,
         show_transfer_progress,
         dry_run,
         capsys,
@@ -299,9 +299,7 @@ class TestFileTransfer:
         """
         project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
 
-        project.update_config(
-            "overwrite_old_files_on_transfer", overwrite_old_files_on_transfer
-        )
+        project.update_config("overwrite_old_files", overwrite_old_files)
         project.update_config("transfer_verbosity", "vv")
         project.update_config("show_transfer_progress", show_transfer_progress)
 
@@ -312,7 +310,7 @@ class TestFileTransfer:
 
         assert "--create-empty-src-dirs" in log
 
-        if overwrite_old_files_on_transfer:
+        if overwrite_old_files:
             assert "--ignore-existing" not in log
         else:
             assert "--ignore-existing" in log

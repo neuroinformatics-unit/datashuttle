@@ -86,14 +86,14 @@ class TestFileTransfer:
     # Test Rclone File Overwrite
     # ---------------------------------------------------------------------------------------------------------------
 
-    @pytest.mark.skip
-    @pytest.mark.parametrize("overwrite_old_files_on_transfer", [True, False])
+    # @pytest.mark.skip
+    @pytest.mark.parametrize("overwrite_old_files", [True, False])
     def test_rclone_overwrite_modified_file(
-        self, project, overwrite_old_files_on_transfer
+        self, project, overwrite_old_files
     ):
         """
         Test how rclone deals with existing files. In datashuttle
-        if project.cfg["overwrite_old_files_on_transfer"] is on,
+        if project.cfg["overwrite_old_files"] is on,
         files will be replaced with newer versions. Alternatively,
         if this is off, files will never be overwritten even if
         the version in source is newer than target.
@@ -111,8 +111,8 @@ class TestFileTransfer:
 
         time_written = os.path.getatime(local_test_file_path)
 
-        if overwrite_old_files_on_transfer:
-            project.update_config("overwrite_old_files_on_transfer", True)
+        if overwrite_old_files:
+            project.update_config("overwrite_old_files", True)
 
         project.upload_all()
 
@@ -127,7 +127,7 @@ class TestFileTransfer:
 
         remote_contents = self.read_file(remote_test_file_path)
 
-        if overwrite_old_files_on_transfer:
+        if overwrite_old_files:
             assert remote_contents == ["first edit second edit"]
         else:
             assert remote_contents == ["first edit"]
