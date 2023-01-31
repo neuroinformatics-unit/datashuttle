@@ -1,5 +1,6 @@
 import os
 import re
+from pathlib import Path
 
 import pytest
 import test_utils
@@ -346,3 +347,48 @@ class TestFileTransfer:
             assert "starting with parameters [" not in log and "-vv" not in log
         else:
             raise BaseException("wrong parameter passed as transfer_verbosity")
+
+    @pytest.mark.parametrize("overwrite_old_files", [True, False])
+    def test_rclone_overwrite_modified_file(
+        self, project, overwrite_old_files
+    ):
+        """
+        Test how rclone deals with existing files. In datashuttle
+        if project.cfg["overwrite_old_files"] is on,
+        files will be replaced with newer versions. Alternatively,
+        if this is off, files will never be overwritten even if
+        the version in source is newer than target.
+        """
+        path_to_test_file = (
+            Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
+        )
+
+        project.make_sub_dir("sub-001")
+        local_test_file_path = project.cfg["local_path"] / path_to_test_file
+        remote_test_file_path = project.cfg["remote_path"] / path_to_test_file
+
+        # Write a local file and transfer
+        test_utils.write_file(local_test_file_path, contents="first edit")
+
+        time_written = os.path.getatime(local_test_file_path)
+
+        if overwrite_old_files:
+            project.update_config("overwrite_old_files", True)
+
+        project.upload_all()
+
+        # Update the file and transfer and transfer again
+        test_utils.write_file(
+            local_test_file_path, contents=" second edit", append=True
+        )
+
+        assert time_written < os.path.getatime(local_test_file_path)
+
+        project.upload_all()
+
+        remote_contents = test_utils.read_file(remote_test_file_path)
+
+        if overwrite_old_files:
+            assert remote_contents == ["first edit second edit"]
+        else:
+            assert remote_contents == ["first edit"]

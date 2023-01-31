@@ -6,63 +6,41 @@
 # https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
 # but these drop python access to internet NOT entire internet (at least some of them)
 
-# PROJECT / SUB / SES LEVEL UNTRACKED FILES
-# add keyword arguments a la #70
+# this would work for data_type and all other files. But didn't work well for testing, so just use the files.
 
-# Note: Use the -P/--progress flag to view real-time transfer statistics.
-
-# new rclone args:
-#   --progress
-#   ignore-existing
-#   verbosity
-
-# dont forget to type everything!
-
-# possible inputs
-# ---------------
-
-# sub_names: "all", "all_sub", "all_non_sub", [some sub names]
-
-# ses_names: "all", "all_ses", "all_non_ses", [some ses_names]
-
-# data_type: "all", "all_data_type", "all_ses_level_non_data_type", [some data type names]
-
-# path table
-# ---------------
-
-# Path : full path to file
-# is_dir : True if directory, False if file
-# level : "project", "sub" or "ses" (i.e. it is in the top level folder (e.g. rawdata), subject levle, or session level.
-# parent_sub : if ses file or other, name of the parent subject (otherwise None)
-# parent_ses : if data type or other file, name of the parent session folder
-# is_data_type : the data type if True, otherwise None
-
+# DOING NOW -------------------------------------------------------------------
 # DONT FORGET THIS IS SUPPOSE TO TEST OVER SSH
 # ASK ALEX ABOUT SSH TO CEPH
-
-# fmt: off
-
-# this would work for data_type and all other files. But didn't work well for testing, so just use the files.
-# TODO: fix naming
-
 # how to handle this, because this should be tested as a normal file transfer without SSH. Maybe call these extended
 # tests, and test with SSH only if set!
-
 # manualyl check this test is doing what I think it is and check all edge cases
 """
 
 import os
 from pathlib import Path
+import shutil
 
 import pandas as pd
 import pytest
 import test_utils
 from test_file_conflicts_pathtable import get_pathtable
+import getpass
+import copy
+import builtins
+from datashuttle.utils import rclone, ssh
 
+REMOTE_PATH = Path(r"/nfs/nhome/live/jziminski/scratch/datashuttle tests")
+REMOTE_HOST_ID = "ssh.swc.ucl.ac.uk"
+REMOTE_HOST_USERNAME = "jziminski"
+SSH_TEST_FILESYSTEM_PATH = Path("S:/scratch/datashuttle tests")
+TEST_SSH = True
+# TODO: a trick here, check all files through mounted but actually transfer
+# through SSH
 
 class TestFileTransfer:
-    @pytest.fixture(scope="function")
-    def project(test, tmp_path):
+
+    @pytest.fixture(scope="module", params=[False, pytest.param(True, marks=pytest.mark.skipif(TEST_SSH is False,  reason="False"))])  # TODO: transfer here both ssh and non-ssh. Only do SSH if some pyetst setting set.
+    def pathtable_and_project(self, request, tmpdir_factory ):
         """
         Create a project with default configs loaded.
         This makes a fresh project for each function,
@@ -72,113 +50,139 @@ class TestFileTransfer:
         Ensure change dir at end of session otherwise it
         is not possible to delete project.
         """
-        tmp_path = tmp_path / "test with space"
+        testing_ssh = request.param
+        tmp_path = tmpdir_factory.mktemp("test")
+
+        if testing_ssh:
+            base_path = SSH_TEST_FILESYSTEM_PATH
+        else:
+            base_path = tmp_path / "test with space"
 
         test_project_name = "test_file_conflicts"
         project, cwd = test_utils.setup_project_fixture(
-            tmp_path, test_project_name
+            base_path, test_project_name
         )
 
-        yield project
+        # ssh stuff - move to new function as also used in ssh_setup
+        if testing_ssh:
+            project.update_config(
+                "remote_path",
+                test_utils.make_test_path(REMOTE_PATH, test_project_name, "remote")
+            )
+            project.update_config("remote_host_id", REMOTE_HOST_ID)  # TODO: NEW FUNCTION
+            project.update_config("remote_host_username", REMOTE_HOST_USERNAME)
+            project.update_config("connection_method", "ssh")
+
+            rclone.setup_remote_as_rclone_target(
+                "ssh",
+                project.cfg,
+                project.cfg.get_rclone_config_name("ssh"),
+                project.cfg.ssh_key_path,
+            )
+
+            self.setup_hostkeys(project)
+            getpass.getpass = lambda _: self.get_password()  # type: ignore   #NEW FUNCTION
+            ssh.setup_ssh_key(project.cfg, log=False,)
+
+        pathtable = get_pathtable(project.cfg["local_path"])
+
+        # Make and transfer all files in the pathtable,
+        # then upload a subset according to the passed arguments
+        self.create_all_pathtable_files(pathtable)
+
+        project.testing_ssh = testing_ssh
+        yield [pathtable, project]
+
         test_utils.teardown_project(cwd, project)
+
+        if testing_ssh:
+            for result in SSH_TEST_FILESYSTEM_PATH.glob("*"):
+                shutil.rmtree(result)
+
+    # to move start
+    def get_password(self):  # TODO: move to utils
+        """
+        Load the password from file. Password is provided to NIU team
+        members only.
+        """
+        test_ssh_script_path = os.path.dirname(os.path.realpath(__file__))
+        with open(
+            test_ssh_script_path + "/test_ssh_password.txt", "r"
+        ) as file:
+            password = file.readlines()[0]
+        return password
+
+
+    def setup_mock_input(self, input_):
+        """
+        This is very similar to pytest monkeypatch but
+        using that was giving me very strange output,
+        monkeypatch.setattr('builtins.input', lambda _: "n")
+        i.e. pdb went deep into some unrelated code stack
+        """
+        orig_builtin = copy.deepcopy(builtins.input)
+        builtins.input = lambda _: input_  # type: ignore
+        return orig_builtin
+
+    def restore_mock_input(self, orig_builtin):
+        """
+        orig_builtin: the copied, original builtins.input
+        """
+        builtins.input = orig_builtin
+
+    def setup_hostkeys(self, project):
+        """
+        Convenience function to verify the server hostkey.
+        """
+        orig_builtin = self.setup_mock_input(input_="y")
+        ssh.verify_ssh_remote_host(
+            project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
+        )
+        self.restore_mock_input(orig_builtin)
+
+    # to move end
 
     # ---------------------------------------------------------------------------------------------------------------
     # Test Rclone File Overwrite
     # ---------------------------------------------------------------------------------------------------------------
 
-    # @pytest.mark.skip
-    @pytest.mark.parametrize("overwrite_old_files", [True, False])
-    def test_rclone_overwrite_modified_file(
-        self, project, overwrite_old_files
-    ):
-        """
-        Test how rclone deals with existing files. In datashuttle
-        if project.cfg["overwrite_old_files"] is on,
-        files will be replaced with newer versions. Alternatively,
-        if this is off, files will never be overwritten even if
-        the version in source is newer than target.
-        """
-        path_to_test_file = (
-            Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
-        )
-
-        project.make_sub_dir("sub-001")
-        local_test_file_path = project.cfg["local_path"] / path_to_test_file
-        remote_test_file_path = project.cfg["remote_path"] / path_to_test_file
-
-        # Write a local file and transfer
-        self.write_file(local_test_file_path, contents="first edit")
-
-        time_written = os.path.getatime(local_test_file_path)
-
-        if overwrite_old_files:
-            project.update_config("overwrite_old_files", True)
-
-        project.upload_all()
-
-        # Update the file and transfer and transfer again
-        self.write_file(
-            local_test_file_path, contents=" second edit", append=True
-        )
-
-        assert time_written < os.path.getatime(local_test_file_path)
-
-        project.upload_all()
-
-        remote_contents = self.read_file(remote_test_file_path)
-
-        if overwrite_old_files:
-            assert remote_contents == ["first edit second edit"]
-        else:
-            assert remote_contents == ["first edit"]
+    def remote_from_local(self, path_):
+        return Path(str(path_).replace("local", "remote"))
 
     # ---------------------------------------------------------------------------------------------------------------
     # Test File Transfer - All Options
     # ---------------------------------------------------------------------------------------------------------------
 
-    @pytest.mark.parametrize(
-        "sub_names",
-        [
+    @pytest.mark.parametrize("sub_names", [
             ["all"],
             ["all_sub"],
             ["all_non_sub"],
             ["sub-001"],
             ["sub-003_date-20231901"],
             ["sub-002", "all_non_sub"],
-        ],
-    )
-    @pytest.mark.parametrize(
-        "ses_names",
-        [
-            ["all"],
-            ["all_ses"],
-            ["all_non_ses"],
-            ["ses_002"],
-            ["all_non_ses", "ses-001"],
-        ],
-    )
-    @pytest.mark.parametrize(
-        "data_type",
-        [
-            ["all"],
-            ["all_ses_level_non_data_type"],
-            ["all_data_type"],
-            ["behav"],
-            ["ephys"],
-            ["histology"],
-            ["funcimg"],
-            ["histology", "behav", "all_ses_level_non_data_type"],
-        ],
-    )
+        ])
+    @pytest.mark.parametrize("ses_names", [
+        ["all"],
+        ["all_ses"],
+        ["all_non_ses"],
+        ["ses_002"],
+        ["all_non_ses", "ses-001"],
+    ])
+    @pytest.mark.parametrize("data_type", [
+        ["all"],
+        ["all_ses_level_non_data_type"],
+        ["all_data_type"],
+        ["behav"],
+        ["ephys"],
+        ["histology"],
+        ["funcimg"],
+        ["histology", "behav", "all_ses_level_non_data_type"],
+    ])
     def test_all_data_transfer_options(
-        self, project, sub_names, ses_names, data_type
+        self, pathtable_and_project, sub_names, ses_names, data_type
     ):
         """ """
-        pathtable = get_pathtable(project.cfg["local_path"])
-
-        # Make and transfer all files in the pathtable,
-        # then upload a subset according to the passed arguments
-        self.create_all_pathtable_files(pathtable)
+        pathtable, project = pathtable_and_project
 
         project.upload_data(sub_names, ses_names, data_type)
 
@@ -209,26 +213,19 @@ class TestFileTransfer:
         expected_transferred_paths = remote_base_paths / expected_paths.path
 
         # Check what paths were actually moved, and test
-        all_transferred = project.cfg["remote_path"].glob("**/*")
+        path_to_search = self.remote_from_local(project.cfg["local_path"])
+        all_transferred = path_to_search.glob("**/*")
         paths_to_transferred_files = filter(Path.is_file, all_transferred)
 
         assert sorted(paths_to_transferred_files) == sorted(
             expected_transferred_paths
         )
 
+        shutil.rmtree(self.remote_from_local(project.cfg["local_path"]))
+
     # ---------------------------------------------------------------------------------------------------------------
     # Utils
     # ---------------------------------------------------------------------------------------------------------------
-
-    def write_file(self, path_, contents, append=False):
-        key = "a" if append else "w"
-        with open(path_, key) as file:
-            file.write(contents)
-
-    def read_file(self, path_):
-        with open(path_, "r") as file:
-            contents = file.readlines()
-        return contents
 
     def query_table(self, pathtable, arguments):
         if any(arguments):
@@ -258,7 +255,7 @@ class TestFileTransfer:
         for i in range(pathtable.shape[0]):
             filepath = pathtable["base_dir"][i] / pathtable["path"][i]
             filepath.parents[0].mkdir(parents=True, exist_ok=True)
-            self.write_file(filepath, contents="test_entry")
+            test_utils.write_file(filepath, contents="test_entry")
 
     def make_pathtable_search_filter(self, sub_names, ses_names, data_type):
         """ """

@@ -67,7 +67,7 @@ def setup_project_default_configs(
 
     if remote_path:
         project.update_config("remote_path", remote_path)
-        delete_all_dirs_in_remote_path(project)
+        delete_all_dirs_in_project_path(project, "remote")
         project.cfg.make_and_get_logging_path()
 
     return project
@@ -92,7 +92,8 @@ def teardown_project(
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
     os.chdir(cwd)
-    delete_all_dirs_in_remote_path(project)
+    delete_all_dirs_in_project_path(project, "remote")
+    delete_all_dirs_in_project_path(project, "local")
     delete_project_if_it_exists(project.project_name)
 
 
@@ -102,11 +103,13 @@ def delete_all_dirs_in_local_path(project):
         shutil.rmtree(project.cfg["local_path"])
 
 
-def delete_all_dirs_in_remote_path(project):
+def delete_all_dirs_in_project_path(project, local_or_remote):
     """"""
+    directory = f"{local_or_remote}_path"
+
     ds_logger.close_log_filehandler()
-    if project.cfg["remote_path"].is_dir():
-        shutil.rmtree(project.cfg["remote_path"])
+    if project.cfg[directory].is_dir():
+        shutil.rmtree(project.cfg[directory])
 
 
 def delete_project_if_it_exists(project_name):
@@ -147,12 +150,16 @@ def setup_project_fixture(tmp_path, test_project_name):
     project = setup_project_default_configs(
         test_project_name,
         tmp_path,
-        local_path=tmp_path / test_project_name / "local",
-        remote_path=tmp_path / test_project_name / "remote",
+        local_path=make_test_path(tmp_path, test_project_name, "local"),
+        remote_path=make_test_path(tmp_path, test_project_name, "remote"),
     )
 
     cwd = os.getcwd()
     return project, cwd
+
+
+def make_test_path(base_path, test_project_name, local_or_remote):
+    return Path(base_path) / test_project_name / local_or_remote
 
 
 def get_protected_test_dir():
@@ -570,3 +577,15 @@ def clear_capsys(capsys):
     print statements are clearer to read.
     """
     capsys.readouterr()
+
+
+def write_file(path_, contents, append=False):
+    key = "a" if append else "w"
+    with open(path_, key) as file:
+        file.write(contents)
+
+
+def read_file(path_):
+    with open(path_, "r") as file:
+        contents = file.readlines()
+    return contents
