@@ -14,7 +14,9 @@ ConfigValueTypes = Union[Path, str, bool, None]
 # -------------------------------------------------------------------
 
 
-def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
+def make_config_file_attempt_load(
+    project_name: str, config_path: Path
+) -> Optional[Configs]:
     """
     Try to load an existing config file, that was previously
     saved by Datashuttle. This should always work, unless
@@ -27,6 +29,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
 
     Parameters
     ----------
+    project_name : name of project
 
     config_path : path to datashuttle config .yaml file
     """
@@ -41,7 +44,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
 
     new_cfg: Optional[Configs]
 
-    new_cfg = Configs(config_path, None)
+    new_cfg = Configs(project_name, config_path, None)
 
     try:
         new_cfg.load_from_file()
@@ -61,6 +64,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
 
 
 def supplied_configs_confirm_overwrite(
+    project_name: str,
     path_to_config: Path,
     warn: bool,
 ) -> Union[Configs, None]:
@@ -75,6 +79,8 @@ def supplied_configs_confirm_overwrite(
 
     Parameters
     ----------
+
+    project_name : name of project
 
     path_to_config : path to the datashuttle config .yaml file to load
 
@@ -93,7 +99,7 @@ def supplied_configs_confirm_overwrite(
             utils.log_and_message("y not pressed. Configs not updated.")
             return None
 
-    new_cfg = Configs(path_to_config, None)
+    new_cfg = Configs(project_name, path_to_config, None)
     new_cfg.load_from_file()
 
     new_cfg = handle_cli_or_supplied_config_bools(new_cfg)

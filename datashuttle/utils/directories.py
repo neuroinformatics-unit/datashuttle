@@ -13,14 +13,14 @@ from typing import List, Optional, Union
 
 from datashuttle.configs.canonical_tags import tags
 
-from . import ssh, utils
+from . import formatting, ssh, utils
 
 # --------------------------------------------------------------------------------------------------------------------
 # Make Dirs
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def _make_directory_trees(
+def make_directory_trees(
     cfg: Configs,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
@@ -57,12 +57,10 @@ def _make_directory_trees(
             sub,
         )
 
-        directories.make_dirs(sub_path, log)
+        make_dirs(sub_path, log)
 
         if data_type_passed:
-            directories.make_data_type_directories(
-                cfg, data_type, sub_path, "sub"
-            )
+            make_data_type_directories(cfg, data_type, sub_path, "sub")
 
         for ses in ses_names:
 
@@ -71,10 +69,10 @@ def _make_directory_trees(
                 [sub, ses],
             )
 
-            directories.make_dirs(ses_path, log)
+            make_dirs(ses_path, log)
 
             if data_type_passed:
-                directories.make_data_type_directories(
+                make_data_type_directories(
                     cfg, data_type, ses_path, "ses", log=log
                 )
 

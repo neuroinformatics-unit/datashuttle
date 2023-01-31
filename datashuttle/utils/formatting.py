@@ -2,10 +2,6 @@ import datetime
 import re
 from typing import List, Union
 
-from datashuttle.configs.canonical_directories import (
-    get_non_ses_names,
-    get_non_sub_names,
-)
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.configs.configs import Configs
 
@@ -286,7 +282,7 @@ def ensure_prefixes_on_list_of_names(
 
 
 def check_data_type_is_valid(
-    cfg: configs.Confgs, data_type: str, error_on_fail: bool
+    cfg: Configs, data_type: str, error_on_fail: bool
 ) -> bool:
     """
     Check the passed data_type is valid (must

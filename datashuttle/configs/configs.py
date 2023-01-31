@@ -9,9 +9,6 @@ import yaml
 from datashuttle.configs import canonical_configs, canonical_directories
 from datashuttle.utils import directories, utils
 
-# TODO: split this into configs and paths - these are distinct!
-# Initialisation here is now very messy, after factoring some out from datashuttle
-
 
 class Configs(UserDict):
     """
@@ -24,6 +21,8 @@ class Configs(UserDict):
     The input dict is checked that it conforms to the
     canonical standard by calling check_dict_values_raise_on_fail()
 
+    project_name and all paths are set at runtime but not stored.
+
     Parameters
     ----------
 
@@ -35,10 +34,14 @@ class Configs(UserDict):
         This must contain all canonical_config keys
     """
 
-    def __init__(self, file_path: Path, input_dict: Union[dict, None]) -> None:
+    def __init__(
+        self, project_name: str, file_path: Path, input_dict: Union[dict, None]
+    ) -> None:
         super(Configs, self).__init__(input_dict)
 
+        self.project_name = project_name
         self.file_path = file_path
+
         self.keys_str_on_file_but_path_in_class = [
             "local_path",
             "remote_path",
@@ -46,15 +49,13 @@ class Configs(UserDict):
         self.sub_prefix = "sub-"
         self.ses_prefix = "ses-"
 
-        self.top_level_dir_name = None  # TODO: filled in later, should be passed directly or set as configs!
-        self.project_name = None
+        self.top_level_dir_name: str  # TODO: these are set in datashuttpe.py. Should be set in configs!
 
-        self.data_type_dirs = None  # self.init_data_type_dirs
-
-        self.logging_path: Optional[str] = None  # set in self.init_paths()
-        self.hostkeys_path: Optional[str] = None
-        self.ssh_key_path: Optional[str] = None
-        self.project_metadata_path: Optional[str] = None
+        self.data_type_dirs: dict
+        self.logging_path: Path
+        self.hostkeys_path: Path
+        self.ssh_key_path: Path
+        self.project_metadata_path: Path
 
     def setup_after_load(self) -> None:
         self.convert_str_and_pathlib_paths(self, "str_to_path")
@@ -320,6 +321,8 @@ class Configs(UserDict):
         """
         if type(data_type) == str:
             data_type = [data_type]
+
+        items: Union[ItemsView, zip]
 
         if "all" in data_type:
             items = self.data_type_dirs.items()

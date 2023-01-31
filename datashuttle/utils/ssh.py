@@ -52,13 +52,13 @@ def setup_ssh_key(
         "You will not have to enter your password again."
     )
 
-    key = paramiko.RSAKey.from_private_key_file(ssh_key_path.as_posix())
+    key = paramiko.RSAKey.from_private_key_file(cfg.ssh_key_path.as_posix())
 
     add_public_key_to_remote_authorized_keys(cfg, password, key)
 
     success_message = (
         f"SSH key pair setup successfully. "
-        f"Private key at: {ssh_key_path.as_posix()}"
+        f"Private key at: {cfg.ssh_key_path.as_posix()}"
     )
 
     utils.message_user(success_message)

@@ -1,7 +1,6 @@
 """
 Explain.
 """
-import copy
 import os
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
@@ -63,7 +62,6 @@ def transfer_sub_ses_data(
                 cfg,
                 upload_or_download,
                 local_or_remote,
-                "all_non_sub",
                 None,
                 None,
                 dry_run,
@@ -93,7 +91,6 @@ def transfer_sub_ses_data(
                     cfg,
                     upload_or_download,
                     local_or_remote,
-                    "all_non_ses",
                     sub,
                     None,
                     dry_run,
@@ -107,7 +104,6 @@ def transfer_sub_ses_data(
                     cfg,
                     upload_or_download,
                     local_or_remote,
-                    "all_ses_level_non_data_type",
                     sub,
                     ses,
                     dry_run,
@@ -150,7 +146,7 @@ def get_processed_names(
         sub_or_ses = "ses"
         search_prefix = cfg.ses_prefix
 
-    if named_checked in [["all"], [f"all_{sub_or_ses}"]]:
+    if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
         processed_names = directories.search_sub_or_ses_level(
             cfg, base_dir, local_or_remote, sub, search_str=f"{search_prefix}*"
         )
@@ -244,9 +240,8 @@ def transfer_all_non_sub_ses_data_type(
     cfg: Configs,
     upload_or_download: str,
     local_or_remote: str,
-    type_: str,
-    sub: str,
-    ses: str,
+    sub: Optional[str],
+    ses: Optional[str],
     dry_run: bool,
     log: bool,
 ):
@@ -254,7 +249,7 @@ def transfer_all_non_sub_ses_data_type(
     data_type_dirs = canonical_directories.get_data_type_directories(cfg)
     data_type_names = [dir.name for dir in data_type_dirs.values()]
 
-    if type_ == "all_non_sub":
+    if not sub and not ses:  # i.e. "all_non_sub":
 
         relative_path = ""
 
@@ -266,7 +261,7 @@ def transfer_all_non_sub_ses_data_type(
         )
         exclude_list = sub_names
 
-    elif type_ == "all_non_ses":
+    elif sub and not ses:  # i.e. "all_non_ses":
 
         relative_path = sub
 
@@ -279,9 +274,9 @@ def transfer_all_non_sub_ses_data_type(
 
         exclude_list = ses_names + data_type_names
 
-    elif type_ == "all_ses_level_non_data_type":
+    elif sub and ses:  # i.e. "all_ses_level_non_data_type":
 
-        relative_path = sub + "/" + "/" + ses
+        relative_path = "/".join([sub, ses])
 
         exclude_list = data_type_names
 
@@ -338,16 +333,16 @@ def move_dir_or_file(
 def check_transfer_sub_ses_input(
     sub_names: Union[str, List[str]],
     ses_names: Union[str, List[str]],
-    data_type: str,
+    data_type: Union[str, List[str]],
 ) -> Tuple[List[str], List[str], List[str]]:
 
-    if type(sub_names) == str:
+    if isinstance(sub_names, str):
         sub_names = [sub_names]
 
-    if type(ses_names) == str:
+    if isinstance(ses_names, str):
         ses_names = [ses_names]
 
-    if type(data_type) == str:
+    if isinstance(data_type, str):
         data_type = [data_type]
 
     if len(sub_names) > 1 and any(

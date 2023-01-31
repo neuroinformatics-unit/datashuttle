@@ -5,13 +5,12 @@ import glob
 import json
 import os
 import shutil
-from collections.abc import ItemsView
 from pathlib import Path
-from typing import Any, List, Optional, Tuple, Union, cast
+from typing import Any, List, Optional, Union
 
 import paramiko
 
-from datashuttle.configs import canonical_directories, load_configs
+from datashuttle.configs import load_configs
 from datashuttle.configs.configs import Configs
 from datashuttle.utils import (
     data_transfer,
@@ -83,12 +82,12 @@ class DataShuttle:
 
         self._config_path = (
             utils.get_datashuttle_path(project_name)[0] / "config.yaml"
-        )  # some duplication here, could put as cls method
+        )
 
-        self.cfg: Any = None  # TODO: add type hints
+        self.cfg: Any = None
 
         self.cfg = load_configs.make_config_file_attempt_load(
-            self._config_path
+            self.project_name, self._config_path
         )
 
         if self.cfg:
@@ -101,9 +100,6 @@ class DataShuttle:
         Once config file is loaded, update all private attributes
         according to config contents.
         """
-        self.cfg.project_name = self.project_name  # TODO FIX THIS!
-        # self.project_name = None  # yes this too! TODO
-
         self.cfg.top_level_dir_name = (
             "rawdata"  # TODO: move this as a proper config!
         )
@@ -204,7 +200,8 @@ class DataShuttle:
             ses_names = []
 
         utils.log("\nMaking directories...")
-        self._make_directory_trees(
+        directories.make_directory_trees(
+            self.cfg,
             sub_names,
             ses_names,
             data_type,
@@ -555,6 +552,7 @@ class DataShuttle:
         )
 
         self.cfg = Configs(
+            self.project_name,
             self._config_path,
             {
                 "local_path": local_path,
@@ -687,7 +685,7 @@ class DataShuttle:
         path_to_config = Path(input_path_to_config)
 
         new_cfg = load_configs.supplied_configs_confirm_overwrite(
-            path_to_config, warn
+            self.project_name, path_to_config, warn
         )
 
         if new_cfg:

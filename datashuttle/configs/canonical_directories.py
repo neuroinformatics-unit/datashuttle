@@ -88,22 +88,3 @@ def get_data_type_directories(cfg: Configs) -> dict:
             level="sub",
         ),
     }
-
-
-def get_data_type_directories_by_level(
-    level: str, used_only: bool, as_str: bool, cfg: Configs
-):  # TODO: DOC!
-
-    directories = [
-        dir
-        for dir in get_data_type_directories(cfg).values()
-        if dir.level == level
-    ]
-
-    if used_only:
-        directories = [dir for dir in directories if dir.used]
-
-    if as_str:
-        directories = [dir.name for dir in directories]
-
-    return directories
