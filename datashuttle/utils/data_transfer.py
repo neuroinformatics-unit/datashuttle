@@ -1,6 +1,3 @@
-"""
-Explain.
-"""
 import os
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
@@ -27,8 +24,13 @@ def transfer_sub_ses_data(
     """
     Iterate through all data type, sub, ses and transfer directory.
 
+    At each level, transfer either the data-type directories, or
+    all non-data-type directories, depending on the passed arguments.
+
     Parameters
     ----------
+
+    cfg : Datshuttle Configs class
 
     upload_or_download : "upload" or "download"
 
@@ -39,6 +41,8 @@ def transfer_sub_ses_data(
     data_type : e.g. ephys, behav, histology, funcimg, see make_sub_dir()
 
     dry_run : see upload_project_dir_or_file()
+
+    log : bool to log or not
     """
     (
         sub_names_checked,
@@ -122,15 +126,6 @@ def transfer_sub_ses_data(
             )
 
 
-def transfer_non_data_type(data_type_checked):
-    return any(
-        [
-            name in ["all_ses_level_non_data_type", "all"]
-            for name in data_type_checked
-        ]
-    )
-
-
 def get_processed_names(
     cfg: Configs,
     local_or_remote: str,
@@ -138,7 +133,24 @@ def get_processed_names(
     names_checked: List[str],
     sub: Optional[str] = None,
 ):
-    """"""
+    """
+    Process the list of subject session names.
+    If they are pre-defined (e.g. ["sub-001", "sub-002"])
+    they will be checked and formatted as per
+    formatting.check_and_format_names() and
+    any wildcard entries searched.
+
+    Otherwise, if "all" or a variant, the local or
+    remote directory (depending on upload vs. download)
+    will be searched to determine what files exist to transfer,
+    and the sub / ses names list generated.
+
+    Parameters
+    ----------
+
+    see transfer_sub_ses_data()
+
+    """
     if sub is None:
         sub_or_ses = "sub"
         search_prefix = cfg.sub_prefix
@@ -245,7 +257,27 @@ def transfer_all_non_sub_ses_data_type(
     dry_run: bool,
     log: bool,
 ):
-    """"""
+    """
+    Transfer all files and folders that are not included
+    in the 'canonical' subject, session or data_type
+    directories (e.g. behav, ephys).
+
+    There are three possible levels, the top level, where
+    anything that is not a subject is transferred (all_non_sub),
+    the subject level, where anything that is not a session or
+    datatype is transferred (all_non_ses), and the session level,
+    where anything that is not a data-type is transferred.
+
+    The level is determined by whether sub or session is passed.
+    If neither is passed,The top-level is assumed. If subject but
+    not session is passed, the subject level is assumed. If both
+    subject and session are passed, the session level is assumed.
+
+    Parameters
+    ----------
+
+    see transfer_data_type()
+    """
     data_type_dirs = canonical_directories.get_data_type_directories(cfg)
     data_type_names = [dir.name for dir in data_type_dirs.values()]
 
@@ -335,7 +367,22 @@ def check_transfer_sub_ses_input(
     ses_names: Union[str, List[str]],
     data_type: Union[str, List[str]],
 ) -> Tuple[List[str], List[str], List[str]]:
+    """
+    Check the sub / session names passed. The checking here
+    is stricter than for make_sub_dirs / formatting.check_and_format_names
+    because we want to ensure that a) non-data-type arguments are not
+    passed at the wrong input (e.g. all_non_ses as a subject name).
 
+    We also want to limit the possible combinations of inputs, such
+    that is a user inputs "all" subjects,  or "all_sub", they should
+    not also pass specific subs (e.g. "sub-001"). However, all_non_sub
+    and sub-001 would be permitted.
+
+    Parameters
+    ----------
+
+    see transfer_data_type()
+    """
     if isinstance(sub_names, str):
         sub_names = [sub_names]
 
@@ -367,3 +414,16 @@ def check_transfer_sub_ses_input(
         )
 
     return sub_names, ses_names, data_type
+
+
+def transfer_non_data_type(data_type_checked: List[str]) -> bool:
+    """
+    Convenience function, bool if all non-data-type directories
+    are to be transferred
+    """
+    return any(
+        [
+            name in ["all_ses_level_non_data_type", "all"]
+            for name in data_type_checked
+        ]
+    )

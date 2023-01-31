@@ -80,9 +80,9 @@ class Configs(UserDict):
     def values(self) -> ValuesView:
         return self.data.values()
 
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Save / Load from file
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def dump_to_file(self) -> None:
         """
@@ -107,9 +107,9 @@ class Configs(UserDict):
 
         self.data = config_dict
 
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Update Configs
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def update_an_entry(self, option_key: str, new_info: Any) -> None:
         """
@@ -251,9 +251,6 @@ class Configs(UserDict):
         base : base path, "local", "remote" or "datashuttle"
 
         """
-        # 1) fully move project name
-        # 2) move _top_level_dir_name
-
         if base == "local":
             base_dir = self["local_path"] / self.top_level_dir_name
         elif base == "remote":
@@ -309,8 +306,6 @@ class Configs(UserDict):
         self.data_type_dirs = canonical_directories.get_data_type_directories(
             self
         )
-
-    # Maybe utils!???
 
     def get_data_type_items(
         self, data_type: Union[str, list]

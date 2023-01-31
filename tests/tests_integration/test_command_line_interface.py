@@ -97,10 +97,7 @@ class TestCommandLineInterface:
             + self.convert_kwargs_to_cli(required_options, sep)
         )
 
-        try:
-            __, kwargs_ = self.decode(stdout)
-        except:
-            breakpoint()
+        __, kwargs_ = self.decode(stdout)
 
         # Remove items that are stripped from configs because they
         # default to None on the CLI
