@@ -2,13 +2,43 @@ import datetime
 import re
 from typing import List, Union
 
+from datashuttle.configs.canonical_directories import (
+    get_non_ses_names,
+    get_non_sub_names,
+)
 from datashuttle.configs.canonical_tags import tags
+from datashuttle.configs.configs import Configs
 
 from . import utils
 
 # --------------------------------------------------------------------------------------------------------------------
 # Format Sub / Ses Names
 # --------------------------------------------------------------------------------------------------------------------
+
+
+def check_and_format_names(
+    cfg: Configs,
+    names: Union[list, str],
+    sub_or_ses: str,
+) -> List[str]:
+    """
+    Format a list of subject or session names, e.g.
+    by ensuring all have sub- or ses- prefix, checking
+    for tags, that names do not include spaces and that
+    there are not duplicates.
+
+    Parameters
+    ----------
+
+    names: str or list containing sub or ses names
+                  (e.g. to make dirs)
+
+    sub_or_ses: "sub" or "ses" - this defines the prefix checks.
+    """
+    prefix = cfg.get_sub_or_ses_prefix(sub_or_ses)
+    formatted_names = format_names(names, prefix)
+
+    return formatted_names
 
 
 def format_names(
@@ -253,3 +283,27 @@ def ensure_prefixes_on_list_of_names(
         else name
         for name in names  # TODO LOL FIX
     ]
+
+
+def check_data_type_is_valid(
+    cfg: configs.Confgs, data_type: str, error_on_fail: bool
+) -> bool:
+    """
+    Check the passed data_type is valid (must
+    be a key on self.ses_dirs e.g. "behav", or "all")
+    """
+    if isinstance(data_type, list):
+        valid_keys = list(cfg.data_type_dirs.keys()) + ["all"]
+        is_valid = all([type in valid_keys for type in data_type])
+    else:
+        is_valid = data_type in cfg.data_type_dirs.keys() or data_type == "all"
+
+    if error_on_fail and not is_valid:
+        utils.log_and_raise_error(
+            f"data_type: '{data_type}' "
+            f"is not valid. Must be one of"
+            f" {list(cfg.data_type_dirs.keys())}. or 'all'"
+            f" No directories were made."
+        )
+
+    return is_valid

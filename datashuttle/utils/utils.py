@@ -131,3 +131,14 @@ def get_first_sub_ses_keys(all_names: List[str]) -> List[str]:
         for name in all_names
         if re.split("-|_", name)[0] in ["sub", "ses"]
     ]
+
+
+def unpack_nested_list(main_list):
+    """"""
+    new_list = []
+    for value in main_list:
+        if isinstance(value, list):
+            new_list += value
+        else:
+            new_list += [value]
+    return new_list

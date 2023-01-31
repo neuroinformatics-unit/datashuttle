@@ -1,20 +1,29 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .configs import Configs
+
 from datashuttle.utils.directory_class import Directory
 
-from .configs import Configs
+
+def get_non_sub_names():
+    return [
+        "all_ses",
+        "all_non_ses",
+        "all_data_type",
+        "all_ses_level_non_data_type",
+    ]
 
 
-def get_reserved_filetransfer_keywords(level: str) -> list:
-    """ """
-    if level == "sub":
-        keywords = ["all_sub", "all_non_sub"]
-
-    elif level == "ses":
-        keywords = ["all_ses", "all_non_ses"]
-
-    elif level == "data_type":
-        keywords = ["all_data_type", "all_ses_level_non_data_type"]
-
-    return keywords
+def get_non_ses_names():
+    return [
+        "all_sub",
+        "all_non_sub",
+        "all_data_type",
+        "all_ses_level_non_data_type",
+    ]
 
 
 def get_data_type_directories(cfg: Configs) -> dict:

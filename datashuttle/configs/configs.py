@@ -295,12 +295,6 @@ class Configs(UserDict):
 
         self.logging_path = self.make_and_get_logging_path()
 
-    def init_data_type_dirs(self):
-        """"""
-        self.data_type_dirs = canonical_directories.get_data_type_directories(
-            self
-        )
-
     def make_and_get_logging_path(self) -> Path:
         """
         Currently logging is located in config path
@@ -308,3 +302,81 @@ class Configs(UserDict):
         logging_path = self.project_metadata_path / "logs"
         directories.make_dirs(logging_path)
         return logging_path
+
+    def init_data_type_dirs(self):
+        """"""
+        self.data_type_dirs = canonical_directories.get_data_type_directories(
+            self
+        )
+
+    # Maybe utils!???
+
+    def get_data_type_items(
+        self, data_type: Union[str, list]
+    ) -> Union[ItemsView, zip]:
+        """
+        Get the .items() structure of the data type, either all of
+        them (stored in self.data_type_dirs) or as a single item.
+        """
+        if type(data_type) == str:
+            data_type = [data_type]
+
+        if "all" in data_type:
+            items = self.data_type_dirs.items()
+        else:
+            items = zip(
+                data_type,
+                [self.data_type_dirs[key] for key in data_type],
+            )
+
+        return items
+
+    def items_from_data_type_input(
+        self,
+        local_or_remote: str,
+        data_type: Union[list, str],
+        sub: str,
+        ses: Optional[str] = None,
+    ) -> Union[ItemsView, zip]:
+        """
+        Get the list of data_types to transfer, either
+        directly from user input, or by searching
+        what is available if "all" is passed.
+
+        Parameters
+        ----------
+
+        see _transfer_data_type() for parameters.
+        """
+        base_dir = self.get_base_dir(local_or_remote)
+
+        if data_type not in [
+            "all",
+            ["all"],
+            "all_data_type",
+            ["all_data_type"],
+        ]:  # TODO: make this better
+            data_type_items = self.get_data_type_items(
+                data_type,
+            )
+        else:
+            data_type_items = directories.search_data_dirs_sub_or_ses_level(
+                self,
+                base_dir,
+                local_or_remote,
+                sub,
+                ses,
+            )
+
+        return data_type_items
+
+    def get_sub_or_ses_prefix(self, sub_or_ses: str) -> str:
+        """
+        Get the sub / ses prefix (default is "sub-" and "ses-") set in cfgs.
+        These should always be "sub-" or "ses-" by SWC-BIDS.
+        """
+        if sub_or_ses == "sub":
+            prefix = self.sub_prefix
+        elif sub_or_ses == "ses":
+            prefix = self.ses_prefix
+        return prefix

@@ -1,16 +1,247 @@
 """
-Explain. Explain why it is horrible.
+Explain.
 """
+import copy
+import os
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple, Union
 
-from datashuttle.configs import canonical_directories, configs
+from datashuttle.configs import canonical_directories
+from datashuttle.configs.configs import Configs
 
-from . import directories, rclone, utils
+from . import directories, formatting, rclone, utils
+
+# --------------------------------------------------------------------------------------------------------------------
+# File Transfer
+# --------------------------------------------------------------------------------------------------------------------
+
+
+def transfer_sub_ses_data(
+    cfg: Configs,
+    upload_or_download: str,
+    sub_names: Union[str, List[str]],
+    ses_names: Union[str, List[str]],
+    data_type: str,
+    dry_run: bool,
+    log: bool = True,
+) -> None:
+    """
+    Iterate through all data type, sub, ses and transfer directory.
+
+    Parameters
+    ----------
+
+    upload_or_download : "upload" or "download"
+
+    sub_names : see make_sub_dir()
+
+    ses_names : see make_sub_dir()
+
+    data_type : e.g. ephys, behav, histology, funcimg, see make_sub_dir()
+
+    dry_run : see upload_project_dir_or_file()
+    """
+    (
+        sub_names_checked,
+        ses_names_checked,
+        data_type_checked,
+    ) = check_transfer_sub_ses_input(sub_names, ses_names, data_type)
+
+    local_or_remote = "local" if upload_or_download == "upload" else "remote"
+    base_dir = cfg.get_base_dir(local_or_remote)
+
+    # Find sub names to transfer
+    processed_sub_names = get_processed_names(
+        cfg, local_or_remote, base_dir, sub_names_checked
+    )
+
+    for sub in processed_sub_names:
+
+        if sub == "all_non_sub":
+
+            transfer_all_non_sub_ses_data_type(
+                cfg,
+                upload_or_download,
+                local_or_remote,
+                "all_non_sub",
+                None,
+                None,
+                dry_run,
+                log,
+            )
+            continue
+
+        transfer_data_type(
+            cfg,
+            upload_or_download,
+            local_or_remote,
+            data_type_checked,
+            sub,
+            dry_run=dry_run,
+            log=log,
+        )
+
+        # Find ses names  to transfer
+        processed_ses_names = get_processed_names(
+            cfg, local_or_remote, base_dir, ses_names_checked, sub
+        )
+
+        for ses in processed_ses_names:
+
+            if ses == "all_non_ses":
+                transfer_all_non_sub_ses_data_type(
+                    cfg,
+                    upload_or_download,
+                    local_or_remote,
+                    "all_non_ses",
+                    sub,
+                    None,
+                    dry_run,
+                    log,
+                )
+                continue
+
+            if transfer_non_data_type(data_type_checked):
+
+                transfer_all_non_sub_ses_data_type(
+                    cfg,
+                    upload_or_download,
+                    local_or_remote,
+                    "all_ses_level_non_data_type",
+                    sub,
+                    ses,
+                    dry_run,
+                    log,
+                )
+
+            transfer_data_type(
+                cfg,
+                upload_or_download,
+                local_or_remote,
+                data_type_checked,
+                sub,
+                ses,
+                dry_run=dry_run,
+                log=log,
+            )
+
+
+def transfer_non_data_type(data_type_checked):
+    return any(
+        [
+            name in ["all_ses_level_non_data_type", "all"]
+            for name in data_type_checked
+        ]
+    )
+
+
+def get_processed_names(
+    cfg: Configs,
+    local_or_remote: str,
+    base_dir: Path,
+    names_checked: List[str],
+    sub: Optional[str] = None,
+):
+    """"""
+    if sub is None:
+        sub_or_ses = "sub"
+        search_prefix = cfg.sub_prefix
+    else:
+        sub_or_ses = "ses"
+        search_prefix = cfg.ses_prefix
+
+    if named_checked in [["all"], [f"all_{sub_or_ses}"]]:
+        processed_names = directories.search_sub_or_ses_level(
+            cfg, base_dir, local_or_remote, sub, search_str=f"{search_prefix}*"
+        )
+        if names_checked == ["all"]:
+            processed_names += [f"all_non_{sub_or_ses}"]
+
+    else:
+        processed_names = formatting.check_and_format_names(
+            cfg, names_checked, sub_or_ses
+        )
+        processed_names = directories.search_for_wildcards(
+            cfg, base_dir, local_or_remote, processed_names, sub=sub
+        )
+
+    return processed_names
+
+
+def transfer_data_type(
+    cfg: Configs,
+    upload_or_download: str,
+    local_or_remote: str,
+    data_type: List[str],
+    sub: str,
+    ses: Optional[str] = None,
+    dry_run: bool = False,
+    log: bool = False,
+) -> None:
+    """
+    Transfer the data_type-level folder at the subject
+    or session level. data_type dirs are got either
+    directly from user input or if "all" is passed searched
+    for in the local / remote directory (for
+    upload / download respectively).
+
+    This can handle both cases of subject level dir (e.g. histology)
+    or session level dir (e.g. ephys).
+
+    Note that the use of upload_or_download / local_or_remote
+    is redundant as the value of local_or_remote is set by
+    upload_or_download, but kept for readability.
+
+    Parameters
+    ----------
+
+    upload_or_download : "upload" or "download"
+
+    local_or_remote : "local" or "remote"
+
+    data_type : e.g. "behav", "all"
+
+    sub : subject name
+
+    ses : Optional session name. If False, directory
+        to transfer will be assumed to be at the
+        subject level.
+
+    dry_run : Show data transfer output but do not
+        actually transfer the data.
+
+    log : Whether to log, if True logging must already
+        be initialized
+    """
+    data_type = list(
+        filter(lambda x: x != "all_ses_level_non_data_type", data_type)
+    )
+
+    data_type_items = cfg.items_from_data_type_input(
+        local_or_remote, data_type, sub, ses
+    )
+
+    level = "ses" if ses else "sub"
+
+    for data_type_key, data_type_dir in data_type_items:  # type: ignore
+
+        if data_type_dir.level == level:
+            if ses:
+                filepath = os.path.join(sub, ses, data_type_dir.name)
+            else:
+                filepath = os.path.join(sub, data_type_dir.name)
+
+            move_dir_or_file(
+                filepath,
+                cfg,
+                upload_or_download,
+                dry_run=dry_run,
+                log=log,
+            )
 
 
 def transfer_all_non_sub_ses_data_type(
-    cfg: configs.Configs,
+    cfg: Configs,
     upload_or_download: str,
     local_or_remote: str,
     type_: str,
@@ -102,3 +333,42 @@ def move_dir_or_file(
     if log:
         utils.log(output.stderr.decode("utf-8"))
     utils.message_user(output.stderr.decode("utf-8"))
+
+
+def check_transfer_sub_ses_input(
+    sub_names: Union[str, List[str]],
+    ses_names: Union[str, List[str]],
+    data_type: str,
+) -> Tuple[List[str], List[str], List[str]]:
+
+    if type(sub_names) == str:
+        sub_names = [sub_names]
+
+    if type(ses_names) == str:
+        ses_names = [ses_names]
+
+    if type(data_type) == str:
+        data_type = [data_type]
+
+    if len(sub_names) > 1 and any(
+        [name in ["all", "all_sub"] for name in sub_names]
+    ):
+        utils.log_and_raise_error(
+            "sub_names must only include 'all' or 'all_subs' if these options are used"
+        )  # TODO: if you pass something that doesn't exist, there is no warning
+
+    if len(ses_names) > 1 and any(
+        [name in ["all", "all_ses"] for name in ses_names]
+    ):
+        utils.log_and_raise_error(
+            "ses_names must only include 'all' or 'all_ses' if these options are used"
+        )
+
+    if len(data_type) > 1 and any(
+        [name in ["all", "all_data_type"] for name in data_type]
+    ):
+        utils.log_and_raise_error(
+            "data_type must only include 'all' or 'all_data_type' if these options are used"
+        )
+
+    return sub_names, ses_names, data_type

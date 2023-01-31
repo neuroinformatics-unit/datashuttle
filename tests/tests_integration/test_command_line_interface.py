@@ -92,12 +92,15 @@ class TestCommandLineInterface:
             tmp_path, required_arguments_only=True
         )
 
-        stdout, __ = test_utils.run_cli(
+        stdout, stderr = test_utils.run_cli(
             f" make{sep}config{sep}file "
             + self.convert_kwargs_to_cli(required_options, sep)
         )
 
-        __, kwargs_ = self.decode(stdout)
+        try:
+            __, kwargs_ = self.decode(stdout)
+        except:
+            breakpoint()
 
         # Remove items that are stripped from configs because they
         # default to None on the CLI
