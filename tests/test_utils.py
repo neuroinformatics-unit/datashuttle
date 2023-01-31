@@ -295,7 +295,7 @@ def check_directory_tree_is_correct(
                     if directory.level == "sub":
                         data_type_path = join(
                             path_to_sub_folder, directory.name
-                        )  # TODO: Remove directory to exp_type_path
+                        )
                     elif directory.level == "ses":
                         data_type_path = join(
                             path_to_ses_folder, directory.name

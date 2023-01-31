@@ -185,9 +185,7 @@ class TestSSH:
 
         assert first_line == "-----BEGIN RSA PRIVATE KEY-----\n"
 
-    def test_setup_ssh_key_success(
-        self, project, capsys
-    ):  # TODO: need to be on the VPN. So we can't CI this test.
+    def test_setup_ssh_key_success(self, project, capsys):
         """
         Setup Hostkeys again. This is required for setting up SSH keys. It is
         required to enter the password once to setup ssh key pair. Check

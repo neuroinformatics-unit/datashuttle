@@ -148,13 +148,21 @@ class TestFileTransfer:
         ],
     )
     @pytest.mark.parametrize(
-        "ses_names", [["all"], ["all_ses"], ["all_non_ses"], ["ses_002"]]
+        "ses_names",
+        [
+            ["all"],
+            ["all_ses"],
+            ["all_non_ses"],
+            ["ses_002"],
+            ["all_non_ses", "ses-001"],
+        ],
     )
     @pytest.mark.parametrize(
         "data_type",
         [
             ["all"],
             ["all_ses_level_non_data_type"],
+            ["all_data_type"],
             ["behav"],
             ["ephys"],
             ["histology"],

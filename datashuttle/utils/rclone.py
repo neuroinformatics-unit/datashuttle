@@ -51,7 +51,9 @@ def handle_rclone_arguments(rclone_options):
         full_exclude_paths = [
             path_ + "/**" for path_ in rclone_options["exclude_list"]
         ]
-        exclude_flags = f"{exclude_text}{exclude_text.join(full_exclude_paths)}"  # TODO: handle at rclone level
+        exclude_flags = (
+            f"{exclude_text}{exclude_text.join(full_exclude_paths)}"
+        )
         extra_arguments_list += [exclude_flags]
 
     extra_arguments = " ".join(extra_arguments_list)

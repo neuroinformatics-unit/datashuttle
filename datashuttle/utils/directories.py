@@ -275,7 +275,11 @@ def search_sub_or_ses_level(
 
 
 def search_data_dirs_sub_or_ses_level(
-    cfg, base_dir, local_or_remote, sub, ses=None  # TODO type
+    cfg: Configs,
+    base_dir: Path,
+    local_or_remote: str,
+    sub: str,
+    ses: Optional[str] = None,
 ):
     """
     Search  a subject or session directory specifically

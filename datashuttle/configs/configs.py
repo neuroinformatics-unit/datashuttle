@@ -49,7 +49,7 @@ class Configs(UserDict):
         self.sub_prefix = "sub-"
         self.ses_prefix = "ses-"
 
-        self.top_level_dir_name: str  # TODO: these are set in datashuttpe.py. Should be set in configs!
+        self.top_level_dir_name: str
 
         self.data_type_dirs: dict
         self.logging_path: Path

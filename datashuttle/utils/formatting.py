@@ -262,23 +262,26 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
 
 
 def ensure_prefixes_on_list_of_names(
-    names: Union[List[str], str], prefix: str
+    all_names: Union[List[str], str], prefix: str
 ) -> List[str]:
     """
     Make sure all elements in the list of names are
     prefixed with the prefix typically "sub-" or "ses-"
+
+    Use expanded list for readability
     """
     n_chars = len(prefix)
-    return [
-        prefix + name
-        if (
-            name[:n_chars] != prefix
-            and name
-            not in ["all_sub", "all_ses", "all_non_sub", "all_non_ses"]
-        )
-        else name
-        for name in names  # TODO LOL FIX
-    ]
+
+    reserved_keywords = ["all_sub", "all_ses", "all_non_sub", "all_non_ses"]
+
+    new_names = []
+    for name in all_names:
+        if name[:n_chars] != prefix and name not in reserved_keywords:
+            new_names.append(prefix + name)
+        else:
+            new_names.append(name)
+
+    return new_names
 
 
 def check_data_type_is_valid(
