@@ -353,7 +353,7 @@ class Configs(UserDict):
             ["all"],
             "all_data_type",
             ["all_data_type"],
-        ]:  # TODO: make this better
+        ]:
             data_type_items = self.get_data_type_items(
                 data_type,
             )

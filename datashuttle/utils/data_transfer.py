@@ -264,8 +264,8 @@ def transfer_all_non_sub_ses_data_type(
 
     There are three possible levels, the top level, where
     anything that is not a subject is transferred (all_non_sub),
-    the subject level, where anything that is not a session or
-    datatype is transferred (all_non_ses), and the session level,
+    the subject level, where anything that is not a session
+    (all_non_ses), and the session level,
     where anything that is not a data-type is transferred.
 
     The level is determined by whether sub or session is passed.

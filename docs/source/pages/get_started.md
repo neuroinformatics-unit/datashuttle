@@ -173,7 +173,8 @@ download_data \
 --data-type behav
 ```
 
-will only transfer behavioral data type folders, for sessions 1 and 5 from all subjects.
+will only transfer behavioral data type folders, for sessions 1 and 5 from all subjects. See the "All sub_names, ses_names and data_type keywords"
+section of the full documentation for more options.
 
 Along with the @TO@ flag, a wildcard @*@ flag can also be used in subject or session names.
 

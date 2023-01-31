@@ -225,7 +225,8 @@ or equivalently
 `datashuttle my_project upload_data --sub_names all --ses_names all --data_type all`
 
 will transfer everything in the local project director to the remote. The convenience functions upload_all()
-and download_all() can be used as shortcuts for this.
+and download_all() can be used as shortcuts for this. See below for a full list of all sub_names, ses_names and data_type
+keyword options.
 
 A number of configuration settings define the behaviour of datashuttle during file transfer (see make_config_file). Datashuttle
 uses [Rclone](https://rclone.org/) for data transfer, and these options are aliases for RClone configurations.
@@ -249,6 +250,45 @@ v (default) these will report each file that is transferred and a small number o
 #### show_transfer_progress
 
 When true, real-time transfer statistics will be reported and logged.
+
+#### All sub_names, ses_names and data_type keywords
+
+For each argument, the subject, session or datatype to transfer can be specified directly, e.g.
+`project.upload_data(sub_names="sub-001", ses_names=["ses-001", "ses-002]", data_type="behav" )`
+
+However, a number of keyword arguments can be used to specify more general rules for transfer:
+
+*sub_names*
+
+<u> all </u>: all subjects and any non-subject files or directories at the top level (e.g. under rawdata)
+will be transferred <br>
+
+<u> all_sub </u>: all subjects, but not any non-subject files or directories at the top level will be transferred  <br>
+
+<u> all_non_sub </u>: Only non-subject directories (or files) will be transferred from the top level <br>
+
+*ses_names*
+
+<u> all </u>: all sessions and any non-session or non-data-type files or directories at the subject level (e.g. within sub-001)
+will be transferred <br>
+
+<u> all_ses </u>: all sessions, but not any non-subject files or directories at the top level will be transferred. Session level
+data types may still be transferred if they are specified in data_type<br>
+
+<u> all_non_ses </u>: Only non-session (and non session-level data_type) directories (or files) will be transferred <br>
+
+
+*data_type*
+
+
+<u> all </u>: all data types, at the subject or session level, will be transferred, as well as non-data-type files
+at the session level (e.g. within sub-001/ses-001) <br>
+
+<u> all_data_type </u>: all data types, at the subject or session level, will be transferred. No non-data-type
+files or directories at the session level will be transferred. <br>
+
+<u> all_ses_level_non_data_type </u>: Only non-data-type files or directories at the session level will be transferred. <br>
+
 
 ### Filtering directories to transfer and using convenience tags
 
