@@ -186,7 +186,7 @@ def check_no_duplicate_sub_ses_key_values(
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
             project.cfg, base_dir, "local"
-        )
+        )[0]
         existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
 
         for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
@@ -200,7 +200,7 @@ def check_no_duplicate_sub_ses_key_values(
         for sub in new_sub_names:
             existing_ses_names = search_sub_or_ses_level(
                 project.cfg, base_dir, "local", sub
-            )
+            )[0]
             existing_ses_values = utils.get_first_sub_ses_keys(
                 existing_ses_names
             )
@@ -267,11 +267,11 @@ def search_sub_or_ses_level(
     if ses:
         base_dir = base_dir / ses
 
-    search_results = search_for_directories(
+    all_dirnames, all_filenames = search_for_directories(
         cfg, base_dir, local_or_remote, search_str
     )
 
-    return search_results
+    return all_dirnames, all_filenames
 
 
 def search_data_dirs_sub_or_ses_level(
@@ -291,7 +291,7 @@ def search_data_dirs_sub_or_ses_level(
     """
     search_results = search_sub_or_ses_level(
         cfg, base_dir, local_or_remote, sub, ses
-    )
+    )[0]
 
     data_directories = process_glob_to_find_data_type_dirs(
         search_results,
@@ -349,11 +349,11 @@ def search_for_wildcards(
             if sub:
                 matching_names = search_sub_or_ses_level(
                     cfg, base_dir, local_or_remote, sub, search_str=name
-                )
+                )[0]
             else:
                 matching_names = search_sub_or_ses_level(
                     cfg, base_dir, local_or_remote, search_str=name
-                )
+                )[0]
 
             new_all_names += matching_names
         else:
@@ -403,7 +403,7 @@ def process_glob_to_find_data_type_dirs(
 # --------------------------------------------------------------------
 
 
-def search_for_directories(
+def search_for_directories(  # TODO: change name
     cfg: Configs,
     search_path: Path,
     local_or_remote: str,
@@ -422,16 +422,16 @@ def search_for_directories(
     """
     if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
 
-        all_dirnames = ssh.search_ssh_remote_for_directories(
+        all_dirnames, all_filenames = ssh.search_ssh_remote_for_directories(
             search_path,
             search_prefix,
             cfg,
         )
     else:
-        all_dirnames = search_filesystem_path_for_directories(
+        all_dirnames, all_filenames = search_filesystem_path_for_directories(
             search_path / search_prefix
         )
-    return all_dirnames
+    return all_dirnames, all_filenames
 
 
 def search_filesystem_path_for_directories(
@@ -442,7 +442,65 @@ def search_filesystem_path_for_directories(
     Files are filtered out of results, returning directories only.
     """
     all_dirnames = []
+    all_filenames = []
     for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
         if os.path.isdir(file_or_dir):
             all_dirnames.append(os.path.basename(file_or_dir))
-    return all_dirnames
+        else:
+            all_filenames.append(os.path.basename(file_or_dir))
+    return all_dirnames, all_filenames
+
+
+def transfer_data(
+    local_filepath: str,
+    remote_filepath: str,
+    rclone_config_name: str,
+    upload_or_download: str,
+    rclone_options: dict,
+) -> subprocess.CompletedProcess:
+    """
+    Call Rclone copy command with appropriate
+    arguments to execute data transfer.
+
+    Parameters
+    ----------
+
+    local_filepath : path to the local directory to
+        transfer / be transferred to
+
+    remote_filepath : path to the remote directory to
+        transfer / be transferred to
+
+    rclone_config_name : name of the rclone config that
+        includes information on the target filesystem (e.g.
+        ssh login details). This is managed by datashuttle
+        e.g. setup_remote_as_rclone_target()
+
+    upload_or_download : "upload" or "download" dictates
+        direction of file transfer
+
+    dry_run : if True, output will be as usual but no
+        file will be transferred.
+    """
+    extra_arguments = handle_rclone_arguments(rclone_options)
+
+    if upload_or_download == "upload":
+
+        output = call_rclone(
+            f"{rclone_args('copy')} "
+            f'"{local_filepath}" "{rclone_config_name}:{remote_filepath}" {extra_arguments}',
+            pipe_std=True,
+        )
+
+    elif upload_or_download == "download":
+
+        output = call_rclone(
+            f"{rclone_args('copy')} "
+            f'"{rclone_config_name}:'
+            f'{remote_filepath}" '
+            f'"{local_filepath}"  '
+            f"{extra_arguments}",
+            pipe_std=True,
+        )
+
+    return output

@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any, List, Optional, Union
 
 import paramiko
+from fancylog import fancylog
 
 from datashuttle.configs import load_configs
 from datashuttle.configs.configs import Configs
@@ -25,6 +26,9 @@ from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
 )
+
+# from datashuttle.utils import data_transfer_ORIG as data_transfer
+
 
 # -----------------------------------------------------------------------------
 # Project Manager Class
@@ -214,6 +218,8 @@ class DataShuttle:
             f"directories, pleasee see {self.cfg.logging_path}"
         )
 
+        ds_logger.close_log_filehandler()
+
     # -------------------------------------------------------------------------
     # Public File Transfer
     # -------------------------------------------------------------------------
@@ -287,6 +293,7 @@ class DataShuttle:
             dry_run,
             log=True,
         )
+        ds_logger.close_log_filehandler()
 
     def download_data(
         self,
@@ -319,6 +326,7 @@ class DataShuttle:
             dry_run,
             log=True,
         )
+        ds_logger.close_log_filehandler()
 
     def upload_all(self, dry_run: bool = False):
         """
@@ -342,6 +350,7 @@ class DataShuttle:
         self.download_data(
             "all", "all", "all", dry_run=dry_run, init_log=False
         )
+        ds_logger.close_log_filehandler()
 
     def upload_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
@@ -377,6 +386,7 @@ class DataShuttle:
             dry_run,
             log=True,
         )
+        ds_logger.close_log_filehandler()
 
     def download_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
@@ -402,6 +412,7 @@ class DataShuttle:
             dry_run,
             log=True,
         )
+        ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
     # SSH
@@ -432,6 +443,8 @@ class DataShuttle:
 
         if verified:
             self._setup_ssh_key_and_rclone_config(log=True)
+
+        ds_logger.close_log_filehandler()
 
     def write_public_key(self, filepath: str) -> None:
         """
@@ -583,6 +596,7 @@ class DataShuttle:
         )
         self._log_successful_config_change()
         self._move_logs_from_temp_dir()
+        ds_logger.close_log_filehandler()
 
     def update_config(
         self, option_key: str, new_info: Union[Path, str, bool, None]
@@ -640,6 +654,8 @@ class DataShuttle:
         if store_logs_in_temp_dir:
             self._move_logs_from_temp_dir()
 
+        ds_logger.close_log_filehandler()
+
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
     ) -> None:
@@ -695,6 +711,7 @@ class DataShuttle:
             self._log_successful_config_change(message=True)
             if store_logs_in_temp_dir:
                 self._move_logs_from_temp_dir()
+        ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
     # Public Getters

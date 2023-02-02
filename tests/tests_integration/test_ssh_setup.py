@@ -32,6 +32,7 @@ import os
 
 import paramiko
 import pytest
+import ssh_test_utils
 import test_utils
 
 from datashuttle.utils import rclone, ssh
@@ -62,66 +63,12 @@ class TestSSH:
             tmp_path, test_project_name
         )
 
-        project.update_config(
-            "remote_path",
-            REMOTE_PATH,
-        )
-        project.update_config("remote_host_id", REMOTE_HOST_ID)
-        project.update_config("remote_host_username", REMOTE_HOST_USERNAME)
-        project.update_config("connection_method", "ssh")
-
-        rclone.setup_remote_as_rclone_target(
-            "ssh",
-            project.cfg,
-            project.cfg.get_rclone_config_name("ssh"),
-            project.cfg.ssh_key_path,
+        ssh_test_utils.setup_project_for_ssh(
+            project, REMOTE_PATH, REMOTE_HOST_ID, REMOTE_HOST_USERNAME
         )
 
         yield project
         test_utils.teardown_project(cwd, project)
-
-    # -----------------------------------------------------------------
-    # Utils
-    # -----------------------------------------------------------------
-
-    def get_password(self):
-        """
-        Load the password from file. Password is provided to NIU team
-        members only.
-        """
-        test_ssh_script_path = os.path.dirname(os.path.realpath(__file__))
-        with open(
-            test_ssh_script_path + "/test_ssh_password.txt", "r"
-        ) as file:
-            password = file.readlines()[0]
-        return password
-
-    def setup_mock_input(self, input_):
-        """
-        This is very similar to pytest monkeypatch but
-        using that was giving me very strange output,
-        monkeypatch.setattr('builtins.input', lambda _: "n")
-        i.e. pdb went deep into some unrelated code stack
-        """
-        orig_builtin = copy.deepcopy(builtins.input)
-        builtins.input = lambda _: input_  # type: ignore
-        return orig_builtin
-
-    def restore_mock_input(self, orig_builtin):
-        """
-        orig_builtin: the copied, original builtins.input
-        """
-        builtins.input = orig_builtin
-
-    def setup_hostkeys(self, project):
-        """
-        Convenience function to verify the server hostkey.
-        """
-        orig_builtin = self.setup_mock_input(input_="y")
-        ssh.verify_ssh_remote_host(
-            project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
-        )
-        self.restore_mock_input(orig_builtin)
 
     # -----------------------------------------------------------------
     # Test Setup SSH Connection
@@ -139,11 +86,11 @@ class TestSSH:
         This should only accept for "y" so try some random strings
         including "n" and check they all do not make the connection.
         """
-        orig_builtin = self.setup_mock_input(input_)
+        orig_builtin = ssh_test_utils.setup_mock_input(input_)
 
         project.setup_ssh_connection_to_remote_server()
 
-        self.restore_mock_input(orig_builtin)
+        ssh_test_utils.restore_mock_input(orig_builtin)
 
         captured = capsys.readouterr()
 
@@ -155,13 +102,13 @@ class TestSSH:
         and check hostkey is successfully accepted and written to configs.
         """
         test_utils.clear_capsys(capsys)
-        orig_builtin = self.setup_mock_input(input_="y")
+        orig_builtin = ssh_test_utils.setup_mock_input(input_="y")
 
         verified = ssh.verify_ssh_remote_host(
             project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
         )
 
-        self.restore_mock_input(orig_builtin)
+        ssh_test_utils.restore_mock_input(orig_builtin)
 
         assert verified
         captured = capsys.readouterr()
@@ -193,9 +140,9 @@ class TestSSH:
 
         Then, try to connect and check this works without password.
         """
-        self.setup_hostkeys(project)
+        ssh_test_utils.setup_hostkeys(project)
 
-        getpass.getpass = lambda _: self.get_password()  # type: ignore
+        getpass.getpass = lambda _: ssh_test_utils.get_password()  # type: ignore
         ssh.setup_ssh_key(
             project.cfg,
             log=False,
@@ -224,7 +171,7 @@ class TestSSH:
         """
         Enter the wrong password and check failure is gracefully handled
         """
-        self.setup_hostkeys(project)
+        ssh_test_utils.setup_hostkeys(project)
 
         getpass.getpass = lambda _: "wrong_password"  # type: ignore
 

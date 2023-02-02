@@ -272,13 +272,12 @@ class Configs(UserDict):
 
         return f"remote_{self.project_name}_{connection_method}"
 
-    def make_rclone_transfer_options(self, dry_run: bool, exclude_list: str):
+    def make_rclone_transfer_options(self, dry_run: bool):
         return {
             "overwrite_old_files": self["overwrite_old_files"],
             "transfer_verbosity": self["transfer_verbosity"],
             "show_transfer_progress": self["show_transfer_progress"],
             "dry_run": dry_run,
-            "exclude_list": exclude_list,
         }
 
     def init_paths(self):

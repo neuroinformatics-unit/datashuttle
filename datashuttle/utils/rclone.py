@@ -28,94 +28,6 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     return output
 
 
-def handle_rclone_arguments(rclone_options):
-    """
-    Construct the extra arguments to pass to RClone based on the
-    current configs.
-    """
-    extra_arguments_list = [rclone_args("create_empty_src_dirs")]
-
-    extra_arguments_list += ["-" + rclone_options["transfer_verbosity"]]
-
-    if not rclone_options["overwrite_old_files"]:
-        extra_arguments_list += [rclone_args("ignore_existing")]
-
-    if rclone_options["show_transfer_progress"]:
-        extra_arguments_list += [rclone_args("progress")]
-
-    if rclone_options["dry_run"]:
-        extra_arguments_list += [rclone_args("dry_run")]
-
-    if rclone_options["exclude_list"]:
-        exclude_text = " --exclude "
-        full_exclude_paths = [
-            path_ + "/**" for path_ in rclone_options["exclude_list"]
-        ]
-        exclude_flags = (
-            f"{exclude_text}{exclude_text.join(full_exclude_paths)}"
-        )
-        extra_arguments_list += [exclude_flags]
-
-    extra_arguments = " ".join(extra_arguments_list)
-
-    return extra_arguments
-
-
-def transfer_data(
-    local_filepath: str,
-    remote_filepath: str,
-    rclone_config_name: str,
-    upload_or_download: str,
-    rclone_options: dict,
-) -> subprocess.CompletedProcess:
-    """
-    Call Rclone copy command with appropriate
-    arguments to execute data transfer.
-
-    Parameters
-    ----------
-
-    local_filepath : path to the local directory to
-        transfer / be transferred to
-
-    remote_filepath : path to the remote directory to
-        transfer / be transferred to
-
-    rclone_config_name : name of the rclone config that
-        includes information on the target filesystem (e.g.
-        ssh login details). This is managed by datashuttle
-        e.g. setup_remote_as_rclone_target()
-
-    upload_or_download : "upload" or "download" dictates
-        direction of file transfer
-
-    dry_run : if True, output will be as usual but no
-        file will be transferred.
-    """
-    extra_arguments = handle_rclone_arguments(rclone_options)
-
-    if upload_or_download == "upload":
-
-        output = call_rclone(
-            f"{rclone_args('copy')} "
-            f'"{local_filepath}" "{rclone_config_name}:{remote_filepath}" {extra_arguments}',
-            pipe_std=True,
-        )
-
-    elif upload_or_download == "download":
-
-        output = call_rclone(
-            f"{rclone_args('copy')} "
-            f'"{rclone_config_name}:'
-            f'{remote_filepath}" '
-            f'"{local_filepath}"  '
-            f"{extra_arguments}",
-            pipe_std=True,
-        )
-
-    return output
-
-
 def setup_remote_as_rclone_target(
     connection_method: str,
     cfg: Configs,
@@ -194,6 +106,31 @@ def prompt_rclone_download_if_does_not_exist() -> None:
             "the following into your terminal:\n"
             " conda install -c conda-forge rclone"
         )
+
+
+def handle_rclone_arguments(rclone_options, include_list):
+    """
+    Construct the extra arguments to pass to RClone based on the
+    current configs.
+    """
+    extra_arguments_list = [rclone_args("create_empty_src_dirs")]
+
+    extra_arguments_list += ["-" + rclone_options["transfer_verbosity"]]
+
+    if not rclone_options["overwrite_old_files"]:
+        extra_arguments_list += [rclone_args("ignore_existing")]
+
+    if rclone_options["show_transfer_progress"]:
+        extra_arguments_list += [rclone_args("progress")]
+
+    if rclone_options["dry_run"]:
+        extra_arguments_list += [rclone_args("dry_run")]
+
+    extra_arguments_list += include_list
+
+    extra_arguments = " ".join(extra_arguments_list)
+
+    return extra_arguments
 
 
 def rclone_args(name: str) -> str:

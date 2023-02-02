@@ -194,11 +194,11 @@ def search_ssh_remote_for_directories(
 
         sftp = client.open_sftp()
 
-        all_dirnames = get_list_of_directory_names_over_sftp(
+        all_dirnames, all_filenames = get_list_of_directory_names_over_sftp(
             sftp, search_path, search_prefix
         )
 
-    return all_dirnames
+    return all_dirnames, all_filenames
 
 
 def get_list_of_directory_names_over_sftp(
@@ -220,6 +220,7 @@ def get_list_of_directory_names_over_sftp(
         to search directory names.
     """
     all_dirnames = []
+    all_filenames = []
     try:
         for file_or_dir in sftp.listdir_attr(search_path.as_posix()):
 
@@ -227,8 +228,10 @@ def get_list_of_directory_names_over_sftp(
 
                 if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
                     all_dirnames.append(file_or_dir.filename)
+                else:
+                    all_filenames.append(file_or_dir.filename)
 
     except FileNotFoundError:
         utils.log_and_raise_error(f"No file found at {search_path.as_posix()}")
 
-    return all_dirnames
+    return all_dirnames, all_filenames

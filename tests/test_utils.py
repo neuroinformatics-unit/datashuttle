@@ -503,24 +503,32 @@ def handle_upload_or_download(
     and local server (so things are still transferred from
     local machine to remote, but using the download function).
     """
-    local_path = copy.deepcopy(project.cfg["local_path"])
-    remote_path = copy.deepcopy(project.cfg["remote_path"])
-
     if upload_or_download == "download":
 
-        project.update_config("local_path", remote_path)
-        project.update_config("remote_path", local_path)
+        __, remote_path = swap_local_and_remote_paths(project)
 
         transfer_function = (
             project.download_all if use_all_alias else project.download_data
         )
 
     else:
+        remote_path = project.cfg["remote_path"]
+
         transfer_function = (
             project.upload_all if use_all_alias else project.upload_data
         )
 
     return transfer_function, remote_path
+
+
+def swap_local_and_remote_paths(project):
+    local_path = copy.deepcopy(project.cfg["local_path"])
+    remote_path = copy.deepcopy(project.cfg["remote_path"])
+
+    project.update_config("local_path", remote_path)
+    project.update_config("remote_path", local_path)
+
+    return local_path, remote_path
 
 
 def get_default_sub_sessions_to_test():
