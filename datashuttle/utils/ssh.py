@@ -224,14 +224,13 @@ def get_list_of_directory_names_over_sftp(
     try:
         for file_or_dir in sftp.listdir_attr(search_path.as_posix()):
 
-            if stat.S_ISDIR(file_or_dir.st_mode):
-
-                if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
+            if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
+                if stat.S_ISDIR(file_or_dir.st_mode):
                     all_dirnames.append(file_or_dir.filename)
                 else:
                     all_filenames.append(file_or_dir.filename)
 
     except FileNotFoundError:
-        utils.log_and_raise_error(f"No file found at {search_path.as_posix()}")
+        utils.log_and_message(f"No file found at {search_path.as_posix()}")
 
     return all_dirnames, all_filenames

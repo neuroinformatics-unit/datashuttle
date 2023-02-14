@@ -1,54 +1,99 @@
 """
-# Still need to do more of this.
-# 4) test all, in particular the removal of --ignore-existing. When the user transfers, it makes
-#    sense to have a comment explicitly stating the nature of the transfer (or, at the end).
+These tests check every possible option for file transfer tests.
 
-# https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
-# but these drop python access to internet NOT entire internet (at least some of them)
+These are tested over:
+1) SSH
+2) Local filesystem. This is done with pytest tmp paths
+   as there is no difference between actual filesystem
+   and locally mounted drive.
 
-# this would work for data_type and all other files. But didn't work well for testing, so just use the files.
+1) require working SSH paths and login  to be setup
+below and VPN to the server setup. The password for the
+USERNAME must be saved in a file test_ssh_password.txt
+in the datashuttle/tests/ folder. The SSH connection
+configs must be specified in confytest.py
 
-# DOING NOW -------------------------------------------------------------------
-# DONT FORGET THIS IS SUPPOSE TO TEST OVER SSH
-# ASK ALEX ABOUT SSH TO CEPH
-# how to handle this, because this should be tested as a normal file transfer without SSH. Maybe call these extended
-# tests, and test with SSH only if set!
-# manualyl check this test is doing what I think it is and check all edge cases
+
+NOTES
+-----
+full transfer tests (similar as to already exists) across SSH
+test switching between local and SSH, as this caused a bug previously
+
+test realistic file transfer
+---------------------------------------------------------------------
+make a full fake directory containing all data types
+test transferring it over SSH and a locally mounted drive (ceph)
+test a) all data transfers, hard coded, lots of combinations
+     b) test what happens when internet looses conenctions
+     c) test what happens when files change
+
+more file transfer tests
+---------------------------------------------------------------------
+
+TODOs
+-----
+TODO: fix move_dir_or_file()
+TODO: generate files in the folders, test what happens when attempting to overwrite a file
+TODO: mock pushing from two separate places and merging into single project
+TODO: SSH tests take ages because a) SSH is slower b) need to wait for filesystem to update (ATM 10 s can probably reduce)
+TODO: test search_ssh_remote_for_directories
+TODO: get_list_of_directory_names_over_sftp
+TODO: make sure have tested different data type at different level s
+TODO: check that sub- ses- is separated by dash and not underscore. Can
+      lead to very hard to detect bugs. This is easy to test for as the
+      order should always be - _ - _ -.... with optional -/_ ending
+TODO: currently if something is passed to transfer, nothing happens if
+      transferring through filesystem, it was crashing SSH
+      but get_list_of_directory_names_over_sftp() was edited to fix this. Make equivilent
+      check in the other low-level functions and make sure these are logged and printed to console.
+TODO: test connection drop https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
+      (but these drop python access to internet NOT entire internet (at least some of them))
+TODO: test partial file transfer - in this case, it will never be updateD? Is there a way to print warning
+      in rclone whendates or filesizes do not match?
+TODO: manually check this test is doing what I think it is and check all edge cases
+TODO: finishing making large real dataset
+TODO: currently if something is passed to transfer, nothing happens if
+     transferring through filesystem, it was crashing SSH
+     but get_list_of_directory_names_over_sftp() was edited to fix this. Make equivilent
+     check in the other low-level functions and make sure these are logged and printed to console.
+TODO: test connection drop https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
+     (but these drop python access to internet NOT entire internet (at least some of them))
+TODO: test partial file transfer - in this case, it will never be updateD? Is there a way to print warning
+     in rclone whendates or filesizes do not match?
+TODO: manually check this test is doing what I think it is and check all edge cases
+TODO: finishing making large real dataset
+TODO: currently rawdata only tested.
 """
 
-import builtins
-import copy
 import getpass
-import os
 import shutil
+import time
 from pathlib import Path
 
 import pandas as pd
 import pytest
 import ssh_test_utils
 import test_utils
+from pytest import ssh_config
 from test_file_conflicts_pathtable import get_pathtable
 
-from datashuttle.utils import rclone, ssh
-
-REMOTE_PATH = Path(r"/nfs/nhome/live/jziminski/scratch/datashuttle tests")
-REMOTE_HOST_ID = "ssh.swc.ucl.ac.uk"
-REMOTE_HOST_USERNAME = "jziminski"
-SSH_TEST_FILESYSTEM_PATH = Path("S:/scratch/datashuttle tests")
-TEST_SSH = False
+from datashuttle.utils import ssh
 
 
 class TestFileTransfer:
     @pytest.fixture(
-        scope="module",
-        params=[
+        scope="class",
+        params=[  # Set running SSH or local filesystem
             False,
             pytest.param(
                 True,
-                marks=pytest.mark.skipif(TEST_SSH is False, reason="False"),
+                marks=pytest.mark.skipif(
+                    ssh_config.TEST_SSH is False,
+                    reason="TEST_SSH is set to False.",
+                ),
             ),
         ],
-    )  # TODO: transfer here both ssh and non-ssh. Only do SSH if some pyetst setting set.
+    )
     def pathtable_and_project(self, request, tmpdir_factory):
         """
         Create a project for SSH testing. Setup
@@ -67,7 +112,8 @@ class TestFileTransfer:
         test function, the dir are transferred.
         Partial cleanup is done in the test function
         i.e. deleting the remote_path to which the
-        items have been transferred.
+        items have been transferred. This is acheived
+        by using "class" scope.
 
         pathtable is a convenient way to represent
         file paths for testing against.
@@ -76,26 +122,28 @@ class TestFileTransfer:
         tmp_path = tmpdir_factory.mktemp("test")
 
         if testing_ssh:
-            base_path = SSH_TEST_FILESYSTEM_PATH
+            base_path = ssh_config.FILESYSTEM_PATH
+            remote_path = ssh_config.SERVER_PATH
         else:
             base_path = tmp_path / "test with space"
-
+            remote_path = base_path
         test_project_name = "test_file_conflicts"
+
         project, cwd = test_utils.setup_project_fixture(
             base_path, test_project_name
         )
 
-        # ssh stuff - move to new function as also used in ssh_setup
         if testing_ssh:
             ssh_test_utils.setup_project_for_ssh(
                 project,
                 test_utils.make_test_path(
-                    REMOTE_PATH, test_project_name, "remote"
+                    remote_path, test_project_name, "remote"
                 ),
-                REMOTE_HOST_ID,
-                REMOTE_HOST_USERNAME,
+                ssh_config.REMOTE_HOST_ID,
+                ssh_config.USERNAME,
             )
 
+            # Initialise the SSH connection
             ssh_test_utils.setup_hostkeys(project)
             getpass.getpass = lambda _: ssh_test_utils.get_password()  # type: ignore
             ssh.setup_ssh_key(
@@ -112,19 +160,19 @@ class TestFileTransfer:
         test_utils.teardown_project(cwd, project)
 
         if testing_ssh:
-            for result in SSH_TEST_FILESYSTEM_PATH.glob("*"):
+            for result in ssh_config.SSH_TEST_FILESYSTEM_PATH.glob("*"):
                 shutil.rmtree(result)
 
-    # ---------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utils
-    # ---------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def remote_from_local(self, path_):
         return Path(str(copy.copy(path_)).replace("local", "remote"))
 
-    # ---------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Test File Transfer - All Options
-    # ---------------------------------------------------------------------------------------------------------------  # TODO: DOWNLOAD NOT TESTED!!
+    # -------------------------------------------------------------------------
 
     @pytest.mark.parametrize(
         "sub_names",
@@ -144,7 +192,7 @@ class TestFileTransfer:
             ["all_non_ses"],
             ["all_ses"],
             ["ses-001"],
-            ["ses_002"],
+            ["ses-002_random-key"],
             ["all_non_ses", "ses-001"],
         ],
     )
@@ -175,18 +223,23 @@ class TestFileTransfer:
         the files expected to be transferred pased on the arguments
         Note files in sub/ses/datatype folders must be handled
         separately to those in non-sub, non-ses, non-data-type folders
+
+        see test_utils.swap_local_and_remote_paths() for the logic
+        on setting up and swapping local / remote paths for
+        upload / download tests.
         """
         pathtable, project = pathtable_and_project
 
-        (
-            transfer_function,
-            __,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        transfer_function = test_utils.handle_upload_or_download(
+            project, upload_or_download, swap_last_dir_only=project.testing_ssh
+        )[0]
 
         transfer_function(sub_names, ses_names, data_type, init_log=False)
 
         if upload_or_download == "download":
-            test_utils.swap_local_and_remote_paths(project)
+            test_utils.swap_local_and_remote_paths(
+                project, swap_last_dir_only=project.testing_ssh
+            )
 
         sub_names = self.parse_arguments(pathtable, sub_names, "sub")
         ses_names = self.parse_arguments(pathtable, ses_names, "ses")
@@ -212,11 +265,16 @@ class TestFileTransfer:
         )
         expected_transferred_paths = remote_base_paths / expected_paths.path
 
+        # When transferring with SSH, there is a delay before
+        # filesystem catches up
+        if project.testing_ssh:
+            time.sleep(10)
+
         # Check what paths were actually moved
         # (through the local filesystem), and test
         path_to_search = (
             self.remote_from_local(project.cfg["local_path"]) / "rawdata"
-        )  # TODO: handle top level dir
+        )
         all_transferred = path_to_search.glob("**/*")
         paths_to_transferred_files = list(
             filter(Path.is_file, all_transferred)
@@ -226,9 +284,10 @@ class TestFileTransfer:
             expected_transferred_paths
         )
 
+        # Teardown here, because we have session scope.
         try:
             shutil.rmtree(self.remote_from_local(project.cfg["local_path"]))
-        except FileNotFoundError:  # TODO: fix this...
+        except FileNotFoundError:
             pass
 
     # ---------------------------------------------------------------------------------------------------------------

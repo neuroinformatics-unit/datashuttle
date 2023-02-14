@@ -108,6 +108,39 @@ def prompt_rclone_download_if_does_not_exist() -> None:
         )
 
 
+def transfer_data(
+    cfg: Configs,
+    upload_or_download: str,
+    include_list: list,
+    rclone_options: dict,
+) -> subprocess.CompletedProcess:
+    """ """
+    local_filepath = cfg.get_base_dir("local").as_posix()
+    remote_filepath = cfg.get_base_dir("remote").as_posix()
+
+    extra_arguments = handle_rclone_arguments(
+        rclone_options, include_list
+    )  # TODO: fix this is not a list
+
+    if upload_or_download == "upload":
+
+        output = call_rclone(
+            f"{rclone_args('copy')} "
+            f'"{local_filepath}" "{cfg.get_rclone_config_name()}:{remote_filepath}" {extra_arguments}',
+            pipe_std=True,
+        )
+
+    elif upload_or_download == "download":
+
+        output = call_rclone(
+            f"{rclone_args('copy')} "
+            f'"{cfg.get_rclone_config_name()}:{remote_filepath}" "{local_filepath}"  {extra_arguments}',
+            pipe_std=True,
+        )
+
+    return output
+
+
 def handle_rclone_arguments(rclone_options, include_list):
     """
     Construct the extra arguments to pass to RClone based on the

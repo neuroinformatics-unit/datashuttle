@@ -9,12 +9,10 @@ from pathlib import Path
 from typing import Any, List, Optional, Union
 
 import paramiko
-from fancylog import fancylog
 
 from datashuttle.configs import load_configs
 from datashuttle.configs.configs import Configs
 from datashuttle.utils import (
-    data_transfer,
     directories,
     ds_logger,
     formatting,
@@ -22,12 +20,13 @@ from datashuttle.utils import (
     ssh,
     utils,
 )
+from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
 )
 
-# from datashuttle.utils import data_transfer_ORIG as data_transfer
+# from datashuttle.utilsdata_transfer_ORIG transfer_sub_ses_data as TransferData
 
 
 # -----------------------------------------------------------------------------
@@ -284,7 +283,7 @@ class DataShuttle:
         if init_log:
             self._start_log("upload_data")
 
-        data_transfer.transfer_sub_ses_data(
+        TransferData(
             self.cfg,
             "upload",
             sub_names,
@@ -317,7 +316,7 @@ class DataShuttle:
         if init_log:
             self._start_log("download_data")
 
-        data_transfer.transfer_sub_ses_data(
+        TransferData(
             self.cfg,
             "download",
             sub_names,

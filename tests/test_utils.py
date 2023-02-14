@@ -495,7 +495,10 @@ def get_rawdata_path(project, local_or_remote="local"):
 
 
 def handle_upload_or_download(
-    project, upload_or_download, use_all_alias=False
+    project,
+    upload_or_download,
+    use_all_alias=False,
+    swap_last_dir_only=False,
 ):
     """
     To keep things consistent and avoid the pain of writing
@@ -505,7 +508,7 @@ def handle_upload_or_download(
     """
     if upload_or_download == "download":
 
-        __, remote_path = swap_local_and_remote_paths(project)
+        remote_path = swap_local_and_remote_paths(project, swap_last_dir_only)
 
         transfer_function = (
             project.download_all if use_all_alias else project.download_data
@@ -521,14 +524,39 @@ def handle_upload_or_download(
     return transfer_function, remote_path
 
 
-def swap_local_and_remote_paths(project):
+def swap_local_and_remote_paths(project, swap_last_dir_only):
+    """
+    When testing upload vs. download, the most conveient way
+    to test download is to swap the paths. In this case, we 'download'
+    from local to remote. It much simplifies creating the folders
+    to transfer (which are created locally), and is fully required
+    in tests with session scope fixture, in which a local project
+    is made only once and repeatedly transferred.
+
+    Typically, this is as simple as swapping remote and local.
+    For SSH test however, we want to use SSH to search the 'remote'
+    filesystem to find the necsesary files / folders to transfer.
+    As such, the 'local' (which we are downloading from) must be the SSH
+    path. As such, in this case we only want to swap the last dir only
+    (i.e. "local" and "remote"). In this case, we download from
+    cfg["remote_path"] (which is ssh_path/local) to cfg["local_path"]
+    (which is filesystem/remote).
+    """
     local_path = copy.deepcopy(project.cfg["local_path"])
     remote_path = copy.deepcopy(project.cfg["remote_path"])
 
-    project.update_config("local_path", remote_path)
-    project.update_config("remote_path", local_path)
+    if swap_last_dir_only:
+        project.update_config(
+            "local_path", local_path.parent / remote_path.name
+        )
+        project.update_config(
+            "remote_path", remote_path.parent / local_path.name
+        )
+    else:
+        project.update_config("local_path", remote_path)
+        project.update_config("remote_path", local_path)
 
-    return local_path, remote_path
+    return remote_path
 
 
 def get_default_sub_sessions_to_test():

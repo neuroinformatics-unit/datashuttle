@@ -1,54 +1,22 @@
-# Things to test
-
-# test SSH
-# ---------------------------------------------------------------------
-# full transfer tests (similar as to already exists) across SSH
-# test switching between local and SSH, as this caused a bug previously
-
-# test realistic file transfer
-# ---------------------------------------------------------------------
-# make a full fake directory containing all data types
-# test transferring it over SSH and a locally mounted drive (ceph)
-# test a) all data transfers, hard coded, lots of combinations
-#      b) test what happens when internet looses conenctions
-#      c) test what happens when files change
-
-# more file transfer tests
-# ---------------------------------------------------------------------
-# generate files in the folders, test what happens when attempting to overwrite a file
-# mock pushing from two separate places and merging into single project
-
-# TODO: need to be on the VPN. So we can't CI this test.
-
-# TODO: these can be tested as
-# TODO: test search_ssh_remote_for_directories
-# TODO: get_list_of_directory_names_over_sftp
-
-
-import builtins
-import copy
+"""
+SSH configs are set in conftest.py . The password
+should be stored in a file called test_ssh_password.txt located
+in the same directory as test_ssh.py
+"""
 import getpass
-import os
 
 import paramiko
 import pytest
 import ssh_test_utils
 import test_utils
+from pytest import ssh_config
 
-from datashuttle.utils import rclone, ssh
-
-# Specify the SSH configurations to use to connect. The password
-# should be stored in a file called test_ssh_password.txt located
-# in the same directory as test_ssh.py
-
-REMOTE_PATH = r"/nfs/nhome/live/jziminski/manager/project_manager_tests"
-REMOTE_HOST_ID = "ssh.swc.ucl.ac.uk"
-REMOTE_HOST_USERNAME = "jziminski"
+from datashuttle.utils import ssh
 
 
-# @pytest.mark.skip(
-#    reason="SSH tests require SWC VPC. " "These cannot be run using CI"
-# )
+@pytest.mark.skipif(
+    ssh_config.TEST_SSH is False, reason="TEST_SSH is set to False."
+)
 class TestSSH:
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
@@ -64,7 +32,10 @@ class TestSSH:
         )
 
         ssh_test_utils.setup_project_for_ssh(
-            project, REMOTE_PATH, REMOTE_HOST_ID, REMOTE_HOST_USERNAME
+            project,
+            ssh_config.FILESYSTEM_PATH,
+            ssh_config.REMOTE_HOST_ID,
+            ssh_config.USERNAME,
         )
 
         yield project

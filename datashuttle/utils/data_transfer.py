@@ -1,388 +1,353 @@
-import os
-import subprocess
 from pathlib import Path
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional
 
-from datashuttle.configs import canonical_directories
 from datashuttle.configs.configs import Configs
 
 from . import directories, formatting, rclone, utils
 
-# --------------------------------------------------------------------------------------------------------------------
-# File Transfer
-# --------------------------------------------------------------------------------------------------------------------
 
-# fmt: on
+class TransferData:
+    def __init__(
+        self,
+        cfg: Configs,
+        upload_or_download,
+        sub_names,
+        ses_names,
+        data_type,
+        dry_run,
+        log,
+    ):
 
-def transfer_sub_ses_data(
-    cfg: Configs,
-    upload_or_download: str,
-    sub_names: Union[str, List[str]],
-    ses_names: Union[str, List[str]],
-    data_type: str,
-    dry_run: bool,
-    log: bool = True,
-) -> None:
-    """
-    """
-    sub_ses_dtype_include = []
-    extra_dirnames = []
-    extra_filenames = []
+        self.cfg = cfg
+        self.upload_or_download = upload_or_download
+        self.local_or_remote = (
+            "local" if upload_or_download == "upload" else "remote"
+        )
+        self.base_dir = self.cfg.get_base_dir(self.local_or_remote)
 
-    (
-        sub_names_checked,
-        ses_names_checked,
-        data_type_checked,
-    ) = check_transfer_sub_ses_input(sub_names, ses_names, data_type)
+        self.sub_names = self.to_list(sub_names)
+        self.ses_names = self.to_list(ses_names)
+        self.data_type = self.to_list(data_type)
 
-    local_or_remote = "local" if upload_or_download == "upload" else "remote"
-    base_dir = cfg.get_base_dir(local_or_remote)
+        self.check_input_arguments()
 
-    # Find sub names to transfer
-    processed_sub_names = get_processed_names(
-        cfg, local_or_remote, base_dir, sub_names_checked
-    )
+        include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
-    for sub in processed_sub_names:
+        if any(include_list):
 
-        if sub == "all_non_sub":
-
-            transfer_all_non_sub_ses_data_type(
-                extra_dirnames,
-                extra_filenames,
+            output = rclone.transfer_data(
                 cfg,
-                local_or_remote,
+                upload_or_download,
+                include_list,
+                cfg.make_rclone_transfer_options(dry_run),
             )
-            continue
 
-        update_list_with_dtype_paths(
-            sub_ses_dtype_include,
-            cfg,
-            local_or_remote,
-            data_type_checked,
-            sub,
-        )
+            if log:
+                utils.log(output.stderr.decode("utf-8"))
+        else:
+            if log:
+                utils.log("No files included. None transferred.")
 
-        # Find ses names  to transfer
-        processed_ses_names = get_processed_names(
-            cfg, local_or_remote, base_dir, ses_names_checked, sub
-        )
+    # -------------------------------------------------------------------------
+    # Build the --include list
+    # -------------------------------------------------------------------------
 
-        for ses in processed_ses_names:
+    def build_a_list_of_all_files_and_folders_to_transfer(self) -> None:
+        """ """
+        # Find sub names to transfer
+        processed_sub_names = self.get_processed_names(self.sub_names)
 
-            if ses == "all_non_ses":
-                transfer_all_non_sub_ses_data_type(
-                    extra_dirnames,
-                    extra_filenames,
-                    cfg,
-                    local_or_remote,
-                    sub,
+        sub_ses_dtype_include = []
+        extra_dirnames = []
+        extra_filenames = []
+        for sub in processed_sub_names:
+
+            # subjects at top level dir ---------------------------------------
+
+            if sub == "all_non_sub":
+                self.update_list_with_non_sub_top_level_dirs(
+                    extra_dirnames, extra_filenames
                 )
                 continue
 
-            if transfer_non_data_type(data_type_checked):
+            self.update_list_with_dtype_paths(
+                sub_ses_dtype_include,
+                self.data_type,
+                sub,
+            )
 
-                transfer_all_non_sub_ses_data_type(
-                    extra_dirnames,
-                    extra_filenames,
-                    cfg,
-                    local_or_remote,
+            # sessions at sub level dir ---------------------------------------
+
+            processed_ses_names = self.get_processed_names(self.ses_names, sub)
+
+            for ses in processed_ses_names:
+
+                if ses == "all_non_ses":
+                    self.update_list_with_non_ses_sub_level_dirs(
+                        extra_dirnames, extra_filenames, sub
+                    )
+
+                    continue
+
+                # Datatype (sub and ses level) --------------------------------
+
+                if self.transfer_non_data_type(self.data_type):
+                    self.update_list_with_non_dtype_ses_level_dirs(
+                        extra_dirnames, extra_filenames, sub, ses
+                    )
+
+                self.update_list_with_dtype_paths(
+                    sub_ses_dtype_include,
+                    self.data_type,
                     sub,
                     ses,
                 )
 
-            update_list_with_dtype_paths(
-                sub_ses_dtype_include,
-                cfg,
-                local_or_remote,
-                data_type_checked,
-                sub,
-                ses,
-            )
-
-    include_list = format_include_lists_into_rclone_args()
-
-    if any(include_list):
-
-        output = transfer_data(local_filepath, remote_filepath, cfg.get_rclone_config_name(), upload_or_download, include_list, cfg.make_rclone_transfer_options(dry_run))
-
-        if log:
-            utils.log(output.stderr.decode("utf-8"))
-    else:
-        if log:
-            utils.log("No files included. None transferred.")
-
-# -----------------------------------------------------------------------------
-#
-# -----------------------------------------------------------------------------
-
-def transfer_data(
-    cfg: Configs,
-    upload_or_download: str,
-    include_list: list,
-    rclone_options: dict,
-) -> subprocess.CompletedProcess:
-    """
-    """
-    local_filepath = cfg.get_base_dir("local").as_posix()
-    remote_filepath = cfg.get_base_dir("remote").as_posix()
-
-    extra_arguments = rclone.handle_rclone_arguments(rclone_options, include_list)  # TODO: fix this is not a list
-
-    if upload_or_download == "upload":
-
-        output = rclone.call_rclone(
-            f"{rclone.rclone_args('copy')} "
-            f'"{local_filepath}" "{cfg.get_rclone_config_name()}:{remote_filepath}" {extra_arguments}',
-            pipe_std=True,
+        include_list = (
+            self.make_include_arg(sub_ses_dtype_include)
+            + self.make_include_arg(extra_dirnames)
+            + self.make_include_arg(extra_filenames, recursive=False)
         )
 
-    elif upload_or_download == "download":
+        return include_list
 
-        output = rclone.call_rclone(
-            f"{rclone.rclone_args('copy')} "
-            f'"{cfg.get_rclone_config_name()}:{remote_filepath}" "{local_filepath}"  {extra_arguments}',
-            pipe_std=True,
-        )
+    def make_include_arg(self, list_of_paths, recursive=True):
+        """ """
+        if not any(list_of_paths):
+            return []
 
-    return output
+        if recursive:
+            include_arg = lambda ele: f""" --include "{ele}/**" """
+        else:
+            include_arg = lambda ele: f""" --include "{ele}" """
 
-# -----------------------------------------------------------------------------
-# Build Include Lists
-# -----------------------------------------------------------------------------
+        return ["".join([include_arg(ele) for ele in list_of_paths])]
 
-def update_list_with_dtype_paths(
-    sub_ses_dtype_include,
-    cfg: Configs,
-    local_or_remote: str,
-    data_type: List[str],
-    sub: str,
-    ses: Optional[str] = None,
-) -> None:
-    """
-    """
-    data_type = list(
-        filter(lambda x: x != "all_ses_level_non_data_type", data_type)
-    )
+    # -------------------------------------------------------------------------
+    # Search for non-sub / ses / dtype dirs and add them to list
+    # -------------------------------------------------------------------------
 
-    data_type_items = cfg.items_from_data_type_input(
-        local_or_remote, data_type, sub, ses
-    )
-
-    level = "ses" if ses else "sub"
-
-    for data_type_key, data_type_dir in data_type_items:  # type: ignore
-
-        if data_type_dir.level == level:
-            if ses:
-                filepath = os.path.join(sub, ses, data_type_dir.name)
-            else:
-                filepath = os.path.join(sub, data_type_dir.name)
-
-            sub_ses_dtype_include.append(Path(filepath).as_posix())  # TODO: HANDLE
-
-#    extra_dirnames,
-#    extra_filenames,
-def get_top_level_non_sub_paths_to_transfer(
-    cfg: Configs,
-    local_or_remote: str):
-
-    top_level_dirs, top_level_files = directories.search_sub_or_ses_level(
-        cfg,
-        cfg.get_base_dir(local_or_remote),
-        local_or_remote,
-        search_str="*",
-    )
-
-    extra_dirnames += [ele for ele in top_level_dirs if ele[:4] != "sub-"]
-    extra_filenames += top_level_files
-
-def get_sub_level_extra_paths_to_transfer(
-    cfg: Configs,
-    local_or_remote: str,
-    sub: Optional[str] = None,):
-
-
-def get_ses_level_extra_paths_to_transfer():
-
-def transfer_all_non_sub_ses_data_type(
-    extra_dirnames,
-    extra_filenames,
-    cfg: Configs,
-    local_or_remote: str,
-    sub: Optional[str] = None,
-    ses: Optional[str] = None,
-):
-    """
-    """
-    if not sub and not ses:  # i.e. "all_non_sub":
-
+    def update_list_with_non_sub_top_level_dirs(
+        self, extra_dirnames, extra_filenames
+    ):
         top_level_dirs, top_level_files = directories.search_sub_or_ses_level(
-            cfg,
-            cfg.get_base_dir(local_or_remote),
-            local_or_remote,
+            self.cfg,
+            self.cfg.get_base_dir(self.local_or_remote),
+            self.local_or_remote,
             search_str="*",
         )
 
-        to_include_dirnames = [ele for ele in top_level_dirs if ele[:4] != "sub-"]
-        to_include_filenames = top_level_files
+        top_level_dirs = list(
+            filter(lambda dir: dir[:4] != "sub-", top_level_dirs)
+        )
 
-    elif sub and not ses:  # i.e. "all_non_ses":
+        extra_dirnames += top_level_dirs
+        extra_filenames += top_level_files
 
+    def update_list_with_non_ses_sub_level_dirs(
+        self, extra_dirnames, extra_filenames, sub
+    ):
+        """ """
         sub_level_dirs, sub_level_files = directories.search_sub_or_ses_level(
-            cfg,
-            cfg.get_base_dir(local_or_remote),
-            local_or_remote,
+            self.cfg,
+            self.cfg.get_base_dir(self.local_or_remote),
+            self.local_or_remote,
             sub=sub,
             search_str="*",
         )
-
-        to_include_dirnames = ["/".join([sub, ele]) for ele in sub_level_dirs if (ele[:4] != "ses-" and ele != "histology")]  # TODO: hadle sub level dtype, use cfg sub prefix!!!!!!
-        to_include_filenames = ["/".join([sub, ele]) for ele in sub_level_files]
-
-    elif sub and ses:  # i.e. "all_ses_level_non_data_type":
-
-        ses_level_dirs, ses_level_filenames = directories.search_sub_or_ses_level(cfg, cfg.get_base_dir(local_or_remote), local_or_remote, sub=sub, ses=ses, search_str=f"*")
-
-        to_include_dirnames = ["/".join([sub, ses, ele]) for ele in ses_level_dirs if ele not in ["histology", "behav", "ephys", "funcimg"]]
-        to_include_filenames = ["/".join([sub, ses, ele]) for ele in ses_level_filenames]
-
-    extra_dirnames += to_include_dirnames
-    extra_filenames += to_include_filenames
-
-# -----------------------------------------------------------------------------
-# Format Arguments
-# -----------------------------------------------------------------------------
-
-def check_transfer_sub_ses_input(
-    sub_names: Union[str, List[str]],
-    ses_names: Union[str, List[str]],
-    data_type: Union[str, List[str]],
-) -> Tuple[List[str], List[str], List[str]]:
-    """
-    Check the sub / session names passed. The checking here
-    is stricter than for make_sub_dirs / formatting.check_and_format_names
-    because we want to ensure that a) non-data-type arguments are not
-    passed at the wrong input (e.g. all_non_ses as a subject name).
-
-    We also want to limit the possible combinations of inputs, such
-    that is a user inputs "all" subjects,  or "all_sub", they should
-    not also pass specific subs (e.g. "sub-001"). However, all_non_sub
-    and sub-001 would be permitted.
-
-    Parameters
-    ----------
-
-    see update_list_with_dtype_paths()
-    """
-    if isinstance(sub_names, str):
-        sub_names = [sub_names]
-
-    if isinstance(ses_names, str):
-        ses_names = [ses_names]
-
-    if isinstance(data_type, str):
-        data_type = [data_type]
-
-    if len(sub_names) > 1 and any(
-        [name in ["all", "all_sub"] for name in sub_names]
-    ):
-        utils.log_and_raise_error(
-            "sub_names must only include 'all' or 'all_subs' if these options are used"
-        )  # TODO: if you pass something that doesn't exist, there is no warning
-
-    if len(ses_names) > 1 and any(
-        [name in ["all", "all_ses"] for name in ses_names]
-    ):
-        utils.log_and_raise_error(
-            "ses_names must only include 'all' or 'all_ses' if these options are used"
-        )
-
-    if len(data_type) > 1 and any(
-        [name in ["all", "all_data_type"] for name in data_type]
-    ):
-        utils.log_and_raise_error(
-            "data_type must only include 'all' or 'all_data_type' if these options are used"
-        )
-
-    return sub_names, ses_names, data_type
-
-
-def get_processed_names(
-    cfg: Configs,
-    local_or_remote: str,
-    base_dir: Path,
-    names_checked: List[str],
-    sub: Optional[str] = None,
-):
-    """
-    Process the list of subject session names.
-    If they are pre-defined (e.g. ["sub-001", "sub-002"])
-    they will be checked and formatted as per
-    formatting.check_and_format_names() and
-    any wildcard entries searched.
-
-    Otherwise, if "all" or a variant, the local or
-    remote directory (depending on upload vs. download)
-    will be searched to determine what files exist to transfer,
-    and the sub / ses names list generated.
-
-    Parameters
-    ----------
-
-    see transfer_sub_ses_data()
-
-    """
-    if sub is None:
-        sub_or_ses = "sub"
-        search_prefix = cfg.sub_prefix
-    else:
-        sub_or_ses = "ses"
-        search_prefix = cfg.ses_prefix
-
-    if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
-        processed_names = directories.search_sub_or_ses_level(
-            cfg, base_dir, local_or_remote, sub, search_str=f"{search_prefix}*"
-        )[0]
-        if names_checked == ["all"]:
-            processed_names += [f"all_non_{sub_or_ses}"]
-
-    else:
-        processed_names = formatting.check_and_format_names(
-            cfg, names_checked, sub_or_ses
-        )
-        processed_names = directories.search_for_wildcards(
-            cfg, base_dir, local_or_remote, processed_names, sub=sub
-        )
-
-    return processed_names
-
-
-def transfer_non_data_type(data_type_checked: List[str]) -> bool:
-    """
-    Convenience function, bool if all non-data-type directories
-    are to be transferred
-    """
-    return any(
-        [
-            name in ["all_ses_level_non_data_type", "all"]
-            for name in data_type_checked
+        sub_level_dtype = [
+            dtype.name
+            for dtype in self.cfg.data_type_dirs.values()
+            if dtype.level == "sub"
         ]
-    )
 
-##
-def format_include_lists_into_rclone_args(sub_ses_dtype_include,
-                                          extra_dirnames,
-                                          extra_filenames):
-    """"""
-    if any(sub_ses_dtype_incluse_list):
-        sub_ses_includes = ["".join([f""" --include "{ele}/**" """ for ele in sub_ses_dtype_incluse_list])]
-    else:
-        sub_ses_includes = []
+        filt_sub_level_dirs = filter(
+            lambda dir: dir[:4] != "ses-" and dir not in sub_level_dtype,
+            sub_level_dirs,
+        )
+        extra_dirnames += ["/".join([sub, dir]) for dir in filt_sub_level_dirs]
+        extra_filenames += ["/".join([sub, file]) for file in sub_level_files]
 
-    if any(extra_dirnames) or any(extra_filenames):
-        extras_includes = ["".join([f""" --include "{ele}/**" """ for ele in extra_dirnames]) + "".join([f""" --include "{ele}" """ for ele in extra_filenames])]
-    else:
-        extras_includes = []
+    def update_list_with_non_dtype_ses_level_dirs(
+        self, extra_dirnames, extra_filenames, sub, ses
+    ):
 
-    include_list = extras_includes + sub_ses_includes
+        (
+            ses_level_dirs,
+            ses_level_filenames,
+        ) = directories.search_sub_or_ses_level(
+            self.cfg,
+            self.cfg.get_base_dir(self.local_or_remote),
+            self.local_or_remote,
+            sub=sub,
+            ses=ses,
+            search_str="*",
+        )
+
+        ses_level_dtype = [
+            dtype.name
+            for dtype in self.cfg.data_type_dirs.values()
+            if dtype.level == "ses"
+        ]
+        filt_ses_level_dirs = filter(
+            lambda dir: dir not in ses_level_dtype, ses_level_dirs
+        )
+        extra_dirnames += [
+            "/".join([sub, ses, dir]) for dir in filt_ses_level_dirs
+        ]
+        extra_filenames += [
+            "/".join([sub, ses, file]) for file in ses_level_filenames
+        ]
+
+    # -------------------------------------------------------------------------
+    # Update list with path to sub and ses level data_type folders
+    # -------------------------------------------------------------------------
+
+    def update_list_with_dtype_paths(
+        self,
+        sub_ses_dtype_include,
+        data_type: List[str],
+        sub: str,
+        ses: Optional[str] = None,
+    ) -> None:
+        """ """
+        data_type = list(
+            filter(lambda x: x != "all_ses_level_non_data_type", data_type)
+        )
+
+        data_type_items = self.cfg.items_from_data_type_input(
+            self.local_or_remote, data_type, sub, ses
+        )
+
+        level = "ses" if ses else "sub"
+
+        for data_type_key, data_type_dir in data_type_items:  # type: ignore
+
+            if data_type_dir.level == level:
+                if ses:
+                    filepath = Path(sub) / ses / data_type_dir.name
+                else:
+                    filepath = Path(sub) / data_type_dir.name
+
+                sub_ses_dtype_include.append(filepath.as_posix())
+
+    # -------------------------------------------------------------------------
+    # Utils
+    # -------------------------------------------------------------------------
+
+    def to_list(self, names):
+        if isinstance(names, str):
+            names = [names]
+        return names
+
+    def check_input_arguments(
+        self,
+    ):
+        """
+        Check the sub / session names passed. The checking here
+        is stricter than for make_sub_dirs / formatting.check_and_format_names
+        because we want to ensure that a) non-data-type arguments are not
+        passed at the wrong input (e.g. all_non_ses as a subject name).
+
+        We also want to limit the possible combinations of inputs, such
+        that is a user inputs "all" subjects,  or "all_sub", they should
+        not also pass specific subs (e.g. "sub-001"). However, all_non_sub
+        and sub-001 would be permitted.
+
+        Parameters
+        ----------
+
+        see update_list_with_dtype_paths()
+        """
+        if len(self.sub_names) > 1 and any(
+            [name in ["all", "all_sub"] for name in self.sub_names]
+        ):
+            utils.log_and_raise_error(
+                "sub_names must only include 'all' or 'all_subs' if these options are used"
+            )
+
+        if len(self.ses_names) > 1 and any(
+            [name in ["all", "all_ses"] for name in self.ses_names]
+        ):
+            utils.log_and_raise_error(
+                "ses_names must only include 'all' or 'all_ses' if these options are used"
+            )
+
+        if len(self.data_type) > 1 and any(
+            [name in ["all", "all_data_type"] for name in self.data_type]
+        ):
+            utils.log_and_raise_error(
+                "data_type must only include 'all' or 'all_data_type' if these options are used"
+            )
+
+    # -----------------------------------------------------------------------------
+    # Format Arguments
+    # -----------------------------------------------------------------------------
+
+    def get_processed_names(
+        self,
+        names_checked: List[str],
+        sub: Optional[str] = None,
+    ):
+        """
+        Process the list of subject session names.
+        If they are pre-defined (e.g. ["sub-001", "sub-002"])
+        they will be checked and formatted as per
+        formatting.check_and_format_names() and
+        any wildcard entries searched.
+
+        Otherwise, if "all" or a variant, the local or
+        remote directory (depending on upload vs. download)
+        will be searched to determine what files exist to transfer,
+        and the sub / ses names list generated.
+
+        Parameters
+        ----------
+
+        see transfer_sub_ses_data()
+
+        """
+        if sub is None:
+            sub_or_ses = "sub"
+            search_prefix = self.cfg.sub_prefix
+        else:
+            sub_or_ses = "ses"
+            search_prefix = self.cfg.ses_prefix
+
+        if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
+            processed_names = directories.search_sub_or_ses_level(
+                self.cfg,
+                self.base_dir,
+                self.local_or_remote,
+                sub,
+                search_str=f"{search_prefix}*",
+            )[0]
+
+            if names_checked == ["all"]:
+                processed_names += [f"all_non_{sub_or_ses}"]
+
+        else:
+            processed_names = formatting.check_and_format_names(
+                self.cfg, names_checked, sub_or_ses
+            )
+            processed_names = directories.search_for_wildcards(
+                self.cfg,
+                self.base_dir,
+                self.local_or_remote,
+                processed_names,
+                sub=sub,
+            )
+
+        return processed_names
+
+    def transfer_non_data_type(self, data_type_checked: List[str]) -> bool:
+        """
+        Convenience function, bool if all non-data-type directories
+        are to be transferred
+        """
+        return any(
+            [
+                name in ["all_ses_level_non_data_type", "all"]
+                for name in data_type_checked
+            ]
+        )
