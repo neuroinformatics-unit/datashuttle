@@ -524,7 +524,7 @@ def handle_upload_or_download(
     return transfer_function, remote_path
 
 
-def swap_local_and_remote_paths(project, swap_last_dir_only):
+def swap_local_and_remote_paths(project, swap_last_dir_only=False):
     """
     When testing upload vs. download, the most conveient way
     to test download is to swap the paths. In this case, we 'download'
@@ -615,7 +615,7 @@ def clear_capsys(capsys):
     capsys.readouterr()
 
 
-def write_file(path_, contents, append=False):
+def write_file(path_, contents="", append=False):
     key = "a" if append else "w"
     with open(path_, key) as file:
         file.write(contents)

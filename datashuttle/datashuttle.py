@@ -355,8 +355,18 @@ class DataShuttle:
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
-        Upload a single, specified directory (including all subdirectories
-        and files) from the local to the remote machine.
+        Upload a specific file or directory. If transferring
+        a single file, the path including the filename is
+        required (see 'filepath' input). If a directory,
+        wildcards "*" or "**" must be used to transfer
+        all files in the directory ("*") or all files
+        and sub-folders ("**"), otherwise the empty folder
+        only will be transferred.
+
+        e.g. "sub-001/ses-002/my_directory/**"
+
+        This function works by passing the file / directory
+        path to transfer to Rclone's --include flag.
 
         Parameters
         ----------
@@ -378,25 +388,47 @@ class DataShuttle:
             Path(filepath),
         )
 
-        data_transfer.move_dir_or_file(
-            processed_filepath,
+        include_list = [f"--include {processed_filepath.as_posix()}"]
+        output = rclone.transfer_data(
             self.cfg,
             "upload",
-            dry_run,
-            log=True,
+            include_list,
+            self.cfg.make_rclone_transfer_options(dry_run),
         )
+
+        utils.log(output.stderr.decode("utf-8"))
+
         ds_logger.close_log_filehandler()
 
     def download_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
-        Download an entire directory (including all subdirectories
-        and files) from the remote to the local machine.
+        Download a specific file or directory. If transferring
+        a single file, the path including the filename is
+        required (see 'filepath' input). If a directory,
+        wildcards "*" or "**" must be used to transfer
+        all files in the directory ("*") or all files
+        and sub-folders ("**"), otherwise the empty folder
+        only will be transferred.
 
-        This method is identical to upload_project_dir_or_file
-        but with direction of transfer reversed. Please see
-        upload_project_dir_or_file() for arguments.
+        e.g. "sub-001/ses-002/my_directory/**"
+
+        This function works by passing the file / directory
+        path to transfer to Rclone's --include flag.
+
+        Parameters
+        ----------
+
+        filepath :
+            a string containing the filepath to move,
+            relative to the project directory "rawdata"
+            or "derivatives" path (depending on which is currently
+            set). Alternatively, the entire path is accepted.
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
         """
         self._start_log("download_project_dir_or_file")
 
@@ -404,13 +436,17 @@ class DataShuttle:
             self.cfg.get_base_dir("remote"),
             Path(filepath),
         )
-        data_transfer.move_dir_or_file(
-            processed_filepath,
+
+        include_list = [f"--include /{processed_filepath.as_posix()}"]
+        output = rclone.transfer_data(
             self.cfg,
             "download",
-            dry_run,
-            log=True,
+            include_list,
+            self.cfg.make_rclone_transfer_options(dry_run),
         )
+
+        utils.log(output.stderr.decode("utf-8"))
+
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------

@@ -392,3 +392,97 @@ class TestFileTransfer:
             assert remote_contents == ["first edit second edit"]
         else:
             assert remote_contents == ["first edit"]
+
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("transfer_file", [True, False])
+    @pytest.mark.parametrize("full_path", [True, False])
+    def test_specific_file_or_dir(
+        self, project, transfer_file, full_path, upload_or_download
+    ):
+        """
+        Test upload_project_dir_or_file() and download_project_dir_or_file().
+
+        This test has a few different parameterisations. It tests
+        1) transfer_file : this transfers a file or folder. if transferring
+           a folder, all contents are transferred with /** wildcard.
+        2) full path : the functions can accept full path or path
+           relative to rawdata/ . Test both these instances
+        3) upload_or_download : Test the direction. As it is more convenient
+           to  make all test project file in local_path then swap the paths
+           if downloading, this is done here (see
+           test_utils.swap_local_and_remote_paths()) for details.
+
+        Make a project with two different files (just to
+        ensure non-target files are not transferred). Transfer
+        a single file or the folder containing the file. Check that
+        the transferred folders and no others were transferred.
+        """
+        (
+            path_to_test_file_behav,
+            path_to_test_file_ephys,
+        ) = self.setup_specific_file_or_dir_files(project)
+
+        if upload_or_download == "upload":
+            transfer_function = project.upload_project_dir_or_file
+            transfer_from = "local_path"
+            transfer_to = "remote_path"
+        else:
+            transfer_function = project.download_project_dir_or_file
+            transfer_from = "remote_path"
+            transfer_to = "local_path"
+            test_utils.swap_local_and_remote_paths(project)
+
+        if transfer_file:
+            to_transfer = path_to_test_file_behav
+            formatted_to_transfer = to_transfer
+        else:
+            to_transfer = path_to_test_file_ephys
+            formatted_to_transfer = to_transfer.parents[0] / "**"
+
+        if full_path:
+            transfer_function(
+                project.cfg[transfer_from] / formatted_to_transfer
+            )
+        else:
+            transfer_function(Path(*formatted_to_transfer.parts[1:]))
+
+        transferred_files = [
+            path_
+            for path_ in project.cfg[transfer_to].glob("**/*")
+            if ".datashuttle" not in str(path_)
+        ]
+        to_test_against = [
+            project.cfg[transfer_to] / path_
+            for path_ in reversed(to_transfer.parents)
+        ][1:] + [project.cfg[transfer_to] / to_transfer]
+
+        assert transferred_files == to_test_against
+
+    def setup_specific_file_or_dir_files(self, project):
+        """ """
+        project.make_sub_dir(["sub-001", "sub-002"], "ses-003")
+
+        path_to_test_file_behav = (
+            Path("rawdata")
+            / "sub-002"
+            / "ses-003"
+            / "behav"
+            / "behav_test_file.txt"
+        )
+
+        path_to_test_file_ephys = (
+            Path("rawdata")
+            / "sub-002"
+            / "ses-003"
+            / "ephys"
+            / "ephys_test_file.txt"
+        )
+
+        test_utils.write_file(
+            project.cfg["local_path"] / path_to_test_file_behav
+        )
+        test_utils.write_file(
+            project.cfg["local_path"] / path_to_test_file_ephys
+        )
+
+        return path_to_test_file_behav, path_to_test_file_ephys

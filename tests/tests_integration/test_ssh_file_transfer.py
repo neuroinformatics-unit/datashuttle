@@ -30,15 +30,15 @@ test a) all data transfers, hard coded, lots of combinations
 more file transfer tests
 ---------------------------------------------------------------------
 
-TODOs
------
-TODO: fix move_dir_or_file()
+Wishlist
+--------
 TODO: generate files in the folders, test what happens when attempting to overwrite a file
 TODO: mock pushing from two separate places and merging into single project
-TODO: SSH tests take ages because a) SSH is slower b) need to wait for filesystem to update (ATM 10 s can probably reduce)
-TODO: test search_ssh_remote_for_directories
-TODO: get_list_of_directory_names_over_sftp
-TODO: make sure have tested different data type at different level s
+TODO: finishing making large real dataset
+TODO: currently rawdata only tested.
+
+TODOs
+-----
 TODO: check that sub- ses- is separated by dash and not underscore. Can
       lead to very hard to detect bugs. This is easy to test for as the
       order should always be - _ - _ -.... with optional -/_ ending
@@ -46,23 +46,20 @@ TODO: currently if something is passed to transfer, nothing happens if
       transferring through filesystem, it was crashing SSH
       but get_list_of_directory_names_over_sftp() was edited to fix this. Make equivilent
       check in the other low-level functions and make sure these are logged and printed to console.
+TODO: test search_ssh_remote_for_directories
+TODO: get_list_of_directory_names_over_sftp
+TODO: manually check this test is doing what I think it is and check all edge cases
+TODO: SSH tests take ages because a) SSH is slower b) need to wait for filesystem to update (ATM 10 s can probably reduce)
+TODO: make sure have tested different data type at different level s
 TODO: test connection drop https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
       (but these drop python access to internet NOT entire internet (at least some of them))
 TODO: test partial file transfer - in this case, it will never be updateD? Is there a way to print warning
       in rclone whendates or filesizes do not match?
-TODO: manually check this test is doing what I think it is and check all edge cases
-TODO: finishing making large real dataset
-TODO: currently if something is passed to transfer, nothing happens if
-     transferring through filesystem, it was crashing SSH
-     but get_list_of_directory_names_over_sftp() was edited to fix this. Make equivilent
-     check in the other low-level functions and make sure these are logged and printed to console.
-TODO: test connection drop https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
-     (but these drop python access to internet NOT entire internet (at least some of them))
-TODO: test partial file transfer - in this case, it will never be updateD? Is there a way to print warning
-     in rclone whendates or filesizes do not match?
-TODO: manually check this test is doing what I think it is and check all edge cases
-TODO: finishing making large real dataset
-TODO: currently rawdata only tested.
+
+
+
+
+
 """
 
 import getpass
