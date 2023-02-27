@@ -812,8 +812,8 @@ class DataShuttle:
             The relevant subject or session prefix,
             e.g. "sub-" or "ses-"
         """
-        if prefix not in ["sub-", "ses-"]:
-            utils.log_and_raise_error("prefix: must be 'sub-' or 'ses-'")
+        if prefix not in ["sub", "ses"]:
+            utils.log_and_raise_error("prefix: must be 'sub' or 'ses'")
 
         formatted_names = formatting.format_names(names, prefix)
         utils.message_user(formatted_names)

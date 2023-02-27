@@ -1,6 +1,9 @@
 import datetime
 import re
+from pathlib import Path
 from typing import List, Union
+
+import numpy as np
 
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.configs.configs import Configs
@@ -10,6 +13,13 @@ from . import utils
 # --------------------------------------------------------------------------------------------------------------------
 # Format Sub / Ses Names
 # --------------------------------------------------------------------------------------------------------------------
+
+RESERVED_KEYWORDS = [
+    "all_sub",
+    "all_ses",
+    "all_non_sub",
+    "all_non_ses",
+]  # TODO: add to configs
 
 
 def check_and_format_names(
@@ -76,6 +86,8 @@ def format_names(
             " duplicates in list input)"
         )
 
+    check_dashes_and_underscore_alternate_correctly(prefixed_names)
+
     prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
 
     update_names_with_datetime(prefixed_names)
@@ -109,8 +121,8 @@ def update_names_with_range_to_flag(
 
             check_name_is_formatted_correctly(name, prefix)
 
-            prefix_tag = re.search(f"{prefix}[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
-            tag_number = prefix_tag.split(f"{prefix}")[1]
+            prefix_tag = re.search(f"{prefix}-[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
+            tag_number = prefix_tag.split(f"{prefix}-")[1]
 
             name_start_str, name_end_str = name.split(tag_number)
 
@@ -146,12 +158,12 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     as expected.
     """
     first_key_value_pair = name.split("_")[0]
-    expected_format = re.compile(f"{prefix}[0-9]+{tags('to')}[0-9]+")
+    expected_format = re.compile(f"{prefix}-[0-9]+{tags('to')}[0-9]+")
 
     if not re.fullmatch(expected_format, first_key_value_pair):
         utils.log_and_raise_error(
             f"The name: {name} is not in required format for {tags('to')} keyword. "
-            f"The start must be  be {prefix}<NUMBER>{tags('to')}<NUMBER>)"
+            f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)"
         )
 
 
@@ -270,13 +282,12 @@ def ensure_prefixes_on_list_of_names(
 
     Use expanded list for readability
     """
+    prefix = prefix + "-"
     n_chars = len(prefix)
-
-    reserved_keywords = ["all_sub", "all_ses", "all_non_sub", "all_non_ses"]
 
     new_names = []
     for name in all_names:
-        if name[:n_chars] != prefix and name not in reserved_keywords:
+        if name[:n_chars] != prefix and name not in RESERVED_KEYWORDS:
             new_names.append(prefix + name)
         else:
             new_names.append(name)
@@ -306,3 +317,31 @@ def check_data_type_is_valid(
         )
 
     return is_valid
+
+
+def check_dashes_and_underscore_alternate_correctly(all_names):
+    """ """
+    for name in all_names:
+
+        if name in RESERVED_KEYWORDS:
+            continue
+
+        discrim = {"-": 1, "_": -1}
+        dashes_underscores = [
+            discrim[ele] for ele in name if ele in ["-", "_"]
+        ]
+
+        if dashes_underscores[0] != 1:
+            utils.log_and_raise_error(
+                "subject or session name first "
+                "delimiter must be dash not underscore"
+            )
+
+        if len(dashes_underscores) % 2 != 0:
+            dashes_underscores.pop(-1)
+
+        if any(np.diff(dashes_underscores) == 0):
+            utils.log_and_raise_error(
+                "subject and session names must contain alternating dashes and "
+                "underscores (used for separating key-value pairs)"
+            )

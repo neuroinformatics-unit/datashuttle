@@ -43,10 +43,10 @@ class TransferData:
             )
 
             if log:
-                utils.log(output.stderr.decode("utf-8"))
+                utils.log_and_message(output.stderr.decode("utf-8"))
         else:
             if log:
-                utils.log("No files included. None transferred.")
+                utils.log_and_message("No files included. None transferred.")
 
     # -------------------------------------------------------------------------
     # Build the --include list
@@ -309,10 +309,10 @@ class TransferData:
         """
         if sub is None:
             sub_or_ses = "sub"
-            search_prefix = self.cfg.sub_prefix
+            search_prefix = self.cfg.sub_prefix + "-"
         else:
             sub_or_ses = "ses"
-            search_prefix = self.cfg.ses_prefix
+            search_prefix = self.cfg.ses_prefix + "-"
 
         if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
             processed_names = directories.search_sub_or_ses_level(

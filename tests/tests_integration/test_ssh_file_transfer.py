@@ -62,6 +62,7 @@ TODO: test partial file transfer - in this case, it will never be updateD? Is th
 
 """
 
+import copy
 import getpass
 import shutil
 import time

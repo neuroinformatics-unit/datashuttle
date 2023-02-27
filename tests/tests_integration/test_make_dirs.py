@@ -42,7 +42,7 @@ class TestMakeDirs:
     # Tests
     # ----------------------------------------------------------------------------------------------------------
 
-    @pytest.mark.parametrize("prefix", ["sub-", "ses-"])
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize(
         "input", [1, {"test": "one"}, 1.0, ["1", "2", ["three"]]]
     )
@@ -114,26 +114,28 @@ class TestMakeDirs:
     def test_format_names_prefix(self):
         """
         Check that format_names correctly prefixes input
-        with default sub- or ses- prefix.
+        with default sub or ses prefix. This is less useful
+        now that ses/sub name dash and underscore order is
+        more strictly checked.
         """
-        prefix = "test_sub-"
+        prefix = "sub"
 
         # check name is prefixed
         formatted_names = formatting.format_names("1", prefix)
-        assert formatted_names[0] == "test_sub-1"
+        assert formatted_names[0] == "sub-1"
 
         # check existing prefix is not duplicated
-        formatted_names = formatting.format_names("test_sub-1", prefix)
-        assert formatted_names[0] == "test_sub-1"
+        formatted_names = formatting.format_names("sub-1", prefix)
+        assert formatted_names[0] == "sub-1"
 
         # test mixed list of prefix and unprefixed are prefixed correctly.
-        mixed_names = ["1", prefix + "four", "5", prefix + "6"]
+        mixed_names = ["1", prefix + "-four", "5", prefix + "-6"]
         formatted_names = formatting.format_names(mixed_names, prefix)
         assert formatted_names == [
-            "test_sub-1",
-            "test_sub-four",
-            "test_sub-5",
-            "test_sub-6",
+            "sub-1",
+            "sub-four",
+            "sub-5",
+            "sub-6",
         ]
 
     def test_generate_dirs_default_ses(self, project):
@@ -145,14 +147,14 @@ class TestMakeDirs:
         a dict that indicates if each subdir is used (to avoid
         circular testing from the project itself).
         """
-        subs = ["1_1", "sub-two-2", "3_3-3=3"]
+        subs = ["1_1", "sub-two", "3_3-3"]
 
         project.make_sub_dir(subs)
 
         test_utils.check_directory_tree_is_correct(
             project,
             base_dir=test_utils.get_rawdata_path(project),
-            subs=["sub-1_1", "sub-two-2", "sub-3_3-3=3"],
+            subs=["sub-1_1", "sub-two", "sub-3_3-3"],
             sessions=[],
             directory_used=test_utils.get_default_directory_used(),
         )
@@ -300,7 +302,7 @@ class TestMakeDirs:
 
         project.make_sub_dir(
             ["sub-001", "sub-002"],
-            [f"ses-001-{tags('date')}", f"002-{tags('date')}"],
+            [f"ses-001_{tags('date')}", f"002_{tags('date')}"],
             "ephys",
         )
 
@@ -321,7 +323,7 @@ class TestMakeDirs:
 
         project.make_sub_dir(
             ["sub-001", "sub-002"],
-            [f"ses-001-{tags('datetime')}", f"002-{tags('datetime')}"],
+            [f"ses-001_{tags('datetime')}", f"002_{tags('datetime')}"],
             "ephys",
         )
 

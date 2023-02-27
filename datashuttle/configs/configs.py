@@ -46,8 +46,8 @@ class Configs(UserDict):
             "local_path",
             "remote_path",
         ]
-        self.sub_prefix = "sub-"
-        self.ses_prefix = "ses-"
+        self.sub_prefix = "sub"
+        self.ses_prefix = "ses"
 
         self.top_level_dir_name: str
 

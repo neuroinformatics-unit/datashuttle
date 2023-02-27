@@ -336,12 +336,12 @@ class TestCommandLineInterface:
 
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_make_sub_dir__(self, setup_project):
+    def test_make_sub_dir(self, setup_project):
         """
         see test_filesystem_transfer.py
         """
-        subs = ["sub-1_1", "sub-two-2", "sub-3_3-3=3"]
-        ses = ["ses-123", "ses-hello_world"]
+        subs = ["sub-1_1", "sub-two", "sub-3_3-3"]
+        ses = ["ses-123", "ses-hello_hello_world"]
 
         test_utils.run_cli(
             f"make_sub_dir --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
@@ -424,7 +424,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys",
+            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys/*",
             setup_project.project_name,
         )
 
@@ -470,7 +470,7 @@ class TestCommandLineInterface:
         properly processed names to stdout
         """
         stdout, stderr = test_utils.run_cli(
-            f"check{sep}name{sep}formatting sub-001 1{tags('to')}02 --prefix sub-",
+            f"check{sep}name{sep}formatting sub-001 1{tags('to')}02 --prefix sub",
             clean_project_name,
         )
 

@@ -218,14 +218,10 @@ class TestCommandLineInterface:
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
+        assert """ "--include" "sub-1_1/histology/**" """ in log
 
-        assert "/test_logging/local/rawdata/sub-1_1/histology" in log
-        assert (
-            "/test_logging/remote/rawdata/sub-1_1/histology: copied 1 directories"
-            in log
-        )
-        assert "/test_logging/local/rawdata/sub-1_1/ses-123/behav" in log
-        assert "/test_logging/remote/rawdata/sub-1_1/ses-123/behav" in log
+        assert """/test_logging/remote/rawdata" to be canonical """ in log
+        assert """ "--include" "sub-1_1/ses-123/behav/**" """ in log
         assert "Waiting for checks to finish" in log
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
 
@@ -261,12 +257,10 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert f"Starting {upload_or_download}_project_dir_or_file" in log
-        assert "/rawdata/sub-001/ses-001" in log
+        assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
-        assert "behav/.datashuttle_meta: Making directory" in log
-        assert "ephys/.datashuttle_meta: Making directory" in log
-        assert "funcimg/.datashuttle_meta: Making directory" in log
+        assert " DEBUG : sub-001: Making directory\n" in log
 
     # ----------------------------------------------------------------------------------------------------------
     # Check errors propagate
