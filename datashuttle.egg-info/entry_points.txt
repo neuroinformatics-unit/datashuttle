@@ -1,2 +1,0 @@
-[console_scripts]
-datashuttle = datashuttle.command_line_interface:main
