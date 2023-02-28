@@ -329,7 +329,7 @@ def move_dir_or_file(
     upload_or_download: str,
     dry_run: bool,
     log: bool = False,
-    exclude_list: Optional[List[str]] = None,
+    exclude_list=None,
 ) -> None:
     """
     Low-level function to transfer a directory or file.
