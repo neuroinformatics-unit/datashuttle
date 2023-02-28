@@ -207,10 +207,12 @@ def upload_data(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
+    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
     run_command(
         project,
         project.upload_data,
-        **kwargs,
+        **filtered_kwargs,
     )
 
 
@@ -222,7 +224,6 @@ def upload_all(*args: Any) -> None:
     project = args[0]
     project.upload_all()
 
-
 # Download Data ---------------------------------------------------------------
 
 
@@ -230,10 +231,12 @@ def download_data(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
+    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
     run_command(
         project,
         project.download_data,
-        **kwargs,
+        **filtered_kwargs,
     )
 
 

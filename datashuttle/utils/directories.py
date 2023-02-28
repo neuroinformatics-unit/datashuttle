@@ -428,6 +428,11 @@ def search_for_directories(  # TODO: change name
             cfg,
         )
     else:
+
+        if not search_path.exists():
+            utils.log_and_message(f"No file found at {search_path.as_posix()}")
+            return [], []
+
         all_dirnames, all_filenames = search_filesystem_path_for_directories(
             search_path / search_prefix
         )
