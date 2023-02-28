@@ -111,7 +111,9 @@ def add_public_key_to_remote_authorized_keys(
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
+    client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
+
         connect_client(client, cfg, password=password)
 
         client.exec_command("mkdir -p ~/.ssh/")
@@ -132,6 +134,7 @@ def verify_ssh_remote_host(
     get the server key and present when connecting
     for manual validation.
     """
+    transport: paramiko.Transport
     with paramiko.Transport(remote_host_id) as transport:
         transport.connect()
         key = transport.get_remote_server_key()
@@ -189,6 +192,7 @@ def search_ssh_remote_for_directories(
 
     cfg : see connect_client()
     """
+    client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
         connect_client(client, cfg)
 
