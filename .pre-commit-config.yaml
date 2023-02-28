@@ -1,4 +1,4 @@
-exclude: 'conf.py | test_file_conflicts_pathtable.py'
+exclude: 'conf.py|test_file_conflicts_pathtable.py'
 
 repos:
     - repo: https://github.com/pycqa/isort
