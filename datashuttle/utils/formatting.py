@@ -2,8 +2,6 @@ import datetime
 import re
 from typing import List, Union
 
-import numpy as np
-
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.configs.configs import Configs
 
@@ -339,8 +337,16 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
         if len(dashes_underscores) % 2 != 0:
             dashes_underscores.pop(-1)
 
-        if any(np.diff(dashes_underscores) == 0):
+        if any(diff(dashes_underscores) == 0):
             utils.log_and_raise_error(
                 "subject and session names must contain alternating dashes and "
                 "underscores (used for separating key-value pairs)"
             )
+
+
+def diff(x):
+    """
+    slow, custom differentiator for small inputs, to avoid
+    adding numpy as a dependency.
+    """
+    return [x[i + 1] - x[i] for i in range(x.size - 1)]
