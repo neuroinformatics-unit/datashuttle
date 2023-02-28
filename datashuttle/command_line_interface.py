@@ -224,6 +224,7 @@ def upload_all(*args: Any) -> None:
     project = args[0]
     project.upload_all()
 
+
 # Download Data ---------------------------------------------------------------
 
 

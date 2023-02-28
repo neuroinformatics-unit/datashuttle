@@ -3,7 +3,7 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils import formatting, utils
+from datashuttle.utils import formatting
 
 
 class TestUnit:

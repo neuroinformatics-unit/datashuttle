@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from datashuttle.configs.configs import Configs
 
@@ -10,12 +10,12 @@ class TransferData:
     def __init__(
         self,
         cfg: Configs,
-        upload_or_download,
-        sub_names,
-        ses_names,
-        data_type,
-        dry_run,
-        log,
+        upload_or_download: str,
+        sub_names: Union[str, List[str]],
+        ses_names: Union[str, List[str]],
+        data_type: Union[str, List[str]],
+        dry_run: bool,
+        log: bool,
     ):
 
         self.cfg = cfg
@@ -52,14 +52,15 @@ class TransferData:
     # Build the --include list
     # -------------------------------------------------------------------------
 
-    def build_a_list_of_all_files_and_folders_to_transfer(self) -> None:
+    def build_a_list_of_all_files_and_folders_to_transfer(self) -> List[str]:
         """ """
         # Find sub names to transfer
         processed_sub_names = self.get_processed_names(self.sub_names)
 
-        sub_ses_dtype_include = []
-        extra_dirnames = []
-        extra_filenames = []
+        sub_ses_dtype_include: List[str] = []
+        extra_dirnames: List[str] = []
+        extra_filenames: List[str] = []
+
         for sub in processed_sub_names:
 
             # subjects at top level dir ---------------------------------------
@@ -111,7 +112,9 @@ class TransferData:
 
         return include_list
 
-    def make_include_arg(self, list_of_paths, recursive=True):
+    def make_include_arg(
+        self, list_of_paths: List[str], recursive: bool = True
+    ) -> List[str]:
         """ """
         if not any(list_of_paths):
             return []
@@ -235,7 +238,7 @@ class TransferData:
     # Utils
     # -------------------------------------------------------------------------
 
-    def to_list(self, names):
+    def to_list(self, names: Union[str, List[str]]) -> List[str]:
         if isinstance(names, str):
             names = [names]
         return names
