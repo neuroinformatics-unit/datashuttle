@@ -114,7 +114,7 @@ description = (
 
 parser = argparse.ArgumentParser(
     prog="datashuttle",
-    usage="%(prog)s [PROJECT NAME]",
+    usage="%(prog)s [PROJECT NAME]",  # old-style format required
     description=description,
     formatter_class=argparse.RawTextHelpFormatter,
 )
@@ -526,8 +526,9 @@ download_project_dir_or_file_parser.add_argument(
 # Get Local Path --------------------------------------------------------------------------
 
 
-def get_local_path(project, args):
+def get_local_path(*args):
     """"""
+    project = args[0]
     print(project.get_local_path())
 
 
@@ -541,8 +542,9 @@ get_local_path_parser.set_defaults(func=get_local_path)
 # Get Appdir Path --------------------------------------------------------------------------
 
 
-def get_appdir_path(project, args):
+def get_appdir_path(*args):
     """"""
+    project = args[0]
     print(project.get_appdir_path())
 
 
@@ -556,8 +558,9 @@ get_appdir_path_parser.set_defaults(func=get_appdir_path)
 # Get Config Path --------------------------------------------------------------------------
 
 
-def get_config_path(project, args):
+def get_config_path(*args):
     """"""
+    project = args[0]
     print(project.get_config_path())
 
 
@@ -571,8 +574,9 @@ get_config_path_parser.set_defaults(func=get_config_path)
 # Get Remote Path --------------------------------------------------------------------------
 
 
-def get_remote_path(project, args):
+def get_remote_path(*args):
     """"""
+    project = args[0]
     print(project.get_remote_path())
 
 
@@ -586,8 +590,9 @@ get_remote_path_parser.set_defaults(func=get_remote_path)
 # Show Configs --------------------------------------------------------------------------
 
 
-def show_configs(project, args):
+def show_configs(*args):
     """"""
+    project = args[0]
     project.show_configs()
 
 
@@ -597,12 +602,55 @@ show_configs_parser = subparsers.add_parser(
 )
 show_configs_parser.set_defaults(func=show_configs)
 
+# Check Name Processing --------------------------------------------------------------------------
+
+
+def check_name_processing(project, args):
+
+    kwargs = make_kwargs(args)
+
+    run_command(
+        project,
+        project.check_name_processing,
+        kwargs.pop("names"),
+        **kwargs,
+    )
+
+
+check_name_processing_parser = subparsers.add_parser(
+    "check_name_processing",
+    description=DataShuttle.check_name_processing.__doc__,
+    formatter_class=argparse.RawTextHelpFormatter,
+    help="",
+)
+check_name_processing_parser.set_defaults(func=check_name_processing)
+
+check_name_processing_parser.add_argument(
+    "names",
+    type=str,
+    nargs="+",
+    help="Required: (str, single or multiple)",
+)
+
+check_name_processing_parser.add_argument(
+    "--prefix",
+    type=str,
+    help="Required: (str)",
+)
+
 # ------------------------------------------------------------------------------------------
 # Run
 # ------------------------------------------------------------------------------------------
 
 
 def main():
+    """
+    Get the arguments, initialise the datashuttle project
+    and pass the project and arguments to default function.
+    Note these functions must all accept two arguments. In the
+    case where only project is required, *args is used
+    (e.g. get_remote_path)
+    """
     args = parser.parse_args()
     project = DataShuttle(args.project_name)
 

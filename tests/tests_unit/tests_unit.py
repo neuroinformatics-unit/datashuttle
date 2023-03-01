@@ -55,6 +55,64 @@ class TestUnit:
 
         assert str(e.value) == "sub or ses names cannot include spaces."
 
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    def test_process_to_keyword_in_sub_input(self, prefix):
+        """ """
+        results = utils.update_names_with_range_to_flag(
+            [f"{prefix}-001", f"{prefix}-01@TO123"], prefix
+        )
+        assert results == [f"{prefix}-001"] + [
+            f"{prefix}-{str(num).zfill(2)}" for num in range(1, 124)
+        ]
+
+        results = utils.update_names_with_range_to_flag(
+            [f"{prefix}-1@TO3_hello-world"], prefix
+        )
+        assert results == [
+            f"{prefix}-1_hello-world",
+            f"{prefix}-2_hello-world",
+            f"{prefix}-3_hello-world",
+        ]
+
+        results = utils.update_names_with_range_to_flag(
+            [
+                f"{prefix}-01@TO3_hello",
+                f"{prefix}-4@TO005_goodbye",
+                f"{prefix}-006@TO0007_hello",
+            ],
+            prefix,
+        )
+
+        assert results == [
+            f"{prefix}-01_hello",
+            f"{prefix}-02_hello",
+            f"{prefix}-03_hello",
+            f"{prefix}-004_goodbye",
+            f"{prefix}-005_goodbye",
+            f"{prefix}-0006_hello",
+            f"{prefix}-0007_hello",
+        ]
+
+    @pytest.mark.parametrize("prefix", ["sub-", "ses-"])
+    @pytest.mark.parametrize(
+        "bad_input",
+        ["1@TO2", "prefix-1@TO_date", "prefix-@01@TO02", "prefix-01@TO1M1"],
+    )
+    def test_process_to_keyword_bad_input_raises_error(
+        self, prefix, bad_input
+    ):
+
+        bad_input = bad_input.replace("prefix", prefix)
+
+        with pytest.raises(BaseException) as e:
+            utils.update_names_with_range_to_flag([bad_input], prefix)
+
+        assert (
+            str(e.value)
+            == f"The name: {bad_input} is not in required format for @TO keyword. "
+            f"The start must be  be {prefix}<NUMBER>@TO<NUMBER>)"
+        )
+
     # ----------------------------------------------------------------------
     # Utlis
     # ----------------------------------------------------------------------

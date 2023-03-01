@@ -2,6 +2,7 @@ import datetime
 import fnmatch
 import glob
 import os
+import re
 import stat
 import warnings
 from pathlib import Path
@@ -97,6 +98,7 @@ def add_public_key_to_remote_authorized_keys(
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
+    client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
         connect_client(client, cfg, hostkeys, password=password)
 
@@ -112,6 +114,7 @@ def add_public_key_to_remote_authorized_keys(
 
 def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
     """"""
+    transport: paramiko.Transport
     with paramiko.Transport(remote_host_id) as transport:
         transport.connect()
         key = transport.get_remote_server_key()
@@ -154,6 +157,7 @@ def search_ssh_remote_for_directories(
     Search for the search prefix in the search path over SSH.
     Returns the list of matching directories, files are filtered out.
     """
+    client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
         connect_client(client, cfg, hostkeys, private_key_path=ssh_key_path)
 
@@ -187,7 +191,7 @@ def get_list_of_directory_names_over_sftp(
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def message_user(message: str):
+def message_user(message: Union[str, list]):
     """
     Centralised way to send message.
     """
@@ -239,23 +243,130 @@ def process_names(
             "Ensure subject and session names are list of strings, or string"
         )
 
-    if any([" " in ele for ele in names]):
-        raise_error("sub or ses names cannot include spaces.")
-
     if isinstance(names, str):
         names = [names]
 
-    update_names_with_datetime(names)
+    if any([" " in ele for ele in names]):
+        raise_error("sub or ses names cannot include spaces.")
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
     if len(prefixed_names) != len(set(prefixed_names)):
         raise_error(
-            "Subject and session names but all be unqiue (i.e. there are no"
+            "Subject and session names but all be unique (i.e. there are no"
             " duplicates in list input)"
         )
 
+    prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
+
+    update_names_with_datetime(prefixed_names)
+
     return prefixed_names
+
+
+# Handle @TO flags  -------------------------------------------------------
+
+
+def update_names_with_range_to_flag(names: list, prefix: str) -> list:
+    """
+    Given a list of names, check if they contain the @TO keyword.
+    If so, expand to a range of names. Names including the @TO
+    keyword must be in the form prefix-num1@num2. The maximum
+    number of leading zeros are used to pad the output
+    e.g.
+    sub-01@003 becomes ["sub-001", "sub-002", "sub-003"]
+
+    Input can also be a mixed list e.g.
+    names = ["sub-01", "sub-02@TO04", "sub-05@TO10"]
+    will output a list of ["sub-01", ..., "sub-10"]
+    """
+    new_names = []
+
+    for i, name in enumerate(names):
+
+        if "@TO" in name:
+
+            check_name_is_formatted_correctly(name, prefix)
+
+            prefix_tag = re.search(f"{prefix}[0-9]+@TO[0-9]+", name)[0]  # type: ignore
+            tag_number = prefix_tag.split(f"{prefix}")[1]
+
+            name_start_str, name_end_str = name.split(tag_number)
+
+            if "@TO" not in tag_number:
+                raise_error(
+                    f"@TO flag must be between two numbers in the {prefix} tag."
+                )
+
+            left_number, right_number = tag_number.split("@TO")
+
+            if int(left_number) >= int(right_number):
+                raise_error(
+                    "Number of the subject to the  left of @TO flag "
+                    "must be small than number to the right."
+                )
+
+            names_with_new_number_inserted = (
+                make_list_of_zero_padded_names_across_range(
+                    left_number, right_number, name_start_str, name_end_str
+                )
+            )
+            new_names += names_with_new_number_inserted
+
+        else:
+            new_names.append(name)
+
+    return new_names
+
+
+def check_name_is_formatted_correctly(name: str, prefix: str):
+    """
+    Check the input string is formatted with the @TO key
+    as expected.
+    """
+    first_key_value_pair = name.split("_")[0]
+    expected_format = re.compile(f"{prefix}[0-9]+@TO[0-9]+")
+
+    if not re.fullmatch(expected_format, first_key_value_pair):
+        raise_error(
+            f"The name: {name} is not in required format for @TO keyword. "
+            f"The start must be  be {prefix}<NUMBER>@TO<NUMBER>)"
+        )
+
+
+def make_list_of_zero_padded_names_across_range(
+    left_number: str, right_number: str, name_start_str: str, name_end_str: str
+) -> list:
+    """
+    Numbers formatted with the @TO keyword need to have
+    standardised leading zeros on the output. Here we take
+    the maximum number of leading zeros and apply or
+    all numbers in the range.
+    """
+    max_leading_zeros = max(
+        num_leading_zeros(left_number), num_leading_zeros(right_number)
+    )
+
+    all_numbers = [*range(int(left_number), int(right_number) + 1)]
+
+    all_numbers_with_leading_zero = [
+        str(number).zfill(max_leading_zeros + 1) for number in all_numbers
+    ]
+
+    names_with_new_number_inserted = [
+        f"{name_start_str}{number}{name_end_str}"
+        for number in all_numbers_with_leading_zero
+    ]
+
+    return names_with_new_number_inserted
+
+
+def num_leading_zeros(string: str):
+    """int() strips leading zeros"""
+    return len(string) - len(str(int(string)))
+
+
+# Handle @DATE, @DATETIME, @TIME flags -------------------------------------------------
 
 
 def update_names_with_datetime(names: list):
@@ -286,8 +397,13 @@ def update_names_with_datetime(names: list):
             names[i] = name.replace("@TIME", format_time)
 
 
-def add_underscore_before_after_if_not_there(string, key):
-
+def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
+    """
+    If names are passed with @DATE, @TIME, or @DATETIME
+    but not surrounded by underscores, check and insert
+    if required. e.g. sub-001@DATE becomes sub-001_@DATE
+    or sub-001@DATEid-101 becomes sub-001_@DATE_id-101
+    """
     key_len = len(key)
     key_start_idx = string.index(key)
 
@@ -312,7 +428,10 @@ def add_underscore_before_after_if_not_there(string, key):
 def ensure_prefixes_on_list_of_names(
     names: Union[list, str], prefix: str
 ) -> list:
-    """ """
+    """
+    Make sure all elements in the list of names are
+    prefixed with the prefix typically "sub-" or "ses-"
+    """
     n_chars = len(prefix)
     return [
         prefix + name if name[:n_chars] != prefix else name for name in names
