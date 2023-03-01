@@ -31,10 +31,27 @@ def check_configs_set(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
 
+        error_type = None
+
         if args[0].cfg is None:
+            error_type = "configs"
+
+        elif args[0].cfg["local_path"] is None:
+            error_type = "local_path"
+
+        elif (
+            args[0].cfg["remote_path_local"] is None
+            and args[0].cfg["remote_path_ssh"] is None
+        ):
+            error_type = "either remote_path_local or remote_path_ssh"
+
+        elif args[0].cfg["ssh_to_remote"] is None:
+            error_type = "ssh_to_remote"
+
+        if error_type:
             raise_error(
-                "Must set configs with make_config_file() "
-                "before using this function"
+                f"Must set {error_type} with make_config_file() "
+                f"(or update_config()) before using this function"
             )
         else:
             return func(*args, **kwargs)

@@ -21,7 +21,6 @@ def setup_project_default_configs(
     project_name,
     local_path=False,
     remote_path=False,
-    all_experiment_type_on=True,
 ):
     """"""
     delete_project_if_it_exists(project_name)
@@ -30,13 +29,9 @@ def setup_project_default_configs(
 
     project = DataShuttle(project_name)
 
-    project._setup_remote_as_rclone_target("local_filesystem")
+    project._setup_remote_as_rclone_target("local")
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
-
-    if all_experiment_type_on:
-        default_configs.update(get_all_experiment_types_on("kwargs"))
-
     project.make_config_file(**default_configs)
 
     warnings.filterwarnings("default")
@@ -50,7 +45,7 @@ def setup_project_default_configs(
         delete_all_dirs_in_local_path(project)
 
     if remote_path:
-        project.update_config("remote_path", remote_path)
+        project.update_config("remote_path_local", remote_path)
         delete_all_dirs_in_remote_path(project)
 
     return project
@@ -121,8 +116,7 @@ def get_protected_test_dir():
 
 
 def get_test_config_arguments_dict(
-    set_as_defaults=False,
-    required_arguments_only=False,
+    set_as_defaults=None, required_arguments_only=None
 ):
     """
     Retrieve configs, either the required configs
@@ -134,11 +128,8 @@ def get_test_config_arguments_dict(
     """
     dict_ = {
         "local_path": r"Not:/a/re al/local/directory",
-        "remote_path": r"/Not/a/re al/remote_ local/directory",
-        "connection_method": "local_filesystem",
-        "use_behav": True,  # This is not explicitly required,
-        # but at least 1 use_x is, so
-        # for tests always set use_behav=True
+        "remote_path_local": r"/Not/a/re al/remote_ local/directory",
+        "remote_path_ssh": r"/not/a/re al/remote_ ssh/directory",
     }
 
     if required_arguments_only:
@@ -149,27 +140,45 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": None,
                 "remote_host_username": None,
-                "use_ephys": False,
-                "use_histology": False,
-                "use_imaging": False,
+                "use_ephys": True,
+                "use_behav": True,
+                "use_histology": True,
+                "use_imaging": True,
+                "ssh_to_remote": False,
             }
         )
     else:
         dict_.update(
             {
-                "local_path": r"C:/test/test_ local/test_edit",
-                "remote_path": r"/nfs/test dir/test_edit2",
-                "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
-                "use_ephys": True,
+                "use_ephys": False,
                 "use_behav": False,
-                "use_histology": True,
-                "use_imaging": True,
+                "use_histology": False,
+                "use_imaging": False,
+                "ssh_to_remote": True,
             }
         )
-
     return dict_
+
+
+def get_not_set_config_args(project):
+    """
+    Include spaces in path so this case is always checked
+    """
+    return {
+        "local_path": r"C:/test/test_ local/test_edit",
+        "remote_path_local": r"/nfs/test dir/test_edit2",
+        "remote_path_ssh": r"/nfs/test dir/test_edit3",
+        "remote_host_id": "test_id",
+        "remote_host_username": "test_host",
+        "use_ephys": not project.cfg["use_ephys"],
+        "use_behav": not project.cfg["use_behav"],
+        "use_histology": not project.cfg["use_histology"],
+        "use_imaging": not project.cfg["use_imaging"],
+        "ssh_to_remote": not project.cfg["ssh_to_remote"],
+        # ^test last so ssh items already set
+    }
 
 
 def get_default_directory_used():
@@ -201,7 +210,7 @@ def check_directory_tree_is_correct(
 ):
     """
     Automated test that directories are made based
-    on the structure specified on project itself.
+    on the  structure specified on project itself.
 
     Cycle through all experiment type (defined in
     project._ses_dirs()), sub, sessions and check that
@@ -377,9 +386,7 @@ def make_and_check_local_project(project, subs, sessions, experiment_type):
 
 def check_configs(project, kwargs):
     """"""
-    config_path = (
-        project.get_appdir_path() + "/config.yaml"
-    )  # TODO: can use new get_config()
+    config_path = project.get_appdir_path() + "/config.yaml"
 
     if not os.path.isfile(config_path):
         raise FileNotFoundError("Config file not found.")
@@ -402,7 +409,11 @@ def check_project_configs(
     """
     for arg_name, value in kwargs[0].items():
 
-        if arg_name in project.cfg.keys_str_on_file_but_path_in_class:
+        if arg_name in [
+            "local_path",
+            "remote_path_ssh",
+            "remote_path_local",
+        ]:
             assert type(project.cfg[arg_name]) in [
                 pathlib.PosixPath,
                 pathlib.WindowsPath,
@@ -448,7 +459,7 @@ def handle_upload_or_download(project, upload_or_download):
     if upload_or_download == "download":
 
         project.update_config("local_path", remote_path)
-        project.update_config("remote_path", local_path)
+        project.update_config("remote_path_local", local_path)
 
         transfer_function = project.download_data
 
@@ -480,32 +491,3 @@ def run_cli(command, project_name=None):
 
     stdout, stderr = result.communicate()
     return stdout.decode("utf8"), stderr.decode("utf8")
-
-
-def get_flags():  # TODO: MOVE TO CANONICAL_CONFIGS
-    return [
-        "use_ephys",
-        "use_behav",
-        "use_histology",
-        "use_imaging",
-    ]
-
-
-def get_all_experiment_types_on(kwargs_or_flags):
-    """ """
-    experiment_types = get_flags()
-    if kwargs_or_flags == "flags":
-        return f"{' '.join(['--' + flag for flag in experiment_types])}"
-    else:
-        return dict(zip(experiment_types, [True] * len(experiment_types)))
-
-
-def move_some_keys_to_end_of_dict(config):
-    """
-    Need to move connection method to the end
-    so ssh opts are already set before it is changed. Similarly,
-    use_behav must be turned off after at least one other use_
-    option is turned on.
-    """
-    config["connection_method"] = config.pop("connection_method")
-    config["use_behav"] = config.pop("use_behav")

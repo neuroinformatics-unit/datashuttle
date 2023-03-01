@@ -17,13 +17,16 @@ this module and other tests.
 NOTE: when testing these functions with breakpoint(),
 the debugger is acting very strangely and breaks in
 1 level lower than usual, requires 'u' to go
-up a level. Cannot understand why yet.
+up a level. Cannot understand why yet,
+might be something to do with click.
 """
 import os
 
 import pytest
 import simplejson
 import test_utils
+
+from datashuttle.datashuttle import DataShuttle
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
@@ -61,8 +64,7 @@ class TestCommandLineInterface:
     # Test CLI Variables are read and passed correctly
     # ----------------------------------------------------------------------------------------------------------
 
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_config_file_required_variables(self, sep):
+    def test_make_config_file_required_variables(self):
         """
         Check the arguments passed to CLI make_config_file
         match those that are passed to wrapped API.
@@ -70,25 +72,17 @@ class TestCommandLineInterface:
         First get default config arguments, run the
         CLI to make config file with defaults and check
         the internal arguments are ordered and in
-        the expected form. Strip flags that are always false.
-        Note use_behav is always on as a required argument,
-        as at least one use_x argument must be true.
+        the expected form.
         """
         required_options = test_utils.get_test_config_arguments_dict(
             required_arguments_only=True
         )
 
         stdout, __ = test_utils.run_cli(
-            f" make{sep}config{sep}file "
-            + self.convert_kwargs_to_cli(required_options, sep)
+            " make_config_file " + self.convert_kwargs_to_cli(required_options)
         )
 
         __, kwargs_ = self.decode(stdout)
-
-        # Update with flags that should always return false
-        flags = test_utils.get_flags()
-        flags.remove("use_behav")
-        required_options.update(dict(zip(flags, [False] * len(flags))))
 
         self.check_kwargs(required_options, kwargs_)
 
@@ -109,8 +103,7 @@ class TestCommandLineInterface:
 
         self.check_kwargs(changed_configs, kwargs_)
 
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_update_config_variables(self, sep):
+    def test_update_config_variables(self):
         """
         Check the variables passed to update_config
         are processed as expected. All arguments
@@ -127,9 +120,7 @@ class TestCommandLineInterface:
             if "path" in key:
                 value = test_utils.add_quotes(value)
 
-            stdout, __ = test_utils.run_cli(
-                f" update{sep}config {key} {value}"
-            )
+            stdout, __ = test_utils.run_cli(f" update_config {key} {value}")
 
             args_, __ = self.decode(stdout)
 
@@ -140,14 +131,13 @@ class TestCommandLineInterface:
             else:
                 assert value == args_[1]
 
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_sub_dir_variable(self, sep):
+    def test_make_sub_dir_variable(self):
 
         stdout, __ = test_utils.run_cli(
-            f" make{sep}sub{sep}dir "
-            f"--experiment_type all "
-            f"--sub_names one "
-            f"--ses_names two "
+            " make_sub_dir "
+            "--experiment_type all "
+            "--sub_names one "
+            "--ses_names two "
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -158,17 +148,16 @@ class TestCommandLineInterface:
         assert kwargs_["ses_names"] == ["two"]
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_upload_download_data_variables(self, upload_or_download, sep):
+    def test_upload_download_data_variables(self, upload_or_download):
         """
         As upload_data and download_data take identical args,
         test both together.
         """
         stdout, __ = test_utils.run_cli(
-            f" {upload_or_download}{sep}data "
-            f"--experiment{sep}type all "
-            f"--sub{sep}names one "
-            f"--ses{sep}names two"
+            f" {upload_or_download}_data "
+            f"--experiment_type all "
+            f"--sub_names one "
+            f"--ses_names two"
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -176,10 +165,10 @@ class TestCommandLineInterface:
 
         stdout, __ = test_utils.run_cli(
             f" {upload_or_download}_data "
-            f"--experiment{sep}type all "
-            f"--sub{sep}names one "
-            f"--ses{sep}names two "
-            f"--dry{sep}run"
+            f"--experiment_type all "
+            f"--sub_names one "
+            f"--ses_names two "
+            f"--dry_run"
         )
 
         args_, kwargs_ = self.decode(stdout)
@@ -187,24 +176,22 @@ class TestCommandLineInterface:
         self.check_upload_download_args(args_, kwargs_, dry_run_is=True)
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_upload_download_dir_or_file(self, upload_or_download, sep):
+    def test_upload_download_dir_or_file(self, upload_or_download):
         """
         As upload_data_dir_or_file and download_data_dir_or_file
         take identical args, test both together"""
-        stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file /fake/filepath"
+        stdout, __ = test_utils.run_cli(
+            f" {upload_or_download}_project_dir_or_file /fake/filepath"
         )
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
         assert kwargs_["dry_run"] is False
 
-        stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file "
-            f"/fake/filepath --dry{sep}run"
+        stdout, __ = test_utils.run_cli(
+            f" {upload_or_download}_project_dir_or_file /fake/filepath "
+            f"--dry_run"
         )
-
         args_, kwargs_ = self.decode(stdout)
 
         assert args_[0] == "/fake/filepath"
@@ -255,12 +242,11 @@ class TestCommandLineInterface:
             clean_project_name,
         )
 
-        not_set_configs = test_utils.get_test_config_arguments_dict(
-            set_as_defaults=False
+        not_set_configs = test_utils.get_not_set_config_args(
+            DataShuttle(clean_project_name)
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
-        test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
         for key, value in not_set_configs.items():
 
@@ -273,10 +259,7 @@ class TestCommandLineInterface:
             )
             default_configs[key] = value
 
-            try:
-                test_utils.check_config_file(config_path, default_configs)
-            except:
-                breakpoint()
+            test_utils.check_config_file(config_path, default_configs)
 
     def test_make_config_file_defaults(
         self,
@@ -331,7 +314,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-hello_world"]
 
         test_utils.run_cli(
-            f"make_sub_dir --experiment_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_dir --experiment_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)}",  # noqa
             setup_project.project_name,
         )
 
@@ -427,28 +410,27 @@ class TestCommandLineInterface:
             "Use make_config_file() to setup before continuing." in stderr
         )
 
-    def test_use_ssh_but_pass_no_ssh_options(self, clean_project_name):
+    def test_fail_to_pass_remote_path_cli(self, clean_project_name):
         """
         Check that error from API are propagated to CLI
         """
         __, stderr = test_utils.run_cli(
-            "make_config_file test_local_path test_remote_path ssh --use_behav",
+            "make_config_file test_local_path ",
             clean_project_name,
         )
 
         assert (
-            "remote_host_id and remote_host_username are "
-            "required if connection_method is ssh." in stderr
+            "AssertionError: "
+            "Must set either remote_path_ssh or remote_path_local" in stderr
         )
 
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_check_process_names(self, clean_project_name, sep):
+    def test_check_process_names(self, clean_project_name):
         """
         Check that testing the process names function outputs the
         properly processed names to stdout
         """
         stdout, __ = test_utils.run_cli(
-            f"check{sep}name{sep}processing sub-001 1@TO02 --prefix sub-",
+            "check_name_processing sub-001 1@TO02 --prefix sub-",
             clean_project_name,
         )
 
@@ -468,17 +450,12 @@ class TestCommandLineInterface:
         """
         Read the simplejson.dumps() output from
         tested CLI.
-
-        Pass a list of keys to strip in strip_keys,
-        these are typically flag args that always
-        return False by default e.g. --use-ephys
         """
         dumped_json = stdout.split("TEST_OUT_START:")[1]
         args_, kwargs_ = simplejson.loads(dumped_json)
-
         return args_, kwargs_
 
-    def convert_kwargs_to_cli(self, kwargs, sep="-"):
+    def convert_kwargs_to_cli(self, kwargs):
         """
         Take a list of key-value pairs that make up
         the arguments we want to pass to CLI, and
@@ -486,11 +463,13 @@ class TestCommandLineInterface:
         pre-pending "--argument_name" for non-positional
         arguments, and wrapping paths in quotes.
         """
-        positionals = ["local_path", "remote_path", "connection_method"]
+        positionals = ["local_path"]
 
         prepend_positionals = ""
-        for pos_arg in positionals:
-            prepend_positionals += test_utils.add_quotes(kwargs[pos_arg]) + " "
+        if "local_path" in kwargs:
+            prepend_positionals += (
+                " " + test_utils.add_quotes(kwargs["local_path"]) + " "
+            )
 
         kwargs_list = []
         for key, value in kwargs.items():
@@ -502,13 +481,7 @@ class TestCommandLineInterface:
                 else:
                     value = str(value)
 
-                if key in test_utils.get_flags():
-                    if value == "True":
-                        argument = f"--{key.replace('_', sep)}"
-                    else:
-                        continue
-                else:
-                    argument = f"--{key.replace('_', sep)} {value}"
+                argument = f"--{key} {value}"
                 kwargs_list.append(argument)
 
         kwargs_list = " ".join(kwargs_list)

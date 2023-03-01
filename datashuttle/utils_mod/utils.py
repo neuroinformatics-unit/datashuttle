@@ -69,8 +69,7 @@ def connect_client(
 ):
     """
     Connect client to remote server using paramiko.
-    Accept either password or path to private key, but not
-    both.
+    Accept either password or path to private key, but not both.
     """
     try:
         client.get_host_keys().load(hostkeys)
@@ -120,14 +119,15 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
         transport.connect()
         key = transport.get_remote_server_key()
 
-    input_ = get_user_input(
-        f"The host key is not cached for this server:"
+    message_user(
+        "The host key is not cached for this server:"
         f" {remote_host_id}.\nYou have no guarantee "
         f"that the server is the computer you think it is.\n"
         f"The server's {key.get_name()} key fingerprint is: "
         f"{key.get_base64()}\nIf you trust this host, to connect"
         " and cache the host key, press y: "
     )
+    input_ = input()
 
     if input_ == "y":
         client = paramiko.SSHClient()
@@ -198,14 +198,6 @@ def message_user(message: Union[str, list]):
     print(message)
 
 
-def get_user_input(message) -> str:
-    """
-    Centralised way to get user input
-    """
-    input_ = input(message)
-    return input_
-
-
 def raise_error(message: str):
     """
     Temporary centralized way to raise and error
@@ -215,9 +207,9 @@ def raise_error(message: str):
 
 def get_appdir_path(project_name: str) -> Path:
     """
-    It is not possible to write to program files in windows
-    from app without admin permissions. However, if admin
-    permission given drag and drop don't work, and it is
+    It is not possible to write to programfiles in windows
+    from app without admin permissions. However if admin
+    permission given drag and drop dont work, and it is
     not good practice. Use appdirs module to get the
     AppData cross-platform and save / load all files form here .
     """
@@ -455,11 +447,3 @@ def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
 
 def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())
-
-
-def raise_error_not_exists_or_not_yaml(path_to_config: Path):
-    if not path_to_config.exists():
-        raise_error(f"No file found at: {path_to_config}")
-
-    if path_to_config.suffix not in [".yaml", ".yml"]:
-        raise_error("The config file must be a YAML file")
