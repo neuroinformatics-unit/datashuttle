@@ -283,6 +283,7 @@ class DataShuttle:
         :param filepath: full filepath (inc filename) to write the
                          public key to.
         """
+        key: paramiko.RSAKey
         key = paramiko.RSAKey.from_private_key_file(self._ssh_key_path)
 
         with open(filepath, "w") as public:
