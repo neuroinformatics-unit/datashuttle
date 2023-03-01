@@ -69,7 +69,8 @@ def connect_client(
 ):
     """
     Connect client to remote server using paramiko.
-    Accept either password or path to private key, but not both.
+    Accept either password or path to private key, but not
+    both.
     """
     try:
         client.get_host_keys().load(hostkeys)
