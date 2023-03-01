@@ -138,6 +138,7 @@ class TestUnit:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
+
         assert (
             str(e.value)
             == "subject and session names must contain alternating dashes and underscores (used for separating key-value pairs)"
