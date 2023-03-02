@@ -1,61 +1,5 @@
 """
-These tests check every possible option for file transfer tests.
-
-These are tested over:
-1) SSH
-2) Local filesystem. This is done with pytest tmp paths
-   as there is no difference between actual filesystem
-   and locally mounted drive.
-
-1) require working SSH paths and login  to be setup
-below and VPN to the server setup. The password for the
-USERNAME must be saved in a file test_ssh_password.txt
-in the datashuttle/tests/ folder. The SSH connection
-configs must be specified in confytest.py
-
-
-NOTES
------
-full transfer tests (similar as to already exists) across SSH
-test switching between local and SSH, as this caused a bug previously
-
-test realistic file transfer
----------------------------------------------------------------------
-make a full fake directory containing all data types
-test transferring it over SSH and a locally mounted drive (ceph)
-test a) all data transfers, hard coded, lots of combinations
-     b) test what happens when internet looses conenctions
-     c) test what happens when files change
-
-more file transfer tests
----------------------------------------------------------------------
-
-Wishlist
---------
-TODO: generate files in the folders, test what happens when attempting to overwrite a file
-TODO: mock pushing from two separate places and merging into single project
-TODO: finishing making large real dataset
-TODO: currently rawdata only tested.
-
-TODOs
------
-# add final tests on checking underscore order, to logs?
-
-TODO: make sure have tested different data type at different level s
-TODO: manually check this test is doing what I think it is and check all edge cases
-TODO: SSH tests take ages because a) SSH is slower b) need to wait for filesystem to update (ATM 10 s can probably reduce)
-
-TODO: test connection drop https://stackoverflow.com/questions/18601828/python-block-network-connections-for-testing-purposes
-      (but these drop python access to internet NOT entire internet (at least some of them))
-TODO: test partial file transfer - in this case, it will never be updateD? Is there a way to print warning
-      in rclone whendates or filesizes do not match?
-
-
-
-
-
 """
-
 import copy
 import getpass
 import shutil
@@ -68,7 +12,7 @@ import ssh_test_utils
 import test_utils
 from pytest import ssh_config
 from test_file_conflicts_pathtable import get_pathtable
-
+import glob
 from datashuttle.utils import ssh
 
 
@@ -109,6 +53,15 @@ class TestFileTransfer:
 
         pathtable is a convenient way to represent
         file paths for testing against.
+
+        NOTE: for convenient, files are transferred
+        with SSH and then checked through the local filesystem
+        mount. This is significantly easier than checking
+        everything through SFTP. However, on Windows the
+        mounted filesystem is quite slow to update, taking
+        a few seconds after SSH transfer. This makes the
+        tests run very slowly. We can  get rid
+        of this limitation on linux.
         """
         testing_ssh = request.param
         tmp_path = tmpdir_factory.mktemp("test")
@@ -152,7 +105,7 @@ class TestFileTransfer:
         test_utils.teardown_project(cwd, project)
 
         if testing_ssh:
-            for result in ssh_config.FILESYSTEM_PATH.glob("*"):
+            for result in glob.glob(ssh_config.FILESYSTEM_PATH):
                 shutil.rmtree(result)
 
     # -------------------------------------------------------------------------
@@ -260,7 +213,7 @@ class TestFileTransfer:
         # When transferring with SSH, there is a delay before
         # filesystem catches up
         if project.testing_ssh:
-            time.sleep(1)
+            time.sleep(10)
 
         # Check what paths were actually moved
         # (through the local filesystem), and test

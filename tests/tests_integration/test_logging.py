@@ -12,6 +12,7 @@ from datashuttle.utils import ds_logger
 
 BAD_WINDOWS_FILECHAR = "?"  # a symbol that will create an error when trying to make a file with this name.
                             # this is only tested in windows as nearly any char is allowed for macos and linux
+IS_WINDOWS = platform.system() == "Windows"
 
 class TestCommandLineInterface:
     @pytest.fixture(scope="function")
@@ -294,7 +295,7 @@ class TestCommandLineInterface:
             in log
         )
 
-    @pytest.mark.skipif(reason="platform.system() != Windows")
+    @pytest.mark.skipif("not IS_WINDOWS")
     def test_temp_log_dir_made_make_config_file(
         self, clean_project_name, tmp_path
     ):
@@ -331,7 +332,7 @@ class TestCommandLineInterface:
         assert len(project_path_logs) == 1
         assert "make_config_file" in project_path_logs[0]
 
-    @pytest.mark.skipif(reason="platform.system() != Windows")
+    @pytest.mark.skipif("not IS_WINDOWS")
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
     def test_temp_log_dir_made_update_config(
         self, setup_project, supply_or_update, tmp_path

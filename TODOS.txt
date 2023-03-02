@@ -1,0 +1,13 @@
+       #     "ghpages_docs_url": "https://test_cookiecutter_username.github.io/test-cookiecutter",
+
+# make new config dict per test
+# 1)  make function scope
+# install ruamel.yaml...
+
+
+the problem with using bool is that True did not work - it was always FAlse (or the other way round), it was read into python as string in hooks! idiot
+
+TODOs
+-----
+add final tests on checking underscore order, to logs?
+TODO: manually check this test is doing what I think it is and check all edge cases

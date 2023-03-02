@@ -15,7 +15,7 @@ from datashuttle.utils import ssh
 
 
 @pytest.mark.skipif(
-    ssh_config.TEST_SSH is False, reason="TEST_SSH is set to False."
+    reason=ssh_config.TEST_SSH is False
 )
 class TestSSH:
     @pytest.fixture(scope="function")

@@ -1,0 +1,15 @@
+key: paramiko.RSAKey
+(get_base64)
+
+
+add_public_key_to_remote_authorized_keys
+search_ssh_remote_for_directories
+connect_client
+
+    client: paramiko.SSHClient
+
+
+
+
+verify_ssh_remote_host
+transport: paramiko.Transport
