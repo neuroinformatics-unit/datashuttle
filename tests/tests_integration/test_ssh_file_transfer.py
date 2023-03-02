@@ -152,7 +152,7 @@ class TestFileTransfer:
         test_utils.teardown_project(cwd, project)
 
         if testing_ssh:
-            for result in ssh_config.SSH_TEST_FILESYSTEM_PATH.glob("*"):
+            for result in ssh_config.FILESYSTEM_PATH.glob("*"):
                 shutil.rmtree(result)
 
     # -------------------------------------------------------------------------
@@ -260,7 +260,7 @@ class TestFileTransfer:
         # When transferring with SSH, there is a delay before
         # filesystem catches up
         if project.testing_ssh:
-            time.sleep(10)
+            time.sleep(1)
 
         # Check what paths were actually moved
         # (through the local filesystem), and test

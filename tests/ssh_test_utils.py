@@ -36,7 +36,8 @@ def get_password():
     """
     test_ssh_script_path = os.path.dirname(os.path.realpath(__file__))
     with open(ssh_config.PASSWORD_FILE, "r") as file:
-        password = file.readlines()[0]
+        password = file.read().splitlines()[0]
+
     return password
 
 

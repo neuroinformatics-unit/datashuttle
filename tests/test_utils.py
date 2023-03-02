@@ -108,7 +108,7 @@ def delete_all_dirs_in_project_path(project, local_or_remote):
     directory = f"{local_or_remote}_path"
 
     ds_logger.close_log_filehandler()
-    if project.cfg[directory].is_dir():
+    if project.cfg[directory].is_dir() and project.cfg[directory].stem in ["local", "remote"]:
         shutil.rmtree(project.cfg[directory])
 
 

@@ -10,8 +10,8 @@ from datashuttle.configs.canonical_tags import tags
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
-BAD_FILECHAR = "?" if platform.system() == "Windows" else "/"
-
+BAD_WINDOWS_FILECHAR = "?"  # a symbol that will create an error when trying to make a file with this name.
+                            # this is only tested in windows as nearly any char is allowed for macos and linux
 
 class TestCommandLineInterface:
     @pytest.fixture(scope="function")
@@ -90,14 +90,14 @@ class TestCommandLineInterface:
 
     def test_logs_update_config(self, setup_project):
 
-        setup_project.update_config("remote_path", "test_path")
+        setup_project.update_config("remote_host_id", "test_id")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert "Starting update_config" in log
-        assert "remote_path has been updated to test_path" in log
+        assert "remote_host_id has been updated to test_id" in log
         assert "Update successful. New config file:" in log
-        assert """ "remote_path": "test_path",\n """ in log
+        assert """ "remote_host_id": "test_id",\n """ in log
 
     def test_logs_supply_config(self, setup_project, tmp_path):
         """"""
@@ -219,8 +219,7 @@ class TestCommandLineInterface:
         assert "Using config file from" in log
         assert "Local file system at" in log
         assert """ "--include" "sub-1_1/histology/**" """ in log
-
-        assert """/test_logging/remote/rawdata" to be canonical """ in log
+        assert """/test_logging/remote/rawdata""" in log
         assert """ "--include" "sub-1_1/ses-123/behav/**" """ in log
         assert "Waiting for checks to finish" in log
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
@@ -260,7 +259,8 @@ class TestCommandLineInterface:
         assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
-        assert " DEBUG : sub-001: Making directory\n" in log
+        assert "DEBUG : sub-001: Making directory\n" in log
+
 
     # ----------------------------------------------------------------------------------------------------------
     # Check errors propagate
@@ -294,6 +294,7 @@ class TestCommandLineInterface:
             in log
         )
 
+    @pytest.mark.skipif(reason="platform.system() != Windows")
     def test_temp_log_dir_made_make_config_file(
         self, clean_project_name, tmp_path
     ):
@@ -301,7 +302,7 @@ class TestCommandLineInterface:
         project = DataShuttle(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(tmp_path)
-        configs["local_path"] = BAD_FILECHAR
+        configs["local_path"] = BAD_WINDOWS_FILECHAR
 
         with pytest.raises(BaseException):
             project.make_config_file(**configs)
@@ -330,6 +331,7 @@ class TestCommandLineInterface:
         assert len(project_path_logs) == 1
         assert "make_config_file" in project_path_logs[0]
 
+    @pytest.mark.skipif(reason="platform.system() != Windows")
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
     def test_temp_log_dir_made_update_config(
         self, setup_project, supply_or_update, tmp_path
@@ -341,7 +343,7 @@ class TestCommandLineInterface:
         # The existing local project exists, so put the log there
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, BAD_FILECHAR, tmp_path
+                setup_project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
@@ -360,7 +362,7 @@ class TestCommandLineInterface:
 
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, BAD_FILECHAR, tmp_path
+                setup_project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
