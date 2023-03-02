@@ -81,13 +81,17 @@ def prompt_rclone_download_if_does_not_exist():
     """
     if not check_rclone_with_default_call():
         raise BaseException(
-            "RClone installation not found. Install with:\n"
+            "RClone installation not found. Install by entering "
+            "the following into your terminal:\n"
             " conda install -c conda-forge rclone"
         )
 
 
 def setup_remote_as_rclone_target(
-    cfg: Configs, local_or_ssh: str, rclone_config_name: str, ssh_key_path: str
+    cfg: Configs,
+    connection_method: str,
+    rclone_config_name: str,
+    ssh_key_path: str,
 ):
     """
     RClone sets remote targets in a config file. When
@@ -100,10 +104,10 @@ def setup_remote_as_rclone_target(
     For SSH, this contains information for
     connecting to remote with SSH.
     """
-    if local_or_ssh == "local":
-        call_rclone(f"config create {rclone_config_name} local")
+    if connection_method == "local_filesystem":
+        call_rclone(f"config create {rclone_config_name} local", silent=True)
 
-    elif local_or_ssh == "ssh":
+    elif connection_method == "ssh":
 
         call_rclone(
             f"config create "
@@ -112,5 +116,6 @@ def setup_remote_as_rclone_target(
             f"host {cfg['remote_host_id']} "
             f"user {cfg['remote_host_username']} "
             f"port 22 "
-            f"key_file {ssh_key_path}"
+            f"key_file {ssh_key_path}",
+            silent=True,
         )
