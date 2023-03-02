@@ -6,7 +6,7 @@ import pytest
 
 def pytest_configure(config):
     pytest.ssh_config = SimpleNamespace(
-        TEST_SSH=True,
+        TEST_SSH=False,
         PASSWORD_FILE="/home/joe/test_pass.txt", # r"C:\Users\Joe\temp_pass.txt",  # don't store this on github!
         USERNAME="jziminski",
         REMOTE_HOST_ID="hpc-gw1.hpc.swc.ucl.ac.uk",
