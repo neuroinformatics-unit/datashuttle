@@ -76,7 +76,7 @@ class TestFileTransfer:
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem
-            False,
+           False,
             pytest.param(
                 True,
                 marks=pytest.mark.skipif(
