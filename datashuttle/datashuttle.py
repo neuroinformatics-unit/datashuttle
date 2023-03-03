@@ -26,9 +26,6 @@ from datashuttle.utils.decorators import (  # noqa
     requires_ssh_configs,
 )
 
-# from datashuttle.utilsdata_transfer_ORIG transfer_sub_ses_data as TransferData
-
-
 # -----------------------------------------------------------------------------
 # Project Manager Class
 # -----------------------------------------------------------------------------
