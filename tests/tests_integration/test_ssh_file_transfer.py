@@ -1,7 +1,6 @@
 """
 """
 import copy
-import getpass
 import glob
 import shutil
 import time
@@ -13,8 +12,6 @@ import ssh_test_utils
 import test_utils
 from pytest import ssh_config
 from test_file_conflicts_pathtable import get_pathtable
-
-from datashuttle.utils import ssh
 
 
 class TestFileTransfer:
@@ -91,11 +88,7 @@ class TestFileTransfer:
 
             # Initialise the SSH connection
             ssh_test_utils.setup_hostkeys(project)
-            getpass.getpass = lambda _: ssh_test_utils.get_password()  # type: ignore
-            ssh.setup_ssh_key(
-                project.cfg,
-                log=False,
-            )
+            shutil.copy(ssh_config.SSH_KEY_PATH, project.cfg.file_path.parent)
 
         pathtable = get_pathtable(project.cfg["local_path"])
         self.create_all_pathtable_files(pathtable)

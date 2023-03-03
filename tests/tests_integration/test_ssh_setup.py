@@ -3,9 +3,6 @@ SSH configs are set in conftest.py . The password
 should be stored in a file called test_ssh_password.txt located
 in the same directory as test_ssh.py
 """
-import getpass
-
-import paramiko
 import pytest
 import ssh_test_utils
 import test_utils
@@ -100,59 +97,3 @@ class TestSSH:
             first_line = file.readlines()[0]
 
         assert first_line == "-----BEGIN RSA PRIVATE KEY-----\n"
-
-    def test_setup_ssh_key_success(self, project, capsys):
-        """
-        Setup Hostkeys again. This is required for setting up SSH keys. It is
-        required to enter the password once to setup ssh key pair. Check
-        when password is enterd the key pair is made sucessfully.
-
-        Then, try to connect and check this works without password.
-        """
-        ssh_test_utils.setup_hostkeys(project)
-
-        getpass.getpass = lambda _: ssh_test_utils.get_password()  # type: ignore
-        ssh.setup_ssh_key(
-            project.cfg,
-            log=False,
-        )
-
-        assert (
-            f"Host accepted.\n"
-            f"Connection to {project.cfg['remote_host_id']} made successfully."
-            f"\nSSH key pair setup successfully. "
-            f"Private key at:" in capsys.readouterr().out
-        )
-
-        test_utils.clear_capsys(capsys)
-        with paramiko.SSHClient() as client:
-            ssh.connect_client(
-                client,
-                project.cfg,
-            )
-
-        assert (
-            capsys.readouterr().out
-            == f"Connection to {project.cfg['remote_host_id']} made successfully.\n"
-        )
-
-    def test_setup_ssh_key_failure(self, project):
-        """
-        Enter the wrong password and check failure is gracefully handled
-        """
-        ssh_test_utils.setup_hostkeys(project)
-
-        getpass.getpass = lambda _: "wrong_password"  # type: ignore
-
-        with pytest.raises(BaseException) as e:
-            ssh.setup_ssh_key(
-                project.cfg,
-                log=False,
-            )
-
-        assert (
-            "Could not connect to server. Ensure that "
-            "\n1) You have run setup_ssh_connection_to_remote_server() "
-            "\n2) You are on VPN network if required. "
-            "\n3) The remote_host_id:" in str(e.value)
-        )

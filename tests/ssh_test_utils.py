@@ -1,8 +1,6 @@
 import builtins
 import copy
 
-from pytest import ssh_config
-
 from datashuttle.utils import rclone, ssh
 
 
@@ -27,17 +25,6 @@ def setup_project_for_ssh(
         project.cfg.get_rclone_config_name("ssh"),
         project.cfg.ssh_key_path,
     )
-
-
-def get_password():
-    """
-    Load the password from file. Password is provided to NIU team
-    members only.
-    """
-    with open(ssh_config.PASSWORD_FILE, "r") as file:
-        password = file.read().splitlines()[0]
-
-    return password
 
 
 def setup_mock_input(input_):
