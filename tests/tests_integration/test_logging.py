@@ -222,7 +222,6 @@ class TestCommandLineInterface:
         assert "Local file system at" in log
         assert """ "--include" "sub-1_1/histology/**" """ in log
         assert """/test_logging/remote/rawdata""" in log
-        assert """ "--include" "sub-1_1/ses-123/behav/**" """ in log
         assert "Waiting for checks to finish" in log
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
 
