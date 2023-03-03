@@ -20,8 +20,6 @@ def process_docstring(message):
     """
     Sphinx is quite specific about the docstrings allowed
     """
-    #  message = message.replace("Parameters", "Arguments")
-    # message = message.replace("Notes", "Note")
     message = message.replace("-", "")
     message = message.split("Parameters")[0]
     return message
