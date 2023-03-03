@@ -162,6 +162,7 @@ def update_config(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
     option_key = kwargs["option_key"]
+    option_key = option_key.replace("-", "_")
     new_info = kwargs["new_info"]
 
     run_command(
@@ -418,61 +419,61 @@ def construct_parser():
 
     make_config_file_parser.add_argument(
         "--remote-host-id",
-        aliases=["--remote_host_id"],
+        "--remote_host_id",
         required=False,
         type=str,
         help="(str)",
     )
     make_config_file_parser.add_argument(
         "--remote-host-username",
-        aliases=["--remote_host_username"],
+        "--remote_host_username",
         required=False,
         help="(str)",
     )
     make_config_file_parser.add_argument(
         "--overwrite-old-files",
-        aliases=["--overwrite_old_files"],
+        "--overwrite_old_files",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
     )
     make_config_file_parser.add_argument(
         "--transfer-verbosity",
-        aliases=["--transfer_verbosity"],
+        "--transfer_verbosity",
         required=False,
         help="(str)",
     )
     make_config_file_parser.add_argument(
         "--show-transfer-progress",
-        aliases=["--show_transfer_progress"],
+        "--show_transfer_progress",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
     )
     make_config_file_parser.add_argument(
         "--use-ephys",
-        aliases=["--use_ephys"],
+        "--use_ephys",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
     )
     make_config_file_parser.add_argument(
         "--use-behav",
-        aliases=["--use_behav"],
+        "--use_behav",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
     )
     make_config_file_parser.add_argument(
         "--use-funcimg",
-        aliases=["--use_funcimg"],
+        "--use_funcimg",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
     )
     make_config_file_parser.add_argument(
         "--use-histology",
-        aliases=["--use_histology"],
+        "--use_histology",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
@@ -534,7 +535,7 @@ def construct_parser():
 
     make_sub_dir_parser.add_argument(
         "--sub-names",
-        aliases=["--sub_names"],
+        "--sub_names",
         type=str,
         nargs="+",
         required=True,
@@ -542,7 +543,7 @@ def construct_parser():
     )
     make_sub_dir_parser.add_argument(
         "--ses-names",
-        aliases=["--ses_names"],
+        "--ses_names",
         nargs="+",
         type=str,
         required=False,
@@ -550,7 +551,7 @@ def construct_parser():
     )
     make_sub_dir_parser.add_argument(
         "--data-type",
-        aliases=["--data_type"],
+        "--data_type",
         type=str,
         nargs="+",
         required=False,
@@ -575,7 +576,7 @@ def construct_parser():
 
     upload_data_parser.add_argument(
         "--sub-names",
-        aliases=["--sub_names"],
+        "--sub_names",
         type=str,
         nargs="+",
         required=True,
@@ -583,7 +584,7 @@ def construct_parser():
     )
     upload_data_parser.add_argument(
         "--ses-names",
-        aliases=["--ses_names"],
+        "--ses_names",
         type=str,
         nargs="+",
         required=True,
@@ -591,7 +592,7 @@ def construct_parser():
     )
     upload_data_parser.add_argument(
         "--data-type",
-        aliases=["--data_type"],
+        "--data_type",
         type=str,
         nargs="+",
         required=False,
@@ -599,7 +600,7 @@ def construct_parser():
     )
     upload_data_parser.add_argument(
         "--dry-run",
-        aliases=["--dry_run"],
+        "--dry_run",
         required=False,
         action="store_true",
         help=help("optional_flag_default_false"),
@@ -632,7 +633,7 @@ def construct_parser():
 
     download_data_parser.add_argument(
         "--sub-names",
-        aliases=["--sub_names"],
+        "--sub_names",
         type=str,
         nargs="+",
         required=True,
@@ -640,7 +641,7 @@ def construct_parser():
     )
     download_data_parser.add_argument(
         "--ses-names",
-        aliases=["--ses_names"],
+        "--ses_names",
         type=str,
         nargs="+",
         required=True,
@@ -648,7 +649,7 @@ def construct_parser():
     )
     download_data_parser.add_argument(
         "--data-type",
-        aliases=["--data_type"],
+        "--data_type",
         type=str,
         nargs="+",
         required=False,
@@ -656,7 +657,7 @@ def construct_parser():
     )
     download_data_parser.add_argument(
         "--dry-run",
-        aliases=["--dry_run"],
+        "--dry_run",
         required=False,
         action="store_true",
         help=help("optional_flag_default_false"),
@@ -693,7 +694,7 @@ def construct_parser():
     )
     upload_project_dir_or_file_parser.add_argument(
         "--dry-run",
-        aliases=["--dry_run"],
+        "--dry_run",
         action="store_true",
         help=help("flag_default_false"),
     )
@@ -719,7 +720,7 @@ def construct_parser():
     )
     download_project_dir_or_file_parser.add_argument(
         "--dry-run",
-        aliases=["--dry_run"],
+        "--dry_run",
         action="store_true",
         help=help("flag_default_false"),
     )
