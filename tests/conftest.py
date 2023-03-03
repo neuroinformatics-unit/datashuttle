@@ -13,7 +13,7 @@ from types import SimpleNamespace
 
 import pytest
 
-test_ssh = False
+test_ssh = True
 username = "jziminski"
 remote_host_id = "hpc-gw1.hpc.swc.ucl.ac.uk"
 server_path = r"/ceph/neuroinformatics/neuroinformatics/scratch/datashuttle_tests/fake_data"
