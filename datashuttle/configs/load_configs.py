@@ -91,7 +91,7 @@ def supplied_configs_confirm_overwrite(
 
     if warn:
         input_ = utils.get_user_input(
-            "This will overwrite the existing datashuttle config file."
+            "This will overwrite any existing datashuttle config file."
             "If you wish to proceed, press y."
         )
 
