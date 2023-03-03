@@ -132,8 +132,8 @@ def update_names_with_range_to_flag(
 
             if int(left_number) >= int(right_number):
                 utils.log_and_raise_error(
-                    f"Number of the subject to the  left of {tags('to')} flag "
-                    f"must be small than number to the right."
+                    f"Number of the {prefix} to the  left of {tags('to')} flag "
+                    f"must be smaller than the number to the right."
                 )
 
             names_with_new_number_inserted = (
@@ -170,7 +170,7 @@ def make_list_of_zero_padded_names_across_range(
     """
     Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
-    the maximum number of leading zeros and apply or
+    the maximum number of leading zeros and apply for
     all numbers in the range. Note int() will strip
     all leading zeros.
 
@@ -275,7 +275,7 @@ def ensure_prefixes_on_list_of_names(
 ) -> List[str]:
     """
     Make sure all elements in the list of names are
-    prefixed with the prefix typically "sub-" or "ses-"
+    prefixed with the prefix, typically "sub-" or "ses-"
 
     Use expanded list for readability
     """
