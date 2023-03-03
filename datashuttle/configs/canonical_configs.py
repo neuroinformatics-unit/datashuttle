@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from datashuttle.configs.configs import Configs
 
 from pathlib import Path
-from typing import Literal, Union, get_args
+from typing import Literal, Union, get_args, get_origin
 
 from datashuttle.utils import directories, utils
 
@@ -121,13 +121,13 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         if key not in config_dict.keys():
             utils.log_and_raise_error(
                 f"Loading Failed. The key {key} was not "
-                f"found in the supplied config. "
+                f"found in the config. "
                 f"Config file was not updated."
             )
     for key in config_dict.keys():
         if key not in canonical_dict.keys():
             utils.log_and_raise_error(
-                f"The supplied config contains an invalid key: {key}. "
+                f"The config contains an invalid key: {key}. "
                 f"Config file was not updated."
             )
 
@@ -208,7 +208,10 @@ def check_config_types(config_dict: Configs) -> None:
 
         expected_type = required_types[key]
 
-        if len(get_args(required_types[key])) == 0:
+        if get_origin(expected_type) is Literal:
+            assert config_dict[key] in get_args(expected_type)
+
+        elif len(get_args(required_types[key])) == 0:
             if not isinstance(config_dict[key], expected_type):
                 fail = True
         else:
