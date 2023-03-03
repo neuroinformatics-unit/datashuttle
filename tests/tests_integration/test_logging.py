@@ -11,8 +11,9 @@ from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
 BAD_WINDOWS_FILECHAR = "?"  # a symbol that will create an error when trying to make a file with this name.
-                            # this is only tested in windows as nearly any char is allowed for macos and linux
+# this is only tested in windows as nearly any char is allowed for macos and linux
 IS_WINDOWS = platform.system() == "Windows"
+
 
 class TestCommandLineInterface:
     @pytest.fixture(scope="function")
@@ -261,7 +262,6 @@ class TestCommandLineInterface:
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
         assert "DEBUG : sub-001: Making directory\n" in log
-
 
     # ----------------------------------------------------------------------------------------------------------
     # Check errors propagate

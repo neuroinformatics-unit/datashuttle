@@ -1,6 +1,6 @@
 import builtins
 import copy
-import os
+
 from pytest import ssh_config
 
 from datashuttle.utils import rclone, ssh
@@ -34,7 +34,6 @@ def get_password():
     Load the password from file. Password is provided to NIU team
     members only.
     """
-    test_ssh_script_path = os.path.dirname(os.path.realpath(__file__))
     with open(ssh_config.PASSWORD_FILE, "r") as file:
         password = file.read().splitlines()[0]
 

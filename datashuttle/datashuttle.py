@@ -913,7 +913,10 @@ class DataShuttle:
         for file_path in log_files:
             file_name = os.path.basename(file_path)
 
-            shutil.move(self._temp_log_path / file_name, self.cfg.logging_path / file_name)
+            shutil.move(
+                self._temp_log_path / file_name,
+                self.cfg.logging_path / file_name,
+            )
 
     def _log_successful_config_change(self, message=False):
         """

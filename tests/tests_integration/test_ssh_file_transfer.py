@@ -2,6 +2,7 @@
 """
 import copy
 import getpass
+import glob
 import shutil
 import time
 from pathlib import Path
@@ -12,7 +13,7 @@ import ssh_test_utils
 import test_utils
 from pytest import ssh_config
 from test_file_conflicts_pathtable import get_pathtable
-import glob
+
 from datashuttle.utils import ssh
 
 
@@ -20,7 +21,7 @@ class TestFileTransfer:
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem
-           False,
+            False,
             pytest.param(
                 True,
                 marks=pytest.mark.skipif(
