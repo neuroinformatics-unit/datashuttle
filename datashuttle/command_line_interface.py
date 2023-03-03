@@ -23,6 +23,7 @@ def process_docstring(message):
     #  message = message.replace("Parameters", "Arguments")
     # message = message.replace("Notes", "Note")
     message = message.replace("-", "")
+    message = message.split("Parameters")[0]
     return message
 
 
