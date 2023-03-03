@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+ga52caee</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g3e1e2ef</p>
   
 </a></div>
     
@@ -342,6 +342,8 @@ e.g. local_path=“/path/to/my_project”). Also, remote project directory and m
 <p>It is also required to specify the data types (e.g. behav, ephys, funcimg, histology) used on the local PC. If data_type flags are not set to True, it will not be possible
 to create directories of these data types.</p>
 <p>If connection_method used is “ssh”, it is necessary to also input the remote_host_id and remote_host_username configs.</p>
+<p>The settings “overwrite_old_files_on_transfer”, “transfer_verbosity” and “show_transfer_progress” determine
+the behaviour during file transfer. Please see the Data Transfer section of the full documentation for more information.</p>
 <p>An example call:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
 <span class="n">local_path</span><span class="o">=</span><span class="s2">&quot;/path/to/my/my_project&quot;</span><span class="p">,</span>
@@ -349,6 +351,9 @@ to create directories of these data types.</p>
 <span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
 <span class="n">remote_host_id</span><span class="o">=</span><span class="s2">&quot;ssh.swc.ucl.ac.uk&quot;</span><span class="p">,</span>
 <span class="n">remote_host_username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
+<span class="n">overwrite_old_files_on_transfer</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="n">transfer_verbosity</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
+<span class="n">show_transfer_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
 <span class="n">use_ephys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="n">use_behav</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
 <span class="n">use_histology</span><span class="o">=</span><span class="kc">True</span>
@@ -364,7 +369,8 @@ to create directories of these data types.</p>
 <span class="n">ssh</span> \
 <span class="o">--</span><span class="n">remote_host_id</span> <span class="n">ssh</span><span class="o">.</span><span class="n">swc</span><span class="o">.</span><span class="n">ucl</span><span class="o">.</span><span class="n">ac</span><span class="o">.</span><span class="n">uk</span> \
 <span class="o">--</span><span class="n">remote_host_username</span> <span class="n">username</span> \
-<span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span>
+<span class="o">--</span><span class="n">transfer_verbosity</span> <span class="n">v</span> \
+<span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span> <span class="o">--</span><span class="n">overwrite_old_files_on_transfer</span>
 </pre></div>
 </div>
 <p>Individual settings can be updated using update_config(), and an existing config file can be used instead using supply_config()</p>
@@ -450,8 +456,11 @@ determine if any files were not transferred for this reason.</p>
 <span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">behav</span>
 </pre></div>
 </div>
-<p>will only transfer behavioral data type folders, for sessions 1 and 5 from all subjects.</p>
+<p>will only transfer behavioral data type folders, for sessions 1 and 5 from all subjects. See the “All sub_names, ses_names and data_type keywords”
+section of the full documentation for more options.</p>
 <p>Along with the &#64;TO&#64; flag, a wildcard &#64;*&#64; flag can also be used in subject or session names.</p>
+<p>The settings “overwrite_old_files_on_transfer”, “transfer_verbosity” and “show_transfer_progress” determine
+the behaviour during file transfer. Please see the Data Transfer section of the full documentation for more information.</p>
 </section>
 <section id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this heading">#</a></h2>

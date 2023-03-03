@@ -109,7 +109,7 @@
   
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+ga52caee</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g3e1e2ef</p>
   
 </a></div>
     
@@ -371,6 +371,21 @@ e.g. “ssh.swc.ucl.ac.uk”</p>
 <dt>remote_host_username :</dt><dd><p>username for which to log in to remote host.
 e.g. “jziminski”</p>
 </dd>
+<dt>overwrite_old_files :</dt><dd><p>If True, when copying data (upload or download) files
+will be overwritten if the timestamp of the copied
+version is later than the target directory version
+of the file i.e. edits made to a file in the source
+machine will be copied to the target machine. If False,
+a file will be copied if it does not exist on the target
+directory, otherwise it will never be copied, even if
+the source version of the file has a later timestamp.</p>
+</dd>
+<dt>transfer_verbosity :</dt><dd><p>“v” will tell you about each file that is transferred and
+significant events, “vv” will be very verbose and inform
+on all events.</p>
+</dd>
+<dt>show_transfer_progress :</dt><dd><p>If true, the realtime progress of file transfers will be printed.</p>
+</dd>
 <dt>use_ephys :</dt><dd><p>if True, will allow ephys directory creation</p>
 </dd>
 <dt>use_funcimg :</dt><dd><p>if True, will allow funcimg directory creation</p>
@@ -383,8 +398,10 @@ e.g. “jziminski”</p>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">make</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="nb">id</span> <span class="n">REMOTE_HOST_ID</span><span class="p">]</span>
                              <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="n">username</span> <span class="n">REMOTE_HOST_USERNAME</span><span class="p">]</span>
-                             <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">funcimg</span><span class="p">]</span>
-                             <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="o">-</span><span class="n">old</span><span class="o">-</span><span class="n">files</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">transfer</span><span class="o">-</span><span class="n">verbosity</span> <span class="n">TRANSFER_VERBOSITY</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">transfer</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">funcimg</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span><span class="p">]</span>
                              <span class="n">local_path</span> <span class="n">remote_path</span> <span class="n">connection_method</span>
 </pre></div>
 </div>
@@ -410,6 +427,17 @@ e.g. “jziminski”</p>
 </dd>
 <dt><kbd>--remote-host-username, --remote_host_username</kbd></dt>
 <dd><p>(str)</p>
+</dd>
+<dt><kbd>--overwrite-old-files, --overwrite_old_files</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
+</dd>
+<dt><kbd>--transfer-verbosity, --transfer_verbosity</kbd></dt>
+<dd><p>(str)</p>
+</dd>
+<dt><kbd>--show-transfer-progress, --show_transfer_progress</kbd></dt>
+<dd><p>flag (default False)</p>
+<p>Default: False</p>
 </dd>
 <dt><kbd>--use-ephys, --use_ephys</kbd></dt>
 <dd><p>flag (default False)</p>
@@ -563,7 +591,7 @@ is permitted. e.g. sub001_&#64;DATE&#64; will generate sub001_date20220101
 directory. In the case that a file / directory exists on
 the remote and local, the remote will not be overwritten
 even if the remote file is an older version. Data
-transfer logs are saved to the logging directory (get_logging_path()).</p>
+transfer logs are saved to the logging directory).</p>
 <p>Parameters</p>
 <dl class="simple">
 <dt>sub_names :</dt><dd><p>a subject name / list of subject names. These must
@@ -587,6 +615,9 @@ always be True, unless logger has already been started
 </dd>
 </dl>
 <p>Notes</p>
+<p>The configs “overwrite_old_files”, “transfer_verbosity”
+and “show_transfer_progress” pertain to datatransfer settings.
+See make_config_file() for more information.</p>
 <p>sub_names or ses_names may contain certain formatting tags:</p>
 <dl class="simple">
 <dt>&#64;*&#64;: wildcard search for subject names. e.g. ses001_date&#64;*&#64;</dt><dd><p>will transfer all session 001 collected on all dates.</p>
@@ -685,8 +716,16 @@ of data transfer reversed. Please see upload_data() for arguments.
 <section id="upload-project-dir-or-file (upload_project_dir_or_file)">
 <h3>upload-project-dir-or-file (upload_project_dir_or_file)<a class="headerlink" href="#upload-project-dir-or-file (upload_project_dir_or_file)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Upload a single, specified directory (including all subdirectories
-and files) from the local to the remote machine.</p>
+<div><p>Upload a specific file or directory. If transferring
+a single file, the path including the filename is
+required (see ‘filepath’ input). If a directory,
+wildcards “*” or “**” must be used to transfer
+all files in the directory (“*”) or all files
+and subfolders (“**”), otherwise the empty folder
+only will be transferred.</p>
+<p>e.g. “sub001/ses002/my_directory/<a href="#system-message-1"><span class="problematic" id="problematic-1">**</span></a>”</p>
+<p>This function works by passing the file / directory
+path to transfer to Rclone’s include flag.</p>
 <p>Parameters</p>
 <dl class="simple">
 <dt>filepath :</dt><dd><p>a string containing the filepath to move,
@@ -724,11 +763,28 @@ to check which files will be moved on data transfer.</p>
 <section id="download-project-dir-or-file (download_project_dir_or_file)">
 <h3>download-project-dir-or-file (download_project_dir_or_file)<a class="headerlink" href="#download-project-dir-or-file (download_project_dir_or_file)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Download an entire directory (including all subdirectories
-and files) from the remote to the local machine.</p>
-<p>This method is identical to upload_project_dir_or_file
-but with direction of transfer reversed. Please see
-upload_project_dir_or_file() for arguments.</p>
+<div><p>Download a specific file or directory. If transferring
+a single file, the path including the filename is
+required (see ‘filepath’ input). If a directory,
+wildcards “*” or “**” must be used to transfer
+all files in the directory (“*”) or all files
+and subfolders (“**”), otherwise the empty folder
+only will be transferred.</p>
+<p>e.g. “sub001/ses002/my_directory/<a href="#system-message-1"><span class="problematic" id="problematic-1">**</span></a>”</p>
+<p>This function works by passing the file / directory
+path to transfer to Rclone’s include flag.</p>
+<p>Parameters</p>
+<dl class="simple">
+<dt>filepath :</dt><dd><p>a string containing the filepath to move,
+relative to the project directory “rawdata”
+or “derivatives” path (depending on which is currently
+set). Alternatively, the entire path is accepted.</p>
+</dd>
+<dt>dry_run :</dt><dd><p>perform a dryrun of upload. This will output as if file
+transfer was taking place, but no files will be moved. Useful
+to check which files will be moved on data transfer.</p>
+</dd>
+</dl>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="nb">dir</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
 </pre></div>

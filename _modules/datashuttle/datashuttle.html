@@ -108,7 +108,7 @@
   
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+ga52caee</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g3e1e2ef</p>
   
 </a></div>
     
@@ -317,13 +317,12 @@ document.write(`
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">collections.abc</span> <span class="kn">import</span> <span class="n">ItemsView</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">cast</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">paramiko</span>
 
-<span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">canonical_directories</span><span class="p">,</span> <span class="n">load_configs</span>
+<span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">load_configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.configs.configs</span> <span class="kn">import</span> <span class="n">Configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">directories</span><span class="p">,</span>
@@ -333,14 +332,15 @@ document.write(`
     <span class="n">ssh</span><span class="p">,</span>
     <span class="n">utils</span><span class="p">,</span>
 <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">datashuttle.utils.data_transfer</span> <span class="kn">import</span> <span class="n">TransferData</span>
 <span class="kn">from</span> <span class="nn">datashuttle.utils.decorators</span> <span class="kn">import</span> <span class="p">(</span>  <span class="c1"># noqa</span>
     <span class="n">check_configs_set</span><span class="p">,</span>
     <span class="n">requires_ssh_configs</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
 <span class="c1"># Project Manager Class</span>
-<span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+<span class="c1"># -----------------------------------------------------------------------------</span>
 
 
 <div class="viewcode-block" id="DataShuttle"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle">[docs]</a><span class="k">class</span> <span class="nc">DataShuttle</span><span class="p">:</span>
@@ -362,7 +362,7 @@ document.write(`
 <span class="sd">    in the main local project. These logs contain</span>
 <span class="sd">    detailed information on directory creation / transfer.</span>
 <span class="sd">    To get the path to datashuttle logs, use</span>
-<span class="sd">    get_logging_path().</span>
+<span class="sd">    cfgs.make_and_get_logging_path().</span>
 
 <span class="sd">    For transferring data between a remote data storage</span>
 <span class="sd">    with SSH, use setup setup_ssh_connection_to_remote_server().</span>
@@ -388,18 +388,18 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span> <span class="o">=</span> <span class="n">project_name</span>
         <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_appdir_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span><span class="s2">&quot;datashuttle&quot;</span><span class="p">,</span> <span class="s2">&quot;config.yaml&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span> <span class="o">=</span> <span class="s2">&quot;rawdata&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="n">project_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;config.yaml&quot;</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="o">.</span><span class="n">make_config_file_attempt_load</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
@@ -412,22 +412,17 @@ document.write(`
 <span class="sd">        Once config file is loaded, update all private attributes</span>
 <span class="sd">        according to config contents.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;.datashuttle&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_dir_name</span> <span class="o">=</span> <span class="s2">&quot;rawdata&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_paths</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_make_project_metadata_if_does_not_exist</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_and_get_logging_path</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_data_type_dirs</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
-            <span class="s2">&quot;datashuttle&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span> <span class="o">+</span> <span class="s2">&quot;_ssh_key&quot;</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_hostkeys_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span><span class="s2">&quot;datashuttle&quot;</span><span class="p">,</span> <span class="s2">&quot;hostkeys&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span> <span class="o">=</span> <span class="n">canonical_directories</span><span class="o">.</span><span class="n">get_directories</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">)</span>
-
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Public Directory Makers</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="DataShuttle.make_sub_dir"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_dir">[docs]</a>    <span class="nd">@check_configs_set</span>
     <span class="k">def</span> <span class="nf">make_sub_dir</span><span class="p">(</span>
@@ -490,10 +485,14 @@ document.write(`
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Formatting Names...&quot;</span><span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">([</span><span class="s2">&quot;sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;ses_names&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">])</span>
 
-        <span class="n">sub_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
+        <span class="n">sub_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ses_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">)</span>
+            <span class="n">ses_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span>
+            <span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">(</span>
             <span class="p">[</span><span class="s2">&quot;formatted_sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;formatted_ses_names&quot;</span><span class="p">],</span>
@@ -502,7 +501,7 @@ document.write(`
 
         <span class="n">directories</span><span class="o">.</span><span class="n">check_no_duplicate_sub_ses_key_values</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_base_and_top_level_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
+            <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
             <span class="n">new_sub_names</span><span class="o">=</span><span class="n">sub_names</span><span class="p">,</span>
             <span class="n">new_ses_names</span><span class="o">=</span><span class="n">ses_names</span><span class="p">,</span>
         <span class="p">)</span>
@@ -511,7 +510,8 @@ document.write(`
             <span class="n">ses_names</span> <span class="o">=</span> <span class="p">[]</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Making directories...&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_make_directory_trees</span><span class="p">(</span>
+        <span class="n">directories</span><span class="o">.</span><span class="n">make_directory_trees</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
             <span class="n">data_type</span><span class="p">,</span>
@@ -523,12 +523,14 @@ document.write(`
 
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Finished making directories. For log of all created &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;directories, pleasee see </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span></div>
+            <span class="sa">f</span><span class="s2">&quot;directories, pleasee see </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Public File Transfer</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="DataShuttle.upload_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_data">[docs]</a>    <span class="k">def</span> <span class="nf">upload_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -543,7 +545,7 @@ document.write(`
 <span class="sd">        directory. In the case that a file / directory exists on</span>
 <span class="sd">        the remote and local, the remote will not be overwritten</span>
 <span class="sd">        even if the remote file is an older version. Data</span>
-<span class="sd">        transfer logs are saved to the logging directory (get_logging_path()).</span>
+<span class="sd">        transfer logs are saved to the logging directory).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -572,6 +574,10 @@ document.write(`
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
 
+<span class="sd">        The configs &quot;overwrite_old_files&quot;, &quot;transfer_verbosity&quot;</span>
+<span class="sd">        and &quot;show_transfer_progress&quot; pertain to data-transfer settings.</span>
+<span class="sd">        See make_config_file() for more information.</span>
+
 <span class="sd">        sub_names or ses_names may contain certain formatting tags:</span>
 
 <span class="sd">        @*@: wildcard search for subject names. e.g. ses-001_date-@*@</span>
@@ -586,14 +592,16 @@ document.write(`
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_data&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_sub_ses_data</span><span class="p">(</span>
+        <span class="n">TransferData</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
             <span class="n">data_type</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.download_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_data">[docs]</a>    <span class="k">def</span> <span class="nf">download_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -617,16 +625,18 @@ document.write(`
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_data&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_sub_ses_data</span><span class="p">(</span>
+        <span class="n">TransferData</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
             <span class="n">data_type</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function to upload all data.</span>
 
@@ -635,9 +645,9 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_all&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">upload_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function to download all data.</span>
 
@@ -645,14 +655,27 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_all&quot;</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span>
+            <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.upload_project_dir_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_dir_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload a single, specified directory (including all subdirectories</span>
-<span class="sd">        and files) from the local to the remote machine.</span>
+<span class="sd">        Upload a specific file or directory. If transferring</span>
+<span class="sd">        a single file, the path including the filename is</span>
+<span class="sd">        required (see &#39;filepath&#39; input). If a directory,</span>
+<span class="sd">        wildcards &quot;*&quot; or &quot;**&quot; must be used to transfer</span>
+<span class="sd">        all files in the directory (&quot;*&quot;) or all files</span>
+<span class="sd">        and sub-folders (&quot;**&quot;), otherwise the empty folder</span>
+<span class="sd">        only will be transferred.</span>
+
+<span class="sd">        e.g. &quot;sub-001/ses-002/my_directory/**&quot;</span>
+
+<span class="sd">        This function works by passing the file / directory</span>
+<span class="sd">        path to transfer to Rclone&#39;s --include flag.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -670,44 +693,74 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_project_dir_or_file&quot;</span><span class="p">)</span>
 
         <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_dir</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_move_dir_or_file</span><span class="p">(</span>
-            <span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span>
+        <span class="n">include_list</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;--include </span><span class="si">{</span><span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">rclone</span><span class="o">.</span><span class="n">transfer_data</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
-            <span class="n">dry_run</span><span class="p">,</span>
-            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
+            <span class="n">include_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">make_rclone_transfer_options</span><span class="p">(</span><span class="n">dry_run</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.download_project_dir_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_project_dir_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download an entire directory (including all subdirectories</span>
-<span class="sd">        and files) from the remote to the local machine.</span>
+<span class="sd">        Download a specific file or directory. If transferring</span>
+<span class="sd">        a single file, the path including the filename is</span>
+<span class="sd">        required (see &#39;filepath&#39; input). If a directory,</span>
+<span class="sd">        wildcards &quot;*&quot; or &quot;**&quot; must be used to transfer</span>
+<span class="sd">        all files in the directory (&quot;*&quot;) or all files</span>
+<span class="sd">        and sub-folders (&quot;**&quot;), otherwise the empty folder</span>
+<span class="sd">        only will be transferred.</span>
 
-<span class="sd">        This method is identical to upload_project_dir_or_file</span>
-<span class="sd">        but with direction of transfer reversed. Please see</span>
-<span class="sd">        upload_project_dir_or_file() for arguments.</span>
+<span class="sd">        e.g. &quot;sub-001/ses-002/my_directory/**&quot;</span>
+
+<span class="sd">        This function works by passing the file / directory</span>
+<span class="sd">        path to transfer to Rclone&#39;s --include flag.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        filepath :</span>
+<span class="sd">            a string containing the filepath to move,</span>
+<span class="sd">            relative to the project directory &quot;rawdata&quot;</span>
+<span class="sd">            or &quot;derivatives&quot; path (depending on which is currently</span>
+<span class="sd">            set). Alternatively, the entire path is accepted.</span>
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of upload. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_project_dir_or_file&quot;</span><span class="p">)</span>
 
         <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_dir</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="s2">&quot;remote&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">(</span><span class="s2">&quot;remote&quot;</span><span class="p">),</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_move_dir_or_file</span><span class="p">(</span>
-            <span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">(),</span>
-            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
-            <span class="n">dry_run</span><span class="p">,</span>
-            <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
 
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+        <span class="n">include_list</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;--include /</span><span class="si">{</span><span class="n">processed_filepath</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">rclone</span><span class="o">.</span><span class="n">transfer_data</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
+            <span class="n">include_list</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">make_rclone_transfer_options</span><span class="p">(</span><span class="n">dry_run</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># SSH</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="DataShuttle.setup_ssh_connection_to_remote_server"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
     <span class="k">def</span> <span class="nf">setup_ssh_connection_to_remote_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -728,12 +781,14 @@ document.write(`
 
         <span class="n">verified</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">verify_ssh_remote_host</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_host_id&quot;</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_hostkeys_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hostkeys_path</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">verified</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_ssh_key_and_rclone_config</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_ssh_key_and_rclone_config</span><span class="p">(</span><span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.write_public_key"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.write_public_key">[docs]</a>    <span class="k">def</span> <span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -750,16 +805,16 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">key</span><span class="p">:</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">RSAKey</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">RSAKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ssh_key_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
         <span class="p">)</span>
 
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">public</span><span class="p">:</span>
             <span class="n">public</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">get_base64</span><span class="p">())</span>
         <span class="n">public</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Configs</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="DataShuttle.make_config_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_config_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -768,6 +823,9 @@ document.write(`
         <span class="n">connection_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">remote_host_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">remote_host_username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">overwrite_old_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">transfer_verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
+        <span class="n">show_transfer_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_ephys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_behav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">use_funcimg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -815,6 +873,24 @@ document.write(`
 <span class="sd">            username for which to log in to remote host.</span>
 <span class="sd">            e.g. &quot;jziminski&quot;</span>
 
+<span class="sd">        overwrite_old_files :</span>
+<span class="sd">            If True, when copying data (upload or download) files</span>
+<span class="sd">            will be overwritten if the timestamp of the copied</span>
+<span class="sd">            version is later than the target directory version</span>
+<span class="sd">            of the file i.e. edits made to a file in the source</span>
+<span class="sd">            machine will be copied to the target machine. If False,</span>
+<span class="sd">            a file will be copied if it does not exist on the target</span>
+<span class="sd">            directory, otherwise it will never be copied, even if</span>
+<span class="sd">            the source version of the file has a later timestamp.</span>
+
+<span class="sd">        transfer_verbosity :</span>
+<span class="sd">            &quot;v&quot; will tell you about each file that is transferred and</span>
+<span class="sd">            significant events, &quot;vv&quot; will be very verbose and inform</span>
+<span class="sd">            on all events.</span>
+
+<span class="sd">        show_transfer_progress :</span>
+<span class="sd">            If true, the real-time progress of file transfers will be printed.</span>
+
 <span class="sd">        use_ephys :</span>
 <span class="sd">            if True, will allow ephys directory creation</span>
 
@@ -832,6 +908,7 @@ document.write(`
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">Configs</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="s2">&quot;local_path&quot;</span><span class="p">:</span> <span class="n">local_path</span><span class="p">,</span>
@@ -839,6 +916,9 @@ document.write(`
                 <span class="s2">&quot;connection_method&quot;</span><span class="p">:</span> <span class="n">connection_method</span><span class="p">,</span>
                 <span class="s2">&quot;remote_host_id&quot;</span><span class="p">:</span> <span class="n">remote_host_id</span><span class="p">,</span>
                 <span class="s2">&quot;remote_host_username&quot;</span><span class="p">:</span> <span class="n">remote_host_username</span><span class="p">,</span>
+                <span class="s2">&quot;overwrite_old_files&quot;</span><span class="p">:</span> <span class="n">overwrite_old_files</span><span class="p">,</span>
+                <span class="s2">&quot;transfer_verbosity&quot;</span><span class="p">:</span> <span class="n">transfer_verbosity</span><span class="p">,</span>
+                <span class="s2">&quot;show_transfer_progress&quot;</span><span class="p">:</span> <span class="n">show_transfer_progress</span><span class="p">,</span>
                 <span class="s2">&quot;use_ephys&quot;</span><span class="p">:</span> <span class="n">use_ephys</span><span class="p">,</span>
                 <span class="s2">&quot;use_behav&quot;</span><span class="p">:</span> <span class="n">use_behav</span><span class="p">,</span>
                 <span class="s2">&quot;use_funcimg&quot;</span><span class="p">:</span> <span class="n">use_funcimg</span><span class="p">,</span>
@@ -860,7 +940,11 @@ document.write(`
             <span class="s2">&quot;options loaded into datashuttle.&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">breakpoint</span><span class="p">()</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.update_config"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">option_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_info</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
@@ -916,7 +1000,9 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.supply_config_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.supply_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">supply_config_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">input_path_to_config</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">warn</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -961,7 +1047,7 @@ document.write(`
         <span class="n">path_to_config</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">input_path_to_config</span><span class="p">)</span>
 
         <span class="n">new_cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="o">.</span><span class="n">supplied_configs_confirm_overwrite</span><span class="p">(</span>
-            <span class="n">path_to_config</span><span class="p">,</span> <span class="n">warn</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">,</span> <span class="n">path_to_config</span><span class="p">,</span> <span class="n">warn</span>
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">new_cfg</span><span class="p">:</span>
@@ -972,11 +1058,12 @@ document.write(`
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Public Getters</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="DataShuttle.get_local_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_local_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -990,7 +1077,7 @@ document.write(`
 <span class="sd">        directory where configs another other</span>
 <span class="sd">        datashuttle files are stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_appdir_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
+        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="DataShuttle.get_config_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1038,520 +1125,32 @@ document.write(`
 <span class="sd">            The relevant subject or session prefix,</span>
 <span class="sd">            e.g. &quot;sub-&quot; or &quot;ses-&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sub-&quot;</span><span class="p">,</span> <span class="s2">&quot;ses-&quot;</span><span class="p">]:</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span><span class="s2">&quot;prefix: must be &#39;sub-&#39; or &#39;ses-&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">]:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span><span class="s2">&quot;prefix: must be &#39;sub&#39; or &#39;ses&#39;&quot;</span><span class="p">)</span>
 
         <span class="n">formatted_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">format_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">formatted_names</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.make_and_get_logging_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_and_get_logging_path">[docs]</a>    <span class="k">def</span> <span class="nf">make_and_get_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Currently logging is located in config path</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logging_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span> <span class="o">/</span> <span class="s2">&quot;logs&quot;</span>
-        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">logging_path</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">logging_path</span></div>
-
-    <span class="c1"># ====================================================================================================================</span>
+    <span class="c1"># =========================================================================</span>
     <span class="c1"># Private Functions</span>
-    <span class="c1"># ====================================================================================================================</span>
+    <span class="c1"># =========================================================================</span>
 
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
-    <span class="c1"># Make Directory Trees</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
-
-    <span class="k">def</span> <span class="nf">_make_directory_trees</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
-        <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Entry method to make a full directory tree. It will</span>
-<span class="sd">        iterate through all passed subjects, then sessions, then</span>
-<span class="sd">        subdirs within a data_type directory. This</span>
-<span class="sd">        permits flexible creation of directories (e.g.</span>
-<span class="sd">        to make subject only, do not pass session name.</span>
-
-<span class="sd">        Ensure sub and ses names are already formatted</span>
-<span class="sd">        before use in this function (see _start_log())</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        sub_names, ses_names, data_type : see make_sub_dir()</span>
-
-<span class="sd">        log : whether to log or not. If True, logging must</span>
-<span class="sd">            already be initialised.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">]:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_check_data_type_is_valid</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">error_on_fail</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">sub_names</span><span class="p">:</span>
-
-            <span class="n">sub_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
-                <span class="s2">&quot;local&quot;</span><span class="p">,</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">sub</span><span class="p">],</span>
-            <span class="p">)</span>
-
-            <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">sub_path</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_make_data_type_directories</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">sub_path</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">ses</span> <span class="ow">in</span> <span class="n">ses_names</span><span class="p">:</span>
-
-                <span class="n">ses_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
-                    <span class="s2">&quot;local&quot;</span><span class="p">,</span>
-                    <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">],</span>
-                <span class="p">)</span>
-
-                <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">ses_path</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_make_data_type_directories</span><span class="p">(</span>
-                    <span class="n">data_type</span><span class="p">,</span> <span class="n">ses_path</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span>
-                <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_make_data_type_directories</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">sub_or_ses_level_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-        <span class="n">level</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Make data_type folder (e.g. behav) at the sub or ses</span>
-<span class="sd">        level. Checks directory_class.Directories attributes,</span>
-<span class="sd">        whether the data_type is used and at the current level.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-<span class="sd">        data_type : data type (e.g. &quot;behav&quot;, &quot;all&quot;) to use. Use</span>
-<span class="sd">            empty string (&quot;&quot;) for none.</span>
-
-<span class="sd">        sub_or_ses_level_path : Full path to the subject</span>
-<span class="sd">            or session directory where the new directory</span>
-<span class="sd">            will be written.</span>
-
-<span class="sd">        level : The directory level that the</span>
-<span class="sd">            directory will be made at, &quot;sub&quot; or &quot;ses&quot;</span>
-
-<span class="sd">        log : whether to log on or not (if True, logging must</span>
-<span class="sd">            already be initialised).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">in</span> <span class="p">[[</span><span class="s2">&quot;&quot;</span><span class="p">],</span> <span class="s2">&quot;&quot;</span><span class="p">]:</span>
-            <span class="k">return</span>
-
-        <span class="n">data_type_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_type_items</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">data_type_key</span><span class="p">,</span> <span class="n">data_type_dir</span> <span class="ow">in</span> <span class="n">data_type_items</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-
-            <span class="k">if</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">used</span> <span class="ow">and</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">level</span><span class="p">:</span>
-
-                <span class="n">data_type_path</span> <span class="o">=</span> <span class="n">sub_or_ses_level_path</span> <span class="o">/</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">name</span>
-
-                <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="n">data_type_path</span><span class="p">,</span> <span class="n">log</span><span class="p">)</span>
-
-                <span class="n">directories</span><span class="o">.</span><span class="n">make_datashuttle_metadata_folder</span><span class="p">(</span>
-                    <span class="n">data_type_path</span><span class="p">,</span> <span class="n">log</span>
-                <span class="p">)</span>
-
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
-    <span class="c1"># File Transfer</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
-
-    <span class="k">def</span> <span class="nf">_transfer_sub_ses_data</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">upload_or_download</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
-        <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Iterate through all data type, sub, ses and transfer directory.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        upload_or_download : &quot;upload&quot; or &quot;download&quot;</span>
-
-<span class="sd">        sub_names : see make_sub_dir()</span>
-
-<span class="sd">        ses_names : see make_sub_dir()</span>
-
-<span class="sd">        data_type : e.g. ephys, behav, histology, funcimg, see make_sub_dir()</span>
-
-<span class="sd">        dry_run : see upload_project_dir_or_file()</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">local_or_remote</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;local&quot;</span> <span class="k">if</span> <span class="n">upload_or_download</span> <span class="o">==</span> <span class="s2">&quot;upload&quot;</span> <span class="k">else</span> <span class="s2">&quot;remote&quot;</span>
-        <span class="p">)</span>
-        <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_and_top_level_dir</span><span class="p">(</span><span class="n">local_or_remote</span><span class="p">)</span>
-
-        <span class="c1"># Find sub names to transfer</span>
-        <span class="k">if</span> <span class="n">sub_names</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]]:</span>
-            <span class="n">sub_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_sub_or_ses_level</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span>
-                <span class="n">base_dir</span><span class="p">,</span>
-                <span class="n">local_or_remote</span><span class="p">,</span>
-                <span class="n">search_str</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sub_prefix</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">sub_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
-            <span class="n">sub_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_for_wildcards</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">local_or_remote</span><span class="p">,</span> <span class="n">sub_names</span>
-            <span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">sub</span> <span class="ow">in</span> <span class="n">sub_names</span><span class="p">:</span>
-
-            <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_data_type</span><span class="p">(</span>
-                <span class="n">upload_or_download</span><span class="p">,</span>
-                <span class="n">local_or_remote</span><span class="p">,</span>
-                <span class="n">data_type</span><span class="p">,</span>
-                <span class="n">sub</span><span class="p">,</span>
-                <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
-                <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
-            <span class="p">)</span>
-
-            <span class="c1"># Find ses names  to transfer</span>
-            <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]]:</span>
-                <span class="n">ses_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_sub_or_ses_level</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span>
-                    <span class="n">base_dir</span><span class="p">,</span>
-                    <span class="n">local_or_remote</span><span class="p">,</span>
-                    <span class="n">sub</span><span class="p">,</span>
-                    <span class="n">search_str</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ses_prefix</span><span class="si">}</span><span class="s2">*&quot;</span><span class="p">,</span>
-                <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">ses_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_names</span><span class="p">(</span><span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">)</span>
-                <span class="n">ses_names</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_for_wildcards</span><span class="p">(</span>
-                    <span class="bp">self</span><span class="p">,</span> <span class="n">base_dir</span><span class="p">,</span> <span class="n">local_or_remote</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span>
-                <span class="p">)</span>
-
-            <span class="k">for</span> <span class="n">ses</span> <span class="ow">in</span> <span class="n">ses_names</span><span class="p">:</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_data_type</span><span class="p">(</span>
-                    <span class="n">upload_or_download</span><span class="p">,</span>
-                    <span class="n">local_or_remote</span><span class="p">,</span>
-                    <span class="n">data_type</span><span class="p">,</span>
-                    <span class="n">sub</span><span class="p">,</span>
-                    <span class="n">ses</span><span class="p">,</span>
-                    <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
-                    <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
-                <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_transfer_data_type</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">upload_or_download</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">local_or_remote</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">sub</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">ses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Transfer the data_type-level folder at the subject</span>
-<span class="sd">        or session level. data_type dirs are got either</span>
-<span class="sd">        directly from user input or if &quot;all&quot; is passed searched</span>
-<span class="sd">        for in the local / remote directory (for</span>
-<span class="sd">        upload / download respectively).</span>
-
-<span class="sd">        This can handle both cases of subject level dir (e.g. histology)</span>
-<span class="sd">        or session level dir (e.g. ephys).</span>
-
-<span class="sd">        Note that the use of upload_or_download / local_or_remote</span>
-<span class="sd">        is redundant as the value of local_or_remote is set by</span>
-<span class="sd">        upload_or_download, but kept for readability.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        upload_or_download : &quot;upload&quot; or &quot;download&quot;</span>
-
-<span class="sd">        local_or_remote : &quot;local&quot; or &quot;remote&quot;</span>
-
-<span class="sd">        data_type : e.g. &quot;behav&quot;, &quot;all&quot;</span>
-
-<span class="sd">        sub : subject name</span>
-
-<span class="sd">        ses : Optional session name. If False, directory</span>
-<span class="sd">            to transfer will be assumed to be at the</span>
-<span class="sd">            subject level.</span>
-
-<span class="sd">        dry_run : Show data transfer output but do not</span>
-<span class="sd">            actually transfer the data.</span>
-
-<span class="sd">        log : Whether to log, if True logging must already</span>
-<span class="sd">            be initialsied</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">level</span> <span class="o">=</span> <span class="s2">&quot;ses&quot;</span> <span class="k">if</span> <span class="n">ses</span> <span class="k">else</span> <span class="s2">&quot;sub&quot;</span>
-
-        <span class="n">data_type_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items_from_data_type_input</span><span class="p">(</span>
-            <span class="n">local_or_remote</span><span class="p">,</span> <span class="n">data_type</span><span class="p">,</span> <span class="n">sub</span><span class="p">,</span> <span class="n">ses</span>
-        <span class="p">)</span>
-
-        <span class="k">for</span> <span class="n">data_type_key</span><span class="p">,</span> <span class="n">data_type_dir</span> <span class="ow">in</span> <span class="n">data_type_items</span><span class="p">:</span>  <span class="c1"># type: ignore</span>
-
-            <span class="k">if</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">level</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">ses</span><span class="p">:</span>
-                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">ses</span><span class="p">,</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sub</span><span class="p">,</span> <span class="n">data_type_dir</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
-
-                <span class="bp">self</span><span class="o">.</span><span class="n">_move_dir_or_file</span><span class="p">(</span>
-                    <span class="n">filepath</span><span class="p">,</span>
-                    <span class="n">upload_or_download</span><span class="p">,</span>
-                    <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
-                    <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
-                <span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">_move_dir_or_file</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">upload_or_download</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-        <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Low-level function to transfer a directory or file.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        filepath : filepath (not including local</span>
-<span class="sd">            or remote root) to copy</span>
-
-<span class="sd">        upload_or_download : &quot;upload&quot; or &quot;download&quot;.</span>
-<span class="sd">            upload goes local to remote, download goes</span>
-<span class="sd">            remote to local</span>
-
-<span class="sd">        dry_run : do not actually move the files,</span>
-<span class="sd">            just report what would be moved.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">local_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
-            <span class="s2">&quot;local&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">filepath</span><span class="p">]</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
-
-        <span class="n">remote_filepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_make_path</span><span class="p">(</span>
-            <span class="s2">&quot;remote&quot;</span><span class="p">,</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span><span class="p">,</span> <span class="n">filepath</span><span class="p">]</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">as_posix</span><span class="p">()</span>
-
-        <span class="n">output</span> <span class="o">=</span> <span class="n">rclone</span><span class="o">.</span><span class="n">transfer_data</span><span class="p">(</span>
-            <span class="n">local_filepath</span><span class="p">,</span>
-            <span class="n">remote_filepath</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(),</span>
-            <span class="n">upload_or_download</span><span class="p">,</span>
-            <span class="n">dry_run</span><span class="p">,</span>
-        <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">message_user</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
-
-    <span class="k">def</span> <span class="nf">_items_from_data_type_input</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span>
-        <span class="n">local_or_remote</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-        <span class="n">sub</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">ses</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemsView</span><span class="p">,</span> <span class="nb">zip</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the list of data_types to transfer, either</span>
-<span class="sd">        directly from user input, or by searching</span>
-<span class="sd">        what is available if &quot;all&quot; is passed.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        see _transfer_data_type() for parameters.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_and_top_level_dir</span><span class="p">(</span><span class="n">local_or_remote</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">data_type</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]]:</span>
-            <span class="n">data_type_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_data_type_items</span><span class="p">(</span>
-                <span class="n">data_type</span><span class="p">,</span>
-            <span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">data_type_items</span> <span class="o">=</span> <span class="n">directories</span><span class="o">.</span><span class="n">search_data_dirs_sub_or_ses_level</span><span class="p">(</span>
-                <span class="bp">self</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="p">,</span>
-                <span class="n">base_dir</span><span class="p">,</span>
-                <span class="n">local_or_remote</span><span class="p">,</span>
-                <span class="n">sub</span><span class="p">,</span>
-                <span class="n">ses</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">data_type_items</span>
-
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># SSH</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
     <span class="k">def</span> <span class="nf">_setup_ssh_key_and_rclone_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup ssh connection, key pair (see ssh.setup_ssh_key)</span>
-<span class="sd">        for details. Also setup rclone config for ssh connection.</span>
+<span class="sd">        for details. Also, setup rclone config for ssh connection.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">ssh</span><span class="o">.</span><span class="n">setup_ssh_key</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_hostkeys_path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span>
-        <span class="p">)</span>
+        <span class="n">ssh</span><span class="o">.</span><span class="n">setup_ssh_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_remote_ssh_config</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
 
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Utils</span>
-    <span class="c1"># --------------------------------------------------------------------------------------------------------------------</span>
-
-    <span class="k">def</span> <span class="nf">_make_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">subdirs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function for joining relative path to base dir.</span>
-<span class="sd">        If path already starts with base dir, the base</span>
-<span class="sd">        dir will not be joined.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        base: &quot;local&quot;, &quot;remote&quot; or &quot;datashuttle&quot;</span>
-
-<span class="sd">        subdirs: a list (or string for 1) of</span>
-<span class="sd">            directory names to be joined into a path.</span>
-<span class="sd">            If file included, must be last entry (with ext).</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">subdirs</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="n">subdirs_str</span> <span class="o">=</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subdirs</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">subdirs_str</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">subdirs</span><span class="p">)</span>
-
-        <span class="n">subdirs_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">subdirs_str</span><span class="p">)</span>
-
-        <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">utils</span><span class="o">.</span><span class="n">path_already_stars_with_base_dir</span><span class="p">(</span><span class="n">base_dir</span><span class="p">,</span> <span class="n">subdirs_path</span><span class="p">):</span>
-            <span class="n">joined_path</span> <span class="o">=</span> <span class="n">subdirs_path</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">joined_path</span> <span class="o">=</span> <span class="n">base_dir</span> <span class="o">/</span> <span class="n">subdirs_path</span>
-
-        <span class="k">return</span> <span class="n">joined_path</span>
-
-    <span class="k">def</span> <span class="nf">_get_base_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convenience function to return the full base path.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        base : base path, &quot;local&quot;, &quot;remote&quot; or &quot;datashuttle&quot;</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;local&quot;</span><span class="p">:</span>
-            <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;remote&quot;</span><span class="p">:</span>
-            <span class="n">base_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_path&quot;</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="n">base</span> <span class="o">==</span> <span class="s2">&quot;datashuttle&quot;</span><span class="p">:</span>
-            <span class="n">base_dir</span><span class="p">,</span> <span class="n">__</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">base_dir</span>
-
-    <span class="k">def</span> <span class="nf">_get_base_and_top_level_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">local_or_remote</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the base project directory with the top level directory,</span>
-<span class="sd">        i.e. &quot;rawdata&quot; or &quot;derivatives&quot;.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        local_or_remote : &quot;local&quot; or &quot;remote&quot;</span>
-
-<span class="sd">        Examples</span>
-<span class="sd">        --------</span>
-<span class="sd">        e.g. if local_path = &quot;/my/local/path and the</span>
-<span class="sd">        top level directory is set to rawdata, this method will return</span>
-<span class="sd">        &quot;/my/local/path/rawdata&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">base_dir</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_base_dir</span><span class="p">(</span><span class="n">local_or_remote</span><span class="p">)</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_top_level_dir_name</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">base_dir</span>
-
-    <span class="k">def</span> <span class="nf">_format_names</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">sub_or_ses</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Format a list of subject or session names, e.g.</span>
-<span class="sd">        by ensuring all have sub- or ses- prefix, checking</span>
-<span class="sd">        for tags, that names do not include spaces and that</span>
-<span class="sd">        there are not duplicates.</span>
-
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        names: str or list containing sub or ses names</span>
-<span class="sd">                      (e.g. to make dirs)</span>
-
-<span class="sd">        sub_or_ses: &quot;sub&quot; or &quot;ses&quot; - this defines the prefix checks.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_sub_or_ses_prefix</span><span class="p">(</span><span class="n">sub_or_ses</span><span class="p">)</span>
-        <span class="n">formatted_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">format_names</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">prefix</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">formatted_names</span>
-
-    <span class="k">def</span> <span class="nf">_get_sub_or_ses_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub_or_ses</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the sub / ses prefix (default is &quot;sub-&quot; and &quot;ses-&quot;) set in cfgs.</span>
-<span class="sd">        These should always be &quot;sub-&quot; or &quot;ses-&quot; by SWC-BIDS.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">sub_or_ses</span> <span class="o">==</span> <span class="s2">&quot;sub&quot;</span><span class="p">:</span>
-            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">sub_prefix</span>
-        <span class="k">elif</span> <span class="n">sub_or_ses</span> <span class="o">==</span> <span class="s2">&quot;ses&quot;</span><span class="p">:</span>
-            <span class="n">prefix</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ses_prefix</span>
-        <span class="k">return</span> <span class="n">prefix</span>
-
-    <span class="k">def</span> <span class="nf">_check_data_type_is_valid</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">error_on_fail</span><span class="p">:</span> <span class="nb">bool</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check the passed data_type is valid (must</span>
-<span class="sd">        be a key on self.ses_dirs e.g. &quot;behav&quot;, or &quot;all&quot;)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">list</span><span class="p">:</span>
-            <span class="n">valid_keys</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;all&quot;</span><span class="p">]</span>
-            <span class="n">is_valid</span> <span class="o">=</span> <span class="nb">all</span><span class="p">([</span><span class="nb">type</span> <span class="ow">in</span> <span class="n">valid_keys</span> <span class="k">for</span> <span class="nb">type</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">is_valid</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">data_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="ow">or</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">if</span> <span class="n">error_on_fail</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">is_valid</span><span class="p">:</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;data_type: &#39;</span><span class="si">{</span><span class="n">data_type</span><span class="si">}</span><span class="s2">&#39; &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;is not valid. Must be one of&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">. or &#39;all&#39;&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; No directories were made.&quot;</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">is_valid</span>
-
-    <span class="k">def</span> <span class="nf">_get_data_type_items</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">data_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">ItemsView</span><span class="p">,</span> <span class="nb">zip</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the .items() structure of the data type, either all of</span>
-<span class="sd">        them (stored in self._data_type_dirs) or as a single item.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data_type</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
-            <span class="n">data_type</span> <span class="o">=</span> <span class="p">[</span><span class="n">data_type</span><span class="p">]</span>
-
-        <span class="k">if</span> <span class="s2">&quot;all&quot;</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">:</span>
-            <span class="n">items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">items</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span>
-                <span class="n">data_type</span><span class="p">,</span>
-                <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_data_type_dirs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">data_type</span><span class="p">],</span>
-            <span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">items</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
 
     <span class="k">def</span> <span class="nf">_get_rclone_config_name</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">connection_method</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1564,7 +1163,7 @@ document.write(`
         <span class="k">if</span> <span class="n">connection_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">connection_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;remote_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">connection_method</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;remote_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">connection_method</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="nf">_start_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1603,7 +1202,7 @@ document.write(`
                 <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir_path</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">path_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span>
+            <span class="n">path_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">)</span>
 
@@ -1627,7 +1226,8 @@ document.write(`
             <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
 
             <span class="n">shutil</span><span class="o">.</span><span class="n">move</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_logging_path</span> <span class="o">/</span> <span class="n">file_name</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span> <span class="o">/</span> <span class="n">file_name</span><span class="p">,</span>
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_log_successful_config_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -1662,14 +1262,14 @@ document.write(`
 <span class="sd">        Within the project local_path is also a .datashuttle</span>
 <span class="sd">        folder that contains additional information, e.g. logs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_setup_rclone_remote_ssh_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
         <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
             <span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ssh_key_path</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -1677,8 +1277,8 @@ document.write(`
         <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
             <span class="s2">&quot;local_filesystem&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ssh_key_path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ssh_key_path</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span></div>
 </pre></div>
