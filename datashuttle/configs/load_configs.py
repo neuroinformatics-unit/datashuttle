@@ -128,8 +128,9 @@ def handle_cli_or_supplied_config_bools(
 ) -> Union[Configs, dict]:
     """
     For supplied configs for CLI input args,
-    in some instances bools will as string type.
-    Handle this case here to cast to correct type.
+    in some instances bools will be passed
+    as string type. Handle this case here
+    to cast to correct type.
     """
     for key in dict_.keys():
         dict_[key] = handle_bool(key, dict_[key])

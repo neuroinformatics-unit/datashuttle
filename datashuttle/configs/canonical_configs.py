@@ -5,7 +5,7 @@ as configs can be provided from file or input dynamically
 and so careful checks must be done.
 
 If adding a new config, first add the key to
-get_canonical_config_dict( and type to
+get_canonical_config_dict() and type to
 get_canonical_config_required_types()
 """
 
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from datashuttle.configs.configs import Configs
 
 from pathlib import Path
-from typing import Union, get_args
+from typing import Literal, Union, get_args
 
 from datashuttle.utils import directories, utils
 
@@ -77,11 +77,11 @@ def get_canonical_config_required_types() -> dict:
     required_types = {
         "local_path": Union[str, Path],
         "remote_path": Union[str, Path],
-        "connection_method": str,
+        "connection_method": Literal["ssh", "local_filesystem"],
         "remote_host_id": Union[str, None],
         "remote_host_username": Union[str, None],
         "overwrite_old_files": bool,
-        "transfer_verbosity": str,
+        "transfer_verbosity": Literal["v", "vv"],
         "show_transfer_progress": bool,
         "use_ephys": bool,
         "use_behav": bool,
