@@ -21,7 +21,7 @@ def setup_project_default_configs(
     project_name,
     local_path=False,
     remote_path=False,
-    all_experiment_type_on=True,
+    all_data_type_on=True,
 ):
     """"""
     delete_project_if_it_exists(project_name)
@@ -34,16 +34,14 @@ def setup_project_default_configs(
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
 
-    if all_experiment_type_on:
-        default_configs.update(get_all_experiment_types_on("kwargs"))
+    if all_data_type_on:
+        default_configs.update(get_all_data_types_on("kwargs"))
 
     project.make_config_file(**default_configs)
 
     warnings.filterwarnings("default")
 
-    project.update_config(
-        "local_path", project.get_appdir_path() + "/base_dir"
-    )
+    project.update_config("local_path", project._appdir_path / "base_dir")
 
     if local_path:
         project.update_config("local_path", local_path)
@@ -76,14 +74,14 @@ def teardown_project(
 
 
 def delete_all_dirs_in_local_path(project):
-    if os.path.isdir(project.get_local_path()):
-        shutil.rmtree(project.get_local_path())
+    if project.cfg["local_path"].is_dir():
+        shutil.rmtree(project.cfg["local_path"])
 
 
 def delete_all_dirs_in_remote_path(project):
     """"""
-    if os.path.isdir(project.get_remote_path()):
-        shutil.rmtree(project.get_remote_path())
+    if project.cfg["remote_path"].is_dir():
+        shutil.rmtree(project.cfg["remote_path"])
 
 
 def delete_project_if_it_exists(project_name):
@@ -151,7 +149,7 @@ def get_test_config_arguments_dict(
                 "remote_host_username": None,
                 "use_ephys": False,
                 "use_histology": False,
-                "use_imaging": False,
+                "use_funcimg": False,
             }
         )
     else:
@@ -165,7 +163,7 @@ def get_test_config_arguments_dict(
                 "use_ephys": True,
                 "use_behav": False,
                 "use_histology": True,
-                "use_imaging": True,
+                "use_funcimg": True,
             }
         )
 
@@ -176,7 +174,7 @@ def get_default_directory_used():
     return {
         "ephys": True,
         "behav": True,
-        "imaging": True,
+        "funcimg": True,
         "histology": True,
     }
 
@@ -203,13 +201,13 @@ def check_directory_tree_is_correct(
     Automated test that directories are made based
     on the structure specified on project itself.
 
-    Cycle through all experiment type (defined in
-    project._ses_dirs()), sub, sessions and check that
+    Cycle through all data_types (defined in
+    project._data_type_dirs()), sub, sessions and check that
     the expected file exists. For  subdirs, recursively
     check all exist.
 
     Directories in which directory_used[key] (where key
-    is the canonical dict key in project._ses_dirs())
+    is the canonical dict key in project._data_type_dirs())
     is not used are expected  not to be made, and this
      is checked.
 
@@ -227,7 +225,7 @@ def check_directory_tree_is_correct(
             path_to_ses_folder = join(base_dir, sub, ses)
             check_and_cd_dir(path_to_ses_folder)
 
-            for key, directory in project._ses_dirs.items():
+            for key, directory in project._data_type_dirs.items():
 
                 assert key in directory_used.keys(), (
                     "Key not found in directory_used. "
@@ -240,18 +238,16 @@ def check_directory_tree_is_correct(
                 ):
 
                     if directory.level == "sub":
-                        experiment_type_path = join(
+                        data_type_path = join(
                             path_to_sub_folder, directory.name
                         )  # TODO: Remove directory to exp_type_path
                     elif directory.level == "ses":
-                        experiment_type_path = join(
+                        data_type_path = join(
                             path_to_ses_folder, directory.name
                         )
 
-                    check_and_cd_dir(experiment_type_path)
-                    check_and_cd_dir(
-                        join(experiment_type_path, ".datashuttle_meta")
-                    )
+                    check_and_cd_dir(data_type_path)
+                    check_and_cd_dir(join(data_type_path, ".datashuttle_meta"))
 
 
 def check_directory_is_used(
@@ -288,16 +284,16 @@ def check_and_cd_dir(path_):
     os.chdir(path_)
 
 
-def check_experiment_type_sub_ses_uploaded_correctly(
+def check_data_type_sub_ses_uploaded_correctly(
     base_path_to_check,
-    experiment_type_to_transfer,
+    data_type_to_transfer,
     subs_to_upload=None,
     ses_to_upload=None,
 ):
     """
-    Iterate through the project (experiment_type > ses > sub) and
+    Iterate through the project (data_type > ses > sub) and
     check that the directories at each level match those that are
-    expected (passed in experiment / sub / ses to upload). Dirs
+    expected (passed in data_type / sub / ses to upload). Dirs
     are searched with wildcard glob.
 
     Note: might be easier to flatten entire path with glob(**)
@@ -318,48 +314,44 @@ def check_experiment_type_sub_ses_uploaded_correctly(
                         "*",
                     )
                 )
-                if experiment_type_to_transfer == ["histology"]:
+                if data_type_to_transfer == ["histology"]:
                     assert ses_names == ["histology"]
                     return  # handle the case in which histology only is transferred,
                     # and there are no sessions to transfer.
 
-                copy_experiment_type_to_transfer = (
-                    check_and_strip_within_sub_experiment_dirs(
-                        ses_names, experiment_type_to_transfer
+                copy_data_type_to_transfer = (
+                    check_and_strip_within_sub_data_dirs(
+                        ses_names, data_type_to_transfer
                     )
                 )
                 assert ses_names == sorted(ses_to_upload)
 
-                # check experiment_type directories in session folder
-                if copy_experiment_type_to_transfer:
+                # check data_type directories in session folder
+                if copy_data_type_to_transfer:
                     for ses in ses_names:
-                        experiment_names = glob_basenames(
+                        data_names = glob_basenames(
                             join(base_path_to_check, sub, ses, "*")
                         )
-                        assert experiment_names == sorted(
-                            copy_experiment_type_to_transfer
-                        )
+                        assert data_names == sorted(copy_data_type_to_transfer)
 
 
-def check_and_strip_within_sub_experiment_dirs(
-    ses_names, experiment_type_to_transfer
-):
-    if "histology" in experiment_type_to_transfer:
+def check_and_strip_within_sub_data_dirs(ses_names, data_type_to_transfer):
+    if "histology" in data_type_to_transfer:
         assert "histology" in ses_names
 
         ses_names.remove("histology")
-        copy_ = copy.deepcopy(experiment_type_to_transfer)
+        copy_ = copy.deepcopy(data_type_to_transfer)
         copy_.remove("histology")
         return copy_
-    return experiment_type_to_transfer
+    return data_type_to_transfer
 
 
-def make_and_check_local_project(project, subs, sessions, experiment_type):
+def make_and_check_local_project(project, subs, sessions, data_type):
     """
-    Make a local project directory tree with the specified experiment_type,
+    Make a local project directory tree with the specified data_type,
     subs, sessions and check it is made successfully.
     """
-    project.make_sub_dir(subs, sessions, experiment_type)
+    project.make_sub_dir(subs, sessions, data_type)
 
     check_directory_tree_is_correct(
         project,
@@ -378,7 +370,7 @@ def make_and_check_local_project(project, subs, sessions, experiment_type):
 def check_configs(project, kwargs):
     """"""
     config_path = (
-        project.get_appdir_path() + "/config.yaml"
+        project._appdir_path / "config.yaml"
     )  # TODO: can use new get_config()
 
     if not os.path.isfile(config_path):
@@ -429,9 +421,9 @@ def check_config_file(config_path, *kwargs):
 
 def get_rawdata_path(project, local_or_remote="local"):
     if local_or_remote == "local":
-        base_path = project.get_local_path()
+        base_path = project.cfg["local_path"]
     else:
-        base_path = project.get_remote_path()
+        base_path = project.cfg["remote_path"]
     return os.path.join(base_path, project._top_level_dir_name)
 
 
@@ -442,8 +434,8 @@ def handle_upload_or_download(project, upload_or_download):
     and local server (so things are still transferred from
     local machine to remote, but using the download function).
     """
-    local_path = copy.deepcopy(project.get_local_path())
-    remote_path = copy.deepcopy(project.get_remote_path())
+    local_path = copy.deepcopy(project.cfg["local_path"])
+    remote_path = copy.deepcopy(project.cfg["remote_path"])
 
     if upload_or_download == "download":
 
@@ -487,17 +479,17 @@ def get_flags():  # TODO: MOVE TO CANONICAL_CONFIGS
         "use_ephys",
         "use_behav",
         "use_histology",
-        "use_imaging",
+        "use_funcimg",
     ]
 
 
-def get_all_experiment_types_on(kwargs_or_flags):
+def get_all_data_types_on(kwargs_or_flags):
     """ """
-    experiment_types = get_flags()
+    data_types = get_flags()
     if kwargs_or_flags == "flags":
-        return f"{' '.join(['--' + flag for flag in experiment_types])}"
+        return f"{' '.join(['--' + flag for flag in data_types])}"
     else:
-        return dict(zip(experiment_types, [True] * len(experiment_types)))
+        return dict(zip(data_types, [True] * len(data_types)))
 
 
 def move_some_keys_to_end_of_dict(config):

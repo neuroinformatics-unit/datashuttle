@@ -1,3 +1,10 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from datashuttle.configs import Configs
+
 import datetime
 import fnmatch
 import glob
@@ -6,7 +13,7 @@ import re
 import stat
 import warnings
 from pathlib import Path
-from typing import Optional, Union
+from typing import List, Optional, Union
 
 import appdirs
 import paramiko
@@ -16,40 +23,40 @@ import paramiko
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[str, list]):
+def make_dirs(paths: Union[Path, List[Path]]) -> None:
     """
     For path or list of path, make them if
-    do not already exist.
+    they do not already exist.
     """
-    if isinstance(paths, str):
+    if isinstance(paths, Path):
         paths = [paths]
 
     for path_ in paths:
-        path_ = os.path.expanduser(path_)
-        if not os.path.isdir(path_):
-            os.makedirs(path_)
+
+        if not path_.is_dir():
+            path_.mkdir(parents=True)
         else:
             warnings.warn(
                 "The following directory was not made "
                 "because it already exists"
-                f" {path_}"
+                f" {path_.as_posix()}"
             )
 
 
-def make_datashuttle_metadata_folder(full_path: str):
-    meta_folder_path = full_path + "/.datashuttle_meta"
+def make_datashuttle_metadata_folder(full_path: Path) -> None:
+    meta_folder_path = full_path / ".datashuttle_meta"
     make_dirs(meta_folder_path)
 
 
 def search_filesystem_path_for_directories(
-    search_path_with_prefix: str,
+    search_path_with_prefix: Path,
 ) -> list:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.
     """
     all_dirnames = []
-    for file_or_dir in glob.glob(search_path_with_prefix):
+    for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
         if os.path.isdir(file_or_dir):
             all_dirnames.append(os.path.basename(file_or_dir))
     return all_dirnames
@@ -62,24 +69,26 @@ def search_filesystem_path_for_directories(
 
 def connect_client(
     client: paramiko.SSHClient,
-    cfg,  # cannot import Configs class due to circular import
-    hostkeys: str,
+    cfg: Configs,
+    hostkeys: Path,
     password: Optional[str] = None,
-    private_key_path: Optional[str] = None,
-):
+    private_key_path: Optional[Path] = None,
+) -> None:
     """
     Connect client to remote server using paramiko.
-    Accept either password or path to private key, but not
-    both.
+    Accept either password or path to private key, but not both.
+    Paramiko does not support pathlib.
     """
     try:
-        client.get_host_keys().load(hostkeys)
+        client.get_host_keys().load(hostkeys.as_posix())
         client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(
             cfg["remote_host_id"],
             username=cfg["remote_host_username"],
             password=password,
-            key_filename=private_key_path,
+            key_filename=private_key_path.as_posix()
+            if isinstance(private_key_path, Path)
+            else None,
             look_for_keys=True,
         )
     except Exception:
@@ -94,8 +103,8 @@ def connect_client(
 
 
 def add_public_key_to_remote_authorized_keys(
-    cfg, hostkeys: str, password: str, key: paramiko.RSAKey
-):
+    cfg: Configs, hostkeys: Path, password: str, key: paramiko.RSAKey
+) -> None:
     """
     Append the public part of key to remote server ~/.ssh/authorized_keys.
     """
@@ -113,7 +122,7 @@ def add_public_key_to_remote_authorized_keys(
         client.exec_command("chmod 700 ~/.ssh/")
 
 
-def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
+def verify_ssh_remote_host(remote_host_id: str, hostkeys: Path) -> bool:
     """"""
     transport: paramiko.Transport
     with paramiko.Transport(remote_host_id) as transport:
@@ -132,26 +141,26 @@ def verify_ssh_remote_host(remote_host_id: str, hostkeys: str) -> bool:
     if input_ == "y":
         client = paramiko.SSHClient()
         client.get_host_keys().add(remote_host_id, key.get_name(), key)
-        client.get_host_keys().save(hostkeys)
-        sucess = True
+        client.get_host_keys().save(hostkeys.as_posix())
+        success = True
     else:
         message_user("Host not accepted. No connection made.")
-        sucess = False
+        success = False
 
-    return sucess
+    return success
 
 
-def generate_and_write_ssh_key(ssh_key_path: str):
+def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
     key = paramiko.RSAKey.generate(4096)
-    key.write_private_key_file(ssh_key_path)
+    key.write_private_key_file(ssh_key_path.as_posix())
 
 
 def search_ssh_remote_for_directories(
-    search_path: str,
+    search_path: Path,
     search_prefix: str,
-    cfg,
-    hostkeys: str,
-    ssh_key_path: str,
+    cfg: Configs,
+    hostkeys: Path,
+    ssh_key_path: Path,
 ) -> list:
     """
     Search for the search prefix in the search path over SSH.
@@ -171,17 +180,20 @@ def search_ssh_remote_for_directories(
 
 
 def get_list_of_directory_names_over_sftp(
-    sftp, search_path: str, search_prefix: str
+    sftp, search_path: Path, search_prefix: str
 ) -> list:
 
     all_dirnames = []
     try:
-        for file_or_dir in sftp.listdir_attr(search_path):
+        for file_or_dir in sftp.listdir_attr(search_path.as_posix()):
+
             if stat.S_ISDIR(file_or_dir.st_mode):
+
                 if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
                     all_dirnames.append(file_or_dir.filename)
+
     except FileNotFoundError:
-        raise_error(f"No file found at {search_path}")
+        raise_error(f"No file found at {search_path.as_posix()}")
 
     return all_dirnames
 
@@ -191,14 +203,14 @@ def get_list_of_directory_names_over_sftp(
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def message_user(message: Union[str, list]):
+def message_user(message: Union[str, list]) -> None:
     """
     Centralised way to send message.
     """
     print(message)
 
 
-def get_user_input(message) -> str:
+def get_user_input(message: str) -> str:
     """
     Centralised way to get user input
     """
@@ -206,7 +218,7 @@ def get_user_input(message) -> str:
     return input_
 
 
-def raise_error(message: str):
+def raise_error(message: str) -> None:
     """
     Temporary centralized way to raise and error
     """
@@ -221,17 +233,15 @@ def get_appdir_path(project_name: str) -> Path:
     not good practice. Use appdirs module to get the
     AppData cross-platform and save / load all files form here .
     """
-    base_path = Path(
-        os.path.join(appdirs.user_data_dir("DataShuttle"), project_name)
-    )
+    base_path = Path(appdirs.user_data_dir("DataShuttle")) / project_name
 
-    if not os.path.isdir(base_path):
-        os.makedirs(base_path)
+    if not base_path.is_dir():
+        make_dirs(base_path)
 
     return base_path
 
 
-def process_names(
+def format_names(
     names: Union[list, str],
     prefix: str,
 ) -> Union[list, str]:
@@ -272,45 +282,45 @@ def process_names(
     return prefixed_names
 
 
-# Handle @TO flags  -------------------------------------------------------
+# Handle @TO@ flags  -------------------------------------------------------
 
 
 def update_names_with_range_to_flag(names: list, prefix: str) -> list:
     """
-    Given a list of names, check if they contain the @TO keyword.
-    If so, expand to a range of names. Names including the @TO
+    Given a list of names, check if they contain the @TO@ keyword.
+    If so, expand to a range of names. Names including the @TO@
     keyword must be in the form prefix-num1@num2. The maximum
     number of leading zeros are used to pad the output
     e.g.
     sub-01@003 becomes ["sub-001", "sub-002", "sub-003"]
 
     Input can also be a mixed list e.g.
-    names = ["sub-01", "sub-02@TO04", "sub-05@TO10"]
+    names = ["sub-01", "sub-02@TO@04", "sub-05@TO@10"]
     will output a list of ["sub-01", ..., "sub-10"]
     """
     new_names = []
 
     for i, name in enumerate(names):
 
-        if "@TO" in name:
+        if "@TO@" in name:
 
             check_name_is_formatted_correctly(name, prefix)
 
-            prefix_tag = re.search(f"{prefix}[0-9]+@TO[0-9]+", name)[0]  # type: ignore
+            prefix_tag = re.search(f"{prefix}[0-9]+@TO@[0-9]+", name)[0]  # type: ignore
             tag_number = prefix_tag.split(f"{prefix}")[1]
 
             name_start_str, name_end_str = name.split(tag_number)
 
-            if "@TO" not in tag_number:
+            if "@TO@" not in tag_number:
                 raise_error(
-                    f"@TO flag must be between two numbers in the {prefix} tag."
+                    f"@TO@ flag must be between two numbers in the {prefix} tag."
                 )
 
-            left_number, right_number = tag_number.split("@TO")
+            left_number, right_number = tag_number.split("@TO@")
 
             if int(left_number) >= int(right_number):
                 raise_error(
-                    "Number of the subject to the  left of @TO flag "
+                    "Number of the subject to the  left of @TO@ flag "
                     "must be small than number to the right."
                 )
 
@@ -327,18 +337,18 @@ def update_names_with_range_to_flag(names: list, prefix: str) -> list:
     return new_names
 
 
-def check_name_is_formatted_correctly(name: str, prefix: str):
+def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     """
-    Check the input string is formatted with the @TO key
+    Check the input string is formatted with the @TO@ key
     as expected.
     """
     first_key_value_pair = name.split("_")[0]
-    expected_format = re.compile(f"{prefix}[0-9]+@TO[0-9]+")
+    expected_format = re.compile(f"{prefix}[0-9]+@TO@[0-9]+")
 
     if not re.fullmatch(expected_format, first_key_value_pair):
         raise_error(
-            f"The name: {name} is not in required format for @TO keyword. "
-            f"The start must be  be {prefix}<NUMBER>@TO<NUMBER>)"
+            f"The name: {name} is not in required format for @TO@ keyword. "
+            f"The start must be  be {prefix}<NUMBER>@TO@<NUMBER>)"
         )
 
 
@@ -346,7 +356,7 @@ def make_list_of_zero_padded_names_across_range(
     left_number: str, right_number: str, name_start_str: str, name_end_str: str
 ) -> list:
     """
-    Numbers formatted with the @TO keyword need to have
+    Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
     the maximum number of leading zeros and apply or
     all numbers in the range.
@@ -369,17 +379,17 @@ def make_list_of_zero_padded_names_across_range(
     return names_with_new_number_inserted
 
 
-def num_leading_zeros(string: str):
+def num_leading_zeros(string: str) -> int:
     """int() strips leading zeros"""
     return len(string) - len(str(int(string)))
 
 
-# Handle @DATE, @DATETIME, @TIME flags -------------------------------------------------
+# Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------------------
 
 
-def update_names_with_datetime(names: list):
+def update_names_with_datetime(names: list) -> None:
     """
-    Replace @DATE and @DATETIME flag with date and datetime respectively.
+    Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
 
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
@@ -391,25 +401,25 @@ def update_names_with_datetime(names: list):
 
     for i, name in enumerate(names):
 
-        if "@DATETIME" in name:  # must come first
-            name = add_underscore_before_after_if_not_there(name, "@DATETIME")
+        if "@DATETIME@" in name:  # must come first
+            name = add_underscore_before_after_if_not_there(name, "@DATETIME@")
             datetime_ = f"{format_date}_{format_time}"
-            names[i] = name.replace("@DATETIME", datetime_)
+            names[i] = name.replace("@DATETIME@", datetime_)
 
-        elif "@DATE" in name:
-            name = add_underscore_before_after_if_not_there(name, "@DATE")
-            names[i] = name.replace("@DATE", format_date)
+        elif "@DATE@" in name:
+            name = add_underscore_before_after_if_not_there(name, "@DATE@")
+            names[i] = name.replace("@DATE@", format_date)
 
-        elif "@TIME" in name:
-            name = add_underscore_before_after_if_not_there(name, "@TIME")
-            names[i] = name.replace("@TIME", format_time)
+        elif "@TIME@" in name:
+            name = add_underscore_before_after_if_not_there(name, "@TIME@")
+            names[i] = name.replace("@TIME@", format_time)
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     """
-    If names are passed with @DATE, @TIME, or @DATETIME
+    If names are passed with @DATE@, @TIME@, or @DATETIME@
     but not surrounded by underscores, check and insert
-    if required. e.g. sub-001@DATE becomes sub-001_@DATE
+    if required. e.g. sub-001@DATE@ becomes sub-001_@DATE@
     or sub-001@DATEid-101 becomes sub-001_@DATE_id-101
     """
     key_len = len(key)
@@ -457,7 +467,7 @@ def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_dir.as_posix())
 
 
-def raise_error_not_exists_or_not_yaml(path_to_config: Path):
+def raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
     if not path_to_config.exists():
         raise_error(f"No file found at: {path_to_config}")
 

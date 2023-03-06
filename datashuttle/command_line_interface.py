@@ -1,4 +1,6 @@
 import argparse
+import warnings
+from typing import Any, Callable
 
 import simplejson
 
@@ -13,7 +15,9 @@ PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 # ------------------------------------------------------------------------------------------
 
 
-def run_command(project, function, *args, **kwargs):
+def run_command(
+    project: DataShuttle, function: Callable, *args: Any, **kwargs: Any
+) -> None:
     """
     If project is protected test name, dump the variables to
     stdout so they can be checked. Otherwise, run the
@@ -25,14 +29,14 @@ def run_command(project, function, *args, **kwargs):
         function(*args, **kwargs)
 
 
-def make_kwargs(args):
+def make_kwargs(args: Any) -> dict:
     kwargs = vars(args)
     del kwargs["func"]
     del kwargs["project_name"]
     return kwargs
 
 
-def help(help_type):
+def help(help_type: str) -> str:
     """ """
 
     if help_type == "flag_default_false":
@@ -96,7 +100,7 @@ subparsers = parser.add_subparsers(metavar="\ncommands:")
 # ------------------------------------------------------------------------------------------
 
 
-def make_config_file(project, args):
+def make_config_file(project: DataShuttle, args: Any) -> None:
     kwargs = make_kwargs(args)
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
@@ -166,8 +170,8 @@ make_config_file_parser.add_argument(
     help=help("flag_default_false"),
 )
 make_config_file_parser.add_argument(
-    "--use-imaging",
-    "--use_imaging",
+    "--use-funcimg",
+    "--use_funcimg",
     required=False,
     action="store_true",
     help=help("flag_default_false"),
@@ -186,7 +190,7 @@ make_config_file_parser.add_argument(
 # ------------------------------------------------------------------------------------------
 
 
-def update_config(project, args):
+def update_config(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
     option_key = kwargs["option_key"]
@@ -229,7 +233,9 @@ make_config_file_parser.add_argument(
 # ------------------------------------------------------------------------------------------
 
 
-def setup_ssh_connection_to_remote_server(project, args):
+def setup_ssh_connection_to_remote_server(*args: Any) -> None:
+    """"""
+    project = args[0]
     project.setup_ssh_connection_to_remote_server()
 
 
@@ -250,7 +256,7 @@ setup_ssh_connection_to_remote_server_parser.set_defaults(
 # ------------------------------------------------------------------------------------------
 
 
-def make_sub_dir(project, args):
+def make_sub_dir(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
@@ -291,8 +297,8 @@ make_sub_dir_parser.add_argument(
     metavar="",
 )
 make_sub_dir_parser.add_argument(
-    "--experiment-type",
-    "--experiment_type",
+    "--data-type",
+    "--data_type",
     type=str,
     nargs="+",
     required=True,
@@ -308,7 +314,7 @@ make_sub_dir_parser.add_argument(
 # Upload Data --------------------------------------------------------------------------
 
 
-def upload_data(project, args):
+def upload_data(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
@@ -350,8 +356,8 @@ upload_data_parser.add_argument(
     metavar="",
 )
 upload_data_parser.add_argument(
-    "--experiment-type",
-    "--experiment_type",
+    "--data-type",
+    "--data_type",
     type=str,
     nargs="+",
     required=False,
@@ -370,7 +376,7 @@ upload_data_parser.add_argument(
 # Download Data --------------------------------------------------------------------------
 
 
-def download_data(project, args):
+def download_data(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
@@ -412,8 +418,8 @@ download_data_parser.add_argument(
     metavar="",
 )
 download_data_parser.add_argument(
-    "--experiment-type",
-    "--experiment_type",
+    "--data-type",
+    "--data_type",
     type=str,
     nargs="+",
     required=False,
@@ -432,7 +438,7 @@ download_data_parser.add_argument(
 # Upload Project Dir or File -----------------------------------------------------------
 
 
-def upload_project_dir_or_file(project, args):
+def upload_project_dir_or_file(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
@@ -467,7 +473,7 @@ upload_project_dir_or_file_parser.add_argument(
 # Download Project Dir or File ---------------------------------------------------------
 
 
-def download_project_dir_or_file(project, args):
+def download_project_dir_or_file(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
@@ -510,7 +516,7 @@ download_project_dir_or_file_parser.add_argument(
 # Get Local Path --------------------------------------------------------------------------
 
 
-def get_local_path(*args):
+def get_local_path(*args: Any) -> None:
     """"""
     project = args[0]
     print(project.get_local_path())
@@ -527,7 +533,7 @@ get_local_path_parser.set_defaults(func=get_local_path)
 # Get Appdir Path --------------------------------------------------------------------------
 
 
-def get_appdir_path(*args):
+def get_appdir_path(*args: Any) -> None:
     """"""
     project = args[0]
     print(project.get_appdir_path())
@@ -544,7 +550,7 @@ get_appdir_path_parser.set_defaults(func=get_appdir_path)
 # Get Config Path --------------------------------------------------------------------------
 
 
-def get_config_path(*args):
+def get_config_path(*args: Any) -> None:
     """"""
     project = args[0]
     print(project.get_config_path())
@@ -561,7 +567,7 @@ get_config_path_parser.set_defaults(func=get_config_path)
 # Get Remote Path --------------------------------------------------------------------------
 
 
-def get_remote_path(*args):
+def get_remote_path(*args: Any) -> None:
     """"""
     project = args[0]
     print(project.get_remote_path())
@@ -578,7 +584,7 @@ get_remote_path_parser.set_defaults(func=get_remote_path)
 # Show Configs --------------------------------------------------------------------------
 
 
-def show_configs(*args):
+def show_configs(*args: Any) -> None:
     """"""
     project = args[0]
     project.show_configs()
@@ -594,7 +600,7 @@ show_configs_parser.set_defaults(func=show_configs)
 # Check Name Processing --------------------------------------------------------------------------
 
 
-def check_name_processing(project, args):
+def check_name_processing(project: DataShuttle, args: Any) -> None:
 
     kwargs = make_kwargs(args)
 
@@ -632,7 +638,7 @@ check_name_processing_parser.add_argument(
 # Supply Own Config ------------------------------------------------------------------------
 
 #
-def supply_config_file(project, args):
+def supply_config_file(project: DataShuttle, args: Any) -> None:
 
     kwargs = make_kwargs(args)
 
@@ -663,16 +669,28 @@ supply_config_file_parser.add_argument(
 # ------------------------------------------------------------------------------------------
 
 
-def main():
+def main() -> None:
     """
     Get the arguments, initialise the datashuttle project
     and pass the project and arguments to default function.
     Note these functions must all accept two arguments. In the
     case where only project is required, *args is used
-    (e.g. get_remote_path)
+    (e.g. get_remote_path).
+
+    Supress the warning that a config file must
+    be made on project initialisation when
+    a config is being made.
     """
     args = parser.parse_args()
+
+    if "func" in args and str(args.func.__name__) == "make_config_file":
+        warn = "ignore"
+    else:
+        warn = "default"
+
+    warnings.filterwarnings(warn)  # type: ignore
     project = DataShuttle(args.project_name)
+    warnings.filterwarnings("default")
 
     if len(vars(args)) > 1:
         args.func(project, args)
