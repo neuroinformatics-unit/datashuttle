@@ -112,10 +112,10 @@ def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
     supplied config path is indeed .yaml.
     """
     if not path_to_config.exists():
-        log_and_raise_error(f"No file found at: {path_to_config}")
+        log_and_raise_error(f"No file found at: {path_to_config}.")
 
     if path_to_config.suffix not in [".yaml", ".yml"]:
-        log_and_raise_error("The config file must be a YAML file")
+        log_and_raise_error("The config file must be a YAML file.")
 
 
 def get_first_sub_ses_keys(all_names: List[str]) -> List[str]:

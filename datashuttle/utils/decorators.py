@@ -16,8 +16,9 @@ def requires_ssh_configs(func):
             or not args[0].cfg["remote_host_username"]
         ):
             log_and_raise_error(
-                "Cannot setup SSH connection, configuration "
-                "file remote_host_id or remote_host_username is not set."
+                "Cannot setup SSH connection, 'remote_host_id' "
+                "or 'remote_host_username' is not set in "
+                "the configuration file."
             )
         else:
             return func(*args, **kwargs)
@@ -38,7 +39,7 @@ def check_configs_set(func):
         if args[0].cfg is None:
             log_and_raise_error(
                 "Must set configs with make_config_file() "
-                "before using this function"
+                "before using this function."
             )
         else:
             return func(*args, **kwargs)

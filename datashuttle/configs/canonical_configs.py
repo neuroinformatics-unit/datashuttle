@@ -136,25 +136,25 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
             f"New config keys are in the wrong order. The"
-            f" order should be: {canonical_dict.keys()}"
+            f" order should be: {canonical_dict.keys()}."
         )
 
     if config_dict["connection_method"] not in ["ssh", "local_filesystem"]:
         utils.log_and_raise_error(
-            "connection method must be ssh or local_filesystem"
+            "'connection method' must be 'ssh' or 'local_filesystem'."
         )
 
     for path_ in ["local_path", "remote_path"]:
         if config_dict[path_].as_posix()[0] == "~":
             utils.log_and_raise_error(
                 f"{path_} must contain the full directory path "
-                "with no ~ syntax"
+                "with no ~ syntax."
             )
 
     if not any([config_dict[key] for key in get_data_types()]):
         utils.log_and_raise_error(
-            f"At least one data_type must be True in "
-            f"configs, from: {' '.join(get_data_types())}"
+            f"At least one data type must be True in "
+            f"configs, from: {' '.join(get_data_types())}."
         )
 
     # Check SSH settings
@@ -163,14 +163,14 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         or not config_dict["remote_host_username"]
     ):
         utils.log_and_raise_error(
-            "remote_host_id and remote_host_username are "
-            "required if connection_method is ssh."
+            "'remote_host_id' and 'remote_host_username' are "
+            "required if 'connection_method' is 'ssh'."
         )
 
     # Transfer settings
     if config_dict["transfer_verbosity"] not in ["v", "vv"]:
         utils.log_and_raise_error(
-            "transfer_verbosity must be either v or vv. " "Config not updated."
+            "'transfer_verbosity' must be either 'v' or 'vv'. Config not updated."
         )
 
     # Initialise the local project directory
@@ -220,7 +220,7 @@ def check_config_types(config_dict: Configs) -> None:
 
         if fail:
             utils.log_and_raise_error(
-                f"The type of the value at {key} is incorrect, "
+                f"The type of the value at '{key}' is incorrect, "
                 f"it must be {expected_type}. "
                 f"Config file was not updated."
             )
