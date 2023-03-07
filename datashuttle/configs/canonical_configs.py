@@ -120,7 +120,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     for key in canonical_dict.keys():
         if key not in config_dict.keys():
             utils.log_and_raise_error(
-                f"Loading Failed. The key {key} was not "
+                f"Loading Failed. The key '{key}' was not "
                 f"found in the config. "
                 f"Config file was not updated."
             )
@@ -209,7 +209,10 @@ def check_config_types(config_dict: Configs) -> None:
         expected_type = required_types[key]
 
         if get_origin(expected_type) is Literal:
-            assert config_dict[key] in get_args(expected_type)
+            if config_dict[key] not in get_args(expected_type):
+                utils.log_and_raise_error(
+                    f"'{config_dict[key]}' not in {get_args(expected_type)}"
+                )
 
         elif len(get_args(required_types[key])) == 0:
             if not isinstance(config_dict[key], expected_type):

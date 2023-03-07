@@ -70,7 +70,7 @@ class TestMakeDirs:
 
         assert (
             "Subject and session names but all be unique "
-            "(i.e. there are no duplicates in list input)" == str(e.value)
+            "(i.e. there are no duplicates in list input)." == str(e.value)
         )
 
     def test_duplicate_ses_or_sub_key_value_pair(self, project):

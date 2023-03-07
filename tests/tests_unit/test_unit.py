@@ -109,7 +109,6 @@ class TestUnit:
     def test_process_to_keyword_bad_input_raises_error(
         self, prefix, bad_input
     ):
-
         bad_input = bad_input.replace("prefix", prefix)
 
         with pytest.raises(BaseException) as e:
@@ -118,7 +117,7 @@ class TestUnit:
         assert (
             str(e.value)
             == f"The name: {bad_input} is not in required format for {tags('to')} keyword. "
-            f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)"
+            f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)."
         )
 
     def test_formatting_check_dashes_and_underscore_alternate_correctly(self):
@@ -128,9 +127,15 @@ class TestUnit:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
+
         assert (
             str(e.value)
-            == "subject or session name first delimiter must be dash not underscore"
+            == "The first delimiter of 'sub' or 'ses' must be dash not underscore e.g. sub-001."
+        )
+
+        alternate_error = (
+            "Subject and session names must contain alternating dashes"
+            " and underscores (used for separating key-value pairs)."
         )
 
         all_names = ["sub-001-date_101010"]
@@ -139,30 +144,21 @@ class TestUnit:
                 all_names
             )
 
-        assert (
-            str(e.value)
-            == "subject and session names must contain alternating dashes and underscores (used for separating key-value pairs)"
-        )
+        assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-suffix"]
         with pytest.raises(BaseException) as e:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
-        assert (
-            str(e.value)
-            == "subject and session names must contain alternating dashes and underscores (used for separating key-value pairs)"
-        )
+        assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-task-check"]
         with pytest.raises(BaseException) as e:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
-        assert (
-            str(e.value)
-            == "subject and session names must contain alternating dashes and underscores (used for separating key-value pairs)"
-        )
+        assert str(e.value) == alternate_error
 
         # check these don't raise
         all_names = ["ses-001_hello-world_one-hundred"]

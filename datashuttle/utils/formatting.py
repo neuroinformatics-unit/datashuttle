@@ -340,7 +340,7 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
         if any([ele == 0 for ele in diff(dashes_underscores)]):
             utils.log_and_raise_error(
                 "Subject and session names must contain alternating dashes and "
-                "underscores (used for separating key-value pairs)"
+                "underscores (used for separating key-value pairs)."
             )
 
 

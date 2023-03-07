@@ -459,8 +459,8 @@ class TestCommandLineInterface:
         )
 
         assert (
-            "remote_host_id and remote_host_username are "
-            "required if connection_method is ssh." in stderr
+            "'remote_host_id' and 'remote_host_username' are "
+            "required if 'connection_method' is 'ssh'." in stderr
         )
 
     @pytest.mark.parametrize("sep", ["-", "_"])
