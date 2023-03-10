@@ -1,0 +1,15 @@
+html[data-theme=dark] {
+    --pst-color-primary: #04B46D;
+    --pst-color-link: var(--pst-color-primary);
+}
+
+html[data-theme=light] {
+--pst-color-primary: #03A062;
+--pst-color-link: var(--pst-color-primary);
+}
+
+.things-in-a-row {
+display: flex;
+flex-wrap: wrap;
+justify-content: space-between;
+}
