@@ -11,7 +11,7 @@ from typing import Any, List, Optional, Union
 import paramiko
 
 from datashuttle.configs import load_configs
-from datashuttle.configs.configs import Configs
+from datashuttle.configs.configs_class import Configs
 from datashuttle.utils import (
     directories,
     ds_logger,

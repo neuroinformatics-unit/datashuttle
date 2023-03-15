@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import List, Optional, Union
 
-from datashuttle.configs.configs import Configs
+from datashuttle.configs.configs_class import Configs
 
 from . import directories, formatting, rclone, utils
 

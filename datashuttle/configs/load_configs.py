@@ -5,7 +5,7 @@ from typing import Optional, Union, overload
 from datashuttle.utils import utils
 
 from . import canonical_configs
-from .configs import Configs
+from .configs_class import Configs
 
 ConfigValueTypes = Union[Path, str, bool, None]
 

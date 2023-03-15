@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .configs import Configs
+    from .configs_class import Configs
 
 from datashuttle.utils.directory_class import Directory
 

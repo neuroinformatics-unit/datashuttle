@@ -2,7 +2,7 @@ import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
 
-from datashuttle.configs.configs import Configs
+from datashuttle.configs.configs_class import Configs
 from datashuttle.utils import utils
 
 
