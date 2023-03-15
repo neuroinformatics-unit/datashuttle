@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from datashuttle.datashuttle import DataShuttle
-    from datashuttle.configs.configs_class import Configs
+    from datashuttle.configs.config_class import Configs
 
 import glob
 import os

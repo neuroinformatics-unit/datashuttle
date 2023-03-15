@@ -3,7 +3,7 @@ import re
 from typing import List, Union
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.configs.configs_class import Configs
+from datashuttle.configs.config_class import Configs
 
 from . import utils
 
