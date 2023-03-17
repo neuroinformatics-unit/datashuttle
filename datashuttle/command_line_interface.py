@@ -797,17 +797,16 @@ def construct_parser():
     check_name_formatting_parser.set_defaults(func=check_name_formatting)
 
     check_name_formatting_parser.add_argument(
-        "names",
+        "prefix",
         type=str,
-        nargs="+",
-        help="Required: (str, single or multiple)",
+        help="Required: (str) (sub- or ses-)",
     )
 
     check_name_formatting_parser.add_argument(
-        "--prefix",
+        "--names",
         type=str,
-        required=True,
-        help="Required: (str) (sub- or ses-)",
+        nargs="+",
+        help="Required: (str, single or multiple)",
     )
 
     # Supply Config
