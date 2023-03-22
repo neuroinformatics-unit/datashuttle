@@ -10,17 +10,15 @@ get_canonical_config_required_types()
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from datashuttle.configs import Configs
+    from datashuttle.configs.configs import Configs
 
 from pathlib import Path
-from typing import Union, get_args, overload
+from typing import Union, get_args
 
-from datashuttle.utils_mod import utils
-
-ConfigValueTypes = Union[Path, str, bool, None]
+from datashuttle.utils import utils
 
 
 def get_canonical_config_dict() -> dict:
@@ -34,16 +32,32 @@ def get_canonical_config_dict() -> dict:
         "connection_method": None,
         "remote_host_id": None,
         "remote_host_username": None,
-        "use_ephys": None,
-        "use_behav": None,
-        "use_funcimg": None,
-        "use_histology": None,
     }
+
+    data_type_configs = get_data_types(as_dict=True)
+    config_dict.update(data_type_configs)
+
     return config_dict
 
 
-def get_data_types() -> list[str]:
-    return ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
+def get_data_types(as_dict: bool = False):
+    """
+    New data_types must be added here
+    """
+    keys = ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
+
+    if as_dict:
+        return dict(zip(keys, [None] * len(keys)))
+    else:
+        return keys
+
+
+def get_flags() -> List[str]:
+    """
+    Return all configs that are bool flags. This is used in
+    testing and type checking config inputs.
+    """
+    return get_data_types()
 
 
 def get_canonical_config_required_types() -> dict:
@@ -68,6 +82,11 @@ def get_canonical_config_required_types() -> dict:
     ), "update get_canonical_config_required_types with required types."
 
     return required_types
+
+
+# -------------------------------------------------------------------
+# Check Configs
+# -------------------------------------------------------------------
 
 
 def check_dict_values_and_inform_user(config_dict: Configs) -> None:
@@ -129,55 +148,6 @@ def check_dict_values_and_inform_user(config_dict: Configs) -> None:
             "remote_host_id and remote_host_username are "
             "required if connection_method is ssh."
         )
-
-
-@overload
-def handle_cli_or_supplied_config_bools(dict_: Configs) -> Configs:
-    ...
-
-
-@overload
-def handle_cli_or_supplied_config_bools(dict_: dict) -> dict:
-    ...
-
-
-def handle_cli_or_supplied_config_bools(
-    dict_: Union[Configs, dict]
-) -> Union[Configs, dict]:
-    """
-    For supplied configs for CLI input args,
-    in some instances bools will as string type.
-    Handle this case here to cast to correct type.
-    """
-    for key in dict_.keys():
-        dict_[key] = handle_bool(key, dict_[key])
-    return dict_
-
-
-def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
-    """ """
-    if key in [
-        "use_ephys",
-        "use_behav",
-        "use_funcimg",
-        "use_histology",
-    ]:
-
-        if value in ["None", "none", None]:
-            value = False
-
-        if isinstance(value, str):
-            if value not in ["True", "False", "true", "false"]:
-                utils.raise_error(
-                    f"Input value for {key} " f"must be True or False"
-                )
-
-            value = value in ["True", "true"]
-
-    elif value in ["None", "none"]:
-        value = None
-
-    return value
 
 
 def check_config_types(config_dict: Configs) -> None:

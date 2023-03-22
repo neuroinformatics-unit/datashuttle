@@ -1,22 +1,19 @@
 import copy
-import getpass
 import json
 import os
-import traceback
-import warnings
 from collections.abc import ItemsView
 from pathlib import Path
 from typing import Any, List, Optional, Union, cast
 
 import paramiko
 
-from datashuttle.configs import Configs
-from datashuttle.utils_mod import canonical_configs, rclone_utils, utils
-from datashuttle.utils_mod.decorators import (  # noqa
+from datashuttle.configs import canonical_directories, load_configs
+from datashuttle.configs.configs import Configs
+from datashuttle.utils import directories, formatting, rclone, ssh, utils
+from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
 )
-from datashuttle.utils_mod.directory_class import Directory
 
 # --------------------------------------------------------------------------------------------------------------------
 # Project Manager Class
@@ -60,18 +57,20 @@ class DataShuttle:
         self.project_name = project_name
         self._appdir_path = utils.get_appdir_path(self.project_name)
         self._config_path = self._make_path("appdir", "config.yaml")
+        self._top_level_dir_name = "rawdata"
 
         self.cfg: Any = None
         self._ssh_key_path: Any = None
         self._data_type_dirs: Any = None
-        self._top_level_dir_name = "rawdata"
 
-        self._attempt_load_configs(prompt_on_fail=True)
+        self.cfg = load_configs.make_config_file_attempt_load(
+            self._config_path
+        )
 
         if self.cfg:
             self._set_attributes_after_config_load()
 
-        rclone_utils.prompt_rclone_download_if_does_not_exist()
+        rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
         """
@@ -90,28 +89,7 @@ class DataShuttle:
         )
         self._hostkeys = self._make_path("appdir", "hostkeys")
 
-        self._data_type_dirs = {
-            "ephys": Directory(
-                name="ephys",
-                used=self.cfg["use_ephys"],
-                level="ses",
-            ),
-            "behav": Directory(
-                name="behav",
-                used=self.cfg["use_behav"],
-                level="ses",
-            ),
-            "funcimg": Directory(
-                name="funcimg",
-                used=self.cfg["use_funcimg"],
-                level="ses",
-            ),
-            "histology": Directory(
-                name="histology",
-                used=self.cfg["use_histology"],
-                level="sub",
-            ),
-        }
+        self._data_type_dirs = canonical_directories.get_directories(self.cfg)
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Directory Makers
@@ -268,14 +246,14 @@ class DataShuttle:
 
         Next, prompt to input their password for the remote
         cluster. Once input, SSH private / public key pair
-        will be setup (see _setup_ssh_key() for details).
+        will be setup (see _setup_ssh_key_and_rclone_config() for details).
         """
-        verified = utils.verify_ssh_remote_host(
+        verified = ssh.verify_ssh_remote_host(
             self.cfg["remote_host_id"], self._hostkeys
         )
 
         if verified:
-            self._setup_ssh_key()
+            self._setup_ssh_key_and_rclone_config()
 
     def write_public_key(self, filepath: str) -> None:
         """
@@ -366,10 +344,12 @@ class DataShuttle:
             self.cfg.dump_to_file()
 
         self._set_attributes_after_config_load()
-        self._setup_remote_as_rclone_target(
-            "local_filesystem"
-        )  # TODO: handle this!!
 
+        rclone.setup_remote_as_rclone_target(
+            self.cfg,
+            self._get_rclone_config_name("local_filesystem"),
+            self._ssh_key_path,
+        )
         utils.message_user(
             "Configuration file has been saved and "
             "options loaded into datashuttle."
@@ -392,40 +372,6 @@ class DataShuttle:
             )
         self.cfg.update_an_entry(option_key, new_info)
         self._set_attributes_after_config_load()
-
-    def _attempt_load_configs(self, prompt_on_fail: bool) -> None:
-        """
-        Attempt to load the config file. If it does not exist or crashes
-        when attempt to load from file, return False.
-
-        :param prompt_on_fail: if config file not found, or crashes on load,
-                               show warning.
-
-        :return: loaded dictionary, or False if not loaded.
-        """
-        exists = self._config_path.is_file()
-
-        if not exists and prompt_on_fail:
-            warnings.warn(
-                "Configuration file has not been initialized. "
-                "Use make_config_file() to setup before continuing."
-            )
-            return
-
-        self.cfg = Configs(self._config_path, None)
-
-        try:
-            self.cfg.load_from_file()
-        except Exception:
-            self.cfg = None
-
-            if prompt_on_fail:
-                utils.message_user(
-                    f"Config file failed to load. Check file "
-                    f"formatting at {self._config_path.as_posix()}. If "
-                    f"cannot load, re-initialise configs with "
-                    f"make_config_file()"
-                )
 
     # --------------------------------------------------------------------------------------------------------------------
     # Public Getters
@@ -468,45 +414,34 @@ class DataShuttle:
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
     ) -> None:
+        """
+        Supply own config by passing the path to .yaml config
+        file. The config file must contain exactly the
+        same keys as DataShuttle canonical config, with
+        values the same type. This config will be loaded
+        into datashuttle, and a copy saved in the DataShuttle
+        config folder for future use.
 
+        :param input_path_to_config: Path to the config to
+                                     use as DataShuttle config.
+        :param warn: prompt the user to confirm as supplying
+                     config will overwrite existing config.
+                     Turned off for testing.
+        """
         path_to_config = Path(input_path_to_config)
 
-        utils.raise_error_not_exists_or_not_yaml(path_to_config)
-
-        if warn:
-            input_ = utils.get_user_input(
-                "This will overwrite the existing datashuttle config file."
-                "If you wish to proceed, press y."
+        new_cfg = (
+            load_configs.supplied_configs_confirm_overwrite_raise_on_fail(
+                path_to_config, warn
             )
+        )
 
-            if input_ != "y":
-                return None
-
-        try:
-            new_cfg: Configs
-
-            new_cfg = Configs(path_to_config, None)
-            new_cfg.load_from_file()
-
-            new_cfg = canonical_configs.handle_cli_or_supplied_config_bools(
-                new_cfg
-            )
-            new_cfg.check_dict_values_and_inform_user()
-
-        except BaseException:
-            utils.message_user(traceback.format_exc())
-            utils.raise_error(
-                "Could not load config file. Please check that "
-                "the file is formatted correctly. "
-                "Config file was not updated."
-            )
-            return None
-
-        self.cfg = new_cfg
-        self._set_attributes_after_config_load()
-        self.cfg.file_path = self._config_path
-        self.cfg.dump_to_file()
-        utils.message_user("Update successful.")
+        if new_cfg:
+            self.cfg = new_cfg
+            self._set_attributes_after_config_load()
+            self.cfg.file_path = self._config_path
+            self.cfg.dump_to_file()
+            utils.message_user("Update successful.")
 
     @staticmethod
     def check_name_processing(names: Union[str, list], prefix: str) -> None:
@@ -520,74 +455,8 @@ class DataShuttle:
         if prefix not in ["sub-", "ses-"]:
             utils.raise_error("prefix: must be 'sub-' or 'ses-'")
 
-        processed_names = utils.format_names(names, prefix)
+        processed_names = formatting.format_names(names, prefix)
         utils.message_user(processed_names)
-
-    # --------------------------------------------------------------------------------------------------------------------
-    # Setup RClone
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def _move_dir_or_file(
-        self, filepath: str, upload_or_download: str, dry_run: bool
-    ) -> None:
-        """
-        Copy a directory or file with Rclone.
-
-        :param filepath: filepath (not including local
-                         or remote root) to copy
-        :param upload_or_download: upload goes local to
-                                   remote, download goes
-                                   remote to local
-        :param dry_run: do not actually move the files,
-                        just report what would be moved.
-        """
-        local_filepath = self._make_path(
-            "local", [self._top_level_dir_name, filepath]
-        ).as_posix()
-
-        remote_filepath = self._make_path(
-            "remote", [self._top_level_dir_name, filepath]
-        ).as_posix()
-
-        extra_arguments = "--create-empty-src-dirs"
-        if dry_run:
-            extra_arguments += " --dry-run"
-
-        if upload_or_download == "upload":
-
-            rclone_utils.call_rclone(
-                f"copy "
-                f'"{local_filepath}" '
-                f'"{self._get_rclone_config_name(self.cfg["connection_method"])}:'
-                f'{remote_filepath}" '
-                f"{extra_arguments}"
-            )
-
-        elif upload_or_download == "download":
-            rclone_utils.call_rclone(
-                f"copy "
-                f'"{self._get_rclone_config_name(self.cfg["connection_method"])}:'
-                f'{remote_filepath}" '
-                f'"{local_filepath}"  '
-                f"{extra_arguments}"
-            )
-
-    def _setup_remote_as_rclone_target(self, connection_method: str) -> None:
-        """
-        rclone shares config file so need to create
-        new local and remote for all project
-        :param local_or_ssh:
-        """
-        rclone_config_name = self._get_rclone_config_name(
-            connection_method,
-        )
-
-        rclone_utils.setup_remote_as_rclone_target(
-            self.cfg, connection_method, rclone_config_name, self._ssh_key_path
-        )
-
-    def _get_rclone_config_name(self, connection_method: str) -> str:
-        return f"remote_{self.project_name}_{connection_method}"
 
     # ====================================================================================================================
     # Private Functions
@@ -635,7 +504,7 @@ class DataShuttle:
                 "local", [self._top_level_dir_name, sub]
             )
 
-            utils.make_dirs(sub_path)
+            directories.make_dirs(sub_path)
 
             self._make_data_type_folders(data_type, sub_path, "sub")
 
@@ -645,7 +514,7 @@ class DataShuttle:
                     "local", [self._top_level_dir_name, sub, ses]
                 )
 
-                utils.make_dirs(ses_path)
+                directories.make_dirs(ses_path)
 
                 self._make_data_type_folders(data_type, ses_path, "ses")
 
@@ -655,7 +524,11 @@ class DataShuttle:
         sub_or_ses_level_path: Path,
         level: str,
     ) -> None:
-        """ """
+        """
+        Make data_type folder (e.g. behav) at the sub or ses
+        level. Checks directory_class.Directories attributes,
+        whether the data_type is used and at the current level.
+        """
         data_type_items = self._get_data_type_items(data_type)
 
         for data_type_key, data_type_dir in data_type_items:  # type: ignore
@@ -664,9 +537,9 @@ class DataShuttle:
 
                 data_type_path = sub_or_ses_level_path / data_type_dir.name
 
-                utils.make_dirs(data_type_path)
+                directories.make_dirs(data_type_path)
 
-                utils.make_datashuttle_metadata_folder(data_type_path)
+                directories.make_datashuttle_metadata_folder(data_type_path)
 
     # --------------------------------------------------------------------------------------------------------------------
     # File Transfer
@@ -699,7 +572,6 @@ class DataShuttle:
         else:
             sub_names = self._search_subs_from_project_dir(
                 local_or_remote,
-                self._top_level_dir_name,
             )
 
         for sub in sub_names:
@@ -716,9 +588,7 @@ class DataShuttle:
             if ses_names not in ["all", ["all"]]:
                 ses_names = self._format_names(ses_names, "ses")
             else:
-                ses_names = self._search_ses_from_sub_dir(
-                    local_or_remote, self._top_level_dir_name, sub
-                )
+                ses_names = self._search_ses_from_sub_dir(local_or_remote, sub)
 
             for ses in ses_names:
 
@@ -772,6 +642,36 @@ class DataShuttle:
                     filepath, upload_or_download, dry_run=dry_run
                 )
 
+    def _move_dir_or_file(
+        self, filepath: str, upload_or_download: str, dry_run: bool
+    ) -> None:
+        """
+        Copy a directory or file with data.
+
+        :param filepath: filepath (not including local
+                         or remote root) to copy
+        :param upload_or_download: upload goes local to
+                                   remote, download goes
+                                   remote to local
+        :param dry_run: do not actually move the files,
+                        just report what would be moved.
+        """
+        local_filepath = self._make_path(
+            "local", [self._top_level_dir_name, filepath]
+        ).as_posix()
+
+        remote_filepath = self._make_path(
+            "remote", [self._top_level_dir_name, filepath]
+        ).as_posix()
+
+        rclone.transfer_data(
+            local_filepath,
+            remote_filepath,
+            self._get_rclone_config_name(),
+            upload_or_download,
+            dry_run,
+        )
+
     def _items_from_data_type_input(
         self,
         local_or_remote: str,
@@ -800,46 +700,11 @@ class DataShuttle:
     # Search for subject and sessions (local or remote)
     # --------------------------------------------------------------------------------------------------------------------
 
-    def _search_subs_from_project_dir(
-        self, local_or_remote: str, data_type: str
-    ) -> List[str]:
-        """
-        Search a datatype directory for all present sub-prefixed directories.
-        If remote, ssh or filesystem will be used depending on config.
-
-        :param local_or_remote: "local" or "remote"
-        :param data_type: the data type (e.g. behav, cannot be "all")
-        """
-        search_path = self._make_path(
-            local_or_remote, [self._top_level_dir_name]
-        )
-
-        search_prefix = self.cfg.sub_prefix + "*"
-        return self._search_for_directories(
-            local_or_remote, search_path, search_prefix
-        )
-
-    def _search_ses_from_sub_dir(
-        self, local_or_remote: str, data_type: str, sub: str
-    ) -> List[str]:
-        """
-        See _search_subs_from_project_dir(), same but for searching sessions
-        within a subdirectory.
-        """
-        search_path = self._make_path(
-            local_or_remote, [self._top_level_dir_name, sub]
-        )
-        search_prefix = self.cfg.ses_prefix + "*"
-
-        return self._search_for_directories(
-            local_or_remote, search_path, search_prefix
-        )
-
     def _search_data_dirs_sub_or_ses_level(
         self, local_or_remote: str, sub: str, ses: Optional[str] = None
     ) -> zip:
         """
-        Find data_type type directories in the project base
+        Find data_type directories in the project base
         directory (e.g. "ephys", "behav"), (by filtering the
         names of all directories present).  Return these in the
         same format as dict.items()
@@ -854,102 +719,66 @@ class DataShuttle:
         if ses:
             base_dir = base_dir / ses
 
-        directory_names = self._search_for_directories(
-            local_or_remote, base_dir, "*"
+        directory_names = directories.search_for_directories(
+            self, local_or_remote, base_dir, "*"
         )
 
-        data_directories = self._process_glob_to_find_data_type_dirs(
-            directory_names
+        data_directories = directories.process_glob_to_find_data_type_dirs(
+            directory_names,
+            self._data_type_dirs,
         )
 
         return data_directories
 
-    def _search_for_directories(
-        self, local_or_remote: str, search_path: Path, search_prefix: str
+    def _search_subs_from_project_dir(
+        self,
+        local_or_remote: str,
     ) -> List[str]:
         """
-        Wrapper to determine the method used to search for search
-        prefix directories in the search path.
+        Search a datatype directory for all present sub-prefixed directories.
+        If remote, ssh or filesystem will be used depending on config.
 
         :param local_or_remote: "local" or "remote"
-        :param search_path: full filepath to search in
-        :param search_prefix: file / dirname to search (e.g. "sub-*")
         """
-        if (
-            local_or_remote == "remote"
-            and self.cfg["connection_method"] == "ssh"
-        ):
+        search_path = self._make_path(
+            local_or_remote, [self._top_level_dir_name]
+        )
 
-            all_dirnames = utils.search_ssh_remote_for_directories(
-                search_path,
-                search_prefix,
-                self.cfg,
-                self._hostkeys,
-                self._ssh_key_path,
-            )
-        else:
-            all_dirnames = utils.search_filesystem_path_for_directories(
-                search_path / search_prefix
-            )
-        return all_dirnames
+        search_prefix = self.cfg.sub_prefix + "*"
+        return directories.search_for_directories(
+            self, local_or_remote, search_path, search_prefix
+        )
 
-    def _process_glob_to_find_data_type_dirs(
-        self,
-        directory_names: list,
-    ) -> zip:
+    def _search_ses_from_sub_dir(
+        self, local_or_remote: str, sub: str
+    ) -> List[str]:
         """
-        Process the results of glob on a sub or session level,
-        which could contain any kind of folder / file.
-        Find the data_type files and return in
-        a format that mirros dict.items()
+        See _search_subs_from_project_dir(), same but for searching sessions
+        within a subdirectory.
         """
-        ses_dir_keys = []
-        ses_dir_values = []
-        for dir_name in directory_names:
-            data_type_key = [
-                key
-                for key, value in self._data_type_dirs.items()
-                if value.name == dir_name
-            ]
+        search_path = self._make_path(
+            local_or_remote, [self._top_level_dir_name, sub]
+        )
+        search_prefix = self.cfg.ses_prefix + "*"
 
-            if data_type_key:
-                ses_dir_keys.append(data_type_key[0])
-                ses_dir_values.append(self._data_type_dirs[data_type_key[0]])
-
-        return zip(ses_dir_keys, ses_dir_values)
+        return directories.search_for_directories(
+            self, local_or_remote, search_path, search_prefix
+        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
     # --------------------------------------------------------------------------------------------------------------------
 
     @requires_ssh_configs
-    def _setup_ssh_key(self) -> None:
+    def _setup_ssh_key_and_rclone_config(self) -> None:
         """
-        Setup an SSH private / public key pair with
-        remote server. First, a private key is generated
-        in the appdir. Next a connection requiring input
-        password made, and the public part of the key
-        added to ~/.ssh/authorized_keys.
+        Setup ssh connection, key pair (see ssh.setup_ssh_key)
+        for details. Also, setup rclone config for ssh connection.
         """
-        utils.generate_and_write_ssh_key(self._ssh_key_path)
+        ssh.setup_ssh_key(self._ssh_key_path, self._hostkeys, self.cfg)
 
-        password = getpass.getpass(
-            "Please enter password to your remote host to add the public key. "
-            "You will not have to enter your password again."
-        )
-
-        key = paramiko.RSAKey.from_private_key_file(
-            self._ssh_key_path.as_posix()
-        )
-
-        utils.add_public_key_to_remote_authorized_keys(
-            self.cfg, self._hostkeys, password, key
-        )
-
-        self._setup_remote_as_rclone_target("ssh")
-        utils.message_user(
-            f"SSH key pair setup successfully. "
-            f"Private key at: {self._ssh_key_path.as_posix()}"
+        rclone.setup_remote_as_rclone_target(
+            self.cfg, self._get_rclone_config_name("ssh"), self._ssh_key_path
         )
 
     # --------------------------------------------------------------------------------------------------------------------
@@ -1004,7 +833,7 @@ class DataShuttle:
         :param sub_or_ses: "sub" or "ses" - this defines the prefix checks.
         """
         prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        processed_names = utils.format_names(names, prefix)
+        processed_names = formatting.format_names(names, prefix)
 
         return processed_names
 
@@ -1062,3 +891,15 @@ class DataShuttle:
             )
 
         return items
+
+    def _get_rclone_config_name(
+        self, connection_method: Optional[str] = None
+    ) -> str:
+        """
+        Convenience function to get the rclone config
+        name (these configs are created by datashuttle)
+        """
+        if connection_method is None:
+            connection_method = self.cfg["connection_method"]
+
+        return f"remote_{self.project_name}_{connection_method}"

@@ -10,7 +10,9 @@ from os.path import join
 import appdirs
 import yaml
 
+from datashuttle.configs import canonical_configs
 from datashuttle.datashuttle import DataShuttle
+from datashuttle.utils import rclone
 
 # ----------------------------------------------------------------------------------------------------------
 # Setup and Teardown Test Project
@@ -23,14 +25,19 @@ def setup_project_default_configs(
     remote_path=False,
     all_data_type_on=True,
 ):
-    """"""
+    """
+    Set up a fresh project to test on
+
+    local_path / remote_path: provide the config paths to set
+    all_data_type_on: by default, all data_type flags are False.
+                     for testing, it is preferable to have all True
+                     so set this if this argument is True.
+    """
     delete_project_if_it_exists(project_name)
 
     warnings.filterwarnings("ignore")
 
     project = DataShuttle(project_name)
-
-    project._setup_remote_as_rclone_target("local_filesystem")
 
     default_configs = get_test_config_arguments_dict(set_as_defaults=True)
 
@@ -38,6 +45,12 @@ def setup_project_default_configs(
         default_configs.update(get_all_data_types_on("kwargs"))
 
     project.make_config_file(**default_configs)
+
+    rclone.setup_remote_as_rclone_target(
+        project.cfg,
+        project._get_rclone_config_name("ssh"),
+        project._ssh_key_path,
+    )
 
     warnings.filterwarnings("default")
 
@@ -55,6 +68,10 @@ def setup_project_default_configs(
 
 
 def glob_basenames(search_path, recursive=False, exclude=None):
+    """
+    Use glob to search but strip the full path, including
+    only the base name (lowest level).
+    """
     paths_ = glob.glob(search_path, recursive=recursive)
     basenames = [os.path.basename(path_) for path_ in paths_]
 
@@ -98,7 +115,7 @@ def delete_project_if_it_exists(project_name):
 
 
 def setup_project_fixture(tmp_path, test_project_name):
-
+    """"""
     project = setup_project_default_configs(
         test_project_name,
         local_path=tmp_path / test_project_name / "local",
@@ -336,6 +353,11 @@ def check_data_type_sub_ses_uploaded_correctly(
 
 
 def check_and_strip_within_sub_data_dirs(ses_names, data_type_to_transfer):
+    """
+    Check if data_type folders at the sub level are picked
+    up when sessions are searched for with wildcard. Remove
+    so that sessions can be explicitly tested next.
+    """
     if "histology" in data_type_to_transfer:
         assert "histology" in ses_names
 
@@ -369,11 +391,9 @@ def make_and_check_local_project(project, subs, sessions, data_type):
 
 def check_configs(project, kwargs):
     """"""
-    config_path = (
-        project._appdir_path / "config.yaml"
-    )  # TODO: can use new get_config()
+    config_path = project._config_path
 
-    if not os.path.isfile(config_path):
+    if not config_path.is_file():
         raise FileNotFoundError("Config file not found.")
 
     check_project_configs(project, kwargs)
@@ -406,7 +426,7 @@ def check_project_configs(
 
 
 def check_config_file(config_path, *kwargs):
-    """ """
+    """"""
     with open(config_path, "r") as config_file:
         config_yaml = yaml.full_load(config_file)
 
@@ -420,6 +440,7 @@ def check_config_file(config_path, *kwargs):
 
 
 def get_rawdata_path(project, local_or_remote="local"):
+    """"""
     if local_or_remote == "local":
         base_path = project.cfg["local_path"]
     else:
@@ -460,7 +481,7 @@ def get_default_sub_sessions_to_test():
 
 
 def run_cli(command, project_name=None):
-
+    """"""
     name = get_protected_test_dir() if project_name is None else project_name
 
     result = subprocess.Popen(
@@ -474,18 +495,13 @@ def run_cli(command, project_name=None):
     return stdout.decode("utf8"), stderr.decode("utf8")
 
 
-def get_flags():  # TODO: MOVE TO CANONICAL_CONFIGS
-    return [
-        "use_ephys",
-        "use_behav",
-        "use_histology",
-        "use_funcimg",
-    ]
-
-
 def get_all_data_types_on(kwargs_or_flags):
-    """ """
-    data_types = get_flags()
+    """
+    Get all data_types (e.g. --use_behav) in on form,
+    either as kwargs for API or str of flags for
+    CLI.
+    """
+    data_types = canonical_configs.get_flags()
     if kwargs_or_flags == "flags":
         return f"{' '.join(['--' + flag for flag in data_types])}"
     else:

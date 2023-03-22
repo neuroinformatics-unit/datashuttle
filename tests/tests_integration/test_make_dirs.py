@@ -6,7 +6,7 @@ from os.path import join
 import pytest
 import test_utils
 
-from datashuttle.utils_mod import utils
+from datashuttle.utils import formatting
 
 
 class TestMakeDirs:
@@ -49,7 +49,7 @@ class TestMakeDirs:
         (not str, list) raise appropriate error.
         """
         with pytest.raises(BaseException) as e:
-            utils.format_names(input, prefix)
+            formatting.format_names(input, prefix)
 
         assert (
             "Ensure subject and session names are "
@@ -63,7 +63,7 @@ class TestMakeDirs:
         is passed to format_names().
         """
         with pytest.raises(BaseException) as e:
-            utils.format_names(["1", "2", "3", "3", "4"], prefix)
+            formatting.format_names(["1", "2", "3", "3", "4"], prefix)
 
         assert (
             "Subject and session names but all be unique "
@@ -78,16 +78,16 @@ class TestMakeDirs:
         prefix = "test_sub-"
 
         # check name is prefixed
-        processed_names = utils.format_names("1", prefix)
+        processed_names = formatting.format_names("1", prefix)
         assert processed_names[0] == "test_sub-1"
 
         # check existing prefix is not duplicated
-        processed_names = utils.format_names("test_sub-1", prefix)
+        processed_names = formatting.format_names("test_sub-1", prefix)
         assert processed_names[0] == "test_sub-1"
 
         # test mixed list of prefix and unprefixed are prefixed correctly.
         mixed_names = ["1", prefix + "four", "5", prefix + "6"]
-        processed_names = utils.format_names(mixed_names, prefix)
+        processed_names = formatting.format_names(mixed_names, prefix)
         assert processed_names == [
             "test_sub-1",
             "test_sub-four",
