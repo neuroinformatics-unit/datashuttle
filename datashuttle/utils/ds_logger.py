@@ -31,7 +31,7 @@ def start(
         variables=variables,
         verbose=verbose,
         timestamp=True,
-        file_log_level="INFO",
+        file_log_level="DEBUG",
         write_git=False,
         log_to_console=False,
     )
