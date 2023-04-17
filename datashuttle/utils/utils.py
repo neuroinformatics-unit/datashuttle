@@ -18,7 +18,7 @@ def log(message: str) -> None:
     Log the message to the main initialised
     logger.
     """
-    logger = logging.getLogger()
+    logger = logging.getLogger("datashuttle")
     logger.debug(message)
 
 
@@ -35,8 +35,9 @@ def log_and_raise_error(message: str) -> None:
     """
     Log the message before raising the same message as an error.
     """
-    logging.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
-    logging.error(message)
+    logger = logging.getLogger("datashuttle")
+    logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
+    logger.error(message)
     raise_error(message)
 
 
