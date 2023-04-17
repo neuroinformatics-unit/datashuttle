@@ -861,6 +861,7 @@ class DataShuttle:
         variables: Optional[List[Any]] = None,
         store_in_temp_dir: bool = False,
         temp_dir_path: Union[str, Path] = "",
+        verbose: bool = True,
     ) -> None:
         """
         Initialize the logger. This is typically called at
@@ -894,7 +895,7 @@ class DataShuttle:
         else:
             path_to_save = self.cfg.logging_path
 
-        ds_logger.start(path_to_save, name, variables)
+        ds_logger.start(path_to_save, name, variables, verbose)
 
     def _move_logs_from_temp_dir(self):
         """

@@ -2,7 +2,6 @@ import logging
 from pathlib import Path
 from typing import Any, List, Optional
 
-import fancylog as package
 from fancylog import fancylog
 from rich import print as rich_print
 from rich.console import Console
@@ -11,21 +10,26 @@ from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
 
+import datashuttle as package_to_log
+
 from . import utils
 
 
 def start(
-    path_to_log: Path, name: str, variables: Optional[List[Any]]
+    path_to_log: Path,
+    name: str,
+    variables: Optional[List[Any]],
+    verbose: bool = True,
 ) -> None:
     """
     Call fancylog to initialise logging.
     """
     fancylog.start_logging(
         path_to_log,
-        package,
+        package_to_log,
         filename=name,
         variables=variables,
-        verbose=False,
+        verbose=verbose,
         timestamp=True,
         file_log_level="INFO",
         write_git=False,
