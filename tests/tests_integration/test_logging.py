@@ -82,7 +82,7 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(project.cfg.logging_path)
 
-        assert "Starting make_config_file" in log
+        assert "Starting logging for command make_config_file" in log
         assert "Successfully created rclone config." in log
         assert (
             "Configuration file has been saved and options loaded into datashuttle."
@@ -96,7 +96,7 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
-        assert "Starting update_config" in log
+        assert "Starting logging for command update_config" in log
         assert "remote_host_id has been updated to test_id" in log
         assert "Update successful. New config file:" in log
         assert """ "remote_host_id": "test_id",\n """ in log
@@ -216,7 +216,9 @@ class TestCommandLineInterface:
 
         suffix = "_all" if use_all_alias else "_data"
 
-        assert f"Starting {upload_or_download}{suffix}" in log
+        assert (
+            f"Starting logging for command {upload_or_download}{suffix}" in log
+        )
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
@@ -256,7 +258,10 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
-        assert f"Starting {upload_or_download}_project_dir_or_file" in log
+        assert (
+            f"Starting logging for command {upload_or_download}_project_dir_or_file"
+            in log
+        )
         assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
