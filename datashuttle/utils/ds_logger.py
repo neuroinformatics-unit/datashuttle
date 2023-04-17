@@ -32,7 +32,7 @@ def start(
         verbose=verbose,
         timestamp=True,
         file_log_level="DEBUG",
-        write_git=False,
+        write_git=True,
         log_to_console=False,
     )
     logging.info(f"Starting {name}")
