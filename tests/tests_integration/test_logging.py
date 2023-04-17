@@ -138,39 +138,46 @@ class TestCommandLineInterface:
         )
         assert "formatted_ses_names: ['ses-123', 'ses-hello_world']" in log
         assert "Made directory at path:" in log
+
         assert (
-            os.path.join("test_logging", "local", "rawdata", "sub-1_1") in log
+            str(Path("test_logging") / "local" / "rawdata" / "sub-1_1") in log
         )
         assert (
-            os.path.join(
-                "test_logging",
-                "local",
-                "rawdata",
-                "sub-1_1",
-                "ses-123",
-                "funcimg",
-                ".datashuttle_meta",
+            str(
+                Path(
+                    "test_logging",
+                    "local",
+                    "rawdata",
+                    "sub-1_1",
+                    "ses-123",
+                    "funcimg",
+                    ".datashuttle_meta",
+                )
             )
             in log
         )
         assert (
-            os.path.join(
-                "test_logging",
-                "local",
-                "rawdata",
-                "sub-002",
-                "ses-123",
-                "funcimg",
+            str(
+                Path(
+                    "test_logging",
+                    "local",
+                    "rawdata",
+                    "sub-002",
+                    "ses-123",
+                    "funcimg",
+                )
             )
             in log
         )
         assert (
-            os.path.join(
-                "test_logging",
-                "local",
-                "rawdata",
-                "sub-004",
-                "ses-hello_world",
+            str(
+                Path(
+                    "test_logging",
+                    "local",
+                    "rawdata",
+                    "sub-004",
+                    "ses-hello_world",
+                )
             )
             in log
         )
