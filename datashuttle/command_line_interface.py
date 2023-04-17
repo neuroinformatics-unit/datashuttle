@@ -874,7 +874,7 @@ def main() -> None:
     if len(vars(args)) > 1:
         args.func(project, args)
     else:
-        utils.message_user(
+        utils.print_message_to_user(
             f"Datashuttle project: {args.project_name}. "
             f"Add additional commands, see --help for details"
         )

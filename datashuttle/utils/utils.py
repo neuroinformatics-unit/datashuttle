@@ -25,10 +25,10 @@ def log(message: str) -> None:
 def log_and_message(message: str, use_rich: bool = False) -> None:
     """
     Log the message and send it to user.
-    If use_rich, use rich's print() function
+    use_rich : is True, use rich's print() function
     """
     log(message)
-    message_user(message, use_rich)
+    print_message_to_user(message, use_rich)
 
 
 def log_and_raise_error(message: str) -> None:
@@ -41,7 +41,7 @@ def log_and_raise_error(message: str) -> None:
     raise_error(message)
 
 
-def message_user(message: Union[str, list], use_rich=False) -> None:
+def print_message_to_user(message: Union[str, list], use_rich=False) -> None:
     """
     Centralised way to send message. if use_rich, use rich's
     print() function.

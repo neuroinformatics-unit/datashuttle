@@ -211,7 +211,7 @@ class DataShuttle:
         utils.log("\nFinished file creation. Local folder tree is now:\n")
         ds_logger.log_tree(self.cfg["local_path"])
 
-        utils.message_user(
+        utils.print_message_to_user(
             f"Finished making directories. For log of all created "
             f"directories, pleasee see {self.cfg.logging_path}"
         )
@@ -759,7 +759,7 @@ class DataShuttle:
         """
         Print the projects local path.
         """
-        utils.message_user(self.cfg["local_path"].as_posix())
+        utils.print_message_to_user(self.cfg["local_path"].as_posix())
 
     def get_datashuttle_path(self) -> None:
         """
@@ -767,27 +767,27 @@ class DataShuttle:
         directory where configs another other
         datashuttle files are stored.
         """
-        utils.message_user(self._datashuttle_path.as_posix())
+        utils.print_message_to_user(self._datashuttle_path.as_posix())
 
     def get_config_path(self) -> None:
         """
         Print the full path to the DataShuttle config file.
         This is always formatted to UNIX style.
         """
-        utils.message_user(self._config_path.as_posix())
+        utils.print_message_to_user(self._config_path.as_posix())
 
     def get_remote_path(self) -> None:
         """
         Print the project remote path.
         This is always formatted to UNIX style.
         """
-        utils.message_user(self.cfg["remote_path"].as_posix())
+        utils.print_message_to_user(self.cfg["remote_path"].as_posix())
 
     def show_configs(self) -> None:
         """
         Print the current configs to the terminal.
         """
-        utils.message_user(self._get_json_dumps_config())
+        utils.print_message_to_user(self._get_json_dumps_config())
 
     def show_local_tree(self):
         """
@@ -819,7 +819,7 @@ class DataShuttle:
             utils.log_and_raise_error("'prefix' must be 'sub' or 'ses'.")
 
         formatted_names = formatting.format_names(names, prefix)
-        utils.message_user(formatted_names)
+        utils.print_message_to_user(formatted_names)
 
     # =========================================================================
     # Private Functions
@@ -928,7 +928,7 @@ class DataShuttle:
         print the entire configs as it becomes confusing.
         """
         if message:
-            utils.message_user("Update successful.")
+            utils.print_message_to_user("Update successful.")
         utils.log(
             f"Update successful. New config file: \n {self._get_json_dumps_config()}"
         )
