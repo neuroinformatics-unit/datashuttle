@@ -83,6 +83,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command make_config_file" in log
+        assert "\nVariablesState:\nlocals: {'local_path':" in log
         assert "Successfully created rclone config." in log
         assert (
             "Configuration file has been saved and options loaded into datashuttle."
@@ -97,6 +98,10 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert "Starting logging for command update_config" in log
+        assert (
+            "\n\nVariablesState:\nlocals: {'option_key': 'remote_host_id'"
+            in log
+        )
         assert "remote_host_id has been updated to test_id" in log
         assert "Update successful. New config file:" in log
         assert """ "remote_host_id": "test_id",\n """ in log
@@ -114,6 +119,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(orig_project_path)
 
         assert "supply_config_file" in log
+        assert "\n\nVariablesState:\nlocals: {'input_path_to_config':" in log
         assert "Update successful. New config file: " in log
         assert (
             f""" "local_path": "{setup_project.cfg['local_path'].as_posix()}",\n """
@@ -130,6 +136,10 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert "Formatting Names..." in log
+        assert (
+            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-1_1', 'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-hello_world'], 'data_type': 'all'}\ncfg: {'local_path':"
+            in log
+        )
         assert f"sub_names: ['sub-1_1', 'sub-002{tags('to')}004']" in log
         assert "ses_names: ['ses-123', 'ses-hello_world']" in log
         assert (
@@ -226,6 +236,18 @@ class TestCommandLineInterface:
         assert (
             f"Starting logging for command {upload_or_download}{suffix}" in log
         )
+
+        if use_all_alias:
+            assert (
+                "VariablesState:\nlocals: {'dry_run': False}\ncfg: {'local_path':"
+                in log
+            )
+        else:
+            assert (
+                "VariablesState:\nlocals: {'sub_names': 'all', 'ses_names': 'all', 'data_type': 'all', 'dry_run': False, 'init_log': True}\ncfg: {'local_path': "
+                in log
+            )
+
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
@@ -269,6 +291,10 @@ class TestCommandLineInterface:
             f"Starting logging for command {upload_or_download}_project_dir_or_file"
             in log
         )
+        assert (
+            "\n\nVariablesState:\nlocals: {'filepath': 'sub-001/ses-001', 'dry_run': False}\ncfg: {'local_path':"
+            in log
+        )
         assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
@@ -290,6 +316,10 @@ class TestCommandLineInterface:
             "required if 'connection_method' is 'ssh'." in log
         )
 
+        assert (
+            "\n\nVariablesState:\nlocals: {'option_key': 'connection_method', 'new_info': 'ssh', 'store_logs_in_temp_dir': False}\ncfg: {'local_path':"
+            in log
+        )
         assert "connection_method was not updated" in log
 
     def test_logs_bad_make_sub_dir_error(self, setup_project):

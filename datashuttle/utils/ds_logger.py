@@ -1,3 +1,4 @@
+import copy
 import logging
 from pathlib import Path
 from typing import Any, List, Optional
@@ -12,6 +13,7 @@ from rich.tree import Tree
 
 import datashuttle as package_to_log
 
+from ..configs.configs import Configs
 from . import utils
 
 
@@ -77,6 +79,28 @@ def log_names(list_of_headers, list_of_names):
     """
     for header, names in zip(list_of_headers, list_of_names):
         utils.log(f"{header}: {names}")
+
+
+def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs):
+    """
+    Wrap the locals from the original function call to log
+    and the datashuttle.cfg in a wrapper class with __dict__
+    attribute for fancylog writing.
+
+    Delete the self attribute (which is DataShuttle class)
+    to keep the logs neat, as it adds no information.
+    """
+
+    class VariablesState:
+        def __init__(self, local_vars_, cfg_):
+            local_vars_ = copy.deepcopy(local_vars_)
+            del local_vars_["self"]
+            self.locals = local_vars_
+            self.cfg = copy.deepcopy(cfg_)
+
+    variables = [VariablesState(local_vars, cfg)]
+
+    return variables
 
 
 # -------------------------------------------------------------------
