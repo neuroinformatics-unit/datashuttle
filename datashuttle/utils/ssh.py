@@ -127,7 +127,7 @@ def add_public_key_to_remote_authorized_keys(
 
 
 def verify_ssh_remote_host(
-    remote_host_id: str, hostkeys_path: Path, log: bool = False
+    remote_host_id: str, hostkeys_path: Path, log: bool = True
 ) -> bool:
     """
     Similar to connecting with other SSH manager e.g. putty,

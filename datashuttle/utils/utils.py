@@ -43,8 +43,8 @@ def log_and_raise_error(message: str) -> None:
 
 def print_message_to_user(message: Union[str, list], use_rich=False) -> None:
     """
-    Centralised way to send message. if use_rich, use rich's
-    print() function.
+    Centralised way to send message.
+    use_rich :  use rich's print() function.
     """
     if use_rich:
         rich_print(message)

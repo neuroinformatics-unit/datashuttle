@@ -25,7 +25,7 @@ def make_directory_trees(
     sub_names: Union[str, list],
     ses_names: Union[str, list],
     data_type: str,
-    log: bool = False,
+    log: bool = True,
 ) -> None:
     """
     Entry method to make a full directory tree. It will
@@ -82,7 +82,7 @@ def make_data_type_directories(
     data_type: Union[list, str],
     sub_or_ses_level_path: Path,
     level: str,
-    log: bool = False,
+    log: bool = True,
 ) -> None:
     """
     Make data_type folder (e.g. behav) at the sub or ses
@@ -119,7 +119,7 @@ def make_data_type_directories(
 # Make Dirs Helpers --------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
+def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
     """
     For path or list of paths, make them if
     they do not already exist.
@@ -144,7 +144,7 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
 
 
 def make_datashuttle_metadata_folder(
-    full_path: Path, log: bool = False
+    full_path: Path, log: bool = True
 ) -> None:
     """
     Make a .datashuttle folder (this is created
