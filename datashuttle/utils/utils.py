@@ -19,7 +19,7 @@ def log(message: str) -> None:
     logger.
     """
     logger = logging.getLogger()
-    logger.info(message)
+    logger.debug(message)
 
 
 def log_and_message(message: str, use_rich: bool = False) -> None:

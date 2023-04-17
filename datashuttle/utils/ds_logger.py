@@ -35,7 +35,7 @@ def start(
         write_git=True,
         log_to_console=False,
     )
-    logging.info(f"Starting {name}")
+    logging.info(f"Starting logging for command {name}")
 
 
 def print_tree(project_path: Path) -> None:
@@ -58,7 +58,7 @@ def log_tree(project_path: Path) -> None:
 
     with console.capture() as capture:
         console.print(tree_, markup=True)
-    logging.info(
+    logging.debug(
         capture.get()
     )  # https://github.com/Textualize/rich/issues/2688
 
