@@ -212,8 +212,8 @@ class DataShuttle:
         ds_logger.log_tree(self.cfg["local_path"])
 
         utils.print_message_to_user(
-            f"Finished making directories. For log of all created "
-            f"directories, pleasee see {self.cfg.logging_path}"
+            f"Finished making directories. \nFor log of all created "
+            f"directories, please see {self.cfg.logging_path}"
         )
 
         ds_logger.close_log_filehandler()
@@ -333,6 +333,7 @@ class DataShuttle:
         Alias for:
             project.upload_data("all", "all", "all")
         """
+        #        1/0
         self._start_log("upload_all")
 
         self.upload_data("all", "all", "all", dry_run=dry_run, init_log=False)
