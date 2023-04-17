@@ -1,7 +1,11 @@
+from typing import TYPE_CHECKING, Any, List, Optional
+
+if TYPE_CHECKING:
+    from ..configs.configs import Configs
+
 import copy
 import logging
 from pathlib import Path
-from typing import Any, List, Optional
 
 from fancylog import fancylog
 from rich import print as rich_print
@@ -13,7 +17,6 @@ from rich.tree import Tree
 
 import datashuttle as package_to_log
 
-from ..configs.configs import Configs
 from . import utils
 
 
