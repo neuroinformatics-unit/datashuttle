@@ -161,10 +161,10 @@ def verify_ssh_remote_host(
 
     if log:
         if success:
-            utils.log(f"\n{message}")
-            utils.log(f"\nHostkeys saved at:{hostkeys_path.as_posix()}")
+            utils.log(f"{message}")
+            utils.log(f"Hostkeys saved at:{hostkeys_path.as_posix()}")
         else:
-            utils.log("\nHost not accepted. No connection made.")
+            utils.log("Host not accepted. No connection made.")
 
     return success
 
