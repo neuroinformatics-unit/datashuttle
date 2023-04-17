@@ -290,6 +290,11 @@ def search_data_dirs_sub_or_ses_level(
 
     see directories.search_sub_or_ses_level() for full
     parameters list.
+
+    Returns
+    -------
+    Find the data_type files and return in
+    a format that mirrors dict.items()
     """
     search_results = search_sub_or_ses_level(
         cfg, base_dir, local_or_remote, sub, ses
@@ -380,10 +385,12 @@ def process_glob_to_find_data_type_dirs(
     Process the results of glob on a sub or session level,
     which could contain any kind of folder / file.
 
-    Find the data_type files and return in
-    a format that mirros dict.items()
-
     see project.search_sub_or_ses_level() for inputs.
+
+    Returns
+    -------
+    Find the data_type files and return in
+    a format that mirrors dict.items()
     """
     ses_dir_keys = []
     ses_dir_values = []
