@@ -1,26 +1,27 @@
 import subprocess
 from pathlib import Path
-from subprocess import CompletedProcess
 
 from datashuttle.configs.configs import Configs
-from datashuttle.utils import utils
 
 
-def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
+def call_rclone(command: str, silent: bool = False) -> int:
     """
     :param command: Rclone command to be run
     :param silent: if True, do not output anything to stdout.
     :return:
     """
-    command = "rclone -vv " + command
-    if pipe_std:
-        output = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    command = "rclone " + command
+    if silent:
+        return_code = subprocess.run(
+            command,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.STDOUT,
+            shell=True,
         )
     else:
-        output = subprocess.run(command, shell=True)
+        return_code = subprocess.run(command, shell=True)
 
-    return output
+    return return_code.returncode
 
 
 def transfer_data(
@@ -29,7 +30,7 @@ def transfer_data(
     rclone_config_name: str,
     upload_or_download: str,
     dry_run: bool,
-) -> subprocess.CompletedProcess:
+) -> None:
     """
     Call Rclone copy command with appropriate
     arguments to execute data transfer.
@@ -41,33 +42,28 @@ def transfer_data(
 
     if upload_or_download == "upload":
 
-        output = call_rclone(
+        call_rclone(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" '
             f'"{rclone_config_name}:'
             f'{remote_filepath}" '
-            f"{extra_arguments}",
-            pipe_std=True,
+            f"{extra_arguments}"
         )
 
     elif upload_or_download == "download":
-        output = call_rclone(
+        call_rclone(
             f"{rclone_args('copy')} "
             f'"{rclone_config_name}:'
             f'{remote_filepath}" '
             f'"{local_filepath}"  '
-            f"{extra_arguments}",
-            pipe_std=True,
+            f"{extra_arguments}"
         )
-
-    return output
 
 
 def setup_remote_as_rclone_target(
     cfg: Configs,
     rclone_config_name: str,
     ssh_key_path: Path,
-    log: bool = False,
 ) -> None:
     """
     RClone sets remote targets in a config file. When
@@ -83,7 +79,7 @@ def setup_remote_as_rclone_target(
     connection_method = cfg["connection_method"]
 
     if connection_method == "local_filesystem":
-        call_rclone(f"config create {rclone_config_name} local", pipe_std=True)
+        call_rclone(f"config create {rclone_config_name} local", silent=True)
 
     elif connection_method == "ssh":
 
@@ -95,15 +91,7 @@ def setup_remote_as_rclone_target(
             f"user {cfg['remote_host_username']} "
             f"port 22 "
             f"key_file {ssh_key_path.as_posix()}",
-            pipe_std=True,
-        )
-
-    output = call_rclone("config file", pipe_std=True)
-
-    if log:
-        utils.log(
-            f"Successfully created rclone config. "
-            f"{output.stdout.decode('utf-8')}"
+            silent=True,
         )
 
 
@@ -112,10 +100,10 @@ def check_rclone_with_default_call() -> bool:
     Check to see whether rclone is installed.
     """
     try:
-        output = call_rclone("-h", pipe_std=True)
+        return_code = call_rclone("-h", silent=True)
     except FileNotFoundError:
         return False
-    return True if output.returncode == 0 else False
+    return True if return_code == 0 else False
 
 
 def prompt_rclone_download_if_does_not_exist() -> None:

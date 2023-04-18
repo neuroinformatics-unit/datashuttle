@@ -1,3 +1,4 @@
+import traceback
 import warnings
 from pathlib import Path
 from typing import Optional, Union, overload
@@ -20,7 +21,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
     saved by Datashuttle. This should always work, unless
     not already initialised (prompt) or these have been
     changed manually. This function is very similar to
-    supplied_configs_confirm_overwrite()
+    supplied_configs_confirm_overwrite_raise_on_fail()
     but has different set of prompts and some different logic.
     """
     exists = config_path.is_file()
@@ -39,11 +40,11 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
     try:
         new_cfg.load_from_file()
 
-    except BaseException:
+    except Exception:
 
         new_cfg = None
 
-        utils.log_and_raise_error(
+        utils.message_user(
             f"Config file failed to load. Check file "
             f"formatting at {config_path.as_posix()}. If "
             f"cannot load, re-initialise configs with "
@@ -53,14 +54,14 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
     return new_cfg
 
 
-def supplied_configs_confirm_overwrite(
+def supplied_configs_confirm_overwrite_raise_on_fail(
     path_to_config: Path,
     warn: bool,
 ) -> Union[Configs, None]:
     """
     Try and load a supplied config file.
     """
-    utils.log_and_raise_error_not_exists_or_not_yaml(path_to_config)
+    utils.raise_error_not_exists_or_not_yaml(path_to_config)
 
     if warn:
         input_ = utils.get_user_input(
@@ -69,16 +70,26 @@ def supplied_configs_confirm_overwrite(
         )
 
         if input_ != "y":
-            utils.log_and_message("y not pressed. Configs not updated.")
             return None
 
-    new_cfg = Configs(path_to_config, None)
-    new_cfg.load_from_file()
+    try:
 
-    new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
-    new_cfg.check_dict_values_raise_on_fail()
+        new_cfg = Configs(path_to_config, None)
+        new_cfg.load_from_file()
 
-    return new_cfg
+        new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
+        new_cfg.check_dict_values_and_inform_user()
+
+        return new_cfg
+
+    except BaseException:
+        utils.message_user(traceback.format_exc())
+        utils.raise_error(
+            "Could not load config file. Please check that "
+            "the file is formatted correctly. "
+            "Config file was not updated."
+        )
+        return None
 
 
 # -------------------------------------------------------------------
@@ -102,7 +113,7 @@ def handle_cli_or_supplied_config_bools(
     """
     For supplied configs for CLI input args,
     in some instances bools will as string type.
-    Handle this case here to cast to correct type .
+    Handle this case here to cast to correct type.
     """
     for key in dict_.keys():
         dict_[key] = handle_bool(key, dict_[key])
