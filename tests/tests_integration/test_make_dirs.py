@@ -20,7 +20,7 @@ class TestMakeDirs:
         saved in the appdir path for platform independent
         and to avoid path setup on new machine.
 
-        Ensure change dir at end of session otherwise
+        Ensure change directory at end of session otherwise
         it is not possible to delete project.
         """
         tmp_path = tmp_path / "test with space"
@@ -28,7 +28,9 @@ class TestMakeDirs:
         test_project_name = "test_make_dirs"
 
         project = test_utils.setup_project_default_configs(
-            test_project_name, local_path=tmp_path / test_project_name
+            test_project_name,
+            tmp_path,
+            local_path=tmp_path / test_project_name,
         )
 
         cwd = os.getcwd()
@@ -116,17 +118,17 @@ class TestMakeDirs:
         prefix = "test_sub-"
 
         # check name is prefixed
-        processed_names = formatting.format_names("1", prefix)
-        assert processed_names[0] == "test_sub-1"
+        formatted_names = formatting.format_names("1", prefix)
+        assert formatted_names[0] == "test_sub-1"
 
         # check existing prefix is not duplicated
-        processed_names = formatting.format_names("test_sub-1", prefix)
-        assert processed_names[0] == "test_sub-1"
+        formatted_names = formatting.format_names("test_sub-1", prefix)
+        assert formatted_names[0] == "test_sub-1"
 
         # test mixed list of prefix and unprefixed are prefixed correctly.
         mixed_names = ["1", prefix + "four", "5", prefix + "6"]
-        processed_names = formatting.format_names(mixed_names, prefix)
-        assert processed_names == [
+        formatted_names = formatting.format_names(mixed_names, prefix)
+        assert formatted_names == [
             "test_sub-1",
             "test_sub-four",
             "test_sub-5",
@@ -254,10 +256,10 @@ class TestMakeDirs:
             ["funcimg"],
         ],
     )
-    def test_dataal_data_subsection(self, project, files_to_test):
+    def test_data_types_subsection(self, project, files_to_test):
         """
         Check that combinations of data_types passed to make file dir
-        make the correct combination of epxeriment types.
+        make the correct combination of data types.
 
         Note this will fail when new top level dirs are added, and should be
         updated.
@@ -296,7 +298,7 @@ class TestMakeDirs:
         date, time_ = self.get_formatted_date_and_time()
 
         project.make_sub_dir(
-            "ephys", ["sub-001", "sub-002"], ["ses-001-@DATE@", "002-@DATE@"]
+            ["sub-001", "sub-002"], ["ses-001-@DATE@", "002-@DATE@"], "ephys"
         )
 
         ses_names = test_utils.glob_basenames(
@@ -315,9 +317,9 @@ class TestMakeDirs:
         date, time_ = self.get_formatted_date_and_time()
 
         project.make_sub_dir(
-            "ephys",
             ["sub-001", "sub-002"],
             ["ses-001-@DATETIME@", "002-@DATETIME@"],
+            "ephys",
         )
 
         ses_names = test_utils.glob_basenames(
@@ -326,8 +328,8 @@ class TestMakeDirs:
         )
 
         # Convert the minutes to regexp as could change during test runtime
-        regexp_time = time_[:-3] + r"\d\dm"
-        datetime_regexp = f"{date}-{regexp_time}"
+        regexp_time = r"\d\d\d\d\d\d"
+        datetime_regexp = f"{date}_time-{regexp_time}"
 
         assert all([re.search(datetime_regexp, name) for name in ses_names])
         assert all(["@DATETIME@" not in name for name in ses_names])
