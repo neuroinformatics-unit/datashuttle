@@ -31,8 +31,12 @@ class TestFileTransfer:
     # ----------------------------------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("use_all_alias", [True, False])
     def test_transfer_empty_folder_structure(
-        self, project, upload_or_download
+        self,
+        project,
+        upload_or_download,
+        use_all_alias,
     ):
         """
         First make a project (folders only) locally.
@@ -46,9 +50,14 @@ class TestFileTransfer:
         (
             transfer_function,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, use_all_alias=use_all_alias
+        )
 
-        transfer_function("all", "all", "all")
+        if use_all_alias:
+            transfer_function()
+        else:
+            transfer_function("all", "all", "all")
 
         test_utils.check_directory_tree_is_correct(
             project,
@@ -72,7 +81,7 @@ class TestFileTransfer:
             ["behav", "ephys", "funcimg", "histology"],
         ],
     )
-    @pytest.mark.parametrize("upload_or_download", ["upload"])  # "download"
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_specific_dataal_data(
         self, project, upload_or_download, data_type_to_transfer
     ):
@@ -227,3 +236,44 @@ class TestFileTransfer:
                 assert re.match(
                     "ses-003_" + datetime_regexp, sessions_in_path[2]
                 )
+
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_wildcard_transfer(self, project, upload_or_download):
+        """
+        Transfer a subset of define subject and session
+        and check only the expected folders are there.
+        """
+        subs = ["sub-hello", "sub-hullo", "sub-world"]
+        sessions = [
+            "001_date-20220501",
+            "002_date-20220516",
+            "003_date-20220601",
+        ]
+
+        project.make_sub_dir(subs, sessions, "all")
+
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+
+        transfer_function(
+            "sub-h@*@llo",
+            "ses-@*@_date-202205@*@",
+            ["ephys", "behav", "funcimg"],
+        )
+
+        transferred_subs = test_utils.glob_basenames(
+            (base_path_to_check / "rawdata" / "*").as_posix()
+        )
+        expected_subs = ["sub-hello", "sub-hullo"]
+        assert transferred_subs == ["sub-hello", "sub-hullo"]
+
+        for sub in expected_subs:
+            transferred_ses = test_utils.glob_basenames(
+                (base_path_to_check / "rawdata" / sub / "*").as_posix()
+            )
+            assert transferred_ses == [
+                "ses-001_date-20220501",
+                "ses-002_date-20220516",
+            ]

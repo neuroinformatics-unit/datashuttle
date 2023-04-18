@@ -110,8 +110,8 @@ class DataShuttle:
                                 within the directory (if not already, these
                                 will be prefixed with sub/ses identifier)
         :param ses_names:       session names (same format as subject name).
-                                If no session is provided, defaults to
-                                "ses-001".
+                                If no session is provided, no session-level
+                                directories are made.
         :param data_type: The data_type to make the directory
                                 in (e.g. "ephys", "behav", "histology"). If
                                 "all" is selected, directory will be created
@@ -119,11 +119,18 @@ class DataShuttle:
         """
         sub_names = self._format_names(sub_names, "sub")
 
-        if ses_names is None:
-            ses_names = [self.cfg.ses_prefix + "001"]
-
-        else:
+        if ses_names is not None:
             ses_names = self._format_names(ses_names, "ses")
+
+        directories.check_no_duplicate_sub_ses_key_values(
+            self,
+            base_dir=self._get_base_and_top_level_dir("local"),
+            new_sub_names=sub_names,
+            new_ses_names=ses_names,
+        )
+
+        if ses_names is None:
+            ses_names = []
 
         self._make_directory_trees(
             sub_names,
@@ -182,6 +189,22 @@ class DataShuttle:
         self._transfer_sub_ses_data(
             "download", sub_names, ses_names, data_type, dry_run
         )
+
+    def upload_all(self):
+        """
+        Convenience function to upload all data.
+        Alias for:
+            project.upload_data("all", "all", "all")
+        """
+        self.upload_data("all", "all", "all")
+
+    def download_all(self):
+        """
+        Convenience function to download all data.
+        Alias for:
+            project.download_data("all", "all", "all")
+        """
+        self.download_data("all", "all", "all")
 
     def upload_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
@@ -565,13 +588,20 @@ class DataShuttle:
         local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
+        base_dir = self._get_base_and_top_level_dir(local_or_remote)
 
         # Find sub names to transfer
-        if sub_names not in ["all", ["all"]]:
-            sub_names = self._format_names(sub_names, "sub")
-        else:
-            sub_names = self._search_subs_from_project_dir(
+        if sub_names in ["all", ["all"]]:
+            sub_names = directories.search_sub_or_ses_level(
+                self,
+                base_dir,
                 local_or_remote,
+                search_str=f"{self.cfg.sub_prefix}*",
+            )
+        else:
+            sub_names = self._format_names(sub_names, "sub")
+            sub_names = directories.search_for_wildcards(
+                self, base_dir, local_or_remote, sub_names
             )
 
         for sub in sub_names:
@@ -585,10 +615,19 @@ class DataShuttle:
             )
 
             # Find ses names  to transfer
-            if ses_names not in ["all", ["all"]]:
-                ses_names = self._format_names(ses_names, "ses")
+            if ses_names in ["all", ["all"]]:
+                ses_names = directories.search_sub_or_ses_level(
+                    self,
+                    base_dir,
+                    local_or_remote,
+                    sub,
+                    search_str=f"{self.cfg.ses_prefix}*",
+                )
             else:
-                ses_names = self._search_ses_from_sub_dir(local_or_remote, sub)
+                ses_names = self._format_names(ses_names, "ses")
+                ses_names = directories.search_for_wildcards(
+                    self, base_dir, local_or_remote, ses_names, sub=sub
+                )
 
             for ses in ses_names:
 
@@ -684,86 +723,23 @@ class DataShuttle:
         directly from user input, or by searching
         what is available if "all" is passed.
         """
+        base_dir = self._get_base_and_top_level_dir(local_or_remote)
+
         if data_type not in ["all", ["all"]]:
             data_type_items = self._get_data_type_items(
                 data_type,
             )
         else:
-            data_type_items = self._search_data_dirs_sub_or_ses_level(
+            data_type_items = directories.search_data_dirs_sub_or_ses_level(
+                self,
+                self._data_type_dirs,
+                base_dir,
                 local_or_remote,
                 sub,
                 ses,
             )
+
         return data_type_items
-
-    # --------------------------------------------------------------------------------------------------------------------
-    # Search for subject and sessions (local or remote)
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def _search_data_dirs_sub_or_ses_level(
-        self, local_or_remote: str, sub: str, ses: Optional[str] = None
-    ) -> zip:
-        """
-        Find data_type directories in the project base
-        directory (e.g. "ephys", "behav"), (by filtering the
-        names of all directories present).  Return these in the
-        same format as dict.items()
-
-        :param local_or_remote: "local" or "remote
-        """
-        base_dir = (
-            self._get_base_dir(local_or_remote)
-            / self._top_level_dir_name
-            / sub
-        )
-        if ses:
-            base_dir = base_dir / ses
-
-        directory_names = directories.search_for_directories(
-            self, local_or_remote, base_dir, "*"
-        )
-
-        data_directories = directories.process_glob_to_find_data_type_dirs(
-            directory_names,
-            self._data_type_dirs,
-        )
-
-        return data_directories
-
-    def _search_subs_from_project_dir(
-        self,
-        local_or_remote: str,
-    ) -> List[str]:
-        """
-        Search a datatype directory for all present sub-prefixed directories.
-        If remote, ssh or filesystem will be used depending on config.
-
-        :param local_or_remote: "local" or "remote"
-        """
-        search_path = self._make_path(
-            local_or_remote, [self._top_level_dir_name]
-        )
-
-        search_prefix = self.cfg.sub_prefix + "*"
-        return directories.search_for_directories(
-            self, local_or_remote, search_path, search_prefix
-        )
-
-    def _search_ses_from_sub_dir(
-        self, local_or_remote: str, sub: str
-    ) -> List[str]:
-        """
-        See _search_subs_from_project_dir(), same but for searching sessions
-        within a subdirectory.
-        """
-        search_path = self._make_path(
-            local_or_remote, [self._top_level_dir_name, sub]
-        )
-        search_prefix = self.cfg.ses_prefix + "*"
-
-        return directories.search_for_directories(
-            self, local_or_remote, search_path, search_prefix
-        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # SSH
@@ -824,9 +800,16 @@ class DataShuttle:
             base_dir = utils.get_appdir_path(self.project_name)
         return base_dir
 
+    def _get_base_and_top_level_dir(self, local_or_remote: str) -> Path:
+        """"""
+        base_dir = (
+            self._get_base_dir(local_or_remote) / self._top_level_dir_name
+        )
+        return base_dir
+
     def _format_names(
         self, names: Union[list, str], sub_or_ses: str
-    ) -> Union[str, list]:
+    ) -> List[str]:
         """
         :param names: str or list containing sub or ses names
                       (e.g. to make dirs)

@@ -1,7 +1,6 @@
+import re
 from pathlib import Path
-from typing import Union
-
-import appdirs
+from typing import List, Union
 
 from . import directories
 
@@ -40,7 +39,7 @@ def get_appdir_path(project_name: str) -> Path:
     not good practice. Use appdirs module to get the
     AppData cross-platform and save / load all files form here .
     """
-    base_path = Path(appdirs.user_data_dir("DataShuttle")) / project_name
+    base_path = Path.home() / ".datashuttle" / project_name
 
     if not base_path.is_dir():
         directories.make_dirs(base_path)
@@ -66,3 +65,18 @@ def raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
 
     if path_to_config.suffix not in [".yaml", ".yml"]:
         raise_error("The config file must be a YAML file")
+
+
+def get_first_sub_ses_keys(all_names: List[str]) -> List[str]:
+    """
+    Assumes sub / ses name is in standard form with sub/ses label
+    in the second position e.g. sub-001_id-...
+
+    Only look for folders / file with sub/ses in first key
+    to ignore all other files
+    """
+    return [
+        re.split("-|_", name)[1]
+        for name in all_names
+        if re.split("-|_", name)[0] in ["sub", "ses"]
+    ]
