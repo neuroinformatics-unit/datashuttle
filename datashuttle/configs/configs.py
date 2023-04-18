@@ -1,6 +1,4 @@
 import copy
-import traceback
-import warnings
 from collections import UserDict
 from collections.abc import ItemsView, KeysView, ValuesView
 from pathlib import Path
@@ -25,7 +23,7 @@ class Configs(UserDict):
     the config file and a dict of config key-value pairs
     to input dict. Next, check that the config dict
     conforms to the canonical standard by calling
-    check_dict_values_and_inform_user()
+    check_dict_values_raise_on_fail()
     """
 
     def __init__(self, file_path: Path, input_dict: Union[dict, None]) -> None:
@@ -41,14 +39,14 @@ class Configs(UserDict):
 
     def setup_after_load(self) -> None:
         self.convert_str_and_pathlib_paths(self, "str_to_path")
-        self.check_dict_values_and_inform_user()
+        self.check_dict_values_raise_on_fail()
 
-    def check_dict_values_and_inform_user(self) -> None:
+    def check_dict_values_raise_on_fail(self) -> None:
         """
         Check the values of the current dictionary are set
         correctly and will not cause downstream errors.
         """
-        canonical_configs.check_dict_values_and_inform_user(self)
+        canonical_configs.check_dict_values_raise_on_fail(self)
 
     def keys(self) -> KeysView:
         return self.data.keys()
@@ -98,7 +96,7 @@ class Configs(UserDict):
         :param new_info: value to update the config too
         """
         if option_key not in self:
-            utils.raise_error(f"'{option_key}' is not a valid config.")
+            utils.log_and_raise_error(f"'{option_key}' is not a valid config.")
 
         original_value = copy.deepcopy(self[option_key])
 
@@ -107,34 +105,43 @@ class Configs(UserDict):
 
         self[option_key] = new_info
 
-        change_valid = self.safe_check_current_dict_is_valid()
+        check_change = self.safe_check_current_dict_is_valid()
 
-        if change_valid:
+        if check_change["passed"]:
             self.dump_to_file()
-            utils.message_user(f"{option_key} has been updated to {new_info}")
+            utils.log_and_message(
+                f"{option_key} has been updated to {new_info}"
+            )
 
             if option_key in ["connection_method", "remote_path"]:
                 if self["connection_method"] == "ssh":
-                    utils.message_user(
+                    utils.log_and_message(
                         f"SSH will be used to connect to project directory at: {self['remote_path']}"
                     )
                 elif self["connection_method"] == "local_filesystem":
-                    utils.message_user(
+                    utils.log_and_message(
                         f"Local filesystem will be used to connect to project "
                         f"directory at: {self['remote_path'].as_posix()}"
                     )
         else:
             self[option_key] = original_value
-            warnings.warn(f"{option_key} was not updated")
+            utils.log_and_raise_error(
+                f"\n{check_change['error']}\n{option_key} was not updated"
+            )
 
-    def safe_check_current_dict_is_valid(self) -> bool:
-        """ """
+    def safe_check_current_dict_is_valid(self) -> dict:
+        """
+        Check the dict, but do not raise error as
+        we need to set the putatively changed key
+        back to the state before change attempt.
+        Propagate the error message so it can be
+        shown later.
+        """
         try:
-            self.check_dict_values_and_inform_user()
-            return True
-        except BaseException:
-            utils.message_user(traceback.format_exc())
-            return False
+            self.check_dict_values_raise_on_fail()
+            return {"passed": True, "error": None}
+        except BaseException as e:
+            return {"passed": False, "error": str(e)}
 
     # --------------------------------------------------------------------
     # Utils
@@ -162,6 +169,6 @@ class Configs(UserDict):
                         config_dict[path_key] = value.as_posix()
 
                 else:
-                    utils.raise_error(
+                    utils.log_and_raise_error(
                         "Option must be 'path_to_str' or 'str_to_path'"
                     )

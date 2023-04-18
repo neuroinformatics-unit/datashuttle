@@ -17,7 +17,7 @@ from . import ssh, utils
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, List[Path]]) -> None:
+def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
     """
     For path or list of path, make them if
     they do not already exist.
@@ -29,11 +29,15 @@ def make_dirs(paths: Union[Path, List[Path]]) -> None:
 
         if not path_.is_dir():
             path_.mkdir(parents=True)
+            if log:
+                utils.log(f"Made directory at path: {path_}")
 
 
-def make_datashuttle_metadata_folder(full_path: Path) -> None:
+def make_datashuttle_metadata_folder(
+    full_path: Path, log: bool = False
+) -> None:
     meta_folder_path = full_path / ".datashuttle_meta"
-    make_dirs(meta_folder_path)
+    make_dirs(meta_folder_path, log)
 
 
 def check_no_duplicate_sub_ses_key_values(
@@ -51,7 +55,7 @@ def check_no_duplicate_sub_ses_key_values(
 
         for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
             if new_sub in existing_sub_values:
-                utils.raise_error(
+                utils.log_and_raise_error(
                     f"Cannot make directories. "
                     f"The key sub-{new_sub} already exists in the project"
                 )
@@ -68,7 +72,7 @@ def check_no_duplicate_sub_ses_key_values(
             for new_ses in utils.get_first_sub_ses_keys(new_ses_names):
 
                 if new_ses in existing_ses_values:
-                    utils.raise_error(
+                    utils.log_and_raise_error(
                         f"Cannot make directories. "
                         f"The key ses-{new_ses} for {sub} already exists in the project"
                     )
@@ -109,7 +113,7 @@ def search_sub_or_ses_level(
           directory level.
     """
     if ses and not sub:
-        utils.raise_error(
+        utils.log_and_raise_error(
             "cannot pass session to "
             "_search_sub_or_ses_level() without subject"
         )
@@ -252,7 +256,7 @@ def search_for_directories(
             search_path,
             search_prefix,
             project.cfg,
-            project._hostkeys,
+            project._hostkeys_path,
             project._ssh_key_path,
         )
     else:

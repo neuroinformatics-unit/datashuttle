@@ -1,6 +1,6 @@
 from functools import wraps
 
-from datashuttle.utils.utils import raise_error
+from datashuttle.utils.utils import log_and_raise_error
 
 
 def requires_ssh_configs(func):
@@ -15,7 +15,7 @@ def requires_ssh_configs(func):
             not args[0].cfg["remote_host_id"]
             or not args[0].cfg["remote_host_username"]
         ):
-            raise_error(
+            log_and_raise_error(
                 "Cannot setup SSH connection, configuration "
                 "file remote_host_id or remote_host_username is not set."
             )
@@ -36,7 +36,7 @@ def check_configs_set(func):
     def wrapper(*args, **kwargs):
 
         if args[0].cfg is None:
-            raise_error(
+            log_and_raise_error(
                 "Must set configs with make_config_file() "
                 "before using this function"
             )
