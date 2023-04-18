@@ -10,6 +10,8 @@ import os
 from pathlib import Path
 from typing import List, Optional, Union
 
+from datashuttle.configs.canonical_tags import tags
+
 from . import ssh, utils
 
 # --------------------------------------------------------------------------------------------------------------------
@@ -176,8 +178,8 @@ def search_for_wildcards(
     """
     new_all_names = []
     for name in all_names:
-        if "@*@" in name:
-            name = name.replace("@*@", "*")
+        if tags("*") in name:
+            name = name.replace(tags("*"), "*")
 
             if sub:
                 matching_names = search_sub_or_ses_level(

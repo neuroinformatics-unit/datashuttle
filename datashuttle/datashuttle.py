@@ -130,9 +130,18 @@ class DataShuttle:
                                 If no session is provided, no session-level
                                 directories are made.
         :param data_type: The data_type to make the directory
-                                in (e.g. "ephys", "behav", "histology"). If
-                                "all" is selected, directory will be created
-                                for all data type.
+                          in (e.g. "ephys", "behav", "histology"). If
+                          "all" is selected, directory will be created
+                          for all data_type enabled in config.
+
+        sub_names or ses_names may contain certain formatting tags:
+            @TO@: used to make a range of sub/ses. Nubmer must be either side of the tag
+                  e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
+            @DATE@, @TIME@ @DATETIME@: will add date-<value>, time-<value> or
+                  date-<value>_time-<value> keys respectively. Only one per-name
+                  is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
+                  (on the 1st january, 2022).
+
         """
         self.start_log("make_sub_dir")
 
@@ -170,6 +179,11 @@ class DataShuttle:
         utils.log("\nFinished file creation. Local folder tree is now:\n")
         ds_logger.log_tree(self.cfg["local_path"])
 
+        utils.message_user(
+            f"Finished making directories. For log of all created "
+            f"directories, pleasee see {self._logging_path}"
+        )
+
     # --------------------------------------------------------------------------------------------------------------------
     # Public File Transfer
     # --------------------------------------------------------------------------------------------------------------------
@@ -185,7 +199,7 @@ class DataShuttle:
         """
         Upload data from a local machine to the remote project
         directory. In the case that a file / directory exists on
-        the remote and local, the local will not be overwritten
+        the remote and local, the remote will not be overwritten
         even if the remote file is an older version.
 
         :param sub_names: a list of sub names as accepted in make_sub_dir().
@@ -200,6 +214,17 @@ class DataShuttle:
 
         :param _init_log: start the logger (False if started elsewhere
                           e.g. upload_project_dir_or_file)
+
+        sub_names or ses_names may contain certain formatting tags:
+
+        @*@: wildcard search for subject names. e.g. ses-001_date-@*@
+             will transfer all session 001 collected on all dates.
+        @TO@: used to make a range of sub/ses. Nubmer must be either side of the tag
+              e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
+        @DATE@, @TIME@ @DATETIME@: will add date-<value>, time-<value> or
+              date-<value>_time-<value> keys respectively. Only one per-name
+              is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
+              (on the 1st january, 2022).
         """
         if _init_log:
             self.start_log("upload_data")
@@ -650,6 +675,7 @@ class DataShuttle:
                                 this text will be replaced with the date /
                                 datetime at the time of directory creation.
 
+        data_type: e.g. ephys, behav, histology, funcimg, see make_sub_dir()
         """
         self._check_data_type_is_valid(data_type, error_on_fail=True)
 
@@ -722,7 +748,7 @@ class DataShuttle:
         :param upload_or_download: "upload" or "download"
         :param sub_names: see make_sub_dir()
         :param ses_names: see make_sub_dir()
-        :param data_type: see make_sub_dir()
+        :param data_type: e.g. ephys, behav, histology, funcimg, see make_sub_dir()
         :param dry_run: see upload_project_dir_or_file*(
         """
         local_or_remote = (
