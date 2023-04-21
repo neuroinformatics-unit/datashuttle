@@ -1,0 +1,17 @@
+fancylog
+linkify-it-py
+myst-parser
+nbsphinx
+numpydoc
+
+paramiko
+pydata-sphinx-theme
+PyYAML
+requests
+rich
+setuptools_scm
+simplejson
+sphinx>=5.0,<6.0
+sphinx-argparse
+sphinx-design
+sphinx_autodoc_typehints

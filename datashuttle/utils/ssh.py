@@ -29,9 +29,23 @@ def setup_ssh_key(
     """
     Set up an SSH private / public key pair with
     remote server. First, a private key is generated
-    in the appdir. Next a connection requiring input
+    and saved in the .datashuttle config path.
+    Next a connection requiring input
     password made, and the public part of the key
     added to ~/.ssh/authorized_keys.
+
+    Parameters
+    -----------
+
+    ssh_key_path : path to the ssh private key
+
+    hostkeys_path : path to the ssh host key, once the user
+        has confirmed the key ID this is saved so verification
+        is not required each time.
+
+    cfg : datashuttle config UserDict
+
+    log : log if True, logger must already be initialised.
     """
     generate_and_write_ssh_key(ssh_key_path)
 
@@ -60,7 +74,7 @@ def connect_client(
     cfg: Configs,
     hostkeys_path: Path,
     password: Optional[str] = None,
-    private_key_path: Optional[Path] = None,
+    ssh_key_path: Optional[Path] = None,
 ) -> None:
     """
     Connect client to remote server using paramiko.
@@ -74,18 +88,19 @@ def connect_client(
             cfg["remote_host_id"],
             username=cfg["remote_host_username"],
             password=password,
-            key_filename=private_key_path.as_posix()
-            if isinstance(private_key_path, Path)
+            key_filename=ssh_key_path.as_posix()
+            if isinstance(ssh_key_path, Path)
             else None,
             look_for_keys=True,
         )
     except Exception:
         utils.log_and_raise_error(
             "Could not connect to server. Ensure that \n"
-            "1) You are on VPN network if required. \n"
-            "2) The remote_host_id: {cfg['remote_host_id']} is"
+            "1) You have run setup_ssh_connection_to_remote_server() \n"
+            "2) You are on VPN network if required. \n"
+            "3) The remote_host_id: {cfg['remote_host_id']} is"
             " correct.\n"
-            "3) The remote username:"
+            "4) The remote username:"
             f" {cfg['remote_host_username']}, and password are correct."
         )
 
@@ -167,12 +182,19 @@ def search_ssh_remote_for_directories(
     """
     Search for the search prefix in the search path over SSH.
     Returns the list of matching directories, files are filtered out.
+
+    Parameters
+    -----------
+
+    search_path : path to search for directories in
+
+    search_prefix : search prefix for directory names e.g. "sub-*"
+
+    cfg, hostkeys_path, ssh_key_path : see connect_client()
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
-        connect_client(
-            client, cfg, hostkeys_path, private_key_path=ssh_key_path
-        )
+        connect_client(client, cfg, hostkeys_path, ssh_key_path=ssh_key_path)
 
         sftp = client.open_sftp()
 
@@ -186,7 +208,21 @@ def search_ssh_remote_for_directories(
 def get_list_of_directory_names_over_sftp(
     sftp, search_path: Path, search_prefix: str
 ) -> List[str]:
+    """
+    Use paramiko's sftp to search a path
+    over ssh for directories. Return the directory names.
 
+    Parameters
+    ----------
+
+    stfp : connected paramiko stfp object
+        (see search_ssh_remote_for_directories())
+
+    search_path : path to search for directories in
+
+    search_prefix : prefix (can include wildcards)
+        to search directory names.
+    """
     all_dirnames = []
     try:
         for file_or_dir in sftp.listdir_attr(search_path.as_posix()):

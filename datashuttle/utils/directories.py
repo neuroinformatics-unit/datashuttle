@@ -21,8 +21,16 @@ from . import ssh, utils
 
 def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
     """
-    For path or list of path, make them if
+    For path or list of paths, make them if
     they do not already exist.
+
+    Parameters
+    ----------
+
+    paths : Path or list of Paths to create
+
+    log : if True, log all made directories. This
+        requires the logger to already be initialised.
     """
     if isinstance(paths, Path):
         paths = [paths]
@@ -38,6 +46,11 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
 def make_datashuttle_metadata_folder(
     full_path: Path, log: bool = False
 ) -> None:
+    """
+    Make a .datashuttle folder (this is created
+    in the local_path for logs and User directory
+    for configs). See make_dirs() for arguments.
+    """
     meta_folder_path = full_path / ".datashuttle_meta"
     make_dirs(meta_folder_path, log)
 
@@ -48,7 +61,28 @@ def check_no_duplicate_sub_ses_key_values(
     new_sub_names: List[str],
     new_ses_names: Optional[List[str]] = None,
 ) -> None:
-    """"""
+    """
+    Given a list of subject and optional session names,
+    check whether these already exist in the local project
+    directory.
+
+    This uses search_sub_or_ses_level() to search the local
+    directory and then checks for the putative new subject
+    or session names to determine any matches.
+
+    Parameters
+    ----------
+
+    project : initialised datashuttle project
+
+    base_dir : local_path to search
+
+    new_sub_names : list of subject names that are being
+     checked for duplicates
+
+    new_ses_names : list of session names that are being
+     checked for duplicates
+    """
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
             project, base_dir, "local"
@@ -99,20 +133,26 @@ def search_sub_or_ses_level(
     """
     Search project folder at the subject or session level
 
-    project: datashuttle project. Currently, this is used
-             as a holder for some ssh configs to avoid too many
-             arguments, but this is not nice and breaks the
-             general rule that these functions should operate
-             project-agnostic.
+    Parameters
+    ----------
 
-    local_or_remote: search in local or remote project
-    sub: either a subject name (string) or None. If None, the search
-         is performed at the top_level_dir_name level
+    project : datashuttle project. Currently, this is used
+        as a holder for some ssh configs to avoid too many
+        arguments, but this is not nice and breaks the
+        general rule that these functions should operate
+        project-agnostic.
+
+    local_or_remote : search in local or remote project
+
+    sub : either a subject name (string) or None. If None, the search
+        is performed at the top_level_dir_name level
+
     ses: either a session name (string) or None, This must not
-         be a session name if sub is None. If provided (with sub)
-         then the session dir is searched
-     str: glob-format search string to search at the
-          directory level.
+        be a session name if sub is None. If provided (with sub)
+        then the session dir is searched
+
+    str: glob-format search string to search at the
+        directory level.
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -141,7 +181,7 @@ def search_data_dirs_sub_or_ses_level(
     in the directory, and then returns any dirs that
     match data_type name.
 
-    see _search_sub_or_ses_level() for inputs.
+    see project._search_sub_or_ses_level() for inputs.
     """
     search_results = search_sub_or_ses_level(
         project, base_dir, local_or_remote, sub, ses
@@ -175,6 +215,25 @@ def search_for_wildcards(
     Outputs a new list of names including all original names
     but where @*@-containing names have been replaced with
     search results.
+
+    Parameters
+    ----------
+
+    project : initialised datashuttle project
+
+    base_dir : directory to search for wildcards in
+
+    local_or_remote : "local" or "remote" project path to
+        search in
+
+    all_names : list of subject or session names that
+        may or may not include the wildcard flag. If sub (below)
+        is passed, it is assumed these are session names. Otherwise,
+        it is assumed these are subject names.
+
+    sub : optional subject to search for sessions in. If not provided,
+        will search for subjects rather than sessions.
+
     """
     new_all_names = []
     for name in all_names:
@@ -212,8 +271,11 @@ def process_glob_to_find_data_type_dirs(
     """
     Process the results of glob on a sub or session level,
     which could contain any kind of folder / file.
+
     Find the data_type files and return in
     a format that mirros dict.items()
+
+    see project._search_sub_or_ses_level() for inputs.
     """
     ses_dir_keys = []
     ses_dir_values = []
@@ -245,9 +307,12 @@ def search_for_directories(
     Wrapper to determine the method used to search for search
     prefix directories in the search path.
 
-    :param local_or_remote: "local" or "remote"
-    :param search_path: full filepath to search in
-    :param search_prefix: file / dirname to search (e.g. "sub-*")
+    Parameters
+    ----------
+
+    local_or_remote : "local" or "remote"
+    search_path : full filepath to search in
+    search_prefix : file / dirname to search (e.g. "sub-*")
     """
     if (
         local_or_remote == "remote"

@@ -50,6 +50,7 @@ def setup_project_default_configs(
     project.make_config_file(**default_configs)
 
     rclone.setup_remote_as_rclone_target(
+        "ssh",
         project.cfg,
         project._get_rclone_config_name("ssh"),
         project._ssh_key_path,
@@ -110,7 +111,7 @@ def delete_all_dirs_in_remote_path(project):
 
 def delete_project_if_it_exists(project_name):
     """"""
-    config_path, __ = utils.get_appdir_path(project_name)
+    config_path, __ = utils.get_datashuttle_path(project_name)
 
     if config_path.is_dir():
         ds_logger.close_log_filehandler()
