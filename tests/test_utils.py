@@ -529,7 +529,7 @@ def handle_upload_or_download(
 
 def swap_local_and_remote_paths(project, swap_last_dir_only=False):
     """
-    When testing upload vs. download, the most conveient way
+    When testing upload vs. download, the most convenient way
     to test download is to swap the paths. In this case, we 'download'
     from local to remote. It much simplifies creating the folders
     to transfer (which are created locally), and is fully required
