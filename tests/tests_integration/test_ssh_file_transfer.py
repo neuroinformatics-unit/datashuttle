@@ -46,7 +46,7 @@ class TestFileTransfer:
         test function, the dir are transferred.
         Partial cleanup is done in the test function
         i.e. deleting the remote_path to which the
-        items have been transferred. This is acheived
+        items have been transferred. This is achieved
         by using "class" scope.
 
         pathtable is a convenient way to represent
@@ -58,7 +58,7 @@ class TestFileTransfer:
         everything through SFTP. However, on Windows the
         mounted filesystem is quite slow to update, taking
         a few seconds after SSH transfer. This makes the
-        tests run very slowly. We can  get rid
+        tests run very slowly. We can get rid
         of this limitation on linux.
         """
         testing_ssh = request.param
