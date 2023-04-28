@@ -58,7 +58,7 @@ class TestFileTransfer:
         everything through SFTP. However, on Windows the
         mounted filesystem is quite slow to update, taking
         a few seconds after SSH transfer. This makes the
-        tests run very slowly. We can  get rid
+        tests run very slowly. We can get rid
         of this limitation on linux.
         """
         testing_ssh = request.param
