@@ -40,5 +40,5 @@ def pytest_configure(config):
         USERNAME=username,
         REMOTE_HOST_ID=remote_host_id,
         FILESYSTEM_PATH=filesystem_path,  # FILESYSTEM_PATH and SERVER_PATH these must point to the same folder on the HPC, filesystem
-        SERVER_PATH=server_path,  # as a moutned drive and server as the linux path to connect through SSH
+        SERVER_PATH=server_path,  # as a mounted drive and server as the linux path to connect through SSH
     )
