@@ -459,8 +459,8 @@ class TestCommandLineInterface:
         )
 
         assert (
-            "remote_host_id and remote_host_username are "
-            "required if connection_method is ssh." in stderr
+            "'remote_host_id' and 'remote_host_username' are "
+            "required if 'connection_method' is 'ssh'." in stderr
         )
 
     @pytest.mark.parametrize("sep", ["-", "_"])
@@ -470,7 +470,7 @@ class TestCommandLineInterface:
         properly processed names to stdout
         """
         stdout, stderr = test_utils.run_cli(
-            f"check{sep}name{sep}formatting sub-001 1{tags('to')}02 --prefix sub",
+            f"check{sep}name{sep}formatting sub --names sub-001 1{tags('to')}02",
             clean_project_name,
         )
 

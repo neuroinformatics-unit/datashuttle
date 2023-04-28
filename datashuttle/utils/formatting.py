@@ -3,7 +3,7 @@ import re
 from typing import List, Union
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.configs.configs import Configs
+from datashuttle.configs.config_class import Configs
 
 from . import utils
 
@@ -80,7 +80,7 @@ def format_names(
     if len(prefixed_names) != len(set(prefixed_names)):
         utils.log_and_raise_error(
             "Subject and session names but all be unique (i.e. there are no"
-            " duplicates in list input)"
+            " duplicates in list input)."
         )
 
     check_dashes_and_underscore_alternate_correctly(prefixed_names)
@@ -160,7 +160,7 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     if not re.fullmatch(expected_format, first_key_value_pair):
         utils.log_and_raise_error(
             f"The name: {name} is not in required format for {tags('to')} keyword. "
-            f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)"
+            f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)."
         )
 
 
@@ -330,8 +330,8 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
 
         if dashes_underscores[0] != 1:
             utils.log_and_raise_error(
-                "subject or session name first "
-                "delimiter must be dash not underscore"
+                "The first delimiter of 'sub' or 'ses' "
+                "must be dash not underscore e.g. sub-001."
             )
 
         if len(dashes_underscores) % 2 != 0:
@@ -339,8 +339,8 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
 
         if any([ele == 0 for ele in diff(dashes_underscores)]):
             utils.log_and_raise_error(
-                "subject and session names must contain alternating dashes and "
-                "underscores (used for separating key-value pairs)"
+                "Subject and session names must contain alternating dashes and "
+                "underscores (used for separating key-value pairs)."
             )
 
 

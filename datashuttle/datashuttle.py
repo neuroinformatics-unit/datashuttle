@@ -11,7 +11,7 @@ from typing import Any, List, Optional, Union
 import paramiko
 
 from datashuttle.configs import load_configs
-from datashuttle.configs.configs import Configs
+from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     directories,
     ds_logger,
@@ -72,7 +72,9 @@ class DataShuttle:
     def __init__(self, project_name: str):
 
         if " " in project_name:
-            utils.log_and_raise_error("project_name must not include spaces.")
+            utils.log_and_raise_error(
+                "'project_name' must not include spaces."
+            )
 
         self.project_name = project_name
         (
@@ -814,7 +816,7 @@ class DataShuttle:
             e.g. "sub-" or "ses-"
         """
         if prefix not in ["sub", "ses"]:
-            utils.log_and_raise_error("prefix: must be 'sub' or 'ses'")
+            utils.log_and_raise_error("'prefix' must be 'sub' or 'ses'.")
 
         formatted_names = formatting.format_names(names, prefix)
         utils.message_user(formatted_names)

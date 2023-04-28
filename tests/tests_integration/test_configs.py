@@ -88,8 +88,8 @@ class TestConfigs:
             )
 
         assert (
-            str(e.value) == "remote_host_id and remote_host_username are "
-            "required if connection_method is ssh."
+            str(e.value) == "'remote_host_id' and 'remote_host_username' are "
+            "required if 'connection_method' is 'ssh'."
         )
 
     @pytest.mark.parametrize(
@@ -124,10 +124,9 @@ class TestConfigs:
 
             assert (
                 str(e.value)
-                == "\nremote_host_id and remote_host_username are required "
-                "if connection_method is ssh.\nconnection_method was not updated"
+                == "\n'remote_host_id' and 'remote_host_username' are required "
+                "if 'connection_method' is 'ssh'.\nconnection_method was not updated."
             )
-
             assert project.cfg["connection_method"] == "local_filesystem"
 
     # Test Make Configs API
@@ -219,7 +218,7 @@ class TestConfigs:
         with pytest.raises(BaseException) as e:
             setup_project.supply_config_file(non_existant_path, warn=False)
 
-        assert str(e.value) == f"No file found at: {non_existant_path}"
+        assert str(e.value) == f"No file found at: {non_existant_path}."
 
         # Test non-yaml file supplied
         wrong_filetype_path = setup_project._datashuttle_path / "file.yuml"
@@ -230,7 +229,7 @@ class TestConfigs:
         with pytest.raises(BaseException) as e:
             setup_project.supply_config_file(wrong_filetype_path, warn=False)
 
-        assert str(e.value) == "The config file must be a YAML file"
+        assert str(e.value) == "The config file must be a YAML file."
 
     def test_supplied_config_file_missing_key(self, setup_project, tmp_path):
         """
@@ -251,8 +250,8 @@ class TestConfigs:
 
         assert (
             str(e.value) == "Loading Failed. "
-            "The key use_histology was not found in "
-            "the supplied config. Config file was not updated."
+            "The key 'use_histology' was not found in "
+            "the config. Config file was not updated."
         )
 
     def test_supplied_config_file_extra_key(self, setup_project, tmp_path):
@@ -269,7 +268,7 @@ class TestConfigs:
             setup_project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
-            str(e.value) == "The supplied config contains an "
+            str(e.value) == "The config contains an "
             "invalid key: use_mismology. "
             "Config file was not updated."
         )
@@ -296,11 +295,24 @@ class TestConfigs:
 
             required_types = get_canonical_config_required_types()
 
-            assert (
-                str(e.value) == f"The type of the value at {key} is "
-                f"incorrect, it must be {required_types[key]}. "
-                f"Config file was not updated."
-            )
+            if key == "connection_method":
+                assert (
+                    str(e.value)
+                    == "'<class 'datashuttle.datashuttle.DataShuttle'>' "
+                    "not in ('ssh', 'local_filesystem')"
+                )
+            elif key == "transfer_verbosity":
+                assert (
+                    str(e.value)
+                    == "'<class 'datashuttle.datashuttle.DataShuttle'>' not in ('v', 'vv')"
+                )
+
+            else:
+                assert (
+                    str(e.value) == f"The type of the value at '{key}' is "
+                    f"incorrect, it must be {required_types[key]}. "
+                    f"Config file was not updated."
+                )
 
     def test_supplied_config_file_changes_wrong_order(
         self, setup_project, tmp_path
@@ -326,8 +338,8 @@ class TestConfigs:
             )
 
         assert (
-            str(e.value)
-            == f"New config keys are in the wrong order. The order should be: {get_canonical_config_dict().keys()}"
+            str(e.value) == f"New config keys are in the wrong order. "
+            f"The order should be: {get_canonical_config_dict().keys()}."
         )
 
     def test_supplied_config_file_updates(self, setup_project, tmp_path):

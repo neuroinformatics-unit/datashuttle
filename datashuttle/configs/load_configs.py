@@ -5,7 +5,7 @@ from typing import Optional, Union, overload
 from datashuttle.utils import utils
 
 from . import canonical_configs
-from .configs import Configs
+from .config_class import Configs
 
 ConfigValueTypes = Union[Path, str, bool, None]
 
@@ -91,7 +91,7 @@ def supplied_configs_confirm_overwrite(
 
     if warn:
         input_ = utils.get_user_input(
-            "This will overwrite the existing datashuttle config file."
+            "This will overwrite any existing datashuttle config file."
             "If you wish to proceed, press y."
         )
 
@@ -128,8 +128,9 @@ def handle_cli_or_supplied_config_bools(
 ) -> Union[Configs, dict]:
     """
     For supplied configs for CLI input args,
-    in some instances bools will as string type.
-    Handle this case here to cast to correct type .
+    in some instances bools will be passed
+    as string type. Handle this case here
+    to cast to correct type.
     """
     for key in dict_.keys():
         dict_[key] = handle_bool(key, dict_[key])
@@ -150,7 +151,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
         if isinstance(value, str):
             if value not in ["True", "False", "true", "false"]:
                 utils.raise_error(
-                    f"Input value for {key} " f"must be True or False"
+                    f"Input value for '{key}' must be True or False"
                 )
 
             value = value in ["True", "true"]

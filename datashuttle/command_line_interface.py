@@ -20,8 +20,6 @@ def process_docstring(message):
     """
     Sphinx is quite specific about the docstrings allowed
     """
-    #  message = message.replace("Parameters", "Arguments")
-    # message = message.replace("Notes", "Note")
     message = message.replace("-", "")
     message = message.split("Parameters")[0]
     return message
@@ -117,9 +115,9 @@ description = (
     "\ntype datashuttle [PROJECT NAME] [COMMAND] --help'"
     "\n\n"
     "On first use it is necessary to setup configurations. \ne.g."
-    "'datashuttle [PROJECT NAME] make_config_file [OPTIONS]'"
+    "'datashuttle [PROJECT NAME] make-config-file [OPTIONS]'"
     "\n\n"
-    "see \n'datashuttle <project_name> make_config_file --help'"
+    "see \n'datashuttle <project_name> make-config-file --help'"
     "\nfor full list of options."
     "\n\n"
     "All command and argument names are matched to the API "
@@ -162,6 +160,7 @@ def update_config(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
     option_key = kwargs["option_key"]
+    option_key = option_key.replace("-", "_")
     new_info = kwargs["new_info"]
 
     run_command(
@@ -798,17 +797,16 @@ def construct_parser():
     check_name_formatting_parser.set_defaults(func=check_name_formatting)
 
     check_name_formatting_parser.add_argument(
-        "names",
+        "prefix",
         type=str,
-        nargs="+",
-        help="Required: (str, single or multiple)",
+        help="Required: (str) (sub- or ses-)",
     )
 
     check_name_formatting_parser.add_argument(
-        "--prefix",
+        "--names",
         type=str,
-        required=True,
-        help="Required: (str) (sub- or ses-)",
+        nargs="+",
+        help="Required: (str, single or multiple)",
     )
 
     # Supply Config

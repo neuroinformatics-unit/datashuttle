@@ -274,9 +274,10 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            "remote_host_id and remote_host_username are required if connection_method is ssh."
-            in log
+            "'remote_host_id' and 'remote_host_username' are "
+            "required if 'connection_method' is 'ssh'." in log
         )
+
         assert "connection_method was not updated" in log
 
     def test_logs_bad_make_sub_dir_error(self, setup_project):
