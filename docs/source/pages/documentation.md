@@ -231,7 +231,7 @@ keyword options.
 A number of configuration settings define the behaviour of datashuttle during file transfer (see make_config_file). Datashuttle
 uses [Rclone](https://rclone.org/) for data transfer, and these options are aliases for RClone configurations.
 
-#### overwrite_old_files_on_transfer
+### overwrite_old_files_on_transfer
 
 By default, datashuttle will never overwrite files in the target project directories (i.e. the
 directories the data is being transferred to). This is the case even if the version of the
@@ -242,16 +242,16 @@ When "overwrite_old_files_on_transfer"
 this behaviour is changed, and target directory files that are older than source directory
 will be overwritten.
 
-#### transfer_verbosity
+### transfer_verbosity
 
 When set to vv, the console and log output will become very verbose and report all defaults. When
 v (default) these will report each file that is transferred and a small number of significant events.
 
-#### show_transfer_progress
+### show_transfer_progress
 
 When true, real-time transfer statistics will be reported and logged.
 
-#### All sub_names, ses_names and data_type keywords
+### All sub_names, ses_names and data_type keywords
 
 For each argument, the subject, session or datatype to transfer can be specified directly, e.g.
 `project.upload_data(sub_names="sub-001", ses_names=["ses-001", "ses-002]", data_type="behav" )`
