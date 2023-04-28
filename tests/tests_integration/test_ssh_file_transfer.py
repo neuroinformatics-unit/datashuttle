@@ -46,7 +46,7 @@ class TestFileTransfer:
         test function, the dir are transferred.
         Partial cleanup is done in the test function
         i.e. deleting the remote_path to which the
-        items have been transferred. This is acheived
+        items have been transferred. This is achieved
         by using "class" scope.
 
         pathtable is a convenient way to represent
