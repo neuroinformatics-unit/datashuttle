@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, List, Optional, Union
+from typing import Any, Optional, Union
 
 import paramiko
 
@@ -170,7 +170,7 @@ class DataShuttle:
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make_sub_dir")
+        self._start_log("make_sub_dir", local_vars=locals())
 
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
@@ -211,9 +211,9 @@ class DataShuttle:
         utils.log("\nFinished file creation. Local folder tree is now:\n")
         ds_logger.log_tree(self.cfg["local_path"])
 
-        utils.message_user(
-            f"Finished making directories. For log of all created "
-            f"directories, pleasee see {self.cfg.logging_path}"
+        utils.print_message_to_user(
+            f"Finished making directories. \nFor log of all created "
+            f"directories, please see {self.cfg.logging_path}"
         )
 
         ds_logger.close_log_filehandler()
@@ -280,7 +280,7 @@ class DataShuttle:
               (on the 1st january, 2022).
         """
         if init_log:
-            self._start_log("upload_data")
+            self._start_log("upload_data", local_vars=locals())
 
         TransferData(
             self.cfg,
@@ -313,7 +313,7 @@ class DataShuttle:
         "all" arguments will search the remote project for sub / ses to download.
         """
         if init_log:
-            self._start_log("download_data")
+            self._start_log("download_data", local_vars=locals())
 
         TransferData(
             self.cfg,
@@ -333,7 +333,7 @@ class DataShuttle:
         Alias for:
             project.upload_data("all", "all", "all")
         """
-        self._start_log("upload_all")
+        self._start_log("upload_all", local_vars=locals())
 
         self.upload_data("all", "all", "all", dry_run=dry_run, init_log=False)
 
@@ -343,7 +343,7 @@ class DataShuttle:
 
         Alias for : project.download_data("all", "all", "all")
         """
-        self._start_log("download_all")
+        self._start_log("download_all", local_vars=locals())
 
         self.download_data(
             "all", "all", "all", dry_run=dry_run, init_log=False
@@ -380,7 +380,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("upload_project_dir_or_file")
+        self._start_log("upload_project_dir_or_file", local_vars=locals())
 
         processed_filepath = utils.get_path_after_base_dir(
             self.cfg.get_base_dir("local"),
@@ -429,7 +429,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("download_project_dir_or_file")
+        self._start_log("download_project_dir_or_file", local_vars=locals())
 
         processed_filepath = utils.get_path_after_base_dir(
             self.cfg.get_base_dir("remote"),
@@ -467,7 +467,9 @@ class DataShuttle:
         cluster. Once input, SSH private / public key pair
         will be setup.
         """
-        self._start_log("setup_ssh_connection_to_remote_server")
+        self._start_log(
+            "setup_ssh_connection_to_remote_server", local_vars=locals()
+        )
 
         verified = ssh.verify_ssh_remote_host(
             self.cfg["remote_host_id"],
@@ -594,7 +596,10 @@ class DataShuttle:
             if True, will allow behav directory creation
         """
         self._start_log(
-            "make_config_file", store_in_temp_dir=True, temp_dir_path="default"
+            "make_config_file",
+            local_vars=locals(),
+            store_in_temp_dir=True,
+            temp_dir_path="default",
         )
 
         self.cfg = Configs(
@@ -671,11 +676,14 @@ class DataShuttle:
         if store_logs_in_temp_dir:
             self._start_log(
                 "update_config",
+                local_vars=locals(),
                 store_in_temp_dir=True,
                 temp_dir_path="default",
             )
         else:
-            self._start_log("update_config", store_in_temp_dir=False)
+            self._start_log(
+                "update_config", local_vars=locals(), store_in_temp_dir=False
+            )
 
         if not self.cfg:
             utils.log_and_raise_error(
@@ -728,11 +736,16 @@ class DataShuttle:
         if store_logs_in_temp_dir:
             self._start_log(
                 "supply_config_file",
+                local_vars=locals(),
                 store_in_temp_dir=True,
                 temp_dir_path="default",
             )
         else:
-            self._start_log("supply_config_file", store_in_temp_dir=False)
+            self._start_log(
+                "supply_config_file",
+                local_vars=locals(),
+                store_in_temp_dir=False,
+            )
 
         path_to_config = Path(input_path_to_config)
 
@@ -759,7 +772,7 @@ class DataShuttle:
         """
         Print the projects local path.
         """
-        utils.message_user(self.cfg["local_path"].as_posix())
+        utils.print_message_to_user(self.cfg["local_path"].as_posix())
 
     def get_datashuttle_path(self) -> None:
         """
@@ -767,27 +780,27 @@ class DataShuttle:
         directory where configs another other
         datashuttle files are stored.
         """
-        utils.message_user(self._datashuttle_path.as_posix())
+        utils.print_message_to_user(self._datashuttle_path.as_posix())
 
     def get_config_path(self) -> None:
         """
         Print the full path to the DataShuttle config file.
         This is always formatted to UNIX style.
         """
-        utils.message_user(self._config_path.as_posix())
+        utils.print_message_to_user(self._config_path.as_posix())
 
     def get_remote_path(self) -> None:
         """
         Print the project remote path.
         This is always formatted to UNIX style.
         """
-        utils.message_user(self.cfg["remote_path"].as_posix())
+        utils.print_message_to_user(self.cfg["remote_path"].as_posix())
 
     def show_configs(self) -> None:
         """
         Print the current configs to the terminal.
         """
-        utils.message_user(self._get_json_dumps_config())
+        utils.print_message_to_user(self._get_json_dumps_config())
 
     def show_local_tree(self):
         """
@@ -819,7 +832,7 @@ class DataShuttle:
             utils.log_and_raise_error("'prefix' must be 'sub' or 'ses'.")
 
         formatted_names = formatting.format_names(names, prefix)
-        utils.message_user(formatted_names)
+        utils.print_message_to_user(formatted_names)
 
     # =========================================================================
     # Private Functions
@@ -858,9 +871,10 @@ class DataShuttle:
     def _start_log(
         self,
         name: str,
-        variables: Optional[List[Any]] = None,
+        local_vars: Optional[dict] = None,
         store_in_temp_dir: bool = False,
         temp_dir_path: Union[str, Path] = "",
+        verbose: bool = True,
     ) -> None:
         """
         Initialize the logger. This is typically called at
@@ -873,7 +887,8 @@ class DataShuttle:
         name : name of the log output files. Typically, the
             name of the function logged e.g. "update_config"
 
-        variables : variables are passed to fancylog variables argument.
+        local_vars : local_vars are passed to fancylog variables argument.
+                 see ds_logger.wrap_variables_for_fancylog for more info
 
         store_in_temp_dir :
             if False, existing logging path will be used
@@ -885,6 +900,13 @@ class DataShuttle:
             if "default", use the default temp dir path stored at
             self._temp_log_path otherwise a full path to save the log at.
         """
+        if local_vars is None:
+            variables = None
+        else:
+            variables = ds_logger.wrap_variables_for_fancylog(
+                local_vars, self.cfg
+            )
+
         if store_in_temp_dir:
             path_to_save = (
                 self._temp_log_path
@@ -894,7 +916,7 @@ class DataShuttle:
         else:
             path_to_save = self.cfg.logging_path
 
-        ds_logger.start(path_to_save, name, variables)
+        ds_logger.start(path_to_save, name, variables, verbose)
 
     def _move_logs_from_temp_dir(self):
         """
@@ -927,7 +949,7 @@ class DataShuttle:
         print the entire configs as it becomes confusing.
         """
         if message:
-            utils.message_user("Update successful.")
+            utils.print_message_to_user("Update successful.")
         utils.log(
             f"Update successful. New config file: \n {self._get_json_dumps_config()}"
         )

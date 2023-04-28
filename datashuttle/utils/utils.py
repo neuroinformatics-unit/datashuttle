@@ -18,32 +18,33 @@ def log(message: str) -> None:
     Log the message to the main initialised
     logger.
     """
-    logger = logging.getLogger()
-    logger.info(message)
+    logger = logging.getLogger("datashuttle")
+    logger.debug(message)
 
 
 def log_and_message(message: str, use_rich: bool = False) -> None:
     """
     Log the message and send it to user.
-    If use_rich, use rich's print() function
+    use_rich : is True, use rich's print() function
     """
     log(message)
-    message_user(message, use_rich)
+    print_message_to_user(message, use_rich)
 
 
 def log_and_raise_error(message: str) -> None:
     """
     Log the message before raising the same message as an error.
     """
-    logging.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
-    logging.error(message)
+    logger = logging.getLogger("datashuttle")
+    logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
+    logger.error(message)
     raise_error(message)
 
 
-def message_user(message: Union[str, list], use_rich=False) -> None:
+def print_message_to_user(message: Union[str, list], use_rich=False) -> None:
     """
-    Centralised way to send message. if use_rich, use rich's
-    print() function.
+    Centralised way to send message.
+    use_rich :  use rich's print() function.
     """
     if use_rich:
         rich_print(message)

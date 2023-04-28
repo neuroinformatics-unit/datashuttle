@@ -61,7 +61,7 @@ def setup_ssh_key(
         f"Private key at: {cfg.ssh_key_path.as_posix()}"
     )
 
-    utils.message_user(success_message)
+    utils.print_message_to_user(success_message)
 
     if log:
         utils.log(f"\n{success_message}")
@@ -89,7 +89,7 @@ def connect_client(
             else None,
             look_for_keys=True,
         )
-        utils.message_user(
+        utils.print_message_to_user(
             f"Connection to { cfg['remote_host_id']} made successfully."
         )
 
@@ -127,7 +127,7 @@ def add_public_key_to_remote_authorized_keys(
 
 
 def verify_ssh_remote_host(
-    remote_host_id: str, hostkeys_path: Path, log: bool = False
+    remote_host_id: str, hostkeys_path: Path, log: bool = True
 ) -> bool:
     """
     Similar to connecting with other SSH manager e.g. putty,
@@ -154,17 +154,17 @@ def verify_ssh_remote_host(
         client.get_host_keys().add(remote_host_id, key.get_name(), key)
         client.get_host_keys().save(hostkeys_path.as_posix())
         success = True
-        utils.message_user("Host accepted.")
+        utils.print_message_to_user("Host accepted.")
     else:
-        utils.message_user("Host not accepted. No connection made.")
+        utils.print_message_to_user("Host not accepted. No connection made.")
         success = False
 
     if log:
         if success:
-            utils.log(f"\n{message}")
-            utils.log(f"\nHostkeys saved at:{hostkeys_path.as_posix()}")
+            utils.log(f"{message}")
+            utils.log(f"Hostkeys saved at:{hostkeys_path.as_posix()}")
         else:
-            utils.log("\nHost not accepted. No connection made.")
+            utils.log("Host not accepted. No connection made.")
 
     return success
 

@@ -33,7 +33,7 @@ def setup_remote_as_rclone_target(
     cfg: Configs,
     rclone_config_name: str,
     ssh_key_path: Path,
-    log: bool = False,
+    log: bool = True,
 ) -> None:
     """
     RClone sets remote targets in a config file. When

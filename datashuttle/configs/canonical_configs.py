@@ -175,7 +175,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     # Initialise the local project directory
     try:
-        utils.message_user(
+        utils.print_message_to_user(
             f"Making project directory at: {config_dict['local_path']}"
         )
         directories.make_dirs(config_dict["local_path"])

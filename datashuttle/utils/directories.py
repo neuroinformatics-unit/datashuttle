@@ -25,7 +25,7 @@ def make_directory_trees(
     sub_names: Union[str, list],
     ses_names: Union[str, list],
     data_type: str,
-    log: bool = False,
+    log: bool = True,
 ) -> None:
     """
     Entry method to make a full directory tree. It will
@@ -82,7 +82,7 @@ def make_data_type_directories(
     data_type: Union[list, str],
     sub_or_ses_level_path: Path,
     level: str,
-    log: bool = False,
+    log: bool = True,
 ) -> None:
     """
     Make data_type folder (e.g. behav) at the sub or ses
@@ -119,7 +119,7 @@ def make_data_type_directories(
 # Make Dirs Helpers --------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
+def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
     """
     For path or list of paths, make them if
     they do not already exist.
@@ -144,7 +144,7 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
 
 
 def make_datashuttle_metadata_folder(
-    full_path: Path, log: bool = False
+    full_path: Path, log: bool = True
 ) -> None:
     """
     Make a .datashuttle folder (this is created
@@ -259,7 +259,7 @@ def search_sub_or_ses_level(
     if ses and not sub:
         utils.log_and_raise_error(
             "cannot pass session to "
-            "_search_sub_or_ses_level() without subject"
+            "search_sub_or_ses_level() without subject"
         )
 
     if sub:
@@ -281,14 +281,20 @@ def search_data_dirs_sub_or_ses_level(
     local_or_remote: str,
     sub: str,
     ses: Optional[str] = None,
-):
+) -> zip:
     """
     Search  a subject or session directory specifically
     for data_types. First searches for all folders / files
     in the directory, and then returns any dirs that
     match data_type name.
 
-    see project._search_sub_or_ses_level() for inputs.
+    see directories.search_sub_or_ses_level() for full
+    parameters list.
+
+    Returns
+    -------
+    Find the data_type files and return in
+    a format that mirrors dict.items()
     """
     search_results = search_sub_or_ses_level(
         cfg, base_dir, local_or_remote, sub, ses
@@ -379,10 +385,12 @@ def process_glob_to_find_data_type_dirs(
     Process the results of glob on a sub or session level,
     which could contain any kind of folder / file.
 
-    Find the data_type files and return in
-    a format that mirros dict.items()
+    see project.search_sub_or_ses_level() for inputs.
 
-    see project._search_sub_or_ses_level() for inputs.
+    Returns
+    -------
+    Find the data_type files and return in
+    a format that mirrors dict.items()
     """
     ses_dir_keys = []
     ses_dir_values = []
