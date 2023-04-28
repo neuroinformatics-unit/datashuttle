@@ -14,9 +14,9 @@ from datashuttle.configs import canonical_configs
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger, rclone, utils
 
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Setup and Teardown Test Project
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def setup_project_default_configs(
@@ -52,23 +52,23 @@ def setup_project_default_configs(
     rclone.setup_remote_as_rclone_target(
         "ssh",
         project.cfg,
-        project._get_rclone_config_name("ssh"),
-        project._ssh_key_path,
+        project.cfg.get_rclone_config_name("ssh"),
+        project.cfg.ssh_key_path,
     )
 
     warnings.filterwarnings("default")
 
-    project.update_config("local_path", project._appdir_path / "base_dir")
+    project.update_config("local_path", project._datashuttle_path / "base_dir")
 
     if local_path:
         project.update_config("local_path", local_path)
         delete_all_dirs_in_local_path(project)
-        project.make_and_get_logging_path()
+        project.cfg.make_and_get_logging_path()
 
     if remote_path:
         project.update_config("remote_path", remote_path)
-        delete_all_dirs_in_remote_path(project)
-        project.make_and_get_logging_path()
+        delete_all_dirs_in_project_path(project, "remote")
+        project.cfg.make_and_get_logging_path()
 
     return project
 
@@ -92,7 +92,8 @@ def teardown_project(
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
     os.chdir(cwd)
-    delete_all_dirs_in_remote_path(project)
+    delete_all_dirs_in_project_path(project, "remote")
+    delete_all_dirs_in_project_path(project, "local")
     delete_project_if_it_exists(project.project_name)
 
 
@@ -102,11 +103,16 @@ def delete_all_dirs_in_local_path(project):
         shutil.rmtree(project.cfg["local_path"])
 
 
-def delete_all_dirs_in_remote_path(project):
+def delete_all_dirs_in_project_path(project, local_or_remote):
     """"""
+    directory = f"{local_or_remote}_path"
+
     ds_logger.close_log_filehandler()
-    if project.cfg["remote_path"].is_dir():
-        shutil.rmtree(project.cfg["remote_path"])
+    if project.cfg[directory].is_dir() and project.cfg[directory].stem in [
+        "local",
+        "remote",
+    ]:
+        shutil.rmtree(project.cfg[directory])
 
 
 def delete_project_if_it_exists(project_name):
@@ -123,7 +129,7 @@ def make_correct_supply_config_file(
     setup_project, tmp_path, update_configs=False
 ):
     """"""
-    new_configs_path = setup_project._appdir_path / "new_configs.yaml"
+    new_configs_path = setup_project._datashuttle_path / "new_configs.yaml"
     new_configs = get_test_config_arguments_dict(tmp_path)
 
     canonical_config_dict = canonical_configs.get_canonical_config_dict()
@@ -147,21 +153,25 @@ def setup_project_fixture(tmp_path, test_project_name):
     project = setup_project_default_configs(
         test_project_name,
         tmp_path,
-        local_path=tmp_path / test_project_name / "local",
-        remote_path=tmp_path / test_project_name / "remote",
+        local_path=make_test_path(tmp_path, test_project_name, "local"),
+        remote_path=make_test_path(tmp_path, test_project_name, "remote"),
     )
 
     cwd = os.getcwd()
     return project, cwd
 
 
+def make_test_path(base_path, test_project_name, local_or_remote):
+    return Path(base_path) / test_project_name / local_or_remote
+
+
 def get_protected_test_dir():
     return "ds_protected_test_name"
 
 
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test Configs
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def get_test_config_arguments_dict(
@@ -184,7 +194,7 @@ def get_test_config_arguments_dict(
         "remote_path": f"{tmp_path}/a/re al/remote_ local/directory",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
-        # but at least 1 use_x is, so
+        # but at least 1 use_x must be true, so
         # for tests always set use_behav=True
     }
 
@@ -196,6 +206,9 @@ def get_test_config_arguments_dict(
             {
                 "remote_host_id": None,
                 "remote_host_username": None,
+                "overwrite_old_files": False,
+                "transfer_verbosity": "v",
+                "show_transfer_progress": False,
                 "use_ephys": False,
                 "use_histology": False,
                 "use_funcimg": False,
@@ -209,6 +222,9 @@ def get_test_config_arguments_dict(
                 "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
+                "overwrite_old_files": True,
+                "transfer_verbosity": "vv",
+                "show_transfer_progress": True,
                 "use_ephys": True,
                 "use_behav": False,
                 "use_histology": True,
@@ -238,9 +254,9 @@ def add_quotes(string: str):
     return '"' + string + '"'
 
 
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Directory Checkers
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def check_directory_tree_is_correct(
@@ -251,12 +267,12 @@ def check_directory_tree_is_correct(
     on the structure specified on project itself.
 
     Cycle through all data_types (defined in
-    project._data_type_dirs()), sub, sessions and check that
+    project.cfg.data_type_dirs()), sub, sessions and check that
     the expected file exists. For  subdirs, recursively
     check all exist.
 
     Directories in which directory_used[key] (where key
-    is the canonical dict key in project._data_type_dirs())
+    is the canonical dict key in project.cfg.data_type_dirs())
     is not used are expected  not to be made, and this
      is checked.
 
@@ -274,7 +290,7 @@ def check_directory_tree_is_correct(
             path_to_ses_folder = join(base_dir, sub, ses)
             check_and_cd_dir(path_to_ses_folder)
 
-            for key, directory in project._data_type_dirs.items():
+            for key, directory in project.cfg.data_type_dirs.items():
 
                 assert key in directory_used.keys(), (
                     "Key not found in directory_used. "
@@ -289,7 +305,7 @@ def check_directory_tree_is_correct(
                     if directory.level == "sub":
                         data_type_path = join(
                             path_to_sub_folder, directory.name
-                        )  # TODO: Remove directory to exp_type_path
+                        )
                     elif directory.level == "ses":
                         data_type_path = join(
                             path_to_ses_folder, directory.name
@@ -365,7 +381,8 @@ def check_data_type_sub_ses_uploaded_correctly(
                 )
                 if data_type_to_transfer == ["histology"]:
                     assert ses_names == ["histology"]
-                    return  # handle the case in which histology only is transferred,
+                    return  # handle the case in which histology
+                    # only is transferred,
                     # and there are no sessions to transfer.
 
                 copy_data_type_to_transfer = (
@@ -416,9 +433,9 @@ def make_and_check_local_project(project, subs, sessions, data_type):
     )
 
 
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Config Checkers
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def check_configs(project, kwargs):
@@ -466,9 +483,9 @@ def check_config_file(config_path, *kwargs):
             assert value == config_yaml[name], f"{name}"
 
 
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Test Helpers
-# ----------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def get_rawdata_path(project, local_or_remote="local"):
@@ -477,11 +494,14 @@ def get_rawdata_path(project, local_or_remote="local"):
         base_path = project.cfg["local_path"]
     else:
         base_path = project.cfg["remote_path"]
-    return os.path.join(base_path, project._top_level_dir_name)
+    return os.path.join(base_path, project.cfg.top_level_dir_name)
 
 
 def handle_upload_or_download(
-    project, upload_or_download, use_all_alias=False
+    project,
+    upload_or_download,
+    use_all_alias=False,
+    swap_last_dir_only=False,
 ):
     """
     To keep things consistent and avoid the pain of writing
@@ -489,19 +509,17 @@ def handle_upload_or_download(
     and local server (so things are still transferred from
     local machine to remote, but using the download function).
     """
-    local_path = copy.deepcopy(project.cfg["local_path"])
-    remote_path = copy.deepcopy(project.cfg["remote_path"])
-
     if upload_or_download == "download":
 
-        project.update_config("local_path", remote_path)
-        project.update_config("remote_path", local_path)
+        remote_path = swap_local_and_remote_paths(project, swap_last_dir_only)
 
         transfer_function = (
             project.download_all if use_all_alias else project.download_data
         )
 
     else:
+        remote_path = project.cfg["remote_path"]
+
         transfer_function = (
             project.upload_all if use_all_alias else project.upload_data
         )
@@ -509,12 +527,47 @@ def handle_upload_or_download(
     return transfer_function, remote_path
 
 
+def swap_local_and_remote_paths(project, swap_last_dir_only=False):
+    """
+    When testing upload vs. download, the most convenient way
+    to test download is to swap the paths. In this case, we 'download'
+    from local to remote. It much simplifies creating the folders
+    to transfer (which are created locally), and is fully required
+    in tests with session scope fixture, in which a local project
+    is made only once and repeatedly transferred.
+
+    Typically, this is as simple as swapping remote and local.
+    For SSH test however, we want to use SSH to search the 'remote'
+    filesystem to find the necsesary files / folders to transfer.
+    As such, the 'local' (which we are downloading from) must be the SSH
+    path. As such, in this case we only want to swap the last dir only
+    (i.e. "local" and "remote"). In this case, we download from
+    cfg["remote_path"] (which is ssh_path/local) to cfg["local_path"]
+    (which is filesystem/remote).
+    """
+    local_path = copy.deepcopy(project.cfg["local_path"])
+    remote_path = copy.deepcopy(project.cfg["remote_path"])
+
+    if swap_last_dir_only:
+        project.update_config(
+            "local_path", local_path.parent / remote_path.name
+        )
+        project.update_config(
+            "remote_path", remote_path.parent / local_path.name
+        )
+    else:
+        project.update_config("local_path", remote_path)
+        project.update_config("remote_path", local_path)
+
+    return remote_path
+
+
 def get_default_sub_sessions_to_test():
     """
     Canonical subs / sessions for these tests
     """
     subs = ["sub-001", "sub-002", "sub-003"]
-    sessions = ["ses-001-23092022-13h50s", "ses-002", "ses-003"]
+    sessions = ["ses-001_23092022-13h50s", "ses-002", "ses-003"]
     return subs, sessions
 
 
@@ -539,7 +592,7 @@ def get_all_data_types_on(kwargs_or_flags):
     either as kwargs for API or str of flags for
     CLI.
     """
-    data_types = canonical_configs.get_flags()
+    data_types = canonical_configs.get_data_types()
     if kwargs_or_flags == "flags":
         return f"{' '.join(['--' + flag for flag in data_types])}"
     else:
@@ -555,3 +608,23 @@ def move_some_keys_to_end_of_dict(config):
     """
     config["connection_method"] = config.pop("connection_method")
     config["use_behav"] = config.pop("use_behav")
+
+
+def clear_capsys(capsys):
+    """
+    read from capsys clears it, so new
+    print statements are clearer to read.
+    """
+    capsys.readouterr()
+
+
+def write_file(path_, contents="", append=False):
+    key = "a" if append else "w"
+    with open(path_, key) as file:
+        file.write(contents)
+
+
+def read_file(path_):
+    with open(path_, "r") as file:
+        contents = file.readlines()
+    return contents

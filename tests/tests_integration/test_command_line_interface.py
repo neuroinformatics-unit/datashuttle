@@ -77,24 +77,38 @@ class TestCommandLineInterface:
         the expected form. Strip flags that are always false.
         Note use_behav is always on as a required argument,
         as at least one use_x argument must be true.
+
+        Note any bool option is automatically included in the kwargs
+        output from the CLI and passed to API. This is because initially
+        any non-required argument defaulted to None. None is then
+        stripped from the kwargs_ in the CLI code so these are not
+        passed to the API and the default is used. However, for flags
+        this is not possible, so the default value (False) is
+        passed to the API. Here we need to delete the options
+        that do not default to None on the CLI from the dictionary
+        that is tested again (because, these are stripped in the CLI code)
         """
         required_options = test_utils.get_test_config_arguments_dict(
             tmp_path, required_arguments_only=True
         )
 
-        stdout, __ = test_utils.run_cli(
+        stdout, stderr = test_utils.run_cli(
             f" make{sep}config{sep}file "
             + self.convert_kwargs_to_cli(required_options, sep)
         )
 
         __, kwargs_ = self.decode(stdout)
 
-        # Update with flags that should always return false
-        flags = canonical_configs.get_flags()
-        flags.remove("use_behav")
-        required_options.update(dict(zip(flags, [False] * len(flags))))
+        # Remove items that are stripped from configs because they
+        # default to None on the CLI
+        default_options = test_utils.get_test_config_arguments_dict(
+            tmp_path, set_as_defaults=True
+        )
+        del default_options["remote_host_id"]
+        del default_options["remote_host_username"]
+        del default_options["transfer_verbosity"]
 
-        self.check_kwargs(required_options, kwargs_)
+        self.check_kwargs(default_options, kwargs_)
 
     def test_make_config_file_non_default_variables(self, tmp_path):
         """
@@ -105,7 +119,7 @@ class TestCommandLineInterface:
             tmp_path, set_as_defaults=False
         )
 
-        stdout, __ = test_utils.run_cli(
+        stdout, stderr = test_utils.run_cli(
             " make_config_file " + self.convert_kwargs_to_cli(changed_configs)
         )
 
@@ -173,7 +187,7 @@ class TestCommandLineInterface:
         stdout, stderr = test_utils.run_cli(
             f"{upload_or_download}{sep}all", setup_project.project_name
         )
-        assert stdout == ""
+
         assert stderr == ""
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -322,12 +336,12 @@ class TestCommandLineInterface:
 
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_make_sub_dir__(self, setup_project):
+    def test_make_sub_dir(self, setup_project):
         """
         see test_filesystem_transfer.py
         """
-        subs = ["sub-1_1", "sub-two-2", "sub-3_3-3=3"]
-        ses = ["ses-123", "ses-hello_world"]
+        subs = ["sub-1_1", "sub-two", "sub-3_3-3"]
+        ses = ["ses-123", "ses-hello_hello_world"]
 
         test_utils.run_cli(
             f"make_sub_dir --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
@@ -379,7 +393,7 @@ class TestCommandLineInterface:
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
-                base_path_to_check, setup_project._top_level_dir_name
+                base_path_to_check, setup_project.cfg.top_level_dir_name
             ),
             data_type_to_transfer=[
                 flag.split("use_")[1]
@@ -410,7 +424,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys",
+            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys/*",
             setup_project.project_name,
         )
 
@@ -456,7 +470,7 @@ class TestCommandLineInterface:
         properly processed names to stdout
         """
         stdout, stderr = test_utils.run_cli(
-            f"check{sep}name{sep}formatting sub-001 1{tags('to')}02 --prefix sub-",
+            f"check{sep}name{sep}formatting sub-001 1{tags('to')}02 --prefix sub",
             clean_project_name,
         )
 

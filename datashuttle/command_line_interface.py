@@ -11,9 +11,9 @@ from datashuttle.utils import utils
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Utils
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def process_docstring(message):
@@ -102,9 +102,9 @@ def help(help_type: str) -> str:
     return help_str
 
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Entry Point to the CLI
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 description = (
     "----------------------------------------------------------------------\n"
@@ -127,9 +127,9 @@ description = (
     "----------------------------------------------------------------------"
 )
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Setup
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def make_config_file(project: DataShuttle, args: Any) -> None:
@@ -152,9 +152,9 @@ def make_config_file(project: DataShuttle, args: Any) -> None:
     )
 
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Update Config
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def update_config(project: DataShuttle, args: Any) -> None:
@@ -171,9 +171,9 @@ def update_config(project: DataShuttle, args: Any) -> None:
     )
 
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Setup SSH
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def setup_ssh_connection_to_remote_server(*args: Any) -> None:
@@ -182,9 +182,9 @@ def setup_ssh_connection_to_remote_server(*args: Any) -> None:
     project.setup_ssh_connection_to_remote_server()
 
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Make Sub Dirs
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def make_sub_dir(project: DataShuttle, args: Any) -> None:
@@ -196,25 +196,27 @@ def make_sub_dir(project: DataShuttle, args: Any) -> None:
     run_command(project, project.make_sub_dir, **filtered_kwargs)
 
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Transfer
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-# Upload Data --------------------------------------------------------------------------
+# Upload Data -----------------------------------------------------------------
 
 
 def upload_data(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
+    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
     run_command(
         project,
         project.upload_data,
-        **kwargs,
+        **filtered_kwargs,
     )
 
 
-# Upload All --------------------------------------------------------------------------
+# Upload All ------------------------------------------------------------------
 
 
 def upload_all(*args: Any) -> None:
@@ -223,21 +225,23 @@ def upload_all(*args: Any) -> None:
     project.upload_all()
 
 
-# Download Data --------------------------------------------------------------------------
+# Download Data ---------------------------------------------------------------
 
 
 def download_data(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
+    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+
     run_command(
         project,
         project.download_data,
-        **kwargs,
+        **filtered_kwargs,
     )
 
 
-# Download All --------------------------------------------------------------------------
+# Download All ----------------------------------------------------------------
 
 
 def download_all(*args: Any) -> None:
@@ -246,7 +250,7 @@ def download_all(*args: Any) -> None:
     project.download_all()
 
 
-# Upload Project Dir or File -----------------------------------------------------------
+# Upload Project Dir or File --------------------------------------------------
 
 
 def upload_project_dir_or_file(project: DataShuttle, args: Any) -> None:
@@ -261,7 +265,7 @@ def upload_project_dir_or_file(project: DataShuttle, args: Any) -> None:
     )
 
 
-# Download Project Dir or File ---------------------------------------------------------
+# Download Project Dir or File ------------------------------------------------
 
 
 def download_project_dir_or_file(project: DataShuttle, args: Any) -> None:
@@ -276,13 +280,13 @@ def download_project_dir_or_file(project: DataShuttle, args: Any) -> None:
     )
 
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Getters
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Almost worth creating a function factory for these, only thing that changes is
 # DataShuttle function. But code would be hard to understand and only 4 cases...
 
-# Get Local Path --------------------------------------------------------------------------
+# Get Local Path --------------------------------------------------------------
 
 
 def get_local_path(*args: Any) -> None:
@@ -291,7 +295,7 @@ def get_local_path(*args: Any) -> None:
     project.get_local_path()
 
 
-# Get Appdir Path --------------------------------------------------------------------------
+# Get Appdir Path -------------------------------------------------------------
 
 
 def get_datashuttle_path(*args: Any) -> None:
@@ -300,7 +304,7 @@ def get_datashuttle_path(*args: Any) -> None:
     project.get_datashuttle_path()
 
 
-# Get Config Path --------------------------------------------------------------------------
+# Get Config Path -------------------------------------------------------------
 
 
 def get_config_path(*args: Any) -> None:
@@ -309,7 +313,7 @@ def get_config_path(*args: Any) -> None:
     project.get_config_path()
 
 
-# Get Remote Path --------------------------------------------------------------------------
+# Get Remote Path -------------------------------------------------------------
 
 
 def get_remote_path(*args: Any) -> None:
@@ -318,7 +322,7 @@ def get_remote_path(*args: Any) -> None:
     project.get_remote_path()
 
 
-# Show Configs --------------------------------------------------------------------------
+# Show Configs ----------------------------------------------------------------
 
 
 def show_configs(*args: Any) -> None:
@@ -327,7 +331,7 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-# Show Local Three --------------------------------------------------------------------------
+# Show Local Three ------------------------------------------------------------
 
 
 def show_local_tree(*args: Any) -> None:
@@ -336,7 +340,7 @@ def show_local_tree(*args: Any) -> None:
     project.show_local_tree()
 
 
-# Check Name Processing --------------------------------------------------------------------------
+# Check Name Processing -----------------------------------------------------------
 
 
 def check_name_formatting(project: DataShuttle, args: Any) -> None:
@@ -351,7 +355,7 @@ def check_name_formatting(project: DataShuttle, args: Any) -> None:
     )
 
 
-# Supply Own Config ------------------------------------------------------------------------
+# Supply Own Config -----------------------------------------------------------
 
 #
 def supply_config_file(project: DataShuttle, args: Any) -> None:
@@ -384,7 +388,7 @@ def construct_parser():
     subparsers = parser.add_subparsers()
 
     # Make Config File
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     make_config_file_parser = subparsers.add_parser(
         "make-config-file",
@@ -423,6 +427,26 @@ def construct_parser():
         "--remote_host_username",
         required=False,
         help="(str)",
+    )
+    make_config_file_parser.add_argument(
+        "--overwrite-old-files",
+        "--overwrite_old_files",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
+    )
+    make_config_file_parser.add_argument(
+        "--transfer-verbosity",
+        "--transfer_verbosity",
+        required=False,
+        help="(str)",
+    )
+    make_config_file_parser.add_argument(
+        "--show-transfer-progress",
+        "--show_transfer_progress",
+        required=False,
+        action="store_true",
+        help=help("flag_default_false"),
     )
     make_config_file_parser.add_argument(
         "--use-ephys",
@@ -529,7 +553,7 @@ def construct_parser():
         type=str,
         nargs="+",
         required=False,
-        default="all",
+        default="all",  # TODO: this is not nice, should read the default from API NOT duplicate in CLI
         help=help("required_str_single_or_multiple_or_all"),
     )
 
@@ -581,7 +605,7 @@ def construct_parser():
     )
 
     # Upload All
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     upload_all_parser = subparsers.add_parser(
         "upload-all",
@@ -591,7 +615,7 @@ def construct_parser():
     upload_all_parser.set_defaults(func=upload_all)
 
     # Download Data
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     download_data_parser = subparsers.add_parser(
         "download-data",
@@ -638,7 +662,7 @@ def construct_parser():
     )
 
     # Download All
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     download_all_parser = subparsers.add_parser(
         "download-all",
@@ -648,7 +672,7 @@ def construct_parser():
     download_all_parser.set_defaults(func=download_all)
 
     # Upload project dir or file
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     upload_project_dir_or_file_parser = subparsers.add_parser(
         "upload-project-dir-or-file",
@@ -674,7 +698,7 @@ def construct_parser():
     )
 
     # Download project dir or file
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     download_project_dir_or_file_parser = subparsers.add_parser(
         "download-project-dir-or-file",
@@ -700,7 +724,7 @@ def construct_parser():
     )
 
     # Get Local Path
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     get_local_path_parser = subparsers.add_parser(
         "get-local-path",
@@ -719,7 +743,7 @@ def construct_parser():
     get_datashuttle_path_parser.set_defaults(func=get_datashuttle_path)
 
     # Get Config Path
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     get_config_path_parser = subparsers.add_parser(
         "get-config-path",
@@ -729,7 +753,7 @@ def construct_parser():
     get_config_path_parser.set_defaults(func=get_config_path)
 
     # Get Remote Path
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     get_remote_path_parser = subparsers.add_parser(
         "get-remote-path",
@@ -739,7 +763,7 @@ def construct_parser():
     get_remote_path_parser.set_defaults(func=get_remote_path)
 
     # Show Configs
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     show_configs_parser = subparsers.add_parser(
         "show-configs",
@@ -749,7 +773,7 @@ def construct_parser():
     show_configs_parser.set_defaults(func=show_configs)
 
     # Show Local tree
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     show_local_tree_parser = subparsers.add_parser(
         "show-local-tree",
@@ -759,7 +783,7 @@ def construct_parser():
     show_local_tree_parser.set_defaults(func=show_local_tree)
 
     # Check Name Processing
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     check_name_formatting_parser = subparsers.add_parser(
         "check-name-formatting",
@@ -787,7 +811,7 @@ def construct_parser():
     )
 
     # Supply Config
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     supply_config_file_parser = subparsers.add_parser(
         "supply-config-file",
@@ -809,9 +833,9 @@ def construct_parser():
 
 parser = construct_parser()
 
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Run
-# ------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def main() -> None:

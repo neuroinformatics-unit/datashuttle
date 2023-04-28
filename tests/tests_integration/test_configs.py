@@ -214,7 +214,7 @@ class TestConfigs:
 
         # Test path supplied that doesn't exist
 
-        non_existant_path = setup_project._appdir_path / "fake.file"
+        non_existant_path = setup_project._datashuttle_path / "fake.file"
 
         with pytest.raises(BaseException) as e:
             setup_project.supply_config_file(non_existant_path, warn=False)
@@ -222,7 +222,7 @@ class TestConfigs:
         assert str(e.value) == f"No file found at: {non_existant_path}"
 
         # Test non-yaml file supplied
-        wrong_filetype_path = setup_project._appdir_path / "file.yuml"
+        wrong_filetype_path = setup_project._datashuttle_path / "file.yuml"
 
         with open(wrong_filetype_path, "w"):
             pass
@@ -236,7 +236,7 @@ class TestConfigs:
         """
         More informative traceback is also printed
         """
-        bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
+        bad_configs_path = setup_project._datashuttle_path / "bad_config.yaml"
         missing_key_configs = test_utils.get_test_config_arguments_dict(
             tmp_path
         )
@@ -259,7 +259,7 @@ class TestConfigs:
         """
         More informative traceback is also printed
         """
-        bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
+        bad_configs_path = setup_project._datashuttle_path / "bad_config.yaml"
 
         wrong_key_configs = test_utils.get_test_config_arguments_dict(tmp_path)
         wrong_key_configs["use_mismology"] = "wrong"
@@ -276,9 +276,10 @@ class TestConfigs:
 
     def test_supplied_config_file_bad_types(self, setup_project, tmp_path):
         """ """
-        bad_configs_path = setup_project._appdir_path / "bad_config.yaml"
+        bad_configs_path = setup_project._datashuttle_path / "bad_config.yaml"
 
         for key in setup_project.cfg.keys():
+
             if key in setup_project.cfg.keys_str_on_file_but_path_in_class:
                 continue
 
@@ -306,7 +307,7 @@ class TestConfigs:
     ):
 
         bad_order_configs_path = (
-            setup_project._appdir_path / "new_configs.yaml"
+            setup_project._datashuttle_path / "new_configs.yaml"
         )
         good_order_configs = test_utils.get_test_config_arguments_dict(
             tmp_path

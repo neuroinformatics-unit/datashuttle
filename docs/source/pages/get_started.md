@@ -40,6 +40,10 @@ to create directories of these data types.
 
 If connection_method used is "ssh", it is necessary to also input the remote_host_id and remote_host_username configs.
 
+The settings "overwrite_old_files_on_transfer", "transfer_verbosity" and "show_transfer_progress" determine
+the behaviour during file transfer. Please see the Data Transfer section of the full documentation for more information.
+
+
 An example call:
 
 ```
@@ -49,13 +53,15 @@ remote_path="/nfs/nhome/live/username/",
 connection_method="ssh",
 remote_host_id="ssh.swc.ucl.ac.uk",
 remote_host_username="username",
+overwrite_old_files_on_transfer=True,
+transfer_verbosity="v",
+show_transfer_progress=False,
 use_ephys=True,
 use_behav=True,
 use_histology=True
 )
 ```
 or equivalently using the command-line interface
-
 
 ```
 datashuttle \
@@ -66,7 +72,8 @@ make_config_file \
 ssh \
 --remote_host_id ssh.swc.ucl.ac.uk \
 --remote_host_username username \
---use-ephys --use-behav --use-histology
+--transfer_verbosity v \
+--use-ephys --use-behav --use-histology --overwrite_old_files_on_transfer
 ```
 
 Individual settings can be updated using update_config(), and an existing config file can be used instead using supply_config()
@@ -166,10 +173,13 @@ download_data \
 --data-type behav
 ```
 
-will only transfer behavioral data type folders, for sessions 1 and 5 from all subjects.
+will only transfer behavioral data type folders, for sessions 1 and 5 from all subjects. See the "All sub_names, ses_names and data_type keywords"
+section of the full documentation for more options.
 
 Along with the @TO@ flag, a wildcard @*@ flag can also be used in subject or session names.
 
+The settings "overwrite_old_files_on_transfer", "transfer_verbosity" and "show_transfer_progress" determine
+the behaviour during file transfer. Please see the Data Transfer section of the full documentation for more information.
 
 ## Logging
 
