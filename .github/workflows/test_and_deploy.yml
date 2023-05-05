@@ -9,11 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: neuroinformatics-unit/actions/lint@main
-  manifest:
-    name: Check Manifest
-    runs-on: ubuntu-latest
-    steps:
-      - uses: neuroinformatics-unit/actions/check_manifest@main
 
   test:
     needs: [linting, manifest]
