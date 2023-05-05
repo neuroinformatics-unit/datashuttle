@@ -5,7 +5,7 @@ as configs can be provided from file or input dynamically
 and so careful checks must be done.
 
 If adding a new config, first add the key to
-get_canonical_config_dict( and type to
+get_canonical_config_dict() and type to
 get_canonical_config_required_types()
 """
 
@@ -14,10 +14,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
-    from datashuttle.configs.configs import Configs
+    from datashuttle.configs.config_class import Configs
 
 from pathlib import Path
-from typing import Union, get_args
+from typing import Literal, Union, get_args, get_origin
 
 from datashuttle.utils import directories, utils
 
@@ -33,6 +33,9 @@ def get_canonical_config_dict() -> dict:
         "connection_method": None,
         "remote_host_id": None,
         "remote_host_username": None,
+        "overwrite_old_files": None,
+        "transfer_verbosity": None,
+        "show_transfer_progress": None,
     }
 
     data_type_configs = get_data_types(as_dict=True)
@@ -60,7 +63,10 @@ def get_flags() -> List[str]:
     Return all configs that are bool flags. This is used in
     testing and type checking config inputs.
     """
-    return get_data_types()
+    return get_data_types() + [
+        "overwrite_old_files",
+        "show_transfer_progress",
+    ]
 
 
 def get_canonical_config_required_types() -> dict:
@@ -71,9 +77,12 @@ def get_canonical_config_required_types() -> dict:
     required_types = {
         "local_path": Union[str, Path],
         "remote_path": Union[str, Path],
-        "connection_method": str,
+        "connection_method": Literal["ssh", "local_filesystem"],
         "remote_host_id": Union[str, None],
         "remote_host_username": Union[str, None],
+        "overwrite_old_files": bool,
+        "transfer_verbosity": Literal["v", "vv"],
+        "show_transfer_progress": bool,
         "use_ephys": bool,
         "use_behav": bool,
         "use_funcimg": bool,
@@ -111,14 +120,14 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     for key in canonical_dict.keys():
         if key not in config_dict.keys():
             utils.log_and_raise_error(
-                f"Loading Failed. The key {key} was not "
-                f"found in the supplied config. "
+                f"Loading Failed. The key '{key}' was not "
+                f"found in the config. "
                 f"Config file was not updated."
             )
     for key in config_dict.keys():
         if key not in canonical_dict.keys():
             utils.log_and_raise_error(
-                f"The supplied config contains an invalid key: {key}. "
+                f"The config contains an invalid key: {key}. "
                 f"Config file was not updated."
             )
 
@@ -127,25 +136,25 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
             f"New config keys are in the wrong order. The"
-            f" order should be: {canonical_dict.keys()}"
+            f" order should be: {canonical_dict.keys()}."
         )
 
     if config_dict["connection_method"] not in ["ssh", "local_filesystem"]:
         utils.log_and_raise_error(
-            "connection method must be ssh or local_filesystem"
+            "'connection method' must be 'ssh' or 'local_filesystem'."
         )
 
     for path_ in ["local_path", "remote_path"]:
         if config_dict[path_].as_posix()[0] == "~":
             utils.log_and_raise_error(
                 f"{path_} must contain the full directory path "
-                "with no ~ syntax"
+                "with no ~ syntax."
             )
 
     if not any([config_dict[key] for key in get_data_types()]):
         utils.log_and_raise_error(
-            f"At least one data_type must be True in "
-            f"configs, from: {' '.join(get_data_types())}"
+            f"At least one data type must be True in "
+            f"configs, from: {' '.join(get_data_types())}."
         )
 
     # Check SSH settings
@@ -154,12 +163,19 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         or not config_dict["remote_host_username"]
     ):
         utils.log_and_raise_error(
-            "remote_host_id and remote_host_username are "
-            "required if connection_method is ssh."
+            "'remote_host_id' and 'remote_host_username' are "
+            "required if 'connection_method' is 'ssh'."
         )
 
+    # Transfer settings
+    if config_dict["transfer_verbosity"] not in ["v", "vv"]:
+        utils.log_and_raise_error(
+            "'transfer_verbosity' must be either 'v' or 'vv'. Config not updated."
+        )
+
+    # Initialise the local project directory
     try:
-        utils.message_user(
+        utils.print_message_to_user(
             f"Making project directory at: {config_dict['local_path']}"
         )
         directories.make_dirs(config_dict["local_path"])
@@ -192,7 +208,13 @@ def check_config_types(config_dict: Configs) -> None:
 
         expected_type = required_types[key]
 
-        if len(get_args(required_types[key])) == 0:
+        if get_origin(expected_type) is Literal:
+            if config_dict[key] not in get_args(expected_type):
+                utils.log_and_raise_error(
+                    f"'{config_dict[key]}' not in {get_args(expected_type)}"
+                )
+
+        elif len(get_args(required_types[key])) == 0:
             if not isinstance(config_dict[key], expected_type):
                 fail = True
         else:
@@ -201,7 +223,7 @@ def check_config_types(config_dict: Configs) -> None:
 
         if fail:
             utils.log_and_raise_error(
-                f"The type of the value at {key} is incorrect, "
+                f"The type of the value at '{key}' is incorrect, "
                 f"it must be {expected_type}. "
                 f"Config file was not updated."
             )

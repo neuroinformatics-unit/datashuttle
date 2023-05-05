@@ -5,14 +5,13 @@ import glob
 import json
 import os
 import shutil
-from collections.abc import ItemsView
 from pathlib import Path
-from typing import Any, List, Optional, Union, cast
+from typing import Any, Optional, Union
 
 import paramiko
 
-from datashuttle.configs import canonical_directories, load_configs
-from datashuttle.configs.configs import Configs
+from datashuttle.configs import load_configs
+from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     directories,
     ds_logger,
@@ -21,14 +20,15 @@ from datashuttle.utils import (
     ssh,
     utils,
 )
+from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     requires_ssh_configs,
 )
 
-# --------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Project Manager Class
-# --------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class DataShuttle:
@@ -50,7 +50,7 @@ class DataShuttle:
     in the main local project. These logs contain
     detailed information on directory creation / transfer.
     To get the path to datashuttle logs, use
-    get_logging_path().
+    cfgs.make_and_get_logging_path().
 
     For transferring data between a remote data storage
     with SSH, use setup setup_ssh_connection_to_remote_server().
@@ -72,22 +72,24 @@ class DataShuttle:
     def __init__(self, project_name: str):
 
         if " " in project_name:
-            utils.log_and_raise_error("project_name must not include spaces.")
+            utils.log_and_raise_error(
+                "'project_name' must not include spaces."
+            )
 
         self.project_name = project_name
         (
-            self._appdir_path,
+            self._datashuttle_path,
             self._temp_log_path,
         ) = utils.get_datashuttle_path(self.project_name)
-        self._config_path = self._make_path("datashuttle", "config.yaml")
-        self._top_level_dir_name = "rawdata"
+
+        self._config_path = (
+            utils.get_datashuttle_path(project_name)[0] / "config.yaml"
+        )
 
         self.cfg: Any = None
-        self._ssh_key_path: Any = None
-        self._data_type_dirs: Any = None
 
         self.cfg = load_configs.make_config_file_attempt_load(
-            self._config_path
+            self.project_name, self._config_path
         )
 
         if self.cfg:
@@ -100,22 +102,17 @@ class DataShuttle:
         Once config file is loaded, update all private attributes
         according to config contents.
         """
-        self._project_metadata_path = self.cfg["local_path"] / ".datashuttle"
+        self.cfg.top_level_dir_name = "rawdata"
+
+        self.cfg.init_paths()
 
         self._make_project_metadata_if_does_not_exist()
 
-        self._logging_path = self.make_and_get_logging_path()
+        self.cfg.init_data_type_dirs()
 
-        self._ssh_key_path = self._make_path(
-            "datashuttle", self.project_name + "_ssh_key"
-        )
-        self._hostkeys_path = self._make_path("datashuttle", "hostkeys")
-
-        self._data_type_dirs = canonical_directories.get_directories(self.cfg)
-
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Public Directory Makers
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     @check_configs_set
     def make_sub_dir(
@@ -173,15 +170,19 @@ class DataShuttle:
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make_sub_dir")
+        self._start_log("make_sub_dir", local_vars=locals())
 
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
-        sub_names = self._format_names(sub_names, "sub")
+        sub_names = formatting.check_and_format_names(
+            self.cfg, sub_names, "sub"
+        )
 
         if ses_names is not None:
-            ses_names = self._format_names(ses_names, "ses")
+            ses_names = formatting.check_and_format_names(
+                self.cfg, ses_names, "ses"
+            )
 
         ds_logger.log_names(
             ["formatted_sub_names", "formatted_ses_names"],
@@ -190,7 +191,7 @@ class DataShuttle:
 
         directories.check_no_duplicate_sub_ses_key_values(
             self,
-            base_dir=self._get_base_and_top_level_dir("local"),
+            base_dir=self.cfg.get_base_dir("local"),
             new_sub_names=sub_names,
             new_ses_names=ses_names,
         )
@@ -199,7 +200,8 @@ class DataShuttle:
             ses_names = []
 
         utils.log("\nMaking directories...")
-        self._make_directory_trees(
+        directories.make_directory_trees(
+            self.cfg,
             sub_names,
             ses_names,
             data_type,
@@ -209,14 +211,16 @@ class DataShuttle:
         utils.log("\nFinished file creation. Local folder tree is now:\n")
         ds_logger.log_tree(self.cfg["local_path"])
 
-        utils.message_user(
-            f"Finished making directories. For log of all created "
-            f"directories, pleasee see {self._logging_path}"
+        utils.print_message_to_user(
+            f"Finished making directories. \nFor log of all created "
+            f"directories, please see {self.cfg.logging_path}"
         )
 
-    # --------------------------------------------------------------------------------------------------------------------
+        ds_logger.close_log_filehandler()
+
+    # -------------------------------------------------------------------------
     # Public File Transfer
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def upload_data(
         self,
@@ -231,7 +235,7 @@ class DataShuttle:
         directory. In the case that a file / directory exists on
         the remote and local, the remote will not be overwritten
         even if the remote file is an older version. Data
-        transfer logs are saved to the logging directory (get_logging_path()).
+        transfer logs are saved to the logging directory).
 
         Parameters
         ----------
@@ -260,6 +264,10 @@ class DataShuttle:
         Notes
         -----
 
+        The configs "overwrite_old_files", "transfer_verbosity"
+        and "show_transfer_progress" pertain to data-transfer settings.
+        See make_config_file() for more information.
+
         sub_names or ses_names may contain certain formatting tags:
 
         @*@: wildcard search for subject names. e.g. ses-001_date-@*@
@@ -272,9 +280,10 @@ class DataShuttle:
               (on the 1st january, 2022).
         """
         if init_log:
-            self._start_log("upload_data")
+            self._start_log("upload_data", local_vars=locals())
 
-        self._transfer_sub_ses_data(
+        TransferData(
+            self.cfg,
             "upload",
             sub_names,
             ses_names,
@@ -282,6 +291,7 @@ class DataShuttle:
             dry_run,
             log=True,
         )
+        ds_logger.close_log_filehandler()
 
     def download_data(
         self,
@@ -303,9 +313,10 @@ class DataShuttle:
         "all" arguments will search the remote project for sub / ses to download.
         """
         if init_log:
-            self._start_log("download_data")
+            self._start_log("download_data", local_vars=locals())
 
-        self._transfer_sub_ses_data(
+        TransferData(
+            self.cfg,
             "download",
             sub_names,
             ses_names,
@@ -313,34 +324,48 @@ class DataShuttle:
             dry_run,
             log=True,
         )
+        ds_logger.close_log_filehandler()
 
-    def upload_all(self):
+    def upload_all(self, dry_run: bool = False):
         """
         Convenience function to upload all data.
 
         Alias for:
             project.upload_data("all", "all", "all")
         """
-        self._start_log("upload_all")
+        self._start_log("upload_all", local_vars=locals())
 
-        self.upload_data("all", "all", "all", init_log=False)
+        self.upload_data("all", "all", "all", dry_run=dry_run, init_log=False)
 
-    def download_all(self):
+    def download_all(self, dry_run: bool = False):
         """
         Convenience function to download all data.
 
         Alias for : project.download_data("all", "all", "all")
         """
-        self._start_log("download_all")
+        self._start_log("download_all", local_vars=locals())
 
-        self.download_data("all", "all", "all", init_log=False)
+        self.download_data(
+            "all", "all", "all", dry_run=dry_run, init_log=False
+        )
+        ds_logger.close_log_filehandler()
 
     def upload_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
-        Upload a single, specified directory (including all subdirectories
-        and files) from the local to the remote machine.
+        Upload a specific file or directory. If transferring
+        a single file, the path including the filename is
+        required (see 'filepath' input). If a directory,
+        wildcards "*" or "**" must be used to transfer
+        all files in the directory ("*") or all files
+        and sub-folders ("**"), otherwise the empty folder
+        only will be transferred.
+
+        e.g. "sub-001/ses-002/my_directory/**"
+
+        This function works by passing the file / directory
+        path to transfer to Rclone's --include flag.
 
         Parameters
         ----------
@@ -355,47 +380,77 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("upload_project_dir_or_file")
+        self._start_log("upload_project_dir_or_file", local_vars=locals())
 
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("local") / self._top_level_dir_name,
+            self.cfg.get_base_dir("local"),
             Path(filepath),
         )
 
-        self._move_dir_or_file(
-            processed_filepath.as_posix(),
+        include_list = [f"--include {processed_filepath.as_posix()}"]
+        output = rclone.transfer_data(
+            self.cfg,
             "upload",
-            dry_run,
-            log=True,
+            include_list,
+            self.cfg.make_rclone_transfer_options(dry_run),
         )
+
+        utils.log(output.stderr.decode("utf-8"))
+
+        ds_logger.close_log_filehandler()
 
     def download_project_dir_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
-        Download an entire directory (including all subdirectories
-        and files) from the remote to the local machine.
+        Download a specific file or directory. If transferring
+        a single file, the path including the filename is
+        required (see 'filepath' input). If a directory,
+        wildcards "*" or "**" must be used to transfer
+        all files in the directory ("*") or all files
+        and sub-folders ("**"), otherwise the empty folder
+        only will be transferred.
 
-        This method is identical to upload_project_dir_or_file
-        but with direction of transfer reversed. Please see
-        upload_project_dir_or_file() for arguments.
+        e.g. "sub-001/ses-002/my_directory/**"
+
+        This function works by passing the file / directory
+        path to transfer to Rclone's --include flag.
+
+        Parameters
+        ----------
+
+        filepath :
+            a string containing the filepath to move,
+            relative to the project directory "rawdata"
+            or "derivatives" path (depending on which is currently
+            set). Alternatively, the entire path is accepted.
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
         """
-        self._start_log("download_project_dir_or_file")
+        self._start_log("download_project_dir_or_file", local_vars=locals())
 
         processed_filepath = utils.get_path_after_base_dir(
-            self._get_base_dir("remote") / self._top_level_dir_name,
+            self.cfg.get_base_dir("remote"),
             Path(filepath),
         )
-        self._move_dir_or_file(
-            processed_filepath.as_posix(),
+
+        include_list = [f"--include /{processed_filepath.as_posix()}"]
+        output = rclone.transfer_data(
+            self.cfg,
             "download",
-            dry_run,
-            log=True,
+            include_list,
+            self.cfg.make_rclone_transfer_options(dry_run),
         )
 
-    # --------------------------------------------------------------------------------------------------------------------
+        utils.log(output.stderr.decode("utf-8"))
+
+        ds_logger.close_log_filehandler()
+
+    # -------------------------------------------------------------------------
     # SSH
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     @requires_ssh_configs
     def setup_ssh_connection_to_remote_server(self) -> None:
@@ -412,16 +467,20 @@ class DataShuttle:
         cluster. Once input, SSH private / public key pair
         will be setup.
         """
-        self._start_log("setup_ssh_connection_to_remote_server")
+        self._start_log(
+            "setup_ssh_connection_to_remote_server", local_vars=locals()
+        )
 
         verified = ssh.verify_ssh_remote_host(
             self.cfg["remote_host_id"],
-            self._hostkeys_path,
+            self.cfg.hostkeys_path,
             log=True,
         )
 
         if verified:
             self._setup_ssh_key_and_rclone_config(log=True)
+
+        ds_logger.close_log_filehandler()
 
     def write_public_key(self, filepath: str) -> None:
         """
@@ -438,16 +497,16 @@ class DataShuttle:
         """
         key: paramiko.RSAKey
         key = paramiko.RSAKey.from_private_key_file(
-            self._ssh_key_path.as_posix()
+            self.cfg.ssh_key_path.as_posix()
         )
 
         with open(filepath, "w") as public:
             public.write(key.get_base64())
         public.close()
 
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Configs
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def make_config_file(
         self,
@@ -456,6 +515,9 @@ class DataShuttle:
         connection_method: str,
         remote_host_id: Optional[str] = None,
         remote_host_username: Optional[str] = None,
+        overwrite_old_files: bool = False,
+        transfer_verbosity: str = "v",
+        show_transfer_progress: bool = False,
         use_ephys: bool = False,
         use_behav: bool = False,
         use_funcimg: bool = False,
@@ -503,6 +565,24 @@ class DataShuttle:
             username for which to log in to remote host.
             e.g. "jziminski"
 
+        overwrite_old_files :
+            If True, when copying data (upload or download) files
+            will be overwritten if the timestamp of the copied
+            version is later than the target directory version
+            of the file i.e. edits made to a file in the source
+            machine will be copied to the target machine. If False,
+            a file will be copied if it does not exist on the target
+            directory, otherwise it will never be copied, even if
+            the source version of the file has a later timestamp.
+
+        transfer_verbosity :
+            "v" will tell you about each file that is transferred and
+            significant events, "vv" will be very verbose and inform
+            on all events.
+
+        show_transfer_progress :
+            If true, the real-time progress of file transfers will be printed.
+
         use_ephys :
             if True, will allow ephys directory creation
 
@@ -516,10 +596,14 @@ class DataShuttle:
             if True, will allow behav directory creation
         """
         self._start_log(
-            "make_config_file", store_in_temp_dir=True, temp_dir_path="default"
+            "make_config_file",
+            local_vars=locals(),
+            store_in_temp_dir=True,
+            temp_dir_path="default",
         )
 
         self.cfg = Configs(
+            self.project_name,
             self._config_path,
             {
                 "local_path": local_path,
@@ -527,6 +611,9 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "remote_host_id": remote_host_id,
                 "remote_host_username": remote_host_username,
+                "overwrite_old_files": overwrite_old_files,
+                "transfer_verbosity": transfer_verbosity,
+                "show_transfer_progress": show_transfer_progress,
                 "use_ephys": use_ephys,
                 "use_behav": use_behav,
                 "use_funcimg": use_funcimg,
@@ -548,7 +635,11 @@ class DataShuttle:
             "options loaded into datashuttle."
         )
         self._log_successful_config_change()
-        self._move_logs_from_temp_dir()
+        try:
+            self._move_logs_from_temp_dir()
+        except:
+            breakpoint()
+        ds_logger.close_log_filehandler()
 
     def update_config(
         self, option_key: str, new_info: Union[Path, str, bool, None]
@@ -585,11 +676,14 @@ class DataShuttle:
         if store_logs_in_temp_dir:
             self._start_log(
                 "update_config",
+                local_vars=locals(),
                 store_in_temp_dir=True,
                 temp_dir_path="default",
             )
         else:
-            self._start_log("update_config", store_in_temp_dir=False)
+            self._start_log(
+                "update_config", local_vars=locals(), store_in_temp_dir=False
+            )
 
         if not self.cfg:
             utils.log_and_raise_error(
@@ -605,6 +699,8 @@ class DataShuttle:
 
         if store_logs_in_temp_dir:
             self._move_logs_from_temp_dir()
+
+        ds_logger.close_log_filehandler()
 
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
@@ -640,16 +736,21 @@ class DataShuttle:
         if store_logs_in_temp_dir:
             self._start_log(
                 "supply_config_file",
+                local_vars=locals(),
                 store_in_temp_dir=True,
                 temp_dir_path="default",
             )
         else:
-            self._start_log("supply_config_file", store_in_temp_dir=False)
+            self._start_log(
+                "supply_config_file",
+                local_vars=locals(),
+                store_in_temp_dir=False,
+            )
 
         path_to_config = Path(input_path_to_config)
 
         new_cfg = load_configs.supplied_configs_confirm_overwrite(
-            path_to_config, warn
+            self.project_name, path_to_config, warn
         )
 
         if new_cfg:
@@ -661,16 +762,17 @@ class DataShuttle:
             self._log_successful_config_change(message=True)
             if store_logs_in_temp_dir:
                 self._move_logs_from_temp_dir()
+        ds_logger.close_log_filehandler()
 
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Public Getters
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def get_local_path(self) -> None:
         """
         Print the projects local path.
         """
-        utils.message_user(self.cfg["local_path"].as_posix())
+        utils.print_message_to_user(self.cfg["local_path"].as_posix())
 
     def get_datashuttle_path(self) -> None:
         """
@@ -678,27 +780,27 @@ class DataShuttle:
         directory where configs another other
         datashuttle files are stored.
         """
-        utils.message_user(self._appdir_path.as_posix())
+        utils.print_message_to_user(self._datashuttle_path.as_posix())
 
     def get_config_path(self) -> None:
         """
         Print the full path to the DataShuttle config file.
         This is always formatted to UNIX style.
         """
-        utils.message_user(self._config_path.as_posix())
+        utils.print_message_to_user(self._config_path.as_posix())
 
     def get_remote_path(self) -> None:
         """
         Print the project remote path.
         This is always formatted to UNIX style.
         """
-        utils.message_user(self.cfg["remote_path"].as_posix())
+        utils.print_message_to_user(self.cfg["remote_path"].as_posix())
 
     def show_configs(self) -> None:
         """
         Print the current configs to the terminal.
         """
-        utils.message_user(self._get_json_dumps_config())
+        utils.print_message_to_user(self._get_json_dumps_config())
 
     def show_local_tree(self):
         """
@@ -726,520 +828,32 @@ class DataShuttle:
             The relevant subject or session prefix,
             e.g. "sub-" or "ses-"
         """
-        if prefix not in ["sub-", "ses-"]:
-            utils.log_and_raise_error("prefix: must be 'sub-' or 'ses-'")
+        if prefix not in ["sub", "ses"]:
+            utils.log_and_raise_error("'prefix' must be 'sub' or 'ses'.")
 
         formatted_names = formatting.format_names(names, prefix)
-        utils.message_user(formatted_names)
+        utils.print_message_to_user(formatted_names)
 
-    def make_and_get_logging_path(self) -> Path:
-        """
-        Currently logging is located in config path
-        """
-        logging_path = self._project_metadata_path / "logs"
-        directories.make_dirs(logging_path)
-        return logging_path
-
-    # ====================================================================================================================
+    # =========================================================================
     # Private Functions
-    # ====================================================================================================================
+    # =========================================================================
 
-    # --------------------------------------------------------------------------------------------------------------------
-    # Make Directory Trees
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def _make_directory_trees(
-        self,
-        sub_names: Union[str, list],
-        ses_names: Union[str, list],
-        data_type: str,
-        log: bool = False,
-    ) -> None:
-        """
-        Entry method to make a full directory tree. It will
-        iterate through all passed subjects, then sessions, then
-        subdirs within a data_type directory. This
-        permits flexible creation of directories (e.g.
-        to make subject only, do not pass session name.
-
-        Ensure sub and ses names are already formatted
-        before use in this function (see _start_log())
-
-        Parameters
-        ----------
-
-        sub_names, ses_names, data_type : see make_sub_dir()
-
-        log : whether to log or not. If True, logging must
-            already be initialised.
-        """
-        if data_type not in [[""], ""]:
-            self._check_data_type_is_valid(data_type, error_on_fail=True)
-
-        for sub in sub_names:
-
-            sub_path = self._make_path(
-                "local",
-                [self._top_level_dir_name, sub],
-            )
-
-            directories.make_dirs(sub_path, log)
-
-            self._make_data_type_directories(data_type, sub_path, "sub")
-
-            for ses in ses_names:
-
-                ses_path = self._make_path(
-                    "local",
-                    [self._top_level_dir_name, sub, ses],
-                )
-
-                directories.make_dirs(ses_path, log)
-
-                self._make_data_type_directories(
-                    data_type, ses_path, "ses", log=log
-                )
-
-    def _make_data_type_directories(
-        self,
-        data_type: Union[list, str],
-        sub_or_ses_level_path: Path,
-        level: str,
-        log: bool = False,
-    ) -> None:
-        """
-        Make data_type folder (e.g. behav) at the sub or ses
-        level. Checks directory_class.Directories attributes,
-        whether the data_type is used and at the current level.
-
-        Parameters
-        ----------
-        data_type : data type (e.g. "behav", "all") to use. Use
-            empty string ("") for none.
-
-        sub_or_ses_level_path : Full path to the subject
-            or session directory where the new directory
-            will be written.
-
-        level : The directory level that the
-            directory will be made at, "sub" or "ses"
-
-        log : whether to log on or not (if True, logging must
-            already be initialised).
-        """
-        if data_type in [[""], ""]:
-            return
-
-        data_type_items = self._get_data_type_items(data_type)
-
-        for data_type_key, data_type_dir in data_type_items:  # type: ignore
-
-            if data_type_dir.used and data_type_dir.level == level:
-
-                data_type_path = sub_or_ses_level_path / data_type_dir.name
-
-                directories.make_dirs(data_type_path, log)
-
-                directories.make_datashuttle_metadata_folder(
-                    data_type_path, log
-                )
-
-    # --------------------------------------------------------------------------------------------------------------------
-    # File Transfer
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def _transfer_sub_ses_data(
-        self,
-        upload_or_download: str,
-        sub_names: Union[str, list],
-        ses_names: Union[str, list],
-        data_type: str,
-        dry_run: bool,
-        log: bool = True,
-    ) -> None:
-        """
-        Iterate through all data type, sub, ses and transfer directory.
-
-        Parameters
-        ----------
-
-        upload_or_download : "upload" or "download"
-
-        sub_names : see make_sub_dir()
-
-        ses_names : see make_sub_dir()
-
-        data_type : e.g. ephys, behav, histology, funcimg, see make_sub_dir()
-
-        dry_run : see upload_project_dir_or_file()
-        """
-        local_or_remote = (
-            "local" if upload_or_download == "upload" else "remote"
-        )
-        base_dir = self._get_base_and_top_level_dir(local_or_remote)
-
-        # Find sub names to transfer
-        if sub_names in ["all", ["all"]]:
-            sub_names = directories.search_sub_or_ses_level(
-                self,
-                base_dir,
-                local_or_remote,
-                search_str=f"{self.cfg.sub_prefix}*",
-            )
-        else:
-            sub_names = self._format_names(sub_names, "sub")
-            sub_names = directories.search_for_wildcards(
-                self, base_dir, local_or_remote, sub_names
-            )
-
-        for sub in sub_names:
-
-            self._transfer_data_type(
-                upload_or_download,
-                local_or_remote,
-                data_type,
-                sub,
-                dry_run=dry_run,
-                log=log,
-            )
-
-            # Find ses names  to transfer
-            if ses_names in ["all", ["all"]]:
-                ses_names = directories.search_sub_or_ses_level(
-                    self,
-                    base_dir,
-                    local_or_remote,
-                    sub,
-                    search_str=f"{self.cfg.ses_prefix}*",
-                )
-            else:
-                ses_names = self._format_names(ses_names, "ses")
-                ses_names = directories.search_for_wildcards(
-                    self, base_dir, local_or_remote, ses_names, sub=sub
-                )
-
-            for ses in ses_names:
-
-                self._transfer_data_type(
-                    upload_or_download,
-                    local_or_remote,
-                    data_type,
-                    sub,
-                    ses,
-                    dry_run=dry_run,
-                    log=log,
-                )
-
-    def _transfer_data_type(
-        self,
-        upload_or_download: str,
-        local_or_remote: str,
-        data_type: Union[list, str],
-        sub: str,
-        ses: Optional[str] = None,
-        dry_run: bool = False,
-        log: bool = False,
-    ) -> None:
-        """
-        Transfer the data_type-level folder at the subject
-        or session level. data_type dirs are got either
-        directly from user input or if "all" is passed searched
-        for in the local / remote directory (for
-        upload / download respectively).
-
-        This can handle both cases of subject level dir (e.g. histology)
-        or session level dir (e.g. ephys).
-
-        Note that the use of upload_or_download / local_or_remote
-        is redundant as the value of local_or_remote is set by
-        upload_or_download, but kept for readability.
-
-        Parameters
-        ----------
-
-        upload_or_download : "upload" or "download"
-
-        local_or_remote : "local" or "remote"
-
-        data_type : e.g. "behav", "all"
-
-        sub : subject name
-
-        ses : Optional session name. If False, directory
-            to transfer will be assumed to be at the
-            subject level.
-
-        dry_run : Show data transfer output but do not
-            actually transfer the data.
-
-        log : Whether to log, if True logging must already
-            be initialsied
-        """
-        level = "ses" if ses else "sub"
-
-        data_type_items = self._items_from_data_type_input(
-            local_or_remote, data_type, sub, ses
-        )
-
-        for data_type_key, data_type_dir in data_type_items:  # type: ignore
-
-            if data_type_dir.level == level:
-                if ses:
-                    filepath = os.path.join(sub, ses, data_type_dir.name)
-                else:
-                    filepath = os.path.join(sub, data_type_dir.name)
-
-                self._move_dir_or_file(
-                    filepath,
-                    upload_or_download,
-                    dry_run=dry_run,
-                    log=log,
-                )
-
-    def _move_dir_or_file(
-        self,
-        filepath: str,
-        upload_or_download: str,
-        dry_run: bool,
-        log: bool = False,
-    ) -> None:
-        """
-        Low-level function to transfer a directory or file.
-
-        Parameters
-        ----------
-
-        filepath : filepath (not including local
-            or remote root) to copy
-
-        upload_or_download : "upload" or "download".
-            upload goes local to remote, download goes
-            remote to local
-
-        dry_run : do not actually move the files,
-            just report what would be moved.
-        """
-        local_filepath = self._make_path(
-            "local", [self._top_level_dir_name, filepath]
-        ).as_posix()
-
-        remote_filepath = self._make_path(
-            "remote", [self._top_level_dir_name, filepath]
-        ).as_posix()
-
-        output = rclone.transfer_data(
-            local_filepath,
-            remote_filepath,
-            self._get_rclone_config_name(),
-            upload_or_download,
-            dry_run,
-        )
-
-        if log:
-            utils.log(output.stderr.decode("utf-8"))
-        utils.message_user(output.stderr.decode("utf-8"))
-
-    def _items_from_data_type_input(
-        self,
-        local_or_remote: str,
-        data_type: Union[list, str],
-        sub: str,
-        ses: Optional[str] = None,
-    ) -> Union[ItemsView, zip]:
-        """
-        Get the list of data_types to transfer, either
-        directly from user input, or by searching
-        what is available if "all" is passed.
-
-        Parameters
-        ----------
-
-        see _transfer_data_type() for parameters.
-        """
-        base_dir = self._get_base_and_top_level_dir(local_or_remote)
-
-        if data_type not in ["all", ["all"]]:
-            data_type_items = self._get_data_type_items(
-                data_type,
-            )
-        else:
-            data_type_items = directories.search_data_dirs_sub_or_ses_level(
-                self,
-                self._data_type_dirs,
-                base_dir,
-                local_or_remote,
-                sub,
-                ses,
-            )
-
-        return data_type_items
-
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # SSH
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def _setup_ssh_key_and_rclone_config(self, log: bool = True) -> None:
         """
         Setup ssh connection, key pair (see ssh.setup_ssh_key)
-        for details. Also setup rclone config for ssh connection.
+        for details. Also, setup rclone config for ssh connection.
         """
-        ssh.setup_ssh_key(
-            self._ssh_key_path, self._hostkeys_path, self.cfg, log=log
-        )
+        ssh.setup_ssh_key(self.cfg, log=log)
 
         self._setup_rclone_remote_ssh_config(log)
 
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utils
-    # --------------------------------------------------------------------------------------------------------------------
-
-    def _make_path(self, base: str, subdirs: Union[str, list]) -> Path:
-        """
-        Function for joining relative path to base dir.
-        If path already starts with base dir, the base
-        dir will not be joined.
-
-        Parameters
-        ----------
-
-        base: "local", "remote" or "datashuttle"
-
-        subdirs: a list (or string for 1) of
-            directory names to be joined into a path.
-            If file included, must be last entry (with ext).
-        """
-        if isinstance(subdirs, list):
-            subdirs_str = "/".join(subdirs)
-        else:
-            subdirs_str = cast(str, subdirs)
-
-        subdirs_path = Path(subdirs_str)
-
-        base_dir = self._get_base_dir(base)
-
-        if utils.path_already_stars_with_base_dir(base_dir, subdirs_path):
-            joined_path = subdirs_path
-        else:
-            joined_path = base_dir / subdirs_path
-
-        return joined_path
-
-    def _get_base_dir(self, base: str) -> Path:
-        """
-        Convenience function to return the full base path.
-
-        Parameters
-        ----------
-
-        base : base path, "local", "remote" or "datashuttle"
-
-        """
-        if base == "local":
-            base_dir = self.cfg["local_path"]
-        elif base == "remote":
-            base_dir = self.cfg["remote_path"]
-        elif base == "datashuttle":
-            base_dir, __ = utils.get_datashuttle_path(self.project_name)
-        return base_dir
-
-    def _get_base_and_top_level_dir(self, local_or_remote: str) -> Path:
-        """
-        Get the base project directory with the top level directory,
-        i.e. "rawdata" or "derivatives".
-
-        Parameters
-        ----------
-
-        local_or_remote : "local" or "remote"
-
-        Examples
-        --------
-        e.g. if local_path = "/my/local/path and the
-        top level directory is set to rawdata, this method will return
-        "/my/local/path/rawdata"
-        """
-        base_dir = (
-            self._get_base_dir(local_or_remote) / self._top_level_dir_name
-        )
-        return base_dir
-
-    def _format_names(
-        self, names: Union[list, str], sub_or_ses: str
-    ) -> List[str]:
-        """
-        Format a list of subject or session names, e.g.
-        by ensuring all have sub- or ses- prefix, checking
-        for tags, that names do not include spaces and that
-        there are not duplicates.
-
-        Parameters
-        ----------
-
-        names: str or list containing sub or ses names
-                      (e.g. to make dirs)
-
-        sub_or_ses: "sub" or "ses" - this defines the prefix checks.
-        """
-        prefix = self._get_sub_or_ses_prefix(sub_or_ses)
-        formatted_names = formatting.format_names(names, prefix)
-
-        return formatted_names
-
-    def _get_sub_or_ses_prefix(self, sub_or_ses: str) -> str:
-        """
-        Get the sub / ses prefix (default is "sub-" and "ses-") set in cfgs.
-        These should always be "sub-" or "ses-" by SWC-BIDS.
-        """
-        if sub_or_ses == "sub":
-            prefix = self.cfg.sub_prefix
-        elif sub_or_ses == "ses":
-            prefix = self.cfg.ses_prefix
-        return prefix
-
-    def _check_data_type_is_valid(
-        self, data_type: str, error_on_fail: bool
-    ) -> bool:
-        """
-        Check the passed data_type is valid (must
-        be a key on self.ses_dirs e.g. "behav", or "all")
-        """
-        if type(data_type) == list:
-            valid_keys = list(self._data_type_dirs.keys()) + ["all"]
-            is_valid = all([type in valid_keys for type in data_type])
-        else:
-            is_valid = (
-                data_type in self._data_type_dirs.keys() or data_type == "all"
-            )
-
-        if error_on_fail and not is_valid:
-            utils.log_and_raise_error(
-                f"data_type: '{data_type}' "
-                f"is not valid. Must be one of"
-                f" {list(self._data_type_dirs.keys())}. or 'all'"
-                f" No directories were made."
-            )
-
-        return is_valid
-
-    def _get_data_type_items(
-        self, data_type: Union[str, list]
-    ) -> Union[ItemsView, zip]:
-        """
-        Get the .items() structure of the data type, either all of
-        them (stored in self._data_type_dirs) or as a single item.
-        """
-        if type(data_type) == str:
-            data_type = [data_type]
-
-        if "all" in data_type:
-            items = self._data_type_dirs.items()
-        else:
-            items = zip(
-                data_type,
-                [self._data_type_dirs[key] for key in data_type],
-            )
-
-        return items
+    # -------------------------------------------------------------------------
 
     def _get_rclone_config_name(
         self, connection_method: Optional[str] = None
@@ -1252,14 +866,15 @@ class DataShuttle:
         if connection_method is None:
             connection_method = self.cfg["connection_method"]
 
-        return f"remote_{self.project_name}_{connection_method}"
+        return f"remote_{self.cfg.project_name}_{connection_method}"
 
     def _start_log(
         self,
         name: str,
-        variables: Optional[List[Any]] = None,
+        local_vars: Optional[dict] = None,
         store_in_temp_dir: bool = False,
         temp_dir_path: Union[str, Path] = "",
+        verbose: bool = True,
     ) -> None:
         """
         Initialize the logger. This is typically called at
@@ -1272,7 +887,8 @@ class DataShuttle:
         name : name of the log output files. Typically, the
             name of the function logged e.g. "update_config"
 
-        variables : variables are passed to fancylog variables argument.
+        local_vars : local_vars are passed to fancylog variables argument.
+                 see ds_logger.wrap_variables_for_fancylog for more info
 
         store_in_temp_dir :
             if False, existing logging path will be used
@@ -1284,6 +900,13 @@ class DataShuttle:
             if "default", use the default temp dir path stored at
             self._temp_log_path otherwise a full path to save the log at.
         """
+        if local_vars is None:
+            variables = None
+        else:
+            variables = ds_logger.wrap_variables_for_fancylog(
+                local_vars, self.cfg
+            )
+
         if store_in_temp_dir:
             path_to_save = (
                 self._temp_log_path
@@ -1291,9 +914,9 @@ class DataShuttle:
                 else Path(temp_dir_path)
             )
         else:
-            path_to_save = self._logging_path
+            path_to_save = self.cfg.logging_path
 
-        ds_logger.start(path_to_save, name, variables)
+        ds_logger.start(path_to_save, name, variables, verbose)
 
     def _move_logs_from_temp_dir(self):
         """
@@ -1315,7 +938,8 @@ class DataShuttle:
             file_name = os.path.basename(file_path)
 
             shutil.move(
-                self._temp_log_path / file_name, self._logging_path / file_name
+                self._temp_log_path / file_name,
+                self.cfg.logging_path / file_name,
             )
 
     def _log_successful_config_change(self, message=False):
@@ -1325,7 +949,7 @@ class DataShuttle:
         print the entire configs as it becomes confusing.
         """
         if message:
-            utils.message_user("Update successful.")
+            utils.print_message_to_user("Update successful.")
         utils.log(
             f"Update successful. New config file: \n {self._get_json_dumps_config()}"
         )
@@ -1350,14 +974,14 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        directories.make_dirs(self._project_metadata_path, log=False)
+        directories.make_dirs(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_remote_ssh_config(self, log):
         rclone.setup_remote_as_rclone_target(
             "ssh",
             self.cfg,
-            self._get_rclone_config_name("ssh"),
-            self._ssh_key_path,
+            self.cfg.get_rclone_config_name("ssh"),
+            self.cfg.ssh_key_path,
             log=log,
         )
 
@@ -1365,7 +989,7 @@ class DataShuttle:
         rclone.setup_remote_as_rclone_target(
             "local_filesystem",
             self.cfg,
-            self._get_rclone_config_name("local_filesystem"),
-            self._ssh_key_path,
+            self.cfg.get_rclone_config_name("local_filesystem"),
+            self.cfg.ssh_key_path,
             log=True,
         )

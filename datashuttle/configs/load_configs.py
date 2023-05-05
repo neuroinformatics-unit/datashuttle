@@ -5,16 +5,18 @@ from typing import Optional, Union, overload
 from datashuttle.utils import utils
 
 from . import canonical_configs
-from .configs import Configs
+from .config_class import Configs
 
 ConfigValueTypes = Union[Path, str, bool, None]
 
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Load Supplied Config
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
-def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
+def make_config_file_attempt_load(
+    project_name: str, config_path: Path
+) -> Optional[Configs]:
     """
     Try to load an existing config file, that was previously
     saved by Datashuttle. This should always work, unless
@@ -27,6 +29,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
 
     Parameters
     ----------
+    project_name : name of project
 
     config_path : path to datashuttle config .yaml file
     """
@@ -41,7 +44,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
 
     new_cfg: Optional[Configs]
 
-    new_cfg = Configs(config_path, None)
+    new_cfg = Configs(project_name, config_path, None)
 
     try:
         new_cfg.load_from_file()
@@ -61,6 +64,7 @@ def make_config_file_attempt_load(config_path: Path) -> Optional[Configs]:
 
 
 def supplied_configs_confirm_overwrite(
+    project_name: str,
     path_to_config: Path,
     warn: bool,
 ) -> Union[Configs, None]:
@@ -76,6 +80,8 @@ def supplied_configs_confirm_overwrite(
     Parameters
     ----------
 
+    project_name : name of project
+
     path_to_config : path to the datashuttle config .yaml file to load
 
     warn : option to get confirmation after warning that new config will
@@ -85,7 +91,7 @@ def supplied_configs_confirm_overwrite(
 
     if warn:
         input_ = utils.get_user_input(
-            "This will overwrite the existing datashuttle config file."
+            "This will overwrite any existing datashuttle config file."
             "If you wish to proceed, press y."
         )
 
@@ -93,7 +99,7 @@ def supplied_configs_confirm_overwrite(
             utils.log_and_message("y not pressed. Configs not updated.")
             return None
 
-    new_cfg = Configs(path_to_config, None)
+    new_cfg = Configs(project_name, path_to_config, None)
     new_cfg.load_from_file()
 
     new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
@@ -102,9 +108,9 @@ def supplied_configs_confirm_overwrite(
     return new_cfg
 
 
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Convert keys from string inputs
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 @overload
@@ -122,8 +128,9 @@ def handle_cli_or_supplied_config_bools(
 ) -> Union[Configs, dict]:
     """
     For supplied configs for CLI input args,
-    in some instances bools will as string type.
-    Handle this case here to cast to correct type.
+    in some instances bools will be passed
+    as string type. Handle this case here
+    to cast to correct type.
     """
     for key in dict_.keys():
         dict_[key] = handle_bool(key, dict_[key])
@@ -144,7 +151,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
         if isinstance(value, str):
             if value not in ["True", "False", "true", "false"]:
                 utils.raise_error(
-                    f"Input value for {key} " f"must be True or False"
+                    f"Input value for '{key}' must be True or False"
                 )
 
             value = value in ["True", "true"]

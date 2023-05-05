@@ -10,7 +10,9 @@ from datashuttle.configs.canonical_tags import tags
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
-BAD_FILECHAR = "?" if platform.system() == "Windows" else "/"
+BAD_WINDOWS_FILECHAR = "?"  # a symbol that will create an error when trying to make a file with this name.
+# this is only tested in windows as nearly any char is allowed for macos and linux
+IS_WINDOWS = platform.system() == "Windows"
 
 
 class TestCommandLineInterface:
@@ -40,7 +42,7 @@ class TestCommandLineInterface:
             tmp_path, test_project_name
         )
 
-        self.delete_log_files(setup_project._logging_path)
+        self.delete_log_files(setup_project.cfg.logging_path)
 
         yield setup_project
         test_utils.teardown_project(cwd, setup_project)
@@ -78,9 +80,10 @@ class TestCommandLineInterface:
             tmp_path, "two", "local_filesystem", use_behav=True
         )
 
-        log = self.read_log_file(project._logging_path)
+        log = self.read_log_file(project.cfg.logging_path)
 
-        assert "Starting make_config_file" in log
+        assert "Starting logging for command make_config_file" in log
+        assert "\nVariablesState:\nlocals: {'local_path':" in log
         assert "Successfully created rclone config." in log
         assert (
             "Configuration file has been saved and options loaded into datashuttle."
@@ -90,28 +93,33 @@ class TestCommandLineInterface:
 
     def test_logs_update_config(self, setup_project):
 
-        setup_project.update_config("remote_path", "test_path")
+        setup_project.update_config("remote_host_id", "test_id")
 
-        log = self.read_log_file(setup_project._logging_path)
+        log = self.read_log_file(setup_project.cfg.logging_path)
 
-        assert "Starting update_config" in log
-        assert "remote_path has been updated to test_path" in log
+        assert "Starting logging for command update_config" in log
+        assert (
+            "\n\nVariablesState:\nlocals: {'option_key': 'remote_host_id'"
+            in log
+        )
+        assert "remote_host_id has been updated to test_id" in log
         assert "Update successful. New config file:" in log
-        assert """ "remote_path": "test_path",\n """ in log
+        assert """ "remote_host_id": "test_id",\n """ in log
 
     def test_logs_supply_config(self, setup_project, tmp_path):
         """"""
         new_configs_path, __ = test_utils.make_correct_supply_config_file(
             setup_project, tmp_path
         )
-        self.delete_log_files(setup_project._logging_path)
-        orig_project_path = setup_project._logging_path
+        self.delete_log_files(setup_project.cfg.logging_path)
+        orig_project_path = setup_project.cfg.logging_path
 
         setup_project.supply_config_file(new_configs_path, warn=False)
 
         log = self.read_log_file(orig_project_path)
 
         assert "supply_config_file" in log
+        assert "\n\nVariablesState:\nlocals: {'input_path_to_config':" in log
         assert "Update successful. New config file: " in log
         assert (
             f""" "local_path": "{setup_project.cfg['local_path'].as_posix()}",\n """
@@ -125,9 +133,13 @@ class TestCommandLineInterface:
 
         setup_project.make_sub_dir(subs, ses, data_type="all")
 
-        log = self.read_log_file(setup_project._logging_path)
+        log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert "Formatting Names..." in log
+        assert (
+            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-1_1', 'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-hello_world'], 'data_type': 'all'}\ncfg: {'local_path':"
+            in log
+        )
         assert f"sub_names: ['sub-1_1', 'sub-002{tags('to')}004']" in log
         assert "ses_names: ['ses-123', 'ses-hello_world']" in log
         assert (
@@ -136,39 +148,46 @@ class TestCommandLineInterface:
         )
         assert "formatted_ses_names: ['ses-123', 'ses-hello_world']" in log
         assert "Made directory at path:" in log
+
         assert (
-            os.path.join("test_logging", "local", "rawdata", "sub-1_1") in log
+            str(Path("test_logging") / "local" / "rawdata" / "sub-1_1") in log
         )
         assert (
-            os.path.join(
-                "test_logging",
-                "local",
-                "rawdata",
-                "sub-1_1",
-                "ses-123",
-                "funcimg",
-                ".datashuttle_meta",
+            str(
+                Path(
+                    "test_logging",
+                    "local",
+                    "rawdata",
+                    "sub-1_1",
+                    "ses-123",
+                    "funcimg",
+                    ".datashuttle_meta",
+                )
             )
             in log
         )
         assert (
-            os.path.join(
-                "test_logging",
-                "local",
-                "rawdata",
-                "sub-002",
-                "ses-123",
-                "funcimg",
+            str(
+                Path(
+                    "test_logging",
+                    "local",
+                    "rawdata",
+                    "sub-002",
+                    "ses-123",
+                    "funcimg",
+                )
             )
             in log
         )
         assert (
-            os.path.join(
-                "test_logging",
-                "local",
-                "rawdata",
-                "sub-004",
-                "ses-hello_world",
+            str(
+                Path(
+                    "test_logging",
+                    "local",
+                    "rawdata",
+                    "sub-004",
+                    "ses-hello_world",
+                )
             )
             in log
         )
@@ -179,6 +198,10 @@ class TestCommandLineInterface:
     def test_logs_upload_and_download_data(
         self, setup_project, upload_or_download, use_all_alias
     ):
+        """
+        Set transfer verbosity and progress settings so
+        maximum output is produced to test against.
+        """
         subs = ["sub-1_1"]
         sessions = ["ses-123"]
 
@@ -189,6 +212,9 @@ class TestCommandLineInterface:
             "all",
         )
 
+        setup_project.update_config("show_transfer_progress", False)
+        setup_project.update_config("transfer_verbosity", "vv")
+
         (
             transfer_function,
             base_path_to_check,
@@ -197,27 +223,36 @@ class TestCommandLineInterface:
             upload_or_download,
             use_all_alias,
         )
-        self.delete_log_files(setup_project._logging_path)
+        self.delete_log_files(setup_project.cfg.logging_path)
 
         transfer_function() if use_all_alias else transfer_function(
             "all", "all", "all"
         )
 
-        log = self.read_log_file(setup_project._logging_path)
+        log = self.read_log_file(setup_project.cfg.logging_path)
 
         suffix = "_all" if use_all_alias else "_data"
 
-        assert f"Starting {upload_or_download}{suffix}" in log
+        assert (
+            f"Starting logging for command {upload_or_download}{suffix}" in log
+        )
+
+        if use_all_alias:
+            assert (
+                "VariablesState:\nlocals: {'dry_run': False}\ncfg: {'local_path':"
+                in log
+            )
+        else:
+            assert (
+                "VariablesState:\nlocals: {'sub_names': 'all', 'ses_names': 'all', 'data_type': 'all', 'dry_run': False, 'init_log': True}\ncfg: {'local_path': "
+                in log
+            )
+
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
-        assert "/test_logging/local/rawdata/sub-1_1/histology" in log
-        assert (
-            "/test_logging/remote/rawdata/sub-1_1/histology: copied 1 directories"
-            in log
-        )
-        assert "/test_logging/local/rawdata/sub-1_1/ses-123/behav" in log
-        assert "/test_logging/remote/rawdata/sub-1_1/ses-123/behav" in log
+        assert """ "--include" "sub-1_1/histology/**" """ in log
+        assert """/test_logging/remote/rawdata""" in log
         assert "Waiting for checks to finish" in log
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
 
@@ -225,33 +260,45 @@ class TestCommandLineInterface:
     def test_logs_upload_and_download_dir_or_file(
         self, setup_project, upload_or_download
     ):
-        """ """
+        """
+        Set transfer verbosity and progress settings so
+        maximum output is produced to test against.
+        """
         test_utils.make_and_check_local_project(
             setup_project,
             subs=["sub-001"],
             sessions=["ses-001"],
             data_type="all",
         )
+
+        setup_project.update_config("show_transfer_progress", False)
+        setup_project.update_config("transfer_verbosity", "vv")
+
         test_utils.handle_upload_or_download(
             setup_project,
             upload_or_download,
         )
-        self.delete_log_files(setup_project._logging_path)
+        self.delete_log_files(setup_project.cfg.logging_path)
 
         if upload_or_download == "upload":
             setup_project.upload_project_dir_or_file("sub-001/ses-001")
         else:
             setup_project.download_project_dir_or_file("sub-001/ses-001")
 
-        log = self.read_log_file(setup_project._logging_path)
+        log = self.read_log_file(setup_project.cfg.logging_path)
 
-        assert f"Starting {upload_or_download}_project_dir_or_file" in log
-        assert "/rawdata/sub-001/ses-001" in log
+        assert (
+            f"Starting logging for command {upload_or_download}_project_dir_or_file"
+            in log
+        )
+        assert (
+            "\n\nVariablesState:\nlocals: {'filepath': 'sub-001/ses-001', 'dry_run': False}\ncfg: {'local_path':"
+            in log
+        )
+        assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
-        assert "behav/.datashuttle_meta: Making directory" in log
-        assert "ephys/.datashuttle_meta: Making directory" in log
-        assert "funcimg/.datashuttle_meta: Making directory" in log
+        assert "DEBUG : sub-001: Making directory\n" in log
 
     # ----------------------------------------------------------------------------------------------------------
     # Check errors propagate
@@ -262,10 +309,15 @@ class TestCommandLineInterface:
         with pytest.raises(BaseException):
             setup_project.update_config("connection_method", "ssh")
 
-        log = self.read_log_file(setup_project._logging_path)
+        log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            "remote_host_id and remote_host_username are required if connection_method is ssh."
+            "'remote_host_id' and 'remote_host_username' are "
+            "required if 'connection_method' is 'ssh'." in log
+        )
+
+        assert (
+            "\n\nVariablesState:\nlocals: {'option_key': 'connection_method', 'new_info': 'ssh', 'store_logs_in_temp_dir': False}\ncfg: {'local_path':"
             in log
         )
         assert "connection_method was not updated" in log
@@ -273,18 +325,19 @@ class TestCommandLineInterface:
     def test_logs_bad_make_sub_dir_error(self, setup_project):
         """"""
         setup_project.make_sub_dir("sub-001", data_type="all")
-        self.delete_log_files(setup_project._logging_path)
+        self.delete_log_files(setup_project.cfg.logging_path)
 
         with pytest.raises(BaseException):
             setup_project.make_sub_dir("sub-001", data_type="all")
 
-        log = self.read_log_file(setup_project._logging_path)
+        log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
             "Cannot make directories. The key sub-001 already exists in the project"
             in log
         )
 
+    @pytest.mark.skipif("not IS_WINDOWS")
     def test_temp_log_dir_made_make_config_file(
         self, clean_project_name, tmp_path
     ):
@@ -292,7 +345,7 @@ class TestCommandLineInterface:
         project = DataShuttle(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(tmp_path)
-        configs["local_path"] = BAD_FILECHAR
+        configs["local_path"] = BAD_WINDOWS_FILECHAR
 
         with pytest.raises(BaseException):
             project.make_config_file(**configs)
@@ -315,34 +368,35 @@ class TestCommandLineInterface:
         project.make_config_file(**configs)
 
         tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        project_path_logs = glob.glob(str(project._logging_path / "*.log"))
+        project_path_logs = glob.glob(str(project.cfg.logging_path / "*.log"))
 
         assert len(tmp_path_logs) == 0
         assert len(project_path_logs) == 1
         assert "make_config_file" in project_path_logs[0]
 
+    @pytest.mark.skipif("not IS_WINDOWS")
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
     def test_temp_log_dir_made_update_config(
         self, setup_project, supply_or_update, tmp_path
     ):
         """"""
-        self.delete_log_files(setup_project._logging_path)
+        self.delete_log_files(setup_project.cfg.logging_path)
 
         # Try to set local_path to a folder that cannot be made.
         # The existing local project exists, so put the log there
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, BAD_FILECHAR, tmp_path
+                setup_project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
         orig_local_path_logs = glob.glob(
-            str(setup_project._logging_path / "*.log")
+            str(setup_project.cfg.logging_path / "*.log")
         )
 
         assert len(tmp_path_logs) == 0
         assert len(orig_local_path_logs) == 1
-        self.delete_log_files(setup_project._logging_path)
+        self.delete_log_files(setup_project.cfg.logging_path)
 
         # Now change the local_path to something that doesn't exist.
         # Also, the new path cannot be made. In this case store the logs
@@ -351,12 +405,12 @@ class TestCommandLineInterface:
 
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
-                setup_project, supply_or_update, BAD_FILECHAR, tmp_path
+                setup_project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
             )
 
         tmp_path_logs = glob.glob(str(setup_project._temp_log_path / "*.log"))
         orig_local_path_logs = glob.glob(
-            str(setup_project._logging_path / "*.log")
+            str(setup_project.cfg.logging_path / "*.log")
         )
 
         assert len(tmp_path_logs) == 1
@@ -372,7 +426,7 @@ class TestCommandLineInterface:
         logs are moved to new project.
         """
         setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
-        new_log_path = setup_project._logging_path / "new_logs"
+        new_log_path = setup_project.cfg.logging_path / "new_logs"
 
         self.run_supply_or_update_configs(
             setup_project,

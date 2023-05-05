@@ -3,7 +3,7 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils import formatting, utils
+from datashuttle.utils import formatting
 
 
 class TestUnit:
@@ -38,7 +38,7 @@ class TestUnit:
             )
 
         name_list = [name]
-        utils.update_names_with_datetime(name_list)
+        formatting.update_names_with_datetime(name_list)
 
         assert re.search(regex, name_list[0]) is not None
 
@@ -61,14 +61,14 @@ class TestUnit:
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_to_keyword_in_sub_input(self, prefix):
         """ """
-        results = utils.update_names_with_range_to_flag(
+        results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
         assert results == [f"{prefix}-001"] + [
             f"{prefix}-{str(num).zfill(2)}" for num in range(1, 124)
         ]
 
-        results = utils.update_names_with_range_to_flag(
+        results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-1{tags('to')}3_hello-world"], prefix
         )
         assert results == [
@@ -77,7 +77,7 @@ class TestUnit:
             f"{prefix}-3_hello-world",
         ]
 
-        results = utils.update_names_with_range_to_flag(
+        results = formatting.update_names_with_range_to_flag(
             [
                 f"{prefix}-01{tags('to')}3_hello",
                 f"{prefix}-4{tags('to')}005_goodbye",
@@ -96,7 +96,7 @@ class TestUnit:
             f"{prefix}-0007_hello",
         ]
 
-    @pytest.mark.parametrize("prefix", ["sub-", "ses-"])
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize(
         "bad_input",
         [
@@ -109,17 +109,63 @@ class TestUnit:
     def test_process_to_keyword_bad_input_raises_error(
         self, prefix, bad_input
     ):
-
         bad_input = bad_input.replace("prefix", prefix)
 
         with pytest.raises(BaseException) as e:
-            utils.update_names_with_range_to_flag([bad_input], prefix)
+            formatting.update_names_with_range_to_flag([bad_input], prefix)
 
         assert (
             str(e.value)
             == f"The name: {bad_input} is not in required format for {tags('to')} keyword. "
-            f"The start must be  be {prefix}<NUMBER>{tags('to')}<NUMBER>)"
+            f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)."
         )
+
+    def test_formatting_check_dashes_and_underscore_alternate_correctly(self):
+        """"""
+        all_names = ["sub_001_date-010101"]
+        with pytest.raises(BaseException) as e:
+            formatting.check_dashes_and_underscore_alternate_correctly(
+                all_names
+            )
+
+        assert (
+            str(e.value)
+            == "The first delimiter of 'sub' or 'ses' must be dash not underscore e.g. sub-001."
+        )
+
+        alternate_error = (
+            "Subject and session names must contain alternating dashes"
+            " and underscores (used for separating key-value pairs)."
+        )
+
+        all_names = ["sub-001-date_101010"]
+        with pytest.raises(BaseException) as e:
+            formatting.check_dashes_and_underscore_alternate_correctly(
+                all_names
+            )
+
+        assert str(e.value) == alternate_error
+
+        all_names = ["sub-001_ses-002-suffix"]
+        with pytest.raises(BaseException) as e:
+            formatting.check_dashes_and_underscore_alternate_correctly(
+                all_names
+            )
+        assert str(e.value) == alternate_error
+
+        all_names = ["sub-001_ses-002-task-check"]
+        with pytest.raises(BaseException) as e:
+            formatting.check_dashes_and_underscore_alternate_correctly(
+                all_names
+            )
+        assert str(e.value) == alternate_error
+
+        # check these don't raise
+        all_names = ["ses-001_hello-world_one-hundred"]
+        formatting.check_dashes_and_underscore_alternate_correctly(all_names)
+
+        all_names = ["ses-001_hello-world_suffix"]
+        formatting.check_dashes_and_underscore_alternate_correctly(all_names)
 
     # ----------------------------------------------------------------------
     # Utlis

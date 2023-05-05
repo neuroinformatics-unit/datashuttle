@@ -3,12 +3,45 @@ import re
 from typing import List, Union
 
 from datashuttle.configs.canonical_tags import tags
+from datashuttle.configs.config_class import Configs
 
 from . import utils
 
 # --------------------------------------------------------------------------------------------------------------------
 # Format Sub / Ses Names
 # --------------------------------------------------------------------------------------------------------------------
+
+RESERVED_KEYWORDS = [
+    "all_sub",
+    "all_ses",
+    "all_non_sub",
+    "all_non_ses",
+]  # TODO: add to configs
+
+
+def check_and_format_names(
+    cfg: Configs,
+    names: Union[list, str],
+    sub_or_ses: str,
+) -> List[str]:
+    """
+    Format a list of subject or session names, e.g.
+    by ensuring all have sub- or ses- prefix, checking
+    for tags, that names do not include spaces and that
+    there are not duplicates.
+
+    Parameters
+    ----------
+
+    names: str or list containing sub or ses names
+                  (e.g. to make dirs)
+
+    sub_or_ses: "sub" or "ses" - this defines the prefix checks.
+    """
+    prefix = cfg.get_sub_or_ses_prefix(sub_or_ses)
+    formatted_names = format_names(names, prefix)
+
+    return formatted_names
 
 
 def format_names(
@@ -47,8 +80,10 @@ def format_names(
     if len(prefixed_names) != len(set(prefixed_names)):
         utils.log_and_raise_error(
             "Subject and session names but all be unique (i.e. there are no"
-            " duplicates in list input)"
+            " duplicates in list input)."
         )
+
+    check_dashes_and_underscore_alternate_correctly(prefixed_names)
 
     prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
 
@@ -83,8 +118,8 @@ def update_names_with_range_to_flag(
 
             check_name_is_formatted_correctly(name, prefix)
 
-            prefix_tag = re.search(f"{prefix}[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
-            tag_number = prefix_tag.split(f"{prefix}")[1]
+            prefix_tag = re.search(f"{prefix}-[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
+            tag_number = prefix_tag.split(f"{prefix}-")[1]
 
             name_start_str, name_end_str = name.split(tag_number)
 
@@ -97,8 +132,8 @@ def update_names_with_range_to_flag(
 
             if int(left_number) >= int(right_number):
                 utils.log_and_raise_error(
-                    f"Number of the subject to the  left of {tags('to')} flag "
-                    f"must be small than number to the right."
+                    f"Number of the {prefix} to the  left of {tags('to')} flag "
+                    f"must be smaller than the number to the right."
                 )
 
             names_with_new_number_inserted = (
@@ -120,12 +155,12 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
     as expected.
     """
     first_key_value_pair = name.split("_")[0]
-    expected_format = re.compile(f"{prefix}[0-9]+{tags('to')}[0-9]+")
+    expected_format = re.compile(f"{prefix}-[0-9]+{tags('to')}[0-9]+")
 
     if not re.fullmatch(expected_format, first_key_value_pair):
         utils.log_and_raise_error(
             f"The name: {name} is not in required format for {tags('to')} keyword. "
-            f"The start must be  be {prefix}<NUMBER>{tags('to')}<NUMBER>)"
+            f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)."
         )
 
 
@@ -135,7 +170,7 @@ def make_list_of_zero_padded_names_across_range(
     """
     Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
-    the maximum number of leading zeros and apply or
+    the maximum number of leading zeros and apply for
     all numbers in the range. Note int() will strip
     all leading zeros.
 
@@ -236,13 +271,82 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
 
 
 def ensure_prefixes_on_list_of_names(
-    names: Union[List[str], str], prefix: str
+    all_names: Union[List[str], str], prefix: str
 ) -> List[str]:
     """
     Make sure all elements in the list of names are
-    prefixed with the prefix typically "sub-" or "ses-"
+    prefixed with the prefix, typically "sub-" or "ses-"
+
+    Use expanded list for readability
     """
+    prefix = prefix + "-"
     n_chars = len(prefix)
-    return [
-        prefix + name if name[:n_chars] != prefix else name for name in names
-    ]
+
+    new_names = []
+    for name in all_names:
+        if name[:n_chars] != prefix and name not in RESERVED_KEYWORDS:
+            new_names.append(prefix + name)
+        else:
+            new_names.append(name)
+
+    return new_names
+
+
+def check_data_type_is_valid(
+    cfg: Configs, data_type: str, error_on_fail: bool
+) -> bool:
+    """
+    Check the passed data_type is valid (must
+    be a key on self.ses_dirs e.g. "behav", or "all")
+    """
+    if isinstance(data_type, list):
+        valid_keys = list(cfg.data_type_dirs.keys()) + ["all"]
+        is_valid = all([type in valid_keys for type in data_type])
+    else:
+        is_valid = data_type in cfg.data_type_dirs.keys() or data_type == "all"
+
+    if error_on_fail and not is_valid:
+        utils.log_and_raise_error(
+            f"data_type: '{data_type}' "
+            f"is not valid. Must be one of"
+            f" {list(cfg.data_type_dirs.keys())}. or 'all'"
+            f" No directories were made."
+        )
+
+    return is_valid
+
+
+def check_dashes_and_underscore_alternate_correctly(all_names):
+    """ """
+    for name in all_names:
+
+        if name in RESERVED_KEYWORDS:
+            continue
+
+        discrim = {"-": 1, "_": -1}
+        dashes_underscores = [
+            discrim[ele] for ele in name if ele in ["-", "_"]
+        ]
+
+        if dashes_underscores[0] != 1:
+            utils.log_and_raise_error(
+                "The first delimiter of 'sub' or 'ses' "
+                "must be dash not underscore e.g. sub-001."
+            )
+
+        if len(dashes_underscores) % 2 != 0:
+            dashes_underscores.pop(-1)
+
+        if any([ele == 0 for ele in diff(dashes_underscores)]):
+            utils.log_and_raise_error(
+                "Subject and session names must contain alternating dashes and "
+                "underscores (used for separating key-value pairs)."
+            )
+
+
+def diff(x):
+    """
+    slow, custom differentiator for small inputs, to avoid
+    adding numpy as a dependency.
+    """
+    return [x[i + 1] - x[i] for i in range(len(x) - 1)]

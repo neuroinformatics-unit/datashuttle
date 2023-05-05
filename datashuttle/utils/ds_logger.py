@@ -1,8 +1,14 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, List, Optional
+
+if TYPE_CHECKING:
+    from ..configs.configs import Configs
+
+import copy
 import logging
 from pathlib import Path
-from typing import Any, List, Optional
 
-import fancylog as package
 from fancylog import fancylog
 from rich import print as rich_print
 from rich.console import Console
@@ -11,27 +17,32 @@ from rich.markup import escape
 from rich.text import Text
 from rich.tree import Tree
 
+import datashuttle as package_to_log
+
 from . import utils
 
 
 def start(
-    path_to_log: Path, name: str, variables: Optional[List[Any]]
+    path_to_log: Path,
+    name: str,
+    variables: Optional[List[Any]],
+    verbose: bool = True,
 ) -> None:
     """
     Call fancylog to initialise logging.
     """
     fancylog.start_logging(
         path_to_log,
-        package,
+        package_to_log,
         filename=name,
         variables=variables,
-        verbose=False,
+        verbose=verbose,
         timestamp=True,
-        file_log_level="INFO",
-        write_git=False,
+        file_log_level="DEBUG",
+        write_git=True,
         log_to_console=False,
     )
-    logging.info(f"Starting {name}")
+    logging.info(f"Starting logging for command {name}")
 
 
 def print_tree(project_path: Path) -> None:
@@ -54,7 +65,7 @@ def log_tree(project_path: Path) -> None:
 
     with console.capture() as capture:
         console.print(tree_, markup=True)
-    logging.info(
+    logging.debug(
         capture.get()
     )  # https://github.com/Textualize/rich/issues/2688
 
@@ -73,6 +84,28 @@ def log_names(list_of_headers, list_of_names):
     """
     for header, names in zip(list_of_headers, list_of_names):
         utils.log(f"{header}: {names}")
+
+
+def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs):
+    """
+    Wrap the locals from the original function call to log
+    and the datashuttle.cfg in a wrapper class with __dict__
+    attribute for fancylog writing.
+
+    Delete the self attribute (which is DataShuttle class)
+    to keep the logs neat, as it adds no information.
+    """
+
+    class VariablesState:
+        def __init__(self, local_vars_, cfg_):
+            local_vars_ = copy.deepcopy(local_vars_)
+            del local_vars_["self"]
+            self.locals = local_vars_
+            self.cfg = copy.deepcopy(cfg_)
+
+    variables = [VariablesState(local_vars, cfg)]
+
+    return variables
 
 
 # -------------------------------------------------------------------

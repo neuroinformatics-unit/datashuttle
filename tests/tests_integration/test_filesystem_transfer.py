@@ -1,5 +1,6 @@
 import os
 import re
+from pathlib import Path
 
 import pytest
 import test_utils
@@ -63,7 +64,7 @@ class TestFileTransfer:
 
         test_utils.check_directory_tree_is_correct(
             project,
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             subs,
             sessions,
             test_utils.get_default_directory_used(),
@@ -103,7 +104,7 @@ class TestFileTransfer:
         transfer_function(subs, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             data_type_to_transfer,
             subs,
             sessions,
@@ -146,7 +147,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             data_type_to_transfer,
             subs_to_upload,
         )
@@ -186,7 +187,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project._top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
@@ -279,3 +280,209 @@ class TestFileTransfer:
                 "ses-001_date-20220501",
                 "ses-002_date-20220516",
             ]
+
+    @pytest.mark.parametrize("overwrite_old_files", [True, False])
+    @pytest.mark.parametrize("show_transfer_progress", [True, False])
+    @pytest.mark.parametrize("dry_run", [True, False])
+    def test_rclone_options(
+        self,
+        project,
+        overwrite_old_files,
+        show_transfer_progress,
+        dry_run,
+        capsys,
+    ):
+        """
+        When verbosity is --vv, rclone itself will output
+        a list of all called arguments. Use this to check
+        rclone is called with the arguments set in configs
+        as expected. verbosity itself is tested in another method.
+        """
+        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+
+        project.update_config("overwrite_old_files", overwrite_old_files)
+        project.update_config("transfer_verbosity", "vv")
+        project.update_config("show_transfer_progress", show_transfer_progress)
+
+        test_utils.clear_capsys(capsys)
+        project.upload_all(dry_run=dry_run)
+
+        log = capsys.readouterr().out
+
+        assert "--create-empty-src-dirs" in log
+
+        if overwrite_old_files:
+            assert "--ignore-existing" not in log
+        else:
+            assert "--ignore-existing" in log
+
+        if show_transfer_progress:
+            assert "--progress" in log
+        else:
+            assert "--progress" not in log
+
+        if dry_run:
+            assert "--dry-run" in log
+        else:
+            assert "--dry-run" not in log
+
+    @pytest.mark.parametrize("transfer_verbosity", ["v", "vv"])
+    def test_rclone_transfer_verbosity(
+        self, project, transfer_verbosity, capsys
+    ):
+        """
+        see test_rclone_options()
+        """
+        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+        project.update_config("transfer_verbosity", transfer_verbosity)
+
+        test_utils.clear_capsys(capsys)
+        project.upload_all()
+
+        log = capsys.readouterr().out
+
+        if transfer_verbosity == "vv":
+            assert "-vv" in log
+        elif transfer_verbosity == "v":
+            assert "starting with parameters [" not in log and "-vv" not in log
+        else:
+            raise BaseException("wrong parameter passed as transfer_verbosity")
+
+    @pytest.mark.parametrize("overwrite_old_files", [True, False])
+    def test_rclone_overwrite_modified_file(
+        self, project, overwrite_old_files
+    ):
+        """
+        Test how rclone deals with existing files. In datashuttle
+        if project.cfg["overwrite_old_files"] is on,
+        files will be replaced with newer versions. Alternatively,
+        if this is off, files will never be overwritten even if
+        the version in source is newer than target.
+        """
+        path_to_test_file = (
+            Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
+        )
+
+        project.make_sub_dir("sub-001")
+        local_test_file_path = project.cfg["local_path"] / path_to_test_file
+        remote_test_file_path = project.cfg["remote_path"] / path_to_test_file
+
+        # Write a local file and transfer
+        test_utils.write_file(local_test_file_path, contents="first edit")
+
+        time_written = os.path.getatime(local_test_file_path)
+
+        if overwrite_old_files:
+            project.update_config("overwrite_old_files", True)
+
+        project.upload_all()
+
+        # Update the file and transfer and transfer again
+        test_utils.write_file(
+            local_test_file_path, contents=" second edit", append=True
+        )
+
+        assert time_written < os.path.getatime(local_test_file_path)
+
+        project.upload_all()
+
+        remote_contents = test_utils.read_file(remote_test_file_path)
+
+        if overwrite_old_files:
+            assert remote_contents == ["first edit second edit"]
+        else:
+            assert remote_contents == ["first edit"]
+
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("transfer_file", [True, False])
+    @pytest.mark.parametrize("full_path", [True, False])
+    def test_specific_file_or_dir(
+        self, project, transfer_file, full_path, upload_or_download
+    ):
+        """
+        Test upload_project_dir_or_file() and download_project_dir_or_file().
+
+        This test has a few different parameterisations. It tests
+        1) transfer_file : this transfers a file or folder. if transferring
+           a folder, all contents are transferred with /** wildcard.
+        2) full path : the functions can accept full path or path
+           relative to rawdata/ . Test both these instances
+        3) upload_or_download : Test the direction. As it is more convenient
+           to  make all test project file in local_path then swap the paths
+           if downloading, this is done here (see
+           test_utils.swap_local_and_remote_paths()) for details.
+
+        Make a project with two different files (just to
+        ensure non-target files are not transferred). Transfer
+        a single file or the folder containing the file. Check that
+        the transferred folders and no others were transferred.
+        """
+        (
+            path_to_test_file_behav,
+            path_to_test_file_ephys,
+        ) = self.setup_specific_file_or_dir_files(project)
+
+        if upload_or_download == "upload":
+            transfer_function = project.upload_project_dir_or_file
+            transfer_from = "local_path"
+            transfer_to = "remote_path"
+        else:
+            transfer_function = project.download_project_dir_or_file
+            transfer_from = "remote_path"
+            transfer_to = "local_path"
+            test_utils.swap_local_and_remote_paths(project)
+
+        if transfer_file:
+            to_transfer = path_to_test_file_behav
+            formatted_to_transfer = to_transfer
+        else:
+            to_transfer = path_to_test_file_ephys
+            formatted_to_transfer = to_transfer.parents[0] / "**"
+
+        if full_path:
+            transfer_function(
+                project.cfg[transfer_from] / formatted_to_transfer
+            )
+        else:
+            transfer_function(Path(*formatted_to_transfer.parts[1:]))
+
+        transferred_files = [
+            path_
+            for path_ in project.cfg[transfer_to].glob("**/*")
+            if ".datashuttle" not in str(path_)
+        ]
+        to_test_against = [
+            project.cfg[transfer_to] / path_
+            for path_ in reversed(to_transfer.parents)
+        ][1:] + [project.cfg[transfer_to] / to_transfer]
+
+        assert transferred_files == to_test_against
+
+    def setup_specific_file_or_dir_files(self, project):
+        """ """
+        project.make_sub_dir(["sub-001", "sub-002"], "ses-003")
+
+        path_to_test_file_behav = (
+            Path("rawdata")
+            / "sub-002"
+            / "ses-003"
+            / "behav"
+            / "behav_test_file.txt"
+        )
+
+        path_to_test_file_ephys = (
+            Path("rawdata")
+            / "sub-002"
+            / "ses-003"
+            / "ephys"
+            / "ephys_test_file.txt"
+        )
+
+        test_utils.write_file(
+            project.cfg["local_path"] / path_to_test_file_behav
+        )
+        test_utils.write_file(
+            project.cfg["local_path"] / path_to_test_file_ephys
+        )
+
+        return path_to_test_file_behav, path_to_test_file_ephys

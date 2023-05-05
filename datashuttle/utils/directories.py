@@ -4,22 +4,122 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from datashuttle.datashuttle import DataShuttle
+    from datashuttle.configs.config_class import Configs
 
 import glob
 import os
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import Any, List, Optional, Tuple, Union
 
 from datashuttle.configs.canonical_tags import tags
 
-from . import ssh, utils
+from . import formatting, ssh, utils
 
 # --------------------------------------------------------------------------------------------------------------------
 # Make Dirs
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
+def make_directory_trees(
+    cfg: Configs,
+    sub_names: Union[str, list],
+    ses_names: Union[str, list],
+    data_type: str,
+    log: bool = True,
+) -> None:
+    """
+    Entry method to make a full directory tree. It will
+    iterate through all passed subjects, then sessions, then
+    subdirs within a data_type directory. This
+    permits flexible creation of directories (e.g.
+    to make subject only, do not pass session name.
+
+    Ensure sub and ses names are already formatted
+    before use in this function (see _start_log())
+
+    Parameters
+    ----------
+
+    sub_names, ses_names, data_type : see make_sub_dir()
+
+    log : whether to log or not. If True, logging must
+        already be initialised.
+    """
+    data_type_passed = data_type not in [[""], ""]
+
+    if data_type_passed:
+        formatting.check_data_type_is_valid(cfg, data_type, error_on_fail=True)
+
+    for sub in sub_names:
+
+        sub_path = cfg.make_path(
+            "local",
+            sub,
+        )
+
+        make_dirs(sub_path, log)
+
+        if data_type_passed:
+            make_data_type_directories(cfg, data_type, sub_path, "sub")
+
+        for ses in ses_names:
+
+            ses_path = cfg.make_path(
+                "local",
+                [sub, ses],
+            )
+
+            make_dirs(ses_path, log)
+
+            if data_type_passed:
+                make_data_type_directories(
+                    cfg, data_type, ses_path, "ses", log=log
+                )
+
+
+def make_data_type_directories(
+    cfg: Configs,
+    data_type: Union[list, str],
+    sub_or_ses_level_path: Path,
+    level: str,
+    log: bool = True,
+) -> None:
+    """
+    Make data_type folder (e.g. behav) at the sub or ses
+    level. Checks directory_class.Directories attributes,
+    whether the data_type is used and at the current level.
+
+    Parameters
+    ----------
+    data_type : data type (e.g. "behav", "all") to use. Use
+        empty string ("") for none.
+
+    sub_or_ses_level_path : Full path to the subject
+        or session directory where the new directory
+        will be written.
+
+    level : The directory level that the
+        directory will be made at, "sub" or "ses"
+
+    log : whether to log on or not (if True, logging must
+        already be initialised).
+    """
+    data_type_items = cfg.get_data_type_items(data_type)
+
+    for data_type_key, data_type_dir in data_type_items:  # type: ignore
+
+        if data_type_dir.used and data_type_dir.level == level:
+            data_type_path = sub_or_ses_level_path / data_type_dir.name
+
+            make_dirs(data_type_path, log)
+
+            make_datashuttle_metadata_folder(data_type_path, log)
+
+
+# Make Dirs Helpers --------------------------------------------------------------------------------------------------
+
+
+def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
     """
     For path or list of paths, make them if
     they do not already exist.
@@ -44,7 +144,7 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = False) -> None:
 
 
 def make_datashuttle_metadata_folder(
-    full_path: Path, log: bool = False
+    full_path: Path, log: bool = True
 ) -> None:
     """
     Make a .datashuttle folder (this is created
@@ -85,8 +185,8 @@ def check_no_duplicate_sub_ses_key_values(
     """
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
-            project, base_dir, "local"
-        )
+            project.cfg, base_dir, "local"
+        )[0]
         existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
 
         for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
@@ -99,8 +199,9 @@ def check_no_duplicate_sub_ses_key_values(
         # for each subject, check session level
         for sub in new_sub_names:
             existing_ses_names = search_sub_or_ses_level(
-                project, base_dir, "local", sub
-            )
+                project.cfg, base_dir, "local", sub
+            )[0]
+
             existing_ses_values = utils.get_first_sub_ses_keys(
                 existing_ses_names
             )
@@ -123,21 +224,22 @@ def check_no_duplicate_sub_ses_key_values(
 
 
 def search_sub_or_ses_level(
-    project: DataShuttle,
+    cfg: Configs,
     base_dir: Path,
     local_or_remote: str,
     sub: Optional[str] = None,
     ses: Optional[str] = None,
     search_str: str = "*",
-) -> List[str]:
+) -> Tuple[List[str], List[str]]:
     """
-    Search project folder at the subject or session level
+    Search project folder at the subject or session level.
+    Only returns directories
 
     Parameters
     ----------
 
-    project : datashuttle project. Currently, this is used
-        as a holder for some ssh configs to avoid too many
+    cfg : datashuttle project cfg. Currently, this is used
+        as a holder for  ssh configs to avoid too many
         arguments, but this is not nice and breaks the
         general rule that these functions should operate
         project-agnostic.
@@ -157,7 +259,7 @@ def search_sub_or_ses_level(
     if ses and not sub:
         utils.log_and_raise_error(
             "cannot pass session to "
-            "_search_sub_or_ses_level() without subject"
+            "search_sub_or_ses_level() without subject"
         )
 
     if sub:
@@ -166,37 +268,48 @@ def search_sub_or_ses_level(
     if ses:
         base_dir = base_dir / ses
 
-    search_results = search_for_directories(
-        project, base_dir, local_or_remote, search_str
+    all_dirnames, all_filenames = search_for_directories(
+        cfg, base_dir, local_or_remote, search_str
     )
-    return search_results
+
+    return all_dirnames, all_filenames
 
 
 def search_data_dirs_sub_or_ses_level(
-    project, data_type_dirs, base_dir, local_or_remote, sub, ses=None
-):
+    cfg: Configs,
+    base_dir: Path,
+    local_or_remote: str,
+    sub: str,
+    ses: Optional[str] = None,
+) -> zip:
     """
     Search  a subject or session directory specifically
     for data_types. First searches for all folders / files
     in the directory, and then returns any dirs that
     match data_type name.
 
-    see project._search_sub_or_ses_level() for inputs.
+    see directories.search_sub_or_ses_level() for full
+    parameters list.
+
+    Returns
+    -------
+    Find the data_type files and return in
+    a format that mirrors dict.items()
     """
     search_results = search_sub_or_ses_level(
-        project, base_dir, local_or_remote, sub, ses
-    )
+        cfg, base_dir, local_or_remote, sub, ses
+    )[0]
 
     data_directories = process_glob_to_find_data_type_dirs(
         search_results,
-        data_type_dirs,
+        cfg.data_type_dirs,
     )
 
     return data_directories
 
 
 def search_for_wildcards(
-    project,
+    cfg: Configs,
     base_dir: Path,
     local_or_remote: str,
     all_names: List[str],
@@ -242,12 +355,12 @@ def search_for_wildcards(
 
             if sub:
                 matching_names = search_sub_or_ses_level(
-                    project, base_dir, local_or_remote, sub, search_str=name
-                )
+                    cfg, base_dir, local_or_remote, sub, search_str=name
+                )[0]
             else:
                 matching_names = search_sub_or_ses_level(
-                    project, base_dir, local_or_remote, search_str=name
-                )
+                    cfg, base_dir, local_or_remote, search_str=name
+                )[0]
 
             new_all_names += matching_names
         else:
@@ -272,10 +385,12 @@ def process_glob_to_find_data_type_dirs(
     Process the results of glob on a sub or session level,
     which could contain any kind of folder / file.
 
-    Find the data_type files and return in
-    a format that mirros dict.items()
+    see project.search_sub_or_ses_level() for inputs.
 
-    see project._search_sub_or_ses_level() for inputs.
+    Returns
+    -------
+    Find the data_type files and return in
+    a format that mirrors dict.items()
     """
     ses_dir_keys = []
     ses_dir_values = []
@@ -297,12 +412,12 @@ def process_glob_to_find_data_type_dirs(
 # --------------------------------------------------------------------
 
 
-def search_for_directories(
-    project: DataShuttle,
+def search_for_directories(  # TODO: change name
+    cfg: Configs,
     search_path: Path,
     local_or_remote: str,
     search_prefix: str,
-) -> List[str]:
+) -> Tuple[List[Any], List[Any]]:
     """
     Wrapper to determine the method used to search for search
     prefix directories in the search path.
@@ -314,34 +429,37 @@ def search_for_directories(
     search_path : full filepath to search in
     search_prefix : file / dirname to search (e.g. "sub-*")
     """
-    if (
-        local_or_remote == "remote"
-        and project.cfg["connection_method"] == "ssh"
-    ):
+    if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
 
-        all_dirnames = ssh.search_ssh_remote_for_directories(
+        all_dirnames, all_filenames = ssh.search_ssh_remote_for_directories(
             search_path,
             search_prefix,
-            project.cfg,
-            project._hostkeys_path,
-            project._ssh_key_path,
+            cfg,
         )
     else:
-        all_dirnames = search_filesystem_path_for_directories(
+
+        if not search_path.exists():
+            utils.log_and_message(f"No file found at {search_path.as_posix()}")
+            return [], []
+
+        all_dirnames, all_filenames = search_filesystem_path_for_directories(
             search_path / search_prefix
         )
-    return all_dirnames
+    return all_dirnames, all_filenames
 
 
 def search_filesystem_path_for_directories(
     search_path_with_prefix: Path,
-) -> List[str]:
+) -> Tuple[List[str], List[str]]:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning directories only.
     """
     all_dirnames = []
+    all_filenames = []
     for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
         if os.path.isdir(file_or_dir):
             all_dirnames.append(os.path.basename(file_or_dir))
-    return all_dirnames
+        else:
+            all_filenames.append(os.path.basename(file_or_dir))
+    return all_dirnames, all_filenames

@@ -16,7 +16,7 @@ dependencies = [
     "PyYAML",
     "requests",
     "rich",
-    "fancylog",
+    "fancylog[git]",
 ]
 
 classifiers = [
@@ -39,6 +39,7 @@ user_support = "https://github.com/neuroinformatics-unit/datashuttle/issues"
 
 [project.optional-dependencies]
 dev = [
+    "pandas",
     "pytest",
     "pytest-cov",
     "coverage",

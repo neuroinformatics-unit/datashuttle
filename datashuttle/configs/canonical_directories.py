@@ -1,9 +1,14 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .config_class import Configs
+
 from datashuttle.utils.directory_class import Directory
 
-from .configs import Configs
 
-
-def get_directories(cfg: Configs) -> dict:
+def get_data_type_directories(cfg: Configs) -> dict:
     """
     This function holds the canonical directories
     managed by datashuttle.
@@ -65,3 +70,29 @@ def get_directories(cfg: Configs) -> dict:
             level="sub",
         ),
     }
+
+
+def get_non_sub_names():
+    """
+    Get all arguments that are not allowed at the
+    subject level for data transfer, i.e. as sub_names
+    """
+    return [
+        "all_ses",
+        "all_non_ses",
+        "all_data_type",
+        "all_ses_level_non_data_type",
+    ]
+
+
+def get_non_ses_names():
+    """
+    Get all arguments that are not allowed at the
+    session level for data transfer, i.e. as ses_names
+    """
+    return [
+        "all_sub",
+        "all_non_sub",
+        "all_data_type",
+        "all_ses_level_non_data_type",
+    ]
