@@ -12,13 +12,15 @@ import ssh_test_utils
 import test_utils
 from pytest import ssh_config
 from test_file_conflicts_pathtable import get_pathtable
+from datashuttle.utils import ssh
 
 
 class TestFileTransfer:
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem
-            False,
+            True,
+            # False,
             pytest.param(
                 True,
                 marks=pytest.mark.skipif(
@@ -28,6 +30,11 @@ class TestFileTransfer:
             ),
         ],
     )
+
+    # TODO: there is no way around it, going to have to test
+    # through SSH by actually SSH in and perform file discovery
+    # to test against. This way of using a mounted drive is not
+    # portable.
     def pathtable_and_project(self, request, tmpdir_factory):
         """
         Create a project for SSH testing. Setup
@@ -88,7 +95,12 @@ class TestFileTransfer:
 
             # Initialise the SSH connection
             ssh_test_utils.setup_hostkeys(project)
-            shutil.copy(ssh_config.SSH_KEY_PATH, project.cfg.file_path.parent)
+
+            path_to_save = project.cfg["local_path"] / "test"
+            ssh.generate_and_write_ssh_key(path_to_save)
+
+            shutil.copy(path_to_save,
+                        project.cfg.file_path.parent / f"{test_project_name}_ssh_key")
 
         pathtable = get_pathtable(project.cfg["local_path"])
         self.create_all_pathtable_files(pathtable)
@@ -174,7 +186,7 @@ class TestFileTransfer:
             upload_or_download,
             swap_last_folder_only=project.testing_ssh,
         )[0]
-
+        breakpoint()
         transfer_function(sub_names, ses_names, data_type, init_log=False)
 
         if upload_or_download == "download":

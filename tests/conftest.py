@@ -10,7 +10,7 @@ and it will be copied to the project test folder before testing.
 
 FILESYSTEM_PATH and SERVER_PATH these must point
 to the same folder on the HPC, filesystem,
-as a moutned drive and server as the linux path to
+as a mounted drive and server as the linux path to
 connect through SSH
 """
 import platform
@@ -34,7 +34,7 @@ def pytest_configure(config):
         SSH_KEY_PATH=ssh_key_path,
         USERNAME=username,
         REMOTE_HOST_ID=remote_host_id,
-        FILESYSTEM_PATH=Path.home() / ".datashuttle_tests",  # FILESYSTEM_PATH and SERVER_PATH these must point to the same folder on the HPC, filesystem
-        SERVER_PATH=Path.home() / ".datashuttle_tests",  # as a mounted drive and server as the linux path to connect through SSH
+        FILESYSTEM_PATH= str(Path.home() / ".datashuttle_tests"),  # FILESYSTEM_PATH and SERVER_PATH these must point to the same folder on the HPC, filesystem
+        SERVER_PATH= str(Path.home() / ".datashuttle_tests"),  # as a mounted drive and server as the linux path to connect through SSH
     )
     test_utils.set_datashuttle_loggers(disable=True)

@@ -2,7 +2,7 @@ import builtins
 import copy
 
 from datashuttle.utils import rclone, ssh
-
+import os
 
 def setup_project_for_ssh(
     project, remote_path, remote_host_id, remote_host_username
@@ -55,3 +55,13 @@ def setup_hostkeys(project):
         project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
     )
     restore_mock_input(orig_builtin)
+
+def get_password():
+    """
+    Load the password from file. Password is provided to NIU team
+    members only.
+    """
+    test_ssh_script_path = os.path.dirname(os.path.realpath(__file__))
+    with open(test_ssh_script_path + "/test_ssh_password.txt", "r") as file:
+        password = file.readlines()[0]
+    return password
