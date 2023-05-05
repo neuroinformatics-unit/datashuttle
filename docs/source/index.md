@@ -39,18 +39,9 @@ Check out the API documentation (to call from python)
 :link: pages/cli_index
 :link-type: doc
 
-Documenation for Command line interface
+Documentation for Command line interface
 :::
 
 ::::
 
-```{toctree}
-:maxdepth: 2
-:caption: Projects index
-:hidden:
 
-pages/api_index
-pages/cli_index
-pages/documentation
-pages/get_started
-```
