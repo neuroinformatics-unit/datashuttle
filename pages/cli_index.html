@@ -19,22 +19,23 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=12da95d707ffb74b382d" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../_static/design-style.4045f2051d55cab465a707391d5b2007.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -46,6 +47,7 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'pages/cli_index';</script>
     <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/cli_index.html" />
+    <link rel="shortcut icon" href="../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -108,8 +110,16 @@
   
   
   
+    
+    
+      
+    
+    
+    <img src="../_static/logo_light.png" class="logo__image only-light" alt="Logo image"/>
+    <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g3e1e2ef</p>
+  
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gffd79cb</p>
   
 </a></div>
     
@@ -318,9 +328,9 @@ document.write(`
 <p>To get detailed help for commands and their optional arguments, 
 type datashuttle [PROJECT NAME] [COMMAND] –help’</p>
 <p>On first use it is necessary to setup configurations. 
-e.g.’datashuttle [PROJECT NAME] make_config_file [OPTIONS]’</p>
+e.g.’datashuttle [PROJECT NAME] make-config-file [OPTIONS]’</p>
 <p>see 
-‘datashuttle &lt;project_name&gt; make_config_file –help’
+‘datashuttle &lt;project_name&gt; make-config-file –help’
 for full list of options.</p>
 <p>All command and argument names are matched to the API documentation.</p>
 </p>
@@ -349,52 +359,6 @@ on the local machine. Use get_config_path() to
 get the full path to the saved config file.</p>
 <p>Use update_config() to update a single config, and
 supply_config() to use an existing config file.</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>local_path :</dt><dd><p>path to project dir on local machine</p>
-</dd>
-<dt>remote_path :</dt><dd><p>Filepath to remote project.
-If this is local (i.e. connection_method = “local_filesystem”),
-this is the full path on the local filesystem
-Otherwise, if this is via ssh (i.e. connection method = “ssh”),
-this is the path to the project directory on remote machine.
-This should be a full path to remote directory i.e. this cannot
-include ~ home directory syntax, must contain the full path
-(e.g. /nfs/nhome/live/jziminski)</p>
-</dd>
-<dt>connection_method :</dt><dd><p>The method used to connect to the remote project filesystem,
-e.g. “local_filesystem” (e.g. mounted drive) or “ssh”</p>
-</dd>
-<dt>remote_host_id :</dt><dd><p>server address for remote host for ssh connection
-e.g. “ssh.swc.ucl.ac.uk”</p>
-</dd>
-<dt>remote_host_username :</dt><dd><p>username for which to log in to remote host.
-e.g. “jziminski”</p>
-</dd>
-<dt>overwrite_old_files :</dt><dd><p>If True, when copying data (upload or download) files
-will be overwritten if the timestamp of the copied
-version is later than the target directory version
-of the file i.e. edits made to a file in the source
-machine will be copied to the target machine. If False,
-a file will be copied if it does not exist on the target
-directory, otherwise it will never be copied, even if
-the source version of the file has a later timestamp.</p>
-</dd>
-<dt>transfer_verbosity :</dt><dd><p>“v” will tell you about each file that is transferred and
-significant events, “vv” will be very verbose and inform
-on all events.</p>
-</dd>
-<dt>show_transfer_progress :</dt><dd><p>If true, the realtime progress of file transfers will be printed.</p>
-</dd>
-<dt>use_ephys :</dt><dd><p>if True, will allow ephys directory creation</p>
-</dd>
-<dt>use_funcimg :</dt><dd><p>if True, will allow funcimg directory creation</p>
-</dd>
-<dt>use_histology :</dt><dd><p>if True, will allow histology directory creation</p>
-</dd>
-<dt>use_behav :</dt><dd><p>if True, will allow behav directory creation</p>
-</dd>
-</dl>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">make</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="nb">id</span> <span class="n">REMOTE_HOST_ID</span><span class="p">]</span>
                              <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="n">username</span> <span class="n">REMOTE_HOST_USERNAME</span><span class="p">]</span>
@@ -464,22 +428,6 @@ on all events.</p>
 <div><p>Update a single config entry. This will overwrite the existing
 entry in the saved configs file and be used for all future
 datashuttle sessions.</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>option_key :</dt><dd><p>dictionary key of the option to change,
-see make_config_file() for available keys.</p>
-</dd>
-<dt>new_info :</dt><dd><p>value to update the config too</p>
-</dd>
-</dl>
-<p>Notes</p>
-<p>If the local path is changed with update_config(),
-there are a couple of possibilities for where logs are stored.
-If the local_path project already exists, the config log will be
-written to the original local_path, and future logs will
-be written to the new local path. However, if a local_path does
-not exist, move to a temp_dir and then move the logs to the
-new local_path if successful.</p>
 </div></blockquote>
 <p>The option key should be in the form of config file keys(e.g. remote_path, local_path)
 EXAMPLE: datashuttle test update_config remote_path ‘test_path’</p>
@@ -520,48 +468,6 @@ will be setup.</p>
 <blockquote>
 <div><p>Create a subject / session directory tree in the project
 folder.</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>sub_names :</dt><dd><p>subject name / list of subject names to make
-within the toplevel project directory
-(if not already, these will be prefixed with
-“sub”)</p>
-</dd>
-<dt>ses_names :</dt><dd><p>(Optional). session name / list of session names.
-(if not already, these will be prefixed with
-“ses”). If no session is provided, no sessionlevel
-directories are made.</p>
-</dd>
-<dt>data_type :</dt><dd><p>The data_type to make in the sub / ses directories.
-(e.g. “ephys”, “behav”, “histology”). Only data_types
-that are enabled in the configs (e.g. use_behav) will be
-created. If “all” is selected, directories will be created
-for all data_type enabled in config. Use empty string “” for
-none.</p>
-</dd>
-</dl>
-<p>Notes</p>
-<p>sub_names or ses_names may contain formatting tags</p>
-<blockquote>
-<div><dl class="simple">
-<dt>&#64;TO&#64; :</dt><dd><p>used to make a range of subjects / sessions.
-Boundaries of the range must be either side of the tag
-e.g. sub001&#64;TO&#64;003 will generate [“sub001”, “sub002”, “sub003”]</p>
-</dd>
-<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64; :</dt><dd><p>will add date&lt;value&gt;, time&lt;value&gt; or
-date&lt;value&gt;_time&lt;value&gt; keys respectively. Only one pername
-is permitted. e.g. sub001_&#64;DATE&#64; will generate sub001_date20220101
-(on the 1st january, 2022).</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>Examples</p>
-<p>project.make_sub_dir(“sub001”, data_type=”all”)</p>
-<dl class="simple">
-<dt>project.make_sub_dir(“sub002&#64;TO&#64;005”,</dt><dd><p>[“ses001”, “ses002”],
-[“ephys”, “behav”])</p>
-</dd>
-</dl>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">make</span><span class="o">-</span><span class="n">sub</span><span class="o">-</span><span class="nb">dir</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span>
                          <span class="p">[</span><span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span> <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]]</span>
@@ -592,43 +498,6 @@ directory. In the case that a file / directory exists on
 the remote and local, the remote will not be overwritten
 even if the remote file is an older version. Data
 transfer logs are saved to the logging directory).</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>sub_names :</dt><dd><p>a subject name / list of subject names. These must
-be prefixed with “sub”, or the prefix will be
-automatically added. “&#64;*&#64;” can be used as a wildcard.
-“all” will search for all subdirectories in the
-data type directory to upload.</p>
-</dd>
-<dt>ses_names :</dt><dd><p>a session name / list of session names, similar to
-sub_names but requring a “ses” prefix.</p>
-</dd>
-<dt>dry_run :</dt><dd><p>perform a dryrun of upload. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p>
-</dd>
-<dt>data_type :</dt><dd><p>see make_sub_dir()</p>
-</dd>
-<dt>init_log :</dt><dd><p>(Optional). Whether to start the logger. This should
-always be True, unless logger has already been started
-(e.g. in a calling function).</p>
-</dd>
-</dl>
-<p>Notes</p>
-<p>The configs “overwrite_old_files”, “transfer_verbosity”
-and “show_transfer_progress” pertain to datatransfer settings.
-See make_config_file() for more information.</p>
-<p>sub_names or ses_names may contain certain formatting tags:</p>
-<dl class="simple">
-<dt>&#64;*&#64;: wildcard search for subject names. e.g. ses001_date&#64;*&#64;</dt><dd><p>will transfer all session 001 collected on all dates.</p>
-</dd>
-<dt>&#64;TO&#64;: used to transfer a range of sub/ses. Number must be either side of the tag</dt><dd><p>e.g. sub001&#64;TO&#64;003 will generate [“sub001”, “sub002”, “sub003”]</p>
-</dd>
-<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64;: will add date&lt;value&gt;, time&lt;value&gt; or</dt><dd><p>date&lt;value&gt;_time&lt;value&gt; keys respectively. Only one pername
-is permitted. e.g. sub001_&#64;DATE&#64; will generate sub001_date20220101
-(on the 1st january, 2022).</p>
-</dd>
-</dl>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">data</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span>
                         <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
@@ -726,18 +595,6 @@ only will be transferred.</p>
 <p>e.g. “sub001/ses002/my_directory/<a href="#system-message-1"><span class="problematic" id="problematic-1">**</span></a>”</p>
 <p>This function works by passing the file / directory
 path to transfer to Rclone’s include flag.</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>filepath :</dt><dd><p>a string containing the filepath to move,
-relative to the project directory “rawdata”
-or “derivatives” path (depending on which is currently
-set). Alternatively, the entire path is accepted.</p>
-</dd>
-<dt>dry_run :</dt><dd><p>perform a dryrun of upload. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p>
-</dd>
-</dl>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="nb">dir</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
 </pre></div>
@@ -773,18 +630,6 @@ only will be transferred.</p>
 <p>e.g. “sub001/ses002/my_directory/<a href="#system-message-1"><span class="problematic" id="problematic-1">**</span></a>”</p>
 <p>This function works by passing the file / directory
 path to transfer to Rclone’s include flag.</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>filepath :</dt><dd><p>a string containing the filepath to move,
-relative to the project directory “rawdata”
-or “derivatives” path (depending on which is currently
-set). Alternatively, the entire path is accepted.</p>
-</dd>
-<dt>dry_run :</dt><dd><p>perform a dryrun of upload. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p>
-</dd>
-</dl>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="nb">dir</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
 </pre></div>
@@ -874,31 +719,23 @@ for example as when passed to make_sub_dir() or upload_data() or
 download_data()</p>
 <p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
 This method will print the formatted list of names,</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>names :</dt><dd><p>A string or list of subject or session names.</p>
-</dd>
-<dt>prefix:</dt><dd><p>The relevant subject or session prefix,
-e.g. “sub” or “ses”</p>
-</dd>
-</dl>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">check</span><span class="o">-</span><span class="n">name</span><span class="o">-</span><span class="n">formatting</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">prefix</span> <span class="n">PREFIX</span> <span class="n">names</span> <span class="p">[</span><span class="n">names</span> <span class="o">...</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">check</span><span class="o">-</span><span class="n">name</span><span class="o">-</span><span class="n">formatting</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">names</span> <span class="n">NAMES</span> <span class="p">[</span><span class="n">NAMES</span> <span class="o">...</span><span class="p">]]</span> <span class="n">prefix</span>
 </pre></div>
 </div>
 <section id="positional-arguments_repeat5">
 <h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>names</kbd></dt>
-<dd><p>Required: (str, single or multiple)</p>
+<dt><kbd>prefix</kbd></dt>
+<dd><p>Required: (str) (sub- or ses-)</p>
 </dd>
 </dl>
 </section>
 <section id="named-arguments_repeat2">
 <h4>Named Arguments<a class="headerlink" href="#named-arguments_repeat2" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--prefix</kbd></dt>
-<dd><p>Required: (str) (sub- or ses-)</p>
+<dt><kbd>--names</kbd></dt>
+<dd><p>Required: (str, single or multiple)</p>
 </dd>
 </dl>
 </section>
@@ -917,15 +754,6 @@ with make_config_file() or look in configs/canonical_configs.py.</p>
 <p>It is possible the local_path will be changed
 with the new config file. see update_config()
 for how this is handled.</p>
-<p>Parameters</p>
-<dl class="simple">
-<dt>input_path_to_config :</dt><dd><p>Path to the config to use as DataShuttle config.</p>
-</dd>
-<dt>warn :</dt><dd><p>prompt the user to confirm as supplying
-config will overwrite existing config.
-Turned off for testing.</p>
-</dd>
-</dl>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">supply</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">path_to_config</span>
 </pre></div>
@@ -948,9 +776,15 @@ Turned off for testing.</p>
               
               
                 <footer class="bd-footer-article">
-                  <!-- Previous / next buttons -->
+                  
+<div class="footer-article-items footer-article__inner">
+  
+    <div class="footer-article-item"><!-- Previous / next buttons -->
 <div class="prev-next-area">
+</div></div>
+  
 </div>
+
                 </footer>
               
             </div>
@@ -1026,7 +860,7 @@ Turned off for testing.</p>
             
           </div>
           <footer class="bd-footer-content">
-            <div class="bd-footer-content__inner"></div>
+            
           </footer>
         
       </main>
@@ -1034,38 +868,43 @@ Turned off for testing.</p>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=12da95d707ffb74b382d"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=12da95d707ffb74b382d"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
   
     <div class="footer-items__start">
       
-        <div class="footer-item">
-  <p class="copyright">
-    
-      © Copyright 2022, Neuroinformatics Unit.
-      <br/>
-    
-  </p>
-</div>
-      
-        <div class="footer-item">
-  <p class="sphinx-version">
-    Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
-    <br/>
-  </p>
-</div>
+        <div class="footer-item"><p class="sphinx-version">
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
+<br/>
+</p>
+<p class="theme-version">
+Built with the
+<a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
+0.13.3.
+</p></div>
       
     </div>
   
   
     <div class="footer-items__end">
       
-        <div class="footer-item"><p class="theme-version">
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.13.0.
-</p></div>
+        <div class="footer-item"><div class="things-in-a-row">
+    <a href="https://www.sainsburywellcome.org/web/">
+        <img src="../_static/light-logo-swc.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../_static/dark-logo-swc.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/gatsby/gatsby-computational-neuroscience-unit">
+        <img src="../_static/light-logo-gatsby.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../_static/dark-logo-gatsby.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/">
+        <img src="../_static/light-logo-ucl.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../_static/dark-logo-ucl.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+</div></div>
       
     </div>
   
