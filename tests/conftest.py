@@ -15,24 +15,18 @@ connect through SSH
 """
 import platform
 from types import SimpleNamespace
-
+from pathlib import Path
 import pytest
 import test_utils
 
-test_ssh = False
-username = "jziminski"
-remote_host_id = "hpc-gw1.hpc.swc.ucl.ac.uk"
-server_path = r"/ceph/neuroinformatics/neuroinformatics/scratch/datashuttle_tests/fake_data"
-
+test_ssh = True
+username = "joeziminski"  # "jziminski"
+remote_host_id = "localhost"  # "hpc-gw1.hpc.swc.ucl.ac.uk"
 
 if platform.system() == "Windows":
-    ssh_key_path = r"C:\Users\Joe\.datashuttle\test_file_conflicts_ssh_key"
-    filesystem_path = "X:/neuroinformatics/scratch/datashuttle_tests/fake_data"
-
+    ssh_key_path = r"/Users/joeziminski/git_repos/datashuttle/tests/tests_integration"  # automate
 else:
-    ssh_key_path = "/home/joe/test_file_conflicts_ssh_key"
-    filesystem_path = "/home/joe/ceph_mount/neuroinformatics/scratch/datashuttle_tests/fake_data"
-
+    ssh_key_path = r"/Users/joeziminski/git_repos/datashuttle/tests/tests_integration"
 
 def pytest_configure(config):
     pytest.ssh_config = SimpleNamespace(
@@ -40,7 +34,7 @@ def pytest_configure(config):
         SSH_KEY_PATH=ssh_key_path,
         USERNAME=username,
         REMOTE_HOST_ID=remote_host_id,
-        FILESYSTEM_PATH=filesystem_path,  # FILESYSTEM_PATH and SERVER_PATH these must point to the same folder on the HPC, filesystem
-        SERVER_PATH=server_path,  # as a mounted drive and server as the linux path to connect through SSH
+        FILESYSTEM_PATH=Path.home() / ".datashuttle_tests",  # FILESYSTEM_PATH and SERVER_PATH these must point to the same folder on the HPC, filesystem
+        SERVER_PATH=Path.home() / ".datashuttle_tests",  # as a mounted drive and server as the linux path to connect through SSH
     )
     test_utils.set_datashuttle_loggers(disable=True)
