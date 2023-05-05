@@ -102,6 +102,18 @@ exclude_patterns = [
 html_theme = "pydata_sphinx_theme"
 html_title = "datashuttle"
 
+
+# Add any paths that contain custom static files (such as style sheets) here,
+# relative to this directory. They are copied after the builtin static files,
+# so a file named "default.css" will overwrite the builtin "default.css".
+html_static_path = ["_static"]
+
+html_css_files = [
+    'css/custom.css',
+]
+
+html_favicon = "_static/logo_light.png"
+
 # Cutomize the theme
 html_theme_options = {
     "icon_links": [
@@ -119,7 +131,11 @@ html_theme_options = {
     ],
     "logo": {
         "text": f"DataShuttle. version: {release}",
+        "image_light": "_static/logo_light.png",
+        "image_dark": "_static/logo_dark.png",
     },
+    "footer_start": ["footer_start"],
+    "footer_end": ["footer_end"],
 #    "show_toc_level": 2  # sidebar levels that are expanded before scrolling
 #    "secondary_sidebar_items": [],
 #    "page_sidebar_items": [],
@@ -131,8 +147,3 @@ html_theme_options = {
 # https://www.sphinx-doc.org/en/master/usage/extensions/githubpages.html
 github_user = "JoeZiminski"
 html_baseurl = "https://datashuttle.neuroinformatics.dev/"  # f"http(s)://{github_user}.github.io/{project}"
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ["_static"]
