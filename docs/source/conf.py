@@ -134,7 +134,7 @@ html_theme_options = {
         "image_light": "_static/logo_light.png",
         "image_dark": "_static/logo_dark.png",
     },
-    "footer_start": ["custom_footer"],
+    "footer_start": ["footer_start"],
     "footer_end": ["footer_end"],
 #    "show_toc_level": 2  # sidebar levels that are expanded before scrolling
 #    "secondary_sidebar_items": [],
