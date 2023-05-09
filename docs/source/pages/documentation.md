@@ -335,7 +335,7 @@ would transfer all any first session, irregardless of date, or all subjects and 
 
 ## Transferring a specific file or folder
 
-The functions upload_project_dir_or_file() or download_project_dir_or_file() can be used to
+The functions upload_project_folder_or_file() or download_project_folder_or_file() can be used to
 transfer a particular, individual file or folder. The path to the file / folder, either full
 or relative to the project top level folder, should be input.
 

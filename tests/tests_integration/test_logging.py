@@ -257,7 +257,7 @@ class TestCommandLineInterface:
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_logs_upload_and_download_dir_or_file(
+    def test_logs_upload_and_download_folder_or_file(
         self, setup_project, upload_or_download
     ):
         """
@@ -281,14 +281,14 @@ class TestCommandLineInterface:
         self.delete_log_files(setup_project.cfg.logging_path)
 
         if upload_or_download == "upload":
-            setup_project.upload_project_dir_or_file("sub-001/ses-001")
+            setup_project.upload_project_folder_or_file("sub-001/ses-001")
         else:
-            setup_project.download_project_dir_or_file("sub-001/ses-001")
+            setup_project.download_project_folder_or_file("sub-001/ses-001")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            f"Starting logging for command {upload_or_download}_project_dir_or_file"
+            f"Starting logging for command {upload_or_download}_project_folder_or_file"
             in log
         )
         assert (

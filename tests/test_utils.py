@@ -218,7 +218,7 @@ def get_test_config_arguments_dict(
         dict_.update(
             {
                 "local_path": f"{tmp_path}/test/test_ local/test_edit",
-                "remote_path": f"{tmp_path}/nfs/test dir/test_edit2",
+                "remote_path": f"{tmp_path}/nfs/test folder/test_edit2",
                 "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",

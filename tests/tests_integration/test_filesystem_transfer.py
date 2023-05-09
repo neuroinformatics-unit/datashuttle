@@ -400,7 +400,7 @@ class TestFileTransfer:
         self, project, transfer_file, full_path, upload_or_download
     ):
         """
-        Test upload_project_dir_or_file() and download_project_dir_or_file().
+        Test upload_project_folder_or_file() and download_project_folder_or_file().
 
         This test has a few different parameterisations. It tests
         1) transfer_file : this transfers a file or folder. if transferring
@@ -423,11 +423,11 @@ class TestFileTransfer:
         ) = self.setup_specific_file_or_dir_files(project)
 
         if upload_or_download == "upload":
-            transfer_function = project.upload_project_dir_or_file
+            transfer_function = project.upload_project_folder_or_file
             transfer_from = "local_path"
             transfer_to = "remote_path"
         else:
-            transfer_function = project.download_project_dir_or_file
+            transfer_function = project.download_project_folder_or_file
             transfer_from = "remote_path"
             transfer_to = "local_path"
             test_utils.swap_local_and_remote_paths(project)

@@ -350,7 +350,7 @@ class DataShuttle:
         )
         ds_logger.close_log_filehandler()
 
-    def upload_project_dir_or_file(
+    def upload_project_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
@@ -380,7 +380,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("upload_project_dir_or_file", local_vars=locals())
+        self._start_log("upload_project_folder_or_file", local_vars=locals())
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("local"),
@@ -399,7 +399,7 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
-    def download_project_dir_or_file(
+    def download_project_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
@@ -429,7 +429,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("download_project_dir_or_file", local_vars=locals())
+        self._start_log("download_project_folder_or_file", local_vars=locals())
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("remote"),
@@ -541,7 +541,7 @@ class DataShuttle:
         ----------
 
         local_path :
-            path to project dir on local machine
+            path to project folder on local machine
 
         remote_path :
             Filepath to remote project.
@@ -635,10 +635,8 @@ class DataShuttle:
             "options loaded into datashuttle."
         )
         self._log_successful_config_change()
-        try:
-            self._move_logs_from_temp_dir()
-        except:
-            breakpoint()
+        self._move_logs_from_temp_dir()
+
         ds_logger.close_log_filehandler()
 
     def update_config(

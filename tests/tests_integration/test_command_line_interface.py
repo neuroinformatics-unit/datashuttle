@@ -192,9 +192,9 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_upload_download_dir_or_file(self, upload_or_download, sep):
+    def test_upload_download_folder_or_file(self, upload_or_download, sep):
         """
-        As upload_data_dir_or_file and download_data_dir_or_file
+        As upload_data_folder_or_file and download_data_folder_or_file
         take identical args, test both together"""
         stdout, stderr = test_utils.run_cli(
             f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file /fake/filepath"
@@ -404,7 +404,7 @@ class TestCommandLineInterface:
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_upload_and_download_dir_or_file(
+    def test_upload_and_download_folder_or_file(
         self, setup_project, upload_or_download
     ):
         """
@@ -424,7 +424,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys/*",
+            f"{upload_or_download}_project_folder_or_file {subs[1]}/{sessions[0]}/ephys/*",
             setup_project.project_name,
         )
 

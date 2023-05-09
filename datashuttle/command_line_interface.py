@@ -250,31 +250,31 @@ def download_all(*args: Any) -> None:
     project.download_all()
 
 
-# Upload Project Dir or File --------------------------------------------------
+# Upload Project Folder or File -----------------------------------------------
 
 
-def upload_project_dir_or_file(project: DataShuttle, args: Any) -> None:
+def upload_project_folder_or_file(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
     run_command(
         project,
-        project.upload_project_dir_or_file,
+        project.upload_project_folder_or_file,
         kwargs.pop("filepath"),
         **kwargs,
     )
 
 
-# Download Project Dir or File ------------------------------------------------
+# Download Project Folder or File ------------------------------------------------
 
 
-def download_project_dir_or_file(project: DataShuttle, args: Any) -> None:
+def download_project_folder_or_file(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
     run_command(
         project,
-        project.download_project_dir_or_file,
+        project.download_project_folder_or_file,
         kwargs.pop("filepath"),
         **kwargs,
     )
@@ -671,52 +671,52 @@ def construct_parser():
     )
     download_all_parser.set_defaults(func=download_all)
 
-    # Upload project dir or file
+    # Upload project folder or file
     # -------------------------------------------------------------------------
 
-    upload_project_dir_or_file_parser = subparsers.add_parser(
-        "upload-project-dir-or-file",
-        aliases=["upload_project_dir_or_file"],
+    upload_project_folder_or_file_parser = subparsers.add_parser(
+        "upload-project-folder-or-file",
+        aliases=["upload_project_folder_or_file"],
         description=process_docstring(
-            DataShuttle.upload_project_dir_or_file.__doc__
+            DataShuttle.upload_project_folder_or_file.__doc__
         ),
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    upload_project_dir_or_file_parser.set_defaults(
-        func=upload_project_dir_or_file
+    upload_project_folder_or_file_parser.set_defaults(
+        func=upload_project_folder_or_file
     )
 
-    upload_project_dir_or_file_parser.add_argument(
+    upload_project_folder_or_file_parser.add_argument(
         "filepath", type=str, help=help("required_str")
     )
-    upload_project_dir_or_file_parser.add_argument(
+    upload_project_folder_or_file_parser.add_argument(
         "--dry-run",
         "--dry_run",
         action="store_true",
         help=help("flag_default_false"),
     )
 
-    # Download project dir or file
+    # Download project folder or file
     # -------------------------------------------------------------------------
 
-    download_project_dir_or_file_parser = subparsers.add_parser(
-        "download-project-dir-or-file",
-        aliases=["download_project_dir_or_file"],
+    download_project_folder_or_file_parser = subparsers.add_parser(
+        "download-project-folder-or-file",
+        aliases=["download_project_folder_or_file"],
         description=process_docstring(
-            DataShuttle.download_project_dir_or_file.__doc__
+            DataShuttle.download_project_folder_or_file.__doc__
         ),
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    download_project_dir_or_file_parser.set_defaults(
-        func=download_project_dir_or_file
+    download_project_folder_or_file_parser.set_defaults(
+        func=download_project_folder_or_file
     )
 
-    download_project_dir_or_file_parser.add_argument(
+    download_project_folder_or_file_parser.add_argument(
         "filepath", type=str, help=help("required_str")
     )
-    download_project_dir_or_file_parser.add_argument(
+    download_project_folder_or_file_parser.add_argument(
         "--dry-run",
         "--dry_run",
         action="store_true",
