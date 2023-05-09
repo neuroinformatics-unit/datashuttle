@@ -1,9 +1,6 @@
-"""
-"""
 import copy
 import glob
 import shutil
-import time
 from pathlib import Path
 
 import pandas as pd
@@ -12,29 +9,22 @@ import ssh_test_utils
 import test_utils
 from pytest import ssh_config
 from test_file_conflicts_pathtable import get_pathtable
-from datashuttle.utils import ssh
 
 
 class TestFileTransfer:
     @pytest.fixture(
         scope="class",
-        params=[  # Set running SSH or local filesystem
-            True,
-            # False,
+        params=[
+            False,
             pytest.param(
                 True,
                 marks=pytest.mark.skipif(
-                    ssh_config.TEST_SSH is False,
+                    not ssh_config.TEST_SSH,
                     reason="TEST_SSH is set to False.",
                 ),
             ),
         ],
     )
-
-    # TODO: there is no way around it, going to have to test
-    # through SSH by actually SSH in and perform file discovery
-    # to test against. This way of using a mounted drive is not
-    # portable.
     def pathtable_and_project(self, request, tmpdir_factory):
         """
         Create a project for SSH testing. Setup
@@ -48,28 +38,13 @@ class TestFileTransfer:
         SSH to must also be mounted and the path
         supplied to the location SSH'd to.
 
-        For speed, create the project once,
-        and all files to transfer. Then in the
-        test function, the folder are transferred.
-        Partial cleanup is done in the test function
-        i.e. deleting the remote_path to which the
-        items have been transferred. This is achieved
+        For speed, create the project once (including
+        all files to transfer) once. This is achieved
         by using "class" scope.
-
-        pathtable is a convenient way to represent
-        file paths for testing against.
-
-        NOTE: for convenient, files are transferred
-        with SSH and then checked through the local filesystem
-        mount. This is significantly easier than checking
-        everything through SFTP. However, on Windows the
-        mounted filesystem is quite slow to update, taking
-        a few seconds after SSH transfer. This makes the
-        tests run very slowly. We can get rid
-        of this limitation on linux.
         """
         testing_ssh = request.param
         tmp_path = tmpdir_factory.mktemp("test")
+        test_project_name = "test_file_conflicts"
 
         if testing_ssh:
             base_path = ssh_config.FILESYSTEM_PATH
@@ -77,7 +52,6 @@ class TestFileTransfer:
         else:
             base_path = tmp_path / "test with space"
             remote_path = base_path
-        test_project_name = "test_file_conflicts"
 
         project, cwd = test_utils.setup_project_fixture(
             base_path, test_project_name
@@ -89,18 +63,8 @@ class TestFileTransfer:
                 test_utils.make_test_path(
                     remote_path, test_project_name, "remote"
                 ),
-                ssh_config.REMOTE_HOST_ID,
-                ssh_config.USERNAME,
+                ssh_config,
             )
-
-            # Initialise the SSH connection
-            ssh_test_utils.setup_hostkeys(project)
-
-            path_to_save = project.cfg["local_path"] / "test"
-            ssh.generate_and_write_ssh_key(path_to_save)
-
-            shutil.copy(path_to_save,
-                        project.cfg.file_path.parent / f"{test_project_name}_ssh_key")
 
         pathtable = get_pathtable(project.cfg["local_path"])
         self.create_all_pathtable_files(pathtable)
@@ -186,7 +150,7 @@ class TestFileTransfer:
             upload_or_download,
             swap_last_folder_only=project.testing_ssh,
         )[0]
-        breakpoint()
+
         transfer_function(sub_names, ses_names, data_type, init_log=False)
 
         if upload_or_download == "download":
@@ -218,11 +182,6 @@ class TestFileTransfer:
         )
         expected_transferred_paths = remote_base_paths / expected_paths.path
 
-        # When transferring with SSH, there is a delay before
-        # filesystem catches up
-        if project.testing_ssh:
-            time.sleep(10)
-
         # Check what paths were actually moved
         # (through the local filesystem), and test
         path_to_search = (
@@ -243,9 +202,9 @@ class TestFileTransfer:
         except FileNotFoundError:
             pass
 
-    # ---------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utils
-    # ---------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def query_table(self, pathtable, arguments):
         """
@@ -305,7 +264,9 @@ class TestFileTransfer:
             else:
                 if "histology" in data_type:
                     sub_ses_dtype_arguments += [
-                        f"(parent_sub == '{sub}' & (parent_data_type == 'histology' | parent_data_type == 'histology'))"
+                        f"(parent_sub == '{sub}' & "
+                        f"(parent_data_type == 'histology' | "
+                        f"parent_data_type == 'histology'))"
                     ]
 
                 for ses in ses_names:
@@ -319,11 +280,16 @@ class TestFileTransfer:
                         for dtype in data_type:
                             if dtype == "all_ses_level_non_data_type":
                                 extra_arguments += [
-                                    f"(parent_sub == '{sub}' & parent_ses == '{ses}' & is_ses_level_non_data_type == True)"
+                                    f"(parent_sub == '{sub}' & "
+                                    f"parent_ses == '{ses}' & "
+                                    f"is_ses_level_non_data_type == True)"
                                 ]
                             else:
                                 sub_ses_dtype_arguments += [
-                                    f"(parent_sub == '{sub}' & parent_ses == '{ses}' & (parent_data_type == '{dtype}' | parent_data_type == '{dtype}'))"
+                                    f"(parent_sub == '{sub}' & "
+                                    f"parent_ses == '{ses}' & "
+                                    f"(parent_data_type == '{dtype}' | "
+                                    f"parent_data_type == '{dtype}'))"
                                 ]
 
         return sub_ses_dtype_arguments, extra_arguments
