@@ -298,7 +298,7 @@ class TestCommandLineInterface:
         assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
-        assert "DEBUG : sub-001: Making folder\n" in log
+        assert "DEBUG : sub-001: Making directory\n" in log
 
     # ----------------------------------------------------------------------------------------------------------
     # Check errors propagate
