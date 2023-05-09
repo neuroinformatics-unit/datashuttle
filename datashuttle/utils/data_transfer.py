@@ -248,7 +248,7 @@ class TransferData:
     ):
         """
         Check the sub / session names passed. The checking here
-        is stricter than for make_sub_dirs / formatting.check_and_format_names
+        is stricter than for make_sub_folderss / formatting.check_and_format_names
         because we want to ensure that a) non-data-type arguments are not
         passed at the wrong input (e.g. all_non_ses as a subject name).
 

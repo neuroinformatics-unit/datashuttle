@@ -115,7 +115,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def make_sub_dir(
+    def make_sub_folders(
         self,
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
@@ -164,13 +164,13 @@ class DataShuttle:
 
         Examples
         --------
-        project.make_sub_dir("sub-001", data_type="all")
+        project.make_sub_folders("sub-001", data_type="all")
 
-        project.make_sub_dir("sub-002@TO@005",
+        project.make_sub_folders("sub-002@TO@005",
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make_sub_dir", local_vars=locals())
+        self._start_log("make_sub_folders", local_vars=locals())
 
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
@@ -254,7 +254,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         data_type :
-            see make_sub_dir()
+            see make_sub_folders()
 
         init_log :
             (Optional). Whether to start the logger. This should
@@ -813,7 +813,7 @@ class DataShuttle:
     def check_name_formatting(names: Union[str, list], prefix: str) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to make_sub_dir() or upload_data() or
+        for example as when passed to make_sub_folders() or upload_data() or
         download_data()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.

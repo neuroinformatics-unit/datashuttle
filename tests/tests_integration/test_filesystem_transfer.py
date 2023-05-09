@@ -200,7 +200,7 @@ class TestFileTransfer:
         """
         Test the @TO@ keyword is accepted properly when making a session and
         transferring it. First pass @TO@-formatted sub and sessions to
-        make_sub_dir. Then transfer the files (upload or download).
+        make_sub_folders. Then transfer the files (upload or download).
 
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
@@ -208,7 +208,7 @@ class TestFileTransfer:
         subs = ["001", f"02{tags('to')}03"]
         sessions = [f"ses-01{tags('to')}003_{tags('datetime')}"]
 
-        project.make_sub_dir(subs, sessions, "all")
+        project.make_sub_folders(subs, sessions, "all")
 
         (
             transfer_function,
@@ -253,7 +253,7 @@ class TestFileTransfer:
             "003_date-20220601",
         ]
 
-        project.make_sub_dir(subs, sessions, "all")
+        project.make_sub_folders(subs, sessions, "all")
 
         (
             transfer_function,
@@ -298,7 +298,7 @@ class TestFileTransfer:
         rclone is called with the arguments set in configs
         as expected. verbosity itself is tested in another method.
         """
-        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+        project.make_sub_folders(["sub-001"], ["ses-002"], ["behav"])
 
         project.update_config("overwrite_old_files", overwrite_old_files)
         project.update_config("transfer_verbosity", "vv")
@@ -333,7 +333,7 @@ class TestFileTransfer:
         """
         see test_rclone_options()
         """
-        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+        project.make_sub_folders(["sub-001"], ["ses-002"], ["behav"])
         project.update_config("transfer_verbosity", transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
@@ -363,7 +363,7 @@ class TestFileTransfer:
             Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
         )
 
-        project.make_sub_dir("sub-001")
+        project.make_sub_folders("sub-001")
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         remote_test_file_path = project.cfg["remote_path"] / path_to_test_file
 
@@ -460,7 +460,7 @@ class TestFileTransfer:
 
     def setup_specific_file_or_dir_files(self, project):
         """ """
-        project.make_sub_dir(["sub-001", "sub-002"], "ses-003")
+        project.make_sub_folders(["sub-001", "sub-002"], "ses-003")
 
         path_to_test_file_behav = (
             Path("rawdata")

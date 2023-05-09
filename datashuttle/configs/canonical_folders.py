@@ -34,7 +34,7 @@ def get_data_type_folders(cfg: Configs) -> dict:
         an option for rare cases in which advanced users want to change it.
 
     used : whether the dirctory is used or not (see make_config_file)
-        if False, the folder will not be made in make_sub_dir
+        if False, the folder will not be made in make_sub_folders
         even if selected.
 
     level : "sub" or "ses", level to make the folder at.

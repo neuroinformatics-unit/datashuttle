@@ -92,14 +92,14 @@ your password will have to be enterred only once, when setting up this connectio
 
 ## Making Project Folders
 
-Subject and session project folders can be made using the function make_sub_dir(). This function accepts a subject name (or list
+Subject and session project folders can be made using the function make_sub_folders(). This function accepts a subject name (or list
 of subject names), with optional session name and data type inputs. If no session or data type name is provided,
 an empty subject folder will be made at the top folder level.
 
 The full paths of all created folders are logged (see "Logging" below).
 
 e.g.
-`project.make_sub_dir(sub_names="sub-001")` or equivalently `datashuttle my_project make_sub_dir --sub_names sub-001`
+`project.make_sub_folders(sub_names="sub-001")` or equivalently `datashuttle my_project make_sub_folders --sub_names sub-001`
 
 will make the folder tree
 
@@ -121,7 +121,7 @@ and any duplicate inputs will be removed. Finally, subject and session names mus
 formatted according to SWC-BIDS.
 e.g.
 ```
-project.make_sub_dir(
+project.make_sub_folders(
 sub_names=["001", "002"],
 ses_names=["ses-001", "002"],
 data_type=["ephys", "behav", "histology"]
@@ -132,7 +132,7 @@ or equivalently
 ```
 datashuttle \
 my_project \
-make_sub_dir \
+make_sub_folders \
 --sub-names 001 002 \
 --ses-names ses-001 002
 --data_type ephys behav histology
@@ -176,7 +176,7 @@ The @DATE@, @TIME@ or @DATETIME@ flags can be used to create date, time or datet
 names, depending on the current system date / time. For example:
 
 ```
-project.make_sub_dir(
+project.make_sub_folders(
 sub_names="sub-001@TO@002",
 ses_names="ses-001_@DATE@",
 data_type=""
@@ -187,7 +187,7 @@ or equivalently
 ```
 datashuttle \
 my_project \
-make_sub_dir \
+make_sub_folders \
 --sub_names sub-001@TO@002 \
 --ses_names ses-001_@DATE@ \
 --data_type ""
@@ -293,7 +293,7 @@ files or folders at the session level will be transferred. <br>
 ### Filtering folders to transfer and using convenience tags
 
 Similarly, specific subject and sessions to transfer can be selected with sub_names, ses_names and data_type
-arguments. Similarly to make_sub_dir(), subject / session names must be prefixed with "sub-" or "ses-" and if this prefix
+arguments. Similarly to make_sub_folders(), subject / session names must be prefixed with "sub-" or "ses-" and if this prefix
 is not found, it will be added.
 
 For example,
@@ -321,7 +321,7 @@ will only transfer behavioral data type folders, for sessions 1 and 5 from all s
 
 #### Convenience Tags
 
-Similarly to make_sub_dir(), convenience tags can be used to simplfy transfers. For data transfer,
+Similarly to make_sub_folders(), convenience tags can be used to simplfy transfers. For data transfer,
 the most useful are the wildcard tag, @*@ and the @TO@ flag.
 
 The wildcard flag can be used to avoid specifying particular parts of subject / session names that are wanted to

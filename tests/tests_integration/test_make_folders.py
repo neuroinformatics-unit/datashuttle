@@ -26,7 +26,7 @@ class TestMakeDirs:
         """
         tmp_path = tmp_path / "test with space"
 
-        test_project_name = "test_make_dirs"
+        test_project_name = "test_make_folders"
 
         project = test_utils.setup_project_default_configs(
             test_project_name,
@@ -85,31 +85,31 @@ class TestMakeDirs:
         """
         # Check trying to make sub only
         subs = ["sub-001_id-123", "sub-002_id-124"]
-        project.make_sub_dir(subs)
+        project.make_sub_folders(subs)
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_dir("sub-001_id-125")
+            project.make_sub_folders("sub-001_id-125")
 
         assert (
             str(e.value) == "Cannot make folders. "
             "The key sub-001 already exists in the project"
         )
 
-        project.make_sub_dir("sub-003")
+        project.make_sub_folders("sub-003")
 
         # check try and make ses within a sub
         sessions = ["ses-001_date-1605", "ses-002_date-1606"]
-        project.make_sub_dir(subs, sessions)
+        project.make_sub_folders(subs, sessions)
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_dir("sub-001_id-123", "ses-002_date-1607")
+            project.make_sub_folders("sub-001_id-123", "ses-002_date-1607")
 
         assert (
             str(e.value) == "Cannot make folders. "
             "The key ses-002 for sub-001_id-123 already exists in the project"
         )
 
-        project.make_sub_dir("sub-001", "ses-003")
+        project.make_sub_folders("sub-001", "ses-003")
 
     def test_format_names_prefix(self):
         """
@@ -149,7 +149,7 @@ class TestMakeDirs:
         """
         subs = ["1_1", "sub-two", "3_3-3"]
 
-        project.make_sub_dir(subs)
+        project.make_sub_folders(subs)
 
         test_utils.check_folder_tree_is_correct(
             project,
@@ -170,7 +170,7 @@ class TestMakeDirs:
         """
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "="]
-        project.make_sub_dir(subs, sessions)
+        project.make_sub_folders(subs, sessions)
         base_dir = test_utils.get_rawdata_path(project)
 
         for sub in subs:
@@ -206,7 +206,7 @@ class TestMakeDirs:
         # Make dir tree
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
-        project.make_sub_dir(subs, sessions)
+        project.make_sub_folders(subs, sessions)
 
         # Check dir tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
@@ -231,7 +231,7 @@ class TestMakeDirs:
         # Make the folders
         sub = "sub-001"
         ses = "ses-001"
-        project.make_sub_dir(sub, ses)
+        project.make_sub_folders(sub, ses)
 
         # Check the folders were not made / made.
         base_dir = test_utils.get_rawdata_path(project)
@@ -269,7 +269,7 @@ class TestMakeDirs:
         """
         sub = "sub-001"
         ses = "ses-001"
-        project.make_sub_dir(sub, ses, files_to_test)
+        project.make_sub_folders(sub, ses, files_to_test)
 
         base_dir = test_utils.get_rawdata_path(project)
 
@@ -300,7 +300,7 @@ class TestMakeDirs:
         """
         date, time_ = self.get_formatted_date_and_time()
 
-        project.make_sub_dir(
+        project.make_sub_folders(
             ["sub-001", "sub-002"],
             [f"ses-001_{tags('date')}", f"002_{tags('date')}"],
             "ephys",
@@ -321,7 +321,7 @@ class TestMakeDirs:
         """
         date, time_ = self.get_formatted_date_and_time()
 
-        project.make_sub_dir(
+        project.make_sub_folders(
             ["sub-001", "sub-002"],
             [f"ses-001_{tags('datetime')}", f"002_{tags('datetime')}"],
             "ephys",

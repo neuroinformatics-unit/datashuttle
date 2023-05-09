@@ -128,10 +128,10 @@ class TestCommandLineInterface:
         self.check_kwargs(changed_configs, kwargs_)
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_sub_dir_variable(self, sep):
+    def test_make_sub_folders_variable(self, sep):
 
         stdout, __ = test_utils.run_cli(
-            f" make{sep}sub{sep}dir "
+            f" make{sep}sub{sep}folders "
             f"--data_type all "
             f"--sub_names one "
             f"--ses_names two "
@@ -215,7 +215,7 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is True
 
     @pytest.mark.parametrize(
-        "command", ["make_sub_dir", "upload_data", "download_data"]
+        "command", ["make_sub_folders", "upload_data", "download_data"]
     )
     def test_multiple_inputs(self, command):
         """
@@ -336,7 +336,7 @@ class TestCommandLineInterface:
 
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_make_sub_dir(self, setup_project):
+    def test_make_sub_folders(self, setup_project):
         """
         see test_filesystem_transfer.py
         """
@@ -344,7 +344,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-hello_hello_world"]
 
         test_utils.run_cli(
-            f"make_sub_dir --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_folders --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
             setup_project.project_name,
         )
 

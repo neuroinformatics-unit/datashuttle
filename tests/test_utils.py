@@ -422,7 +422,7 @@ def make_and_check_local_project(project, subs, sessions, data_type):
     Make a local project folder tree with the specified data_type,
     subs, sessions and check it is made successfully.
     """
-    project.make_sub_dir(subs, sessions, data_type)
+    project.make_sub_folders(subs, sessions, data_type)
 
     check_folder_tree_is_correct(
         project,

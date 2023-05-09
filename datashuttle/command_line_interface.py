@@ -183,17 +183,17 @@ def setup_ssh_connection_to_remote_server(*args: Any) -> None:
 
 
 # -----------------------------------------------------------------------------
-# Make Sub Dirs
+# Make Sub Folders
 # -----------------------------------------------------------------------------
 
 
-def make_sub_dir(project: DataShuttle, args: Any) -> None:
+def make_sub_folders(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-    run_command(project, project.make_sub_dir, **filtered_kwargs)
+    run_command(project, project.make_sub_folders, **filtered_kwargs)
 
 
 # -----------------------------------------------------------------------------
@@ -516,22 +516,22 @@ def construct_parser():
         func=setup_ssh_connection_to_remote_server
     )
 
-    # Make Sub Dir
+    # Make Sub Folder
     # ----------------------------------------------------------------------
 
-    make_sub_dir_parser = subparsers.add_parser(
-        "make-sub-dir",
-        aliases=["make_sub_dir"],
-        description=process_docstring(DataShuttle.make_sub_dir.__doc__),
+    make_sub_folders_parser = subparsers.add_parser(
+        "make-sub-folders",
+        aliases=["make_sub_folders"],
+        description=process_docstring(DataShuttle.make_sub_folders.__doc__),
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    make_sub_dir_parser = make_sub_dir_parser.add_argument_group(
+    make_sub_folders_parser = make_sub_folders_parser.add_argument_group(
         "named arguments:"
     )  # type: ignore
-    make_sub_dir_parser.set_defaults(func=make_sub_dir)
+    make_sub_folders_parser.set_defaults(func=make_sub_folders)
 
-    make_sub_dir_parser.add_argument(
+    make_sub_folders_parser.add_argument(
         "--sub-names",
         "--sub_names",
         type=str,
@@ -539,7 +539,7 @@ def construct_parser():
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
     )
-    make_sub_dir_parser.add_argument(
+    make_sub_folders_parser.add_argument(
         "--ses-names",
         "--ses_names",
         nargs="+",
@@ -547,7 +547,7 @@ def construct_parser():
         required=False,
         help="Optional: (str, single or multiple) (selection of data types, or 'all')",
     )
-    make_sub_dir_parser.add_argument(
+    make_sub_folders_parser.add_argument(
         "--data-type",
         "--data_type",
         type=str,

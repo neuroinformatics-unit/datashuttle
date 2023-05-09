@@ -87,7 +87,7 @@ your password will have to be enterred only once, when setting up this connectio
 
 ## Making Folders
 
-Subject and session project folders can be made using the function make_sub_dir(). This function accepts a subject name (or list
+Subject and session project folders can be made using the function make_sub_folders(). This function accepts a subject name (or list
 of subject names), with optional session name and data type inputs. If no session or data type name is provided,
 an empty subject folder will be made at the top folder level.
 
@@ -101,7 +101,7 @@ date-xxxxxx or time / datetime key-value pairs in subject or session names are a
 An example call:
 
 ```
-project.make_sub_dir(
+project.make_sub_folders(
 sub_names=["001", "002"],
 ses_names=["ses-001", "002"],
 data_type=["ephys", "behav", "histology"]
@@ -112,7 +112,7 @@ or equivalently
 ```
 datashuttle \
 my_project \
-make_sub_dir \
+make_sub_folders \
 --sub-names 001 002 \
 --ses-names ses-001 002
 --data_type ephys behav histology
