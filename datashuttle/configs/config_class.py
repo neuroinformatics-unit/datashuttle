@@ -6,8 +6,8 @@ from typing import Any, Optional, Union, cast
 
 import yaml
 
-from datashuttle.configs import canonical_configs, canonical_directories
-from datashuttle.utils import directories, utils
+from datashuttle.configs import canonical_configs, canonical_folders
+from datashuttle.utils import folders, utils
 
 
 class Configs(UserDict):
@@ -297,12 +297,12 @@ class Configs(UserDict):
         Currently logging is located in config path
         """
         logging_path = self.project_metadata_path / "logs"
-        directories.make_dirs(logging_path)
+        folders.make_dirs(logging_path)
         return logging_path
 
     def init_data_type_dirs(self):
         """"""
-        self.data_type_dirs = canonical_directories.get_data_type_directories(
+        self.data_type_dirs = canonical_folders.get_data_type_folders(
             self
         )
 
@@ -357,7 +357,7 @@ class Configs(UserDict):
                 data_type,
             )
         else:
-            data_type_items = directories.search_data_dirs_sub_or_ses_level(
+            data_type_items = folders.search_data_dirs_sub_or_ses_level(
                 self,
                 base_dir,
                 local_or_remote,

@@ -117,7 +117,7 @@ def walk_folder(
     project_path: Path, tree: Tree, show_hidden_folders: bool = True
 ) -> None:
     """
-    Demonstrates how to display a tree of files / directories
+    Demonstrates how to display a tree of files / folders
     with the Tree renderable.
 
     Based on example from the Rich package.

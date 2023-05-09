@@ -174,19 +174,19 @@ def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
     key.write_private_key_file(ssh_key_path.as_posix())
 
 
-def search_ssh_remote_for_directories(
+def search_ssh_remote_for_folders(
     search_path: Path,
     search_prefix: str,
     cfg: Configs,
 ) -> Tuple[List[Any], List[Any]]:
     """
     Search for the search prefix in the search path over SSH.
-    Returns the list of matching directories, files are filtered out.
+    Returns the list of matching folders, files are filtered out.
 
     Parameters
     -----------
 
-    search_path : path to search for directories in
+    search_path : path to search for folders in
 
     search_prefix : search prefix for folder names e.g. "sub-*"
 
@@ -210,15 +210,15 @@ def get_list_of_folder_names_over_sftp(
 ) -> Tuple[List[Any], List[Any]]:
     """
     Use paramiko's sftp to search a path
-    over ssh for directories. Return the folder names.
+    over ssh for folders. Return the folder names.
 
     Parameters
     ----------
 
     stfp : connected paramiko stfp object
-        (see search_ssh_remote_for_directories())
+        (see search_ssh_remote_for_folders())
 
-    search_path : path to search for directories in
+    search_path : path to search for folders in
 
     search_prefix : prefix (can include wildcards)
         to search folder names.

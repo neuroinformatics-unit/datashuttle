@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 from datashuttle.configs.config_class import Configs
 
-from . import directories, formatting, rclone, utils
+from . import folders, formatting, rclone, utils
 
 
 class TransferData:
@@ -133,7 +133,7 @@ class TransferData:
     def update_list_with_non_sub_top_level_dirs(
         self, extra_dirnames, extra_filenames
     ):
-        top_level_dirs, top_level_files = directories.search_sub_or_ses_level(
+        top_level_dirs, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_dir(self.local_or_remote),
             self.local_or_remote,
@@ -151,7 +151,7 @@ class TransferData:
         self, extra_dirnames, extra_filenames, sub
     ):
         """ """
-        sub_level_dirs, sub_level_files = directories.search_sub_or_ses_level(
+        sub_level_dirs, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_dir(self.local_or_remote),
             self.local_or_remote,
@@ -178,7 +178,7 @@ class TransferData:
         (
             ses_level_dirs,
             ses_level_filenames,
-        ) = directories.search_sub_or_ses_level(
+        ) = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_dir(self.local_or_remote),
             self.local_or_remote,
@@ -318,7 +318,7 @@ class TransferData:
             search_prefix = self.cfg.ses_prefix + "-"
 
         if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
-            processed_names = directories.search_sub_or_ses_level(
+            processed_names = folders.search_sub_or_ses_level(
                 self.cfg,
                 self.base_dir,
                 self.local_or_remote,
@@ -333,7 +333,7 @@ class TransferData:
             processed_names = formatting.check_and_format_names(
                 self.cfg, names_checked, sub_or_ses
             )
-            processed_names = directories.search_for_wildcards(
+            processed_names = folders.search_for_wildcards(
                 self.cfg,
                 self.base_dir,
                 self.local_or_remote,
@@ -345,7 +345,7 @@ class TransferData:
 
     def transfer_non_data_type(self, data_type_checked: List[str]) -> bool:
         """
-        Convenience function, bool if all non-data-type directories
+        Convenience function, bool if all non-data-type folders
         are to be transferred
         """
         return any(

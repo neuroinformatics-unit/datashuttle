@@ -36,7 +36,7 @@ e.g. local_path="/path/to/my_project"). Also, remote project folder and method t
 "ssh").
 
 It is also required to specify the data types (e.g. behav, ephys, funcimg, histology) used on the local PC. If data_type flags are not set to True, it will not be possible
-to create directories of these data types.
+to create folders of these data types.
 
 If connection_method used is "ssh", it is necessary to also input the remote_host_id and remote_host_username configs.
 
@@ -85,9 +85,9 @@ the ssh connection to the remote server. This will allow visual confirmation of 
 your password will have to be enterred only once, when setting up this connection.
 
 
-## Making Directories
+## Making Folders
 
-Subject and session project directories can be made using the function make_sub_dir(). This function accepts a subject name (or list
+Subject and session project folders can be made using the function make_sub_dir(). This function accepts a subject name (or list
 of subject names), with optional session name and data type inputs. If no session or data type name is provided,
 an empty subject folder will be made at the top folder level.
 
@@ -183,7 +183,7 @@ the behaviour during file transfer. Please see the Data Transfer section of the 
 
 ## Logging
 
-Detailed logs of all configuration changes, full paths to created directories and data transfers are logged
+Detailed logs of all configuration changes, full paths to created folders and data transfers are logged
 to a .datashuttle folder in the local project folder. These logs are named
 with the command (e.g. make_config_file), date and time of creation.
 

@@ -310,7 +310,7 @@ def check_data_type_is_valid(
             f"data_type: '{data_type}' "
             f"is not valid. Must be one of"
             f" {list(cfg.data_type_dirs.keys())}. or 'all'"
-            f" No directories were made."
+            f" No folders were made."
         )
 
     return is_valid

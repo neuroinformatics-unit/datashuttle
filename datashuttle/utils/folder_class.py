@@ -1,9 +1,9 @@
 class Folder:
     """
     Folder class used to contain details of canonical
-    directories in the project folder tree.
+    folders in the project folder tree.
 
-    see configs.canonical_directories.py for details.
+    see configs.canonical_folders.py for details.
     """
 
     def __init__(

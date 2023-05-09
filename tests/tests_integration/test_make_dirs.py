@@ -91,7 +91,7 @@ class TestMakeDirs:
             project.make_sub_dir("sub-001_id-125")
 
         assert (
-            str(e.value) == "Cannot make directories. "
+            str(e.value) == "Cannot make folders. "
             "The key sub-001 already exists in the project"
         )
 
@@ -105,7 +105,7 @@ class TestMakeDirs:
             project.make_sub_dir("sub-001_id-123", "ses-002_date-1607")
 
         assert (
-            str(e.value) == "Cannot make directories. "
+            str(e.value) == "Cannot make folders. "
             "The key ses-002 for sub-001_id-123 already exists in the project"
         )
 
@@ -140,7 +140,7 @@ class TestMakeDirs:
 
     def test_generate_dirs_default_ses(self, project):
         """
-        Make a subject directories with full tree. Don't specify
+        Make a subject folders with full tree. Don't specify
         session name (it will default to no sessions).
 
         Check that the folder tree is created correctly. Pass
@@ -165,7 +165,7 @@ class TestMakeDirs:
         This is some redundancy to ensure tests are working correctly and
         make explicit the expected folder tree.
 
-        Note for new directories, this will have to be manually updated.
+        Note for new folders, this will have to be manually updated.
         This is highlighted in an assert in check_and_cd_dir()
         """
         subs = ["sub-001", "sub-002"]
@@ -228,12 +228,12 @@ class TestMakeDirs:
         project.cfg.data_type_dirs["histology"].name = "change_histology"
         project.cfg.data_type_dirs["funcimg"].name = "change_funcimg"
 
-        # Make the directories
+        # Make the folders
         sub = "sub-001"
         ses = "ses-001"
         project.make_sub_dir(sub, ses)
 
-        # Check the directories were not made / made.
+        # Check the folders were not made / made.
         base_dir = test_utils.get_rawdata_path(project)
         test_utils.check_and_cd_dir(
             join(

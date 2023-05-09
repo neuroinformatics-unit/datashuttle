@@ -13,7 +13,7 @@ import paramiko
 from datashuttle.configs import load_configs
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
-    directories,
+    folders,
     ds_logger,
     formatting,
     rclone,
@@ -61,8 +61,8 @@ class DataShuttle:
     ----------
 
     project_name : The project name to use the datashuttle
-                   Directories containing all project files
-                   and folderes are specified in make_config_file().
+                   Folders containing all project files
+                   and folders are specified in make_config_file().
                    Datashuttle-related files are stored in
                    a .datashuttle folder in the user home
                    folder. Use get_datashuttle_path() to
@@ -137,12 +137,12 @@ class DataShuttle:
                 (Optional). session name / list of session names.
                 (if not already, these will be prefixed with
                 "ses-"). If no session is provided, no session-level
-                directories are made.
+                folders are made.
         data_type :
-                The data_type to make in the sub / ses directories.
+                The data_type to make in the sub / ses folders.
                 (e.g. "ephys", "behav", "histology"). Only data_types
                 that are enabled in the configs (e.g. use_behav) will be
-                created. If "all" is selected, directories will be created
+                created. If "all" is selected, folders will be created
                 for all data_type enabled in config. Use empty string "" for
                 none.
 
@@ -189,7 +189,7 @@ class DataShuttle:
             [sub_names, ses_names],
         )
 
-        directories.check_no_duplicate_sub_ses_key_values(
+        folders.check_no_duplicate_sub_ses_key_values(
             self,
             base_dir=self.cfg.get_base_dir("local"),
             new_sub_names=sub_names,
@@ -199,8 +199,8 @@ class DataShuttle:
         if ses_names is None:
             ses_names = []
 
-        utils.log("\nMaking directories...")
-        directories.make_folder_trees(
+        utils.log("\nMaking folders...")
+        folders.make_folder_trees(
             self.cfg,
             sub_names,
             ses_names,
@@ -212,8 +212,8 @@ class DataShuttle:
         ds_logger.log_tree(self.cfg["local_path"])
 
         utils.print_message_to_user(
-            f"Finished making directories. \nFor log of all created "
-            f"directories, please see {self.cfg.logging_path}"
+            f"Finished making folders. \nFor log of all created "
+            f"folders, please see {self.cfg.logging_path}"
         )
 
         ds_logger.close_log_filehandler()
@@ -244,7 +244,7 @@ class DataShuttle:
             a subject name / list of subject names. These must
             be prefixed with "sub-", or the prefix will be
             automatically added. "@*@" can be used as a wildcard.
-            "all" will search for all subdirectories in the
+            "all" will search for all subfolders in the
             data type folder to upload.
         ses_names :
             a session name / list of session names, similar to
@@ -804,7 +804,7 @@ class DataShuttle:
 
     def show_local_tree(self):
         """
-        Print a tree schematic of all files and directories
+        Print a tree schematic of all files and folders
         in the local project.
         """
         ds_logger.print_tree(self.cfg["local_path"])
@@ -974,7 +974,7 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        directories.make_dirs(self.cfg.project_metadata_path, log=False)
+        folders.make_dirs(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_remote_ssh_config(self, log):
         rclone.setup_remote_as_rclone_target(

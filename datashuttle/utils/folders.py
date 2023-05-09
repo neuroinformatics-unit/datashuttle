@@ -31,7 +31,7 @@ def make_folder_trees(
     Entry method to make a full folder tree. It will
     iterate through all passed subjects, then sessions, then
     subdirs within a data_type folder. This
-    permits flexible creation of directories (e.g.
+    permits flexible creation of folders (e.g.
     to make subject only, do not pass session name.
 
     Ensure sub and ses names are already formatted
@@ -60,7 +60,7 @@ def make_folder_trees(
         make_dirs(sub_path, log)
 
         if data_type_passed:
-            make_data_type_directories(cfg, data_type, sub_path, "sub")
+            make_data_type_folders(cfg, data_type, sub_path, "sub")
 
         for ses in ses_names:
 
@@ -72,12 +72,12 @@ def make_folder_trees(
             make_dirs(ses_path, log)
 
             if data_type_passed:
-                make_data_type_directories(
+                make_data_type_folders(
                     cfg, data_type, ses_path, "ses", log=log
                 )
 
 
-def make_data_type_directories(
+def make_data_type_folders(
     cfg: Configs,
     data_type: Union[list, str],
     sub_or_ses_level_path: Path,
@@ -86,7 +86,7 @@ def make_data_type_directories(
 ) -> None:
     """
     Make data_type folder (e.g. behav) at the sub or ses
-    level. Checks folder_class.Directories attributes,
+    level. Checks folder_class.Folders attributes,
     whether the data_type is used and at the current level.
 
     Parameters
@@ -129,7 +129,7 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
 
     paths : Path or list of Paths to create
 
-    log : if True, log all made directories. This
+    log : if True, log all made folders. This
         requires the logger to already be initialised.
     """
     if isinstance(paths, Path):
@@ -192,7 +192,7 @@ def check_no_duplicate_sub_ses_key_values(
         for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
             if new_sub in existing_sub_values:
                 utils.log_and_raise_error(
-                    f"Cannot make directories. "
+                    f"Cannot make folders. "
                     f"The key sub-{new_sub} already exists in the project"
                 )
     else:
@@ -210,7 +210,7 @@ def check_no_duplicate_sub_ses_key_values(
 
                 if new_ses in existing_ses_values:
                     utils.log_and_raise_error(
-                        f"Cannot make directories. "
+                        f"Cannot make folders. "
                         f"The key ses-{new_ses} for {sub} already exists in the project"
                     )
 
@@ -233,7 +233,7 @@ def search_sub_or_ses_level(
 ) -> Tuple[List[str], List[str]]:
     """
     Search project folder at the subject or session level.
-    Only returns directories
+    Only returns folders
 
     Parameters
     ----------
@@ -268,7 +268,7 @@ def search_sub_or_ses_level(
     if ses:
         base_dir = base_dir / ses
 
-    all_dirnames, all_filenames = search_for_directories(
+    all_dirnames, all_filenames = search_for_folders(
         cfg, base_dir, local_or_remote, search_str
     )
 
@@ -288,7 +288,7 @@ def search_data_dirs_sub_or_ses_level(
     in the folder, and then returns any dirs that
     match data_type name.
 
-    see directories.search_sub_or_ses_level() for full
+    see folders.search_sub_or_ses_level() for full
     parameters list.
 
     Returns
@@ -300,12 +300,12 @@ def search_data_dirs_sub_or_ses_level(
         cfg, base_dir, local_or_remote, sub, ses
     )[0]
 
-    data_directories = process_glob_to_find_data_type_dirs(
+    data_folders = process_glob_to_find_data_type_dirs(
         search_results,
         cfg.data_type_dirs,
     )
 
-    return data_directories
+    return data_folders
 
 
 def search_for_wildcards(
@@ -412,7 +412,7 @@ def process_glob_to_find_data_type_dirs(
 # --------------------------------------------------------------------
 
 
-def search_for_directories(  # TODO: change name
+def search_for_folders(  # TODO: change name
     cfg: Configs,
     search_path: Path,
     local_or_remote: str,
@@ -420,7 +420,7 @@ def search_for_directories(  # TODO: change name
 ) -> Tuple[List[Any], List[Any]]:
     """
     Wrapper to determine the method used to search for search
-    prefix directories in the search path.
+    prefix folders in the search path.
 
     Parameters
     ----------
@@ -431,7 +431,7 @@ def search_for_directories(  # TODO: change name
     """
     if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
 
-        all_dirnames, all_filenames = ssh.search_ssh_remote_for_directories(
+        all_dirnames, all_filenames = ssh.search_ssh_remote_for_folders(
             search_path,
             search_prefix,
             cfg,
@@ -442,18 +442,18 @@ def search_for_directories(  # TODO: change name
             utils.log_and_message(f"No file found at {search_path.as_posix()}")
             return [], []
 
-        all_dirnames, all_filenames = search_filesystem_path_for_directories(
+        all_dirnames, all_filenames = search_filesystem_path_for_folders(
             search_path / search_prefix
         )
     return all_dirnames, all_filenames
 
 
-def search_filesystem_path_for_directories(
+def search_filesystem_path_for_folders(
     search_path_with_prefix: Path,
 ) -> Tuple[List[str], List[str]]:
     """
     Use glob to search the full search path (including prefix) with glob.
-    Files are filtered out of results, returning directories only.
+    Files are filtered out of results, returning folders only.
     """
     all_dirnames = []
     all_filenames = []

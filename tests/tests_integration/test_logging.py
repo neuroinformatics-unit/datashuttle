@@ -333,7 +333,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            "Cannot make directories. The key sub-001 already exists in the project"
+            "Cannot make folders. The key sub-001 already exists in the project"
             in log
         )
 

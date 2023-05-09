@@ -263,7 +263,7 @@ def check_folder_tree_is_correct(
     project, base_dir, subs, sessions, folder_used
 ):
     """
-    Automated test that directories are made based
+    Automated test that folders are made based
     on the structure specified on project itself.
 
     Cycle through all data_types (defined in
@@ -271,7 +271,7 @@ def check_folder_tree_is_correct(
     the expected file exists. For  subdirs, recursively
     check all exist.
 
-    Directories in which folder_used[key] (where key
+    Folders in which folder_used[key] (where key
     is the canonical dict key in project.cfg.data_type_dirs())
     is not used are expected  not to be made, and this
      is checked.
@@ -357,7 +357,7 @@ def check_data_type_sub_ses_uploaded_correctly(
 ):
     """
     Iterate through the project (data_type > ses > sub) and
-    check that the directories at each level match those that are
+    check that the folders at each level match those that are
     expected (passed in data_type / sub / ses to upload). Dirs
     are searched with wildcard glob.
 
@@ -392,7 +392,7 @@ def check_data_type_sub_ses_uploaded_correctly(
                 )
                 assert ses_names == sorted(ses_to_upload)
 
-                # check data_type directories in session folder
+                # check data_type folders in session folder
                 if copy_data_type_to_transfer:
                     for ses in ses_names:
                         data_names = glob_basenames(

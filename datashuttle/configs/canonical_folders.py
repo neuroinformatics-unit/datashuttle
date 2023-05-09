@@ -8,9 +8,9 @@ if TYPE_CHECKING:
 from datashuttle.utils.folder_class import Folder
 
 
-def get_data_type_directories(cfg: Configs) -> dict:
+def get_data_type_folders(cfg: Configs) -> dict:
     """
-    This function holds the canonical directories
+    This function holds the canonical folders
     managed by datashuttle.
 
     Parameters

@@ -89,7 +89,7 @@ class TestFileTransfer:
         self, project, upload_or_download, data_type_to_transfer
     ):
         """
-        For the combination of data_type directories, make a folder
+        For the combination of data_type folders, make a folder
         tree with all data_type dirs then upload select ones,
         checking only the selected ones are uploaded.
         """

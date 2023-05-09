@@ -6,7 +6,7 @@ from typing import List, Tuple, Union
 
 from rich import print as rich_print
 
-from . import directories
+from . import folders
 
 # --------------------------------------------------------------------------------------------------------------------
 # General Utils
@@ -79,8 +79,8 @@ def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     base_path = Path.home() / ".datashuttle" / project_name
     temp_logs_path = base_path / "temp_logs"
 
-    directories.make_dirs(base_path)
-    directories.make_dirs(temp_logs_path)
+    folders.make_dirs(base_path)
+    folders.make_dirs(temp_logs_path)
 
     return base_path, temp_logs_path
 

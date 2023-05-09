@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 from pathlib import Path
 from typing import Literal, Union, get_args, get_origin
 
-from datashuttle.utils import directories, utils
+from datashuttle.utils import folders, utils
 
 
 def get_canonical_config_dict() -> dict:
@@ -178,7 +178,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.print_message_to_user(
             f"Making project folder at: {config_dict['local_path']}"
         )
-        directories.make_dirs(config_dict["local_path"])
+        folders.make_dirs(config_dict["local_path"])
     except OSError:
         utils.log_and_raise_error(
             f"Could not make project folder at: {config_dict['local_path']}."
