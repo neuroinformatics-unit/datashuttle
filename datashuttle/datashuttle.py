@@ -102,7 +102,7 @@ class DataShuttle:
         Once config file is loaded, update all private attributes
         according to config contents.
         """
-        self.cfg.top_level_dir_name = "rawdata"
+        self.cfg.top_level_folder_name = "rawdata"
 
         self.cfg.init_paths()
 

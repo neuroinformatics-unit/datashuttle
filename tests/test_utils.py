@@ -494,7 +494,7 @@ def get_rawdata_path(project, local_or_remote="local"):
         base_path = project.cfg["local_path"]
     else:
         base_path = project.cfg["remote_path"]
-    return os.path.join(base_path, project.cfg.top_level_dir_name)
+    return os.path.join(base_path, project.cfg.top_level_folder_name)
 
 
 def handle_upload_or_download(

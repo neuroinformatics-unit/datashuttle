@@ -49,7 +49,7 @@ class Configs(UserDict):
         self.sub_prefix = "sub"
         self.ses_prefix = "ses"
 
-        self.top_level_dir_name: str
+        self.top_level_folder_name: str
 
         self.data_type_dirs: dict
         self.logging_path: Path
@@ -252,9 +252,9 @@ class Configs(UserDict):
 
         """
         if base == "local":
-            base_folder = self["local_path"] / self.top_level_dir_name
+            base_folder = self["local_path"] / self.top_level_folder_name
         elif base == "remote":
-            base_folder = self["remote_path"] / self.top_level_dir_name
+            base_folder = self["remote_path"] / self.top_level_folder_name
         elif base == "datashuttle":
             base_folder, __ = utils.get_datashuttle_path(self.project_name)
         return base_folder

@@ -247,7 +247,7 @@ def search_sub_or_ses_level(
     local_or_remote : search in local or remote project
 
     sub : either a subject name (string) or None. If None, the search
-        is performed at the top_level_dir_name level
+        is performed at the top_level_folder_name level
 
     ses: either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)

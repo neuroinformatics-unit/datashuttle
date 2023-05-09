@@ -393,7 +393,7 @@ class TestCommandLineInterface:
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
-                base_path_to_check, setup_project.cfg.top_level_dir_name
+                base_path_to_check, setup_project.cfg.top_level_folder_name
             ),
             data_type_to_transfer=[
                 flag.split("use_")[1]

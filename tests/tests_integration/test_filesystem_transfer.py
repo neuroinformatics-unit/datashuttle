@@ -64,7 +64,7 @@ class TestFileTransfer:
 
         test_utils.check_folder_tree_is_correct(
             project,
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             subs,
             sessions,
             test_utils.get_default_folder_used(),
@@ -104,7 +104,7 @@ class TestFileTransfer:
         transfer_function(subs, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             data_type_to_transfer,
             subs,
             sessions,
@@ -147,7 +147,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             data_type_to_transfer,
             subs_to_upload,
         )
@@ -187,7 +187,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
