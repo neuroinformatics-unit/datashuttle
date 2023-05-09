@@ -5,11 +5,11 @@ as documented, please await first official release.
 
 DataShuttle helps to manage and transfer a project with many "local" machines all connected to a central "remote" machine.
 DataShuttle has functions to help:
-* Generate BIDS-formatted folder structures
+* Generate BIDS-formatted directory structures
 * Transfer data between remote and local machines
 
 On first setup, it is necessary to specify the project name, paths to the local project folder (typically empty on first use, on a
-local filesystem), and paths to remote project folder and the connection method.
+local filesystem), and paths to remote project directory and the connection method.
 
 This documentation gives examples both using the API (in the python console) or using the command line interface (in system terminal).
 
@@ -94,7 +94,7 @@ your password will have to be enterred only once, when setting up this connectio
 
 Subject and session project directories can be made using the function make_sub_dir(). This function accepts a subject name (or list
 of subject names), with optional session name and data type inputs. If no session or data type name is provided,
-an empty subject folder will be made at the top folder level.
+an empty subject directory will be made at the top directory level.
 
 The full paths of all created directories are logged (see "Logging" below).
 
@@ -193,7 +193,7 @@ make_sub_dir \
 --data_type ""
 ```
 
-would create the folder tree (assuming it is 01/02/2022)
+would create the directory tree (assuming it is 01/02/2022)
 
 ```
 .
@@ -212,7 +212,7 @@ Data transfer can be either from the local project to the remote project ("uploa
 transfers are primarily managed using the upload_data() and download_data() functions.
 
 By default, uploading or downloading data will never overwrite files when transferring data. If an
-existing file with the same name is found in the target folder, even if it is older, it will not be overwritten.
+existing file with the same name is found in the target directory, even if it is older, it will not be overwritten.
 All transfer activity is printed to the console and logged (see "Logging" below), which can be used to
 determine if any files were not transferred for this reason.
 
@@ -235,11 +235,11 @@ uses [Rclone](https://rclone.org/) for data transfer, and these options are alia
 
 By default, datashuttle will never overwrite files in the target project directories (i.e. the
 directories the data is being transferred to). This is the case even if the version of the
-file in the source project folder (i.e. the folder the data is being transferred from)
+file in the source project directory (i.e. the directory the data is being transferred from)
 is newer (as indicated by the file modification timestamp.)
 
 When "overwrite_old_files_on_transfer"
-this behaviour is changed, and target folder files that are older than source folder
+this behaviour is changed, and target directory files that are older than source directory
 will be overwritten.
 
 ### transfer_verbosity
@@ -337,12 +337,12 @@ would transfer all any first session, irregardless of date, or all subjects and 
 
 The functions upload_project_dir_or_file() or download_project_dir_or_file() can be used to
 transfer a particular, individual file or folder. The path to the file / folder, either full
-or relative to the project top level folder, should be input.
+or relative to the project top level directory, should be input.
 
 ## Logging
 
-Detailed logs of all configuration changes, folder creation and data transfers are logged
-to a .datashuttle folder in the local project folder. These logs are named
+Detailed logs of all configuration changes, directory creation and data transfers are logged
+to a .datashuttle directory in the local project directory. These logs are named
 with the command (e.g. make_config_file), date and time of creation.
 
 ## Convenience Functions
