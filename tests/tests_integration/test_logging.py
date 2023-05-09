@@ -317,7 +317,7 @@ class TestCommandLineInterface:
         )
 
         assert (
-            "\n\nVariablesState:\nlocals: {'option_key': 'connection_method', 'new_info': 'ssh', 'store_logs_in_temp_dir': False}\ncfg: {'local_path':"
+            "\n\nVariablesState:\nlocals: {'option_key': 'connection_method', 'new_info': 'ssh', 'store_logs_in_temp_folder': False}\ncfg: {'local_path':"
             in log
         )
         assert "connection_method was not updated" in log

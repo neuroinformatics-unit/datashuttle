@@ -598,8 +598,8 @@ class DataShuttle:
         self._start_log(
             "make_config_file",
             local_vars=locals(),
-            store_in_temp_dir=True,
-            temp_dir_path="default",
+            store_in_temp_folder=True,
+            temp_folder_path="default",
         )
 
         self.cfg = Configs(
@@ -635,7 +635,7 @@ class DataShuttle:
             "options loaded into datashuttle."
         )
         self._log_successful_config_change()
-        self._move_logs_from_temp_dir()
+        self._move_logs_from_temp_folder()
 
         ds_logger.close_log_filehandler()
 
@@ -664,23 +664,23 @@ class DataShuttle:
         If the local_path project already exists, the config log will be
         written to the original local_path, and future logs will
         be written to the new local path. However, if a local_path does
-        not exist, move to a temp_dir and then move the logs to the
+        not exist, move to a temp_folder and then move the logs to the
         new local_path if successful.
         """
-        store_logs_in_temp_dir = (
+        store_logs_in_temp_folder = (
             option_key == "local_path" and not self._local_path_exists()
         )
 
-        if store_logs_in_temp_dir:
+        if store_logs_in_temp_folder:
             self._start_log(
                 "update_config",
                 local_vars=locals(),
-                store_in_temp_dir=True,
-                temp_dir_path="default",
+                store_in_temp_folder=True,
+                temp_folder_path="default",
             )
         else:
             self._start_log(
-                "update_config", local_vars=locals(), store_in_temp_dir=False
+                "update_config", local_vars=locals(), store_in_temp_folder=False
             )
 
         if not self.cfg:
@@ -695,8 +695,8 @@ class DataShuttle:
 
         self._log_successful_config_change()
 
-        if store_logs_in_temp_dir:
-            self._move_logs_from_temp_dir()
+        if store_logs_in_temp_folder:
+            self._move_logs_from_temp_folder()
 
         ds_logger.close_log_filehandler()
 
@@ -730,19 +730,19 @@ class DataShuttle:
             config will overwrite existing config.
             Turned off for testing.
         """
-        store_logs_in_temp_dir = not self._local_path_exists()
-        if store_logs_in_temp_dir:
+        store_logs_in_temp_folder = not self._local_path_exists()
+        if store_logs_in_temp_folder:
             self._start_log(
                 "supply_config_file",
                 local_vars=locals(),
-                store_in_temp_dir=True,
-                temp_dir_path="default",
+                store_in_temp_folder=True,
+                temp_folder_path="default",
             )
         else:
             self._start_log(
                 "supply_config_file",
                 local_vars=locals(),
-                store_in_temp_dir=False,
+                store_in_temp_folder=False,
             )
 
         path_to_config = Path(input_path_to_config)
@@ -758,8 +758,8 @@ class DataShuttle:
             self.cfg.dump_to_file()
 
             self._log_successful_config_change(message=True)
-            if store_logs_in_temp_dir:
-                self._move_logs_from_temp_dir()
+            if store_logs_in_temp_folder:
+                self._move_logs_from_temp_folder()
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
@@ -870,8 +870,8 @@ class DataShuttle:
         self,
         name: str,
         local_vars: Optional[dict] = None,
-        store_in_temp_dir: bool = False,
-        temp_dir_path: Union[str, Path] = "",
+        store_in_temp_folder: bool = False,
+        temp_folder_path: Union[str, Path] = "",
         verbose: bool = True,
     ) -> None:
         """
@@ -888,13 +888,13 @@ class DataShuttle:
         local_vars : local_vars are passed to fancylog variables argument.
                  see ds_logger.wrap_variables_for_fancylog for more info
 
-        store_in_temp_dir :
+        store_in_temp_folder :
             if False, existing logging path will be used
             (local project .datashuttle). If "default"", the temp
             log backup will be used. Otherwise, expect a path / string
             to the new path to make the logs at.
 
-        temp_dir_path :
+        temp_folder_path :
             if "default", use the default temp dir path stored at
             self._temp_log_path otherwise a full path to save the log at.
         """
@@ -905,18 +905,18 @@ class DataShuttle:
                 local_vars, self.cfg
             )
 
-        if store_in_temp_dir:
+        if store_in_temp_folder:
             path_to_save = (
                 self._temp_log_path
-                if temp_dir_path == "default"
-                else Path(temp_dir_path)
+                if temp_folder_path == "default"
+                else Path(temp_folder_path)
             )
         else:
             path_to_save = self.cfg.logging_path
 
         ds_logger.start(path_to_save, name, variables, verbose)
 
-    def _move_logs_from_temp_dir(self):
+    def _move_logs_from_temp_folder(self):
         """
         Logs are stored within the project folder. Although
         in some instances, when setting configs, we do not know what
