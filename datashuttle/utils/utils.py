@@ -87,13 +87,13 @@ def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
 
 def get_path_after_base_folder(base_folder: Path, path_: Path) -> Path:
     """
-    Get path relative to hte base dir, used in case user has
+    Get path relative to the base folder, used in case user has
     passed entire path including local_path or remove_path.
 
     Parameters
     ----------
 
-    base_folder : base dir that should be removed, usually
+    base_folder : base folder that should be removed, usually
         local_path or remote_path
 
     path_ : path after base_folder that should be isolated

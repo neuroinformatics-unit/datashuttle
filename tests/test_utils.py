@@ -62,12 +62,12 @@ def setup_project_default_configs(
 
     if local_path:
         project.update_config("local_path", local_path)
-        delete_all_dirs_in_local_path(project)
+        delete_all_folders_in_local_path(project)
         project.cfg.make_and_get_logging_path()
 
     if remote_path:
         project.update_config("remote_path", remote_path)
-        delete_all_dirs_in_project_path(project, "remote")
+        delete_all_folders_in_project_path(project, "remote")
         project.cfg.make_and_get_logging_path()
 
     return project
@@ -92,18 +92,18 @@ def teardown_project(
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
     os.chdir(cwd)
-    delete_all_dirs_in_project_path(project, "remote")
-    delete_all_dirs_in_project_path(project, "local")
+    delete_all_folders_in_project_path(project, "remote")
+    delete_all_folders_in_project_path(project, "local")
     delete_project_if_it_exists(project.project_name)
 
 
-def delete_all_dirs_in_local_path(project):
+def delete_all_folders_in_local_path(project):
     ds_logger.close_log_filehandler()
     if project.cfg["local_path"].is_dir():
         shutil.rmtree(project.cfg["local_path"])
 
 
-def delete_all_dirs_in_project_path(project, local_or_remote):
+def delete_all_folders_in_project_path(project, local_or_remote):
     """"""
     folder = f"{local_or_remote}_path"
 
@@ -165,7 +165,7 @@ def make_test_path(base_path, test_project_name, local_or_remote):
     return Path(base_path) / test_project_name / local_or_remote
 
 
-def get_protected_test_dir():
+def get_protected_test_folder():
     return "ds_protected_test_name"
 
 
@@ -268,7 +268,7 @@ def check_folder_tree_is_correct(
 
     Cycle through all data_types (defined in
     project.cfg.data_type_folders()), sub, sessions and check that
-    the expected file exists. For  subdirs, recursively
+    the expected file exists. For  subfolders, recursively
     check all exist.
 
     Folders in which folder_used[key] (where key
@@ -283,12 +283,12 @@ def check_folder_tree_is_correct(
     for sub in subs:
 
         path_to_sub_folder = join(base_folder, sub)
-        check_and_cd_dir(path_to_sub_folder)
+        check_and_cd_folder(path_to_sub_folder)
 
         for ses in sessions:
 
             path_to_ses_folder = join(base_folder, sub, ses)
-            check_and_cd_dir(path_to_ses_folder)
+            check_and_cd_folder(path_to_ses_folder)
 
             for key, folder in project.cfg.data_type_folders.items():
 
@@ -311,8 +311,8 @@ def check_folder_tree_is_correct(
                             path_to_ses_folder, folder.name
                         )
 
-                    check_and_cd_dir(data_type_path)
-                    check_and_cd_dir(join(data_type_path, ".datashuttle_meta"))
+                    check_and_cd_folder(data_type_path)
+                    check_and_cd_folder(join(data_type_path, ".datashuttle_meta"))
 
 
 def check_folder_is_used(
@@ -339,7 +339,7 @@ def check_folder_is_used(
     return is_used
 
 
-def check_and_cd_dir(path_):
+def check_and_cd_folder(path_):
     """
     Check a folder exists and CD to it if it does.
 
@@ -358,7 +358,7 @@ def check_data_type_sub_ses_uploaded_correctly(
     """
     Iterate through the project (data_type > ses > sub) and
     check that the folders at each level match those that are
-    expected (passed in data_type / sub / ses to upload). Dirs
+    expected (passed in data_type / sub / ses to upload). Folders
     are searched with wildcard glob.
 
     Note: might be easier to flatten entire path with glob(**)
@@ -386,7 +386,7 @@ def check_data_type_sub_ses_uploaded_correctly(
                     # and there are no sessions to transfer.
 
                 copy_data_type_to_transfer = (
-                    check_and_strip_within_sub_data_dirs(
+                    check_and_strip_within_sub_data_folders(
                         ses_names, data_type_to_transfer
                     )
                 )
@@ -401,7 +401,7 @@ def check_data_type_sub_ses_uploaded_correctly(
                         assert data_names == sorted(copy_data_type_to_transfer)
 
 
-def check_and_strip_within_sub_data_dirs(ses_names, data_type_to_transfer):
+def check_and_strip_within_sub_data_folders(ses_names, data_type_to_transfer):
     """
     Check if data_type folders at the sub level are picked
     up when sessions are searched for with wildcard. Remove
@@ -501,7 +501,7 @@ def handle_upload_or_download(
     project,
     upload_or_download,
     use_all_alias=False,
-    swap_last_dir_only=False,
+    swap_last_folder_only=False,
 ):
     """
     To keep things consistent and avoid the pain of writing
@@ -511,7 +511,7 @@ def handle_upload_or_download(
     """
     if upload_or_download == "download":
 
-        remote_path = swap_local_and_remote_paths(project, swap_last_dir_only)
+        remote_path = swap_local_and_remote_paths(project, swap_last_folder_only)
 
         transfer_function = (
             project.download_all if use_all_alias else project.download_data
@@ -527,7 +527,7 @@ def handle_upload_or_download(
     return transfer_function, remote_path
 
 
-def swap_local_and_remote_paths(project, swap_last_dir_only=False):
+def swap_local_and_remote_paths(project, swap_last_folder_only=False):
     """
     When testing upload vs. download, the most convenient way
     to test download is to swap the paths. In this case, we 'download'
@@ -540,7 +540,7 @@ def swap_local_and_remote_paths(project, swap_last_dir_only=False):
     For SSH test however, we want to use SSH to search the 'remote'
     filesystem to find the necsesary files / folders to transfer.
     As such, the 'local' (which we are downloading from) must be the SSH
-    path. As such, in this case we only want to swap the last dir only
+    path. As such, in this case we only want to swap the last folder only
     (i.e. "local" and "remote"). In this case, we download from
     cfg["remote_path"] (which is ssh_path/local) to cfg["local_path"]
     (which is filesystem/remote).
@@ -548,7 +548,7 @@ def swap_local_and_remote_paths(project, swap_last_dir_only=False):
     local_path = copy.deepcopy(project.cfg["local_path"])
     remote_path = copy.deepcopy(project.cfg["remote_path"])
 
-    if swap_last_dir_only:
+    if swap_last_folder_only:
         project.update_config(
             "local_path", local_path.parent / remote_path.name
         )
@@ -573,7 +573,7 @@ def get_default_sub_sessions_to_test():
 
 def run_cli(command, project_name=None):
     """"""
-    name = get_protected_test_dir() if project_name is None else project_name
+    name = get_protected_test_folder() if project_name is None else project_name
 
     result = subprocess.Popen(
         " ".join(["datashuttle", name, command]),

@@ -17,7 +17,7 @@ class TestFileTransfer:
         saved in the appdir path for platform independent
         and to avoid path setup on new machine.
 
-        Ensure change dir at end of session otherwise it
+        Ensure change folder at end of session otherwise it
         is not possible to delete project.
         """
         tmp_path = tmp_path / "test with space"
@@ -90,7 +90,7 @@ class TestFileTransfer:
     ):
         """
         For the combination of data_type folders, make a folder
-        tree with all data_type dirs then upload select ones,
+        tree with all data_type folders then upload select ones,
         checking only the selected ones are uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()

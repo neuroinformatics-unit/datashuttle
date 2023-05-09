@@ -10,7 +10,7 @@ from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import formatting
 
 
-class TestMakeDirs:
+class TestMakeFolders:
     """"""
 
     @pytest.fixture(scope="function")
@@ -77,7 +77,7 @@ class TestMakeDirs:
         """
         Test the check that if a duplicate key is attempt to be made
         when making a folder e.g. sub-001 exists, then make sub-001_id-123.
-        After this check, make a dir that can be made (e.g. sub-003)
+        After this check, make a folder that can be made (e.g. sub-003)
         just to make sure it does not raise error.
 
         Then, within an already made subject, try and make a session
@@ -138,13 +138,13 @@ class TestMakeDirs:
             "sub-6",
         ]
 
-    def test_generate_dirs_default_ses(self, project):
+    def test_generate_folders_default_ses(self, project):
         """
         Make a subject folders with full tree. Don't specify
         session name (it will default to no sessions).
 
         Check that the folder tree is created correctly. Pass
-        a dict that indicates if each subdir is used (to avoid
+        a dict that indicates if each subfolder is used (to avoid
         circular testing from the project itself).
         """
         subs = ["1_1", "sub-two", "3_3-3"]
@@ -166,7 +166,7 @@ class TestMakeDirs:
         make explicit the expected folder tree.
 
         Note for new folders, this will have to be manually updated.
-        This is highlighted in an assert in check_and_cd_dir()
+        This is highlighted in an assert in check_and_cd_folder()
         """
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "="]
@@ -175,8 +175,8 @@ class TestMakeDirs:
 
         for sub in subs:
             for ses in ["ses-001", "ses-="]:
-                test_utils.check_and_cd_dir(join(base_folder, sub, ses, "ephys"))
-                test_utils.check_and_cd_dir(
+                test_utils.check_and_cd_folder(join(base_folder, sub, ses, "ephys"))
+                test_utils.check_and_cd_folder(
                     join(
                         base_folder,
                         sub,
@@ -184,10 +184,10 @@ class TestMakeDirs:
                         "behav",
                     )
                 )
-                test_utils.check_and_cd_dir(
+                test_utils.check_and_cd_folder(
                     join(base_folder, sub, ses, "funcimg")
                 )
-                test_utils.check_and_cd_dir(join(base_folder, sub, "histology"))
+                test_utils.check_and_cd_folder(join(base_folder, sub, "histology"))
 
     @pytest.mark.parametrize(
         "dir_key", test_utils.get_default_folder_used().keys()
@@ -235,7 +235,7 @@ class TestMakeDirs:
 
         # Check the folders were not made / made.
         base_folder = test_utils.get_rawdata_path(project)
-        test_utils.check_and_cd_dir(
+        test_utils.check_and_cd_folder(
             join(
                 base_folder,
                 sub,
@@ -243,10 +243,10 @@ class TestMakeDirs:
                 "change_ephys",
             )
         )
-        test_utils.check_and_cd_dir(join(base_folder, sub, ses, "change_behav"))
-        test_utils.check_and_cd_dir(join(base_folder, sub, ses, "change_funcimg"))
+        test_utils.check_and_cd_folder(join(base_folder, sub, ses, "change_behav"))
+        test_utils.check_and_cd_folder(join(base_folder, sub, ses, "change_funcimg"))
 
-        test_utils.check_and_cd_dir(join(base_folder, sub, "change_histology"))
+        test_utils.check_and_cd_folder(join(base_folder, sub, "change_histology"))
 
     @pytest.mark.parametrize(
         "files_to_test",

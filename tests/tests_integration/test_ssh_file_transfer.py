@@ -43,7 +43,7 @@ class TestFileTransfer:
 
         For speed, create the project once,
         and all files to transfer. Then in the
-        test function, the dir are transferred.
+        test function, the folder are transferred.
         Partial cleanup is done in the test function
         i.e. deleting the remote_path to which the
         items have been transferred. This is achieved
@@ -170,14 +170,14 @@ class TestFileTransfer:
         pathtable, project = pathtable_and_project
 
         transfer_function = test_utils.handle_upload_or_download(
-            project, upload_or_download, swap_last_dir_only=project.testing_ssh
+            project, upload_or_download, swap_last_folder_only=project.testing_ssh
         )[0]
 
         transfer_function(sub_names, ses_names, data_type, init_log=False)
 
         if upload_or_download == "download":
             test_utils.swap_local_and_remote_paths(
-                project, swap_last_dir_only=project.testing_ssh
+                project, swap_last_folder_only=project.testing_ssh
             )
 
         sub_names = self.parse_arguments(pathtable, sub_names, "sub")

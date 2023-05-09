@@ -16,7 +16,7 @@ from datashuttle.configs.canonical_tags import tags
 from . import formatting, ssh, utils
 
 # --------------------------------------------------------------------------------------------------------------------
-# Make Dirs
+# Make Folders
 # --------------------------------------------------------------------------------------------------------------------
 
 
@@ -30,7 +30,7 @@ def make_folder_trees(
     """
     Entry method to make a full folder tree. It will
     iterate through all passed subjects, then sessions, then
-    subdirs within a data_type folder. This
+    subfolders within a data_type folder. This
     permits flexible creation of folders (e.g.
     to make subject only, do not pass session name.
 

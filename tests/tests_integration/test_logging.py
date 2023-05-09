@@ -338,7 +338,7 @@ class TestCommandLineInterface:
         )
 
     @pytest.mark.skipif("not IS_WINDOWS")
-    def test_temp_log_dir_made_make_config_file(
+    def test_temp_log_folder_made_make_config_file(
         self, clean_project_name, tmp_path
     ):
         """"""
@@ -355,7 +355,7 @@ class TestCommandLineInterface:
         assert len(tmp_path_logs) == 1
         assert "make_config_file" in tmp_path_logs[0]
 
-    def test_temp_log_dir_moved_make_config_file(
+    def test_temp_log_folder_moved_make_config_file(
         self, clean_project_name, tmp_path
     ):
         """
@@ -376,7 +376,7 @@ class TestCommandLineInterface:
 
     @pytest.mark.skipif("not IS_WINDOWS")
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
-    def test_temp_log_dir_made_update_config(
+    def test_temp_log_folder_made_update_config(
         self, setup_project, supply_or_update, tmp_path
     ):
         """"""
@@ -401,7 +401,7 @@ class TestCommandLineInterface:
         # Now change the local_path to something that doesn't exist.
         # Also, the new path cannot be made. In this case store the logs
         # in the temp log file.
-        setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
+        setup_project.cfg["local_path"] = Path("folder_that_does_not_exist")
 
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
@@ -417,7 +417,7 @@ class TestCommandLineInterface:
         assert len(orig_local_path_logs) == 0
 
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
-    def test_temp_log_dir_moved(
+    def test_temp_log_folder_moved(
         self, setup_project, supply_or_update, tmp_path
     ):
         """
@@ -425,7 +425,7 @@ class TestCommandLineInterface:
         exist but the new one to a project that does - and check
         logs are moved to new project.
         """
-        setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
+        setup_project.cfg["local_path"] = Path("folder_that_does_not_exist")
         new_log_path = setup_project.cfg.logging_path / "new_logs"
 
         self.run_supply_or_update_configs(
