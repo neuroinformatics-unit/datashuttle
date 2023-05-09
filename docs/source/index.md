@@ -43,5 +43,3 @@ Documentation for Command line interface
 :::
 
 ::::
-
-
