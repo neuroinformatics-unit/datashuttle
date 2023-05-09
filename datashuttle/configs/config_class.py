@@ -51,7 +51,7 @@ class Configs(UserDict):
 
         self.top_level_folder_name: str
 
-        self.data_type_dirs: dict
+        self.data_type_folders: dict
         self.logging_path: Path
         self.hostkeys_path: Path
         self.ssh_key_path: Path
@@ -302,7 +302,7 @@ class Configs(UserDict):
 
     def init_data_type_folders(self):
         """"""
-        self.data_type_dirs = canonical_folders.get_data_type_folders(
+        self.data_type_folders = canonical_folders.get_data_type_folders(
             self
         )
 
@@ -311,7 +311,7 @@ class Configs(UserDict):
     ) -> Union[ItemsView, zip]:
         """
         Get the .items() structure of the data type, either all of
-        them (stored in self.data_type_dirs) or as a single item.
+        them (stored in self.data_type_folders) or as a single item.
         """
         if type(data_type) == str:
             data_type = [data_type]
@@ -319,11 +319,11 @@ class Configs(UserDict):
         items: Union[ItemsView, zip]
 
         if "all" in data_type:
-            items = self.data_type_dirs.items()
+            items = self.data_type_folders.items()
         else:
             items = zip(
                 data_type,
-                [self.data_type_dirs[key] for key in data_type],
+                [self.data_type_folders[key] for key in data_type],
             )
 
         return items

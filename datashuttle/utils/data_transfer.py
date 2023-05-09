@@ -160,7 +160,7 @@ class TransferData:
         )
         sub_level_dtype = [
             dtype.name
-            for dtype in self.cfg.data_type_dirs.values()
+            for dtype in self.cfg.data_type_folders.values()
             if dtype.level == "sub"
         ]
 
@@ -189,7 +189,7 @@ class TransferData:
 
         ses_level_dtype = [
             dtype.name
-            for dtype in self.cfg.data_type_dirs.values()
+            for dtype in self.cfg.data_type_folders.values()
             if dtype.level == "ses"
         ]
         filt_ses_level_dirs = filter(

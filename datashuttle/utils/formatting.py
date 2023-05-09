@@ -300,16 +300,16 @@ def check_data_type_is_valid(
     be a key on self.ses_dirs e.g. "behav", or "all")
     """
     if isinstance(data_type, list):
-        valid_keys = list(cfg.data_type_dirs.keys()) + ["all"]
+        valid_keys = list(cfg.data_type_folders.keys()) + ["all"]
         is_valid = all([type in valid_keys for type in data_type])
     else:
-        is_valid = data_type in cfg.data_type_dirs.keys() or data_type == "all"
+        is_valid = data_type in cfg.data_type_folders.keys() or data_type == "all"
 
     if error_on_fail and not is_valid:
         utils.log_and_raise_error(
             f"data_type: '{data_type}' "
             f"is not valid. Must be one of"
-            f" {list(cfg.data_type_dirs.keys())}. or 'all'"
+            f" {list(cfg.data_type_folders.keys())}. or 'all'"
             f" No folders were made."
         )
 

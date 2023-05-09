@@ -267,12 +267,12 @@ def check_folder_tree_is_correct(
     on the structure specified on project itself.
 
     Cycle through all data_types (defined in
-    project.cfg.data_type_dirs()), sub, sessions and check that
+    project.cfg.data_type_folders()), sub, sessions and check that
     the expected file exists. For  subdirs, recursively
     check all exist.
 
     Folders in which folder_used[key] (where key
-    is the canonical dict key in project.cfg.data_type_dirs())
+    is the canonical dict key in project.cfg.data_type_folders())
     is not used are expected  not to be made, and this
      is checked.
 
@@ -290,7 +290,7 @@ def check_folder_tree_is_correct(
             path_to_ses_folder = join(base_folder, sub, ses)
             check_and_cd_dir(path_to_ses_folder)
 
-            for key, folder in project.cfg.data_type_dirs.items():
+            for key, folder in project.cfg.data_type_folders.items():
 
                 assert key in folder_used.keys(), (
                     "Key not found in folder_used. "

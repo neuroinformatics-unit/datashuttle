@@ -300,9 +300,9 @@ def search_data_dirs_sub_or_ses_level(
         cfg, base_folder, local_or_remote, sub, ses
     )[0]
 
-    data_folders = process_glob_to_find_data_type_dirs(
+    data_folders = process_glob_to_find_data_type_folders(
         search_results,
-        cfg.data_type_dirs,
+        cfg.data_type_folders,
     )
 
     return data_folders
@@ -377,9 +377,9 @@ def search_for_wildcards(
 # --------------------------------------------------------------------
 
 
-def process_glob_to_find_data_type_dirs(
+def process_glob_to_find_data_type_folders(
     folder_names: list,
-    data_type_dirs: dict,
+    data_type_folders: dict,
 ) -> zip:
     """
     Process the results of glob on a sub or session level,
@@ -397,13 +397,13 @@ def process_glob_to_find_data_type_dirs(
     for dir_name in folder_names:
         data_type_key = [
             key
-            for key, value in data_type_dirs.items()
+            for key, value in data_type_folders.items()
             if value.name == dir_name
         ]
 
         if data_type_key:
             ses_dir_keys.append(data_type_key[0])
-            ses_dir_values.append(data_type_dirs[data_type_key[0]])
+            ses_dir_values.append(data_type_folders[data_type_key[0]])
 
     return zip(ses_dir_keys, ses_dir_values)
 
