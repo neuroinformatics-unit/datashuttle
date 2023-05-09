@@ -119,7 +119,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gffd79cb</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gb2eb802</p>
   
 </a></div>
     
@@ -328,11 +328,11 @@ as documented, please await first official release.</p>
 <p>DataShuttle helps to manage and transfer a project with many “local” machines all connected to a central “remote” machine.
 DataShuttle has functions to help:</p>
 <ul class="simple">
-<li><p>Generate BIDS-formatted directory structures</p></li>
+<li><p>Generate BIDS-formatted folder structures</p></li>
 <li><p>Transfer data between remote and local machines</p></li>
 </ul>
 <p>On first setup, it is necessary to specify the project name, paths to the local project folder (typically empty on first use, on a
-local filesystem), and paths to remote project directory and the connection method.</p>
+local filesystem), and paths to remote project folder and the connection method.</p>
 <p>This documentation gives examples both using the API (in the python console) or using the command line interface (in system terminal).</p>
 <section id="datashuttle-configs">
 <h2>DataShuttle Configs<a class="headerlink" href="#datashuttle-configs" title="Permalink to this heading">#</a></h2>
@@ -403,7 +403,7 @@ your password will have to be enterred only once, when setting up this connectio
 <h2>Making Project Directories<a class="headerlink" href="#making-project-directories" title="Permalink to this heading">#</a></h2>
 <p>Subject and session project directories can be made using the function make_sub_dir(). This function accepts a subject name (or list
 of subject names), with optional session name and data type inputs. If no session or data type name is provided,
-an empty subject directory will be made at the top directory level.</p>
+an empty subject folder will be made at the top folder level.</p>
 <p>The full paths of all created directories are logged (see “Logging” below).</p>
 <p>e.g.
 <code class="docutils literal notranslate"><span class="pre">project.make_sub_dir(sub_names=&quot;sub-001&quot;)</span></code> or equivalently <code class="docutils literal notranslate"><span class="pre">datashuttle</span> <span class="pre">my_project</span> <span class="pre">make_sub_dir</span> <span class="pre">--sub_names</span> <span class="pre">sub-001</span></code></p>
@@ -486,7 +486,7 @@ names, depending on the current system date / time. For example:</p>
 <span class="o">--</span><span class="n">data_type</span> <span class="s2">&quot;&quot;</span>
 </pre></div>
 </div>
-<p>would create the directory tree (assuming it is 01/02/2022)</p>
+<p>would create the folder tree (assuming it is 01/02/2022)</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 └── my_project/
     └── rawdata/
@@ -504,7 +504,7 @@ names, depending on the current system date / time. For example:</p>
 <p>Data transfer can be either from the local project to the remote project (“upload”) or from the remote to local project(“download”). Data
 transfers are primarily managed using the upload_data() and download_data() functions.</p>
 <p>By default, uploading or downloading data will never overwrite files when transferring data. If an
-existing file with the same name is found in the target directory, even if it is older, it will not be overwritten.
+existing file with the same name is found in the target folder, even if it is older, it will not be overwritten.
 All transfer activity is printed to the console and logged (see “Logging” below), which can be used to
 determine if any files were not transferred for this reason.</p>
 <p>To transfer all data, the keyword “all” can be used for sub_names, ses_names and data_type arguments. Note that
@@ -521,10 +521,10 @@ uses <a class="reference external" href="https://rclone.org/">Rclone</a> for dat
 <h3>overwrite_old_files_on_transfer<a class="headerlink" href="#overwrite-old-files-on-transfer" title="Permalink to this heading">#</a></h3>
 <p>By default, datashuttle will never overwrite files in the target project directories (i.e. the
 directories the data is being transferred to). This is the case even if the version of the
-file in the source project directory (i.e. the directory the data is being transferred from)
+file in the source project folder (i.e. the folder the data is being transferred from)
 is newer (as indicated by the file modification timestamp.)</p>
 <p>When “overwrite_old_files_on_transfer”
-this behaviour is changed, and target directory files that are older than source directory
+this behaviour is changed, and target folder files that are older than source folder
 will be overwritten.</p>
 </section>
 <section id="transfer-verbosity">
@@ -599,12 +599,12 @@ equivalently <code class="docutils literal notranslate"><span class="pre">datash
 <h2>Transferring a specific file or folder<a class="headerlink" href="#transferring-a-specific-file-or-folder" title="Permalink to this heading">#</a></h2>
 <p>The functions upload_project_dir_or_file() or download_project_dir_or_file() can be used to
 transfer a particular, individual file or folder. The path to the file / folder, either full
-or relative to the project top level directory, should be input.</p>
+or relative to the project top level folder, should be input.</p>
 </section>
 <section id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this heading">#</a></h2>
-<p>Detailed logs of all configuration changes, directory creation and data transfers are logged
-to a .datashuttle directory in the local project directory. These logs are named
+<p>Detailed logs of all configuration changes, folder creation and data transfers are logged
+to a .datashuttle folder in the local project folder. These logs are named
 with the command (e.g. make_config_file), date and time of creation.</p>
 </section>
 <section id="convenience-functions">
