@@ -74,7 +74,7 @@ def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     some cases where local_path location is not clear.
 
     The datashuttle configuration path is stored in the user home
-    directory.
+    folder.
     """
     base_path = Path.home() / ".datashuttle" / project_name
     temp_logs_path = base_path / "temp_logs"

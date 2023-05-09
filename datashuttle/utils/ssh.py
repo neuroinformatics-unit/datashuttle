@@ -188,7 +188,7 @@ def search_ssh_remote_for_directories(
 
     search_path : path to search for directories in
 
-    search_prefix : search prefix for directory names e.g. "sub-*"
+    search_prefix : search prefix for folder names e.g. "sub-*"
 
     cfg : see connect_client()
     """
@@ -198,19 +198,19 @@ def search_ssh_remote_for_directories(
 
         sftp = client.open_sftp()
 
-        all_dirnames, all_filenames = get_list_of_directory_names_over_sftp(
+        all_dirnames, all_filenames = get_list_of_folder_names_over_sftp(
             sftp, search_path, search_prefix
         )
 
     return all_dirnames, all_filenames
 
 
-def get_list_of_directory_names_over_sftp(
+def get_list_of_folder_names_over_sftp(
     sftp, search_path: Path, search_prefix: str
 ) -> Tuple[List[Any], List[Any]]:
     """
     Use paramiko's sftp to search a path
-    over ssh for directories. Return the directory names.
+    over ssh for directories. Return the folder names.
 
     Parameters
     ----------
@@ -221,7 +221,7 @@ def get_list_of_directory_names_over_sftp(
     search_path : path to search for directories in
 
     search_prefix : prefix (can include wildcards)
-        to search directory names.
+        to search folder names.
     """
     all_dirnames = []
     all_filenames = []

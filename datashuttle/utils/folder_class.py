@@ -1,7 +1,7 @@
 class Directory:
     """
     Directory class used to contain details of canonical
-    directories in the project directory tree.
+    directories in the project folder tree.
 
     see configs.canonical_directories.py for details.
     """

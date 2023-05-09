@@ -105,14 +105,14 @@ def delete_all_dirs_in_local_path(project):
 
 def delete_all_dirs_in_project_path(project, local_or_remote):
     """"""
-    directory = f"{local_or_remote}_path"
+    folder = f"{local_or_remote}_path"
 
     ds_logger.close_log_filehandler()
-    if project.cfg[directory].is_dir() and project.cfg[directory].stem in [
+    if project.cfg[folder].is_dir() and project.cfg[folder].stem in [
         "local",
         "remote",
     ]:
-        shutil.rmtree(project.cfg[directory])
+        shutil.rmtree(project.cfg[folder])
 
 
 def delete_project_if_it_exists(project_name):
@@ -190,8 +190,8 @@ def get_test_config_arguments_dict(
     tmp_path = Path(tmp_path).as_posix()
 
     dict_ = {
-        "local_path": f"{tmp_path}/not/a/re al/local/directory",
-        "remote_path": f"{tmp_path}/a/re al/remote_ local/directory",
+        "local_path": f"{tmp_path}/not/a/re al/local/folder",
+        "remote_path": f"{tmp_path}/a/re al/remote_ local/folder",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
         # but at least 1 use_x must be true, so
@@ -235,7 +235,7 @@ def get_test_config_arguments_dict(
     return dict_
 
 
-def get_default_directory_used():
+def get_default_folder_used():
     return {
         "ephys": True,
         "behav": True,
@@ -259,8 +259,8 @@ def add_quotes(string: str):
 # -----------------------------------------------------------------------------
 
 
-def check_directory_tree_is_correct(
-    project, base_dir, subs, sessions, directory_used
+def check_folder_tree_is_correct(
+    project, base_dir, subs, sessions, folder_used
 ):
     """
     Automated test that directories are made based
@@ -271,12 +271,12 @@ def check_directory_tree_is_correct(
     the expected file exists. For  subdirs, recursively
     check all exist.
 
-    Directories in which directory_used[key] (where key
+    Directories in which folder_used[key] (where key
     is the canonical dict key in project.cfg.data_type_dirs())
     is not used are expected  not to be made, and this
      is checked.
 
-    The directory_used variable must be passed so we don't
+    The folder_used variable must be passed so we don't
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
@@ -290,58 +290,52 @@ def check_directory_tree_is_correct(
             path_to_ses_folder = join(base_dir, sub, ses)
             check_and_cd_dir(path_to_ses_folder)
 
-            for key, directory in project.cfg.data_type_dirs.items():
+            for key, folder in project.cfg.data_type_dirs.items():
 
-                assert key in directory_used.keys(), (
-                    "Key not found in directory_used. "
-                    "Update directory used and hard-coded tests: "
-                    "test_custom_directory_names(), test_explicitly_session_list()"
+                assert key in folder_used.keys(), (
+                    "Key not found in folder_used. "
+                    "Update folder used and hard-coded tests: "
+                    "test_custom_folder_names(), test_explicitly_session_list()"
                 )
 
-                if check_directory_is_used(
-                    base_dir, directory, directory_used, key, sub, ses
+                if check_folder_is_used(
+                    base_dir, folder, folder_used, key, sub, ses
                 ):
 
-                    if directory.level == "sub":
-                        data_type_path = join(
-                            path_to_sub_folder, directory.name
-                        )
-                    elif directory.level == "ses":
-                        data_type_path = join(
-                            path_to_ses_folder, directory.name
-                        )
+                    if folder.level == "sub":
+                        data_type_path = join(path_to_sub_folder, folder.name)
+                    elif folder.level == "ses":
+                        data_type_path = join(path_to_ses_folder, folder.name)
 
                     check_and_cd_dir(data_type_path)
                     check_and_cd_dir(join(data_type_path, ".datashuttle_meta"))
 
 
-def check_directory_is_used(
-    base_dir, directory, directory_used, key, sub, ses
-):
+def check_folder_is_used(base_dir, folder, folder_used, key, sub, ses):
     """
     Test whether the .used flag on the Directory class matched the expected
-    state (provided in directory_used dict). If directory is not used, check
+    state (provided in folder_used dict). If folder is not used, check
     it does not exist.
 
     Use the pytest -s flag to print all tested paths
     """
-    assert directory.used == directory_used[key]
+    assert folder.used == folder_used[key]
 
-    is_used = directory.used
+    is_used = folder.used
 
     if not is_used:
         print(
             "Path was correctly not made: "
-            + join(base_dir, sub, ses, directory.name)
+            + join(base_dir, sub, ses, folder.name)
         )
-        assert not os.path.isdir(join(base_dir, sub, ses, directory.name))
+        assert not os.path.isdir(join(base_dir, sub, ses, folder.name))
 
     return is_used
 
 
 def check_and_cd_dir(path_):
     """
-    Check a directory exists and CD to it if it does.
+    Check a folder exists and CD to it if it does.
 
     Use the pytest -s flag to print all tested paths
     """
@@ -419,17 +413,17 @@ def check_and_strip_within_sub_data_dirs(ses_names, data_type_to_transfer):
 
 def make_and_check_local_project(project, subs, sessions, data_type):
     """
-    Make a local project directory tree with the specified data_type,
+    Make a local project folder tree with the specified data_type,
     subs, sessions and check it is made successfully.
     """
     project.make_sub_dir(subs, sessions, data_type)
 
-    check_directory_tree_is_correct(
+    check_folder_tree_is_correct(
         project,
         get_rawdata_path(project),
         subs,
         sessions,
-        get_default_directory_used(),
+        get_default_folder_used(),
     )
 
 

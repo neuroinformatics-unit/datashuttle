@@ -147,7 +147,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     for path_ in ["local_path", "remote_path"]:
         if config_dict[path_].as_posix()[0] == "~":
             utils.log_and_raise_error(
-                f"{path_} must contain the full directory path "
+                f"{path_} must contain the full folder path "
                 "with no ~ syntax."
             )
 
@@ -173,15 +173,15 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             "'transfer_verbosity' must be either 'v' or 'vv'. Config not updated."
         )
 
-    # Initialise the local project directory
+    # Initialise the local project folder
     try:
         utils.print_message_to_user(
-            f"Making project directory at: {config_dict['local_path']}"
+            f"Making project folder at: {config_dict['local_path']}"
         )
         directories.make_dirs(config_dict["local_path"])
     except OSError:
         utils.log_and_raise_error(
-            f"Could not make project directory at: {config_dict['local_path']}."
+            f"Could not make project folder at: {config_dict['local_path']}."
             f" Config file not updated."
         )
 
