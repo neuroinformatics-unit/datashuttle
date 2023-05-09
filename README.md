@@ -25,7 +25,7 @@ conda install -c conda-forge rclone
 
 See [the Rclone website](https://rclone.org/install/) for alternative installation methods.
 
-## SWC-BIDS Directory Tree
+## SWC-BIDS Folder Tree
 
 DataShuttle project directories are managed according to SWC-BIDS (example below).
 See the SWC-BIDS [specification](https://swc-bids.neuroinformatics.dev/) for more details.

@@ -147,7 +147,7 @@ class TestCommandLineInterface:
             in log
         )
         assert "formatted_ses_names: ['ses-123', 'ses-hello_world']" in log
-        assert "Made directory at path:" in log
+        assert "Made folder at path:" in log
 
         assert (
             str(Path("test_logging") / "local" / "rawdata" / "sub-1_1") in log

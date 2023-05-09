@@ -348,12 +348,12 @@ class TestCommandLineInterface:
             setup_project.project_name,
         )
 
-        test_utils.check_directory_tree_is_correct(
+        test_utils.check_folder_tree_is_correct(
             setup_project,
             base_dir=test_utils.get_rawdata_path(setup_project),
             subs=subs,
             sessions=ses,
-            directory_used=test_utils.get_default_directory_used(),
+            folder_used=test_utils.get_default_folder_used(),
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])

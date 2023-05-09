@@ -48,7 +48,7 @@ class DataShuttle:
 
     Datashuttle will save logs to a .datashuttle folder
     in the main local project. These logs contain
-    detailed information on directory creation / transfer.
+    detailed information on folder creation / transfer.
     To get the path to datashuttle logs, use
     cfgs.make_and_get_logging_path().
 
@@ -64,9 +64,9 @@ class DataShuttle:
                    Directories containing all project files
                    and folderes are specified in make_config_file().
                    Datashuttle-related files are stored in
-                   a .datashuttle directory in the user home
-                   directory. Use get_datashuttle_path() to
-                   see the path to this directory.
+                   a .datashuttle folder in the user home
+                   folder. Use get_datashuttle_path() to
+                   see the path to this folder.
     """
 
     def __init__(self, project_name: str):
@@ -111,7 +111,7 @@ class DataShuttle:
         self.cfg.init_data_type_dirs()
 
     # -------------------------------------------------------------------------
-    # Public Directory Makers
+    # Public Folder Makers
     # -------------------------------------------------------------------------
 
     @check_configs_set
@@ -122,7 +122,7 @@ class DataShuttle:
         data_type: str = "all",
     ) -> None:
         """
-        Create a subject / session directory tree in the project
+        Create a subject / session folder tree in the project
         folder.
 
         Parameters
@@ -130,7 +130,7 @@ class DataShuttle:
 
         sub_names :
                 subject name / list of subject names to make
-                within the top-level project directory
+                within the top-level project folder
                 (if not already, these will be prefixed with
                 "sub-")
         ses_names :
@@ -200,7 +200,7 @@ class DataShuttle:
             ses_names = []
 
         utils.log("\nMaking directories...")
-        directories.make_directory_trees(
+        directories.make_folder_trees(
             self.cfg,
             sub_names,
             ses_names,
@@ -232,10 +232,10 @@ class DataShuttle:
     ) -> None:
         """
         Upload data from a local project to the remote project
-        directory. In the case that a file / directory exists on
+        folder. In the case that a file / folder exists on
         the remote and local, the remote will not be overwritten
         even if the remote file is an older version. Data
-        transfer logs are saved to the logging directory).
+        transfer logs are saved to the logging folder).
 
         Parameters
         ----------
@@ -245,7 +245,7 @@ class DataShuttle:
             be prefixed with "sub-", or the prefix will be
             automatically added. "@*@" can be used as a wildcard.
             "all" will search for all subdirectories in the
-            data type directory to upload.
+            data type folder to upload.
         ses_names :
             a session name / list of session names, similar to
             sub_names but requring a "ses-" prefix.
@@ -302,8 +302,8 @@ class DataShuttle:
         init_log: bool = True,
     ) -> None:
         """
-        Download data from the remote project directory to the
-        local project directory. In the case that a file / directory
+        Download data from the remote project folder to the
+        local project folder. In the case that a file / folder
         exists on the remote and local, the local will
         not be overwritten even if the remote file is an
         older version.
@@ -354,17 +354,17 @@ class DataShuttle:
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
-        Upload a specific file or directory. If transferring
+        Upload a specific file or folder. If transferring
         a single file, the path including the filename is
-        required (see 'filepath' input). If a directory,
+        required (see 'filepath' input). If a folder,
         wildcards "*" or "**" must be used to transfer
-        all files in the directory ("*") or all files
+        all files in the folder ("*") or all files
         and sub-folders ("**"), otherwise the empty folder
         only will be transferred.
 
-        e.g. "sub-001/ses-002/my_directory/**"
+        e.g. "sub-001/ses-002/my_folder/**"
 
-        This function works by passing the file / directory
+        This function works by passing the file / folder
         path to transfer to Rclone's --include flag.
 
         Parameters
@@ -372,7 +372,7 @@ class DataShuttle:
 
         filepath :
             a string containing the filepath to move,
-            relative to the project directory "rawdata"
+            relative to the project folder "rawdata"
             or "derivatives" path (depending on which is currently
             set). Alternatively, the entire path is accepted.
         dry_run :
@@ -403,17 +403,17 @@ class DataShuttle:
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
-        Download a specific file or directory. If transferring
+        Download a specific file or folder. If transferring
         a single file, the path including the filename is
-        required (see 'filepath' input). If a directory,
+        required (see 'filepath' input). If a folder,
         wildcards "*" or "**" must be used to transfer
-        all files in the directory ("*") or all files
+        all files in the folder ("*") or all files
         and sub-folders ("**"), otherwise the empty folder
         only will be transferred.
 
-        e.g. "sub-001/ses-002/my_directory/**"
+        e.g. "sub-001/ses-002/my_folder/**"
 
-        This function works by passing the file / directory
+        This function works by passing the file / folder
         path to transfer to Rclone's --include flag.
 
         Parameters
@@ -421,7 +421,7 @@ class DataShuttle:
 
         filepath :
             a string containing the filepath to move,
-            relative to the project directory "rawdata"
+            relative to the project folder "rawdata"
             or "derivatives" path (depending on which is currently
             set). Alternatively, the entire path is accepted.
         dry_run :
@@ -485,7 +485,7 @@ class DataShuttle:
     def write_public_key(self, filepath: str) -> None:
         """
         By default, the SSH private key only is stored, in
-        the datashuttle configs directory. Use this function
+        the datashuttle configs folder. Use this function
         to save the public key.
 
         Parameters
@@ -530,7 +530,7 @@ class DataShuttle:
         can also be used to completely overwrite existing configs.
 
         These settings are stored in a config file on the
-        datashuttle path (not in the project directory)
+        datashuttle path (not in the project folder)
         on the local machine. Use get_config_path() to
         get the full path to the saved config file.
 
@@ -548,9 +548,9 @@ class DataShuttle:
             If this is local (i.e. connection_method = "local_filesystem"),
             this is the full path on the local filesystem
             Otherwise, if this is via ssh (i.e. connection method = "ssh"),
-            this is the path to the project directory on remote machine.
-            This should be a full path to remote directory i.e. this cannot
-            include ~ home directory syntax, must contain the full path
+            this is the path to the project folder on remote machine.
+            This should be a full path to remote folder i.e. this cannot
+            include ~ home folder syntax, must contain the full path
             (e.g. /nfs/nhome/live/jziminski)
 
         connection_method :
@@ -568,11 +568,11 @@ class DataShuttle:
         overwrite_old_files :
             If True, when copying data (upload or download) files
             will be overwritten if the timestamp of the copied
-            version is later than the target directory version
+            version is later than the target folder version
             of the file i.e. edits made to a file in the source
             machine will be copied to the target machine. If False,
             a file will be copied if it does not exist on the target
-            directory, otherwise it will never be copied, even if
+            folder, otherwise it will never be copied, even if
             the source version of the file has a later timestamp.
 
         transfer_verbosity :
@@ -584,16 +584,16 @@ class DataShuttle:
             If true, the real-time progress of file transfers will be printed.
 
         use_ephys :
-            if True, will allow ephys directory creation
+            if True, will allow ephys folder creation
 
         use_funcimg :
-            if True, will allow funcimg directory creation
+            if True, will allow funcimg folder creation
 
         use_histology :
-            if True, will allow histology directory creation
+            if True, will allow histology folder creation
 
         use_behav :
-            if True, will allow behav directory creation
+            if True, will allow behav folder creation
         """
         self._start_log(
             "make_config_file",
@@ -777,7 +777,7 @@ class DataShuttle:
     def get_datashuttle_path(self) -> None:
         """
         Print the path to the local datashuttle
-        directory where configs another other
+        folder where configs another other
         datashuttle files are stored.
         """
         utils.print_message_to_user(self._datashuttle_path.as_posix())
@@ -920,9 +920,9 @@ class DataShuttle:
 
     def _move_logs_from_temp_dir(self):
         """
-        Logs are stored within the project directory. Although
+        Logs are stored within the project folder. Although
         in some instances, when setting configs, we do not know what
-        the project directory is. In this case, make the logs
+        the project folder is. In this case, make the logs
         in a temp folder in the .datashuttle config dir,
         and move them to the project folder once set.
         """
