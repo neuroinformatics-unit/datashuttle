@@ -895,7 +895,7 @@ class DataShuttle:
             to the new path to make the logs at.
 
         temp_folder_path :
-            if "default", use the default temp dir path stored at
+            if "default", use the default temp folder path stored at
             self._temp_log_path otherwise a full path to save the log at.
         """
         if local_vars is None:
@@ -921,7 +921,7 @@ class DataShuttle:
         Logs are stored within the project folder. Although
         in some instances, when setting configs, we do not know what
         the project folder is. In this case, make the logs
-        in a temp folder in the .datashuttle config dir,
+        in a temp folder in the .datashuttle config folder,
         and move them to the project folder once set.
         """
         if not self.cfg or not self.cfg["local_path"].is_dir():
@@ -972,7 +972,7 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        folders.make_dirs(self.cfg.project_metadata_path, log=False)
+        folders.make_folders(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_remote_ssh_config(self, log):
         rclone.setup_remote_as_rclone_target(

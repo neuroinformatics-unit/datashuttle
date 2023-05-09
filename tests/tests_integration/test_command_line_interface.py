@@ -197,7 +197,7 @@ class TestCommandLineInterface:
         As upload_data_folder_or_file and download_data_folder_or_file
         take identical args, test both together"""
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file /fake/filepath"
+            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file /fake/filepath"
         )
         args_, kwargs_ = self.decode(stdout)
 
@@ -205,7 +205,7 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is False
 
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file "
+            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file "
             f"/fake/filepath --dry{sep}run"
         )
 

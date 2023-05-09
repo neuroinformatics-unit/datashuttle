@@ -79,8 +79,8 @@ def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     base_path = Path.home() / ".datashuttle" / project_name
     temp_logs_path = base_path / "temp_logs"
 
-    folders.make_dirs(base_path)
-    folders.make_dirs(temp_logs_path)
+    folders.make_folders(base_path)
+    folders.make_folders(temp_logs_path)
 
     return base_path, temp_logs_path
 

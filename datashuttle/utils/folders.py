@@ -57,7 +57,7 @@ def make_folder_trees(
             sub,
         )
 
-        make_dirs(sub_path, log)
+        make_folders(sub_path, log)
 
         if data_type_passed:
             make_data_type_folders(cfg, data_type, sub_path, "sub")
@@ -69,7 +69,7 @@ def make_folder_trees(
                 [sub, ses],
             )
 
-            make_dirs(ses_path, log)
+            make_folders(ses_path, log)
 
             if data_type_passed:
                 make_data_type_folders(
@@ -111,7 +111,7 @@ def make_data_type_folders(
         if data_type_dir.used and data_type_dir.level == level:
             data_type_path = sub_or_ses_level_path / data_type_dir.name
 
-            make_dirs(data_type_path, log)
+            make_folders(data_type_path, log)
 
             make_datashuttle_metadata_folder(data_type_path, log)
 
@@ -119,7 +119,7 @@ def make_data_type_folders(
 # Make Dirs Helpers --------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
+def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
     """
     For path or list of paths, make them if
     they do not already exist.
@@ -149,10 +149,10 @@ def make_datashuttle_metadata_folder(
     """
     Make a .datashuttle folder (this is created
     in the local_path for logs and User folder
-    for configs). See make_dirs() for arguments.
+    for configs). See make_folders() for arguments.
     """
     meta_folder_path = full_path / ".datashuttle_meta"
-    make_dirs(meta_folder_path, log)
+    make_folders(meta_folder_path, log)
 
 
 def check_no_duplicate_sub_ses_key_values(
