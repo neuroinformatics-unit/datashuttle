@@ -300,7 +300,7 @@ class Configs(UserDict):
         folders.make_dirs(logging_path)
         return logging_path
 
-    def init_data_type_dirs(self):
+    def init_data_type_folders(self):
         """"""
         self.data_type_dirs = canonical_folders.get_data_type_folders(
             self

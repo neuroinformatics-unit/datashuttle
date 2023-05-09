@@ -108,7 +108,7 @@ class DataShuttle:
 
         self._make_project_metadata_if_does_not_exist()
 
-        self.cfg.init_data_type_dirs()
+        self.cfg.init_data_type_folders()
 
     # -------------------------------------------------------------------------
     # Public Folder Makers
