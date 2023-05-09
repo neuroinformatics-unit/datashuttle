@@ -21,7 +21,7 @@ class TestMakeDirs:
         saved in the appdir path for platform independent
         and to avoid path setup on new machine.
 
-        Ensure change folder at end of session otherwise
+        Ensure change directory at end of session otherwise
         it is not possible to delete project.
         """
         tmp_path = tmp_path / "test with space"
@@ -76,7 +76,7 @@ class TestMakeDirs:
     def test_duplicate_ses_or_sub_key_value_pair(self, project):
         """
         Test the check that if a duplicate key is attempt to be made
-        when making a folder e.g. sub-001 exists, then make sub-001_id-123.
+        when making a directory e.g. sub-001 exists, then make sub-001_id-123.
         After this check, make a dir that can be made (e.g. sub-003)
         just to make sure it does not raise error.
 
@@ -143,7 +143,7 @@ class TestMakeDirs:
         Make a subject directories with full tree. Don't specify
         session name (it will default to no sessions).
 
-        Check that the folder tree is created correctly. Pass
+        Check that the directory tree is created correctly. Pass
         a dict that indicates if each subdir is used (to avoid
         circular testing from the project itself).
         """
@@ -151,19 +151,19 @@ class TestMakeDirs:
 
         project.make_sub_dir(subs)
 
-        test_utils.check_folder_tree_is_correct(
+        test_utils.check_directory_tree_is_correct(
             project,
             base_dir=test_utils.get_rawdata_path(project),
             subs=["sub-1_1", "sub-two", "sub-3_3-3"],
             sessions=[],
-            folder_used=test_utils.get_default_folder_used(),
+            directory_used=test_utils.get_default_directory_used(),
         )
 
     def test_explicitly_session_list(self, project):
         """
         Perform an alternative test where the output is tested explicitly.
         This is some redundancy to ensure tests are working correctly and
-        make explicit the expected folder tree.
+        make explicit the expected directory tree.
 
         Note for new directories, this will have to be manually updated.
         This is highlighted in an assert in check_and_cd_dir()
@@ -190,18 +190,18 @@ class TestMakeDirs:
                 test_utils.check_and_cd_dir(join(base_dir, sub, "histology"))
 
     @pytest.mark.parametrize(
-        "dir_key", test_utils.get_default_folder_used().keys()
+        "dir_key", test_utils.get_default_directory_used().keys()
     )
-    def test_turn_off_specific_folder_used(self, project, dir_key):
+    def test_turn_off_specific_directory_used(self, project, dir_key):
         """
-        Whether or not a folder is made is held in the .used key of the
+        Whether or not a directory is made is held in the .used key of the
         Directory class (stored in project.cfg.data_type_dirs).
         """
 
-        # Overwrite configs to make specified folder not used.
+        # Overwrite configs to make specified directory not used.
         project.update_config("use_" + dir_key, False)
-        folder_used = test_utils.get_default_folder_used()
-        folder_used[dir_key] = False
+        directory_used = test_utils.get_default_directory_used()
+        directory_used[dir_key] = False
 
         # Make dir tree
         subs = ["sub-001", "sub-002"]
@@ -209,20 +209,20 @@ class TestMakeDirs:
         project.make_sub_dir(subs, sessions)
 
         # Check dir tree is not made but all others are
-        test_utils.check_folder_tree_is_correct(
+        test_utils.check_directory_tree_is_correct(
             project,
             base_dir=test_utils.get_rawdata_path(project),
             subs=subs,
             sessions=sessions,
-            folder_used=folder_used,
+            directory_used=directory_used,
         )
 
-    def test_custom_folder_names(self, project):
+    def test_custom_directory_names(self, project):
         """
-        Change folder names to custom (non-default) and
+        Change directory names to custom (non-default) and
         ensure they are made correctly.
         """
-        # Change folder names to custom names
+        # Change directory names to custom names
         project.cfg.data_type_dirs["ephys"].name = "change_ephys"
         project.cfg.data_type_dirs["behav"].name = "change_behav"
         project.cfg.data_type_dirs["histology"].name = "change_histology"
@@ -296,7 +296,7 @@ class TestMakeDirs:
     def test_date_flags_in_session(self, project):
         """
         Check that @DATE@ is converted into current date
-        in generated folder names
+        in generated directory names
         """
         date, time_ = self.get_formatted_date_and_time()
 
@@ -317,7 +317,7 @@ class TestMakeDirs:
     def test_datetime_flag_in_session(self, project):
         """
         Check that @DATETIME@ is converted to datetime
-        in generated folder names
+        in generated directory names
         """
         date, time_ = self.get_formatted_date_and_time()
 

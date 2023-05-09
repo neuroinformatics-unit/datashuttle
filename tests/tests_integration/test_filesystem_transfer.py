@@ -62,12 +62,12 @@ class TestFileTransfer:
         else:
             transfer_function("all", "all", "all")
 
-        test_utils.check_folder_tree_is_correct(
+        test_utils.check_directory_tree_is_correct(
             project,
             os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
             subs,
             sessions,
-            test_utils.get_default_folder_used(),
+            test_utils.get_default_directory_used(),
         )
 
     @pytest.mark.parametrize(
@@ -89,7 +89,7 @@ class TestFileTransfer:
         self, project, upload_or_download, data_type_to_transfer
     ):
         """
-        For the combination of data_type directories, make a folder
+        For the combination of data_type directories, make a directory
         tree with all data_type dirs then upload select ones,
         checking only the selected ones are uploaded.
         """

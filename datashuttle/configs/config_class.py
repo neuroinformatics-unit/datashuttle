@@ -149,12 +149,12 @@ class Configs(UserDict):
             if option_key in ["connection_method", "remote_path"]:
                 if self["connection_method"] == "ssh":
                     utils.log_and_message(
-                        f"SSH will be used to connect to project folder at: {self['remote_path']}"
+                        f"SSH will be used to connect to project directory at: {self['remote_path']}"
                     )
                 elif self["connection_method"] == "local_filesystem":
                     utils.log_and_message(
                         f"Local filesystem will be used to connect to project "
-                        f"folder at: {self['remote_path'].as_posix()}"
+                        f"directory at: {self['remote_path'].as_posix()}"
                     )
         else:
             self[option_key] = original_value
@@ -222,7 +222,7 @@ class Configs(UserDict):
         base: "local", "remote" or "datashuttle"
 
         subdirs: a list (or string for 1) of
-            folder names to be joined into a path.
+            directory names to be joined into a path.
             If file included, must be last entry (with ext).
         """
         if isinstance(subdirs, list):

@@ -300,7 +300,7 @@ class TransferData:
         any wildcard entries searched.
 
         Otherwise, if "all" or a variant, the local or
-        remote folder (depending on upload vs. download)
+        remote directory (depending on upload vs. download)
         will be searched to determine what files exist to transfer,
         and the sub / ses names list generated.
 

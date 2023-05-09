@@ -31,8 +31,8 @@ project = DataShuttle("my_project")
 ```
 
 DataShuttle helps to manage and transfer a project with many "local" machines all connected to a central "remote" machine.
-DataShuttle requires a path to the local project folder (this is typically empty on first use and should include the name of the project
-e.g. local_path="/path/to/my_project"). Also, remote project folder and method to connect to the remote project (either "local_filesystem" or
+DataShuttle requires a path to the local project directory (this is typically empty on first use and should include the name of the project
+e.g. local_path="/path/to/my_project"). Also, remote project directory and method to connect to the remote project (either "local_filesystem" or
 "ssh").
 
 It is also required to specify the data types (e.g. behav, ephys, funcimg, histology) used on the local PC. If data_type flags are not set to True, it will not be possible
@@ -89,7 +89,7 @@ your password will have to be enterred only once, when setting up this connectio
 
 Subject and session project directories can be made using the function make_sub_dir(). This function accepts a subject name (or list
 of subject names), with optional session name and data type inputs. If no session or data type name is provided,
-an empty subject folder will be made at the top folder level.
+an empty subject directory will be made at the top directory level.
 
 All subject or session names must be prefixed with "sub-" or "ses-" respectively, as according to SWC-BIDS. If these prefixes
 are not input, they will be automatically added. To make all data types (i.e. all datatypes for which use_<data_type> configuration is true),
@@ -148,7 +148,7 @@ Data transfer can be either from the local project to the remote project ("uploa
 transfers are primarily managed using the upload_data() and download_data() functions.
 
 By default, uploading or downloading data will never overwrite files when transferring data. If an
-existing file with the same name is found in the target folder, even if it is older, it will not be overwritten.
+existing file with the same name is found in the target directory, even if it is older, it will not be overwritten.
 All transfer activity is printed to the console and logged (see "Logging" below), which can be used to
 determine if any files were not transferred for this reason.
 
@@ -184,7 +184,7 @@ the behaviour during file transfer. Please see the Data Transfer section of the 
 ## Logging
 
 Detailed logs of all configuration changes, full paths to created directories and data transfers are logged
-to a .datashuttle folder in the local project folder. These logs are named
+to a .datashuttle directory in the local project directory. These logs are named
 with the command (e.g. make_config_file), date and time of creation.
 
 ## Convenience Functions

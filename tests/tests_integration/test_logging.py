@@ -147,7 +147,7 @@ class TestCommandLineInterface:
             in log
         )
         assert "formatted_ses_names: ['ses-123', 'ses-hello_world']" in log
-        assert "Made folder at path:" in log
+        assert "Made directory at path:" in log
 
         assert (
             str(Path("test_logging") / "local" / "rawdata" / "sub-1_1") in log
@@ -298,7 +298,7 @@ class TestCommandLineInterface:
         assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
-        assert "DEBUG : sub-001: Making folder\n" in log
+        assert "DEBUG : sub-001: Making directory\n" in log
 
     # ----------------------------------------------------------------------------------------------------------
     # Check errors propagate

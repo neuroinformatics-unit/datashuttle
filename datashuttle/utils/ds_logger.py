@@ -47,7 +47,7 @@ def start(
 
 def print_tree(project_path: Path) -> None:
     """
-    Print a schematic of the folder tree with files
+    Print a schematic of the directory tree with files
     at project_path to the console.
     """
     tree = get_rich_project_path_tree(project_path)
@@ -56,7 +56,7 @@ def print_tree(project_path: Path) -> None:
 
 def log_tree(project_path: Path) -> None:
     """
-    Log a schematic of the folder tree at
+    Log a schematic of the directory tree at
     project_path.
     """
     tree_ = get_rich_project_path_tree(project_path)
@@ -113,7 +113,7 @@ def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs):
 # -------------------------------------------------------------------
 
 
-def walk_folder(
+def walk_directory(
     project_path: Path, tree: Tree, show_hidden_folders: bool = True
 ) -> None:
     """
@@ -153,7 +153,7 @@ def walk_folder(
                 style=style,
                 guide_style=style,
             )
-            walk_folder(path, branch)
+            walk_directory(path, branch)
         else:
             text_filename = Text(path.name, "green")
             #      text_filename.highlight_regex(r"\..*$", "bold red")
@@ -165,10 +165,10 @@ def walk_folder(
 
 def get_rich_project_path_tree(project_path: Path) -> Tree:
     """
-    Get a rich tree class walked through the project_path folder.
+    Get a rich tree class walked through the project_path directory.
     """
     tree = Tree(label=f"{project_path.as_posix()}/")
-    walk_folder(project_path, tree)
+    walk_directory(project_path, tree)
     return tree
 
 

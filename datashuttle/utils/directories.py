@@ -20,7 +20,7 @@ from . import formatting, ssh, utils
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_folder_trees(
+def make_directory_trees(
     cfg: Configs,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
@@ -28,9 +28,9 @@ def make_folder_trees(
     log: bool = True,
 ) -> None:
     """
-    Entry method to make a full folder tree. It will
+    Entry method to make a full directory tree. It will
     iterate through all passed subjects, then sessions, then
-    subdirs within a data_type folder. This
+    subdirs within a data_type directory. This
     permits flexible creation of directories (e.g.
     to make subject only, do not pass session name.
 
@@ -86,7 +86,7 @@ def make_data_type_directories(
 ) -> None:
     """
     Make data_type folder (e.g. behav) at the sub or ses
-    level. Checks folder_class.Directories attributes,
+    level. Checks directory_class.Directories attributes,
     whether the data_type is used and at the current level.
 
     Parameters
@@ -95,11 +95,11 @@ def make_data_type_directories(
         empty string ("") for none.
 
     sub_or_ses_level_path : Full path to the subject
-        or session folder where the new folder
+        or session directory where the new directory
         will be written.
 
-    level : The folder level that the
-        folder will be made at, "sub" or "ses"
+    level : The directory level that the
+        directory will be made at, "sub" or "ses"
 
     log : whether to log on or not (if True, logging must
         already be initialised).
@@ -140,7 +140,7 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
         if not path_.is_dir():
             path_.mkdir(parents=True)
             if log:
-                utils.log(f"Made folder at path: {path_}")
+                utils.log(f"Made directory at path: {path_}")
 
 
 def make_datashuttle_metadata_folder(
@@ -148,7 +148,7 @@ def make_datashuttle_metadata_folder(
 ) -> None:
     """
     Make a .datashuttle folder (this is created
-    in the local_path for logs and User folder
+    in the local_path for logs and User directory
     for configs). See make_dirs() for arguments.
     """
     meta_folder_path = full_path / ".datashuttle_meta"
@@ -164,10 +164,10 @@ def check_no_duplicate_sub_ses_key_values(
     """
     Given a list of subject and optional session names,
     check whether these already exist in the local project
-    folder.
+    directory.
 
     This uses search_sub_or_ses_level() to search the local
-    folder and then checks for the putative new subject
+    directory and then checks for the putative new subject
     or session names to determine any matches.
 
     Parameters
@@ -254,7 +254,7 @@ def search_sub_or_ses_level(
         then the session dir is searched
 
     str: glob-format search string to search at the
-        folder level.
+        directory level.
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -283,9 +283,9 @@ def search_data_dirs_sub_or_ses_level(
     ses: Optional[str] = None,
 ) -> zip:
     """
-    Search  a subject or session folder specifically
+    Search  a subject or session directory specifically
     for data_types. First searches for all folders / files
-    in the folder, and then returns any dirs that
+    in the directory, and then returns any dirs that
     match data_type name.
 
     see directories.search_sub_or_ses_level() for full
@@ -334,7 +334,7 @@ def search_for_wildcards(
 
     project : initialised datashuttle project
 
-    base_dir : folder to search for wildcards in
+    base_dir : directory to search for wildcards in
 
     local_or_remote : "local" or "remote" project path to
         search in
@@ -378,7 +378,7 @@ def search_for_wildcards(
 
 
 def process_glob_to_find_data_type_dirs(
-    folder_names: list,
+    directory_names: list,
     data_type_dirs: dict,
 ) -> zip:
     """
@@ -394,7 +394,7 @@ def process_glob_to_find_data_type_dirs(
     """
     ses_dir_keys = []
     ses_dir_values = []
-    for dir_name in folder_names:
+    for dir_name in directory_names:
         data_type_key = [
             key
             for key, value in data_type_dirs.items()
