@@ -157,7 +157,7 @@ def make_datashuttle_metadata_folder(
 
 def check_no_duplicate_sub_ses_key_values(
     project: DataShuttle,
-    base_dir: Path,
+    base_folder: Path,
     new_sub_names: List[str],
     new_ses_names: Optional[List[str]] = None,
 ) -> None:
@@ -175,7 +175,7 @@ def check_no_duplicate_sub_ses_key_values(
 
     project : initialised datashuttle project
 
-    base_dir : local_path to search
+    base_folder : local_path to search
 
     new_sub_names : list of subject names that are being
      checked for duplicates
@@ -185,7 +185,7 @@ def check_no_duplicate_sub_ses_key_values(
     """
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
-            project.cfg, base_dir, "local"
+            project.cfg, base_folder, "local"
         )[0]
         existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
 
@@ -199,7 +199,7 @@ def check_no_duplicate_sub_ses_key_values(
         # for each subject, check session level
         for sub in new_sub_names:
             existing_ses_names = search_sub_or_ses_level(
-                project.cfg, base_dir, "local", sub
+                project.cfg, base_folder, "local", sub
             )[0]
 
             existing_ses_values = utils.get_first_sub_ses_keys(
@@ -225,7 +225,7 @@ def check_no_duplicate_sub_ses_key_values(
 
 def search_sub_or_ses_level(
     cfg: Configs,
-    base_dir: Path,
+    base_folder: Path,
     local_or_remote: str,
     sub: Optional[str] = None,
     ses: Optional[str] = None,
@@ -263,13 +263,13 @@ def search_sub_or_ses_level(
         )
 
     if sub:
-        base_dir = base_dir / sub
+        base_folder = base_folder / sub
 
     if ses:
-        base_dir = base_dir / ses
+        base_folder = base_folder / ses
 
     all_dirnames, all_filenames = search_for_folders(
-        cfg, base_dir, local_or_remote, search_str
+        cfg, base_folder, local_or_remote, search_str
     )
 
     return all_dirnames, all_filenames
@@ -277,7 +277,7 @@ def search_sub_or_ses_level(
 
 def search_data_dirs_sub_or_ses_level(
     cfg: Configs,
-    base_dir: Path,
+    base_folder: Path,
     local_or_remote: str,
     sub: str,
     ses: Optional[str] = None,
@@ -297,7 +297,7 @@ def search_data_dirs_sub_or_ses_level(
     a format that mirrors dict.items()
     """
     search_results = search_sub_or_ses_level(
-        cfg, base_dir, local_or_remote, sub, ses
+        cfg, base_folder, local_or_remote, sub, ses
     )[0]
 
     data_folders = process_glob_to_find_data_type_dirs(
@@ -310,7 +310,7 @@ def search_data_dirs_sub_or_ses_level(
 
 def search_for_wildcards(
     cfg: Configs,
-    base_dir: Path,
+    base_folder: Path,
     local_or_remote: str,
     all_names: List[str],
     sub: Optional[str] = None,
@@ -334,7 +334,7 @@ def search_for_wildcards(
 
     project : initialised datashuttle project
 
-    base_dir : folder to search for wildcards in
+    base_folder : folder to search for wildcards in
 
     local_or_remote : "local" or "remote" project path to
         search in
@@ -355,11 +355,11 @@ def search_for_wildcards(
 
             if sub:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_dir, local_or_remote, sub, search_str=name
+                    cfg, base_folder, local_or_remote, sub, search_str=name
                 )[0]
             else:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_dir, local_or_remote, search_str=name
+                    cfg, base_folder, local_or_remote, search_str=name
                 )[0]
 
             new_all_names += matching_names

@@ -58,7 +58,7 @@ def setup_project_default_configs(
 
     warnings.filterwarnings("default")
 
-    project.update_config("local_path", project._datashuttle_path / "base_dir")
+    project.update_config("local_path", project._datashuttle_path / "base_folder")
 
     if local_path:
         project.update_config("local_path", local_path)
@@ -260,7 +260,7 @@ def add_quotes(string: str):
 
 
 def check_folder_tree_is_correct(
-    project, base_dir, subs, sessions, folder_used
+    project, base_folder, subs, sessions, folder_used
 ):
     """
     Automated test that folders are made based
@@ -282,12 +282,12 @@ def check_folder_tree_is_correct(
     """
     for sub in subs:
 
-        path_to_sub_folder = join(base_dir, sub)
+        path_to_sub_folder = join(base_folder, sub)
         check_and_cd_dir(path_to_sub_folder)
 
         for ses in sessions:
 
-            path_to_ses_folder = join(base_dir, sub, ses)
+            path_to_ses_folder = join(base_folder, sub, ses)
             check_and_cd_dir(path_to_ses_folder)
 
             for key, folder in project.cfg.data_type_dirs.items():
@@ -299,7 +299,7 @@ def check_folder_tree_is_correct(
                 )
 
                 if check_folder_is_used(
-                    base_dir, folder, folder_used, key, sub, ses
+                    base_folder, folder, folder_used, key, sub, ses
                 ):
 
                     if folder.level == "sub":
@@ -316,7 +316,7 @@ def check_folder_tree_is_correct(
 
 
 def check_folder_is_used(
-    base_dir, folder, folder_used, key, sub, ses
+    base_folder, folder, folder_used, key, sub, ses
 ):
     """
     Test whether the .used flag on the Folder class matched the expected
@@ -332,9 +332,9 @@ def check_folder_is_used(
     if not is_used:
         print(
             "Path was correctly not made: "
-            + join(base_dir, sub, ses, folder.name)
+            + join(base_folder, sub, ses, folder.name)
         )
-        assert not os.path.isdir(join(base_dir, sub, ses, folder.name))
+        assert not os.path.isdir(join(base_folder, sub, ses, folder.name))
 
     return is_used
 

@@ -191,7 +191,7 @@ class DataShuttle:
 
         folders.check_no_duplicate_sub_ses_key_values(
             self,
-            base_dir=self.cfg.get_base_dir("local"),
+            base_folder=self.cfg.get_base_folder("local"),
             new_sub_names=sub_names,
             new_ses_names=ses_names,
         )
@@ -382,8 +382,8 @@ class DataShuttle:
         """
         self._start_log("upload_project_dir_or_file", local_vars=locals())
 
-        processed_filepath = utils.get_path_after_base_dir(
-            self.cfg.get_base_dir("local"),
+        processed_filepath = utils.get_path_after_base_folder(
+            self.cfg.get_base_folder("local"),
             Path(filepath),
         )
 
@@ -431,8 +431,8 @@ class DataShuttle:
         """
         self._start_log("download_project_dir_or_file", local_vars=locals())
 
-        processed_filepath = utils.get_path_after_base_dir(
-            self.cfg.get_base_dir("remote"),
+        processed_filepath = utils.get_path_after_base_folder(
+            self.cfg.get_base_folder("remote"),
             Path(filepath),
         )
 

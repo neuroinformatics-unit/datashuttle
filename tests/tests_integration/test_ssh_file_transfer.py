@@ -199,7 +199,7 @@ class TestFileTransfer:
         expected_paths = pd.concat([data_type_folders, extra_folders])
         expected_paths = expected_paths.drop_duplicates(subset="path")
 
-        remote_base_paths = expected_paths.base_dir.map(
+        remote_base_paths = expected_paths.base_folder.map(
             lambda x: str(x).replace("local", "remote")
         )
         expected_transferred_paths = remote_base_paths / expected_paths.path
@@ -267,7 +267,7 @@ class TestFileTransfer:
     def create_all_pathtable_files(self, pathtable):
         """ """
         for i in range(pathtable.shape[0]):
-            filepath = pathtable["base_dir"][i] / pathtable["path"][i]
+            filepath = pathtable["base_folder"][i] / pathtable["path"][i]
             filepath.parents[0].mkdir(parents=True, exist_ok=True)
             test_utils.write_file(filepath, contents="test_entry")
 

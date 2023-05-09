@@ -23,7 +23,7 @@ class TransferData:
         self.local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
-        self.base_dir = self.cfg.get_base_dir(self.local_or_remote)
+        self.base_folder = self.cfg.get_base_folder(self.local_or_remote)
 
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
@@ -135,7 +135,7 @@ class TransferData:
     ):
         top_level_dirs, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_dir(self.local_or_remote),
+            self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             search_str="*",
         )
@@ -153,7 +153,7 @@ class TransferData:
         """ """
         sub_level_dirs, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_dir(self.local_or_remote),
+            self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             sub=sub,
             search_str="*",
@@ -180,7 +180,7 @@ class TransferData:
             ses_level_filenames,
         ) = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_dir(self.local_or_remote),
+            self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             sub=sub,
             ses=ses,
@@ -320,7 +320,7 @@ class TransferData:
         if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
             processed_names = folders.search_sub_or_ses_level(
                 self.cfg,
-                self.base_dir,
+                self.base_folder,
                 self.local_or_remote,
                 sub,
                 search_str=f"{search_prefix}*",
@@ -335,7 +335,7 @@ class TransferData:
             )
             processed_names = folders.search_for_wildcards(
                 self.cfg,
-                self.base_dir,
+                self.base_folder,
                 self.local_or_remote,
                 processed_names,
                 sub=sub,

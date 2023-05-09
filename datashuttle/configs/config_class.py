@@ -232,16 +232,16 @@ class Configs(UserDict):
 
         subdirs_path = Path(subdirs_str)
 
-        base_dir = self.get_base_dir(base)
+        base_folder = self.get_base_folder(base)
 
-        if utils.path_already_stars_with_base_dir(base_dir, subdirs_path):
+        if utils.path_already_stars_with_base_folder(base_folder, subdirs_path):
             joined_path = subdirs_path
         else:
-            joined_path = base_dir / subdirs_path
+            joined_path = base_folder / subdirs_path
 
         return joined_path
 
-    def get_base_dir(self, base: str) -> Path:
+    def get_base_folder(self, base: str) -> Path:
         """
         Convenience function to return the full base path.
 
@@ -252,12 +252,12 @@ class Configs(UserDict):
 
         """
         if base == "local":
-            base_dir = self["local_path"] / self.top_level_dir_name
+            base_folder = self["local_path"] / self.top_level_dir_name
         elif base == "remote":
-            base_dir = self["remote_path"] / self.top_level_dir_name
+            base_folder = self["remote_path"] / self.top_level_dir_name
         elif base == "datashuttle":
-            base_dir, __ = utils.get_datashuttle_path(self.project_name)
-        return base_dir
+            base_folder, __ = utils.get_datashuttle_path(self.project_name)
+        return base_folder
 
     def get_rclone_config_name(
         self, connection_method: Optional[str] = None
@@ -345,7 +345,7 @@ class Configs(UserDict):
 
         see _transfer_data_type() for parameters.
         """
-        base_dir = self.get_base_dir(local_or_remote)
+        base_folder = self.get_base_folder(local_or_remote)
 
         if data_type not in [
             "all",
@@ -359,7 +359,7 @@ class Configs(UserDict):
         else:
             data_type_items = folders.search_data_dirs_sub_or_ses_level(
                 self,
-                base_dir,
+                base_folder,
                 local_or_remote,
                 sub,
                 ses,

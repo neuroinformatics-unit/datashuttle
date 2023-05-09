@@ -85,7 +85,7 @@ def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     return base_path, temp_logs_path
 
 
-def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
+def get_path_after_base_folder(base_folder: Path, path_: Path) -> Path:
     """
     Get path relative to hte base dir, used in case user has
     passed entire path including local_path or remove_path.
@@ -93,18 +93,18 @@ def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
     Parameters
     ----------
 
-    base_dir : base dir that should be removed, usually
+    base_folder : base dir that should be removed, usually
         local_path or remote_path
 
-    path_ : path after base_dir that should be isolated
+    path_ : path after base_folder that should be isolated
     """
-    if path_already_stars_with_base_dir(base_dir, path_):
-        return path_.relative_to(base_dir)
+    if path_already_stars_with_base_folder(base_folder, path_):
+        return path_.relative_to(base_folder)
     return path_
 
 
-def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
-    return path_.as_posix().startswith(base_dir.as_posix())
+def path_already_stars_with_base_folder(base_folder: Path, path_: Path) -> bool:
+    return path_.as_posix().startswith(base_folder.as_posix())
 
 
 def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:

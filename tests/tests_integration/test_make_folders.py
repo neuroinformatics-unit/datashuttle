@@ -153,7 +153,7 @@ class TestMakeDirs:
 
         test_utils.check_folder_tree_is_correct(
             project,
-            base_dir=test_utils.get_rawdata_path(project),
+            base_folder=test_utils.get_rawdata_path(project),
             subs=["sub-1_1", "sub-two", "sub-3_3-3"],
             sessions=[],
             folder_used=test_utils.get_default_folder_used(),
@@ -171,23 +171,23 @@ class TestMakeDirs:
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "="]
         project.make_sub_folders(subs, sessions)
-        base_dir = test_utils.get_rawdata_path(project)
+        base_folder = test_utils.get_rawdata_path(project)
 
         for sub in subs:
             for ses in ["ses-001", "ses-="]:
-                test_utils.check_and_cd_dir(join(base_dir, sub, ses, "ephys"))
+                test_utils.check_and_cd_dir(join(base_folder, sub, ses, "ephys"))
                 test_utils.check_and_cd_dir(
                     join(
-                        base_dir,
+                        base_folder,
                         sub,
                         ses,
                         "behav",
                     )
                 )
                 test_utils.check_and_cd_dir(
-                    join(base_dir, sub, ses, "funcimg")
+                    join(base_folder, sub, ses, "funcimg")
                 )
-                test_utils.check_and_cd_dir(join(base_dir, sub, "histology"))
+                test_utils.check_and_cd_dir(join(base_folder, sub, "histology"))
 
     @pytest.mark.parametrize(
         "dir_key", test_utils.get_default_folder_used().keys()
@@ -211,7 +211,7 @@ class TestMakeDirs:
         # Check dir tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
             project,
-            base_dir=test_utils.get_rawdata_path(project),
+            base_folder=test_utils.get_rawdata_path(project),
             subs=subs,
             sessions=sessions,
             folder_used=folder_used,
@@ -234,19 +234,19 @@ class TestMakeDirs:
         project.make_sub_folders(sub, ses)
 
         # Check the folders were not made / made.
-        base_dir = test_utils.get_rawdata_path(project)
+        base_folder = test_utils.get_rawdata_path(project)
         test_utils.check_and_cd_dir(
             join(
-                base_dir,
+                base_folder,
                 sub,
                 ses,
                 "change_ephys",
             )
         )
-        test_utils.check_and_cd_dir(join(base_dir, sub, ses, "change_behav"))
-        test_utils.check_and_cd_dir(join(base_dir, sub, ses, "change_funcimg"))
+        test_utils.check_and_cd_dir(join(base_folder, sub, ses, "change_behav"))
+        test_utils.check_and_cd_dir(join(base_folder, sub, ses, "change_funcimg"))
 
-        test_utils.check_and_cd_dir(join(base_dir, sub, "change_histology"))
+        test_utils.check_and_cd_dir(join(base_folder, sub, "change_histology"))
 
     @pytest.mark.parametrize(
         "files_to_test",
@@ -271,11 +271,11 @@ class TestMakeDirs:
         ses = "ses-001"
         project.make_sub_folders(sub, ses, files_to_test)
 
-        base_dir = test_utils.get_rawdata_path(project)
+        base_folder = test_utils.get_rawdata_path(project)
 
         # Check at the subject level
         sub_file_names = test_utils.glob_basenames(
-            join(base_dir, sub, "*"),
+            join(base_folder, sub, "*"),
             exclude=ses,
         )
         if "histology" in files_to_test:
@@ -284,7 +284,7 @@ class TestMakeDirs:
 
         # Check at the session level
         ses_file_names = test_utils.glob_basenames(
-            join(base_dir, sub, ses, "*"),
+            join(base_folder, sub, ses, "*"),
             exclude=ses,
         )
 
