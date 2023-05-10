@@ -192,23 +192,23 @@ class TestMakeFolders:
     @pytest.mark.parametrize(
         "dir_key", test_utils.get_default_folder_used().keys()
     )
-    def test_turn_off_specific_folder_used(self, project, dir_key):
+    def test_turn_off_specific_folder_used(self, project, folder_key):
         """
         Whether or not a folder is made is held in the .used key of the
         folder class (stored in project.cfg.data_type_folders).
         """
 
         # Overwrite configs to make specified folder not used.
-        project.update_config("use_" + dir_key, False)
+        project.update_config("use_" + folder_key, False)
         folder_used = test_utils.get_default_folder_used()
-        folder_used[dir_key] = False
+        folder_used[folder_key] = False
 
-        # Make dir tree
+        # Make folder tree
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
         project.make_sub_folders(subs, sessions)
 
-        # Check dir tree is not made but all others are
+        # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
             project,
             base_folder=test_utils.get_rawdata_path(project),
@@ -261,10 +261,10 @@ class TestMakeFolders:
     )
     def test_data_types_subsection(self, project, files_to_test):
         """
-        Check that combinations of data_types passed to make file dir
+        Check that combinations of data_types passed to make file folder
         make the correct combination of data types.
 
-        Note this will fail when new top level dirs are added, and should be
+        Note this will fail when new top level folders are added, and should be
         updated.
         """
         sub = "sub-001"
