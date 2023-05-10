@@ -228,11 +228,11 @@ def get_list_of_folder_names_over_sftp(
     try:
         for file_or_folder in sftp.listdir_attr(search_path.as_posix()):
 
-            if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
-                if stat.S_ISDIR(file_or_dir.st_mode):
-                    all_folder_names.append(file_or_dir.filename)
+            if fnmatch.fnmatch(file_or_folder.filename, search_prefix):
+                if stat.S_ISDIR(file_or_folder.st_mode):
+                    all_folder_names.append(file_or_folder.filename)
                 else:
-                    all_filenames.append(file_or_dir.filename)
+                    all_filenames.append(file_or_folder.filename)
 
     except FileNotFoundError:
         utils.log_and_message(f"No file found at {search_path.as_posix()}")

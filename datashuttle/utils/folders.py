@@ -393,19 +393,19 @@ def process_glob_to_find_data_type_folders(
     a format that mirrors dict.items()
     """
     ses_folder_keys = []
-    ses_dir_values = []
-    for dir_name in folder_names:
+    ses_folder_values = []
+    for name in folder_names:
         data_type_key = [
             key
             for key, value in data_type_folders.items()
-            if value.name == dir_name
+            if value.name == name
         ]
 
         if data_type_key:
             ses_folder_keys.append(data_type_key[0])
-            ses_dir_values.append(data_type_folders[data_type_key[0]])
+            ses_folder_values.append(data_type_folders[data_type_key[0]])
 
-    return zip(ses_folder_keys, ses_dir_values)
+    return zip(ses_folder_keys, ses_folder_values)
 
 
 # Low level search functions
@@ -427,7 +427,7 @@ def search_for_folders(  # TODO: change name
 
     local_or_remote : "local" or "remote"
     search_path : full filepath to search in
-    search_prefix : file / dirname to search (e.g. "sub-*")
+    search_prefix : file / folder name to search (e.g. "sub-*")
     """
     if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
 
@@ -457,9 +457,9 @@ def search_filesystem_path_for_folders(
     """
     all_folder_names = []
     all_filenames = []
-    for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
-        if os.path.isdir(file_or_dir):
-            all_folder_names.append(os.path.basename(file_or_dir))
+    for file_or_folder in glob.glob(search_path_with_prefix.as_posix()):
+        if os.path.isdir(file_or_folder):
+            all_folder_names.append(os.path.basename(file_or_folder))
         else:
-            all_filenames.append(os.path.basename(file_or_dir))
+            all_filenames.append(os.path.basename(file_or_folder))
     return all_folder_names, all_filenames

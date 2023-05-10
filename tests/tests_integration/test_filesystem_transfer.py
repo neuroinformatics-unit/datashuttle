@@ -420,7 +420,7 @@ class TestFileTransfer:
         (
             path_to_test_file_behav,
             path_to_test_file_ephys,
-        ) = self.setup_specific_file_or_dir_files(project)
+        ) = self.setup_specific_file_or_folder_files(project)
 
         if upload_or_download == "upload":
             transfer_function = project.upload_project_folder_or_file
@@ -458,7 +458,7 @@ class TestFileTransfer:
 
         assert transferred_files == to_test_against
 
-    def setup_specific_file_or_dir_files(self, project):
+    def setup_specific_file_or_folder_files(self, project):
         """ """
         project.make_sub_folders(["sub-001", "sub-002"], "ses-003")
 
