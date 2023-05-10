@@ -64,7 +64,9 @@ class TestFileTransfer:
 
         test_utils.check_folder_tree_is_correct(
             project,
-            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
+            os.path.join(
+                base_path_to_check, project.cfg.top_level_folder_name
+            ),
             subs,
             sessions,
             test_utils.get_default_folder_used(),
@@ -104,7 +106,9 @@ class TestFileTransfer:
         transfer_function(subs, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
+            os.path.join(
+                base_path_to_check, project.cfg.top_level_folder_name
+            ),
             data_type_to_transfer,
             subs,
             sessions,
@@ -147,7 +151,9 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
+            os.path.join(
+                base_path_to_check, project.cfg.top_level_folder_name
+            ),
             data_type_to_transfer,
             subs_to_upload,
         )
@@ -187,7 +193,9 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
+            os.path.join(
+                base_path_to_check, project.cfg.top_level_folder_name
+            ),
             data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
@@ -396,7 +404,7 @@ class TestFileTransfer:
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("transfer_file", [True, False])
     @pytest.mark.parametrize("full_path", [True, False])
-    def test_specific_file_or_dir(
+    def test_specific_file_or_folder(
         self, project, transfer_file, full_path, upload_or_download
     ):
         """
@@ -420,7 +428,7 @@ class TestFileTransfer:
         (
             path_to_test_file_behav,
             path_to_test_file_ephys,
-        ) = self.setup_specific_file_or_dir_files(project)
+        ) = self.setup_specific_file_or_folder_files(project)
 
         if upload_or_download == "upload":
             transfer_function = project.upload_project_folder_or_file
@@ -458,7 +466,7 @@ class TestFileTransfer:
 
         assert transferred_files == to_test_against
 
-    def setup_specific_file_or_dir_files(self, project):
+    def setup_specific_file_or_folder_files(self, project):
         """ """
         project.make_sub_folders(["sub-001", "sub-002"], "ses-003")
 

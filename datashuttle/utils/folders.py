@@ -106,17 +106,17 @@ def make_data_type_folders(
     """
     data_type_items = cfg.get_data_type_items(data_type)
 
-    for data_type_key, data_type_dir in data_type_items:  # type: ignore
+    for data_type_key, data_type_folder in data_type_items:  # type: ignore
 
-        if data_type_dir.used and data_type_dir.level == level:
-            data_type_path = sub_or_ses_level_path / data_type_dir.name
+        if data_type_folder.used and data_type_folder.level == level:
+            data_type_path = sub_or_ses_level_path / data_type_folder.name
 
             make_folders(data_type_path, log)
 
             make_datashuttle_metadata_folder(data_type_path, log)
 
 
-# Make Dirs Helpers --------------------------------------------------------------------------------------------------
+# Make Folderes Helpers ----------------------------------------------------------------
 
 
 def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
@@ -216,7 +216,7 @@ def check_no_duplicate_sub_ses_key_values(
 
 
 # --------------------------------------------------------------------
-# Search Existing Dirs
+# Search Existing Folderes
 # --------------------------------------------------------------------
 
 # Search Subjects / Sessions
@@ -251,7 +251,7 @@ def search_sub_or_ses_level(
 
     ses: either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)
-        then the session dir is searched
+        then the session folder is searched
 
     str: glob-format search string to search at the
         folder level.
@@ -268,14 +268,14 @@ def search_sub_or_ses_level(
     if ses:
         base_folder = base_folder / ses
 
-    all_dirnames, all_filenames = search_for_folders(
+    all_folder_names, all_filenames = search_for_folders(
         cfg, base_folder, local_or_remote, search_str
     )
 
-    return all_dirnames, all_filenames
+    return all_folder_names, all_filenames
 
 
-def search_data_dirs_sub_or_ses_level(
+def search_data_folders_sub_or_ses_level(
     cfg: Configs,
     base_folder: Path,
     local_or_remote: str,
@@ -285,7 +285,7 @@ def search_data_dirs_sub_or_ses_level(
     """
     Search  a subject or session folder specifically
     for data_types. First searches for all folders / files
-    in the folder, and then returns any dirs that
+    in the folder, and then returns any folders that
     match data_type name.
 
     see folders.search_sub_or_ses_level() for full
@@ -320,7 +320,7 @@ def search_for_wildcards(
 
     All names in name are searched for @*@ string, and replaced
     with single * for glob syntax. If sub is passed, it is
-    assumes all_names is ses_names and the sub dir is searched
+    assumes all_names is ses_names and the sub folder is searched
     for ses_names matching the name including wildcard. Otherwise,
     if sub is None it is assumed all_names are sub names and
     the level above is searched.
@@ -392,20 +392,20 @@ def process_glob_to_find_data_type_folders(
     Find the data_type files and return in
     a format that mirrors dict.items()
     """
-    ses_dir_keys = []
-    ses_dir_values = []
-    for dir_name in folder_names:
+    ses_folder_keys = []
+    ses_folder_values = []
+    for name in folder_names:
         data_type_key = [
             key
             for key, value in data_type_folders.items()
-            if value.name == dir_name
+            if value.name == name
         ]
 
         if data_type_key:
-            ses_dir_keys.append(data_type_key[0])
-            ses_dir_values.append(data_type_folders[data_type_key[0]])
+            ses_folder_keys.append(data_type_key[0])
+            ses_folder_values.append(data_type_folders[data_type_key[0]])
 
-    return zip(ses_dir_keys, ses_dir_values)
+    return zip(ses_folder_keys, ses_folder_values)
 
 
 # Low level search functions
@@ -427,11 +427,11 @@ def search_for_folders(  # TODO: change name
 
     local_or_remote : "local" or "remote"
     search_path : full filepath to search in
-    search_prefix : file / dirname to search (e.g. "sub-*")
+    search_prefix : file / folder name to search (e.g. "sub-*")
     """
     if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
 
-        all_dirnames, all_filenames = ssh.search_ssh_remote_for_folders(
+        all_folder_names, all_filenames = ssh.search_ssh_remote_for_folders(
             search_path,
             search_prefix,
             cfg,
@@ -442,10 +442,10 @@ def search_for_folders(  # TODO: change name
             utils.log_and_message(f"No file found at {search_path.as_posix()}")
             return [], []
 
-        all_dirnames, all_filenames = search_filesystem_path_for_folders(
+        all_folder_names, all_filenames = search_filesystem_path_for_folders(
             search_path / search_prefix
         )
-    return all_dirnames, all_filenames
+    return all_folder_names, all_filenames
 
 
 def search_filesystem_path_for_folders(
@@ -455,11 +455,11 @@ def search_filesystem_path_for_folders(
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning folders only.
     """
-    all_dirnames = []
+    all_folder_names = []
     all_filenames = []
-    for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
-        if os.path.isdir(file_or_dir):
-            all_dirnames.append(os.path.basename(file_or_dir))
+    for file_or_folder in glob.glob(search_path_with_prefix.as_posix()):
+        if os.path.isdir(file_or_folder):
+            all_folder_names.append(os.path.basename(file_or_folder))
         else:
-            all_filenames.append(os.path.basename(file_or_dir))
-    return all_dirnames, all_filenames
+            all_filenames.append(os.path.basename(file_or_folder))
+    return all_folder_names, all_filenames

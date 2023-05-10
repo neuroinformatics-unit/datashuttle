@@ -34,7 +34,7 @@ def check_and_format_names(
     ----------
 
     names: str or list containing sub or ses names
-                  (e.g. to make dirs)
+                  (e.g. to make folders)
 
     sub_or_ses: "sub" or "ses" - this defines the prefix checks.
     """
@@ -58,7 +58,7 @@ def format_names(
 
     Parameters
     -----------
-    names: str or list containing sub or ses names (e.g. to make dirs)
+    names: str or list containing sub or ses names (e.g. to make folders)
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
@@ -297,13 +297,15 @@ def check_data_type_is_valid(
 ) -> bool:
     """
     Check the passed data_type is valid (must
-    be a key on self.ses_dirs e.g. "behav", or "all")
+    be a key on self.ses_folders e.g. "behav", or "all")
     """
     if isinstance(data_type, list):
         valid_keys = list(cfg.data_type_folders.keys()) + ["all"]
         is_valid = all([type in valid_keys for type in data_type])
     else:
-        is_valid = data_type in cfg.data_type_folders.keys() or data_type == "all"
+        is_valid = (
+            data_type in cfg.data_type_folders.keys() or data_type == "all"
+        )
 
     if error_on_fail and not is_valid:
         utils.log_and_raise_error(

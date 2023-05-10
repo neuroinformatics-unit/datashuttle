@@ -103,7 +103,9 @@ def get_path_after_base_folder(base_folder: Path, path_: Path) -> Path:
     return path_
 
 
-def path_already_stars_with_base_folder(base_folder: Path, path_: Path) -> bool:
+def path_already_stars_with_base_folder(
+    base_folder: Path, path_: Path
+) -> bool:
     return path_.as_posix().startswith(base_folder.as_posix())
 
 

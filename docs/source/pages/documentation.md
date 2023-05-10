@@ -224,7 +224,7 @@ For example, `project.upload_data(sub_names="all", ses_names="all", data_type="a
 or equivalently
 `datashuttle my_project upload_data --sub_names all --ses_names all --data_type all`
 
-will transfer everything in the local project director to the remote. The convenience functions upload_all()
+will transfer everything in the local project folder to the remote. The convenience functions upload_all()
 and download_all() can be used as shortcuts for this. See below for a full list of all sub_names, ses_names and data_type
 keyword options.
 

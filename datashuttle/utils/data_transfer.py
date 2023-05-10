@@ -58,16 +58,16 @@ class TransferData:
         processed_sub_names = self.get_processed_names(self.sub_names)
 
         sub_ses_dtype_include: List[str] = []
-        extra_dirnames: List[str] = []
+        extra_folder_names: List[str] = []
         extra_filenames: List[str] = []
 
         for sub in processed_sub_names:
 
-            # subjects at top level dir ---------------------------------------
+            # subjects at top level folder ---------------------------------------
 
             if sub == "all_non_sub":
-                self.update_list_with_non_sub_top_level_dirs(
-                    extra_dirnames, extra_filenames
+                self.update_list_with_non_sub_top_level_folders(
+                    extra_folder_names, extra_filenames
                 )
                 continue
 
@@ -77,15 +77,15 @@ class TransferData:
                 sub,
             )
 
-            # sessions at sub level dir ---------------------------------------
+            # sessions at sub level folder ---------------------------------------
 
             processed_ses_names = self.get_processed_names(self.ses_names, sub)
 
             for ses in processed_ses_names:
 
                 if ses == "all_non_ses":
-                    self.update_list_with_non_ses_sub_level_dirs(
-                        extra_dirnames, extra_filenames, sub
+                    self.update_list_with_non_ses_sub_level_folders(
+                        extra_folder_names, extra_filenames, sub
                     )
 
                     continue
@@ -93,8 +93,8 @@ class TransferData:
                 # Datatype (sub and ses level) --------------------------------
 
                 if self.transfer_non_data_type(self.data_type):
-                    self.update_list_with_non_dtype_ses_level_dirs(
-                        extra_dirnames, extra_filenames, sub, ses
+                    self.update_list_with_non_dtype_ses_level_folders(
+                        extra_folder_names, extra_filenames, sub, ses
                     )
 
                 self.update_list_with_dtype_paths(
@@ -106,7 +106,7 @@ class TransferData:
 
         include_list = (
             self.make_include_arg(sub_ses_dtype_include)
-            + self.make_include_arg(extra_dirnames)
+            + self.make_include_arg(extra_folder_names)
             + self.make_include_arg(extra_filenames, recursive=False)
         )
 
@@ -127,31 +127,31 @@ class TransferData:
         return ["".join([include_arg(ele) for ele in list_of_paths])]
 
     # -------------------------------------------------------------------------
-    # Search for non-sub / ses / dtype dirs and add them to list
+    # Search for non-sub / ses / dtype folders and add them to list
     # -------------------------------------------------------------------------
 
-    def update_list_with_non_sub_top_level_dirs(
-        self, extra_dirnames, extra_filenames
+    def update_list_with_non_sub_top_level_folders(
+        self, extra_folder_names, extra_filenames
     ):
-        top_level_dirs, top_level_files = folders.search_sub_or_ses_level(
+        top_level_folders, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             search_str="*",
         )
 
-        top_level_dirs = list(
-            filter(lambda dir: dir[:4] != "sub-", top_level_dirs)
+        top_level_folders = list(
+            filter(lambda folder: folder[:4] != "sub-", top_level_folders)
         )
 
-        extra_dirnames += top_level_dirs
+        extra_folder_names += top_level_folders
         extra_filenames += top_level_files
 
-    def update_list_with_non_ses_sub_level_dirs(
-        self, extra_dirnames, extra_filenames, sub
+    def update_list_with_non_ses_sub_level_folders(
+        self, extra_folder_names, extra_filenames, sub
     ):
         """ """
-        sub_level_dirs, sub_level_files = folders.search_sub_or_ses_level(
+        sub_level_folders, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
@@ -164,19 +164,22 @@ class TransferData:
             if dtype.level == "sub"
         ]
 
-        filt_sub_level_dirs = filter(
-            lambda dir: dir[:4] != "ses-" and dir not in sub_level_dtype,
-            sub_level_dirs,
+        filt_sub_level_folders = filter(
+            lambda folder: folder[:4] != "ses-"
+            and folder not in sub_level_dtype,
+            sub_level_folders,
         )
-        extra_dirnames += ["/".join([sub, dir]) for dir in filt_sub_level_dirs]
+        extra_folder_names += [
+            "/".join([sub, folder]) for folder in filt_sub_level_folders
+        ]
         extra_filenames += ["/".join([sub, file]) for file in sub_level_files]
 
-    def update_list_with_non_dtype_ses_level_dirs(
-        self, extra_dirnames, extra_filenames, sub, ses
+    def update_list_with_non_dtype_ses_level_folders(
+        self, extra_folder_names, extra_filenames, sub, ses
     ):
 
         (
-            ses_level_dirs,
+            ses_level_folders,
             ses_level_filenames,
         ) = folders.search_sub_or_ses_level(
             self.cfg,
@@ -192,11 +195,11 @@ class TransferData:
             for dtype in self.cfg.data_type_folders.values()
             if dtype.level == "ses"
         ]
-        filt_ses_level_dirs = filter(
-            lambda dir: dir not in ses_level_dtype, ses_level_dirs
+        filt_ses_level_folders = filter(
+            lambda folder: folder not in ses_level_dtype, ses_level_folders
         )
-        extra_dirnames += [
-            "/".join([sub, ses, dir]) for dir in filt_ses_level_dirs
+        extra_folder_names += [
+            "/".join([sub, ses, folder]) for folder in filt_ses_level_folders
         ]
         extra_filenames += [
             "/".join([sub, ses, file]) for file in ses_level_filenames
@@ -224,13 +227,13 @@ class TransferData:
 
         level = "ses" if ses else "sub"
 
-        for data_type_key, data_type_dir in data_type_items:  # type: ignore
+        for data_type_key, data_type_folder in data_type_items:  # type: ignore
 
-            if data_type_dir.level == level:
+            if data_type_folder.level == level:
                 if ses:
-                    filepath = Path(sub) / ses / data_type_dir.name
+                    filepath = Path(sub) / ses / data_type_folder.name
                 else:
-                    filepath = Path(sub) / data_type_dir.name
+                    filepath = Path(sub) / data_type_folder.name
 
                 sub_ses_dtype_include.append(filepath.as_posix())
 
