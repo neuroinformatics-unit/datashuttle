@@ -212,9 +212,9 @@ class Configs(UserDict):
 
     def make_path(self, base: str, sub_folders: Union[str, list]) -> Path:
         """
-        Function for joining relative path to base dir.
-        If path already starts with base dir, the base
-        dir will not be joined.
+        Function for joining relative path to base folder.
+        If path already starts with base folder, the base
+        folder will not be joined.
 
         Parameters
         ----------

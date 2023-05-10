@@ -285,7 +285,7 @@ def search_data_folders_sub_or_ses_level(
     """
     Search  a subject or session folder specifically
     for data_types. First searches for all folders / files
-    in the folder, and then returns any dirs that
+    in the folder, and then returns any folders that
     match data_type name.
 
     see folders.search_sub_or_ses_level() for full
@@ -320,7 +320,7 @@ def search_for_wildcards(
 
     All names in name are searched for @*@ string, and replaced
     with single * for glob syntax. If sub is passed, it is
-    assumes all_names is ses_names and the sub dir is searched
+    assumes all_names is ses_names and the sub folder is searched
     for ses_names matching the name including wildcard. Otherwise,
     if sub is None it is assumed all_names are sub names and
     the level above is searched.
@@ -392,7 +392,7 @@ def process_glob_to_find_data_type_folders(
     Find the data_type files and return in
     a format that mirrors dict.items()
     """
-    ses_dir_keys = []
+    ses_folder_keys = []
     ses_dir_values = []
     for dir_name in folder_names:
         data_type_key = [
@@ -402,10 +402,10 @@ def process_glob_to_find_data_type_folders(
         ]
 
         if data_type_key:
-            ses_dir_keys.append(data_type_key[0])
+            ses_folder_keys.append(data_type_key[0])
             ses_dir_values.append(data_type_folders[data_type_key[0]])
 
-    return zip(ses_dir_keys, ses_dir_values)
+    return zip(ses_folder_keys, ses_dir_values)
 
 
 # Low level search functions
