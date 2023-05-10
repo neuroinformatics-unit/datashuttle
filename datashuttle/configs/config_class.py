@@ -210,7 +210,7 @@ class Configs(UserDict):
                         "Option must be 'path_to_str' or 'str_to_path'"
                     )
 
-    def make_path(self, base: str, subdirs: Union[str, list]) -> Path:
+    def make_path(self, base: str, sub_folders: Union[str, list]) -> Path:
         """
         Function for joining relative path to base dir.
         If path already starts with base dir, the base
@@ -221,23 +221,23 @@ class Configs(UserDict):
 
         base: "local", "remote" or "datashuttle"
 
-        subdirs: a list (or string for 1) of
+        sub_folders: a list (or string for 1) of
             folder names to be joined into a path.
             If file included, must be last entry (with ext).
         """
-        if isinstance(subdirs, list):
-            subdirs_str = "/".join(subdirs)
+        if isinstance(sub_folders, list):
+            sub_folders_str = "/".join(sub_folders)
         else:
-            subdirs_str = cast(str, subdirs)
+            sub_folders_str = cast(str, sub_folders)
 
-        subdirs_path = Path(subdirs_str)
+        sub_folders_path = Path(sub_folders_str)
 
         base_folder = self.get_base_folder(base)
 
-        if utils.path_already_stars_with_base_folder(base_folder, subdirs_path):
-            joined_path = subdirs_path
+        if utils.path_already_stars_with_base_folder(base_folder, sub_folders_path):
+            joined_path = sub_folders_path
         else:
-            joined_path = base_folder / subdirs_path
+            joined_path = base_folder / sub_folders_path
 
         return joined_path
 
