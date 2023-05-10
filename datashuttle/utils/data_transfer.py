@@ -127,24 +127,24 @@ class TransferData:
         return ["".join([include_arg(ele) for ele in list_of_paths])]
 
     # -------------------------------------------------------------------------
-    # Search for non-sub / ses / dtype dirs and add them to list
+    # Search for non-sub / ses / dtype folders and add them to list
     # -------------------------------------------------------------------------
 
     def update_list_with_non_sub_top_level_folders(
         self, extra_folder_names, extra_filenames
     ):
-        top_level_dirs, top_level_files = folders.search_sub_or_ses_level(
+        top_level_folders, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             search_str="*",
         )
 
-        top_level_dirs = list(
-            filter(lambda dir: dir[:4] != "sub-", top_level_dirs)
+        top_level_folders = list(
+            filter(lambda dir: dir[:4] != "sub-", top_level_folders)
         )
 
-        extra_folder_names += top_level_dirs
+        extra_folder_names += top_level_folders
         extra_filenames += top_level_files
 
     def update_list_with_non_ses_sub_level_folders(
