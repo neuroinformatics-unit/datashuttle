@@ -170,7 +170,9 @@ class TestFileTransfer:
         pathtable, project = pathtable_and_project
 
         transfer_function = test_utils.handle_upload_or_download(
-            project, upload_or_download, swap_last_folder_only=project.testing_ssh
+            project,
+            upload_or_download,
+            swap_last_folder_only=project.testing_ssh,
         )[0]
 
         transfer_function(sub_names, ses_names, data_type, init_log=False)

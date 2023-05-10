@@ -303,7 +303,9 @@ def check_data_type_is_valid(
         valid_keys = list(cfg.data_type_folders.keys()) + ["all"]
         is_valid = all([type in valid_keys for type in data_type])
     else:
-        is_valid = data_type in cfg.data_type_folders.keys() or data_type == "all"
+        is_valid = (
+            data_type in cfg.data_type_folders.keys() or data_type == "all"
+        )
 
     if error_on_fail and not is_valid:
         utils.log_and_raise_error(

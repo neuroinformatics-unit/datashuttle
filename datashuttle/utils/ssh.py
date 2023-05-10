@@ -198,11 +198,11 @@ def search_ssh_remote_for_folders(
 
         sftp = client.open_sftp()
 
-        all_foldernames, all_filenames = get_list_of_folder_names_over_sftp(
+        all_folder_names, all_filenames = get_list_of_folder_names_over_sftp(
             sftp, search_path, search_prefix
         )
 
-    return all_foldernames, all_filenames
+    return all_folder_names, all_filenames
 
 
 def get_list_of_folder_names_over_sftp(
@@ -223,7 +223,7 @@ def get_list_of_folder_names_over_sftp(
     search_prefix : prefix (can include wildcards)
         to search folder names.
     """
-    all_foldernames = []
+    all_folder_names = []
     all_filenames = []
     try:
         for file_or_folder in sftp.listdir_attr(search_path.as_posix()):

@@ -175,7 +175,9 @@ class TestMakeFolders:
 
         for sub in subs:
             for ses in ["ses-001", "ses-="]:
-                test_utils.check_and_cd_folder(join(base_folder, sub, ses, "ephys"))
+                test_utils.check_and_cd_folder(
+                    join(base_folder, sub, ses, "ephys")
+                )
                 test_utils.check_and_cd_folder(
                     join(
                         base_folder,
@@ -187,7 +189,9 @@ class TestMakeFolders:
                 test_utils.check_and_cd_folder(
                     join(base_folder, sub, ses, "funcimg")
                 )
-                test_utils.check_and_cd_folder(join(base_folder, sub, "histology"))
+                test_utils.check_and_cd_folder(
+                    join(base_folder, sub, "histology")
+                )
 
     @pytest.mark.parametrize(
         "folder_key", test_utils.get_default_folder_used().keys()
@@ -243,10 +247,16 @@ class TestMakeFolders:
                 "change_ephys",
             )
         )
-        test_utils.check_and_cd_folder(join(base_folder, sub, ses, "change_behav"))
-        test_utils.check_and_cd_folder(join(base_folder, sub, ses, "change_funcimg"))
+        test_utils.check_and_cd_folder(
+            join(base_folder, sub, ses, "change_behav")
+        )
+        test_utils.check_and_cd_folder(
+            join(base_folder, sub, ses, "change_funcimg")
+        )
 
-        test_utils.check_and_cd_folder(join(base_folder, sub, "change_histology"))
+        test_utils.check_and_cd_folder(
+            join(base_folder, sub, "change_histology")
+        )
 
     @pytest.mark.parametrize(
         "files_to_test",

@@ -13,8 +13,8 @@ import paramiko
 from datashuttle.configs import load_configs
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
-    folders,
     ds_logger,
+    folders,
     formatting,
     rclone,
     ssh,
@@ -680,7 +680,9 @@ class DataShuttle:
             )
         else:
             self._start_log(
-                "update_config", local_vars=locals(), store_in_temp_folder=False
+                "update_config",
+                local_vars=locals(),
+                store_in_temp_folder=False,
             )
 
         if not self.cfg:

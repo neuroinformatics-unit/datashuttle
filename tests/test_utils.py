@@ -58,7 +58,9 @@ def setup_project_default_configs(
 
     warnings.filterwarnings("default")
 
-    project.update_config("local_path", project._datashuttle_path / "base_folder")
+    project.update_config(
+        "local_path", project._datashuttle_path / "base_folder"
+    )
 
     if local_path:
         project.update_config("local_path", local_path)
@@ -303,21 +305,17 @@ def check_folder_tree_is_correct(
                 ):
 
                     if folder.level == "sub":
-                        data_type_path = join(
-                            path_to_sub_folder, folder.name
-                        )
+                        data_type_path = join(path_to_sub_folder, folder.name)
                     elif folder.level == "ses":
-                        data_type_path = join(
-                            path_to_ses_folder, folder.name
-                        )
+                        data_type_path = join(path_to_ses_folder, folder.name)
 
                     check_and_cd_folder(data_type_path)
-                    check_and_cd_folder(join(data_type_path, ".datashuttle_meta"))
+                    check_and_cd_folder(
+                        join(data_type_path, ".datashuttle_meta")
+                    )
 
 
-def check_folder_is_used(
-    base_folder, folder, folder_used, key, sub, ses
-):
+def check_folder_is_used(base_folder, folder, folder_used, key, sub, ses):
     """
     Test whether the .used flag on the Folder class matched the expected
     state (provided in folder_used dict). If folder is not used, check
@@ -511,7 +509,9 @@ def handle_upload_or_download(
     """
     if upload_or_download == "download":
 
-        remote_path = swap_local_and_remote_paths(project, swap_last_folder_only)
+        remote_path = swap_local_and_remote_paths(
+            project, swap_last_folder_only
+        )
 
         transfer_function = (
             project.download_all if use_all_alias else project.download_data
@@ -573,7 +573,9 @@ def get_default_sub_sessions_to_test():
 
 def run_cli(command, project_name=None):
     """"""
-    name = get_protected_test_folder() if project_name is None else project_name
+    name = (
+        get_protected_test_folder() if project_name is None else project_name
+    )
 
     result = subprocess.Popen(
         " ".join(["datashuttle", name, command]),

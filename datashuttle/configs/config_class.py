@@ -234,7 +234,9 @@ class Configs(UserDict):
 
         base_folder = self.get_base_folder(base)
 
-        if utils.path_already_stars_with_base_folder(base_folder, sub_folders_path):
+        if utils.path_already_stars_with_base_folder(
+            base_folder, sub_folders_path
+        ):
             joined_path = sub_folders_path
         else:
             joined_path = base_folder / sub_folders_path
@@ -302,9 +304,7 @@ class Configs(UserDict):
 
     def init_data_type_folders(self):
         """"""
-        self.data_type_folders = canonical_folders.get_data_type_folders(
-            self
-        )
+        self.data_type_folders = canonical_folders.get_data_type_folders(self)
 
     def get_data_type_items(
         self, data_type: Union[str, list]
