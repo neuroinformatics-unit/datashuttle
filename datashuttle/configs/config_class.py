@@ -357,7 +357,7 @@ class Configs(UserDict):
                 data_type,
             )
         else:
-            data_type_items = folders.search_data_dirs_sub_or_ses_level(
+            data_type_items = folders.search_data_folders_sub_or_ses_level(
                 self,
                 base_folder,
                 local_or_remote,

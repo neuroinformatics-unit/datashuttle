@@ -116,7 +116,7 @@ def make_data_type_folders(
             make_datashuttle_metadata_folder(data_type_path, log)
 
 
-# Make Dirs Helpers --------------------------------------------------------------------------------------------------
+# Make Folderes Helpers ----------------------------------------------------------------
 
 
 def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
@@ -216,7 +216,7 @@ def check_no_duplicate_sub_ses_key_values(
 
 
 # --------------------------------------------------------------------
-# Search Existing Dirs
+# Search Existing Folderes
 # --------------------------------------------------------------------
 
 # Search Subjects / Sessions
@@ -251,7 +251,7 @@ def search_sub_or_ses_level(
 
     ses: either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)
-        then the session dir is searched
+        then the session folder is searched
 
     str: glob-format search string to search at the
         folder level.
@@ -268,14 +268,14 @@ def search_sub_or_ses_level(
     if ses:
         base_folder = base_folder / ses
 
-    all_dirnames, all_filenames = search_for_folders(
+    all_folder_names, all_filenames = search_for_folders(
         cfg, base_folder, local_or_remote, search_str
     )
 
-    return all_dirnames, all_filenames
+    return all_folder_names, all_filenames
 
 
-def search_data_dirs_sub_or_ses_level(
+def search_data_folders_sub_or_ses_level(
     cfg: Configs,
     base_folder: Path,
     local_or_remote: str,
@@ -431,7 +431,7 @@ def search_for_folders(  # TODO: change name
     """
     if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
 
-        all_dirnames, all_filenames = ssh.search_ssh_remote_for_folders(
+        all_folder_names, all_filenames = ssh.search_ssh_remote_for_folders(
             search_path,
             search_prefix,
             cfg,
@@ -442,10 +442,10 @@ def search_for_folders(  # TODO: change name
             utils.log_and_message(f"No file found at {search_path.as_posix()}")
             return [], []
 
-        all_dirnames, all_filenames = search_filesystem_path_for_folders(
+        all_folder_names, all_filenames = search_filesystem_path_for_folders(
             search_path / search_prefix
         )
-    return all_dirnames, all_filenames
+    return all_folder_names, all_filenames
 
 
 def search_filesystem_path_for_folders(
@@ -455,11 +455,11 @@ def search_filesystem_path_for_folders(
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning folders only.
     """
-    all_dirnames = []
+    all_folder_names = []
     all_filenames = []
     for file_or_dir in glob.glob(search_path_with_prefix.as_posix()):
         if os.path.isdir(file_or_dir):
-            all_dirnames.append(os.path.basename(file_or_dir))
+            all_folder_names.append(os.path.basename(file_or_dir))
         else:
             all_filenames.append(os.path.basename(file_or_dir))
-    return all_dirnames, all_filenames
+    return all_folder_names, all_filenames

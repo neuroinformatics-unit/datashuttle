@@ -396,7 +396,7 @@ class TestFileTransfer:
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("transfer_file", [True, False])
     @pytest.mark.parametrize("full_path", [True, False])
-    def test_specific_file_or_dir(
+    def test_specific_file_or_folder(
         self, project, transfer_file, full_path, upload_or_download
     ):
         """

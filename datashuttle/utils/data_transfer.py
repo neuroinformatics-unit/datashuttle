@@ -168,7 +168,7 @@ class TransferData:
             lambda folder: folder[:4] != "ses-" and folder not in sub_level_dtype,
             sub_level_folders,
         )
-        extra_folder_names += ["/".join([sub, dir]) for dir in filt_sub_level_folders]
+        extra_folder_names += ["/".join([sub, folder]) for folder in filt_sub_level_folders]
         extra_filenames += ["/".join([sub, file]) for file in sub_level_files]
 
     def update_list_with_non_dtype_ses_level_folders(
@@ -193,10 +193,10 @@ class TransferData:
             if dtype.level == "ses"
         ]
         filt_ses_level_folders = filter(
-            lambda folder: dir not in ses_level_dtype, ses_level_folders
+            lambda folder: folder not in ses_level_dtype, ses_level_folders
         )
         extra_folder_names += [
-            "/".join([sub, ses, dir]) for dir in filt_ses_level_folders
+            "/".join([sub, ses, folder]) for folder in filt_ses_level_folders
         ]
         extra_filenames += [
             "/".join([sub, ses, file]) for file in ses_level_filenames
