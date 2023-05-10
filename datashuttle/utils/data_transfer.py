@@ -77,14 +77,14 @@ class TransferData:
                 sub,
             )
 
-            # sessions at sub level dir ---------------------------------------
+            # sessions at sub level folder ---------------------------------------
 
             processed_ses_names = self.get_processed_names(self.ses_names, sub)
 
             for ses in processed_ses_names:
 
                 if ses == "all_non_ses":
-                    self.update_list_with_non_ses_sub_level_dirs(
+                    self.update_list_with_non_ses_sub_level_folders(
                         extra_folder_names, extra_filenames, sub
                     )
 
@@ -147,7 +147,7 @@ class TransferData:
         extra_folder_names += top_level_dirs
         extra_filenames += top_level_files
 
-    def update_list_with_non_ses_sub_level_dirs(
+    def update_list_with_non_ses_sub_level_folders(
         self, extra_folder_names, extra_filenames, sub
     ):
         """ """
