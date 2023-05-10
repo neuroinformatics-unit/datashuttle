@@ -106,10 +106,10 @@ def make_data_type_folders(
     """
     data_type_items = cfg.get_data_type_items(data_type)
 
-    for data_type_key, data_type_dir in data_type_items:  # type: ignore
+    for data_type_key, data_type_folder in data_type_items:  # type: ignore
 
-        if data_type_dir.used and data_type_dir.level == level:
-            data_type_path = sub_or_ses_level_path / data_type_dir.name
+        if data_type_folder.used and data_type_folder.level == level:
+            data_type_path = sub_or_ses_level_path / data_type_folder.name
 
             make_folders(data_type_path, log)
 

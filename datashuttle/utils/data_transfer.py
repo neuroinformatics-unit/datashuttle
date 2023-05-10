@@ -165,7 +165,7 @@ class TransferData:
         ]
 
         filt_sub_level_folders = filter(
-            lambda dir: dir[:4] != "ses-" and dir not in sub_level_dtype,
+            lambda folder: folder[:4] != "ses-" and dir not in sub_level_dtype,
             sub_level_folders,
         )
         extra_folder_names += ["/".join([sub, dir]) for dir in filt_sub_level_folders]
@@ -224,13 +224,13 @@ class TransferData:
 
         level = "ses" if ses else "sub"
 
-        for data_type_key, data_type_dir in data_type_items:  # type: ignore
+        for data_type_key, data_type_folder in data_type_items:  # type: ignore
 
-            if data_type_dir.level == level:
+            if data_type_folder.level == level:
                 if ses:
-                    filepath = Path(sub) / ses / data_type_dir.name
+                    filepath = Path(sub) / ses / data_type_folder.name
                 else:
-                    filepath = Path(sub) / data_type_dir.name
+                    filepath = Path(sub) / data_type_folder.name
 
                 sub_ses_dtype_include.append(filepath.as_posix())
 
