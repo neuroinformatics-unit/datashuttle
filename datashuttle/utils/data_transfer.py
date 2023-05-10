@@ -93,7 +93,7 @@ class TransferData:
                 # Datatype (sub and ses level) --------------------------------
 
                 if self.transfer_non_data_type(self.data_type):
-                    self.update_list_with_non_dtype_ses_level_dirs(
+                    self.update_list_with_non_dtype_ses_level_folders(
                         extra_folder_names, extra_filenames, sub, ses
                     )
 
@@ -171,7 +171,7 @@ class TransferData:
         extra_folder_names += ["/".join([sub, dir]) for dir in filt_sub_level_dirs]
         extra_filenames += ["/".join([sub, file]) for file in sub_level_files]
 
-    def update_list_with_non_dtype_ses_level_dirs(
+    def update_list_with_non_dtype_ses_level_folders(
         self, extra_folder_names, extra_filenames, sub, ses
     ):
 
