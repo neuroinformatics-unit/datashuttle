@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g2296d06</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g0ad4382</p>
   
 </a></div>
     
@@ -335,7 +335,7 @@ document.write(`
 <span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">load_configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.configs.config_class</span> <span class="kn">import</span> <span class="n">Configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">directories</span><span class="p">,</span>
+    <span class="n">folders</span><span class="p">,</span>
     <span class="n">ds_logger</span><span class="p">,</span>
     <span class="n">formatting</span><span class="p">,</span>
     <span class="n">rclone</span><span class="p">,</span>
@@ -370,7 +370,7 @@ document.write(`
 
 <span class="sd">    Datashuttle will save logs to a .datashuttle folder</span>
 <span class="sd">    in the main local project. These logs contain</span>
-<span class="sd">    detailed information on directory creation / transfer.</span>
+<span class="sd">    detailed information on folder creation / transfer.</span>
 <span class="sd">    To get the path to datashuttle logs, use</span>
 <span class="sd">    cfgs.make_and_get_logging_path().</span>
 
@@ -383,12 +383,12 @@ document.write(`
 <span class="sd">    ----------</span>
 
 <span class="sd">    project_name : The project name to use the datashuttle</span>
-<span class="sd">                   Directories containing all project files</span>
-<span class="sd">                   and folderes are specified in make_config_file().</span>
+<span class="sd">                   Folders containing all project files</span>
+<span class="sd">                   and folders are specified in make_config_file().</span>
 <span class="sd">                   Datashuttle-related files are stored in</span>
-<span class="sd">                   a .datashuttle directory in the user home</span>
-<span class="sd">                   directory. Use get_datashuttle_path() to</span>
-<span class="sd">                   see the path to this directory.</span>
+<span class="sd">                   a .datashuttle folder in the user home</span>
+<span class="sd">                   folder. Use get_datashuttle_path() to</span>
+<span class="sd">                   see the path to this folder.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -424,27 +424,27 @@ document.write(`
 <span class="sd">        Once config file is loaded, update all private attributes</span>
 <span class="sd">        according to config contents.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_dir_name</span> <span class="o">=</span> <span class="s2">&quot;rawdata&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="s2">&quot;rawdata&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_paths</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_make_project_metadata_if_does_not_exist</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_data_type_dirs</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_data_type_folders</span><span class="p">()</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
-    <span class="c1"># Public Directory Makers</span>
+    <span class="c1"># Public Folder Makers</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.make_sub_dir"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_dir">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">make_sub_dir</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.make_sub_folders"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_folders">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">make_sub_folders</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a subject / session directory tree in the project</span>
+<span class="sd">        Create a subject / session folder tree in the project</span>
 <span class="sd">        folder.</span>
 
 <span class="sd">        Parameters</span>
@@ -452,19 +452,19 @@ document.write(`
 
 <span class="sd">        sub_names :</span>
 <span class="sd">                subject name / list of subject names to make</span>
-<span class="sd">                within the top-level project directory</span>
+<span class="sd">                within the top-level project folder</span>
 <span class="sd">                (if not already, these will be prefixed with</span>
 <span class="sd">                &quot;sub-&quot;)</span>
 <span class="sd">        ses_names :</span>
 <span class="sd">                (Optional). session name / list of session names.</span>
 <span class="sd">                (if not already, these will be prefixed with</span>
 <span class="sd">                &quot;ses-&quot;). If no session is provided, no session-level</span>
-<span class="sd">                directories are made.</span>
+<span class="sd">                folders are made.</span>
 <span class="sd">        data_type :</span>
-<span class="sd">                The data_type to make in the sub / ses directories.</span>
+<span class="sd">                The data_type to make in the sub / ses folders.</span>
 <span class="sd">                (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;histology&quot;). Only data_types</span>
 <span class="sd">                that are enabled in the configs (e.g. use_behav) will be</span>
-<span class="sd">                created. If &quot;all&quot; is selected, directories will be created</span>
+<span class="sd">                created. If &quot;all&quot; is selected, folders will be created</span>
 <span class="sd">                for all data_type enabled in config. Use empty string &quot;&quot; for</span>
 <span class="sd">                none.</span>
 
@@ -486,13 +486,13 @@ document.write(`
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        project.make_sub_dir(&quot;sub-001&quot;, data_type=&quot;all&quot;)</span>
+<span class="sd">        project.make_sub_folders(&quot;sub-001&quot;, data_type=&quot;all&quot;)</span>
 
-<span class="sd">        project.make_sub_dir(&quot;sub-002@TO@005&quot;,</span>
+<span class="sd">        project.make_sub_folders(&quot;sub-002@TO@005&quot;,</span>
 <span class="sd">                             [&quot;ses-001&quot;, &quot;ses-002&quot;],</span>
 <span class="sd">                             [&quot;ephys&quot;, &quot;behav&quot;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;make_sub_dir&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;make_sub_folders&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Formatting Names...&quot;</span><span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">([</span><span class="s2">&quot;sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;ses_names&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">])</span>
@@ -511,9 +511,9 @@ document.write(`
             <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">],</span>
         <span class="p">)</span>
 
-        <span class="n">directories</span><span class="o">.</span><span class="n">check_no_duplicate_sub_ses_key_values</span><span class="p">(</span>
+        <span class="n">folders</span><span class="o">.</span><span class="n">check_no_duplicate_sub_ses_key_values</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">base_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
+            <span class="n">base_folder</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_folder</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
             <span class="n">new_sub_names</span><span class="o">=</span><span class="n">sub_names</span><span class="p">,</span>
             <span class="n">new_ses_names</span><span class="o">=</span><span class="n">ses_names</span><span class="p">,</span>
         <span class="p">)</span>
@@ -521,8 +521,8 @@ document.write(`
         <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ses_names</span> <span class="o">=</span> <span class="p">[]</span>
 
-        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Making directories...&quot;</span><span class="p">)</span>
-        <span class="n">directories</span><span class="o">.</span><span class="n">make_directory_trees</span><span class="p">(</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Making folders...&quot;</span><span class="p">)</span>
+        <span class="n">folders</span><span class="o">.</span><span class="n">make_folder_trees</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
@@ -534,8 +534,8 @@ document.write(`
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Finished making directories. </span><span class="se">\n</span><span class="s2">For log of all created &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;directories, please see </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Finished making folders. </span><span class="se">\n</span><span class="s2">For log of all created &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;folders, please see </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
@@ -554,10 +554,10 @@ document.write(`
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload data from a local project to the remote project</span>
-<span class="sd">        directory. In the case that a file / directory exists on</span>
+<span class="sd">        folder. In the case that a file / folder exists on</span>
 <span class="sd">        the remote and local, the remote will not be overwritten</span>
 <span class="sd">        even if the remote file is an older version. Data</span>
-<span class="sd">        transfer logs are saved to the logging directory).</span>
+<span class="sd">        transfer logs are saved to the logging folder).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
@@ -566,8 +566,8 @@ document.write(`
 <span class="sd">            a subject name / list of subject names. These must</span>
 <span class="sd">            be prefixed with &quot;sub-&quot;, or the prefix will be</span>
 <span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
-<span class="sd">            &quot;all&quot; will search for all subdirectories in the</span>
-<span class="sd">            data type directory to upload.</span>
+<span class="sd">            &quot;all&quot; will search for all subfolders in the</span>
+<span class="sd">            data type folder to upload.</span>
 <span class="sd">        ses_names :</span>
 <span class="sd">            a session name / list of session names, similar to</span>
 <span class="sd">            sub_names but requring a &quot;ses-&quot; prefix.</span>
@@ -576,7 +576,7 @@ document.write(`
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        data_type :</span>
-<span class="sd">            see make_sub_dir()</span>
+<span class="sd">            see make_sub_folders()</span>
 
 <span class="sd">        init_log :</span>
 <span class="sd">            (Optional). Whether to start the logger. This should</span>
@@ -624,8 +624,8 @@ document.write(`
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download data from the remote project directory to the</span>
-<span class="sd">        local project directory. In the case that a file / directory</span>
+<span class="sd">        Download data from the remote project folder to the</span>
+<span class="sd">        local project folder. In the case that a file / folder</span>
 <span class="sd">        exists on the remote and local, the local will</span>
 <span class="sd">        not be overwritten even if the remote file is an</span>
 <span class="sd">        older version.</span>
@@ -672,21 +672,21 @@ document.write(`
         <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_project_dir_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_dir_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_folder_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload a specific file or directory. If transferring</span>
+<span class="sd">        Upload a specific file or folder. If transferring</span>
 <span class="sd">        a single file, the path including the filename is</span>
-<span class="sd">        required (see &#39;filepath&#39; input). If a directory,</span>
+<span class="sd">        required (see &#39;filepath&#39; input). If a folder,</span>
 <span class="sd">        wildcards &quot;*&quot; or &quot;**&quot; must be used to transfer</span>
-<span class="sd">        all files in the directory (&quot;*&quot;) or all files</span>
+<span class="sd">        all files in the folder (&quot;*&quot;) or all files</span>
 <span class="sd">        and sub-folders (&quot;**&quot;), otherwise the empty folder</span>
 <span class="sd">        only will be transferred.</span>
 
-<span class="sd">        e.g. &quot;sub-001/ses-002/my_directory/**&quot;</span>
+<span class="sd">        e.g. &quot;sub-001/ses-002/my_folder/**&quot;</span>
 
-<span class="sd">        This function works by passing the file / directory</span>
+<span class="sd">        This function works by passing the file / folder</span>
 <span class="sd">        path to transfer to Rclone&#39;s --include flag.</span>
 
 <span class="sd">        Parameters</span>
@@ -694,7 +694,7 @@ document.write(`
 
 <span class="sd">        filepath :</span>
 <span class="sd">            a string containing the filepath to move,</span>
-<span class="sd">            relative to the project directory &quot;rawdata&quot;</span>
+<span class="sd">            relative to the project folder &quot;rawdata&quot;</span>
 <span class="sd">            or &quot;derivatives&quot; path (depending on which is currently</span>
 <span class="sd">            set). Alternatively, the entire path is accepted.</span>
 <span class="sd">        dry_run :</span>
@@ -702,10 +702,10 @@ document.write(`
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_project_dir_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_project_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
-        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_dir</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
+        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_folder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_folder</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
         <span class="p">)</span>
 
@@ -721,21 +721,21 @@ document.write(`
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_project_dir_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_project_dir_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_project_dir_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_project_folder_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download a specific file or directory. If transferring</span>
+<span class="sd">        Download a specific file or folder. If transferring</span>
 <span class="sd">        a single file, the path including the filename is</span>
-<span class="sd">        required (see &#39;filepath&#39; input). If a directory,</span>
+<span class="sd">        required (see &#39;filepath&#39; input). If a folder,</span>
 <span class="sd">        wildcards &quot;*&quot; or &quot;**&quot; must be used to transfer</span>
-<span class="sd">        all files in the directory (&quot;*&quot;) or all files</span>
+<span class="sd">        all files in the folder (&quot;*&quot;) or all files</span>
 <span class="sd">        and sub-folders (&quot;**&quot;), otherwise the empty folder</span>
 <span class="sd">        only will be transferred.</span>
 
-<span class="sd">        e.g. &quot;sub-001/ses-002/my_directory/**&quot;</span>
+<span class="sd">        e.g. &quot;sub-001/ses-002/my_folder/**&quot;</span>
 
-<span class="sd">        This function works by passing the file / directory</span>
+<span class="sd">        This function works by passing the file / folder</span>
 <span class="sd">        path to transfer to Rclone&#39;s --include flag.</span>
 
 <span class="sd">        Parameters</span>
@@ -743,7 +743,7 @@ document.write(`
 
 <span class="sd">        filepath :</span>
 <span class="sd">            a string containing the filepath to move,</span>
-<span class="sd">            relative to the project directory &quot;rawdata&quot;</span>
+<span class="sd">            relative to the project folder &quot;rawdata&quot;</span>
 <span class="sd">            or &quot;derivatives&quot; path (depending on which is currently</span>
 <span class="sd">            set). Alternatively, the entire path is accepted.</span>
 <span class="sd">        dry_run :</span>
@@ -751,10 +751,10 @@ document.write(`
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_project_dir_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_project_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
-        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_dir</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_dir</span><span class="p">(</span><span class="s2">&quot;remote&quot;</span><span class="p">),</span>
+        <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_folder</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_folder</span><span class="p">(</span><span class="s2">&quot;remote&quot;</span><span class="p">),</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
         <span class="p">)</span>
 
@@ -807,7 +807,7 @@ document.write(`
 <div class="viewcode-block" id="DataShuttle.write_public_key"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.write_public_key">[docs]</a>    <span class="k">def</span> <span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        By default, the SSH private key only is stored, in</span>
-<span class="sd">        the datashuttle configs directory. Use this function</span>
+<span class="sd">        the datashuttle configs folder. Use this function</span>
 <span class="sd">        to save the public key.</span>
 
 <span class="sd">        Parameters</span>
@@ -852,7 +852,7 @@ document.write(`
 <span class="sd">        can also be used to completely overwrite existing configs.</span>
 
 <span class="sd">        These settings are stored in a config file on the</span>
-<span class="sd">        datashuttle path (not in the project directory)</span>
+<span class="sd">        datashuttle path (not in the project folder)</span>
 <span class="sd">        on the local machine. Use get_config_path() to</span>
 <span class="sd">        get the full path to the saved config file.</span>
 
@@ -863,16 +863,16 @@ document.write(`
 <span class="sd">        ----------</span>
 
 <span class="sd">        local_path :</span>
-<span class="sd">            path to project dir on local machine</span>
+<span class="sd">            path to project folder on local machine</span>
 
 <span class="sd">        remote_path :</span>
 <span class="sd">            Filepath to remote project.</span>
 <span class="sd">            If this is local (i.e. connection_method = &quot;local_filesystem&quot;),</span>
 <span class="sd">            this is the full path on the local filesystem</span>
 <span class="sd">            Otherwise, if this is via ssh (i.e. connection method = &quot;ssh&quot;),</span>
-<span class="sd">            this is the path to the project directory on remote machine.</span>
-<span class="sd">            This should be a full path to remote directory i.e. this cannot</span>
-<span class="sd">            include ~ home directory syntax, must contain the full path</span>
+<span class="sd">            this is the path to the project folder on remote machine.</span>
+<span class="sd">            This should be a full path to remote folder i.e. this cannot</span>
+<span class="sd">            include ~ home folder syntax, must contain the full path</span>
 <span class="sd">            (e.g. /nfs/nhome/live/jziminski)</span>
 
 <span class="sd">        connection_method :</span>
@@ -890,11 +890,11 @@ document.write(`
 <span class="sd">        overwrite_old_files :</span>
 <span class="sd">            If True, when copying data (upload or download) files</span>
 <span class="sd">            will be overwritten if the timestamp of the copied</span>
-<span class="sd">            version is later than the target directory version</span>
+<span class="sd">            version is later than the target folder version</span>
 <span class="sd">            of the file i.e. edits made to a file in the source</span>
 <span class="sd">            machine will be copied to the target machine. If False,</span>
 <span class="sd">            a file will be copied if it does not exist on the target</span>
-<span class="sd">            directory, otherwise it will never be copied, even if</span>
+<span class="sd">            folder, otherwise it will never be copied, even if</span>
 <span class="sd">            the source version of the file has a later timestamp.</span>
 
 <span class="sd">        transfer_verbosity :</span>
@@ -906,22 +906,22 @@ document.write(`
 <span class="sd">            If true, the real-time progress of file transfers will be printed.</span>
 
 <span class="sd">        use_ephys :</span>
-<span class="sd">            if True, will allow ephys directory creation</span>
+<span class="sd">            if True, will allow ephys folder creation</span>
 
 <span class="sd">        use_funcimg :</span>
-<span class="sd">            if True, will allow funcimg directory creation</span>
+<span class="sd">            if True, will allow funcimg folder creation</span>
 
 <span class="sd">        use_histology :</span>
-<span class="sd">            if True, will allow histology directory creation</span>
+<span class="sd">            if True, will allow histology folder creation</span>
 
 <span class="sd">        use_behav :</span>
-<span class="sd">            if True, will allow behav directory creation</span>
+<span class="sd">            if True, will allow behav folder creation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;make_config_file&quot;</span><span class="p">,</span>
             <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
-            <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">temp_dir_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+            <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">temp_folder_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">Configs</span><span class="p">(</span>
@@ -957,10 +957,8 @@ document.write(`
             <span class="s2">&quot;options loaded into datashuttle.&quot;</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">()</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span>
-        <span class="k">except</span><span class="p">:</span>
-            <span class="nb">breakpoint</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_folder</span><span class="p">()</span>
+
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.update_config"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span>
@@ -988,23 +986,23 @@ document.write(`
 <span class="sd">        If the local_path project already exists, the config log will be</span>
 <span class="sd">        written to the original local_path, and future logs will</span>
 <span class="sd">        be written to the new local path. However, if a local_path does</span>
-<span class="sd">        not exist, move to a temp_dir and then move the logs to the</span>
+<span class="sd">        not exist, move to a temp_folder and then move the logs to the</span>
 <span class="sd">        new local_path if successful.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">store_logs_in_temp_dir</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">store_logs_in_temp_folder</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">option_key</span> <span class="o">==</span> <span class="s2">&quot;local_path&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_path_exists</span><span class="p">()</span>
         <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">store_logs_in_temp_folder</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
                 <span class="s2">&quot;update_config&quot;</span><span class="p">,</span>
                 <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
-                <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">temp_dir_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">temp_folder_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-                <span class="s2">&quot;update_config&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span> <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">False</span>
+                <span class="s2">&quot;update_config&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span> <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
@@ -1019,8 +1017,8 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">store_logs_in_temp_folder</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_folder</span><span class="p">()</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
@@ -1054,19 +1052,19 @@ document.write(`
 <span class="sd">            config will overwrite existing config.</span>
 <span class="sd">            Turned off for testing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">store_logs_in_temp_dir</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_path_exists</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
+        <span class="n">store_logs_in_temp_folder</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_path_exists</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">store_logs_in_temp_folder</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
                 <span class="s2">&quot;supply_config_file&quot;</span><span class="p">,</span>
                 <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
-                <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                <span class="n">temp_dir_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+                <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">temp_folder_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
                 <span class="s2">&quot;supply_config_file&quot;</span><span class="p">,</span>
                 <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
-                <span class="n">store_in_temp_dir</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="n">path_to_config</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">input_path_to_config</span><span class="p">)</span>
@@ -1082,8 +1080,8 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">dump_to_file</span><span class="p">()</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_log_successful_config_change</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">store_logs_in_temp_dir</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_dir</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">store_logs_in_temp_folder</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_move_logs_from_temp_folder</span><span class="p">()</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
@@ -1099,7 +1097,7 @@ document.write(`
 <div class="viewcode-block" id="DataShuttle.get_datashuttle_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_datashuttle_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the path to the local datashuttle</span>
-<span class="sd">        directory where configs another other</span>
+<span class="sd">        folder where configs another other</span>
 <span class="sd">        datashuttle files are stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
@@ -1126,7 +1124,7 @@ document.write(`
 
 <div class="viewcode-block" id="DataShuttle.show_local_tree"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_tree">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print a tree schematic of all files and directories</span>
+<span class="sd">        Print a tree schematic of all files and folders</span>
 <span class="sd">        in the local project.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span></div>
@@ -1135,7 +1133,7 @@ document.write(`
     <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
-<span class="sd">        for example as when passed to make_sub_dir() or upload_data() or</span>
+<span class="sd">        for example as when passed to make_sub_folders() or upload_data() or</span>
 <span class="sd">        download_data()</span>
 
 <span class="sd">        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.</span>
@@ -1194,8 +1192,8 @@ document.write(`
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">local_vars</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">store_in_temp_dir</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">temp_dir_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">store_in_temp_folder</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">temp_folder_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1212,14 +1210,14 @@ document.write(`
 <span class="sd">        local_vars : local_vars are passed to fancylog variables argument.</span>
 <span class="sd">                 see ds_logger.wrap_variables_for_fancylog for more info</span>
 
-<span class="sd">        store_in_temp_dir :</span>
+<span class="sd">        store_in_temp_folder :</span>
 <span class="sd">            if False, existing logging path will be used</span>
 <span class="sd">            (local project .datashuttle). If &quot;default&quot;&quot;, the temp</span>
 <span class="sd">            log backup will be used. Otherwise, expect a path / string</span>
 <span class="sd">            to the new path to make the logs at.</span>
 
-<span class="sd">        temp_dir_path :</span>
-<span class="sd">            if &quot;default&quot;, use the default temp dir path stored at</span>
+<span class="sd">        temp_folder_path :</span>
+<span class="sd">            if &quot;default&quot;, use the default temp folder path stored at</span>
 <span class="sd">            self._temp_log_path otherwise a full path to save the log at.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">local_vars</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1229,23 +1227,23 @@ document.write(`
                 <span class="n">local_vars</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span>
             <span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">store_in_temp_dir</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">store_in_temp_folder</span><span class="p">:</span>
             <span class="n">path_to_save</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span>
-                <span class="k">if</span> <span class="n">temp_dir_path</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span>
-                <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_dir_path</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">temp_folder_path</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span>
+                <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">temp_folder_path</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">path_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_move_logs_from_temp_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_move_logs_from_temp_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Logs are stored within the project directory. Although</span>
+<span class="sd">        Logs are stored within the project folder. Although</span>
 <span class="sd">        in some instances, when setting configs, we do not know what</span>
-<span class="sd">        the project directory is. In this case, make the logs</span>
-<span class="sd">        in a temp folder in the .datashuttle config dir,</span>
+<span class="sd">        the project folder is. In this case, make the logs</span>
+<span class="sd">        in a temp folder in the .datashuttle config folder,</span>
 <span class="sd">        and move them to the project folder once set.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="ow">or</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
@@ -1296,7 +1294,7 @@ document.write(`
 <span class="sd">        Within the project local_path is also a .datashuttle</span>
 <span class="sd">        folder that contains additional information, e.g. logs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">directories</span><span class="o">.</span><span class="n">make_dirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">folders</span><span class="o">.</span><span class="n">make_folders</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_setup_rclone_remote_ssh_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
         <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
