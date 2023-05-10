@@ -190,7 +190,7 @@ class TestMakeFolders:
                 test_utils.check_and_cd_folder(join(base_folder, sub, "histology"))
 
     @pytest.mark.parametrize(
-        "dir_key", test_utils.get_default_folder_used().keys()
+        "folder_key", test_utils.get_default_folder_used().keys()
     )
     def test_turn_off_specific_folder_used(self, project, folder_key):
         """
