@@ -141,7 +141,7 @@ class TransferData:
         )
 
         top_level_folders = list(
-            filter(lambda dir: dir[:4] != "sub-", top_level_folders)
+            filter(lambda folder: folder[:4] != "sub-", top_level_folders)
         )
 
         extra_folder_names += top_level_folders
@@ -151,7 +151,7 @@ class TransferData:
         self, extra_folder_names, extra_filenames, sub
     ):
         """ """
-        sub_level_dirs, sub_level_files = folders.search_sub_or_ses_level(
+        sub_level_folders, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
@@ -164,11 +164,11 @@ class TransferData:
             if dtype.level == "sub"
         ]
 
-        filt_sub_level_dirs = filter(
+        filt_sub_level_folders = filter(
             lambda dir: dir[:4] != "ses-" and dir not in sub_level_dtype,
-            sub_level_dirs,
+            sub_level_folders,
         )
-        extra_folder_names += ["/".join([sub, dir]) for dir in filt_sub_level_dirs]
+        extra_folder_names += ["/".join([sub, dir]) for dir in filt_sub_level_folders]
         extra_filenames += ["/".join([sub, file]) for file in sub_level_files]
 
     def update_list_with_non_dtype_ses_level_folders(
