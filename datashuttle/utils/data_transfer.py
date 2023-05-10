@@ -165,7 +165,7 @@ class TransferData:
         ]
 
         filt_sub_level_folders = filter(
-            lambda folder: folder[:4] != "ses-" and dir not in sub_level_dtype,
+            lambda folder: folder[:4] != "ses-" and folder not in sub_level_dtype,
             sub_level_folders,
         )
         extra_folder_names += ["/".join([sub, dir]) for dir in filt_sub_level_folders]
@@ -176,7 +176,7 @@ class TransferData:
     ):
 
         (
-            ses_level_dirs,
+            ses_level_folders,
             ses_level_filenames,
         ) = folders.search_sub_or_ses_level(
             self.cfg,
@@ -192,11 +192,11 @@ class TransferData:
             for dtype in self.cfg.data_type_folders.values()
             if dtype.level == "ses"
         ]
-        filt_ses_level_dirs = filter(
-            lambda dir: dir not in ses_level_dtype, ses_level_dirs
+        filt_ses_level_folders = filter(
+            lambda folder: dir not in ses_level_dtype, ses_level_folders
         )
         extra_folder_names += [
-            "/".join([sub, ses, dir]) for dir in filt_ses_level_dirs
+            "/".join([sub, ses, dir]) for dir in filt_ses_level_folders
         ]
         extra_filenames += [
             "/".join([sub, ses, file]) for file in ses_level_filenames
