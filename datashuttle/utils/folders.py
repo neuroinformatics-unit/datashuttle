@@ -16,11 +16,11 @@ from datashuttle.configs.canonical_tags import tags
 from . import formatting, ssh, utils
 
 # --------------------------------------------------------------------------------------------------------------------
-# Make Dirs
+# Make Folders
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def make_directory_trees(
+def make_folder_trees(
     cfg: Configs,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
@@ -28,10 +28,10 @@ def make_directory_trees(
     log: bool = True,
 ) -> None:
     """
-    Entry method to make a full directory tree. It will
+    Entry method to make a full folder tree. It will
     iterate through all passed subjects, then sessions, then
-    subdirs within a data_type directory. This
-    permits flexible creation of directories (e.g.
+    subfolders within a data_type folder. This
+    permits flexible creation of folders (e.g.
     to make subject only, do not pass session name.
 
     Ensure sub and ses names are already formatted
@@ -40,7 +40,7 @@ def make_directory_trees(
     Parameters
     ----------
 
-    sub_names, ses_names, data_type : see make_sub_dir()
+    sub_names, ses_names, data_type : see make_sub_folders()
 
     log : whether to log or not. If True, logging must
         already be initialised.
@@ -57,10 +57,10 @@ def make_directory_trees(
             sub,
         )
 
-        make_dirs(sub_path, log)
+        make_folders(sub_path, log)
 
         if data_type_passed:
-            make_data_type_directories(cfg, data_type, sub_path, "sub")
+            make_data_type_folders(cfg, data_type, sub_path, "sub")
 
         for ses in ses_names:
 
@@ -69,15 +69,15 @@ def make_directory_trees(
                 [sub, ses],
             )
 
-            make_dirs(ses_path, log)
+            make_folders(ses_path, log)
 
             if data_type_passed:
-                make_data_type_directories(
+                make_data_type_folders(
                     cfg, data_type, ses_path, "ses", log=log
                 )
 
 
-def make_data_type_directories(
+def make_data_type_folders(
     cfg: Configs,
     data_type: Union[list, str],
     sub_or_ses_level_path: Path,
@@ -86,7 +86,7 @@ def make_data_type_directories(
 ) -> None:
     """
     Make data_type folder (e.g. behav) at the sub or ses
-    level. Checks directory_class.Directories attributes,
+    level. Checks folder_class.Folders attributes,
     whether the data_type is used and at the current level.
 
     Parameters
@@ -95,11 +95,11 @@ def make_data_type_directories(
         empty string ("") for none.
 
     sub_or_ses_level_path : Full path to the subject
-        or session directory where the new directory
+        or session folder where the new folder
         will be written.
 
-    level : The directory level that the
-        directory will be made at, "sub" or "ses"
+    level : The folder level that the
+        folder will be made at, "sub" or "ses"
 
     log : whether to log on or not (if True, logging must
         already be initialised).
@@ -111,7 +111,7 @@ def make_data_type_directories(
         if data_type_dir.used and data_type_dir.level == level:
             data_type_path = sub_or_ses_level_path / data_type_dir.name
 
-            make_dirs(data_type_path, log)
+            make_folders(data_type_path, log)
 
             make_datashuttle_metadata_folder(data_type_path, log)
 
@@ -119,7 +119,7 @@ def make_data_type_directories(
 # Make Dirs Helpers --------------------------------------------------------------------------------------------------
 
 
-def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
+def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
     """
     For path or list of paths, make them if
     they do not already exist.
@@ -129,7 +129,7 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
 
     paths : Path or list of Paths to create
 
-    log : if True, log all made directories. This
+    log : if True, log all made folders. This
         requires the logger to already be initialised.
     """
     if isinstance(paths, Path):
@@ -140,7 +140,7 @@ def make_dirs(paths: Union[Path, List[Path]], log: bool = True) -> None:
         if not path_.is_dir():
             path_.mkdir(parents=True)
             if log:
-                utils.log(f"Made directory at path: {path_}")
+                utils.log(f"Made folder at path: {path_}")
 
 
 def make_datashuttle_metadata_folder(
@@ -148,26 +148,26 @@ def make_datashuttle_metadata_folder(
 ) -> None:
     """
     Make a .datashuttle folder (this is created
-    in the local_path for logs and User directory
-    for configs). See make_dirs() for arguments.
+    in the local_path for logs and User folder
+    for configs). See make_folders() for arguments.
     """
     meta_folder_path = full_path / ".datashuttle_meta"
-    make_dirs(meta_folder_path, log)
+    make_folders(meta_folder_path, log)
 
 
 def check_no_duplicate_sub_ses_key_values(
     project: DataShuttle,
-    base_dir: Path,
+    base_folder: Path,
     new_sub_names: List[str],
     new_ses_names: Optional[List[str]] = None,
 ) -> None:
     """
     Given a list of subject and optional session names,
     check whether these already exist in the local project
-    directory.
+    folder.
 
     This uses search_sub_or_ses_level() to search the local
-    directory and then checks for the putative new subject
+    folder and then checks for the putative new subject
     or session names to determine any matches.
 
     Parameters
@@ -175,7 +175,7 @@ def check_no_duplicate_sub_ses_key_values(
 
     project : initialised datashuttle project
 
-    base_dir : local_path to search
+    base_folder : local_path to search
 
     new_sub_names : list of subject names that are being
      checked for duplicates
@@ -185,21 +185,21 @@ def check_no_duplicate_sub_ses_key_values(
     """
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
-            project.cfg, base_dir, "local"
+            project.cfg, base_folder, "local"
         )[0]
         existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
 
         for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
             if new_sub in existing_sub_values:
                 utils.log_and_raise_error(
-                    f"Cannot make directories. "
+                    f"Cannot make folders. "
                     f"The key sub-{new_sub} already exists in the project"
                 )
     else:
         # for each subject, check session level
         for sub in new_sub_names:
             existing_ses_names = search_sub_or_ses_level(
-                project.cfg, base_dir, "local", sub
+                project.cfg, base_folder, "local", sub
             )[0]
 
             existing_ses_values = utils.get_first_sub_ses_keys(
@@ -210,7 +210,7 @@ def check_no_duplicate_sub_ses_key_values(
 
                 if new_ses in existing_ses_values:
                     utils.log_and_raise_error(
-                        f"Cannot make directories. "
+                        f"Cannot make folders. "
                         f"The key ses-{new_ses} for {sub} already exists in the project"
                     )
 
@@ -225,7 +225,7 @@ def check_no_duplicate_sub_ses_key_values(
 
 def search_sub_or_ses_level(
     cfg: Configs,
-    base_dir: Path,
+    base_folder: Path,
     local_or_remote: str,
     sub: Optional[str] = None,
     ses: Optional[str] = None,
@@ -233,7 +233,7 @@ def search_sub_or_ses_level(
 ) -> Tuple[List[str], List[str]]:
     """
     Search project folder at the subject or session level.
-    Only returns directories
+    Only returns folders
 
     Parameters
     ----------
@@ -247,14 +247,14 @@ def search_sub_or_ses_level(
     local_or_remote : search in local or remote project
 
     sub : either a subject name (string) or None. If None, the search
-        is performed at the top_level_dir_name level
+        is performed at the top_level_folder_name level
 
     ses: either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)
         then the session dir is searched
 
     str: glob-format search string to search at the
-        directory level.
+        folder level.
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -263,13 +263,13 @@ def search_sub_or_ses_level(
         )
 
     if sub:
-        base_dir = base_dir / sub
+        base_folder = base_folder / sub
 
     if ses:
-        base_dir = base_dir / ses
+        base_folder = base_folder / ses
 
-    all_dirnames, all_filenames = search_for_directories(
-        cfg, base_dir, local_or_remote, search_str
+    all_dirnames, all_filenames = search_for_folders(
+        cfg, base_folder, local_or_remote, search_str
     )
 
     return all_dirnames, all_filenames
@@ -277,18 +277,18 @@ def search_sub_or_ses_level(
 
 def search_data_dirs_sub_or_ses_level(
     cfg: Configs,
-    base_dir: Path,
+    base_folder: Path,
     local_or_remote: str,
     sub: str,
     ses: Optional[str] = None,
 ) -> zip:
     """
-    Search  a subject or session directory specifically
+    Search  a subject or session folder specifically
     for data_types. First searches for all folders / files
-    in the directory, and then returns any dirs that
+    in the folder, and then returns any dirs that
     match data_type name.
 
-    see directories.search_sub_or_ses_level() for full
+    see folders.search_sub_or_ses_level() for full
     parameters list.
 
     Returns
@@ -297,20 +297,20 @@ def search_data_dirs_sub_or_ses_level(
     a format that mirrors dict.items()
     """
     search_results = search_sub_or_ses_level(
-        cfg, base_dir, local_or_remote, sub, ses
+        cfg, base_folder, local_or_remote, sub, ses
     )[0]
 
-    data_directories = process_glob_to_find_data_type_dirs(
+    data_folders = process_glob_to_find_data_type_folders(
         search_results,
-        cfg.data_type_dirs,
+        cfg.data_type_folders,
     )
 
-    return data_directories
+    return data_folders
 
 
 def search_for_wildcards(
     cfg: Configs,
-    base_dir: Path,
+    base_folder: Path,
     local_or_remote: str,
     all_names: List[str],
     sub: Optional[str] = None,
@@ -334,7 +334,7 @@ def search_for_wildcards(
 
     project : initialised datashuttle project
 
-    base_dir : directory to search for wildcards in
+    base_folder : folder to search for wildcards in
 
     local_or_remote : "local" or "remote" project path to
         search in
@@ -355,11 +355,11 @@ def search_for_wildcards(
 
             if sub:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_dir, local_or_remote, sub, search_str=name
+                    cfg, base_folder, local_or_remote, sub, search_str=name
                 )[0]
             else:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_dir, local_or_remote, search_str=name
+                    cfg, base_folder, local_or_remote, search_str=name
                 )[0]
 
             new_all_names += matching_names
@@ -377,9 +377,9 @@ def search_for_wildcards(
 # --------------------------------------------------------------------
 
 
-def process_glob_to_find_data_type_dirs(
-    directory_names: list,
-    data_type_dirs: dict,
+def process_glob_to_find_data_type_folders(
+    folder_names: list,
+    data_type_folders: dict,
 ) -> zip:
     """
     Process the results of glob on a sub or session level,
@@ -394,16 +394,16 @@ def process_glob_to_find_data_type_dirs(
     """
     ses_dir_keys = []
     ses_dir_values = []
-    for dir_name in directory_names:
+    for dir_name in folder_names:
         data_type_key = [
             key
-            for key, value in data_type_dirs.items()
+            for key, value in data_type_folders.items()
             if value.name == dir_name
         ]
 
         if data_type_key:
             ses_dir_keys.append(data_type_key[0])
-            ses_dir_values.append(data_type_dirs[data_type_key[0]])
+            ses_dir_values.append(data_type_folders[data_type_key[0]])
 
     return zip(ses_dir_keys, ses_dir_values)
 
@@ -412,7 +412,7 @@ def process_glob_to_find_data_type_dirs(
 # --------------------------------------------------------------------
 
 
-def search_for_directories(  # TODO: change name
+def search_for_folders(  # TODO: change name
     cfg: Configs,
     search_path: Path,
     local_or_remote: str,
@@ -420,7 +420,7 @@ def search_for_directories(  # TODO: change name
 ) -> Tuple[List[Any], List[Any]]:
     """
     Wrapper to determine the method used to search for search
-    prefix directories in the search path.
+    prefix folders in the search path.
 
     Parameters
     ----------
@@ -431,7 +431,7 @@ def search_for_directories(  # TODO: change name
     """
     if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
 
-        all_dirnames, all_filenames = ssh.search_ssh_remote_for_directories(
+        all_dirnames, all_filenames = ssh.search_ssh_remote_for_folders(
             search_path,
             search_prefix,
             cfg,
@@ -442,18 +442,18 @@ def search_for_directories(  # TODO: change name
             utils.log_and_message(f"No file found at {search_path.as_posix()}")
             return [], []
 
-        all_dirnames, all_filenames = search_filesystem_path_for_directories(
+        all_dirnames, all_filenames = search_filesystem_path_for_folders(
             search_path / search_prefix
         )
     return all_dirnames, all_filenames
 
 
-def search_filesystem_path_for_directories(
+def search_filesystem_path_for_folders(
     search_path_with_prefix: Path,
 ) -> Tuple[List[str], List[str]]:
     """
     Use glob to search the full search path (including prefix) with glob.
-    Files are filtered out of results, returning directories only.
+    Files are filtered out of results, returning folders only.
     """
     all_dirnames = []
     all_filenames = []

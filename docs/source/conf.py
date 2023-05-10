@@ -88,7 +88,7 @@ autodoc_default_options = {
 }
 
 # List of patterns, relative to source directory, that match files and
-# directories to ignore when looking for source files.
+# folders to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = [
     "**.ipynb_checkpoints",

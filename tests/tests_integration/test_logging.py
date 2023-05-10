@@ -126,12 +126,12 @@ class TestCommandLineInterface:
             in log
         )
 
-    def test_make_sub_dir__(self, setup_project):
+    def test_make_sub_folders__(self, setup_project):
 
         subs = ["sub-1_1", f"sub-002{tags('to')}004"]
         ses = ["ses-123", "ses-hello_world"]
 
-        setup_project.make_sub_dir(subs, ses, data_type="all")
+        setup_project.make_sub_folders(subs, ses, data_type="all")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
@@ -147,7 +147,7 @@ class TestCommandLineInterface:
             in log
         )
         assert "formatted_ses_names: ['ses-123', 'ses-hello_world']" in log
-        assert "Made directory at path:" in log
+        assert "Made folder at path:" in log
 
         assert (
             str(Path("test_logging") / "local" / "rawdata" / "sub-1_1") in log
@@ -257,7 +257,7 @@ class TestCommandLineInterface:
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_logs_upload_and_download_dir_or_file(
+    def test_logs_upload_and_download_folder_or_file(
         self, setup_project, upload_or_download
     ):
         """
@@ -281,14 +281,14 @@ class TestCommandLineInterface:
         self.delete_log_files(setup_project.cfg.logging_path)
 
         if upload_or_download == "upload":
-            setup_project.upload_project_dir_or_file("sub-001/ses-001")
+            setup_project.upload_project_folder_or_file("sub-001/ses-001")
         else:
-            setup_project.download_project_dir_or_file("sub-001/ses-001")
+            setup_project.download_project_folder_or_file("sub-001/ses-001")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            f"Starting logging for command {upload_or_download}_project_dir_or_file"
+            f"Starting logging for command {upload_or_download}_project_folder_or_file"
             in log
         )
         assert (
@@ -317,28 +317,28 @@ class TestCommandLineInterface:
         )
 
         assert (
-            "\n\nVariablesState:\nlocals: {'option_key': 'connection_method', 'new_info': 'ssh', 'store_logs_in_temp_dir': False}\ncfg: {'local_path':"
+            "\n\nVariablesState:\nlocals: {'option_key': 'connection_method', 'new_info': 'ssh', 'store_logs_in_temp_folder': False}\ncfg: {'local_path':"
             in log
         )
         assert "connection_method was not updated" in log
 
-    def test_logs_bad_make_sub_dir_error(self, setup_project):
+    def test_logs_bad_make_sub_folders_error(self, setup_project):
         """"""
-        setup_project.make_sub_dir("sub-001", data_type="all")
+        setup_project.make_sub_folders("sub-001", data_type="all")
         self.delete_log_files(setup_project.cfg.logging_path)
 
         with pytest.raises(BaseException):
-            setup_project.make_sub_dir("sub-001", data_type="all")
+            setup_project.make_sub_folders("sub-001", data_type="all")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            "Cannot make directories. The key sub-001 already exists in the project"
+            "Cannot make folders. The key sub-001 already exists in the project"
             in log
         )
 
     @pytest.mark.skipif("not IS_WINDOWS")
-    def test_temp_log_dir_made_make_config_file(
+    def test_temp_log_folder_made_make_config_file(
         self, clean_project_name, tmp_path
     ):
         """"""
@@ -355,7 +355,7 @@ class TestCommandLineInterface:
         assert len(tmp_path_logs) == 1
         assert "make_config_file" in tmp_path_logs[0]
 
-    def test_temp_log_dir_moved_make_config_file(
+    def test_temp_log_folder_moved_make_config_file(
         self, clean_project_name, tmp_path
     ):
         """
@@ -376,7 +376,7 @@ class TestCommandLineInterface:
 
     @pytest.mark.skipif("not IS_WINDOWS")
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
-    def test_temp_log_dir_made_update_config(
+    def test_temp_log_folder_made_update_config(
         self, setup_project, supply_or_update, tmp_path
     ):
         """"""
@@ -401,7 +401,7 @@ class TestCommandLineInterface:
         # Now change the local_path to something that doesn't exist.
         # Also, the new path cannot be made. In this case store the logs
         # in the temp log file.
-        setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
+        setup_project.cfg["local_path"] = Path("folder_that_does_not_exist")
 
         with pytest.raises(BaseException):
             self.run_supply_or_update_configs(
@@ -417,7 +417,7 @@ class TestCommandLineInterface:
         assert len(orig_local_path_logs) == 0
 
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
-    def test_temp_log_dir_moved(
+    def test_temp_log_folder_moved(
         self, setup_project, supply_or_update, tmp_path
     ):
         """
@@ -425,7 +425,7 @@ class TestCommandLineInterface:
         exist but the new one to a project that does - and check
         logs are moved to new project.
         """
-        setup_project.cfg["local_path"] = Path("dir_that_does_not_exist")
+        setup_project.cfg["local_path"] = Path("folder_that_does_not_exist")
         new_log_path = setup_project.cfg.logging_path / "new_logs"
 
         self.run_supply_or_update_configs(

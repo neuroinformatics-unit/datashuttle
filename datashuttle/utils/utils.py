@@ -6,7 +6,7 @@ from typing import List, Tuple, Union
 
 from rich import print as rich_print
 
-from . import directories
+from . import folders
 
 # --------------------------------------------------------------------------------------------------------------------
 # General Utils
@@ -74,37 +74,37 @@ def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     some cases where local_path location is not clear.
 
     The datashuttle configuration path is stored in the user home
-    directory.
+    folder.
     """
     base_path = Path.home() / ".datashuttle" / project_name
     temp_logs_path = base_path / "temp_logs"
 
-    directories.make_dirs(base_path)
-    directories.make_dirs(temp_logs_path)
+    folders.make_folders(base_path)
+    folders.make_folders(temp_logs_path)
 
     return base_path, temp_logs_path
 
 
-def get_path_after_base_dir(base_dir: Path, path_: Path) -> Path:
+def get_path_after_base_folder(base_folder: Path, path_: Path) -> Path:
     """
-    Get path relative to hte base dir, used in case user has
+    Get path relative to the base folder, used in case user has
     passed entire path including local_path or remove_path.
 
     Parameters
     ----------
 
-    base_dir : base dir that should be removed, usually
+    base_folder : base folder that should be removed, usually
         local_path or remote_path
 
-    path_ : path after base_dir that should be isolated
+    path_ : path after base_folder that should be isolated
     """
-    if path_already_stars_with_base_dir(base_dir, path_):
-        return path_.relative_to(base_dir)
+    if path_already_stars_with_base_folder(base_folder, path_):
+        return path_.relative_to(base_folder)
     return path_
 
 
-def path_already_stars_with_base_dir(base_dir: Path, path_: Path) -> bool:
-    return path_.as_posix().startswith(base_dir.as_posix())
+def path_already_stars_with_base_folder(base_folder: Path, path_: Path) -> bool:
+    return path_.as_posix().startswith(base_folder.as_posix())
 
 
 def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:

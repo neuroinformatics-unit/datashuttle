@@ -115,8 +115,8 @@ def transfer_data(
     rclone_options: dict,
 ) -> subprocess.CompletedProcess:
     """ """
-    local_filepath = cfg.get_base_dir("local").as_posix()
-    remote_filepath = cfg.get_base_dir("remote").as_posix()
+    local_filepath = cfg.get_base_folder("local").as_posix()
+    remote_filepath = cfg.get_base_folder("remote").as_posix()
 
     extra_arguments = handle_rclone_arguments(
         rclone_options, include_list
