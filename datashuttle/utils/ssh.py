@@ -174,21 +174,21 @@ def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
     key.write_private_key_file(ssh_key_path.as_posix())
 
 
-def search_ssh_remote_for_directories(
+def search_ssh_remote_for_folders(
     search_path: Path,
     search_prefix: str,
     cfg: Configs,
 ) -> Tuple[List[Any], List[Any]]:
     """
     Search for the search prefix in the search path over SSH.
-    Returns the list of matching directories, files are filtered out.
+    Returns the list of matching folders, files are filtered out.
 
     Parameters
     -----------
 
-    search_path : path to search for directories in
+    search_path : path to search for folders in
 
-    search_prefix : search prefix for directory names e.g. "sub-*"
+    search_prefix : search prefix for folder names e.g. "sub-*"
 
     cfg : see connect_client()
     """
@@ -198,35 +198,35 @@ def search_ssh_remote_for_directories(
 
         sftp = client.open_sftp()
 
-        all_dirnames, all_filenames = get_list_of_directory_names_over_sftp(
+        all_foldernames, all_filenames = get_list_of_folder_names_over_sftp(
             sftp, search_path, search_prefix
         )
 
-    return all_dirnames, all_filenames
+    return all_foldernames, all_filenames
 
 
-def get_list_of_directory_names_over_sftp(
+def get_list_of_folder_names_over_sftp(
     sftp, search_path: Path, search_prefix: str
 ) -> Tuple[List[Any], List[Any]]:
     """
     Use paramiko's sftp to search a path
-    over ssh for directories. Return the directory names.
+    over ssh for folders. Return the folder names.
 
     Parameters
     ----------
 
     stfp : connected paramiko stfp object
-        (see search_ssh_remote_for_directories())
+        (see search_ssh_remote_for_folders())
 
-    search_path : path to search for directories in
+    search_path : path to search for folders in
 
     search_prefix : prefix (can include wildcards)
-        to search directory names.
+        to search folder names.
     """
-    all_dirnames = []
+    all_foldernames = []
     all_filenames = []
     try:
-        for file_or_dir in sftp.listdir_attr(search_path.as_posix()):
+        for file_or_folder in sftp.listdir_attr(search_path.as_posix()):
 
             if fnmatch.fnmatch(file_or_dir.filename, search_prefix):
                 if stat.S_ISDIR(file_or_dir.st_mode):

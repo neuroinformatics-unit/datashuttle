@@ -3,7 +3,7 @@ from typing import List, Optional, Union
 
 from datashuttle.configs.config_class import Configs
 
-from . import directories, formatting, rclone, utils
+from . import folders, formatting, rclone, utils
 
 
 class TransferData:
@@ -23,7 +23,7 @@ class TransferData:
         self.local_or_remote = (
             "local" if upload_or_download == "upload" else "remote"
         )
-        self.base_dir = self.cfg.get_base_dir(self.local_or_remote)
+        self.base_folder = self.cfg.get_base_folder(self.local_or_remote)
 
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
@@ -133,9 +133,9 @@ class TransferData:
     def update_list_with_non_sub_top_level_dirs(
         self, extra_dirnames, extra_filenames
     ):
-        top_level_dirs, top_level_files = directories.search_sub_or_ses_level(
+        top_level_dirs, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_dir(self.local_or_remote),
+            self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             search_str="*",
         )
@@ -151,16 +151,16 @@ class TransferData:
         self, extra_dirnames, extra_filenames, sub
     ):
         """ """
-        sub_level_dirs, sub_level_files = directories.search_sub_or_ses_level(
+        sub_level_dirs, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_dir(self.local_or_remote),
+            self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             sub=sub,
             search_str="*",
         )
         sub_level_dtype = [
             dtype.name
-            for dtype in self.cfg.data_type_dirs.values()
+            for dtype in self.cfg.data_type_folders.values()
             if dtype.level == "sub"
         ]
 
@@ -178,9 +178,9 @@ class TransferData:
         (
             ses_level_dirs,
             ses_level_filenames,
-        ) = directories.search_sub_or_ses_level(
+        ) = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_dir(self.local_or_remote),
+            self.cfg.get_base_folder(self.local_or_remote),
             self.local_or_remote,
             sub=sub,
             ses=ses,
@@ -189,7 +189,7 @@ class TransferData:
 
         ses_level_dtype = [
             dtype.name
-            for dtype in self.cfg.data_type_dirs.values()
+            for dtype in self.cfg.data_type_folders.values()
             if dtype.level == "ses"
         ]
         filt_ses_level_dirs = filter(
@@ -248,7 +248,7 @@ class TransferData:
     ):
         """
         Check the sub / session names passed. The checking here
-        is stricter than for make_sub_dirs / formatting.check_and_format_names
+        is stricter than for make_sub_folderss / formatting.check_and_format_names
         because we want to ensure that a) non-data-type arguments are not
         passed at the wrong input (e.g. all_non_ses as a subject name).
 
@@ -300,7 +300,7 @@ class TransferData:
         any wildcard entries searched.
 
         Otherwise, if "all" or a variant, the local or
-        remote directory (depending on upload vs. download)
+        remote folder (depending on upload vs. download)
         will be searched to determine what files exist to transfer,
         and the sub / ses names list generated.
 
@@ -318,9 +318,9 @@ class TransferData:
             search_prefix = self.cfg.ses_prefix + "-"
 
         if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
-            processed_names = directories.search_sub_or_ses_level(
+            processed_names = folders.search_sub_or_ses_level(
                 self.cfg,
-                self.base_dir,
+                self.base_folder,
                 self.local_or_remote,
                 sub,
                 search_str=f"{search_prefix}*",
@@ -333,9 +333,9 @@ class TransferData:
             processed_names = formatting.check_and_format_names(
                 self.cfg, names_checked, sub_or_ses
             )
-            processed_names = directories.search_for_wildcards(
+            processed_names = folders.search_for_wildcards(
                 self.cfg,
-                self.base_dir,
+                self.base_folder,
                 self.local_or_remote,
                 processed_names,
                 sub=sub,
@@ -345,7 +345,7 @@ class TransferData:
 
     def transfer_non_data_type(self, data_type_checked: List[str]) -> bool:
         """
-        Convenience function, bool if all non-data-type directories
+        Convenience function, bool if all non-data-type folders
         are to be transferred
         """
         return any(

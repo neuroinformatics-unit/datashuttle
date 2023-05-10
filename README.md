@@ -3,7 +3,7 @@
 Datashuttle is a work in progress as has not been officially released. It is not ready for use
 as documented, please await first official release.
 
-Datashuttle includes tools for automated generation and transfer of neuroscience project directories formatted to the [SWC-BIDS specification](https://swc-bids.neuroinformatics.dev/).
+Datashuttle includes tools for automated generation and transfer of neuroscience project folders formatted to the [SWC-BIDS specification](https://swc-bids.neuroinformatics.dev/).
 
 * Manage files across multiple data-collection computers by synchronising all data to with a centrally stored project.
 
@@ -25,9 +25,9 @@ conda install -c conda-forge rclone
 
 See [the Rclone website](https://rclone.org/install/) for alternative installation methods.
 
-## SWC-BIDS Directory Tree
+## SWC-BIDS Folder Tree
 
-DataShuttle project directories are managed according to SWC-BIDS (example below).
+DataShuttle project folders are managed according to SWC-BIDS (example below).
 See the SWC-BIDS [specification](https://swc-bids.neuroinformatics.dev/) for more details.
 
 ```

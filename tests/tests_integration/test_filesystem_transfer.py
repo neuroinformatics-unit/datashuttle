@@ -17,7 +17,7 @@ class TestFileTransfer:
         saved in the appdir path for platform independent
         and to avoid path setup on new machine.
 
-        Ensure change dir at end of session otherwise it
+        Ensure change folder at end of session otherwise it
         is not possible to delete project.
         """
         tmp_path = tmp_path / "test with space"
@@ -62,12 +62,12 @@ class TestFileTransfer:
         else:
             transfer_function("all", "all", "all")
 
-        test_utils.check_directory_tree_is_correct(
+        test_utils.check_folder_tree_is_correct(
             project,
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             subs,
             sessions,
-            test_utils.get_default_directory_used(),
+            test_utils.get_default_folder_used(),
         )
 
     @pytest.mark.parametrize(
@@ -89,8 +89,8 @@ class TestFileTransfer:
         self, project, upload_or_download, data_type_to_transfer
     ):
         """
-        For the combination of data_type directories, make a directory
-        tree with all data_type dirs then upload select ones,
+        For the combination of data_type folders, make a folder
+        tree with all data_type folders then upload select ones,
         checking only the selected ones are uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -104,7 +104,7 @@ class TestFileTransfer:
         transfer_function(subs, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             data_type_to_transfer,
             subs,
             sessions,
@@ -147,7 +147,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             data_type_to_transfer,
             subs_to_upload,
         )
@@ -187,7 +187,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_dir_name),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder_name),
             data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
@@ -200,7 +200,7 @@ class TestFileTransfer:
         """
         Test the @TO@ keyword is accepted properly when making a session and
         transferring it. First pass @TO@-formatted sub and sessions to
-        make_sub_dir. Then transfer the files (upload or download).
+        make_sub_folders. Then transfer the files (upload or download).
 
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
@@ -208,7 +208,7 @@ class TestFileTransfer:
         subs = ["001", f"02{tags('to')}03"]
         sessions = [f"ses-01{tags('to')}003_{tags('datetime')}"]
 
-        project.make_sub_dir(subs, sessions, "all")
+        project.make_sub_folders(subs, sessions, "all")
 
         (
             transfer_function,
@@ -253,7 +253,7 @@ class TestFileTransfer:
             "003_date-20220601",
         ]
 
-        project.make_sub_dir(subs, sessions, "all")
+        project.make_sub_folders(subs, sessions, "all")
 
         (
             transfer_function,
@@ -298,7 +298,7 @@ class TestFileTransfer:
         rclone is called with the arguments set in configs
         as expected. verbosity itself is tested in another method.
         """
-        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+        project.make_sub_folders(["sub-001"], ["ses-002"], ["behav"])
 
         project.update_config("overwrite_old_files", overwrite_old_files)
         project.update_config("transfer_verbosity", "vv")
@@ -333,7 +333,7 @@ class TestFileTransfer:
         """
         see test_rclone_options()
         """
-        project.make_sub_dir(["sub-001"], ["ses-002"], ["behav"])
+        project.make_sub_folders(["sub-001"], ["ses-002"], ["behav"])
         project.update_config("transfer_verbosity", transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
@@ -363,7 +363,7 @@ class TestFileTransfer:
             Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
         )
 
-        project.make_sub_dir("sub-001")
+        project.make_sub_folders("sub-001")
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         remote_test_file_path = project.cfg["remote_path"] / path_to_test_file
 
@@ -400,7 +400,7 @@ class TestFileTransfer:
         self, project, transfer_file, full_path, upload_or_download
     ):
         """
-        Test upload_project_dir_or_file() and download_project_dir_or_file().
+        Test upload_project_folder_or_file() and download_project_folder_or_file().
 
         This test has a few different parameterisations. It tests
         1) transfer_file : this transfers a file or folder. if transferring
@@ -423,11 +423,11 @@ class TestFileTransfer:
         ) = self.setup_specific_file_or_dir_files(project)
 
         if upload_or_download == "upload":
-            transfer_function = project.upload_project_dir_or_file
+            transfer_function = project.upload_project_folder_or_file
             transfer_from = "local_path"
             transfer_to = "remote_path"
         else:
-            transfer_function = project.download_project_dir_or_file
+            transfer_function = project.download_project_folder_or_file
             transfer_from = "remote_path"
             transfer_to = "local_path"
             test_utils.swap_local_and_remote_paths(project)
@@ -460,7 +460,7 @@ class TestFileTransfer:
 
     def setup_specific_file_or_dir_files(self, project):
         """ """
-        project.make_sub_dir(["sub-001", "sub-002"], "ses-003")
+        project.make_sub_folders(["sub-001", "sub-002"], "ses-003")
 
         path_to_test_file_behav = (
             Path("rawdata")

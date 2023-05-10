@@ -128,10 +128,10 @@ class TestCommandLineInterface:
         self.check_kwargs(changed_configs, kwargs_)
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_sub_dir_variable(self, sep):
+    def test_make_sub_folders_variable(self, sep):
 
         stdout, __ = test_utils.run_cli(
-            f" make{sep}sub{sep}dir "
+            f" make{sep}sub{sep}folders "
             f"--data_type all "
             f"--sub_names one "
             f"--ses_names two "
@@ -192,12 +192,12 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_upload_download_dir_or_file(self, upload_or_download, sep):
+    def test_upload_download_folder_or_file(self, upload_or_download, sep):
         """
-        As upload_data_dir_or_file and download_data_dir_or_file
+        As upload_data_folder_or_file and download_data_folder_or_file
         take identical args, test both together"""
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file /fake/filepath"
+            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file /fake/filepath"
         )
         args_, kwargs_ = self.decode(stdout)
 
@@ -205,7 +205,7 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is False
 
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}dir{sep}or{sep}file "
+            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file "
             f"/fake/filepath --dry{sep}run"
         )
 
@@ -215,7 +215,7 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is True
 
     @pytest.mark.parametrize(
-        "command", ["make_sub_dir", "upload_data", "download_data"]
+        "command", ["make_sub_folders", "upload_data", "download_data"]
     )
     def test_multiple_inputs(self, command):
         """
@@ -336,7 +336,7 @@ class TestCommandLineInterface:
 
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_make_sub_dir(self, setup_project):
+    def test_make_sub_folders(self, setup_project):
         """
         see test_filesystem_transfer.py
         """
@@ -344,16 +344,16 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-hello_hello_world"]
 
         test_utils.run_cli(
-            f"make_sub_dir --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_folders --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
             setup_project.project_name,
         )
 
-        test_utils.check_directory_tree_is_correct(
+        test_utils.check_folder_tree_is_correct(
             setup_project,
-            base_dir=test_utils.get_rawdata_path(setup_project),
+            base_folder=test_utils.get_rawdata_path(setup_project),
             subs=subs,
             sessions=ses,
-            directory_used=test_utils.get_default_directory_used(),
+            folder_used=test_utils.get_default_folder_used(),
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -393,7 +393,7 @@ class TestCommandLineInterface:
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
-                base_path_to_check, setup_project.cfg.top_level_dir_name
+                base_path_to_check, setup_project.cfg.top_level_folder_name
             ),
             data_type_to_transfer=[
                 flag.split("use_")[1]
@@ -404,7 +404,7 @@ class TestCommandLineInterface:
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_upload_and_download_dir_or_file(
+    def test_upload_and_download_folder_or_file(
         self, setup_project, upload_or_download
     ):
         """
@@ -424,7 +424,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_dir_or_file {subs[1]}/{sessions[0]}/ephys/*",
+            f"{upload_or_download}_project_folder_or_file {subs[1]}/{sessions[0]}/ephys/*",
             setup_project.project_name,
         )
 

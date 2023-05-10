@@ -58,16 +58,16 @@ def setup_project_default_configs(
 
     warnings.filterwarnings("default")
 
-    project.update_config("local_path", project._datashuttle_path / "base_dir")
+    project.update_config("local_path", project._datashuttle_path / "base_folder")
 
     if local_path:
         project.update_config("local_path", local_path)
-        delete_all_dirs_in_local_path(project)
+        delete_all_folders_in_local_path(project)
         project.cfg.make_and_get_logging_path()
 
     if remote_path:
         project.update_config("remote_path", remote_path)
-        delete_all_dirs_in_project_path(project, "remote")
+        delete_all_folders_in_project_path(project, "remote")
         project.cfg.make_and_get_logging_path()
 
     return project
@@ -92,27 +92,27 @@ def teardown_project(
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
     os.chdir(cwd)
-    delete_all_dirs_in_project_path(project, "remote")
-    delete_all_dirs_in_project_path(project, "local")
+    delete_all_folders_in_project_path(project, "remote")
+    delete_all_folders_in_project_path(project, "local")
     delete_project_if_it_exists(project.project_name)
 
 
-def delete_all_dirs_in_local_path(project):
+def delete_all_folders_in_local_path(project):
     ds_logger.close_log_filehandler()
     if project.cfg["local_path"].is_dir():
         shutil.rmtree(project.cfg["local_path"])
 
 
-def delete_all_dirs_in_project_path(project, local_or_remote):
+def delete_all_folders_in_project_path(project, local_or_remote):
     """"""
-    directory = f"{local_or_remote}_path"
+    folder = f"{local_or_remote}_path"
 
     ds_logger.close_log_filehandler()
-    if project.cfg[directory].is_dir() and project.cfg[directory].stem in [
+    if project.cfg[folder].is_dir() and project.cfg[folder].stem in [
         "local",
         "remote",
     ]:
-        shutil.rmtree(project.cfg[directory])
+        shutil.rmtree(project.cfg[folder])
 
 
 def delete_project_if_it_exists(project_name):
@@ -165,7 +165,7 @@ def make_test_path(base_path, test_project_name, local_or_remote):
     return Path(base_path) / test_project_name / local_or_remote
 
 
-def get_protected_test_dir():
+def get_protected_test_folder():
     return "ds_protected_test_name"
 
 
@@ -190,8 +190,8 @@ def get_test_config_arguments_dict(
     tmp_path = Path(tmp_path).as_posix()
 
     dict_ = {
-        "local_path": f"{tmp_path}/not/a/re al/local/directory",
-        "remote_path": f"{tmp_path}/a/re al/remote_ local/directory",
+        "local_path": f"{tmp_path}/not/a/re al/local/folder",
+        "remote_path": f"{tmp_path}/a/re al/remote_ local/folder",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
         # but at least 1 use_x must be true, so
@@ -218,7 +218,7 @@ def get_test_config_arguments_dict(
         dict_.update(
             {
                 "local_path": f"{tmp_path}/test/test_ local/test_edit",
-                "remote_path": f"{tmp_path}/nfs/test dir/test_edit2",
+                "remote_path": f"{tmp_path}/nfs/test folder/test_edit2",
                 "connection_method": "ssh",
                 "remote_host_id": "test_remote_host_id",
                 "remote_host_username": "test_remote_host_username",
@@ -235,7 +235,7 @@ def get_test_config_arguments_dict(
     return dict_
 
 
-def get_default_directory_used():
+def get_default_folder_used():
     return {
         "ephys": True,
         "behav": True,
@@ -255,93 +255,93 @@ def add_quotes(string: str):
 
 
 # -----------------------------------------------------------------------------
-# Directory Checkers
+# Folder Checkers
 # -----------------------------------------------------------------------------
 
 
-def check_directory_tree_is_correct(
-    project, base_dir, subs, sessions, directory_used
+def check_folder_tree_is_correct(
+    project, base_folder, subs, sessions, folder_used
 ):
     """
-    Automated test that directories are made based
+    Automated test that folders are made based
     on the structure specified on project itself.
 
     Cycle through all data_types (defined in
-    project.cfg.data_type_dirs()), sub, sessions and check that
-    the expected file exists. For  subdirs, recursively
+    project.cfg.data_type_folders()), sub, sessions and check that
+    the expected file exists. For  subfolders, recursively
     check all exist.
 
-    Directories in which directory_used[key] (where key
-    is the canonical dict key in project.cfg.data_type_dirs())
+    Folders in which folder_used[key] (where key
+    is the canonical dict key in project.cfg.data_type_folders())
     is not used are expected  not to be made, and this
      is checked.
 
-    The directory_used variable must be passed so we don't
+    The folder_used variable must be passed so we don't
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
     for sub in subs:
 
-        path_to_sub_folder = join(base_dir, sub)
-        check_and_cd_dir(path_to_sub_folder)
+        path_to_sub_folder = join(base_folder, sub)
+        check_and_cd_folder(path_to_sub_folder)
 
         for ses in sessions:
 
-            path_to_ses_folder = join(base_dir, sub, ses)
-            check_and_cd_dir(path_to_ses_folder)
+            path_to_ses_folder = join(base_folder, sub, ses)
+            check_and_cd_folder(path_to_ses_folder)
 
-            for key, directory in project.cfg.data_type_dirs.items():
+            for key, folder in project.cfg.data_type_folders.items():
 
-                assert key in directory_used.keys(), (
-                    "Key not found in directory_used. "
-                    "Update directory used and hard-coded tests: "
-                    "test_custom_directory_names(), test_explicitly_session_list()"
+                assert key in folder_used.keys(), (
+                    "Key not found in folder_used. "
+                    "Update folder used and hard-coded tests: "
+                    "test_custom_folder_names(), test_explicitly_session_list()"
                 )
 
-                if check_directory_is_used(
-                    base_dir, directory, directory_used, key, sub, ses
+                if check_folder_is_used(
+                    base_folder, folder, folder_used, key, sub, ses
                 ):
 
-                    if directory.level == "sub":
+                    if folder.level == "sub":
                         data_type_path = join(
-                            path_to_sub_folder, directory.name
+                            path_to_sub_folder, folder.name
                         )
-                    elif directory.level == "ses":
+                    elif folder.level == "ses":
                         data_type_path = join(
-                            path_to_ses_folder, directory.name
+                            path_to_ses_folder, folder.name
                         )
 
-                    check_and_cd_dir(data_type_path)
-                    check_and_cd_dir(join(data_type_path, ".datashuttle_meta"))
+                    check_and_cd_folder(data_type_path)
+                    check_and_cd_folder(join(data_type_path, ".datashuttle_meta"))
 
 
-def check_directory_is_used(
-    base_dir, directory, directory_used, key, sub, ses
+def check_folder_is_used(
+    base_folder, folder, folder_used, key, sub, ses
 ):
     """
-    Test whether the .used flag on the Directory class matched the expected
-    state (provided in directory_used dict). If directory is not used, check
+    Test whether the .used flag on the Folder class matched the expected
+    state (provided in folder_used dict). If folder is not used, check
     it does not exist.
 
     Use the pytest -s flag to print all tested paths
     """
-    assert directory.used == directory_used[key]
+    assert folder.used == folder_used[key]
 
-    is_used = directory.used
+    is_used = folder.used
 
     if not is_used:
         print(
             "Path was correctly not made: "
-            + join(base_dir, sub, ses, directory.name)
+            + join(base_folder, sub, ses, folder.name)
         )
-        assert not os.path.isdir(join(base_dir, sub, ses, directory.name))
+        assert not os.path.isdir(join(base_folder, sub, ses, folder.name))
 
     return is_used
 
 
-def check_and_cd_dir(path_):
+def check_and_cd_folder(path_):
     """
-    Check a directory exists and CD to it if it does.
+    Check a folder exists and CD to it if it does.
 
     Use the pytest -s flag to print all tested paths
     """
@@ -357,8 +357,8 @@ def check_data_type_sub_ses_uploaded_correctly(
 ):
     """
     Iterate through the project (data_type > ses > sub) and
-    check that the directories at each level match those that are
-    expected (passed in data_type / sub / ses to upload). Dirs
+    check that the folders at each level match those that are
+    expected (passed in data_type / sub / ses to upload). Folders
     are searched with wildcard glob.
 
     Note: might be easier to flatten entire path with glob(**)
@@ -386,13 +386,13 @@ def check_data_type_sub_ses_uploaded_correctly(
                     # and there are no sessions to transfer.
 
                 copy_data_type_to_transfer = (
-                    check_and_strip_within_sub_data_dirs(
+                    check_and_strip_within_sub_data_folders(
                         ses_names, data_type_to_transfer
                     )
                 )
                 assert ses_names == sorted(ses_to_upload)
 
-                # check data_type directories in session folder
+                # check data_type folders in session folder
                 if copy_data_type_to_transfer:
                     for ses in ses_names:
                         data_names = glob_basenames(
@@ -401,7 +401,7 @@ def check_data_type_sub_ses_uploaded_correctly(
                         assert data_names == sorted(copy_data_type_to_transfer)
 
 
-def check_and_strip_within_sub_data_dirs(ses_names, data_type_to_transfer):
+def check_and_strip_within_sub_data_folders(ses_names, data_type_to_transfer):
     """
     Check if data_type folders at the sub level are picked
     up when sessions are searched for with wildcard. Remove
@@ -419,17 +419,17 @@ def check_and_strip_within_sub_data_dirs(ses_names, data_type_to_transfer):
 
 def make_and_check_local_project(project, subs, sessions, data_type):
     """
-    Make a local project directory tree with the specified data_type,
+    Make a local project folder tree with the specified data_type,
     subs, sessions and check it is made successfully.
     """
-    project.make_sub_dir(subs, sessions, data_type)
+    project.make_sub_folders(subs, sessions, data_type)
 
-    check_directory_tree_is_correct(
+    check_folder_tree_is_correct(
         project,
         get_rawdata_path(project),
         subs,
         sessions,
-        get_default_directory_used(),
+        get_default_folder_used(),
     )
 
 
@@ -494,14 +494,14 @@ def get_rawdata_path(project, local_or_remote="local"):
         base_path = project.cfg["local_path"]
     else:
         base_path = project.cfg["remote_path"]
-    return os.path.join(base_path, project.cfg.top_level_dir_name)
+    return os.path.join(base_path, project.cfg.top_level_folder_name)
 
 
 def handle_upload_or_download(
     project,
     upload_or_download,
     use_all_alias=False,
-    swap_last_dir_only=False,
+    swap_last_folder_only=False,
 ):
     """
     To keep things consistent and avoid the pain of writing
@@ -511,7 +511,7 @@ def handle_upload_or_download(
     """
     if upload_or_download == "download":
 
-        remote_path = swap_local_and_remote_paths(project, swap_last_dir_only)
+        remote_path = swap_local_and_remote_paths(project, swap_last_folder_only)
 
         transfer_function = (
             project.download_all if use_all_alias else project.download_data
@@ -527,7 +527,7 @@ def handle_upload_or_download(
     return transfer_function, remote_path
 
 
-def swap_local_and_remote_paths(project, swap_last_dir_only=False):
+def swap_local_and_remote_paths(project, swap_last_folder_only=False):
     """
     When testing upload vs. download, the most convenient way
     to test download is to swap the paths. In this case, we 'download'
@@ -540,7 +540,7 @@ def swap_local_and_remote_paths(project, swap_last_dir_only=False):
     For SSH test however, we want to use SSH to search the 'remote'
     filesystem to find the necsesary files / folders to transfer.
     As such, the 'local' (which we are downloading from) must be the SSH
-    path. As such, in this case we only want to swap the last dir only
+    path. As such, in this case we only want to swap the last folder only
     (i.e. "local" and "remote"). In this case, we download from
     cfg["remote_path"] (which is ssh_path/local) to cfg["local_path"]
     (which is filesystem/remote).
@@ -548,7 +548,7 @@ def swap_local_and_remote_paths(project, swap_last_dir_only=False):
     local_path = copy.deepcopy(project.cfg["local_path"])
     remote_path = copy.deepcopy(project.cfg["remote_path"])
 
-    if swap_last_dir_only:
+    if swap_last_folder_only:
         project.update_config(
             "local_path", local_path.parent / remote_path.name
         )
@@ -573,7 +573,7 @@ def get_default_sub_sessions_to_test():
 
 def run_cli(command, project_name=None):
     """"""
-    name = get_protected_test_dir() if project_name is None else project_name
+    name = get_protected_test_folder() if project_name is None else project_name
 
     result = subprocess.Popen(
         " ".join(["datashuttle", name, command]),

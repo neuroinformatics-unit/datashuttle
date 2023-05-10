@@ -6,8 +6,8 @@ from typing import Any, Optional, Union, cast
 
 import yaml
 
-from datashuttle.configs import canonical_configs, canonical_directories
-from datashuttle.utils import directories, utils
+from datashuttle.configs import canonical_configs, canonical_folders
+from datashuttle.utils import folders, utils
 
 
 class Configs(UserDict):
@@ -49,9 +49,9 @@ class Configs(UserDict):
         self.sub_prefix = "sub"
         self.ses_prefix = "ses"
 
-        self.top_level_dir_name: str
+        self.top_level_folder_name: str
 
-        self.data_type_dirs: dict
+        self.data_type_folders: dict
         self.logging_path: Path
         self.hostkeys_path: Path
         self.ssh_key_path: Path
@@ -149,12 +149,12 @@ class Configs(UserDict):
             if option_key in ["connection_method", "remote_path"]:
                 if self["connection_method"] == "ssh":
                     utils.log_and_message(
-                        f"SSH will be used to connect to project directory at: {self['remote_path']}"
+                        f"SSH will be used to connect to project folder at: {self['remote_path']}"
                     )
                 elif self["connection_method"] == "local_filesystem":
                     utils.log_and_message(
                         f"Local filesystem will be used to connect to project "
-                        f"directory at: {self['remote_path'].as_posix()}"
+                        f"folder at: {self['remote_path'].as_posix()}"
                     )
         else:
             self[option_key] = original_value
@@ -222,7 +222,7 @@ class Configs(UserDict):
         base: "local", "remote" or "datashuttle"
 
         subdirs: a list (or string for 1) of
-            directory names to be joined into a path.
+            folder names to be joined into a path.
             If file included, must be last entry (with ext).
         """
         if isinstance(subdirs, list):
@@ -232,16 +232,16 @@ class Configs(UserDict):
 
         subdirs_path = Path(subdirs_str)
 
-        base_dir = self.get_base_dir(base)
+        base_folder = self.get_base_folder(base)
 
-        if utils.path_already_stars_with_base_dir(base_dir, subdirs_path):
+        if utils.path_already_stars_with_base_folder(base_folder, subdirs_path):
             joined_path = subdirs_path
         else:
-            joined_path = base_dir / subdirs_path
+            joined_path = base_folder / subdirs_path
 
         return joined_path
 
-    def get_base_dir(self, base: str) -> Path:
+    def get_base_folder(self, base: str) -> Path:
         """
         Convenience function to return the full base path.
 
@@ -252,12 +252,12 @@ class Configs(UserDict):
 
         """
         if base == "local":
-            base_dir = self["local_path"] / self.top_level_dir_name
+            base_folder = self["local_path"] / self.top_level_folder_name
         elif base == "remote":
-            base_dir = self["remote_path"] / self.top_level_dir_name
+            base_folder = self["remote_path"] / self.top_level_folder_name
         elif base == "datashuttle":
-            base_dir, __ = utils.get_datashuttle_path(self.project_name)
-        return base_dir
+            base_folder, __ = utils.get_datashuttle_path(self.project_name)
+        return base_folder
 
     def get_rclone_config_name(
         self, connection_method: Optional[str] = None
@@ -297,12 +297,12 @@ class Configs(UserDict):
         Currently logging is located in config path
         """
         logging_path = self.project_metadata_path / "logs"
-        directories.make_dirs(logging_path)
+        folders.make_folders(logging_path)
         return logging_path
 
-    def init_data_type_dirs(self):
+    def init_data_type_folders(self):
         """"""
-        self.data_type_dirs = canonical_directories.get_data_type_directories(
+        self.data_type_folders = canonical_folders.get_data_type_folders(
             self
         )
 
@@ -311,7 +311,7 @@ class Configs(UserDict):
     ) -> Union[ItemsView, zip]:
         """
         Get the .items() structure of the data type, either all of
-        them (stored in self.data_type_dirs) or as a single item.
+        them (stored in self.data_type_folders) or as a single item.
         """
         if type(data_type) == str:
             data_type = [data_type]
@@ -319,11 +319,11 @@ class Configs(UserDict):
         items: Union[ItemsView, zip]
 
         if "all" in data_type:
-            items = self.data_type_dirs.items()
+            items = self.data_type_folders.items()
         else:
             items = zip(
                 data_type,
-                [self.data_type_dirs[key] for key in data_type],
+                [self.data_type_folders[key] for key in data_type],
             )
 
         return items
@@ -345,7 +345,7 @@ class Configs(UserDict):
 
         see _transfer_data_type() for parameters.
         """
-        base_dir = self.get_base_dir(local_or_remote)
+        base_folder = self.get_base_folder(local_or_remote)
 
         if data_type not in [
             "all",
@@ -357,9 +357,9 @@ class Configs(UserDict):
                 data_type,
             )
         else:
-            data_type_items = directories.search_data_dirs_sub_or_ses_level(
+            data_type_items = folders.search_data_dirs_sub_or_ses_level(
                 self,
-                base_dir,
+                base_folder,
                 local_or_remote,
                 sub,
                 ses,
