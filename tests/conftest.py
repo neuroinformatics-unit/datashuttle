@@ -15,7 +15,7 @@ connect through SSH
 """
 import platform
 from types import SimpleNamespace
-import logging
+
 import pytest
 import test_utils
 
@@ -44,7 +44,3 @@ def pytest_configure(config):
         SERVER_PATH=server_path,  # as a mounted drive and server as the linux path to connect through SSH
     )
     test_utils.set_datashuttle_loggers(disable=True)
-
-
-
-

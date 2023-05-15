@@ -1,5 +1,6 @@
 import copy
 import glob
+import logging
 import os
 import pathlib
 import shutil
@@ -7,7 +8,6 @@ import subprocess
 import warnings
 from os.path import join
 from pathlib import Path
-import logging
 
 import yaml
 
@@ -631,6 +631,7 @@ def read_file(path_):
     with open(path_, "r") as file:
         contents = file.readlines()
     return contents
+
 
 def set_datashuttle_loggers(disable):
     """
