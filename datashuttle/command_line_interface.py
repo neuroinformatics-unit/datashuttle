@@ -316,10 +316,10 @@ def show_config_path(*args: Any) -> None:
 # Get Remote Path -------------------------------------------------------------
 
 
-def get_remote_path(*args: Any) -> None:
+def show_remote_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_remote_path()
+    project.show_remote_path()
 
 
 # Show Configs ----------------------------------------------------------------
@@ -755,12 +755,12 @@ def construct_parser():
     # Get Remote Path
     # -------------------------------------------------------------------------
 
-    get_remote_path_parser = subparsers.add_parser(
-        "get-remote-path",
-        aliases=["get_remote_path"],
-        description=process_docstring(DataShuttle.get_remote_path.__doc__),
+    show_remote_path_parser = subparsers.add_parser(
+        "show-remote-path",
+        aliases=["show_remote_path"],
+        description=process_docstring(DataShuttle.show_remote_path.__doc__),
     )
-    get_remote_path_parser.set_defaults(func=get_remote_path)
+    show_remote_path_parser.set_defaults(func=show_remote_path)
 
     # Show Configs
     # -------------------------------------------------------------------------

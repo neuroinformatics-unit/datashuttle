@@ -789,7 +789,7 @@ class DataShuttle:
         """
         utils.print_message_to_user(self._config_path.as_posix())
 
-    def get_remote_path(self) -> None:
+    def show_remote_path(self) -> None:
         """
         Print the project remote path.
         This is always formatted to UNIX style.
