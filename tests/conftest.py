@@ -42,3 +42,9 @@ def pytest_configure(config):
         FILESYSTEM_PATH=filesystem_path,  # FILESYSTEM_PATH and SERVER_PATH these must point to the same folder on the HPC, filesystem
         SERVER_PATH=server_path,  # as a mounted drive and server as the linux path to connect through SSH
     )
+    for name in []:
+        logger = logging.getLogger(name)
+        logger.propagate = False
+
+
+
