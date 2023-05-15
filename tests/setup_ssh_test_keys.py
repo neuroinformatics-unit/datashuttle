@@ -11,7 +11,6 @@ project is deleted during tear-down, the SSH key is still available
 for future testing
 """
 import conftest
-
 from datashuttle.datashuttle import DataShuttle
 
 (

@@ -64,9 +64,7 @@ def get_canonical_test_dir_names(initialise=False):
     # Load SSH setup configs
     config_filepath = (
         Path(os.path.dirname(os.path.realpath(__file__)))
-        / "tests_integration"
-        / "ssh_tests"
-        / "setup_configs_for_ssh_tests.yaml"
+        / "configs_for_ssh_tests.yaml"
     )
 
     with open(config_filepath) as file:
