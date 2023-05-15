@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g0ad4382</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g5b1a147</p>
   
 </a></div>
     
@@ -335,8 +335,8 @@ document.write(`
 <span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">load_configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.configs.config_class</span> <span class="kn">import</span> <span class="n">Configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.utils</span> <span class="kn">import</span> <span class="p">(</span>
-    <span class="n">folders</span><span class="p">,</span>
     <span class="n">ds_logger</span><span class="p">,</span>
+    <span class="n">folders</span><span class="p">,</span>
     <span class="n">formatting</span><span class="p">,</span>
     <span class="n">rclone</span><span class="p">,</span>
     <span class="n">ssh</span><span class="p">,</span>
@@ -1002,7 +1002,9 @@ document.write(`
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-                <span class="s2">&quot;update_config&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span> <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">False</span>
+                <span class="s2">&quot;update_config&quot;</span><span class="p">,</span>
+                <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
+                <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
