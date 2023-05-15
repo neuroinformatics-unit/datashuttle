@@ -331,7 +331,16 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-# Show Local Three ------------------------------------------------------------
+# Show Logging Path ----------------------------------------------------------
+
+
+def show_logging_path(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.show_logging_path()
+
+
+# Show Local Tree ------------------------------------------------------------
 
 
 def show_local_tree(*args: Any) -> None:
@@ -771,6 +780,16 @@ def construct_parser():
         description=process_docstring(DataShuttle.show_configs.__doc__),
     )
     show_configs_parser.set_defaults(func=show_configs)
+
+    # Show Logging Path
+    # -------------------------------------------------------------------------
+
+    show_logging_path_parser = subparsers.add_parser(
+        "show-logging-path",
+        aliases=["show_logging_path"],
+        description=process_docstring(DataShuttle.show_logging_path.__doc__),
+    )
+    show_logging_path_parser.set_defaults(func=show_logging_path)
 
     # Show Local tree
     # -------------------------------------------------------------------------
