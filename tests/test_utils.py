@@ -7,6 +7,7 @@ import subprocess
 import warnings
 from os.path import join
 from pathlib import Path
+import logging
 
 import yaml
 
@@ -630,3 +631,18 @@ def read_file(path_):
     with open(path_, "r") as file:
         contents = file.readlines()
     return contents
+
+def set_datashuttle_loggers(disable):
+    """
+    Turn off or on datashuttle logs, if these are
+    on when testing with pytest they will be propagated
+    to pytest's output, making it difficult to read.
+
+    As such, these are turned off for all tests
+    (in conftest.py)  and dynamically turned on in setup
+    of test_logging.py and turned back off during
+    tear-down.
+    """
+    for name in ["datashuttle", "rich"]:
+        logger = logging.getLogger(name)
+        logger.disabled = disable
