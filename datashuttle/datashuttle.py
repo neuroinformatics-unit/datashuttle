@@ -768,7 +768,7 @@ class DataShuttle:
     # Public Getters
     # -------------------------------------------------------------------------
 
-    def get_local_path(self) -> None:
+    def show_local_path(self) -> None:
         """
         Print the projects local path.
         """

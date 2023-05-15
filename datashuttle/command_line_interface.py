@@ -289,10 +289,10 @@ def download_project_folder_or_file(project: DataShuttle, args: Any) -> None:
 # Get Local Path --------------------------------------------------------------
 
 
-def get_local_path(*args: Any) -> None:
+def show_local_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_local_path()
+    project.show_local_path()
 
 
 # Get Appdir Path -------------------------------------------------------------
@@ -331,7 +331,16 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-# Show Local Three ------------------------------------------------------------
+# Show Logging Path ----------------------------------------------------------
+
+
+def show_logging_path(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.show_logging_path()
+
+
+# Show Local Tree ------------------------------------------------------------
 
 
 def show_local_tree(*args: Any) -> None:
@@ -726,12 +735,12 @@ def construct_parser():
     # Get Local Path
     # -------------------------------------------------------------------------
 
-    get_local_path_parser = subparsers.add_parser(
-        "get-local-path",
-        aliases=["get_local_path"],
-        description=process_docstring(DataShuttle.get_local_path.__doc__),
+    show_local_path_parser = subparsers.add_parser(
+        "show-local-path",
+        aliases=["show_local_path"],
+        description=process_docstring(DataShuttle.show_local_path.__doc__),
     )
-    get_local_path_parser.set_defaults(func=get_local_path)
+    show_local_path_parser.set_defaults(func=show_local_path)
 
     get_datashuttle_path_parser = subparsers.add_parser(
         "get-datashuttle-path",
@@ -771,6 +780,16 @@ def construct_parser():
         description=process_docstring(DataShuttle.show_configs.__doc__),
     )
     show_configs_parser.set_defaults(func=show_configs)
+
+    # Show Logging Path
+    # -------------------------------------------------------------------------
+
+    show_logging_path_parser = subparsers.add_parser(
+        "show-logging-path",
+        aliases=["show_logging_path"],
+        description=process_docstring(DataShuttle.show_logging_path.__doc__),
+    )
+    show_logging_path_parser.set_defaults(func=show_logging_path)
 
     # Show Local tree
     # -------------------------------------------------------------------------
