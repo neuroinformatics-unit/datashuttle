@@ -298,19 +298,19 @@ def show_local_path(*args: Any) -> None:
 # Get Appdir Path -------------------------------------------------------------
 
 
-def get_datashuttle_path(*args: Any) -> None:
+def show_datashuttle_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_datashuttle_path()
+    project.show_datashuttle_path()
 
 
 # Get Config Path -------------------------------------------------------------
 
 
-def get_config_path(*args: Any) -> None:
+def show_config_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_config_path()
+    project.show_config_path()
 
 
 # Get Remote Path -------------------------------------------------------------
@@ -733,24 +733,24 @@ def construct_parser():
     )
     show_local_path_parser.set_defaults(func=show_local_path)
 
-    get_datashuttle_path_parser = subparsers.add_parser(
-        "get-datashuttle-path",
-        aliases=["get_datashuttle_path"],
+    show_datashuttle_path_parser = subparsers.add_parser(
+        "show-datashuttle-path",
+        aliases=["show_datashuttle_path"],
         description=process_docstring(
-            DataShuttle.get_datashuttle_path.__doc__
+            DataShuttle.show_datashuttle_path.__doc__
         ),
     )
-    get_datashuttle_path_parser.set_defaults(func=get_datashuttle_path)
+    show_datashuttle_path_parser.set_defaults(func=show_datashuttle_path)
 
     # Get Config Path
     # -------------------------------------------------------------------------
 
-    get_config_path_parser = subparsers.add_parser(
-        "get-config-path",
-        aliases=["get_config_path"],
-        description=process_docstring(DataShuttle.get_config_path.__doc__),
+    show_config_path_parser = subparsers.add_parser(
+        "show-config-path",
+        aliases=["show_config_path"],
+        description=process_docstring(DataShuttle.show_config_path.__doc__),
     )
-    get_config_path_parser.set_defaults(func=get_config_path)
+    show_config_path_parser.set_defaults(func=show_config_path)
 
     # Get Remote Path
     # -------------------------------------------------------------------------
