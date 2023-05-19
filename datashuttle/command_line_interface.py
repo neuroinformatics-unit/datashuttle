@@ -534,6 +534,7 @@ def construct_parser():
     make_sub_folders_parser.add_argument(
         "--sub-names",
         "--sub_names",
+        "-sub",
         type=str,
         nargs="+",
         required=True,
@@ -542,6 +543,7 @@ def construct_parser():
     make_sub_folders_parser.add_argument(
         "--ses-names",
         "--ses_names",
+        "-ses",
         nargs="+",
         type=str,
         required=False,
@@ -550,6 +552,7 @@ def construct_parser():
     make_sub_folders_parser.add_argument(
         "--data-type",
         "--data_type",
+        "-dt",
         type=str,
         nargs="+",
         required=False,
@@ -575,6 +578,7 @@ def construct_parser():
     upload_data_parser.add_argument(
         "--sub-names",
         "--sub_names",
+        "-sub",
         type=str,
         nargs="+",
         required=True,
@@ -583,6 +587,7 @@ def construct_parser():
     upload_data_parser.add_argument(
         "--ses-names",
         "--ses_names",
+        "-ses",
         type=str,
         nargs="+",
         required=True,
@@ -591,6 +596,7 @@ def construct_parser():
     upload_data_parser.add_argument(
         "--data-type",
         "--data_type",
+        "-dt",
         type=str,
         nargs="+",
         required=False,
@@ -632,6 +638,7 @@ def construct_parser():
     download_data_parser.add_argument(
         "--sub-names",
         "--sub_names",
+        "-sub",
         type=str,
         nargs="+",
         required=True,
@@ -640,6 +647,7 @@ def construct_parser():
     download_data_parser.add_argument(
         "--ses-names",
         "--ses_names",
+        "-ses",
         type=str,
         nargs="+",
         required=True,
@@ -648,6 +656,7 @@ def construct_parser():
     download_data_parser.add_argument(
         "--data-type",
         "--data_type",
+        "-dt",
         type=str,
         nargs="+",
         required=False,
