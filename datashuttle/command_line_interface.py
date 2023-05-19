@@ -289,37 +289,37 @@ def download_project_folder_or_file(project: DataShuttle, args: Any) -> None:
 # Get Local Path --------------------------------------------------------------
 
 
-def get_local_path(*args: Any) -> None:
+def show_local_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_local_path()
+    project.show_local_path()
 
 
 # Get Appdir Path -------------------------------------------------------------
 
 
-def get_datashuttle_path(*args: Any) -> None:
+def show_datashuttle_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_datashuttle_path()
+    project.show_datashuttle_path()
 
 
 # Get Config Path -------------------------------------------------------------
 
 
-def get_config_path(*args: Any) -> None:
+def show_config_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_config_path()
+    project.show_config_path()
 
 
 # Get Remote Path -------------------------------------------------------------
 
 
-def get_remote_path(*args: Any) -> None:
+def show_remote_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.get_remote_path()
+    project.show_remote_path()
 
 
 # Show Configs ----------------------------------------------------------------
@@ -331,7 +331,7 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-# Show Local Three ------------------------------------------------------------
+# Show Local Tree ------------------------------------------------------------
 
 
 def show_local_tree(*args: Any) -> None:
@@ -732,44 +732,44 @@ def construct_parser():
         help=help("flag_default_false"),
     )
 
-    # Get Local Path
+    # Show Local Path
     # -------------------------------------------------------------------------
 
-    get_local_path_parser = subparsers.add_parser(
-        "get-local-path",
-        aliases=["get_local_path"],
-        description=process_docstring(DataShuttle.get_local_path.__doc__),
+    show_local_path_parser = subparsers.add_parser(
+        "show-local-path",
+        aliases=["show_local_path"],
+        description=process_docstring(DataShuttle.show_local_path.__doc__),
     )
-    get_local_path_parser.set_defaults(func=get_local_path)
+    show_local_path_parser.set_defaults(func=show_local_path)
 
-    get_datashuttle_path_parser = subparsers.add_parser(
-        "get-datashuttle-path",
-        aliases=["get_datashuttle_path"],
+    show_datashuttle_path_parser = subparsers.add_parser(
+        "show-datashuttle-path",
+        aliases=["show_datashuttle_path"],
         description=process_docstring(
-            DataShuttle.get_datashuttle_path.__doc__
+            DataShuttle.show_datashuttle_path.__doc__
         ),
     )
-    get_datashuttle_path_parser.set_defaults(func=get_datashuttle_path)
+    show_datashuttle_path_parser.set_defaults(func=show_datashuttle_path)
 
     # Get Config Path
     # -------------------------------------------------------------------------
 
-    get_config_path_parser = subparsers.add_parser(
-        "get-config-path",
-        aliases=["get_config_path"],
-        description=process_docstring(DataShuttle.get_config_path.__doc__),
+    show_config_path_parser = subparsers.add_parser(
+        "show-config-path",
+        aliases=["show_config_path"],
+        description=process_docstring(DataShuttle.show_config_path.__doc__),
     )
-    get_config_path_parser.set_defaults(func=get_config_path)
+    show_config_path_parser.set_defaults(func=show_config_path)
 
     # Get Remote Path
     # -------------------------------------------------------------------------
 
-    get_remote_path_parser = subparsers.add_parser(
-        "get-remote-path",
-        aliases=["get_remote_path"],
-        description=process_docstring(DataShuttle.get_remote_path.__doc__),
+    show_remote_path_parser = subparsers.add_parser(
+        "show-remote-path",
+        aliases=["show_remote_path"],
+        description=process_docstring(DataShuttle.show_remote_path.__doc__),
     )
-    get_remote_path_parser.set_defaults(func=get_remote_path)
+    show_remote_path_parser.set_defaults(func=show_remote_path)
 
     # Show Configs
     # -------------------------------------------------------------------------
