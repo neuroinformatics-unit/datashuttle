@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g80c46e9</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g935c417</p>
   
 </a></div>
     
@@ -387,7 +387,7 @@ document.write(`
 <span class="sd">                   and folders are specified in make_config_file().</span>
 <span class="sd">                   Datashuttle-related files are stored in</span>
 <span class="sd">                   a .datashuttle folder in the user home</span>
-<span class="sd">                   folder. Use get_datashuttle_path() to</span>
+<span class="sd">                   folder. Use show_datashuttle_path() to</span>
 <span class="sd">                   see the path to this folder.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
@@ -853,7 +853,7 @@ document.write(`
 
 <span class="sd">        These settings are stored in a config file on the</span>
 <span class="sd">        datashuttle path (not in the project folder)</span>
-<span class="sd">        on the local machine. Use get_config_path() to</span>
+<span class="sd">        on the local machine. Use show_config_path() to</span>
 <span class="sd">        get the full path to the saved config file.</span>
 
 <span class="sd">        Use update_config() to update a single config, and</span>
@@ -1090,13 +1090,13 @@ document.write(`
     <span class="c1"># Public Getters</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.get_local_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_local_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_local_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the projects local path.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_datashuttle_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_datashuttle_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_datashuttle_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_datashuttle_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the path to the local datashuttle</span>
 <span class="sd">        folder where configs another other</span>
@@ -1104,14 +1104,14 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_config_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_config_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the full path to the DataShuttle config file.</span>
 <span class="sd">        This is always formatted to UNIX style.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_remote_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_remote_path">[docs]</a>    <span class="k">def</span> <span class="nf">get_remote_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_remote_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_remote_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_remote_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the project remote path.</span>
 <span class="sd">        This is always formatted to UNIX style.</span>

@@ -119,7 +119,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g80c46e9</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g935c417</p>
   
 </a></div>
     
@@ -349,7 +349,7 @@ profile if accepted, and setup ssh key pair.</p>
 and folders are specified in make_config_file().
 Datashuttle-related files are stored in
 a .datashuttle folder in the user home
-folder. Use get_datashuttle_path() to
+folder. Use show_datashuttle_path() to
 see the path to this folder.</p>
 </dd>
 </dl>
@@ -368,18 +368,6 @@ see the path to this folder.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file" title="datashuttle.datashuttle.DataShuttle.download_project_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_project_folder_or_file</span></code></a>(filepath[, ...])</p></td>
 <td><p>Download a specific file or folder.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_config_path" title="datashuttle.datashuttle.DataShuttle.get_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config_path</span></code></a>()</p></td>
-<td><p>Print the full path to the DataShuttle config file.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_datashuttle_path" title="datashuttle.datashuttle.DataShuttle.get_datashuttle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datashuttle_path</span></code></a>()</p></td>
-<td><p>Print the path to the local datashuttle folder where configs another other datashuttle files are stored.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_local_path" title="datashuttle.datashuttle.DataShuttle.get_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_local_path</span></code></a>()</p></td>
-<td><p>Print the projects local path.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_remote_path" title="datashuttle.datashuttle.DataShuttle.get_remote_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_remote_path</span></code></a>()</p></td>
-<td><p>Print the project remote path.</p></td>
-</tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.make_config_file" title="datashuttle.datashuttle.DataShuttle.make_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_config_file</span></code></a>(local_path, remote_path, ...)</p></td>
 <td><p>Initialise the configurations for datashuttle to use on the local machine.</p></td>
 </tr>
@@ -389,11 +377,23 @@ see the path to this folder.</p>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server" title="datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_ssh_connection_to_remote_server</span></code></a>()</p></td>
 <td><p>Setup a connection to the remote server using SSH.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_configs" title="datashuttle.datashuttle.DataShuttle.show_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_configs</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_config_path" title="datashuttle.datashuttle.DataShuttle.show_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_config_path</span></code></a>()</p></td>
+<td><p>Print the full path to the DataShuttle config file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_configs" title="datashuttle.datashuttle.DataShuttle.show_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_configs</span></code></a>()</p></td>
 <td><p>Print the current configs to the terminal.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_tree" title="datashuttle.datashuttle.DataShuttle.show_local_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_tree</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_datashuttle_path" title="datashuttle.datashuttle.DataShuttle.show_datashuttle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_datashuttle_path</span></code></a>()</p></td>
+<td><p>Print the path to the local datashuttle folder where configs another other datashuttle files are stored.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_path" title="datashuttle.datashuttle.DataShuttle.show_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_path</span></code></a>()</p></td>
+<td><p>Print the projects local path.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_tree" title="datashuttle.datashuttle.DataShuttle.show_local_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_tree</span></code></a>()</p></td>
 <td><p>Print a tree schematic of all files and folders in the local project.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_remote_path" title="datashuttle.datashuttle.DataShuttle.show_remote_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_remote_path</span></code></a>()</p></td>
+<td><p>Print the project remote path.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.supply_config_file" title="datashuttle.datashuttle.DataShuttle.supply_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">supply_config_file</span></code></a>(input_path_to_config[, warn])</p></td>
 <td><p>Supply an existing config by passing the path the config file (.yaml).</p></td>
@@ -657,7 +657,7 @@ used each time the datashuttle is opened. This method
 can also be used to completely overwrite existing configs.</p>
 <p>These settings are stored in a config file on the
 datashuttle path (not in the project folder)
-on the local machine. Use get_config_path() to
+on the local machine. Use show_config_path() to
 get the full path to the saved config file.</p>
 <p>Use update_config() to update a single config, and
 supply_config() to use an existing config file.</p>
@@ -761,8 +761,8 @@ Turned off for testing.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_local_path">
-<span class="sig-name descname"><span class="pre">get_local_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.get_local_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_local_path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.show_local_path">
+<span class="sig-name descname"><span class="pre">show_local_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.show_local_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.show_local_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Print the projects local path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -772,8 +772,8 @@ Turned off for testing.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_datashuttle_path">
-<span class="sig-name descname"><span class="pre">get_datashuttle_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.get_datashuttle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_datashuttle_path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.show_datashuttle_path">
+<span class="sig-name descname"><span class="pre">show_datashuttle_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.show_datashuttle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.show_datashuttle_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Print the path to the local datashuttle
 folder where configs another other
 datashuttle files are stored.</p>
@@ -785,8 +785,8 @@ datashuttle files are stored.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_config_path">
-<span class="sig-name descname"><span class="pre">get_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.get_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_config_path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.show_config_path">
+<span class="sig-name descname"><span class="pre">show_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.show_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.show_config_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Print the full path to the DataShuttle config file.
 This is always formatted to UNIX style.</p>
 <dl class="field-list simple">
@@ -797,8 +797,8 @@ This is always formatted to UNIX style.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.get_remote_path">
-<span class="sig-name descname"><span class="pre">get_remote_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.get_remote_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.get_remote_path" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.show_remote_path">
+<span class="sig-name descname"><span class="pre">show_remote_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.show_remote_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.show_remote_path" title="Permalink to this definition">#</a></dt>
 <dd><p>Print the project remote path.
 This is always formatted to UNIX style.</p>
 <dl class="field-list simple">
@@ -892,10 +892,10 @@ e.g. “sub-” or “ses-”</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_config_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.make_config_file()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.update_config"><code class="docutils literal notranslate"><span class="pre">DataShuttle.update_config()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.supply_config_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.supply_config_file()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_local_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_local_path()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_datashuttle_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_datashuttle_path()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_config_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_config_path()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_remote_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_remote_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_local_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_local_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_datashuttle_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_datashuttle_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_config_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_config_path()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_remote_path"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_remote_path()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_configs"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_configs()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_local_tree"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_local_tree()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.check_name_formatting"><code class="docutils literal notranslate"><span class="pre">DataShuttle.check_name_formatting()</span></code></a></li>
