@@ -5,9 +5,8 @@ import glob
 import json
 import os
 import shutil
-import warnings
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import paramiko
 import yaml
@@ -225,63 +224,23 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
-    def get_next_sub_number(self):
+    def get_next_sub_number(self) -> Tuple[int, int]:
         """
-
-        Returns
-        -------
-
+        Convenience function for get_next_sub_or_ses_number
+        to find the next subject number.
         """
-        # Search local and remote for folders that begin with "sub-*"
-        (
-            local_subs_foldernames,
-            local_subs_filenames,
-        ) = folders.search_sub_or_ses_level(
-            self.cfg,
-            self.cfg.get_base_folder("local"),
-            "local",
-            search_str="sub-*",
-        )
-        (
-            remote_subs_foldernames,
-            remote_subs_filenames,
-        ) = folders.search_sub_or_ses_level(
-            self.cfg,
-            self.cfg.get_base_folder("remote"),
-            "remote",
-            search_str="sub-*",
+        return folders.get_next_sub_or_ses_number(
+            self.cfg, sub=None, search_str="sub-*"
         )
 
-        # Convert subject values to a list of integers
-        all_subs = list(set(local_subs_foldernames + remote_subs_foldernames))
-
-        all_sub_nums = utils.get_values_from_bids_formatted_name(
-            all_subs,
-            "sub",
-            return_as_int=True,
-            sort=True,
+    def get_next_ses_number(self, sub: Optional[str]) -> Tuple[int, int]:
+        """
+        Convenience function for get_next_sub_or_ses_number
+        to find the next session number.
+        """
+        return folders.get_next_sub_or_ses_number(
+            self.cfg, sub=sub, search_str="ses-*"
         )
-
-        diff_between_subs = formatting.diff(all_sub_nums)
-
-        if any([diff != 1 for diff in diff_between_subs]):
-            warnings.warn(
-                f"A subject number has been skipped, currently used "
-                f"subject numbers are: {all_sub_nums}"
-            )
-
-        latest_sub_num = max(all_sub_nums)
-        new_sub_num = latest_sub_num + 1
-        utils.print_message_to_user(
-            "Local and Remote repositories searched. "
-            f"The most recent subject number is: {latest_sub_num}."
-            f"The suggested new subject number is {new_sub_num}"
-        )
-
-        return new_sub_num
-
-    #        def get_next_ses_number(self, ses):
-    #       pass
 
     # -------------------------------------------------------------------------
     # Public File Transfer
@@ -879,6 +838,47 @@ class DataShuttle:
         in the local project.
         """
         ds_logger.print_tree(self.cfg["local_path"])
+
+    def show_next_sub_number(self) -> None:
+        """
+        Show a suggested value for the next available subject number
+        The local and remote repository will be searched, and the
+        maximum existing subject number + 1 will be suggested.
+
+        Note that this cannot search all local machines except for the one
+        in use, and the suggested number will not reflect existing sessions
+        on other local machines.
+        """
+        latest_existing_num, suggested_new_num = self.get_next_sub_number()
+
+        utils.print_message_to_user(
+            "Local and Remote repository searched. "
+            f"The most recent subject number found is: {latest_existing_num}. "
+            f"The suggested new subject number is: {suggested_new_num}"
+        )
+
+    def show_next_ses_number(self, sub: Optional[str]) -> None:
+        """
+        Show a suggested value for the next session number of a
+        given subject. The local and remote repository will be
+        searched, and the maximum session number + 1 will be suggested.
+
+        Note that this cannot search all local machines except for the one
+        in use, and the suggested number will not reflect existing sessions
+        on other local machines.
+
+        Parameters
+        ----------
+
+        sub : the subject for which to suggest the next available session.
+        """
+        latest_existing_num, suggested_new_num = self.get_next_ses_number(sub)
+
+        utils.print_message_to_user(
+            f"Local and Remote repository searched for sessions for {sub}. "
+            f"The most recent session number found is: {latest_existing_num}. "
+            f"The suggested new session number is: {suggested_new_num}"
+        )
 
     @staticmethod
     def check_name_formatting(names: Union[str, list], prefix: str) -> None:

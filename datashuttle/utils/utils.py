@@ -160,14 +160,14 @@ def get_values_from_bids_formatted_name(
     for name in all_names:
 
         if key not in name:
-            raise_error(f"They key {key} is not found in {name}")
+            raise_error(f"The key {key} is not found in {name}")
 
         value = re.findall(f"{key}-(.*?)(?=_|$)", name)
 
         if len(value) > 1:
             raise_error(
-                f"There is more than instance of {key} in {name}."
-                f"BIDS names must contain only one instance of"
+                f"There is more than instance of {key} in {name}. "
+                f"BIDS names must contain only one instance of "
                 f"each key."
             )
 
@@ -175,7 +175,7 @@ def get_values_from_bids_formatted_name(
             try:
                 value_to_append = int(value[0])
             except ValueError:
-                raise_error(f"Invalid character in subject number {name}")
+                raise_error(f"Invalid character in subject number: {name}")
         else:
             value_to_append = value[0]
 
@@ -196,3 +196,17 @@ def unpack_nested_list(main_list):
         else:
             new_list += [value]
     return new_list
+
+
+def integers_are_consecutive(list_of_ints: List[int]) -> bool:
+
+    diff_between_ints = diff(list_of_ints)
+    return all([diff == 1 for diff in diff_between_ints])
+
+
+def diff(x):
+    """
+    slow, custom differentiator for small inputs, to avoid
+    adding numpy as a dependency.
+    """
+    return [x[i + 1] - x[i] for i in range(len(x) - 1)]

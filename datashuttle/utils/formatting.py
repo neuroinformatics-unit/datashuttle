@@ -339,16 +339,8 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
         if len(dashes_underscores) % 2 != 0:
             dashes_underscores.pop(-1)
 
-        if any([ele == 0 for ele in diff(dashes_underscores)]):
+        if any([ele == 0 for ele in utils.diff(dashes_underscores)]):
             utils.log_and_raise_error(
                 "Subject and session names must contain alternating dashes and "
                 "underscores (used for separating key-value pairs)."
             )
-
-
-def diff(x):
-    """
-    slow, custom differentiator for small inputs, to avoid
-    adding numpy as a dependency.
-    """
-    return [x[i + 1] - x[i] for i in range(len(x) - 1)]

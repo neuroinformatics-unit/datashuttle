@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 import glob
 import os
+import warnings
 from pathlib import Path
 from typing import Any, List, Optional, Tuple, Union
 
@@ -469,3 +470,88 @@ def search_filesystem_path_for_folders(
         else:
             all_filenames.append(os.path.basename(file_or_folder))
     return all_folder_names, all_filenames
+
+
+# -----------------------------------------------------------------------------
+# Get Next Subject or Session Number
+# -----------------------------------------------------------------------------
+
+
+def get_next_sub_or_ses_number(
+    cfg: Configs, sub: Optional[str], search_str: str
+) -> Tuple[int, int]:
+    """
+    Suggest the next available subject or session number. This function will
+    search the local repository, and the remote repository, for all subject
+    or session folders (subject or session depending on inputs).
+    It will take the union of all folder names, find the relevant key-value
+    pair values, and return the maximum value + 1 as the new number.
+    A warning will be shown if the existing sub / session numbers are not
+    consecutive.
+
+    If sub is None, the top-level level folder will be searched (i.e. for subjects).
+    The search string "sub-*" is suggested in this case. Otherwise, the subject,
+    level folder for the specified subject will be searched. The search_str
+    "ses-*" is suggested in this case.
+
+    Parameters
+    ----------
+
+    cfg : datashuttle configs class
+    sub : subject name to search within if searching for sessions, otherwise None
+          to search for subjects
+    search_str : the string to search for within the top-level or subject-levle
+                 folder ("sub-*") or ("ses-*") are suggested, respectively.
+
+    Returns
+    -------
+    suggested_new_num : the new suggested sub / ses number.
+    latest_existing_num : the latest sub / ses number that currently
+                          exists in the project.
+
+    """
+    if sub:
+        bids_key = "ses"
+    else:
+        bids_key = "sub"
+
+    # Search local and remote for folders that begin with "sub-*"
+    local_foldernames, __ = search_sub_or_ses_level(
+        cfg,
+        cfg.get_base_folder("local"),
+        "local",
+        sub=sub,
+        search_str=search_str,
+    )
+    remote_foldernames, __ = search_sub_or_ses_level(
+        cfg,
+        cfg.get_base_folder("remote"),
+        "remote",
+        sub,
+        search_str=search_str,
+    )
+
+    # Convert subject values to a list of increasing-by-1 integers
+    all_folders = list(set(local_foldernames + remote_foldernames))
+
+    if len(all_folders) == 0:
+        utils.raise_error("No folders found. Cannot suggest the next number.")
+
+    all_value_nums = utils.get_values_from_bids_formatted_name(
+        all_folders,
+        bids_key,
+        return_as_int=True,
+        sort=True,
+    )
+
+    if not utils.integers_are_consecutive(all_value_nums):
+        warnings.warn(
+            f"A subject number has been skipped, "
+            f"currently used subject numbers are: {all_value_nums}"
+        )
+
+    # calculate next sub number
+    latest_existing_num = max(all_value_nums)
+    suggested_new_num = latest_existing_num + 1
+
+    return suggested_new_num, latest_existing_num
