@@ -190,16 +190,21 @@ def check_no_duplicate_sub_ses_key_values(
         )[0]
 
         existing_sub_values = utils.get_values_from_bids_formatted_name(
-            existing_sub_names, "sub"
+            existing_sub_names,
+            "sub",
+            return_as_int=True,
         )
 
         for new_sub in utils.get_values_from_bids_formatted_name(
-            new_sub_names, "sub"
+            new_sub_names,
+            "sub",
+            return_as_int=True,
         ):
             if new_sub in existing_sub_values:
                 utils.log_and_raise_error(
                     f"Cannot make folders. "
-                    f"The key sub-{new_sub} already exists in the project"
+                    f"The key sub-{new_sub} (possibly with leading zeros) "
+                    f"already exists in the project"
                 )
     else:
         # for each subject, check session level
@@ -209,16 +214,21 @@ def check_no_duplicate_sub_ses_key_values(
             )[0]
 
             existing_ses_values = utils.get_values_from_bids_formatted_name(
-                existing_ses_names, "ses"
+                existing_ses_names,
+                "ses",
+                return_as_int=True,
             )
             for new_ses in utils.get_values_from_bids_formatted_name(
-                new_ses_names, "ses"
+                new_ses_names,
+                "ses",
+                return_as_int=True,
             ):
 
                 if new_ses in existing_ses_values:
                     utils.log_and_raise_error(
                         f"Cannot make folders. "
-                        f"The key ses-{new_ses} for {sub} already exists in the project"
+                        f"The key ses-{new_ses} for {sub} (possibly with leading "
+                        f"zeros) already exists in the project"
                     )
 
 
@@ -472,11 +482,6 @@ def search_filesystem_path_for_folders(
     return all_folder_names, all_filenames
 
 
-# -----------------------------------------------------------------------------
-# Get Next Subject or Session Number
-# -----------------------------------------------------------------------------
-
-
 def get_next_sub_or_ses_number(
     cfg: Configs, sub: Optional[str], search_str: str
 ) -> Tuple[int, int]:
@@ -488,27 +493,22 @@ def get_next_sub_or_ses_number(
     pair values, and return the maximum value + 1 as the new number.
     A warning will be shown if the existing sub / session numbers are not
     consecutive.
-
     If sub is None, the top-level level folder will be searched (i.e. for subjects).
     The search string "sub-*" is suggested in this case. Otherwise, the subject,
     level folder for the specified subject will be searched. The search_str
     "ses-*" is suggested in this case.
-
     Parameters
     ----------
-
     cfg : datashuttle configs class
     sub : subject name to search within if searching for sessions, otherwise None
           to search for subjects
     search_str : the string to search for within the top-level or subject-levle
                  folder ("sub-*") or ("ses-*") are suggested, respectively.
-
     Returns
     -------
     suggested_new_num : the new suggested sub / ses number.
     latest_existing_num : the latest sub / ses number that currently
                           exists in the project.
-
     """
     if sub:
         bids_key = "ses"
