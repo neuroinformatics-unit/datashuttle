@@ -11,7 +11,7 @@ from pathlib import Path
 
 import yaml
 
-from datashuttle.configs import canonical_configs
+from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger, rclone, utils
 
@@ -416,7 +416,9 @@ def check_and_strip_within_sub_data_folders(ses_names, data_type_to_transfer):
     return data_type_to_transfer
 
 
-def make_and_check_local_project(project, subs, sessions, data_type):
+def make_and_check_local_project(
+    project, subs, sessions, data_type, folder_name="rawdata"
+):
     """
     Make a local project folder tree with the specified data_type,
     subs, sessions and check it is made successfully.
@@ -425,7 +427,7 @@ def make_and_check_local_project(project, subs, sessions, data_type):
 
     check_folder_tree_is_correct(
         project,
-        get_rawdata_path(project),
+        get_rawdata_path(project, folder_name=folder_name),
         subs,
         sessions,
         get_default_folder_used(),
@@ -486,20 +488,27 @@ def check_config_file(config_path, *kwargs):
 # Test Helpers
 # -----------------------------------------------------------------------------
 
-
-def get_rawdata_path(project, local_or_remote="local"):
+# TODO: rename this 'top level folder path'
+def get_rawdata_path(project, local_or_remote="local", folder_name="rawdata"):
     """"""
+
+    assert (
+        folder_name in canonical_folders.get_top_level_folder_names()
+    ), "folder_name must be cannonical e.g. rawdata"
+
     if local_or_remote == "local":
         base_path = project.cfg["local_path"]
     else:
         base_path = project.cfg["remote_path"]
-    return os.path.join(base_path, project.cfg.top_level_folder_name)
+
+    return base_path / folder_name
 
 
 def handle_upload_or_download(
     project,
     upload_or_download,
     use_all_alias=False,
+    transfer_entire_project=False,  # TODO: fix this signature
     swap_last_folder_only=False,
 ):
     """
@@ -514,16 +523,21 @@ def handle_upload_or_download(
             project, swap_last_folder_only
         )
 
-        transfer_function = (
-            project.download_all if use_all_alias else project.download_data
-        )
-
+        if transfer_entire_project:
+            transfer_function = project.download_entire_project
+        elif use_all_alias:
+            transfer_function = project.download_all
+        else:
+            transfer_function = project.download_data
     else:
         remote_path = project.cfg["remote_path"]
 
-        transfer_function = (
-            project.upload_all if use_all_alias else project.upload_data
-        )
+        if transfer_entire_project:
+            transfer_function = project.upload_entire_project
+        elif use_all_alias:
+            transfer_function = project.upload_all
+        else:
+            transfer_function = project.upload_data
 
     return transfer_function, remote_path
 
@@ -647,3 +661,29 @@ def set_datashuttle_loggers(disable):
     for name in ["datashuttle", "rich"]:
         logger = logging.getLogger(name)
         logger.disabled = disable
+
+
+def check_working_top_level_folder_only_exists(
+    folder_name, project, base_path_to_check, subs, sessions
+):
+    """
+    Check that the folder tree made in the 'folder_name'
+    (e.g. 'rawdata') top level folder is correctly. Additionally,
+    check that no other top-level folders exist. This is to ensure
+    that folders made / transferred from one top-level folder
+    do not inadvertently transfer other top-level folders
+    """
+    check_folder_tree_is_correct(
+        project,
+        base_path_to_check,
+        subs,
+        sessions,
+        get_default_folder_used(),
+    )
+
+    # Check other top-level folders are not made
+    unused_folders = canonical_folders.get_top_level_folder_names()
+    unused_folders.remove(folder_name)
+
+    for folder in unused_folders:
+        assert not (base_path_to_check.parent / folder).is_dir()

@@ -235,6 +235,21 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_upload_download_entire_project_variables(
+        self, setup_project, upload_or_download, sep
+    ):
+        """
+        see test_upload_download_all_variables()
+        """
+        stdout, stderr = test_utils.run_cli(
+            f"{upload_or_download}{sep}entire{sep}project",
+            setup_project.project_name,
+        )
+
+        assert stderr == ""
+
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("sep", ["-", "_"])
     def test_upload_download_folder_or_file(self, upload_or_download, sep):
         """
         As upload_data_folder_or_file and download_data_folder_or_file
@@ -400,12 +415,19 @@ class TestCommandLineInterface:
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_all_alias", [True, False])
+    @pytest.mark.parametrize(
+        "transfer_method", ["standard", "all_alias", "entire_project"]
+    )
     def test_upload_and_download_data(
-        self, setup_project, upload_or_download, use_all_alias
+        self, setup_project, upload_or_download, transfer_method
     ):
         """
-        see test_filesystem_transfer.py
+        This tests whether basic transfer works through CLI.
+        see test_filesystem_transfer.py for more extensive tests.
+        "_" vs. "-" command separators are not tested here to avoid
+        adding another enumeration, as these tests are slow.
+        Testing that the command runs with both separators is done above,
+        in test_upload_download_all_variables() and test_upload_download_data_variables()
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
@@ -420,17 +442,22 @@ class TestCommandLineInterface:
             setup_project, upload_or_download
         )
 
-        if use_all_alias:
+        if transfer_method == "all_alias":
             test_utils.run_cli(
                 f"{upload_or_download}-all",
                 setup_project.project_name,
             )
-        else:
+        elif transfer_method == "standard":
             test_utils.run_cli(
                 f"{upload_or_download}_data "
                 f"--data_type all "
                 f"--sub_names all "
                 f"--ses_names all",
+                setup_project.project_name,
+            )
+        elif transfer_method == "entire_project":
+            test_utils.run_cli(
+                f"{upload_or_download}_entire_project",
                 setup_project.project_name,
             )
 
@@ -518,6 +545,44 @@ class TestCommandLineInterface:
         )
 
         assert "['sub-001', 'sub-01', 'sub-02']" in stdout
+
+    @pytest.mark.parametrize("sep", ["-", "_"])
+    def test_set_top_level_folder(self, setup_project, sep):
+        """
+        Test that the top level folder is "rawdata" by default,
+        setting the top level folder to a new folder ("code")
+        updates the top level folder correctly. Finally, test
+        passing a not-allowed top-level-folder to
+        set-top-level-folder raises an error.
+        """
+        stdout, __ = test_utils.run_cli(
+            f"show{sep}top{sep}level{sep}folder", setup_project.project_name
+        )
+
+        assert "rawdata" in stdout
+
+        stdout, __ = test_utils.run_cli(
+            f"set{sep}top{sep}level{sep}folder code",
+            setup_project.project_name,
+        )
+
+        assert "code" in stdout
+
+        stdout, __ = test_utils.run_cli(
+            f"show{sep}top{sep}level{sep}folder", setup_project.project_name
+        )
+
+        assert "code" in stdout
+
+        __, stderr = test_utils.run_cli(
+            f"set{sep}top{sep}level{sep}folder NOT_RECOGNISED",
+            setup_project.project_name,
+        )
+
+        assert (
+            "Folder name: NOT_RECOGNISED is not in permitted top-level folder names"
+            in stderr
+        )
 
     # ----------------------------------------------------------------------------------------------------------
     # Helpers
