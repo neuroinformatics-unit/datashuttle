@@ -96,3 +96,7 @@ def get_non_ses_names():
         "all_data_type",
         "all_ses_level_non_data_type",
     ]
+
+
+def get_top_level_folder_names():
+    return ["rawdata", "derivatives", "analysis", "code"]
