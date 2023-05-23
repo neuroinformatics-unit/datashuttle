@@ -83,9 +83,7 @@ class DataShuttle:
             self._temp_log_path,
         ) = utils.get_datashuttle_path(self.project_name)
 
-        self._config_path = (
-            utils.get_datashuttle_path(project_name)[0] / "config.yaml"
-        )
+        self._config_path = self._datashuttle_path / "config.yaml"
 
         self._persistent_settings_path = (
             self._datashuttle_path / "persistent_settings.yaml"
@@ -109,6 +107,11 @@ class DataShuttle:
         self.cfg.top_level_folder_name = self._load_persistent_settings()[
             "top_level_folder"
         ]
+
+        utils.print_message_to_user(
+            f"\nThe working top level folder is: "
+            f"{self.cfg.top_level_folder_name}\n"
+        )
 
         self.cfg.init_paths()
 
