@@ -849,7 +849,7 @@ class DataShuttle:
         in use, and the suggested number will not reflect existing sessions
         on other local machines.
         """
-        latest_existing_num, suggested_new_num = self.get_next_sub_number()
+        suggested_new_num, latest_existing_num = self.get_next_sub_number()
 
         utils.print_message_to_user(
             "Local and Remote repository searched. "

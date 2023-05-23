@@ -349,7 +349,25 @@ def show_local_tree(*args: Any) -> None:
     project.show_local_tree()
 
 
-# Check Name Processing -----------------------------------------------------------
+# Show Next Sub Number -------------------------------------------------------
+
+
+def show_next_sub_number(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.show_next_sub_number()
+
+
+# Show Next Sub Number -------------------------------------------------------
+
+
+def show_next_ses_number(project: DataShuttle, args: Any) -> None:
+    """"""
+    kwargs = make_kwargs(args)
+    project.show_next_ses_number(kwargs["sub"])
+
+
+# Check Name Processing -------------------------------------------------------
 
 
 def check_name_formatting(project: DataShuttle, args: Any) -> None:
@@ -818,6 +836,34 @@ def construct_parser():
         help="",
     )
     show_local_tree_parser.set_defaults(func=show_local_tree)
+
+    # Show Local tree
+    # -------------------------------------------------------------------------
+
+    show_next_sub_number_parser = subparsers.add_parser(
+        "show-next-sub-number",
+        aliases=["show_next_sub_number"],
+        description=process_docstring(DataShuttle.show_next_sub_number.__doc__),
+        help="",
+    )
+    show_next_sub_number_parser.set_defaults(func=show_next_sub_number)
+
+    # Show Local tree
+    # -------------------------------------------------------------------------
+
+    show_next_ses_number_parser = subparsers.add_parser(
+        "show-next-ses-number",
+        aliases=["show_next_ses_number"],
+        description=process_docstring(DataShuttle.show_next_ses_number.__doc__),
+        help="",
+    )
+    show_next_ses_number_parser.set_defaults(func=show_next_ses_number)
+
+    show_next_ses_number_parser.add_argument(
+        "sub",
+        type=str,
+        help="Required: (str) sub to find latest session for.",
+    )
 
     # Check Name Processing
     # -------------------------------------------------------------------------

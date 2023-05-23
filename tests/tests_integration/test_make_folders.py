@@ -1,6 +1,7 @@
 import datetime
 import os.path
 import re
+import shutil
 from os.path import join
 
 import pytest
@@ -38,9 +39,9 @@ class TestMakeFolders:
         yield project
         test_utils.teardown_project(cwd, project)
 
-    # ----------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
     # Tests
-    # ----------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize(
@@ -349,9 +350,103 @@ class TestMakeFolders:
         assert all([re.search(datetime_regexp, name) for name in ses_names])
         assert all([tags("time") not in name for name in ses_names])
 
-    # ----------------------------------------------------------------------------------------------------------
+    # Test get next subject / session numbers
+    # ----------------------------------------------------------------------------------
+
+    def test_get_next_sub_number(self, project):
+        """
+        Test that the next subject number is suggested correctly.
+        This takes the union of subjects available in the local and
+        remote repository. As such test the case where either are
+        empty, or when they have different subjects in.
+        """
+        # Create local folders, remote is empty
+        project.make_sub_folders(["001", "002", "003"])
+        new_num, old_num = project.get_next_sub_number()
+
+        assert new_num == 4
+        assert old_num == 3
+
+        # Upload to remote, now local and remote folders match
+        project.upload_all()
+        new_num, old_num = project.get_next_sub_number()
+        assert new_num == 4
+        assert old_num == 3
+
+        # Delete subject folders from local
+        folders_to_del = list(
+            (project.cfg["local_path"] / "rawdata").glob("sub-*")
+        )
+        for path_ in folders_to_del:
+            shutil.rmtree(path_)  # this doesn't work with map or listcomp
+
+        new_num, old_num = project.get_next_sub_number()
+        assert new_num == 4
+        assert old_num == 3
+
+        # Add large-sub num folders to local and check all are detected.
+        project.make_sub_folders(["004", "005"])
+        new_num, old_num = project.get_next_sub_number()
+        assert new_num == 6
+        assert old_num == 5
+
+    def test_get_next_ses_number(self, project):
+        """
+        Almost identical to test_get_next_sub_number() but with calls
+        for searching sessions. This could be combined with
+        above but reduces readability, so leave with some duplication.
+        """
+        sub = "sub-3"
+        project.make_sub_folders(sub, ["001", "002", "003"])
+        new_num, old_num = project.get_next_sub_number()
+
+        assert new_num == 4
+        assert old_num == 3
+
+        project.upload_all()
+        new_num, old_num = project.get_next_ses_number(sub)
+        assert new_num == 4
+        assert old_num == 3
+
+        folders_to_del = list(
+            (project.cfg["local_path"] / "rawdata" / sub).glob("ses-*")
+        )
+        for path_ in folders_to_del:
+            shutil.rmtree(path_)  # this doesn't work with map or listcomp
+
+        new_num, old_num = project.get_next_ses_number(sub)
+        assert new_num == 4
+        assert old_num == 3
+
+        project.make_sub_folders(sub, ["04", "0005"])
+        new_num, old_num = project.get_next_ses_number(sub)
+        assert new_num == 6
+        assert old_num == 5
+
+    def test_warning_non_consecutive_numbers(self, project):
+
+        project.make_sub_folders(
+            ["sub-01", "sub-2", "sub-04"], ["ses-05", "ses-10"]
+        )
+
+        with pytest.warns(UserWarning) as w:
+            project.get_next_sub_number()
+        assert (
+            str(w[0].message) == "A subject number has been skipped, "
+            "currently used subject numbers are: [1, 2, 4]"
+        )
+
+        with pytest.warns(UserWarning) as w:
+            project.get_next_ses_number("sub-2")
+        assert (
+            str(w[0].message)
+            == "A subject number has been skipped, currently "
+            "used subject numbers are: [5, 10]"
+        )
+
+    # ----------------------------------------------------------------------------------
     # Test Helpers
-    # ----------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     def get_formatted_date_and_time(self):
         date = str(datetime.datetime.now().date())
