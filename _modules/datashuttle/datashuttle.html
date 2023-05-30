@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g797a5cc</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gca214fb</p>
   
 </a></div>
     
@@ -1123,6 +1123,12 @@ document.write(`
 <span class="sd">        Print the current configs to the terminal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="DataShuttle.show_logging_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_logging_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the path where datashuttle logs are written.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.show_local_tree"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_tree">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
