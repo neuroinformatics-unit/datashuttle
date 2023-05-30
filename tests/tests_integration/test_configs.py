@@ -96,15 +96,17 @@ class TestConfigs:
         "argument_type",
         ["none", "remote_host_id", "remote_host_username", "both"],
     )
-    def test_no_ssh_options_set_update_config(self, project, argument_type):
+    def test_no_ssh_options_set_update_config(
+        self, project, argument_type, tmp_path
+    ):
         """
         Check every config option missing does not allow
         switching on ssh_to_remote unless all options
         are set.
         """
         project.make_config_file(
-            "test_local_path",
-            "test_remote_path",
+            tmp_path / "test_local_path",
+            tmp_path / "test_remote_path",
             "local_filesystem",
             use_behav=True,
         )
