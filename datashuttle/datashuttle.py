@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import shutil
+import warnings
 from pathlib import Path
 from typing import Any, Dict, Optional, Union
 
@@ -223,6 +224,64 @@ class DataShuttle:
         )
 
         ds_logger.close_log_filehandler()
+
+    def get_next_sub_number(self):
+        """
+
+        Returns
+        -------
+
+        """
+        # Search local and remote for folders that begin with "sub-*"
+        (
+            local_subs_foldernames,
+            local_subs_filenames,
+        ) = folders.search_sub_or_ses_level(
+            self.cfg,
+            self.cfg.get_base_folder("local"),
+            "local",
+            search_str="sub-*",
+        )
+        (
+            remote_subs_foldernames,
+            remote_subs_filenames,
+        ) = folders.search_sub_or_ses_level(
+            self.cfg,
+            self.cfg.get_base_folder("remote"),
+            "remote",
+            search_str="sub-*",
+        )
+
+        # Convert subject values to a list of integers
+        all_subs = list(set(local_subs_foldernames + remote_subs_foldernames))
+
+        all_sub_nums = utils.get_values_from_bids_formatted_name(
+            all_subs,
+            "sub",
+            return_as_int=True,
+            sort=True,
+        )
+
+        diff_between_subs = formatting.diff(all_sub_nums)
+
+        if any([diff != 1 for diff in diff_between_subs]):
+            warnings.warn(
+                f"A subject number has been skipped, currently used "
+                f"subject numbers are: {all_sub_nums}"
+            )
+
+        latest_sub_num = max(all_sub_nums)
+        new_sub_num = latest_sub_num + 1
+        utils.print_message_to_user(
+            "Local and Remote repositories searched. "
+            f"The most recent subject number is: {latest_sub_num}."
+            f"The suggested new subject number is {new_sub_num}"
+        )
+
+        return new_sub_num
+
+    #        def get_next_ses_number(self, ses):
+    #       pass
 
     # -------------------------------------------------------------------------
     # Public File Transfer
