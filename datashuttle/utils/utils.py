@@ -1,16 +1,18 @@
+from __future__ import annotations
+
 import logging
 import re
 import traceback
 from pathlib import Path
-from typing import List, Tuple, Union
+from typing import List, Literal, Tuple, Union, overload
 
 from rich import print as rich_print
 
 from . import folders
 
-# --------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 # General Utils
-# --------------------------------------------------------------------------------------------------------------------
+# --------------------------------------------------------------------------------------
 
 
 def log(message: str) -> None:
@@ -121,19 +123,68 @@ def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
         log_and_raise_error("The config file must be a YAML file.")
 
 
-def get_first_sub_ses_keys(all_names: List[str]) -> List[str]:
-    """
-    Assumes sub / ses name is in standard form with sub/ses label
-    in the second position e.g. sub-001_id-...
+# TODO: test this method
 
-    Only look for folders / file with sub/ses in first key
-    to ignore all other files
+
+@overload
+def get_values_from_bids_formatted_name(
+    all_names: List[str],
+    key: str,
+    return_as_int: Literal[True],
+    sort: bool = False,
+) -> List[int]:
+    ...
+
+
+@overload
+def get_values_from_bids_formatted_name(
+    all_names: List[str],
+    key: str,
+    return_as_int: Literal[False] = False,
+    sort: bool = False,
+) -> List[str]:
+    ...
+
+
+def get_values_from_bids_formatted_name(
+    all_names: List[str],
+    key: str,
+    return_as_int: bool = False,
+    sort: bool = False,
+) -> Union[List[int], List[str]]:
     """
-    return [
-        re.split("-|_", name)[1]
-        for name in all_names
-        if re.split("-|_", name)[0] in ["sub", "ses"]
-    ]
+    Find the values associated with a key from a list of all
+    BIDS-formatted file / folder names.
+    """
+    all_values = []
+    for name in all_names:
+
+        if key not in name:
+            raise_error(f"They key {key} is not found in {name}")
+
+        value = re.findall(f"{key}-(.*?)(?=_|$)", name)
+
+        if len(value) > 1:
+            raise_error(
+                f"There is more than instance of {key} in {name}."
+                f"BIDS names must contain only one instance of"
+                f"each key."
+            )
+
+        if return_as_int:
+            try:
+                value_to_append = int(value[0])
+            except ValueError:
+                raise_error(f"Invalid character in subject number {name}")
+        else:
+            value_to_append = value[0]
+
+        all_values.append(value_to_append)
+
+    if sort:
+        all_values = sorted(all_values)
+
+    return all_values
 
 
 def unpack_nested_list(main_list):

@@ -185,11 +185,16 @@ def check_no_duplicate_sub_ses_key_values(
     """
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
-            project.cfg, base_folder, "local"
+            project.cfg, base_folder, "local", search_str="*sub-*"
         )[0]
-        existing_sub_values = utils.get_first_sub_ses_keys(existing_sub_names)
 
-        for new_sub in utils.get_first_sub_ses_keys(new_sub_names):
+        existing_sub_values = utils.get_values_from_bids_formatted_name(
+            existing_sub_names, "sub"
+        )
+
+        for new_sub in utils.get_values_from_bids_formatted_name(
+            new_sub_names, "sub"
+        ):
             if new_sub in existing_sub_values:
                 utils.log_and_raise_error(
                     f"Cannot make folders. "
@@ -199,14 +204,15 @@ def check_no_duplicate_sub_ses_key_values(
         # for each subject, check session level
         for sub in new_sub_names:
             existing_ses_names = search_sub_or_ses_level(
-                project.cfg, base_folder, "local", sub
+                project.cfg, base_folder, "local", sub, search_str="*ses-*"
             )[0]
 
-            existing_ses_values = utils.get_first_sub_ses_keys(
-                existing_ses_names
+            existing_ses_values = utils.get_values_from_bids_formatted_name(
+                existing_ses_names, "ses"
             )
-
-            for new_ses in utils.get_first_sub_ses_keys(new_ses_names):
+            for new_ses in utils.get_values_from_bids_formatted_name(
+                new_ses_names, "ses"
+            ):
 
                 if new_ses in existing_ses_values:
                     utils.log_and_raise_error(
