@@ -65,7 +65,7 @@ class DataShuttle:
                    and folders are specified in make_config_file().
                    Datashuttle-related files are stored in
                    a .datashuttle folder in the user home
-                   folder. Use get_datashuttle_path() to
+                   folder. Use show_datashuttle_path() to
                    see the path to this folder.
     """
 
@@ -531,7 +531,7 @@ class DataShuttle:
 
         These settings are stored in a config file on the
         datashuttle path (not in the project folder)
-        on the local machine. Use get_config_path() to
+        on the local machine. Use show_config_path() to
         get the full path to the saved config file.
 
         Use update_config() to update a single config, and
@@ -768,13 +768,13 @@ class DataShuttle:
     # Public Getters
     # -------------------------------------------------------------------------
 
-    def get_local_path(self) -> None:
+    def show_local_path(self) -> None:
         """
         Print the projects local path.
         """
         utils.print_message_to_user(self.cfg["local_path"].as_posix())
 
-    def get_datashuttle_path(self) -> None:
+    def show_datashuttle_path(self) -> None:
         """
         Print the path to the local datashuttle
         folder where configs another other
@@ -782,14 +782,14 @@ class DataShuttle:
         """
         utils.print_message_to_user(self._datashuttle_path.as_posix())
 
-    def get_config_path(self) -> None:
+    def show_config_path(self) -> None:
         """
         Print the full path to the DataShuttle config file.
         This is always formatted to UNIX style.
         """
         utils.print_message_to_user(self._config_path.as_posix())
 
-    def get_remote_path(self) -> None:
+    def show_remote_path(self) -> None:
         """
         Print the project remote path.
         This is always formatted to UNIX style.

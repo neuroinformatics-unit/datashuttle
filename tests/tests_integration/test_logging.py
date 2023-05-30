@@ -22,11 +22,17 @@ class TestCommandLineInterface:
         Create an empty project, but ensure no
         configs already exists, and delete created configs
         after test.
+
+        Switch on datashuttle logging as required for
+        these tests, then turn back off during tear-down.
         """
         project_name = "test_logging"
         test_utils.delete_project_if_it_exists(project_name)
+        test_utils.set_datashuttle_loggers(disable=False)
+
         yield project_name
         test_utils.delete_project_if_it_exists(project_name)
+        test_utils.set_datashuttle_loggers(disable=True)
 
     @pytest.fixture(scope="function")
     def setup_project(self, tmp_path):
@@ -34,8 +40,8 @@ class TestCommandLineInterface:
         Setup a project with default configs to use
         for testing.
 
-        # Note this fixture is a duplicate of project()
-        in test_filesystem_transfer.py fixture
+        Switch on datashuttle logging as required for
+        these tests, then turn back off during tear-down.
         """
         test_project_name = "test_logging"
         setup_project, cwd = test_utils.setup_project_fixture(
@@ -44,8 +50,12 @@ class TestCommandLineInterface:
 
         self.delete_log_files(setup_project.cfg.logging_path)
 
+        test_utils.set_datashuttle_loggers(disable=False)
+
         yield setup_project
+
         test_utils.teardown_project(cwd, setup_project)
+        test_utils.set_datashuttle_loggers(disable=True)
 
     # ----------------------------------------------------------------------------------------------------------
     # Test Public API Logging
