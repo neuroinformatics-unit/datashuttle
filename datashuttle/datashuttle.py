@@ -802,6 +802,12 @@ class DataShuttle:
         """
         utils.print_message_to_user(self._get_json_dumps_config())
 
+    def show_logging_path(self) -> None:
+        """
+        Print the path where datashuttle logs are written.
+        """
+        utils.print_message_to_user(self.cfg.logging_path)
+
     def show_local_tree(self):
         """
         Print a tree schematic of all files and folders
