@@ -339,6 +339,7 @@ def show_logging_path(*args: Any) -> None:
     project = args[0]
     project.show_logging_path()
 
+
 # Show Local Tree ------------------------------------------------------------
 
 
