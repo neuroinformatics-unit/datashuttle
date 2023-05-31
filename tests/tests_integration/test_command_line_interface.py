@@ -20,12 +20,14 @@ the debugger is acting very strangely and breaks in
 up a level. This is probably because testing in subprocess.
 Might be better to use mock.
 """
+import argparse
 import os
 
 import pytest
 import simplejson
 import test_utils
 
+from datashuttle.command_line_interface import construct_parser
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.canonical_tags import tags
 
@@ -64,6 +66,47 @@ class TestCommandLineInterface:
     # ----------------------------------------------------------------------------------------------------------
     # Test CLI Variables are read and passed correctly
     # ----------------------------------------------------------------------------------------------------------
+
+    def test_all_commands_appear_in_help(self, setup_project):
+        """
+        Test that all subparsers defined in command_line_interface.py
+        are displayed in the main --help list. This requires they have a help
+        argument added on the subparser initialisation, e.g. help="".
+
+        The below test requires some un-robust-seeming parsing
+        of argparse output. First, the help string output
+        by the CLI is split based on "}" character, as the
+        argparse CLI output first has a list of all commands
+        in {}, then a easier to read list of commands, that we want
+        every command to be shown in, after this.
+
+        Next, cycle through all subparsers and extract the name
+        from the parser using the 'prog' attribute. This is
+        well-defined so can be split from the number of spaces.
+
+        Finally, check every parser is represented in the help string.
+        """
+        stdout, stderr = test_utils.run_cli("--help")
+        cli_help_argument_list = stdout.split("}")[1]
+
+        parser = construct_parser()
+
+        all_subparsers = [
+            subparser
+            for action in parser._actions
+            if isinstance(action, argparse._SubParsersAction)
+            for _, subparser in action.choices.items()
+        ]
+        for subparser in all_subparsers:
+            command_name = subparser.prog.split(" ")[3]
+
+            assert command_name in cli_help_argument_list, (
+                f"The command {command_name} is defined "
+                f"in command_line_interface"
+                f"but does not have a help string. Add an empty help="
+                " to the parser"
+                f"to resolve this (see command_line_interface.py for examples)."
+            )
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_make_config_file_required_variables(self, sep, tmp_path):

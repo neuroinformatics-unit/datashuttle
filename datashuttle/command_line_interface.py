@@ -626,6 +626,7 @@ def construct_parser():
         "upload-all",
         aliases=["upload_all"],
         description=process_docstring(DataShuttle.upload_all.__doc__),
+        help="",
     )
     upload_all_parser.set_defaults(func=upload_all)
 
@@ -686,6 +687,7 @@ def construct_parser():
         "download-all",
         aliases=["download_all"],
         description=process_docstring(DataShuttle.download_all.__doc__),
+        help="",
     )
     download_all_parser.set_defaults(func=download_all)
 
@@ -748,6 +750,7 @@ def construct_parser():
         "show-local-path",
         aliases=["show_local_path"],
         description=process_docstring(DataShuttle.show_local_path.__doc__),
+        help="",
     )
     show_local_path_parser.set_defaults(func=show_local_path)
 
@@ -757,6 +760,7 @@ def construct_parser():
         description=process_docstring(
             DataShuttle.show_datashuttle_path.__doc__
         ),
+        help="",
     )
     show_datashuttle_path_parser.set_defaults(func=show_datashuttle_path)
 
@@ -767,6 +771,7 @@ def construct_parser():
         "show-config-path",
         aliases=["show_config_path"],
         description=process_docstring(DataShuttle.show_config_path.__doc__),
+        help="",
     )
     show_config_path_parser.set_defaults(func=show_config_path)
 
@@ -777,6 +782,7 @@ def construct_parser():
         "show-remote-path",
         aliases=["show_remote_path"],
         description=process_docstring(DataShuttle.show_remote_path.__doc__),
+        help="",
     )
     show_remote_path_parser.set_defaults(func=show_remote_path)
 
@@ -787,6 +793,7 @@ def construct_parser():
         "show-configs",
         aliases=["show_configs"],
         description=process_docstring(DataShuttle.show_configs.__doc__),
+        help="",
     )
     show_configs_parser.set_defaults(func=show_configs)
 
@@ -797,6 +804,7 @@ def construct_parser():
         "show-logging-path",
         aliases=["show_logging_path"],
         description=process_docstring(DataShuttle.show_logging_path.__doc__),
+        help="",
     )
     show_logging_path_parser.set_defaults(func=show_logging_path)
 
@@ -807,6 +815,7 @@ def construct_parser():
         "show-local-tree",
         aliases=["show_local_tree"],
         description=process_docstring(DataShuttle.show_local_tree.__doc__),
+        help="",
     )
     show_local_tree_parser.set_defaults(func=show_local_tree)
 
