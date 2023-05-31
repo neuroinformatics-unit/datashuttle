@@ -70,7 +70,7 @@ class DataShuttle:
                    see the path to this folder.
     """
 
-    def __init__(self, project_name: str):
+    def __init__(self, project_name: str, print_startup_message: bool = True):
 
         if " " in project_name:
             utils.log_and_raise_error(
@@ -96,6 +96,10 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
+
+        if print_startup_message:
+            if self.cfg:
+                self.show_top_level_folder()
 
         rclone.prompt_rclone_download_if_does_not_exist()
 
@@ -917,7 +921,7 @@ class DataShuttle:
         """
         utils.print_message_to_user(
             f"\nThe working top level folder is: "
-            f"{self.cfg.top_level_folder}"
+            f"{self.cfg.top_level_folder}\n"
         )
 
     @check_configs_set

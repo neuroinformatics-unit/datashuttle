@@ -1025,6 +1025,50 @@ parser = construct_parser()
 # -----------------------------------------------------------------------------
 
 
+def should_show_startup_message(func_name: str) -> bool:
+    """ """
+    show_message_funcs = [
+        "make_config_file",
+        "update_config",
+        "supply_config_file",
+        "make_sub_folders",
+        "upload_data",
+        "upload_all",
+        "upload_entire_project",
+        "download_data",
+        "download_all",
+        "download_entire_project",
+        "upload_project_folder_or_file",
+        "download_project_folder_or_file",
+    ]
+
+    dont_show_message_funcs = [
+        "setup_ssh_connection_to_central_server",
+        "set_top_level_folder",
+        "show_local_path",
+        "show_datashuttle_path",
+        "show_config_path",
+        "show_central_path",
+        "show_configs",
+        "show_logging_path",
+        "show_local_tree",
+        "show_top_level_folder",
+        "show_next_sub_number",
+        "show_next_ses_number",
+        "check_name_formatting",
+    ]
+
+    assert func_name in show_message_funcs + dont_show_message_funcs, (
+        "func name not found. Make sure to add it to the list above"
+        "if implementing a new CLI command."
+    )
+
+    if func_name in show_message_funcs:
+        return True
+    else:
+        return False
+
+
 def main() -> None:
     """
     All arguments from the CLI are collected and
@@ -1049,13 +1093,16 @@ def main() -> None:
     """
     args = parser.parse_args()
 
-    if "func" in args and str(args.func.__name__) == "make_config_file":
+    func_name = args.func.__name__
+    if "func" in args and str(func_name) == "make_config_file":
         warn = "ignore"
     else:
         warn = "default"
 
+    show_startup_message = should_show_startup_message(func_name)
+
     warnings.filterwarnings(warn)  # type: ignore
-    project = DataShuttle(args.project_name)
+    project = DataShuttle(args.project_name, show_startup_message)
     warnings.filterwarnings("default")
 
     if len(vars(args)) > 1:
