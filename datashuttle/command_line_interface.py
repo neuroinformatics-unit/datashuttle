@@ -843,7 +843,9 @@ def construct_parser():
     show_next_sub_number_parser = subparsers.add_parser(
         "show-next-sub-number",
         aliases=["show_next_sub_number"],
-        description=process_docstring(DataShuttle.show_next_sub_number.__doc__),
+        description=process_docstring(
+            DataShuttle.show_next_sub_number.__doc__
+        ),
         help="",
     )
     show_next_sub_number_parser.set_defaults(func=show_next_sub_number)
@@ -854,7 +856,9 @@ def construct_parser():
     show_next_ses_number_parser = subparsers.add_parser(
         "show-next-ses-number",
         aliases=["show_next_ses_number"],
-        description=process_docstring(DataShuttle.show_next_ses_number.__doc__),
+        description=process_docstring(
+            DataShuttle.show_next_ses_number.__doc__
+        ),
         help="",
     )
     show_next_ses_number_parser.set_defaults(func=show_next_ses_number)

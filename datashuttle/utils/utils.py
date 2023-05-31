@@ -162,7 +162,7 @@ def get_values_from_bids_formatted_name(
         if key not in name:
             raise_error(f"The key {key} is not found in {name}")
 
-        value = re.findall(f"{key}-(.*?)(?=_|$)", name)
+        value = get_value_from_key_regexp(name, key)
 
         if len(value) > 1:
             raise_error(
@@ -185,6 +185,16 @@ def get_values_from_bids_formatted_name(
         all_values = sorted(all_values)
 
     return all_values
+
+
+def get_value_from_key_regexp(name, key):
+    """
+    Find the value related to the key in a
+    BIDS-style key-value pair name.
+    e.g. sub-001_ses-312 would find
+    312 for key "ses".
+    """
+    return re.findall(f"{key}-(.*?)(?=_|$)", name)
 
 
 def unpack_nested_list(main_list):
