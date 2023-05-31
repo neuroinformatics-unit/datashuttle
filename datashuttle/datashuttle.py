@@ -6,9 +6,10 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Dict, Optional, Union
 
 import paramiko
+import yaml
 
 from datashuttle.configs import load_configs
 from datashuttle.configs.config_class import Configs
@@ -86,6 +87,9 @@ class DataShuttle:
             utils.get_datashuttle_path(project_name)[0] / "config.yaml"
         )
 
+        self._persistent_settings_path = (
+            self._datashuttle_path / "persistent_settings.yaml"
+        )
         self.cfg: Any = None
 
         self.cfg = load_configs.make_config_file_attempt_load(
@@ -102,7 +106,9 @@ class DataShuttle:
         Once config file is loaded, update all private attributes
         according to config contents.
         """
-        self.cfg.top_level_folder_name = "rawdata"
+        self.cfg.top_level_folder_name = self._load_persistent_settings()[
+            "top_level_folder"
+        ]
 
         self.cfg.init_paths()
 
@@ -999,3 +1005,58 @@ class DataShuttle:
             self.cfg.ssh_key_path,
             log=True,
         )
+
+    # -------------------------------------------------------------------------
+    # Utils
+    # -------------------------------------------------------------------------
+
+    def _update_persistent_setting(
+        self, setting_name: str, setting_value: Any
+    ) -> None:
+        """
+        Load settings that are stored persistently across datashuttle
+        sessions. These are stored in yaml dumped to dictionary.
+
+        Parameters
+        ----------
+        setting_name : dictionary key of the persistent setting to change
+        setting_value : value to change the persistent setting to
+        """
+        settings = self._load_persistent_settings()
+
+        if setting_name not in settings:
+            utils.raise_error(
+                f"Setting key {setting_name} not found in "
+                f"settings dictionary"
+            )
+
+        settings[setting_name] = setting_value
+
+        self._save_persistent_settings(settings)
+
+    def _init_persistent_settings(self) -> None:
+        """
+        Initialise the default persistent settings
+        and save to file.
+        """
+        settings = {"top_level_folder": "rawdata"}
+        self._save_persistent_settings(settings)
+
+    def _save_persistent_settings(self, settings: Dict) -> None:
+        """
+        Save the settings dict to file as .yaml
+        """
+        with open(self._persistent_settings_path, "w") as settings_file:
+            yaml.dump(settings, settings_file, sort_keys=False)
+
+    def _load_persistent_settings(self) -> Dict:
+        """
+        Load settings that are stored persistently across
+        datashuttle sessions.
+        """
+        if not self._persistent_settings_path.is_file():
+            self._init_persistent_settings()
+
+        with open(self._persistent_settings_path, "r") as settings_file:
+            settings = yaml.full_load(settings_file)
+        return settings
