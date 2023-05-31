@@ -261,7 +261,9 @@ class TestCommandLineInterface:
                 in log
             )
 
-        assert "Creating backend with central" in log
+        # 'remote' here is rclone terminology
+        assert "Creating backend with remote" in log
+
         assert "Using config file from" in log
         assert "Local file system at" in log
         assert """ "--include" "sub-11/histology/**" """ in log

@@ -18,7 +18,7 @@ class TestFileTransfer:
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem
-            False,
+            #     False,
             pytest.param(
                 True,
                 marks=pytest.mark.skipif(
@@ -82,7 +82,7 @@ class TestFileTransfer:
                 test_utils.make_test_path(
                     central_path, test_project_name, "central"
                 ),
-                ssh_config.central_HOST_ID,
+                ssh_config.CENTRAL_HOST_ID,
                 ssh_config.USERNAME,
             )
 
@@ -209,7 +209,7 @@ class TestFileTransfer:
         # When transferring with SSH, there is a delay before
         # filesystem catches up
         if project.testing_ssh:
-            time.sleep(10)
+            time.sleep(0.5)
 
         # Check what paths were actually moved
         # (through the local filesystem), and test

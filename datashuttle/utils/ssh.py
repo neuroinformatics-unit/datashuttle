@@ -137,7 +137,7 @@ def verify_ssh_central_host(
     transport: paramiko.Transport
     with paramiko.Transport(central_host_id) as transport:
         transport.connect()
-        key = transport.get_central_server_key()
+        key = transport.get_remote_server_key()
 
     message = (
         f"The host key is not cached for this server: "

@@ -26,7 +26,7 @@ server_path = r"/ceph/neuroinformatics/neuroinformatics/scratch/datashuttle_test
 
 
 if platform.system() == "Windows":
-    ssh_key_path = r"C:\Users\Joe\.datashuttle\test_file_conflicts_ssh_key"
+    ssh_key_path = r"C:\Users\User\.datashuttle\test_file_conflicts_ssh_key"
     filesystem_path = "X:/neuroinformatics/scratch/datashuttle_tests/fake_data"
 
 else:
