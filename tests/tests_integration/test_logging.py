@@ -138,29 +138,32 @@ class TestCommandLineInterface:
 
     def test_make_sub_folders__(self, setup_project):
 
-        subs = ["sub-1_1", f"sub-002{tags('to')}004"]
-        ses = ["ses-123", "ses-hello_world"]
+        subs = ["sub-11", f"sub-002{tags('to')}004"]
+        ses = ["ses-123", "ses-101"]
 
         setup_project.make_sub_folders(subs, ses, data_type="all")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert "Formatting Names..." in log
+
         assert (
-            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-1_1', 'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-hello_world'], 'data_type': 'all'}\ncfg: {'local_path':"
+            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-11', "
+            "'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-101'], "
+            "'data_type': 'all'}\ncfg: {'local_path':" in log
+        )
+
+        assert f"sub_names: ['sub-11', 'sub-002{tags('to')}004']" in log
+        assert "ses_names: ['ses-123', 'ses-101']" in log
+        assert (
+            "formatted_sub_names: ['sub-11', 'sub-002', 'sub-003', 'sub-004']"
             in log
         )
-        assert f"sub_names: ['sub-1_1', 'sub-002{tags('to')}004']" in log
-        assert "ses_names: ['ses-123', 'ses-hello_world']" in log
-        assert (
-            "formatted_sub_names: ['sub-1_1', 'sub-002', 'sub-003', 'sub-004']"
-            in log
-        )
-        assert "formatted_ses_names: ['ses-123', 'ses-hello_world']" in log
+        assert "formatted_ses_names: ['ses-123', 'ses-101']" in log
         assert "Made folder at path:" in log
 
         assert (
-            str(Path("test_logging") / "local" / "rawdata" / "sub-1_1") in log
+            str(Path("test_logging") / "local" / "rawdata" / "sub-11") in log
         )
         assert (
             str(
@@ -168,7 +171,7 @@ class TestCommandLineInterface:
                     "test_logging",
                     "local",
                     "rawdata",
-                    "sub-1_1",
+                    "sub-11",
                     "ses-123",
                     "funcimg",
                     ".datashuttle_meta",
@@ -196,7 +199,7 @@ class TestCommandLineInterface:
                     "local",
                     "rawdata",
                     "sub-004",
-                    "ses-hello_world",
+                    "ses-101",
                 )
             )
             in log
@@ -212,7 +215,7 @@ class TestCommandLineInterface:
         Set transfer verbosity and progress settings so
         maximum output is produced to test against.
         """
-        subs = ["sub-1_1"]
+        subs = ["sub-11"]
         sessions = ["ses-123"]
 
         test_utils.make_and_check_local_project(
@@ -261,7 +264,7 @@ class TestCommandLineInterface:
         assert "Creating backend with remote" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
-        assert """ "--include" "sub-1_1/histology/**" """ in log
+        assert """ "--include" "sub-11/histology/**" """ in log
         assert """/test_logging/remote/rawdata""" in log
         assert "Waiting for checks to finish" in log
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
@@ -343,7 +346,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            "Cannot make folders. The key sub-001 already exists in the project"
+            "Cannot make folders. The key sub-1 (possibly with leading zeros) already exists in the project"
             in log
         )
 

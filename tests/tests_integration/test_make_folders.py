@@ -93,7 +93,8 @@ class TestMakeFolders:
 
         assert (
             str(e.value) == "Cannot make folders. "
-            "The key sub-001 already exists in the project"
+            "The key sub-1 (possibly with leading zeros) "
+            "already exists in the project"
         )
 
         project.make_sub_folders("sub-003")
@@ -106,11 +107,41 @@ class TestMakeFolders:
             project.make_sub_folders("sub-001_id-123", "ses-002_date-1607")
 
         assert (
-            str(e.value) == "Cannot make folders. "
-            "The key ses-002 for sub-001_id-123 already exists in the project"
+            str(e.value)
+            == "Cannot make folders. The key ses-2 for sub-001_id-123 "
+            "(possibly with leading zeros) already exists "
+            "in the project"
         )
 
         project.make_sub_folders("sub-001", "ses-003")
+
+    def test_duplicate_sub_and_ses_num_leading_zeros(self, project):
+        """
+        Very similar to test_duplicate_ses_or_sub_key_value_pair(),
+        but explicitly check that error is raised if the same
+        number is used with different number of leading zeros.
+        """
+        project.make_sub_folders("sub-001")
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub-1")
+
+        assert (
+            str(e.value) == "Cannot make folders. The key sub-1 "
+            "(possibly with leading zeros) already exists "
+            "in the project"
+        )
+
+        project.make_sub_folders("sub-001", "ses-3")
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub-001", "ses-003")
+
+        assert (
+            str(e.value) == "Cannot make folders. The key ses-3 for"
+            " sub-001 (possibly with leading zeros) "
+            "already exists in the project"
+        )
 
     def test_format_names_prefix(self):
         """
@@ -148,14 +179,14 @@ class TestMakeFolders:
         a dict that indicates if each subfolder is used (to avoid
         circular testing from the project itself).
         """
-        subs = ["1_1", "sub-two", "3_3-3"]
+        subs = ["11", "sub-002", "30303"]
 
         project.make_sub_folders(subs)
 
         test_utils.check_folder_tree_is_correct(
             project,
             base_folder=test_utils.get_rawdata_path(project),
-            subs=["sub-1_1", "sub-two", "sub-3_3-3"],
+            subs=["sub-11", "sub-002", "sub-30303"],
             sessions=[],
             folder_used=test_utils.get_default_folder_used(),
         )
@@ -170,12 +201,12 @@ class TestMakeFolders:
         This is highlighted in an assert in check_and_cd_folder()
         """
         subs = ["sub-001", "sub-002"]
-        sessions = ["ses-001", "="]
+        sessions = ["ses-001", "50432"]
         project.make_sub_folders(subs, sessions)
         base_folder = test_utils.get_rawdata_path(project)
 
         for sub in subs:
-            for ses in ["ses-001", "ses-="]:
+            for ses in ["ses-001", "ses-50432"]:
                 test_utils.check_and_cd_folder(
                     join(base_folder, sub, ses, "ephys")
                 )
