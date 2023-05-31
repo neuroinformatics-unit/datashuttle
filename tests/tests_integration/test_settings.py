@@ -67,3 +67,24 @@ class TestPersistentSettings:
         fresh_project = DataShuttle(TEST_PROJECT_NAME)
 
         assert fresh_project.cfg.top_level_folder_name == "rawdata"
+
+    def test_set_top_level_folder_is_persistent(self, project):
+        """
+        Test that set_top_level_folder_name sets the top
+        level folder name persistently across sessions.
+        """
+        assert project.cfg.top_level_folder_name == "rawdata"
+
+        project.set_top_level_folder("derivatives")
+
+        assert project.cfg.top_level_folder_name == "derivatives"
+
+        project_reload = DataShuttle(TEST_PROJECT_NAME)
+
+        assert project_reload.cfg.top_level_folder_name == "derivatives"
+
+        stdout = test_utils.run_cli(
+            " show-top-level-folder", TEST_PROJECT_NAME
+        )
+
+        assert "The working top level folder is: derivatives" in stdout[0]
