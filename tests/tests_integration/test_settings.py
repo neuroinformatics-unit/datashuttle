@@ -55,7 +55,7 @@ class TestPersistentSettings:
         # Re-load the project - this should now take top_level_folder
         # from the new persistent settings
         project_reload = DataShuttle(TEST_PROJECT_NAME)
-        assert project_reload.cfg.top_level_folder_name == "derivatives"
+        assert project_reload.cfg.top_level_folder == "derivatives"
 
         # Delete the persistent settings .yaml and check the next
         # time a project is loaded, it is initialized gracefully to the
@@ -66,22 +66,22 @@ class TestPersistentSettings:
 
         fresh_project = DataShuttle(TEST_PROJECT_NAME)
 
-        assert fresh_project.cfg.top_level_folder_name == "rawdata"
+        assert fresh_project.cfg.top_level_folder == "rawdata"
 
     def test_set_top_level_folder_is_persistent(self, project):
         """
-        Test that set_top_level_folder_name sets the top
+        Test that set_top_level_folder sets the top
         level folder name persistently across sessions.
         """
-        assert project.cfg.top_level_folder_name == "rawdata"
+        assert project.cfg.top_level_folder == "rawdata"
 
         project.set_top_level_folder("derivatives")
 
-        assert project.cfg.top_level_folder_name == "derivatives"
+        assert project.cfg.top_level_folder == "derivatives"
 
         project_reload = DataShuttle(TEST_PROJECT_NAME)
 
-        assert project_reload.cfg.top_level_folder_name == "derivatives"
+        assert project_reload.cfg.top_level_folder == "derivatives"
 
         stdout = test_utils.run_cli(
             " show-top-level-folder", TEST_PROJECT_NAME

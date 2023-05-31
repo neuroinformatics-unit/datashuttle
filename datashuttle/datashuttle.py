@@ -104,7 +104,7 @@ class DataShuttle:
         Once config file is loaded, update all private attributes
         according to config contents.
         """
-        self.cfg.top_level_folder_name = self._load_persistent_settings()[
+        self.cfg.top_level_folder = self._load_persistent_settings()[
             "top_level_folder"
         ]
 
@@ -131,18 +131,16 @@ class DataShuttle:
         folder), use the 'command upload_entire_project' or
         'download_entire_project'.
         """
-        canonical_top_level_folder_names = (
-            canonical_folders.get_top_level_folder_names()
-        )
+        canonical_top_level_folders = canonical_folders.get_top_level_folders()
 
-        if folder_name not in canonical_top_level_folder_names:
+        if folder_name not in canonical_top_level_folders:
             utils.raise_error(
                 f"Folder name: {folder_name} "
                 f"is not in permitted top-level folder"
-                f" names: {canonical_top_level_folder_names}"
+                f" names: {canonical_top_level_folders}"
             )
 
-        self.cfg.top_level_folder_name = folder_name
+        self.cfg.top_level_folder = folder_name
 
         self._update_persistent_setting("top_level_folder", folder_name)
 
@@ -899,7 +897,7 @@ class DataShuttle:
         """
         utils.print_message_to_user(
             f"\nThe working top level folder is: "
-            f"{self.cfg.top_level_folder_name}"
+            f"{self.cfg.top_level_folder}"
         )
 
     def show_next_sub_number(self) -> None:
@@ -1006,15 +1004,13 @@ class DataShuttle:
             self.upload_all if direction == "upload" else self.download_all
         )
 
-        tmp_current_top_level_folder_name = copy.copy(
-            self.cfg.top_level_folder_name
-        )
+        tmp_current_top_level_folder = copy.copy(self.cfg.top_level_folder)
 
-        for folder_name in canonical_folders.get_top_level_folder_names():
-            self.cfg.top_level_folder_name = folder_name
+        for folder_name in canonical_folders.get_top_level_folders():
+            self.cfg.top_level_folder = folder_name
             transfer_all_func()
 
-        self.cfg.top_level_folder_name = tmp_current_top_level_folder_name
+        self.cfg.top_level_folder = tmp_current_top_level_folder
 
     # -------------------------------------------------------------------------
     # SSH

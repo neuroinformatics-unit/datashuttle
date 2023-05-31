@@ -387,18 +387,18 @@ class TestMakeFolders:
     # ----------------------------------------------------------------------------------------------------------
 
     @pytest.mark.parametrize(
-        "folder_name", canonical_folders.get_top_level_folder_names()
+        "folder_name", canonical_folders.get_top_level_folders()
     )
     def test_all_top_level_folders(self, project, folder_name):
         """
         Check that when switching the top level folder (e.g. rawdata, derivatives)
         new folders are made in the correct folder. The code that underpins this
         is very simple (all the path for folder creation / transfer is determined
-        only by project.cfg.top_level_folder_name. Therefore if these tests pass,
+        only by project.cfg.top_level_folder. Therefore if these tests pass,
         any test that passes for rawdata (all other tests are for rawdata) should
         pass for all top-level folders.
         """
-        project.cfg.top_level_folder_name = folder_name
+        project.cfg.top_level_folder = folder_name
 
         subs = ["sub-001", "sub-2"]
         sessions = ["ses-001", "ses-03"]

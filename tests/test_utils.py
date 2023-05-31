@@ -493,7 +493,7 @@ def get_rawdata_path(project, local_or_remote="local", folder_name="rawdata"):
     """"""
 
     assert (
-        folder_name in canonical_folders.get_top_level_folder_names()
+        folder_name in canonical_folders.get_top_level_folders()
     ), "folder_name must be cannonical e.g. rawdata"
 
     if local_or_remote == "local":
@@ -682,7 +682,7 @@ def check_working_top_level_folder_only_exists(
     )
 
     # Check other top-level folders are not made
-    unused_folders = canonical_folders.get_top_level_folder_names()
+    unused_folders = canonical_folders.get_top_level_folders()
     unused_folders.remove(folder_name)
 
     for folder in unused_folders:
