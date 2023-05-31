@@ -115,6 +115,34 @@ class TestMakeFolders:
 
         project.make_sub_folders("sub-001", "ses-003")
 
+    def test_duplicate_sub_and_ses_num_leading_zeros(self, project):
+        """
+        Very similar to test_duplicate_ses_or_sub_key_value_pair(),
+        but explicitly check that error is raised if the same
+        number is used with different number of leading zeros.
+        """
+        project.make_sub_folders("sub-001")
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub-1")
+
+        assert (
+            str(e.value) == "Cannot make folders. The key sub-1 "
+            "(possibly with leading zeros) already exists "
+            "in the project"
+        )
+
+        project.make_sub_folders("sub-001", "ses-3")
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub-001", "ses-003")
+
+        assert (
+            str(e.value) == "Cannot make folders. The key ses-3 for"
+            " sub-001 (possibly with leading zeros) "
+            "already exists in the project"
+        )
+
     def test_format_names_prefix(self):
         """
         Check that format_names correctly prefixes input
