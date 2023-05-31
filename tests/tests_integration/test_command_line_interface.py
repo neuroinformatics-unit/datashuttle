@@ -384,7 +384,7 @@ class TestCommandLineInterface:
         see test_filesystem_transfer.py
         """
         subs = ["sub-1_1", "sub-two", "sub-3_3-3"]
-        ses = ["ses-123", "ses-hello_hello_world"]
+        ses = ["ses-123", "ses-999"]
 
         test_utils.run_cli(
             f"make_sub_folders --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
