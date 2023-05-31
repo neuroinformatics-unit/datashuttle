@@ -3,7 +3,7 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils import formatting
+from datashuttle.utils import formatting, utils
 
 
 class TestUnit:
@@ -166,6 +166,25 @@ class TestUnit:
 
         all_names = ["ses-001_hello-world_suffix"]
         formatting.check_dashes_and_underscore_alternate_correctly(all_names)
+
+    def test_get_value_from_bids_name_regexp(self):
+        """
+        Test the regexp that finds the value from a BIDS-name
+        key-value pair.
+        """
+        bids_name = "sub-0123125_ses-11312_datetime-5345323_id-3asd@523"
+
+        sub = utils.get_value_from_key_regexp(bids_name, "sub")[0]
+        assert sub == "0123125"
+
+        ses = utils.get_value_from_key_regexp(bids_name, "ses")[0]
+        assert ses == "11312"
+
+        datetime = utils.get_value_from_key_regexp(bids_name, "datetime")[0]
+        assert datetime == "5345323"
+
+        id = utils.get_value_from_key_regexp(bids_name, "id")[0]
+        assert id == "3asd@523"
 
     # ----------------------------------------------------------------------
     # Utlis

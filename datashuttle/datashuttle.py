@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional, Tuple, Union
 
 import paramiko
 import yaml
@@ -223,6 +223,24 @@ class DataShuttle:
         )
 
         ds_logger.close_log_filehandler()
+
+    def get_next_sub_number(self) -> Tuple[int, int]:
+        """
+        Convenience function for get_next_sub_or_ses_number
+        to find the next subject number.
+        """
+        return folders.get_next_sub_or_ses_number(
+            self.cfg, sub=None, search_str="sub-*"
+        )
+
+    def get_next_ses_number(self, sub: Optional[str]) -> Tuple[int, int]:
+        """
+        Convenience function for get_next_sub_or_ses_number
+        to find the next session number.
+        """
+        return folders.get_next_sub_or_ses_number(
+            self.cfg, sub=sub, search_str="ses-*"
+        )
 
     # -------------------------------------------------------------------------
     # Public File Transfer
@@ -820,6 +838,59 @@ class DataShuttle:
         in the local project.
         """
         ds_logger.print_tree(self.cfg["local_path"])
+
+    def show_next_sub_number(self) -> None:
+        """
+        Show a suggested value for the next available subject number.
+        The local and remote repository will be searched, and the
+        maximum existing subject number + 1 will be suggested.
+
+        In the case where there are multiple 'local' machines interacting
+        with a central remote repository, this function will not detect
+        subject numbers of other 'local' machines. For example, if there
+        is one machine for behavioural and another for electrophysiological
+        data collection, connected to a central server that is 'remote'.
+        If run on the behavioural data collection machine, this function
+        will suggest the next number based on the subjects found on the
+        behavioural machine and central machine, but not the
+        electrophysiological machine.
+        """
+        suggested_new_num, latest_existing_num = self.get_next_sub_number()
+
+        utils.print_message_to_user(
+            "Local and Remote repository searched. "
+            f"The most recent subject number found is: {latest_existing_num}. "
+            f"The suggested new subject number is: {suggested_new_num}"
+        )
+
+    def show_next_ses_number(self, sub: Optional[str]) -> None:
+        """
+        Show a suggested value for the next session number of a
+        given subject. The local and remote repository will be
+        searched, and the maximum session number + 1 will be suggested.
+
+        In the case where there are multiple 'local' machines interacting
+        with a central remote repository, this function will not detect
+        session numbers of other 'local' machines. For example, if there
+        is one machine for behavioural and another for electrophysiological
+        data collection, connected to a central server that is 'remote'.
+        If run on the behavioural data collection machine, this function
+        will suggest the next number based on the sessions found on the
+        behavioural machine and central machine, but not the
+        electrophysiological machine.
+
+        Parameters
+        ----------
+
+        sub : the subject for which to suggest the next available session.
+        """
+        latest_existing_num, suggested_new_num = self.get_next_ses_number(sub)
+
+        utils.print_message_to_user(
+            f"Local and Remote repository searched for sessions for {sub}. "
+            f"The most recent session number found is: {latest_existing_num}. "
+            f"The suggested new session number is: {suggested_new_num}"
+        )
 
     @staticmethod
     def check_name_formatting(names: Union[str, list], prefix: str) -> None:
