@@ -934,6 +934,7 @@ def construct_parser():
         description=process_docstring(
             DataShuttle.show_top_level_folder.__doc__
         ),
+        help="",
     )
     show_top_level_folder_parser.set_defaults(func=show_top_level_folder)
 
