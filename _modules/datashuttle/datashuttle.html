@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gf2f0e30</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+ga22fbe3</p>
   
 </a></div>
     
@@ -328,9 +328,10 @@ document.write(`
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">paramiko</span>
+<span class="kn">import</span> <span class="nn">yaml</span>
 
 <span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">load_configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.configs.config_class</span> <span class="kn">import</span> <span class="n">Configs</span>
@@ -408,6 +409,9 @@ document.write(`
             <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="n">project_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;config.yaml&quot;</span>
         <span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span> <span class="o">/</span> <span class="s2">&quot;persistent_settings.yaml&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span> <span class="o">=</span> <span class="n">load_configs</span><span class="o">.</span><span class="n">make_config_file_attempt_load</span><span class="p">(</span>
@@ -424,7 +428,9 @@ document.write(`
 <span class="sd">        Once config file is loaded, update all private attributes</span>
 <span class="sd">        according to config contents.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="s2">&quot;rawdata&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_persistent_settings</span><span class="p">()[</span>
+            <span class="s2">&quot;top_level_folder&quot;</span>
+        <span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_paths</span><span class="p">()</span>
 
@@ -1320,7 +1326,62 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">ssh_key_path</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+    <span class="c1"># -------------------------------------------------------------------------</span>
+    <span class="c1"># Utils</span>
+    <span class="c1"># -------------------------------------------------------------------------</span>
+
+    <span class="k">def</span> <span class="nf">_update_persistent_setting</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load settings that are stored persistently across datashuttle</span>
+<span class="sd">        sessions. These are stored in yaml dumped to dictionary.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        setting_name : dictionary key of the persistent setting to change</span>
+<span class="sd">        setting_value : value to change the persistent setting to</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_persistent_settings</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">setting_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">raise_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Setting key </span><span class="si">{</span><span class="n">setting_name</span><span class="si">}</span><span class="s2"> not found in &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;settings dictionary&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">settings</span><span class="p">[</span><span class="n">setting_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">setting_value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_persistent_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_persistent_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the default persistent settings</span>
+<span class="sd">        and save to file.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;top_level_folder&quot;</span><span class="p">:</span> <span class="s2">&quot;rawdata&quot;</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_save_persistent_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_save_persistent_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Save the settings dict to file as .yaml</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">settings_file</span><span class="p">:</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_load_persistent_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load settings that are stored persistently across</span>
+<span class="sd">        datashuttle sessions.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_init_persistent_settings</span><span class="p">()</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">settings_file</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">full_load</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">settings</span></div>
 </pre></div>
 
                 </article>
