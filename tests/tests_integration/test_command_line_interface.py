@@ -147,8 +147,8 @@ class TestCommandLineInterface:
         default_options = test_utils.get_test_config_arguments_dict(
             tmp_path, set_as_defaults=True
         )
-        del default_options["remote_host_id"]
-        del default_options["remote_host_username"]
+        del default_options["central_host_id"]
+        del default_options["central_host_username"]
         del default_options["transfer_verbosity"]
 
         self.check_kwargs(default_options, kwargs_)
@@ -524,12 +524,12 @@ class TestCommandLineInterface:
         Check that error from API are propagated to CLI
         """
         _, stderr = test_utils.run_cli(
-            "make_config_file test_local_path test_remote_path ssh --use_behav",
+            "make_config_file test_local_path test_central_path ssh --use_behav",
             clean_project_name,
         )
 
         assert (
-            "'remote_host_id' and 'remote_host_username' are "
+            "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'." in stderr
         )
 
@@ -616,7 +616,7 @@ class TestCommandLineInterface:
         pre-pending "--argument_name" for non-positional
         arguments, and wrapping paths in quotes.
         """
-        positionals = ["local_path", "remote_path", "connection_method"]
+        positionals = ["local_path", "central_path", "connection_method"]
 
         prepend_positionals = ""
         for pos_arg in positionals:

@@ -5,21 +5,21 @@ from datashuttle.utils import rclone, ssh
 
 
 def setup_project_for_ssh(
-    project, remote_path, remote_host_id, remote_host_username
+    project, central_path, central_host_id, central_host_username
 ):
     """
     Setup the project configs to use SSH connection
-    to remote
+    to central
     """
     project.update_config(
-        "remote_path",
-        remote_path,
+        "central_path",
+        central_path,
     )
-    project.update_config("remote_host_id", remote_host_id)
-    project.update_config("remote_host_username", remote_host_username)
+    project.update_config("central_host_id", central_host_id)
+    project.update_config("central_host_username", central_host_username)
     project.update_config("connection_method", "ssh")
 
-    rclone.setup_remote_as_rclone_target(
+    rclone.setup_central_as_rclone_target(
         "ssh",
         project.cfg,
         project.cfg.get_rclone_config_name("ssh"),
@@ -51,7 +51,7 @@ def setup_hostkeys(project):
     Convenience function to verify the server hostkey.
     """
     orig_builtin = setup_mock_input(input_="y")
-    ssh.verify_ssh_remote_host(
-        project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
+    ssh.verify_ssh_central_host(
+        project.cfg["central_host_id"], project.cfg.hostkeys_path, log=True
     )
     restore_mock_input(orig_builtin)

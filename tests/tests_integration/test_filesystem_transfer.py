@@ -44,7 +44,7 @@ class TestFileTransfer:
     ):
         """
         First make a project (folders only) locally.
-        Next upload this to the remote path
+        Next upload this to the central path
         and check all folders are uploaded correctly.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -304,7 +304,7 @@ class TestFileTransfer:
 
         for base_local in [
             project.cfg["local_path"],
-            project.cfg["remote_path"],
+            project.cfg["central_path"],
         ]:
 
             for sub in ["sub-001", "sub-02", "sub-03"]:
@@ -450,7 +450,9 @@ class TestFileTransfer:
 
         project.make_sub_folders("sub-001")
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
-        remote_test_file_path = project.cfg["remote_path"] / path_to_test_file
+        central_test_file_path = (
+            project.cfg["central_path"] / path_to_test_file
+        )
 
         # Write a local file and transfer
         test_utils.write_file(local_test_file_path, contents="first edit")
@@ -471,12 +473,12 @@ class TestFileTransfer:
 
         project.upload_all()
 
-        remote_contents = test_utils.read_file(remote_test_file_path)
+        central_contents = test_utils.read_file(central_test_file_path)
 
         if overwrite_old_files:
-            assert remote_contents == ["first edit second edit"]
+            assert central_contents == ["first edit second edit"]
         else:
-            assert remote_contents == ["first edit"]
+            assert central_contents == ["first edit"]
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("transfer_file", [True, False])
@@ -495,7 +497,7 @@ class TestFileTransfer:
         3) upload_or_download : Test the direction. As it is more convenient
            to  make all test project file in local_path then swap the paths
            if downloading, this is done here (see
-           test_utils.swap_local_and_remote_paths()) for details.
+           test_utils.swap_local_and_central_paths()) for details.
 
         Make a project with two different files (just to
         ensure non-target files are not transferred). Transfer
@@ -510,12 +512,12 @@ class TestFileTransfer:
         if upload_or_download == "upload":
             transfer_function = project.upload_project_folder_or_file
             transfer_from = "local_path"
-            transfer_to = "remote_path"
+            transfer_to = "central_path"
         else:
             transfer_function = project.download_project_folder_or_file
-            transfer_from = "remote_path"
+            transfer_from = "central_path"
             transfer_to = "local_path"
-            test_utils.swap_local_and_remote_paths(project)
+            test_utils.swap_local_and_central_paths(project)
 
         if transfer_file:
             to_transfer = path_to_test_file_behav

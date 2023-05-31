@@ -103,18 +103,18 @@ class TestCommandLineInterface:
 
     def test_logs_update_config(self, setup_project):
 
-        setup_project.update_config("remote_host_id", "test_id")
+        setup_project.update_config("central_host_id", "test_id")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert "Starting logging for command update_config" in log
         assert (
-            "\n\nVariablesState:\nlocals: {'option_key': 'remote_host_id'"
+            "\n\nVariablesState:\nlocals: {'option_key': 'central_host_id'"
             in log
         )
-        assert "remote_host_id has been updated to test_id" in log
+        assert "central_host_id has been updated to test_id" in log
         assert "Update successful. New config file:" in log
-        assert """ "remote_host_id": "test_id",\n """ in log
+        assert """ "central_host_id": "test_id",\n """ in log
 
     def test_logs_supply_config(self, setup_project, tmp_path):
         """"""
@@ -261,11 +261,11 @@ class TestCommandLineInterface:
                 in log
             )
 
-        assert "Creating backend with remote" in log
+        assert "Creating backend with central" in log
         assert "Using config file from" in log
         assert "Local file system at" in log
         assert """ "--include" "sub-11/histology/**" """ in log
-        assert """/test_logging/remote/rawdata""" in log
+        assert """/test_logging/central/rawdata""" in log
         assert "Waiting for checks to finish" in log
         assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
 
@@ -325,7 +325,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            "'remote_host_id' and 'remote_host_username' are "
+            "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'." in log
         )
 

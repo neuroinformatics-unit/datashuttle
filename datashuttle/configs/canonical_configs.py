@@ -29,10 +29,10 @@ def get_canonical_config_dict() -> dict:
     """
     config_dict = {
         "local_path": None,
-        "remote_path": None,
+        "central_path": None,
         "connection_method": None,
-        "remote_host_id": None,
-        "remote_host_username": None,
+        "central_host_id": None,
+        "central_host_username": None,
         "overwrite_old_files": None,
         "transfer_verbosity": None,
         "show_transfer_progress": None,
@@ -76,10 +76,10 @@ def get_canonical_config_required_types() -> dict:
     """
     required_types = {
         "local_path": Union[str, Path],
-        "remote_path": Union[str, Path],
+        "central_path": Union[str, Path],
         "connection_method": Literal["ssh", "local_filesystem"],
-        "remote_host_id": Union[str, None],
-        "remote_host_username": Union[str, None],
+        "central_host_id": Union[str, None],
+        "central_host_username": Union[str, None],
         "overwrite_old_files": bool,
         "transfer_verbosity": Literal["v", "vv"],
         "show_transfer_progress": bool,
@@ -144,7 +144,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             "'connection method' must be 'ssh' or 'local_filesystem'."
         )
 
-    for path_ in ["local_path", "remote_path"]:
+    for path_ in ["local_path", "central_path"]:
         if config_dict[path_].as_posix()[0] == "~":
             utils.log_and_raise_error(
                 f"{path_} must contain the full folder path "
@@ -159,11 +159,11 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     # Check SSH settings
     if config_dict["connection_method"] == "ssh" and (
-        not config_dict["remote_host_id"]
-        or not config_dict["remote_host_username"]
+        not config_dict["central_host_id"]
+        or not config_dict["central_host_username"]
     ):
         utils.log_and_raise_error(
-            "'remote_host_id' and 'remote_host_username' are "
+            "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'."
         )
 

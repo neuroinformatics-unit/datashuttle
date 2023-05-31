@@ -3,13 +3,13 @@
 Datashuttle is a work in progress as has not been officially released. It is not ready for use
 as documented, please await first official release.
 
-DataShuttle helps to manage and transfer a project with many "local" machines all connected to a central "remote" machine.
+DataShuttle helps to manage and transfer a project with many "local" machines all connected to a "central" machine.
 DataShuttle has functions to help:
 * Generate BIDS-formatted folder structures
-* Transfer data between remote and local machines
+* Transfer data between central and local machines
 
 On first setup, it is necessary to specify the project name, paths to the local project folder (typically empty on first use, on a
-local filesystem), and paths to remote project folder and the connection method.
+local filesystem), and paths to central project folder and the connection method.
 
 This documentation gives examples both using the API (in the python console) or using the command line interface (in system terminal).
 
@@ -35,12 +35,12 @@ on first use, and should include the name of the project.
 e.g. if the local_path="/path/to/my_project", when making a new subject (e.g. sub-001) this will be
 made at /path/to/my_project/rawdata/sub-001.
 
-Next, the "remote_path" argument gives the path to the central remote project. This may be on a local
+Next, the "central_path" argument gives the path to the central machine project. This may be on a local
 filesystem (e.g. if a HPC or network drive is mounted) or using SSH. On Linux systems, ~ syntax is
 not supported and the full filepath must be input.
 
 Also required is the "connection_method". This can either be "local_filesystem" or "ssh". If "ssh",
-then the "remote_host_id" and "remote_host_username" options are also required (see example below).
+then the "central_host_id" and "central_host_username" options are also required (see example below).
 
 The options "use_ephys", "use_behav"... are used to set the data types used on the local PC.
 If these are not set to True, it will not be possible to make data_type folders of this type.
@@ -54,10 +54,10 @@ An example call may look like:
 ```
 project.make_config_file(
 local_path="/path/to/my/my_project",
-remote_path="/nfs/nhome/live/username/",
+central_path="/nfs/nhome/live/username/",
 connection_method="ssh",
-remote_host_id="ssh.swc.ucl.ac.uk",
-remote_host_username="username",
+central_host_id="ssh.swc.ucl.ac.uk",
+central_host_username="username",
 overwrite_old_files_on_transfer=True,
 transfer_verbosity="v",
 show_transfer_progress=False,
@@ -76,8 +76,8 @@ make_config_file \
 /path/to/my/project \
 /nfs/nhome/live/username/ \
 ssh \
---remote_host_id ssh.swc.ucl.ac.uk \
---remote_host_username username \
+--central_host_id ssh.swc.ucl.ac.uk \
+--central_host_username username \
 --transfer_verbosity v \
 --use-ephys --use-behav --use-histology --overwrite_old_files_on_transfer
 ```
@@ -86,8 +86,8 @@ Individual settings can be updated using update_config(), and an existing config
 
 ### Setting up an SSH Connection
 
-Once configurations are set, if the "connection_method" is "ssh", the function setup_ssh_connection_to_remote_server() must be run to setup
-the ssh connection to the remote server. This will allow visual confirmation of the server key, and setup a SSH key pair. This means
+Once configurations are set, if the "connection_method" is "ssh", the function setup_ssh_connection_to_central_server() must be run to setup
+the ssh connection to the central server. This will allow visual confirmation of the server key, and setup a SSH key pair. This means
 your password will have to be enterred only once, when setting up this connection.
 
 ## Making Project Folders
@@ -208,7 +208,7 @@ only one @DATE@, @TIME@ or @DATETIME@ flag can be used per subject / session nam
 
 ## Data Transfer
 
-Data transfer can be either from the local project to the remote project ("upload") or from the remote to local project("download"). Data
+Data transfer can be either from the local project to the central project ("upload") or from the central to local project("download"). Data
 transfers are primarily managed using the upload_data() and download_data() functions.
 
 By default, uploading or downloading data will never overwrite files when transferring data. If an
@@ -224,7 +224,7 @@ For example, `project.upload_data(sub_names="all", ses_names="all", data_type="a
 or equivalently
 `datashuttle my_project upload_data --sub_names all --ses_names all --data_type all`
 
-will transfer everything in the local project folder to the remote. The convenience functions upload_all()
+will transfer everything in the local project folder to the central. The convenience functions upload_all()
 and download_all() can be used as shortcuts for this. See below for a full list of all sub_names, ses_names and data_type
 keyword options.
 

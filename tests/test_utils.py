@@ -24,13 +24,13 @@ def setup_project_default_configs(
     project_name,
     tmp_path,
     local_path=False,
-    remote_path=False,
+    central_path=False,
     all_data_type_on=True,
 ):
     """
     Set up a fresh project to test on
 
-    local_path / remote_path: provide the config paths to set
+    local_path / central_path: provide the config paths to set
     all_data_type_on: by default, all data_type flags are False.
                      for testing, it is preferable to have all True
                      so set this if this argument is True.
@@ -50,7 +50,7 @@ def setup_project_default_configs(
 
     project.make_config_file(**default_configs)
 
-    rclone.setup_remote_as_rclone_target(
+    rclone.setup_central_as_rclone_target(
         "ssh",
         project.cfg,
         project.cfg.get_rclone_config_name("ssh"),
@@ -68,9 +68,9 @@ def setup_project_default_configs(
         delete_all_folders_in_local_path(project)
         project.cfg.make_and_get_logging_path()
 
-    if remote_path:
-        project.update_config("remote_path", remote_path)
-        delete_all_folders_in_project_path(project, "remote")
+    if central_path:
+        project.update_config("central_path", central_path)
+        delete_all_folders_in_project_path(project, "central")
         project.cfg.make_and_get_logging_path()
 
     return project
@@ -95,7 +95,7 @@ def teardown_project(
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
     os.chdir(cwd)
-    delete_all_folders_in_project_path(project, "remote")
+    delete_all_folders_in_project_path(project, "central")
     delete_all_folders_in_project_path(project, "local")
     delete_project_if_it_exists(project.project_name)
 
@@ -106,14 +106,14 @@ def delete_all_folders_in_local_path(project):
         shutil.rmtree(project.cfg["local_path"])
 
 
-def delete_all_folders_in_project_path(project, local_or_remote):
+def delete_all_folders_in_project_path(project, local_or_central):
     """"""
-    folder = f"{local_or_remote}_path"
+    folder = f"{local_or_central}_path"
 
     ds_logger.close_log_filehandler()
     if project.cfg[folder].is_dir() and project.cfg[folder].stem in [
         "local",
-        "remote",
+        "central",
     ]:
         shutil.rmtree(project.cfg[folder])
 
@@ -157,15 +157,15 @@ def setup_project_fixture(tmp_path, test_project_name):
         test_project_name,
         tmp_path,
         local_path=make_test_path(tmp_path, test_project_name, "local"),
-        remote_path=make_test_path(tmp_path, test_project_name, "remote"),
+        central_path=make_test_path(tmp_path, test_project_name, "central"),
     )
 
     cwd = os.getcwd()
     return project, cwd
 
 
-def make_test_path(base_path, test_project_name, local_or_remote):
-    return Path(base_path) / test_project_name / local_or_remote
+def make_test_path(base_path, test_project_name, local_or_central):
+    return Path(base_path) / test_project_name / local_or_central
 
 
 def get_protected_test_folder():
@@ -194,7 +194,7 @@ def get_test_config_arguments_dict(
 
     dict_ = {
         "local_path": f"{tmp_path}/not/a/re al/local/folder",
-        "remote_path": f"{tmp_path}/a/re al/remote_ local/folder",
+        "central_path": f"{tmp_path}/a/re al/central_ local/folder",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
         # but at least 1 use_x must be true, so
@@ -207,8 +207,8 @@ def get_test_config_arguments_dict(
     if set_as_defaults:
         dict_.update(
             {
-                "remote_host_id": None,
-                "remote_host_username": None,
+                "central_host_id": None,
+                "central_host_username": None,
                 "overwrite_old_files": False,
                 "transfer_verbosity": "v",
                 "show_transfer_progress": False,
@@ -221,10 +221,10 @@ def get_test_config_arguments_dict(
         dict_.update(
             {
                 "local_path": f"{tmp_path}/test/test_ local/test_edit",
-                "remote_path": f"{tmp_path}/nfs/test folder/test_edit2",
+                "central_path": f"{tmp_path}/nfs/test folder/test_edit2",
                 "connection_method": "ssh",
-                "remote_host_id": "test_remote_host_id",
-                "remote_host_username": "test_remote_host_username",
+                "central_host_id": "test_central_host_id",
+                "central_host_username": "test_central_host_username",
                 "overwrite_old_files": True,
                 "transfer_verbosity": "vv",
                 "show_transfer_progress": True,
@@ -490,7 +490,7 @@ def check_config_file(config_path, *kwargs):
 
 # TODO: rename this 'top level folder path'
 def get_top_level_folder_path(
-    project, local_or_remote="local", folder_name="rawdata"
+    project, local_or_central="local", folder_name="rawdata"
 ):
     """"""
 
@@ -498,10 +498,10 @@ def get_top_level_folder_path(
         folder_name in canonical_folders.get_top_level_folders()
     ), "folder_name must be cannonical e.g. rawdata"
 
-    if local_or_remote == "local":
+    if local_or_central == "local":
         base_path = project.cfg["local_path"]
     else:
-        base_path = project.cfg["remote_path"]
+        base_path = project.cfg["central_path"]
 
     return base_path / folder_name
 
@@ -515,13 +515,13 @@ def handle_upload_or_download(
 ):
     """
     To keep things consistent and avoid the pain of writing
-    files over SSH, to test download just swap the remote
+    files over SSH, to test download just swap the central
     and local server (so things are still transferred from
-    local machine to remote, but using the download function).
+    local machine to central, but using the download function).
     """
     if upload_or_download == "download":
 
-        remote_path = swap_local_and_remote_paths(
+        central_path = swap_local_and_central_paths(
             project, swap_last_folder_only
         )
 
@@ -532,7 +532,7 @@ def handle_upload_or_download(
         else:
             transfer_function = project.download_data
     else:
-        remote_path = project.cfg["remote_path"]
+        central_path = project.cfg["central_path"]
 
         if transfer_entire_project:
             transfer_function = project.upload_entire_project
@@ -541,42 +541,42 @@ def handle_upload_or_download(
         else:
             transfer_function = project.upload_data
 
-    return transfer_function, remote_path
+    return transfer_function, central_path
 
 
-def swap_local_and_remote_paths(project, swap_last_folder_only=False):
+def swap_local_and_central_paths(project, swap_last_folder_only=False):
     """
     When testing upload vs. download, the most convenient way
     to test download is to swap the paths. In this case, we 'download'
-    from local to remote. It much simplifies creating the folders
+    from local to central. It much simplifies creating the folders
     to transfer (which are created locally), and is fully required
     in tests with session scope fixture, in which a local project
     is made only once and repeatedly transferred.
 
-    Typically, this is as simple as swapping remote and local.
-    For SSH test however, we want to use SSH to search the 'remote'
+    Typically, this is as simple as swapping central and local.
+    For SSH test however, we want to use SSH to search the 'central'
     filesystem to find the necsesary files / folders to transfer.
     As such, the 'local' (which we are downloading from) must be the SSH
     path. As such, in this case we only want to swap the last folder only
-    (i.e. "local" and "remote"). In this case, we download from
-    cfg["remote_path"] (which is ssh_path/local) to cfg["local_path"]
-    (which is filesystem/remote).
+    (i.e. "local" and "central"). In this case, we download from
+    cfg["central_path"] (which is ssh_path/local) to cfg["local_path"]
+    (which is filesystem/central).
     """
     local_path = copy.deepcopy(project.cfg["local_path"])
-    remote_path = copy.deepcopy(project.cfg["remote_path"])
+    central_path = copy.deepcopy(project.cfg["central_path"])
 
     if swap_last_folder_only:
         project.update_config(
-            "local_path", local_path.parent / remote_path.name
+            "local_path", local_path.parent / central_path.name
         )
         project.update_config(
-            "remote_path", remote_path.parent / local_path.name
+            "central_path", central_path.parent / local_path.name
         )
     else:
-        project.update_config("local_path", remote_path)
-        project.update_config("remote_path", local_path)
+        project.update_config("local_path", central_path)
+        project.update_config("central_path", local_path)
 
-    return remote_path
+    return central_path
 
 
 def get_default_sub_sessions_to_test():

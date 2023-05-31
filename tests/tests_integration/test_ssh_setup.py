@@ -29,7 +29,7 @@ class TestSSH:
         ssh_test_utils.setup_project_for_ssh(
             project,
             ssh_config.FILESYSTEM_PATH,
-            ssh_config.REMOTE_HOST_ID,
+            ssh_config.CENTRAL_HOST_ID,
             ssh_config.USERNAME,
         )
 
@@ -41,7 +41,7 @@ class TestSSH:
     # -----------------------------------------------------------------
 
     @pytest.mark.parametrize("input_", ["n", "o", "@"])
-    def test_verify_ssh_remote_host_do_not_accept(
+    def test_verify_ssh_central_host_do_not_accept(
         self, capsys, project, input_
     ):
         """
@@ -54,7 +54,7 @@ class TestSSH:
         """
         orig_builtin = ssh_test_utils.setup_mock_input(input_)
 
-        project.setup_ssh_connection_to_remote_server()
+        project.setup_ssh_connection_to_central_server()
 
         ssh_test_utils.restore_mock_input(orig_builtin)
 
@@ -62,7 +62,7 @@ class TestSSH:
 
         assert "Host not accepted. No connection made.\n" in captured.out
 
-    def test_verify_ssh_remote_host_accept(self, capsys, project):
+    def test_verify_ssh_central_host_accept(self, capsys, project):
         """
         User is asked to accept the server hostkey. Mock this here
         and check hostkey is successfully accepted and written to configs.
@@ -70,8 +70,8 @@ class TestSSH:
         test_utils.clear_capsys(capsys)
         orig_builtin = ssh_test_utils.setup_mock_input(input_="y")
 
-        verified = ssh.verify_ssh_remote_host(
-            project.cfg["remote_host_id"], project.cfg.hostkeys_path, log=True
+        verified = ssh.verify_ssh_central_host(
+            project.cfg["central_host_id"], project.cfg.hostkeys_path, log=True
         )
 
         ssh_test_utils.restore_mock_input(orig_builtin)
@@ -83,7 +83,7 @@ class TestSSH:
         with open(project.cfg.hostkeys_path, "r") as file:
             hostkey = file.readlines()[0]
 
-        assert f"{project.cfg['remote_host_id']} ssh-ed25519 " in hostkey
+        assert f"{project.cfg['central_host_id']} ssh-ed25519 " in hostkey
 
     def test_generate_and_write_ssh_key(self, project):
         """

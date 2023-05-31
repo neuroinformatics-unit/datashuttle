@@ -243,7 +243,7 @@ def check_no_duplicate_sub_ses_key_values(
 def search_sub_or_ses_level(
     cfg: Configs,
     base_folder: Path,
-    local_or_remote: str,
+    local_or_central: str,
     sub: Optional[str] = None,
     ses: Optional[str] = None,
     search_str: str = "*",
@@ -261,7 +261,7 @@ def search_sub_or_ses_level(
         general rule that these functions should operate
         project-agnostic.
 
-    local_or_remote : search in local or remote project
+    local_or_central : search in local or central project
 
     sub : either a subject name (string) or None. If None, the search
         is performed at the top_level_folder level
@@ -286,7 +286,7 @@ def search_sub_or_ses_level(
         base_folder = base_folder / ses
 
     all_folder_names, all_filenames = search_for_folders(
-        cfg, base_folder, local_or_remote, search_str
+        cfg, base_folder, local_or_central, search_str
     )
 
     return all_folder_names, all_filenames
@@ -295,7 +295,7 @@ def search_sub_or_ses_level(
 def search_data_folders_sub_or_ses_level(
     cfg: Configs,
     base_folder: Path,
-    local_or_remote: str,
+    local_or_central: str,
     sub: str,
     ses: Optional[str] = None,
 ) -> zip:
@@ -314,7 +314,7 @@ def search_data_folders_sub_or_ses_level(
     a format that mirrors dict.items()
     """
     search_results = search_sub_or_ses_level(
-        cfg, base_folder, local_or_remote, sub, ses
+        cfg, base_folder, local_or_central, sub, ses
     )[0]
 
     data_folders = process_glob_to_find_data_type_folders(
@@ -328,7 +328,7 @@ def search_data_folders_sub_or_ses_level(
 def search_for_wildcards(
     cfg: Configs,
     base_folder: Path,
-    local_or_remote: str,
+    local_or_central: str,
     all_names: List[str],
     sub: Optional[str] = None,
 ) -> List[str]:
@@ -353,7 +353,7 @@ def search_for_wildcards(
 
     base_folder : folder to search for wildcards in
 
-    local_or_remote : "local" or "remote" project path to
+    local_or_central : "local" or "central" project path to
         search in
 
     all_names : list of subject or session names that
@@ -372,11 +372,11 @@ def search_for_wildcards(
 
             if sub:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_folder, local_or_remote, sub, search_str=name
+                    cfg, base_folder, local_or_central, sub, search_str=name
                 )[0]
             else:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_folder, local_or_remote, search_str=name
+                    cfg, base_folder, local_or_central, search_str=name
                 )[0]
 
             new_all_names += matching_names
@@ -432,7 +432,7 @@ def process_glob_to_find_data_type_folders(
 def search_for_folders(  # TODO: change name
     cfg: Configs,
     search_path: Path,
-    local_or_remote: str,
+    local_or_central: str,
     search_prefix: str,
 ) -> Tuple[List[Any], List[Any]]:
     """
@@ -442,13 +442,13 @@ def search_for_folders(  # TODO: change name
     Parameters
     ----------
 
-    local_or_remote : "local" or "remote"
+    local_or_central : "local" or "central"
     search_path : full filepath to search in
     search_prefix : file / folder name to search (e.g. "sub-*")
     """
-    if local_or_remote == "remote" and cfg["connection_method"] == "ssh":
+    if local_or_central == "central" and cfg["connection_method"] == "ssh":
 
-        all_folder_names, all_filenames = ssh.search_ssh_remote_for_folders(
+        all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
             search_path,
             search_prefix,
             cfg,
@@ -487,7 +487,7 @@ def get_next_sub_or_ses_number(
 ) -> Tuple[int, int]:
     """
     Suggest the next available subject or session number. This function will
-    search the local repository, and the remote repository, for all subject
+    search the local repository, and the central repository, for all subject
     or session folders (subject or session depending on inputs).
     It will take the union of all folder names, find the relevant key-value
     pair values, and return the maximum value + 1 as the new number.
@@ -515,7 +515,7 @@ def get_next_sub_or_ses_number(
     else:
         bids_key = "sub"
 
-    # Search local and remote for folders that begin with "sub-*"
+    # Search local and central for folders that begin with "sub-*"
     local_foldernames, _ = search_sub_or_ses_level(
         cfg,
         cfg.get_base_folder("local"),
@@ -523,16 +523,16 @@ def get_next_sub_or_ses_number(
         sub=sub,
         search_str=search_str,
     )
-    remote_foldernames, _ = search_sub_or_ses_level(
+    central_foldernames, _ = search_sub_or_ses_level(
         cfg,
-        cfg.get_base_folder("remote"),
-        "remote",
+        cfg.get_base_folder("central"),
+        "central",
         sub,
         search_str=search_str,
     )
 
     # Convert subject values to a list of increasing-by-1 integers
-    all_folders = list(set(local_foldernames + remote_foldernames))
+    all_folders = list(set(local_foldernames + central_foldernames))
 
     if len(all_folders) == 0:
         utils.raise_error("No folders found. Cannot suggest the next number.")
