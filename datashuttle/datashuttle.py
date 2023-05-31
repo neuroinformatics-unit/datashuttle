@@ -118,6 +118,7 @@ class DataShuttle:
     # Public Folder Makers
     # -------------------------------------------------------------------------
 
+    @check_configs_set
     def set_top_level_folder(self, folder_name):
         """
         Set the working top level folder (e.g. 'rawdata', 'derivatives').
@@ -250,6 +251,7 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
+    @check_configs_set
     def get_next_sub_number(self) -> Tuple[int, int]:
         """
         Convenience function for get_next_sub_or_ses_number
@@ -259,6 +261,7 @@ class DataShuttle:
             self.cfg, sub=None, search_str="sub-*"
         )
 
+    @check_configs_set
     def get_next_ses_number(self, sub: Optional[str]) -> Tuple[int, int]:
         """
         Convenience function for get_next_sub_or_ses_number
@@ -272,6 +275,7 @@ class DataShuttle:
     # Public File Transfer
     # -------------------------------------------------------------------------
 
+    @check_configs_set
     def upload_data(
         self,
         sub_names: Union[str, list],
@@ -343,6 +347,7 @@ class DataShuttle:
         )
         ds_logger.close_log_filehandler()
 
+    @check_configs_set
     def download_data(
         self,
         sub_names: Union[str, list],
@@ -376,6 +381,7 @@ class DataShuttle:
         )
         ds_logger.close_log_filehandler()
 
+    @check_configs_set
     def upload_all(self, dry_run: bool = False):
         """
         Convenience function to upload all data.
@@ -387,6 +393,7 @@ class DataShuttle:
 
         self.upload_data("all", "all", "all", dry_run=dry_run, init_log=False)
 
+    @check_configs_set
     def download_all(self, dry_run: bool = False):
         """
         Convenience function to download all data.
@@ -400,6 +407,7 @@ class DataShuttle:
         )
         ds_logger.close_log_filehandler()
 
+    @check_configs_set
     def upload_entire_project(self):
         """
         Upload the entire project (from 'local' to 'central'),
@@ -408,6 +416,7 @@ class DataShuttle:
         """
         self._transfer_entire_project("upload")
 
+    @check_configs_set
     def download_entire_project(self):
         """
         Download the entire project (from 'central' to 'local'),
@@ -416,6 +425,7 @@ class DataShuttle:
         """
         self._transfer_entire_project("download")
 
+    @check_configs_set
     def upload_project_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
@@ -465,6 +475,7 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
+    @check_configs_set
     def download_project_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
@@ -548,6 +559,7 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
+    @requires_ssh_configs
     def write_public_key(self, filepath: str) -> None:
         """
         By default, the SSH private key only is stored, in
@@ -705,6 +717,7 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
+    @check_configs_set
     def update_config(
         self, option_key: str, new_info: Union[Path, str, bool, None]
     ) -> None:
@@ -834,6 +847,7 @@ class DataShuttle:
     # Public Getters
     # -------------------------------------------------------------------------
 
+    @check_configs_set
     def show_local_path(self) -> None:
         """
         Print the projects local path.
@@ -848,6 +862,7 @@ class DataShuttle:
         """
         utils.print_message_to_user(self._datashuttle_path.as_posix())
 
+    @check_configs_set
     def show_config_path(self) -> None:
         """
         Print the full path to the DataShuttle config file.
@@ -855,6 +870,7 @@ class DataShuttle:
         """
         utils.print_message_to_user(self._config_path.as_posix())
 
+    @check_configs_set
     def show_central_path(self) -> None:
         """
         Print the project central path.
@@ -862,18 +878,21 @@ class DataShuttle:
         """
         utils.print_message_to_user(self.cfg["central_path"].as_posix())
 
+    @check_configs_set
     def show_configs(self) -> None:
         """
         Print the current configs to the terminal.
         """
         utils.print_message_to_user(self._get_json_dumps_config())
 
+    @check_configs_set
     def show_logging_path(self) -> None:
         """
         Print the path where datashuttle logs are written.
         """
         utils.print_message_to_user(self.cfg.logging_path)
 
+    @check_configs_set
     def show_local_tree(self):
         """
         Print a tree schematic of all files and folders
@@ -881,6 +900,7 @@ class DataShuttle:
         """
         ds_logger.print_tree(self.cfg["local_path"])
 
+    @check_configs_set
     def show_top_level_folder(self):
         """
         Print the current working top level folder (e.g.
@@ -900,6 +920,7 @@ class DataShuttle:
             f"{self.cfg.top_level_folder}"
         )
 
+    @check_configs_set
     def show_next_sub_number(self) -> None:
         """
         Show a suggested value for the next available subject number.
@@ -924,6 +945,7 @@ class DataShuttle:
             f"The suggested new subject number is: {suggested_new_num}"
         )
 
+    @check_configs_set
     def show_next_ses_number(self, sub: Optional[str]) -> None:
         """
         Show a suggested value for the next session number of a
@@ -931,7 +953,7 @@ class DataShuttle:
         searched, and the maximum session number + 1 will be suggested.
 
         In the case where there are multiple 'local' machines interacting
-        with a central central repository, this function will not detect
+        with a central repository, this function will not detect
         session numbers of other 'local' machines. For example, if there
         is one machine for behavioural and another for electrophysiological
         data collection, connected to a central server that is 'central'.
