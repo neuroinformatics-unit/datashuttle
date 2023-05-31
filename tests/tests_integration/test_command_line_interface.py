@@ -140,7 +140,7 @@ class TestCommandLineInterface:
             + self.convert_kwargs_to_cli(required_options, sep)
         )
 
-        __, kwargs_ = self.decode(stdout)
+        _, kwargs_ = self.decode(stdout)
 
         # Remove items that are stripped from configs because they
         # default to None on the CLI
@@ -173,7 +173,7 @@ class TestCommandLineInterface:
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_make_sub_folders_variable(self, sep):
 
-        stdout, __ = test_utils.run_cli(
+        stdout, _ = test_utils.run_cli(
             f" make{sep}sub{sep}folders "
             f"--data_type all "
             f"--sub_names one "
@@ -194,7 +194,7 @@ class TestCommandLineInterface:
         As upload_data and download_data take identical args,
         test both together.
         """
-        stdout, __ = test_utils.run_cli(
+        stdout, _ = test_utils.run_cli(
             f" {upload_or_download}{sep}data "
             f"--data{sep}type all "
             f"--sub{sep}names one "
@@ -204,7 +204,7 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
         self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
-        stdout, __ = test_utils.run_cli(
+        stdout, _ = test_utils.run_cli(
             f" {upload_or_download}_data "
             f"--data{sep}type all "
             f"--sub{sep}names one "
@@ -288,7 +288,7 @@ class TestCommandLineInterface:
             f"--ses_names 5 06 007"
         )
 
-        __, kwargs_ = self.decode(stdout)
+        _, kwargs_ = self.decode(stdout)
 
         assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == [
@@ -438,7 +438,7 @@ class TestCommandLineInterface:
             "all",
         )
 
-        __, base_path_to_check = test_utils.handle_upload_or_download(
+        _, base_path_to_check = test_utils.handle_upload_or_download(
             setup_project, upload_or_download
         )
 
@@ -489,7 +489,7 @@ class TestCommandLineInterface:
             "all",
         )
 
-        __, base_path_to_check = test_utils.handle_upload_or_download(
+        _, base_path_to_check = test_utils.handle_upload_or_download(
             setup_project, upload_or_download
         )
 
@@ -512,7 +512,7 @@ class TestCommandLineInterface:
         """
         Check that warning from API are propagated to CLI
         """
-        __, stderr = test_utils.run_cli("", clean_project_name)
+        _, stderr = test_utils.run_cli("", clean_project_name)
 
         assert (
             "Configuration file has not been initialized. "
@@ -523,7 +523,7 @@ class TestCommandLineInterface:
         """
         Check that error from API are propagated to CLI
         """
-        __, stderr = test_utils.run_cli(
+        _, stderr = test_utils.run_cli(
             "make_config_file test_local_path test_remote_path ssh --use_behav",
             clean_project_name,
         )
@@ -555,26 +555,26 @@ class TestCommandLineInterface:
         passing a not-allowed top-level-folder to
         set-top-level-folder raises an error.
         """
-        stdout, __ = test_utils.run_cli(
+        stdout, _ = test_utils.run_cli(
             f"show{sep}top{sep}level{sep}folder", setup_project.project_name
         )
 
         assert "rawdata" in stdout
 
-        stdout, __ = test_utils.run_cli(
+        stdout, _ = test_utils.run_cli(
             f"set{sep}top{sep}level{sep}folder code",
             setup_project.project_name,
         )
 
         assert "code" in stdout
 
-        stdout, __ = test_utils.run_cli(
+        stdout, _ = test_utils.run_cli(
             f"show{sep}top{sep}level{sep}folder", setup_project.project_name
         )
 
         assert "code" in stdout
 
-        __, stderr = test_utils.run_cli(
+        _, stderr = test_utils.run_cli(
             f"set{sep}top{sep}level{sep}folder NOT_RECOGNISED",
             setup_project.project_name,
         )

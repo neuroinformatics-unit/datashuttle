@@ -516,14 +516,14 @@ def get_next_sub_or_ses_number(
         bids_key = "sub"
 
     # Search local and remote for folders that begin with "sub-*"
-    local_foldernames, __ = search_sub_or_ses_level(
+    local_foldernames, _ = search_sub_or_ses_level(
         cfg,
         cfg.get_base_folder("local"),
         "local",
         sub=sub,
         search_str=search_str,
     )
-    remote_foldernames, __ = search_sub_or_ses_level(
+    remote_foldernames, _ = search_sub_or_ses_level(
         cfg,
         cfg.get_base_folder("remote"),
         "remote",

@@ -118,7 +118,7 @@ class TestCommandLineInterface:
 
     def test_logs_supply_config(self, setup_project, tmp_path):
         """"""
-        new_configs_path, __ = test_utils.make_correct_supply_config_file(
+        new_configs_path, _ = test_utils.make_correct_supply_config_file(
             setup_project, tmp_path
         )
         self.delete_log_files(setup_project.cfg.logging_path)
@@ -136,7 +136,7 @@ class TestCommandLineInterface:
             in log
         )
 
-    def test_make_sub_folders__(self, setup_project):
+    def test_make_sub_folders(self, setup_project):
 
         subs = ["sub-11", f"sub-002{tags('to')}004"]
         ses = ["ses-123", "ses-101"]
@@ -463,7 +463,7 @@ class TestCommandLineInterface:
         if supply_or_update == "update":
             project.update_config("local_path", new_local_path)
         else:
-            new_configs_path, __ = test_utils.make_correct_supply_config_file(
+            new_configs_path, _ = test_utils.make_correct_supply_config_file(
                 project,
                 tmp_path,
                 update_configs={"key": "local_path", "value": new_local_path},
