@@ -119,7 +119,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gd0f2c52</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gd91c555</p>
   
 </a></div>
     
@@ -720,6 +720,54 @@ in the local project.</p>
 </pre></div>
 </div>
 </section>
+<section id="show-next-sub-number (show_next_sub_number)">
+<h3>show-next-sub-number (show_next_sub_number)<a class="headerlink" href="#show-next-sub-number (show_next_sub_number)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Show a suggested value for the next available subject number.
+The local and remote repository will be searched, and the
+maximum existing subject number + 1 will be suggested.</p>
+<p>In the case where there are multiple ‘local’ machines interacting
+with a central remote repository, this function will not detect
+subject numbers of other ‘local’ machines. For example, if there
+is one machine for behavioural and another for electrophysiological
+data collection, connected to a central server that is ‘remote’.
+If run on the behavioural data collection machine, this function
+will suggest the next number based on the subjects found on the
+behavioural machine and central machine, but not the
+electrophysiological machine.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">show</span><span class="o">-</span><span class="nb">next</span><span class="o">-</span><span class="n">sub</span><span class="o">-</span><span class="n">number</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+</pre></div>
+</div>
+</section>
+<section id="show-next-ses-number (show_next_ses_number)">
+<h3>show-next-ses-number (show_next_ses_number)<a class="headerlink" href="#show-next-ses-number (show_next_ses_number)" title="Permalink to this heading">#</a></h3>
+<blockquote>
+<div><p>Show a suggested value for the next session number of a
+given subject. The local and remote repository will be
+searched, and the maximum session number + 1 will be suggested.</p>
+<p>In the case where there are multiple ‘local’ machines interacting
+with a central remote repository, this function will not detect
+session numbers of other ‘local’ machines. For example, if there
+is one machine for behavioural and another for electrophysiological
+data collection, connected to a central server that is ‘remote’.
+If run on the behavioural data collection machine, this function
+will suggest the next number based on the sessions found on the
+behavioural machine and central machine, but not the
+electrophysiological machine.</p>
+</div></blockquote>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">show</span><span class="o">-</span><span class="nb">next</span><span class="o">-</span><span class="n">ses</span><span class="o">-</span><span class="n">number</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">sub</span>
+</pre></div>
+</div>
+<section id="positional-arguments_repeat5">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Permalink to this heading">#</a></h4>
+<dl class="option-list">
+<dt><kbd>sub</kbd></dt>
+<dd><p>Required: (str) sub to find latest session for.</p>
+</dd>
+</dl>
+</section>
+</section>
 <section id="check-name-formatting (check_name_formatting)">
 <h3>check-name-formatting (check_name_formatting)<a class="headerlink" href="#check-name-formatting (check_name_formatting)" title="Permalink to this heading">#</a></h3>
 <blockquote>
@@ -732,8 +780,8 @@ This method will print the formatted list of names,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">check</span><span class="o">-</span><span class="n">name</span><span class="o">-</span><span class="n">formatting</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">names</span> <span class="n">NAMES</span> <span class="p">[</span><span class="n">NAMES</span> <span class="o">...</span><span class="p">]]</span> <span class="n">prefix</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat5">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat5" title="Permalink to this heading">#</a></h4>
+<section id="positional-arguments_repeat6">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat6" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>prefix</kbd></dt>
 <dd><p>Required: (str) (sub- or ses-)</p>
@@ -767,8 +815,8 @@ for how this is handled.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">supply</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">path_to_config</span>
 </pre></div>
 </div>
-<section id="positional-arguments_repeat6">
-<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat6" title="Permalink to this heading">#</a></h4>
+<section id="positional-arguments_repeat7">
+<h4>Positional Arguments<a class="headerlink" href="#positional-arguments_repeat7" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
 <dt><kbd>path_to_config</kbd></dt>
 <dd><p>Required: (str, single or multiple)</p>
@@ -851,13 +899,18 @@ for how this is handled.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-configs (show_configs)">show-configs (show_configs)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-logging-path (show_logging_path)">show-logging-path (show_logging_path)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-local-tree (show_local_tree)">show-local-tree (show_local_tree)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-name-formatting (check_name_formatting)">check-name-formatting (check_name_formatting)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-next-sub-number (show_next_sub_number)">show-next-sub-number (show_next_sub_number)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-next-ses-number (show_next_ses_number)">show-next-ses-number (show_next_ses_number)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments_repeat5">Positional Arguments</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#check-name-formatting (check_name_formatting)">check-name-formatting (check_name_formatting)</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments_repeat6">Positional Arguments</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments_repeat2">Named Arguments</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#supply-config-file (supply_config_file)">supply-config-file (supply_config_file)</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments_repeat6">Positional Arguments</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments_repeat7">Positional Arguments</a></li>
 </ul>
 </li>
 </ul>

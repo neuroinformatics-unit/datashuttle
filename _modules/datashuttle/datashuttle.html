@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gd0f2c52</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gd91c555</p>
   
 </a></div>
     
@@ -328,7 +328,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">paramiko</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
@@ -545,6 +545,24 @@ document.write(`
         <span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataShuttle.get_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_sub_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function for get_next_sub_or_ses_number</span>
+<span class="sd">        to find the next subject number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">folders</span><span class="o">.</span><span class="n">get_next_sub_or_ses_number</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;sub-*&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.get_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_ses_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_ses_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convenience function for get_next_sub_or_ses_number</span>
+<span class="sd">        to find the next session number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">folders</span><span class="o">.</span><span class="n">get_next_sub_or_ses_number</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span> <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;ses-*&quot;</span>
+        <span class="p">)</span></div>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Public File Transfer</span>
@@ -1142,6 +1160,59 @@ document.write(`
 <span class="sd">        in the local project.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="DataShuttle.show_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_sub_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show a suggested value for the next available subject number.</span>
+<span class="sd">        The local and remote repository will be searched, and the</span>
+<span class="sd">        maximum existing subject number + 1 will be suggested.</span>
+
+<span class="sd">        In the case where there are multiple &#39;local&#39; machines interacting</span>
+<span class="sd">        with a central remote repository, this function will not detect</span>
+<span class="sd">        subject numbers of other &#39;local&#39; machines. For example, if there</span>
+<span class="sd">        is one machine for behavioural and another for electrophysiological</span>
+<span class="sd">        data collection, connected to a central server that is &#39;remote&#39;.</span>
+<span class="sd">        If run on the behavioural data collection machine, this function</span>
+<span class="sd">        will suggest the next number based on the subjects found on the</span>
+<span class="sd">        behavioural machine and central machine, but not the</span>
+<span class="sd">        electrophysiological machine.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">suggested_new_num</span><span class="p">,</span> <span class="n">latest_existing_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_sub_number</span><span class="p">()</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
+            <span class="s2">&quot;Local and Remote repository searched. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;The most recent subject number found is: </span><span class="si">{</span><span class="n">latest_existing_num</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;The suggested new subject number is: </span><span class="si">{</span><span class="n">suggested_new_num</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.show_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_ses_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_ses_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Show a suggested value for the next session number of a</span>
+<span class="sd">        given subject. The local and remote repository will be</span>
+<span class="sd">        searched, and the maximum session number + 1 will be suggested.</span>
+
+<span class="sd">        In the case where there are multiple &#39;local&#39; machines interacting</span>
+<span class="sd">        with a central remote repository, this function will not detect</span>
+<span class="sd">        session numbers of other &#39;local&#39; machines. For example, if there</span>
+<span class="sd">        is one machine for behavioural and another for electrophysiological</span>
+<span class="sd">        data collection, connected to a central server that is &#39;remote&#39;.</span>
+<span class="sd">        If run on the behavioural data collection machine, this function</span>
+<span class="sd">        will suggest the next number based on the sessions found on the</span>
+<span class="sd">        behavioural machine and central machine, but not the</span>
+<span class="sd">        electrophysiological machine.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        sub : the subject for which to suggest the next available session.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">latest_existing_num</span><span class="p">,</span> <span class="n">suggested_new_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_ses_number</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Local and Remote repository searched for sessions for </span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;The most recent session number found is: </span><span class="si">{</span><span class="n">latest_existing_num</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;The suggested new session number is: </span><span class="si">{</span><span class="n">suggested_new_num</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.check_name_formatting"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.check_name_formatting">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
