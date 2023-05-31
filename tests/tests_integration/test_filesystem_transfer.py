@@ -49,7 +49,9 @@ class TestFileTransfer:
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        test_utils.make_and_check_local_project(project, subs, sessions, "all")
+        test_utils.make_and_check_local_project_folders(
+            project, subs, sessions, "all"
+        )
 
         (
             transfer_function,
@@ -91,7 +93,7 @@ class TestFileTransfer:
 
         for making_folder_name in canonical_folders.get_top_level_folders():
             project.cfg.top_level_folder = making_folder_name
-            test_utils.make_and_check_local_project(
+            test_utils.make_and_check_local_project_folders(
                 project, subs, sessions, "all", folder_name=making_folder_name
             )
         project.cfg.top_level_folder = folder_name
@@ -124,7 +126,7 @@ class TestFileTransfer:
         for folder_name in canonical_folders.get_top_level_folders():
             project.set_top_level_folder(folder_name)
 
-            test_utils.make_and_check_local_project(
+            test_utils.make_and_check_local_project_folders(
                 project, subs, sessions, "all", folder_name=folder_name
             )
 
@@ -171,7 +173,9 @@ class TestFileTransfer:
         checking only the selected ones are uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
-        test_utils.make_and_check_local_project(project, subs, sessions, "all")
+        test_utils.make_and_check_local_project_folders(
+            project, subs, sessions, "all"
+        )
 
         (
             transfer_function,
@@ -213,7 +217,9 @@ class TestFileTransfer:
         selected subs were uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
-        test_utils.make_and_check_local_project(project, subs, sessions, "all")
+        test_utils.make_and_check_local_project_folders(
+            project, subs, sessions, "all"
+        )
 
         (
             transfer_function,
@@ -251,7 +257,9 @@ class TestFileTransfer:
         sessions to upload. Check only the selected sessions were uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
-        test_utils.make_and_check_local_project(project, subs, sessions, "all")
+        test_utils.make_and_check_local_project_folders(
+            project, subs, sessions, "all"
+        )
 
         (
             transfer_function,

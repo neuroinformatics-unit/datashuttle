@@ -431,7 +431,7 @@ class TestCommandLineInterface:
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        test_utils.make_and_check_local_project(
+        test_utils.make_and_check_local_project_folders(
             setup_project,
             subs,
             sessions,
@@ -482,7 +482,7 @@ class TestCommandLineInterface:
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        test_utils.make_and_check_local_project(
+        test_utils.make_and_check_local_project_folders(
             setup_project,
             subs,
             sessions,

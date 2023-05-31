@@ -416,7 +416,7 @@ def check_and_strip_within_sub_data_folders(ses_names, data_type_to_transfer):
     return data_type_to_transfer
 
 
-def make_and_check_local_project(
+def make_and_check_local_project_folders(
     project, subs, sessions, data_type, folder_name="rawdata"
 ):
     """

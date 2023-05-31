@@ -218,7 +218,7 @@ class TestCommandLineInterface:
         subs = ["sub-11"]
         sessions = ["ses-123"]
 
-        test_utils.make_and_check_local_project(
+        test_utils.make_and_check_local_project_folders(
             setup_project,
             subs,
             sessions,
@@ -277,7 +277,7 @@ class TestCommandLineInterface:
         Set transfer verbosity and progress settings so
         maximum output is produced to test against.
         """
-        test_utils.make_and_check_local_project(
+        test_utils.make_and_check_local_project_folders(
             setup_project,
             subs=["sub-001"],
             sessions=["ses-001"],
