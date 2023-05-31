@@ -841,13 +841,19 @@ class DataShuttle:
 
     def show_next_sub_number(self) -> None:
         """
-        Show a suggested value for the next available subject number
+        Show a suggested value for the next available subject number.
         The local and remote repository will be searched, and the
         maximum existing subject number + 1 will be suggested.
 
-        Note that this cannot search all local machines except for the one
-        in use, and the suggested number will not reflect existing sessions
-        on other local machines.
+        In the case where there are multiple 'local' machines interacting
+        with a central remote repository, this function will not detect
+        subject numbers of other 'local' machines. For example, if there
+        is one machine for behavioural and another for electrophysiological
+        data collection, connected to a central server that is 'remote'.
+        If run on the behavioural data collection machine, this function
+        will suggest the next number based on the subjects found on the
+        behavioural machine and central machine, but not the
+        electrophysiological machine.
         """
         suggested_new_num, latest_existing_num = self.get_next_sub_number()
 
@@ -863,9 +869,15 @@ class DataShuttle:
         given subject. The local and remote repository will be
         searched, and the maximum session number + 1 will be suggested.
 
-        Note that this cannot search all local machines except for the one
-        in use, and the suggested number will not reflect existing sessions
-        on other local machines.
+        In the case where there are multiple 'local' machines interacting
+        with a central remote repository, this function will not detect
+        session numbers of other 'local' machines. For example, if there
+        is one machine for behavioural and another for electrophysiological
+        data collection, connected to a central server that is 'remote'.
+        If run on the behavioural data collection machine, this function
+        will suggest the next number based on the sessions found on the
+        behavioural machine and central machine, but not the
+        electrophysiological machine.
 
         Parameters
         ----------
