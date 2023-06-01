@@ -1090,16 +1090,21 @@ def main() -> None:
     These command functions (all defined above) will process
     the CLI arguments and then call the appropriate API function
     through run_command().
+
     """
     args = parser.parse_args()
 
-    func_name = args.func.__name__
-    if "func" in args and str(func_name) == "make_config_file":
-        warn = "ignore"
+    if "func" in args:
+        func_name = args.func.__name__
+        if str(func_name) == "make_config_file":
+            warn = "ignore"
+        else:
+            warn = "default"
+
+        show_startup_message = should_show_startup_message(func_name)
     else:
         warn = "default"
-
-    show_startup_message = should_show_startup_message(func_name)
+        show_startup_message = False
 
     warnings.filterwarnings(warn)  # type: ignore
     project = DataShuttle(args.project_name, show_startup_message)
