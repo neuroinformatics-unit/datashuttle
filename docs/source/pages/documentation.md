@@ -1,18 +1,170 @@
 # Full Documentation
 
-Datashuttle is a work in progress as has not been officially released. It is not ready for use
-as documented, please await first official release.
 
-DataShuttle helps to manage and transfer a project with many "local" machines all connected to a "central" machine.
-DataShuttle has functions to help:
-* Generate BIDS-formatted folder structures
-* Transfer data between central and local machines
+DataShuttle is a tool to streamline the management of neuroscience projects, allowing simple and convenient standardisation of data structures.
 
-On first setup, it is necessary to specify the project name, paths to the local project folder (typically empty on first use, on a
-local filesystem), and paths to central project folder and the connection method.
+DataShuttle's goal is to alleviate the burden researchers face in adhering to standardized file and folder specifications during the execution of intricate and demanding experimental projects. It will:
+
+- Eliminate the need to manually integrate datasets collected across different machines (e.g. behaviour and electrophysiology acquisition machines).
+- Allow convenient transfer of data between machines. This may be between a central project storange and analysis machine (e.g. ''*I want to transfer subjects 1-5, sessions 5 and 10, behavioural data only to my laptop*.'')
+- Avoids re-naming and re-formatting of project folders for collaboriation or dataset publication.
+
+DataShuttle aims to integreate seamlessly into the  neuroscience data collection and analysis workflows and eliminate the need to manually , providing tools to:
+
+- Create folder trees that adhere to SWC-Blueprint, a data management specification based on and aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.
+- Convenient transfer of between machines used for data collection and analysis, and a central storage repository.
+
+[IMAGE OF PCS]
+
+DataShuttle requires a one-time setup of project name and configurations.  Next, subjects, session and data-type folder trees can be conveniently created during experimental acquisition. Once acquisition is complete, data can be easily transferred from acquisition computers to a central storage machine.
+
+### Installation
+
+DataShuttle is hosted on  [PyPI](https://pypi.org/project/datashuttle/) and can be installed with pip.
+
+`pip install datashuttle`
+
+Datashuttle required Rclone for data transfers. The easiest way to install Rclone is using [Miniconda](https://docs.conda.io/en/main/miniconda.html):
+
+```
+conda install -c conda-forge rclone
+```
+
+See [the Rclone website](https://rclone.org/install/) for alternative installation methods.
+
+
+### Getting Started
+
+Datashuttle provides a Python API and cross-platform command line interface (CLI). In this guide examples will be down using the command line, but corresponding methods can be found in the [API Reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html).
+
+The first thing to do when using DataShuttle is to setup a new project on a *local* machine.
+
+#### *local* machines and the *central* machine
+
+DataShuttle makes the distinction between (possibly multiple) *local* machines and a single *central* machine. DataShuttle needs to be setup once for each *local* machine, but requires no setup on the *central* machine.
+
+A typical use case is an experment in which behavioural data and electrophysiological data are collected on acquisition PCs. They send the data to a central server where it is stored.
+
+Later, a subset of the data is transferred to a third machine for analysis. In this case, the behavioural and electrophysiological acquisition machine and analysis machines are 'local'. The central storage machine is the *central* machine.
+
+#### One-time project setup on a *local* machine
+
+A one-time setup on each *local* machine used is required, specifying the *project name* and *configurations*.
+
+The configurations tell DataShuttle
+
+- The paths to the *local* and *central* folders that contain the project.
+- How to connect to the central project.
+- The settings that specify how data is transferred.
+- The *data-types* (e.g. *behaviour* (`behav`), *electrophysiology* (`ephys`)) that will be used in the project.
+
+The command `make-config-file` is used for the initial setup of the project. The **required arguments** are:
+
+`local_path`: The full filepath to the project folder on the *local* machine. For example, if you wanted to make a new project called `my_first_project` in the folder `C:\User\my_projects`, the local path would be `C:\User\my_projects`.
+
+`central_path`: The path on the *central* machine to the central project. For example, if connecting to a remote linux server, this may be `/hpc/home/user/my_projects`.
+
+`connection_method`: `local_filesystem` or `ssh`. Local filesystem can be used if the *central* storage is mounted to the local machine. Otherwise `ssh` can be used.
+
+**Optional Arguments**
+
+If connection method is `ssh`, the `central_host_id`, `central_host_username` must be set, and a one-time SSH setup command run (see the [SSH section][#### SSH] for details).
+
+The optional arguments `ovewrite_old_files`, `transfer_verbosity` and `show_transfer_progress` determine how *data transfer* is performed (see the [Data Transfer section](#### Data Transfer) for details).
+
+Finally, the optional *data-type* flags `--use_ephys`, `--use_funcimg`, `--use_histology`, `--use_behav` set the types of data required for the project on the local machine.
+
+**Example**
+
+An example call to `make-config-file` below sets makes a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project`, the *central* path (to a remote linux server) to `/nfs/nhome/live/username/`, sets the required SSH configurations, and indicates that *behavioural*, electrophysiological and *histological* data will be used on this machine for this project.
+
+```
+datashuttle \
+my_first_project \
+make-config-file \
+/path/to/my/project \
+/nfs/nhome/live/username/ \
+ssh \
+--central_host_id ssh.swc.ucl.ac.uk \
+--central_host_username username \
+--transfer_verbosity v \
+--use-ephys --use-behav --use-histology --overwrite_old_files
+```
+
+
+Now setup is complete! Configuration settings can be edited at any time with the `update-config` command (TODO LINK). Alternatively, custom confiruation files can be supplied using the `supply-config` command (TODO LINK) (this greatly simplifies setting up projects across multiple *local* machines).
+
+Next, we can start setting up the project by automatically creating project folder trees that conform to a standardised specification.
+
+#### Creating *subject* and *session* folders
+
+In a typical neuroscience experiment, a data-collection session begins by creating the folder for the current subject name (e.g. mouse, rat) and current session name. Once created, the data for this session is stored in the created folder.
+
+The command `make-sub-folders` can be used automatically create folder trees that adhere to the SWC-Blueprint (and correspondingly, BIDS) specification. The linked specifications contain more detail, but at it's heard this requires:
+
+All subjects are given a numerical (integer) number that is prefixed with the key `sub-`. All sessions are also given a numerical (integer) number that is prefixed with the key `ses-`.
+
+Following this, optional information can be included in the form of key-value pairs. For example, a folder tree for *subject 1*, *session 1*  with *behavioural* data that includes the date of each session in the *session* folder name would be:
+
+```
+└── sub-001/
+    └── ses-001_date_20230516/
+        └── behav/
+            └── sub-001_ses-001_recording.mp4
+```
+
+In DataShuttle, this folder tree (excluding the .mp4 file which must be saved using third-party software) can be created (assuming today's date is `20220516`), with the command
+
+```
+datashuttle \
+my_first_project \
+make-sub-folders -sub 001 -ses 001_@DATE@ -dt behav
+```
+
+The leading `sub-` or `ses-` is optional when specifying folders to create. It is possible to automatically create date, time or datetime key-value pairs with the days `@DATE@`, `@TIME@` or `@DATETIME@` repsectively.
+
+Another example call, which creates a range of subject and session folders, is shown below:
+
+```
+datashuttle \
+my_first_project \
+make-sub-folders -sub 001@TO@003 -ses 010_@TIME@ -dt all
+```
+
+When the `all` argument is used for `--data_type` (`-dt`), the folders created depend on the *data-types* specified during *configuration* setup. For example, if
+`--use_behav`, `--use_funcimg`, `--use_histology` were set during *configuration* setup, the folder tree from the above command (assuming the time is 4.02.48 PM), would look like:
+
+```
+├── sub-001/
+│   ├── ses-010_time-160248/
+│   │   ├── behav
+│   │   └── funcimg
+│   └── histology
+├── sub-002/
+│   ├── ses-010_time-160248/
+│   │   ├── behav
+│   │   └── funcimg
+│   └── histology
+└── sub-003/
+    ├── ses-010_time-160248/
+    │   ├── behav
+    │   └── funcimg
+    └── histology
+```
+
+# FOR FULL DETAILS, SEE XXX
+
+
+#### Data Transfer
+
+
+
+#### Configuration
+
 
 This documentation gives examples both using the API (in the python console) or using the command line interface (in system terminal).
 
+#### C
 ## DataShuttle Configs
 
 ### Configuration File
