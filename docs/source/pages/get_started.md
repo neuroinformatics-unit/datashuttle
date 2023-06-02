@@ -40,7 +40,7 @@ to create folders of these data types.
 
 If connection_method used is "ssh", it is necessary to also input the central_host_id and central_host_username configs.
 
-The settings "overwrite_old_files_on_transfer", "transfer_verbosity" and "show_transfer_progress" determine
+The settings "overwrite_old_files", "transfer_verbosity" and "show_transfer_progress" determine
 the behaviour during file transfer. Please see the Data Transfer section of the full documentation for more information.
 
 
@@ -53,7 +53,7 @@ central_path="/nfs/nhome/live/username/",
 connection_method="ssh",
 central_host_id="ssh.swc.ucl.ac.uk",
 central_host_username="username",
-overwrite_old_files_on_transfer=True,
+overwrite_old_files=True,
 transfer_verbosity="v",
 show_transfer_progress=False,
 use_ephys=True,
@@ -73,7 +73,7 @@ ssh \
 --central_host_id ssh.swc.ucl.ac.uk \
 --central_host_username username \
 --transfer_verbosity v \
---use-ephys --use-behav --use-histology --overwrite_old_files_on_transfer
+--use-ephys --use-behav --use-histology --overwrite_old_files
 ```
 
 Individual settings can be updated using update_config(), and an existing config file can be used instead using supply_config()
@@ -178,7 +178,7 @@ section of the full documentation for more options.
 
 Along with the @TO@ flag, a wildcard @*@ flag can also be used in subject or session names.
 
-The settings "overwrite_old_files_on_transfer", "transfer_verbosity" and "show_transfer_progress" determine
+The settings "overwrite_old_files", "transfer_verbosity" and "show_transfer_progress" determine
 the behaviour during file transfer. Please see the Data Transfer section of the full documentation for more information.
 
 ## Logging

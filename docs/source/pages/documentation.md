@@ -46,7 +46,7 @@ The options "use_ephys", "use_behav"... are used to set the data types used on t
 If these are not set to True, it will not be possible to make data_type folders of this type.
 This option is useful if there are dedicated machines for collection of different data types.
 
-Finally, the settings "overwrite_old_files_on_transfer", "transfer_verbosity" and "show_transfer_progress" determine
+Finally, the settings "overwrite_old_files", "transfer_verbosity" and "show_transfer_progress" determine
 the behaviour during file transfer. Please see the Data Transfer section for more information.
 
 An example call may look like:
@@ -58,7 +58,7 @@ central_path="/nfs/nhome/live/username/",
 connection_method="ssh",
 central_host_id="ssh.swc.ucl.ac.uk",
 central_host_username="username",
-overwrite_old_files_on_transfer=True,
+overwrite_old_files=True,
 transfer_verbosity="v",
 show_transfer_progress=False,
 use_ephys=True,
@@ -79,7 +79,7 @@ ssh \
 --central_host_id ssh.swc.ucl.ac.uk \
 --central_host_username username \
 --transfer_verbosity v \
---use-ephys --use-behav --use-histology --overwrite_old_files_on_transfer
+--use-ephys --use-behav --use-histology --overwrite_old_files
 ```
 
 Individual settings can be updated using update_config(), and an existing config file can be used instead using supply_config()
@@ -231,14 +231,14 @@ keyword options.
 A number of configuration settings define the behaviour of datashuttle during file transfer (see make_config_file). Datashuttle
 uses [Rclone](https://rclone.org/) for data transfer, and these options are aliases for RClone configurations.
 
-### overwrite_old_files_on_transfer
+### overwrite_old_files
 
 By default, datashuttle will never overwrite files in the target project folders (i.e. the
 folders the data is being transferred to). This is the case even if the version of the
 file in the source project folder (i.e. the folder the data is being transferred from)
 is newer (as indicated by the file modification timestamp.)
 
-When "overwrite_old_files_on_transfer"
+When "overwrite_old_files"
 this behaviour is changed, and target folder files that are older than source folder
 will be overwritten.
 
