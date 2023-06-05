@@ -65,16 +65,14 @@ class TestFileTransfer:
 
         test_utils.check_folder_tree_is_correct(
             project,
-            os.path.join(
-                base_path_to_check, project.cfg.top_level_folder_name
-            ),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder),
             subs,
             sessions,
             test_utils.get_default_folder_used(),
         )
 
     @pytest.mark.parametrize(
-        "folder_name", canonical_folders.get_top_level_folder_names()
+        "folder_name", canonical_folders.get_top_level_folders()
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("use_all_alias", [True, False])
@@ -91,14 +89,12 @@ class TestFileTransfer:
         project.set_top_level_folder(folder_name)
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        for (
-            making_folder_name
-        ) in canonical_folders.get_top_level_folder_names():
-            project.cfg.top_level_folder_name = making_folder_name
+        for making_folder_name in canonical_folders.get_top_level_folders():
+            project.cfg.top_level_folder = making_folder_name
             test_utils.make_and_check_local_project(
                 project, subs, sessions, "all", folder_name=making_folder_name
             )
-        project.cfg.top_level_folder_name = folder_name
+        project.cfg.top_level_folder = folder_name
 
         (
             transfer_function,
@@ -113,7 +109,7 @@ class TestFileTransfer:
             transfer_function("all", "all", "all")
 
         full_base_path_to_check = (
-            base_path_to_check / project.cfg.top_level_folder_name
+            base_path_to_check / project.cfg.top_level_folder
         )
 
         test_utils.check_working_top_level_folder_only_exists(
@@ -125,7 +121,7 @@ class TestFileTransfer:
         """ """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        for folder_name in canonical_folders.get_top_level_folder_names():
+        for folder_name in canonical_folders.get_top_level_folders():
             project.set_top_level_folder(folder_name)
 
             test_utils.make_and_check_local_project(
@@ -141,13 +137,11 @@ class TestFileTransfer:
 
         transfer_function()
 
-        for folder_name in canonical_folders.get_top_level_folder_names():
+        for folder_name in canonical_folders.get_top_level_folders():
             project.set_top_level_folder(folder_name)
             test_utils.check_folder_tree_is_correct(
                 project,
-                os.path.join(
-                    base_path_to_check, project.cfg.top_level_folder_name
-                ),
+                os.path.join(base_path_to_check, project.cfg.top_level_folder),
                 subs,
                 sessions,
                 test_utils.get_default_folder_used(),
@@ -187,9 +181,7 @@ class TestFileTransfer:
         transfer_function(subs, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(
-                base_path_to_check, project.cfg.top_level_folder_name
-            ),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder),
             data_type_to_transfer,
             subs,
             sessions,
@@ -232,9 +224,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, sessions, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(
-                base_path_to_check, project.cfg.top_level_folder_name
-            ),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder),
             data_type_to_transfer,
             subs_to_upload,
         )
@@ -274,9 +264,7 @@ class TestFileTransfer:
         transfer_function(subs_to_upload, ses_to_upload, data_type_to_transfer)
 
         test_utils.check_data_type_sub_ses_uploaded_correctly(
-            os.path.join(
-                base_path_to_check, project.cfg.top_level_folder_name
-            ),
+            os.path.join(base_path_to_check, project.cfg.top_level_folder),
             data_type_to_transfer,
             subs_to_upload,
             ses_to_upload,
