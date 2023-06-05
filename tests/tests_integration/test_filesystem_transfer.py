@@ -93,6 +93,7 @@ class TestFileTransfer:
 
         for making_folder_name in canonical_folders.get_top_level_folders():
             project.cfg.top_level_folder = making_folder_name
+
             test_utils.make_and_check_local_project_folders(
                 project, subs, sessions, "all", folder_name=making_folder_name
             )
