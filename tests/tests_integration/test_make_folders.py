@@ -186,7 +186,7 @@ class TestMakeFolders:
 
         test_utils.check_folder_tree_is_correct(
             project,
-            base_folder=test_utils.get_rawdata_path(project),
+            base_folder=test_utils.get_top_level_folder_path(project),
             subs=["sub-11", "sub-002", "sub-30303"],
             sessions=[],
             folder_used=test_utils.get_default_folder_used(),
@@ -204,7 +204,7 @@ class TestMakeFolders:
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "50432"]
         project.make_sub_folders(subs, sessions)
-        base_folder = test_utils.get_rawdata_path(project)
+        base_folder = test_utils.get_top_level_folder_path(project)
 
         for sub in subs:
             for ses in ["ses-001", "ses-50432"]:
@@ -248,7 +248,7 @@ class TestMakeFolders:
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
             project,
-            base_folder=test_utils.get_rawdata_path(project),
+            base_folder=test_utils.get_top_level_folder_path(project),
             subs=subs,
             sessions=sessions,
             folder_used=folder_used,
@@ -271,7 +271,7 @@ class TestMakeFolders:
         project.make_sub_folders(sub, ses)
 
         # Check the folders were not made / made.
-        base_folder = test_utils.get_rawdata_path(project)
+        base_folder = test_utils.get_top_level_folder_path(project)
         test_utils.check_and_cd_folder(
             join(
                 base_folder,
@@ -314,7 +314,7 @@ class TestMakeFolders:
         ses = "ses-001"
         project.make_sub_folders(sub, ses, files_to_test)
 
-        base_folder = test_utils.get_rawdata_path(project)
+        base_folder = test_utils.get_top_level_folder_path(project)
 
         # Check at the subject level
         sub_file_names = test_utils.glob_basenames(
@@ -350,7 +350,7 @@ class TestMakeFolders:
         )
 
         ses_names = test_utils.glob_basenames(
-            join(test_utils.get_rawdata_path(project), "**", "ses-*"),
+            join(test_utils.get_top_level_folder_path(project), "**", "ses-*"),
             recursive=True,
         )
 
@@ -371,7 +371,7 @@ class TestMakeFolders:
         )
 
         ses_names = test_utils.glob_basenames(
-            join(test_utils.get_rawdata_path(project), "**", "ses-*"),
+            join(test_utils.get_top_level_folder_path(project), "**", "ses-*"),
             recursive=True,
         )
 

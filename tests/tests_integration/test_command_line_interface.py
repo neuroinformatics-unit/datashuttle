@@ -408,7 +408,7 @@ class TestCommandLineInterface:
 
         test_utils.check_folder_tree_is_correct(
             setup_project,
-            base_folder=test_utils.get_rawdata_path(setup_project),
+            base_folder=test_utils.get_top_level_folder_path(setup_project),
             subs=subs,
             sessions=ses,
             folder_used=test_utils.get_default_folder_used(),
@@ -431,7 +431,7 @@ class TestCommandLineInterface:
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        test_utils.make_and_check_local_project(
+        test_utils.make_and_check_local_project_folders(
             setup_project,
             subs,
             sessions,
@@ -482,7 +482,7 @@ class TestCommandLineInterface:
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        test_utils.make_and_check_local_project(
+        test_utils.make_and_check_local_project_folders(
             setup_project,
             subs,
             sessions,

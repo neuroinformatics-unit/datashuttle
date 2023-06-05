@@ -416,7 +416,7 @@ def check_and_strip_within_sub_data_folders(ses_names, data_type_to_transfer):
     return data_type_to_transfer
 
 
-def make_and_check_local_project(
+def make_and_check_local_project_folders(
     project, subs, sessions, data_type, folder_name="rawdata"
 ):
     """
@@ -427,7 +427,7 @@ def make_and_check_local_project(
 
     check_folder_tree_is_correct(
         project,
-        get_rawdata_path(project, folder_name=folder_name),
+        get_top_level_folder_path(project, folder_name=folder_name),
         subs,
         sessions,
         get_default_folder_used(),
@@ -489,7 +489,9 @@ def check_config_file(config_path, *kwargs):
 # -----------------------------------------------------------------------------
 
 # TODO: rename this 'top level folder path'
-def get_rawdata_path(project, local_or_remote="local", folder_name="rawdata"):
+def get_top_level_folder_path(
+    project, local_or_remote="local", folder_name="rawdata"
+):
     """"""
 
     assert (
