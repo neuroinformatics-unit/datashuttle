@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g54888e3</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gbffa2a4</p>
   
 </a></div>
     
@@ -328,12 +328,12 @@ document.write(`
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">paramiko</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
 
-<span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">load_configs</span>
+<span class="kn">from</span> <span class="nn">datashuttle.configs</span> <span class="kn">import</span> <span class="n">canonical_folders</span><span class="p">,</span> <span class="n">load_configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.configs.config_class</span> <span class="kn">import</span> <span class="n">Configs</span>
 <span class="kn">from</span> <span class="nn">datashuttle.utils</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">ds_logger</span><span class="p">,</span>
@@ -405,9 +405,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="n">project_name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="s2">&quot;config.yaml&quot;</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span> <span class="o">/</span> <span class="s2">&quot;config.yaml&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span> <span class="o">/</span> <span class="s2">&quot;persistent_settings.yaml&quot;</span>
@@ -441,6 +439,36 @@ document.write(`
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Public Folder Makers</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
+
+<div class="viewcode-block" id="DataShuttle.set_top_level_folder"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.set_top_level_folder">[docs]</a>    <span class="k">def</span> <span class="nf">set_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the working top level folder (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
+
+<span class="sd">        The top level folder defines in which top level folder folders</span>
+<span class="sd">        are made (e.g. make_sub_folders) or at which level folders</span>
+<span class="sd">        are transferred with the commands upload_data / download_data</span>
+<span class="sd">        and upload_all / download all.</span>
+
+<span class="sd">        To upload the entire project (i.e. every top level</span>
+<span class="sd">        folder), use the &#39;command upload_entire_project&#39; or</span>
+<span class="sd">        &#39;download_entire_project&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">canonical_top_level_folder_names</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folder_names</span><span class="p">()</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">folder_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">canonical_top_level_folder_names</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">raise_error</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Folder name: </span><span class="si">{</span><span class="n">folder_name</span><span class="si">}</span><span class="s2"> &quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;is not in permitted top-level folder&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; names: </span><span class="si">{</span><span class="n">canonical_top_level_folder_names</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="n">folder_name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_update_persistent_setting</span><span class="p">(</span><span class="s2">&quot;top_level_folder&quot;</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.make_sub_folders"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_folders">[docs]</a>    <span class="nd">@check_configs_set</span>
     <span class="k">def</span> <span class="nf">make_sub_folders</span><span class="p">(</span>
@@ -695,6 +723,22 @@ document.write(`
             <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="DataShuttle.upload_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_entire_project">[docs]</a>    <span class="k">def</span> <span class="nf">upload_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Upload the entire project (from &#39;local&#39; to &#39;remote&#39;),</span>
+<span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
+<span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.download_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_entire_project">[docs]</a>    <span class="k">def</span> <span class="nf">download_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download the entire project (from &#39;remote&#39; to &#39;local&#39;),</span>
+<span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
+<span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.upload_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_folder_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -1161,6 +1205,25 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span></div>
 
+<div class="viewcode-block" id="DataShuttle.show_top_level_folder"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_top_level_folder">[docs]</a>    <span class="k">def</span> <span class="nf">show_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print the current working top level folder (e.g.</span>
+<span class="sd">        &#39;rawdata&#39;, &#39;derivatives&#39;)</span>
+
+<span class="sd">        The top level folder defines in which top level folder folders</span>
+<span class="sd">        are made (e.g. make_sub_folders) or at which level folders</span>
+<span class="sd">        are transferred with the commands upload_data / download_data</span>
+<span class="sd">        and upload_all / download all.</span>
+
+<span class="sd">        To upload the entire project (i.e. every top level</span>
+<span class="sd">        folder), use the &#39;command upload_entire_project&#39; or</span>
+<span class="sd">        &#39;download_entire_project&#39;.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The working top level folder is: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span></div>
+
 <div class="viewcode-block" id="DataShuttle.show_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_sub_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a suggested value for the next available subject number.</span>
@@ -1218,8 +1281,8 @@ document.write(`
     <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
-<span class="sd">        for example as when passed to make_sub_folders() or upload_data() or</span>
-<span class="sd">        download_data()</span>
+<span class="sd">        for example as when passed to make_sub_folders() or upload_data()</span>
+<span class="sd">        or download_data()</span>
 
 <span class="sd">        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.</span>
 <span class="sd">        This method will print the formatted list of names,</span>
@@ -1242,6 +1305,38 @@ document.write(`
     <span class="c1"># =========================================================================</span>
     <span class="c1"># Private Functions</span>
     <span class="c1"># =========================================================================</span>
+
+    <span class="k">def</span> <span class="nf">_transfer_entire_project</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="s2">&quot;download&quot;</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transfer (i.e. upload or download) the entire project (i.e.</span>
+<span class="sd">        every &#39;top level folder&#39; (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
+
+<span class="sd">        This function leverages the upload_all or download_all</span>
+<span class="sd">        methods while switching the top level folder as defined in</span>
+<span class="sd">        self.cfg that these methods use to determine the top-level</span>
+<span class="sd">        folder to transfer.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        direction : direction to transfer the data, either &quot;upload&quot; (from</span>
+<span class="sd">                    local to remote) or &quot;download&quot; (from remote to local).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">transfer_all_func</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">upload_all</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;upload&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_all</span>
+        <span class="p">)</span>
+
+        <span class="n">tmp_current_top_level_folder_name</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span>
+        <span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">folder_name</span> <span class="ow">in</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folder_names</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="n">folder_name</span>
+            <span class="n">transfer_all_func</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="n">tmp_current_top_level_folder_name</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># SSH</span>
@@ -1356,7 +1451,8 @@ document.write(`
         <span class="k">if</span> <span class="n">message</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="s2">&quot;Update successful.&quot;</span><span class="p">)</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Update successful. New config file: </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Update successful. New config file: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_get_json_dumps_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
