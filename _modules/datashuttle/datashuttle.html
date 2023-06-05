@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g090f80f</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g8f55b1c</p>
   
 </a></div>
     
@@ -426,7 +426,7 @@ document.write(`
 <span class="sd">        Once config file is loaded, update all private attributes</span>
 <span class="sd">        according to config contents.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_persistent_settings</span><span class="p">()[</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_persistent_settings</span><span class="p">()[</span>
             <span class="s2">&quot;top_level_folder&quot;</span>
         <span class="p">]</span>
 
@@ -453,18 +453,16 @@ document.write(`
 <span class="sd">        folder), use the &#39;command upload_entire_project&#39; or</span>
 <span class="sd">        &#39;download_entire_project&#39;.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">canonical_top_level_folder_names</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folder_names</span><span class="p">()</span>
-        <span class="p">)</span>
+        <span class="n">canonical_top_level_folders</span> <span class="o">=</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folders</span><span class="p">()</span>
 
-        <span class="k">if</span> <span class="n">folder_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">canonical_top_level_folder_names</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">folder_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">canonical_top_level_folders</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">raise_error</span><span class="p">(</span>
                 <span class="sa">f</span><span class="s2">&quot;Folder name: </span><span class="si">{</span><span class="n">folder_name</span><span class="si">}</span><span class="s2"> &quot;</span>
                 <span class="sa">f</span><span class="s2">&quot;is not in permitted top-level folder&quot;</span>
-                <span class="sa">f</span><span class="s2">&quot; names: </span><span class="si">{</span><span class="n">canonical_top_level_folder_names</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot; names: </span><span class="si">{</span><span class="n">canonical_top_level_folders</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="n">folder_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span> <span class="o">=</span> <span class="n">folder_name</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_persistent_setting</span><span class="p">(</span><span class="s2">&quot;top_level_folder&quot;</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">)</span>
 
@@ -1221,7 +1219,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The working top level folder is: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.show_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_sub_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -1328,15 +1326,13 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">upload_all</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;upload&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_all</span>
         <span class="p">)</span>
 
-        <span class="n">tmp_current_top_level_folder_name</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span>
-        <span class="p">)</span>
+        <span class="n">tmp_current_top_level_folder</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">folder_name</span> <span class="ow">in</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folder_names</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="n">folder_name</span>
+        <span class="k">for</span> <span class="n">folder_name</span> <span class="ow">in</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folders</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span> <span class="o">=</span> <span class="n">folder_name</span>
             <span class="n">transfer_all_func</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder_name</span> <span class="o">=</span> <span class="n">tmp_current_top_level_folder_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span> <span class="o">=</span> <span class="n">tmp_current_top_level_folder</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># SSH</span>
