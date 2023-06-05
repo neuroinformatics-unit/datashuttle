@@ -39,7 +39,7 @@ def setup_central_as_rclone_target(
     RClone sets remote targets in a config file. When
     copying to central, use the syntax remote: to
     identify the central to copy to. Note rclone calls
-    the target machine 'central' and we call it 'central'.
+   the target machine 'remote' and we call it 'central'.
 
     For local filesystem, this is just a placeholder and
     the config contains no further information.
