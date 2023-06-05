@@ -240,7 +240,7 @@ Individual settings can be updated using update_config(), and an existing config
 
 Once configurations are set, if the "connection_method" is "ssh", the function setup_ssh_connection_to_central_server() must be run to setup
 the ssh connection to the central server. This will allow visual confirmation of the server key, and setup a SSH key pair. This means
-your password will have to be enterred only once, when setting up this connection.
+your password will have to be entered only once, when setting up this connection.
 
 ## Making Project Folders
 
