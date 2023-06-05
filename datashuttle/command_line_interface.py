@@ -225,6 +225,15 @@ def upload_all(*args: Any) -> None:
     project.upload_all()
 
 
+# Upload Entire Project -------------------------------------------------------
+
+
+def upload_entire_project(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.upload_entire_project()
+
+
 # Download Data ---------------------------------------------------------------
 
 
@@ -250,6 +259,15 @@ def download_all(*args: Any) -> None:
     project.download_all()
 
 
+# Download Entire Project -----------------------------------------------------
+
+
+def download_entire_project(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.download_entire_project()
+
+
 # Upload Project Folder or File -----------------------------------------------
 
 
@@ -265,7 +283,7 @@ def upload_project_folder_or_file(project: DataShuttle, args: Any) -> None:
     )
 
 
-# Download Project Folder or File ------------------------------------------------
+# Download Project Folder or File ---------------------------------------------
 
 
 def download_project_folder_or_file(project: DataShuttle, args: Any) -> None:
@@ -277,6 +295,20 @@ def download_project_folder_or_file(project: DataShuttle, args: Any) -> None:
         project.download_project_folder_or_file,
         kwargs.pop("filepath"),
         **kwargs,
+    )
+
+
+# Set Top Level Folder or File ------------------------------------------------
+
+
+def set_top_level_folder(project: DataShuttle, args: Any) -> None:
+    """"""
+    kwargs = make_kwargs(args)
+
+    run_command(
+        project,
+        project.set_top_level_folder,
+        kwargs["folder_name"],
     )
 
 
@@ -340,13 +372,22 @@ def show_logging_path(*args: Any) -> None:
     project.show_logging_path()
 
 
-# Show Local Tree ------------------------------------------------------------
+# Show Local Tree -------------------------------------------------------------
 
 
 def show_local_tree(*args: Any) -> None:
     """"""
     project = args[0]
     project.show_local_tree()
+
+
+# Show Top Level Folder -------------------------------------------------------
+
+
+def show_top_level_folder(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.show_top_level_folder()
 
 
 # Show Next Sub Number -------------------------------------------------------
@@ -384,7 +425,7 @@ def check_name_formatting(project: DataShuttle, args: Any) -> None:
 
 # Supply Own Config -----------------------------------------------------------
 
-#
+
 def supply_config_file(project: DataShuttle, args: Any) -> None:
 
     kwargs = make_kwargs(args)
@@ -648,6 +689,19 @@ def construct_parser():
     )
     upload_all_parser.set_defaults(func=upload_all)
 
+    # Upload All
+    # -------------------------------------------------------------------------
+
+    upload_entire_project_parser = subparsers.add_parser(
+        "upload-entire-project",
+        aliases=["upload_entire_project"],
+        description=process_docstring(
+            DataShuttle.upload_entire_project.__doc__
+        ),
+        help="",
+    )
+    upload_entire_project_parser.set_defaults(func=upload_entire_project)
+
     # Download Data
     # -------------------------------------------------------------------------
 
@@ -688,7 +742,8 @@ def construct_parser():
         type=str,
         nargs="+",
         required=False,
-        help="Optional: (str or list) (selection of data types, or 'all') (default 'all')",
+        help="Optional: (str or list) (selection of data "
+        "types, or 'all') (default 'all')",
     )
     download_data_parser.add_argument(
         "--dry-run",
@@ -708,6 +763,19 @@ def construct_parser():
         help="",
     )
     download_all_parser.set_defaults(func=download_all)
+
+    # Download Entire Project
+    # -------------------------------------------------------------------------
+
+    download_entire_project_parser = subparsers.add_parser(
+        "download-entire-project",
+        aliases=["download_entire_project"],
+        description=process_docstring(
+            DataShuttle.download_entire_project.__doc__
+        ),
+        help="",
+    )
+    download_entire_project_parser.set_defaults(func=download_entire_project)
 
     # Upload project folder or file
     # -------------------------------------------------------------------------
@@ -759,6 +827,26 @@ def construct_parser():
         "--dry_run",
         action="store_true",
         help=help("flag_default_false"),
+    )
+
+    # Set Top Level Folder
+    # -------------------------------------------------------------------------
+
+    set_top_level_folder_parser = subparsers.add_parser(
+        "set-top-level-folder",
+        aliases=["set_top_level_folder"],
+        description=process_docstring(
+            DataShuttle.set_top_level_folder.__doc__
+        ),
+        formatter_class=argparse.RawTextHelpFormatter,
+        help="",
+    )
+    set_top_level_folder_parser.set_defaults(func=set_top_level_folder)
+
+    set_top_level_folder_parser.add_argument(
+        "folder_name",
+        type=str,
+        help=help("required_str"),
     )
 
     # Show Local Path
@@ -837,7 +925,20 @@ def construct_parser():
     )
     show_local_tree_parser.set_defaults(func=show_local_tree)
 
-    # Show Local tree
+    # Show Top Level Folder
+    # -------------------------------------------------------------------------
+
+    show_top_level_folder_parser = subparsers.add_parser(
+        "show-top-level-folder",
+        aliases=["show_top_level_folder"],
+        description=process_docstring(
+            DataShuttle.show_top_level_folder.__doc__
+        ),
+        help="",
+    )
+    show_top_level_folder_parser.set_defaults(func=show_top_level_folder)
+
+    # Show Next Sub Number
     # -------------------------------------------------------------------------
 
     show_next_sub_number_parser = subparsers.add_parser(
@@ -850,7 +951,7 @@ def construct_parser():
     )
     show_next_sub_number_parser.set_defaults(func=show_next_sub_number)
 
-    # Show Local tree
+    # Show Next Ses Number
     # -------------------------------------------------------------------------
 
     show_next_ses_number_parser = subparsers.add_parser(

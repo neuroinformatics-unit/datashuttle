@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 import test_utils
 
+from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
 
@@ -71,6 +72,86 @@ class TestFileTransfer:
             sessions,
             test_utils.get_default_folder_used(),
         )
+
+    @pytest.mark.parametrize(
+        "folder_name", canonical_folders.get_top_level_folder_names()
+    )
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize("use_all_alias", [True, False])
+    def test_transfer_across_top_level_folders(
+        self, project, folder_name, upload_or_download, use_all_alias
+    ):
+        """
+        For each possible top level folder (e.g. rawdata, derivatives)
+        (parametrized) create a folder tree in every top-level folder,
+        then transfer using upload_data / download_data and
+        upload_all / download_all that only the working top-level folder
+        is transferred.
+        """
+        project.set_top_level_folder(folder_name)
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        for (
+            making_folder_name
+        ) in canonical_folders.get_top_level_folder_names():
+            project.cfg.top_level_folder_name = making_folder_name
+            test_utils.make_and_check_local_project(
+                project, subs, sessions, "all", folder_name=making_folder_name
+            )
+        project.cfg.top_level_folder_name = folder_name
+
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, use_all_alias=use_all_alias
+        )
+
+        if use_all_alias:
+            transfer_function()
+        else:
+            transfer_function("all", "all", "all")
+
+        full_base_path_to_check = (
+            base_path_to_check / project.cfg.top_level_folder_name
+        )
+
+        test_utils.check_working_top_level_folder_only_exists(
+            folder_name, project, full_base_path_to_check, subs, sessions
+        )
+
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_transfer_all_top_level_folders(self, project, upload_or_download):
+        """ """
+        subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
+        for folder_name in canonical_folders.get_top_level_folder_names():
+            project.set_top_level_folder(folder_name)
+
+            test_utils.make_and_check_local_project(
+                project, subs, sessions, "all", folder_name=folder_name
+            )
+
+        (
+            transfer_function,
+            base_path_to_check,
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_entire_project=True
+        )
+
+        transfer_function()
+
+        for folder_name in canonical_folders.get_top_level_folder_names():
+            project.set_top_level_folder(folder_name)
+            test_utils.check_folder_tree_is_correct(
+                project,
+                os.path.join(
+                    base_path_to_check, project.cfg.top_level_folder_name
+                ),
+                subs,
+                sessions,
+                test_utils.get_default_folder_used(),
+            )
 
     @pytest.mark.parametrize(
         "data_type_to_transfer",

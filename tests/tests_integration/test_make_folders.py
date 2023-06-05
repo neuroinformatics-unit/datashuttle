@@ -7,6 +7,7 @@ from os.path import join
 import pytest
 import test_utils
 
+from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import formatting
 
@@ -381,6 +382,39 @@ class TestMakeFolders:
         assert all([re.search(datetime_regexp, name) for name in ses_names])
         assert all([tags("time") not in name for name in ses_names])
 
+    # ----------------------------------------------------------------------------------------------------------
+    # Test Make Folders in Different Top Level Folders
+    # ----------------------------------------------------------------------------------------------------------
+
+    @pytest.mark.parametrize(
+        "folder_name", canonical_folders.get_top_level_folder_names()
+    )
+    def test_all_top_level_folders(self, project, folder_name):
+        """
+        Check that when switching the top level folder (e.g. rawdata, derivatives)
+        new folders are made in the correct folder. The code that underpins this
+        is very simple (all the path for folder creation / transfer is determined
+        only by project.cfg.top_level_folder_name. Therefore if these tests pass,
+        any test that passes for rawdata (all other tests are for rawdata) should
+        pass for all top-level folders.
+        """
+        project.cfg.top_level_folder_name = folder_name
+
+        subs = ["sub-001", "sub-2"]
+        sessions = ["ses-001", "ses-03"]
+
+        project.make_sub_folders(subs, sessions)
+
+        # Check folder tree is made in the desired top level folder
+        test_utils.check_working_top_level_folder_only_exists(
+            folder_name,
+            project,
+            project.cfg["local_path"] / folder_name,
+            subs,
+            sessions,
+        )
+
+    # ----------------------------------------------------------------------------------------------------------
     # Test get next subject / session numbers
     # ----------------------------------------------------------------------------------
 

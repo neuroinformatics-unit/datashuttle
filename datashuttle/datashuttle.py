@@ -6,12 +6,12 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, Optional, Tuple, Union
+from typing import Any, Dict, Literal, Optional, Tuple, Union
 
 import paramiko
 import yaml
 
-from datashuttle.configs import load_configs
+from datashuttle.configs import canonical_folders, load_configs
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     ds_logger,
@@ -83,9 +83,7 @@ class DataShuttle:
             self._temp_log_path,
         ) = utils.get_datashuttle_path(self.project_name)
 
-        self._config_path = (
-            utils.get_datashuttle_path(project_name)[0] / "config.yaml"
-        )
+        self._config_path = self._datashuttle_path / "config.yaml"
 
         self._persistent_settings_path = (
             self._datashuttle_path / "persistent_settings.yaml"
@@ -119,6 +117,36 @@ class DataShuttle:
     # -------------------------------------------------------------------------
     # Public Folder Makers
     # -------------------------------------------------------------------------
+
+    def set_top_level_folder(self, folder_name):
+        """
+        Set the working top level folder (e.g. 'rawdata', 'derivatives').
+
+        The top level folder defines in which top level folder folders
+        are made (e.g. make_sub_folders) or at which level folders
+        are transferred with the commands upload_data / download_data
+        and upload_all / download all.
+
+        To upload the entire project (i.e. every top level
+        folder), use the 'command upload_entire_project' or
+        'download_entire_project'.
+        """
+        canonical_top_level_folder_names = (
+            canonical_folders.get_top_level_folder_names()
+        )
+
+        if folder_name not in canonical_top_level_folder_names:
+            utils.raise_error(
+                f"Folder name: {folder_name} "
+                f"is not in permitted top-level folder"
+                f" names: {canonical_top_level_folder_names}"
+            )
+
+        self.cfg.top_level_folder_name = folder_name
+
+        self._update_persistent_setting("top_level_folder", folder_name)
+
+        self.show_top_level_folder()
 
     @check_configs_set
     def make_sub_folders(
@@ -373,6 +401,22 @@ class DataShuttle:
             "all", "all", "all", dry_run=dry_run, init_log=False
         )
         ds_logger.close_log_filehandler()
+
+    def upload_entire_project(self):
+        """
+        Upload the entire project (from 'local' to 'remote'),
+        i.e. including every top level folder (e.g. 'rawdata',
+        'derivatives', 'code', 'analysis').
+        """
+        self._transfer_entire_project("upload")
+
+    def download_entire_project(self):
+        """
+        Download the entire project (from 'remote' to 'local'),
+        i.e. including every top level folder (e.g. 'rawdata',
+        'derivatives', 'code', 'analysis').
+        """
+        self._transfer_entire_project("download")
 
     def upload_project_folder_or_file(
         self, filepath: str, dry_run: bool = False
@@ -839,6 +883,25 @@ class DataShuttle:
         """
         ds_logger.print_tree(self.cfg["local_path"])
 
+    def show_top_level_folder(self):
+        """
+        Print the current working top level folder (e.g.
+        'rawdata', 'derivatives')
+
+        The top level folder defines in which top level folder folders
+        are made (e.g. make_sub_folders) or at which level folders
+        are transferred with the commands upload_data / download_data
+        and upload_all / download all.
+
+        To upload the entire project (i.e. every top level
+        folder), use the 'command upload_entire_project' or
+        'download_entire_project'.
+        """
+        utils.print_message_to_user(
+            f"\nThe working top level folder is: "
+            f"{self.cfg.top_level_folder_name}"
+        )
+
     def show_next_sub_number(self) -> None:
         """
         Show a suggested value for the next available subject number.
@@ -896,8 +959,8 @@ class DataShuttle:
     def check_name_formatting(names: Union[str, list], prefix: str) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to make_sub_folders() or upload_data() or
-        download_data()
+        for example as when passed to make_sub_folders() or upload_data()
+        or download_data()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
         This method will print the formatted list of names,
@@ -920,6 +983,38 @@ class DataShuttle:
     # =========================================================================
     # Private Functions
     # =========================================================================
+
+    def _transfer_entire_project(
+        self, direction: Literal["upload", "download"]
+    ) -> None:
+        """
+        Transfer (i.e. upload or download) the entire project (i.e.
+        every 'top level folder' (e.g. 'rawdata', 'derivatives').
+
+        This function leverages the upload_all or download_all
+        methods while switching the top level folder as defined in
+        self.cfg that these methods use to determine the top-level
+        folder to transfer.
+
+        Parameters
+        ----------
+
+        direction : direction to transfer the data, either "upload" (from
+                    local to remote) or "download" (from remote to local).
+        """
+        transfer_all_func = (
+            self.upload_all if direction == "upload" else self.download_all
+        )
+
+        tmp_current_top_level_folder_name = copy.copy(
+            self.cfg.top_level_folder_name
+        )
+
+        for folder_name in canonical_folders.get_top_level_folder_names():
+            self.cfg.top_level_folder_name = folder_name
+            transfer_all_func()
+
+        self.cfg.top_level_folder_name = tmp_current_top_level_folder_name
 
     # -------------------------------------------------------------------------
     # SSH
@@ -1034,7 +1129,8 @@ class DataShuttle:
         if message:
             utils.print_message_to_user("Update successful.")
         utils.log(
-            f"Update successful. New config file: \n {self._get_json_dumps_config()}"
+            f"Update successful. New config file: "
+            f"\n {self._get_json_dumps_config()}"
         )
 
     def _get_json_dumps_config(self):
