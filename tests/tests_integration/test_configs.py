@@ -185,7 +185,7 @@ class TestConfigs:
     # Test Update Configs
     # -------------------------------------------------------------
 
-    def test_update_config__(self, project, tmp_path):
+    def test_update_config(self, project, tmp_path):
         """
         Set the configs as default and then sequentially update
         each entry with a different option. Check that
