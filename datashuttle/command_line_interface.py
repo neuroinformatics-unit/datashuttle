@@ -203,7 +203,7 @@ def make_sub_folders(project: DataShuttle, args: Any) -> None:
 # Upload Data -----------------------------------------------------------------
 
 
-def upload_data(project: DataShuttle, args: Any) -> None:
+def upload(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
@@ -211,7 +211,7 @@ def upload_data(project: DataShuttle, args: Any) -> None:
 
     run_command(
         project,
-        project.upload_data,
+        project.upload,
         **filtered_kwargs,
     )
 
@@ -219,10 +219,10 @@ def upload_data(project: DataShuttle, args: Any) -> None:
 # Upload All ------------------------------------------------------------------
 
 
-def upload_all(*args: Any) -> None:
+def upload_working_folder(*args: Any) -> None:
     """"""
     project = args[0]
-    project.upload_all()
+    project.upload_working_folder()
 
 
 # Upload Entire Project -------------------------------------------------------
@@ -237,7 +237,7 @@ def upload_entire_project(*args: Any) -> None:
 # Download Data ---------------------------------------------------------------
 
 
-def download_data(project: DataShuttle, args: Any) -> None:
+def download(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
@@ -245,7 +245,7 @@ def download_data(project: DataShuttle, args: Any) -> None:
 
     run_command(
         project,
-        project.download_data,
+        project.download,
         **filtered_kwargs,
     )
 
@@ -253,10 +253,10 @@ def download_data(project: DataShuttle, args: Any) -> None:
 # Download All ----------------------------------------------------------------
 
 
-def download_all(*args: Any) -> None:
+def download_working_folder(*args: Any) -> None:
     """"""
     project = args[0]
-    project.download_all()
+    project.download_working_folder()
 
 
 # Download Entire Project -----------------------------------------------------
@@ -631,19 +631,19 @@ def construct_parser():
     # Upload Data
     # ----------------------------------------------------------------------
 
-    upload_data_parser = subparsers.add_parser(
-        "upload-data",
-        aliases=["upload_data"],
-        description=process_docstring(DataShuttle.upload_data.__doc__),
+    upload_parser = subparsers.add_parser(
+        "upload",
+        aliases=["upload"],
+        description=process_docstring(DataShuttle.upload.__doc__),
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    upload_data_parser = upload_data_parser.add_argument_group(
+    upload_parser = upload_parser.add_argument_group(
         "named arguments:"
     )  # type: ignore
-    upload_data_parser.set_defaults(func=upload_data)
+    upload_parser.set_defaults(func=upload)
 
-    upload_data_parser.add_argument(
+    upload_parser.add_argument(
         "--sub-names",
         "--sub_names",
         "-sub",
@@ -652,7 +652,7 @@ def construct_parser():
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
     )
-    upload_data_parser.add_argument(
+    upload_parser.add_argument(
         "--ses-names",
         "--ses_names",
         "-ses",
@@ -661,7 +661,7 @@ def construct_parser():
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
     )
-    upload_data_parser.add_argument(
+    upload_parser.add_argument(
         "--data-type",
         "--data_type",
         "-dt",
@@ -670,7 +670,7 @@ def construct_parser():
         required=False,
         help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
     )
-    upload_data_parser.add_argument(
+    upload_parser.add_argument(
         "--dry-run",
         "--dry_run",
         required=False,
@@ -681,13 +681,15 @@ def construct_parser():
     # Upload All
     # -------------------------------------------------------------------------
 
-    upload_all_parser = subparsers.add_parser(
-        "upload-all",
-        aliases=["upload_all"],
-        description=process_docstring(DataShuttle.upload_all.__doc__),
+    upload_working_folder_parser = subparsers.add_parser(
+        "upload-working-folder",
+        aliases=["upload_working_folder"],
+        description=process_docstring(
+            DataShuttle.upload_working_folder.__doc__
+        ),
         help="",
     )
-    upload_all_parser.set_defaults(func=upload_all)
+    upload_working_folder_parser.set_defaults(func=upload_working_folder)
 
     # Upload All
     # -------------------------------------------------------------------------
@@ -705,19 +707,19 @@ def construct_parser():
     # Download Data
     # -------------------------------------------------------------------------
 
-    download_data_parser = subparsers.add_parser(
-        "download-data",
-        aliases=["download_data"],
-        description=process_docstring(DataShuttle.download_data.__doc__),
+    download_parser = subparsers.add_parser(
+        "download",
+        aliases=["download"],
+        description=process_docstring(DataShuttle.download.__doc__),
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    download_data_parser = download_data_parser.add_argument_group(
+    download_parser = download_parser.add_argument_group(
         "named arguments:"  # type: ignore
     )
-    download_data_parser.set_defaults(func=download_data)
+    download_parser.set_defaults(func=download)
 
-    download_data_parser.add_argument(
+    download_parser.add_argument(
         "--sub-names",
         "--sub_names",
         "-sub",
@@ -726,7 +728,7 @@ def construct_parser():
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
     )
-    download_data_parser.add_argument(
+    download_parser.add_argument(
         "--ses-names",
         "--ses_names",
         "-ses",
@@ -735,7 +737,7 @@ def construct_parser():
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
     )
-    download_data_parser.add_argument(
+    download_parser.add_argument(
         "--data-type",
         "--data_type",
         "-dt",
@@ -745,7 +747,7 @@ def construct_parser():
         help="Optional: (str or list) (selection of data "
         "types, or 'all') (default 'all')",
     )
-    download_data_parser.add_argument(
+    download_parser.add_argument(
         "--dry-run",
         "--dry_run",
         required=False,
@@ -756,13 +758,15 @@ def construct_parser():
     # Download All
     # -------------------------------------------------------------------------
 
-    download_all_parser = subparsers.add_parser(
-        "download-all",
-        aliases=["download_all"],
-        description=process_docstring(DataShuttle.download_all.__doc__),
+    download_working_folder_parser = subparsers.add_parser(
+        "download-working-folder",
+        aliases=["download_working_folder"],
+        description=process_docstring(
+            DataShuttle.download_working_folder.__doc__
+        ),
         help="",
     )
-    download_all_parser.set_defaults(func=download_all)
+    download_working_folder_parser.set_defaults(func=download_working_folder)
 
     # Download Entire Project
     # -------------------------------------------------------------------------

@@ -433,7 +433,7 @@ class TestMakeFolders:
         assert old_num == 3
 
         # Upload to central, now local and central folders match
-        project.upload_all()
+        project.upload_working_folder()
         new_num, old_num = project.get_next_sub_number()
         assert new_num == 4
         assert old_num == 3
@@ -468,7 +468,7 @@ class TestMakeFolders:
         assert new_num == 4
         assert old_num == 3
 
-        project.upload_all()
+        project.upload_working_folder()
         new_num, old_num = project.get_next_ses_number(sub)
         assert new_num == 4
         assert old_num == 3

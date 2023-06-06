@@ -84,8 +84,8 @@ class TestFileTransfer:
         """
         For each possible top level folder (e.g. rawdata, derivatives)
         (parametrized) create a folder tree in every top-level folder,
-        then transfer using upload_data / download_data and
-        upload_all / download_all that only the working top-level folder
+        then transfer using upload / download and
+        upload_working_folder / download_working_folder that only the working top-level folder
         is transferred.
         """
         project.set_top_level_folder(folder_name)
@@ -390,7 +390,7 @@ class TestFileTransfer:
         project.update_config("show_transfer_progress", show_transfer_progress)
 
         test_utils.clear_capsys(capsys)
-        project.upload_all(dry_run=dry_run)
+        project.upload_working_folder(dry_run=dry_run)
 
         log = capsys.readouterr().out
 
@@ -422,7 +422,7 @@ class TestFileTransfer:
         project.update_config("transfer_verbosity", transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
-        project.upload_all()
+        project.upload_working_folder()
 
         log = capsys.readouterr().out
 
@@ -462,7 +462,7 @@ class TestFileTransfer:
         if overwrite_old_files:
             project.update_config("overwrite_old_files", True)
 
-        project.upload_all()
+        project.upload_working_folder()
 
         # Update the file and transfer and transfer again
         test_utils.write_file(
@@ -471,7 +471,7 @@ class TestFileTransfer:
 
         assert time_written < os.path.getatime(local_test_file_path)
 
-        project.upload_all()
+        project.upload_working_folder()
 
         central_contents = test_utils.read_file(central_test_file_path)
 

@@ -145,7 +145,7 @@ will create the folder structure:
 ## Data Transfer
 
 Data transfer can be either from the local project to the central project ("upload") or from the central to local project("download"). Data
-transfers are primarily managed using the upload_data() and download_data() functions.
+transfers are primarily managed using the upload() and download() functions.
 
 By default, uploading or downloading data will never overwrite files when transferring data. If an
 existing file with the same name is found in the target folder, even if it is older, it will not be overwritten.
@@ -155,7 +155,7 @@ determine if any files were not transferred for this reason.
 For example,
 
 ```
-project.download_data(
+project.download(
 sub_names=["all"],
 ses_names=["ses-001", "ses-005"],
 data_type="behav"
@@ -167,7 +167,7 @@ or equivalently
 ```
 datashuttle \
 my_project \
-download_data \
+download \
 --sub-names all
 --ses-names ses-001 ses-005
 --data-type behav

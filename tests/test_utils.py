@@ -528,18 +528,18 @@ def handle_upload_or_download(
         if transfer_entire_project:
             transfer_function = project.download_entire_project
         elif use_all_alias:
-            transfer_function = project.download_all
+            transfer_function = project.download_working_folder
         else:
-            transfer_function = project.download_data
+            transfer_function = project.download
     else:
         central_path = project.cfg["central_path"]
 
         if transfer_entire_project:
             transfer_function = project.upload_entire_project
         elif use_all_alias:
-            transfer_function = project.upload_all
+            transfer_function = project.upload_working_folder
         else:
-            transfer_function = project.upload_data
+            transfer_function = project.upload
 
     return transfer_function, central_path
 

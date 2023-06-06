@@ -209,7 +209,7 @@ only one @DATE@, @TIME@ or @DATETIME@ flag can be used per subject / session nam
 ## Data Transfer
 
 Data transfer can be either from the local project to the central project ("upload") or from the central to local project("download"). Data
-transfers are primarily managed using the upload_data() and download_data() functions.
+transfers are primarily managed using the upload() and download() functions.
 
 By default, uploading or downloading data will never overwrite files when transferring data. If an
 existing file with the same name is found in the target folder, even if it is older, it will not be overwritten.
@@ -219,13 +219,13 @@ determine if any files were not transferred for this reason.
 To transfer all data, the keyword "all" can be used for sub_names, ses_names and data_type arguments. Note that
 any existing data_type will be transferred, even if the flag use_<data_type> (e.g. use_behav) is False.
 
-For example, `project.upload_data(sub_names="all", ses_names="all", data_type="all")`
+For example, `project.upload(sub_names="all", ses_names="all", data_type="all")`
 
 or equivalently
-`datashuttle my_project upload_data --sub_names all --ses_names all --data_type all`
+`datashuttle my_project upload --sub_names all --ses_names all --data_type all`
 
-will transfer everything in the local project folder to the central. The convenience functions upload_all()
-and download_all() can be used as shortcuts for this. See below for a full list of all sub_names, ses_names and data_type
+will transfer everything in the local project folder to the central. The convenience functions upload_working_folder()
+and download_working_folder() can be used as shortcuts for this. See below for a full list of all sub_names, ses_names and data_type
 keyword options.
 
 A number of configuration settings define the behaviour of datashuttle during file transfer (see make_config_file). Datashuttle
@@ -254,7 +254,7 @@ When true, real-time transfer statistics will be reported and logged.
 ### All sub_names, ses_names and data_type keywords
 
 For each argument, the subject, session or datatype to transfer can be specified directly, e.g.
-`project.upload_data(sub_names="sub-001", ses_names=["ses-001", "ses-002]", data_type="behav" )`
+`project.upload(sub_names="sub-001", ses_names=["ses-001", "ses-002]", data_type="behav" )`
 
 However, a number of keyword arguments can be used to specify more general rules for transfer:
 
@@ -299,7 +299,7 @@ is not found, it will be added.
 For example,
 
 ```
-project.download_data(
+project.download(
 sub_names=["all"],
 ses_names=["ses-001", "ses-005"],
 data_type="behav"
@@ -311,7 +311,7 @@ or equivalently
 ```
 datashuttle \
 my_project \
-download_data \
+download \
 --sub-names all
 --ses-names ses-001 ses-005
 --data-type behav
@@ -328,8 +328,8 @@ The wildcard flag can be used to avoid specifying particular parts of subject / 
 to tbe transferred. This is particularly useful for skipping the `date_xxxxxx` flag that might differ across sessions or subjects.
 
 For example,
-`project.upload_data(sub_names="sub-@*@", ses_names="ses-001_date-@*@", data_type="all")` or
-equivalently `datashuttle my_project upload_data --sub_names sub-@*@ --ses_names ses-001_date-@*@ --data_type all`
+`project.upload(sub_names="sub-@*@", ses_names="ses-001_date-@*@", data_type="all")` or
+equivalently `datashuttle my_project upload --sub_names sub-@*@ --ses_names ses-001_date-@*@ --data_type all`
 
 would transfer all any first session, irregardless of date, or all subjects and all data types.
 
