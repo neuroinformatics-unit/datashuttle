@@ -1,15 +1,15 @@
 # Full Documentation
 
 
-DataShuttle is a tool to streamline the management of neuroscience projects, allowing simple and convenient standardisation of data structures.
+DataShuttle is a tool to streamline the management and standardisation of neuroscience project folders and files.
 
 DataShuttle's goal is to alleviate the burden researchers face in adhering to standardized file and folder specifications during the execution of intricate and demanding experimental projects. It will:
 
 - Eliminate the need to manually integrate datasets collected across different machines (e.g. behaviour and electrophysiology acquisition machines).
-- Allow convenient transfer of data between machines. This may be between a central project storange and analysis machine (e.g. ''*I want to transfer subjects 1-5, sessions 5 and 10, behavioural data only to my laptop*.'')
-- Avoids re-naming and re-formatting of project folders for collaboriation or dataset publication.
+- Allow convenient transfer of data between machines. This may be between a central project storage and analysis machine (e.g. ''*I want to transfer subjects 1-5, sessions 5 and 10, behavioural data only to my laptop*.'')
+- Avoids re-naming and re-formatting of project folders for collaboration or dataset publication.
 
-DataShuttle aims to integreate seamlessly into the  neuroscience data collection and analysis workflows and eliminate the need to manually , providing tools to:
+DataShuttle aims to integrate seamlessly into the  neuroscience data collection and analysis workflows and eliminate the need to manually , providing tools to:
 
 - Create folder trees that adhere to SWC-Blueprint, a data management specification based on and aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.
 - Convenient transfer of between machines used for data collection and analysis, and a central storage repository.
@@ -24,7 +24,7 @@ DataShuttle is hosted on  [PyPI](https://pypi.org/project/datashuttle/) and can 
 
 `pip install datashuttle`
 
-Datashuttle required Rclone for data transfers. The easiest way to install Rclone is using [Miniconda](https://docs.conda.io/en/main/miniconda.html):
+Datashuttle additionally requires Rclone for data transfers. The easiest way to install Rclone is using [Miniconda](https://docs.conda.io/en/main/miniconda.html):
 
 ```
 conda install -c conda-forge rclone
@@ -43,7 +43,7 @@ The first thing to do when using DataShuttle is to setup a new project on a *loc
 
 DataShuttle makes the distinction between (possibly multiple) *local* machines and a single *central* machine. DataShuttle needs to be setup once for each *local* machine, but requires no setup on the *central* machine.
 
-A typical use case is an experment in which behavioural data and electrophysiological data are collected on acquisition PCs. They send the data to a central server where it is stored.
+A typical use case is an experiment in which behavioural data and electrophysiological data are collected on acquisition PCs. They send the data to a central server where it is stored.
 
 Later, a subset of the data is transferred to a third machine for analysis. In this case, the behavioural and electrophysiological acquisition machine and analysis machines are 'local'. The central storage machine is the *central* machine.
 
@@ -66,13 +66,13 @@ The command `make-config-file` is used for the initial setup of the project. The
 
 `connection_method`: `local_filesystem` or `ssh`. Local filesystem can be used if the *central* storage is mounted to the local machine. Otherwise `ssh` can be used.
 
+Finally, the *data-type* flags `--use_ephys`, `--use_funcimg`, `--use_histology`, `--use_behav` set the types of data required for the project on the local machine. While individual flags are optional, at least one must be chosen when initialising the project.
+
 **Optional Arguments**
 
 If connection method is `ssh`, the `central_host_id`, `central_host_username` must be set, and a one-time SSH setup command run (see the [SSH section][#### SSH] for details).
 
 The optional arguments `ovewrite_old_files`, `transfer_verbosity` and `show_transfer_progress` determine how *data transfer* is performed (see the [Data Transfer section](#### Data Transfer) for details).
-
-Finally, the optional *data-type* flags `--use_ephys`, `--use_funcimg`, `--use_histology`, `--use_behav` set the types of data required for the project on the local machine.
 
 **Example**
 
@@ -100,7 +100,7 @@ Next, we can start setting up the project by automatically creating project fold
 
 In a typical neuroscience experiment, a data-collection session begins by creating the folder for the current subject name (e.g. mouse, rat) and current session name. Once created, the data for this session is stored in the created folder.
 
-The command `make-sub-folders` can be used automatically create folder trees that adhere to the SWC-Blueprint (and correspondingly, BIDS) specification. The linked specifications contain more detail, but at it's heard this requires:
+The command `make-sub-folders` can be used automatically create folder trees that adhere to the SWC-Blueprint (and correspondingly, BIDS) specification. The linked specifications contain more detail, but at it's heart this requires:
 
 All subjects are given a numerical (integer) number that is prefixed with the key `sub-`. All sessions are also given a numerical (integer) number that is prefixed with the key `ses-`.
 
@@ -121,7 +121,7 @@ my_first_project \
 make-sub-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```
 
-The leading `sub-` or `ses-` is optional when specifying folders to create. It is possible to automatically create date, time or datetime key-value pairs with the days `@DATE@`, `@TIME@` or `@DATETIME@` repsectively.
+The leading `sub-` or `ses-` is optional when specifying folders to create. It is possible to automatically create date, time or datetime key-value pairs with the days `@DATE@`, `@TIME@` or `@DATETIME@` respectively.
 
 Another example call, which creates a range of subject and session folders, is shown below:
 
@@ -164,7 +164,6 @@ When the `all` argument is used for `--data_type` (`-dt`), the folders created d
 
 This documentation gives examples both using the API (in the python console) or using the command line interface (in system terminal).
 
-#### C
 ## DataShuttle Configs
 
 ### Configuration File
