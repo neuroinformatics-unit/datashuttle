@@ -670,10 +670,10 @@ def check_working_top_level_folder_only_exists(
 ):
     """
     Check that the folder tree made in the 'folder_name'
-    (e.g. 'rawdata') top level folder is correctly. Additionally,
+    (e.g. 'rawdata') top level folder is correct. Additionally,
     check that no other top-level folders exist. This is to ensure
     that folders made / transferred from one top-level folder
-    do not inadvertently transfer other top-level folders
+    do not inadvertently transfer other top-level folders.
     """
     check_folder_tree_is_correct(
         project,

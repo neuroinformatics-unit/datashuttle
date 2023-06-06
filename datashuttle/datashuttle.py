@@ -123,9 +123,9 @@ class DataShuttle:
         """
         Set the working top level folder (e.g. 'rawdata', 'derivatives').
 
-        The top level folder defines in which top level folder folders
-        are made (e.g. make_sub_folders) or at which level folders
-        are transferred with the commands upload_data / download_data
+        The top_level_folder defines in which top level folder new
+        sub-folders will be made (e.g. make_sub_folders) or at which level
+        folders  are transferred with the commands upload_data / download_data
         and upload_all / download all.
 
         To upload the entire project (i.e. every top level
@@ -298,7 +298,7 @@ class DataShuttle:
             a subject name / list of subject names. These must
             be prefixed with "sub-", or the prefix will be
             automatically added. "@*@" can be used as a wildcard.
-            "all" will search for all subfolders in the
+            "all" will search for all sub-folders in the
             data type folder to upload.
         ses_names :
             a session name / list of session names, similar to
@@ -906,10 +906,11 @@ class DataShuttle:
         Print the current working top level folder (e.g.
         'rawdata', 'derivatives')
 
-        The top level folder defines in which top level folder folders
-        are made (e.g. make_sub_folders) or at which level folders
-        are transferred with the commands upload_data / download_data
-        and upload_all / download all.
+        The top_level_folder defines in which top level folder new
+        sub-folders will be made (e.g. make_sub_folders) or
+        at which level folders are transferred with the commands
+        upload_data / download_data and upload_all / download all.
+        upload_project_folder_or_file / download_project_folder_or_file.
 
         To upload the entire project (i.e. every top level
         folder), use the 'command upload_entire_project' or
