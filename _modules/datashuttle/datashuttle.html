@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gc32e7f4</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gefdfb56</p>
   
 </a></div>
     
@@ -440,7 +440,8 @@ document.write(`
     <span class="c1"># Public Folder Makers</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.set_top_level_folder"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.set_top_level_folder">[docs]</a>    <span class="k">def</span> <span class="nf">set_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.set_top_level_folder"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.set_top_level_folder">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">set_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">folder_name</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the working top level folder (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
 
@@ -572,7 +573,8 @@ document.write(`
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_sub_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<div class="viewcode-block" id="DataShuttle.get_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_sub_number">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">get_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function for get_next_sub_or_ses_number</span>
 <span class="sd">        to find the next subject number.</span>
@@ -581,7 +583,8 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">sub</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;sub-*&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_ses_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_next_ses_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<div class="viewcode-block" id="DataShuttle.get_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_ses_number">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">get_next_ses_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function for get_next_sub_or_ses_number</span>
 <span class="sd">        to find the next session number.</span>
@@ -594,7 +597,8 @@ document.write(`
     <span class="c1"># Public File Transfer</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.upload_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_data">[docs]</a>    <span class="k">def</span> <span class="nf">upload_data</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_data">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
@@ -665,7 +669,8 @@ document.write(`
         <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_data">[docs]</a>    <span class="k">def</span> <span class="nf">download_data</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_data">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_data</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
@@ -698,7 +703,8 @@ document.write(`
         <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function to upload all data.</span>
 
@@ -709,7 +715,8 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">upload_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function to download all data.</span>
 
@@ -722,7 +729,8 @@ document.write(`
         <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_entire_project">[docs]</a>    <span class="k">def</span> <span class="nf">upload_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.upload_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_entire_project">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload the entire project (from &#39;local&#39; to &#39;central&#39;),</span>
 <span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
@@ -730,7 +738,8 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_entire_project">[docs]</a>    <span class="k">def</span> <span class="nf">download_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.download_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_entire_project">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download the entire project (from &#39;central&#39; to &#39;local&#39;),</span>
 <span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
@@ -738,7 +747,8 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">upload_project_folder_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_project_folder_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -787,7 +797,8 @@ document.write(`
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file">[docs]</a>    <span class="k">def</span> <span class="nf">download_project_folder_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_project_folder_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -870,7 +881,8 @@ document.write(`
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.write_public_key"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.write_public_key">[docs]</a>    <span class="k">def</span> <span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.write_public_key"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.write_public_key">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
+    <span class="k">def</span> <span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        By default, the SSH private key only is stored, in</span>
 <span class="sd">        the datashuttle configs folder. Use this function</span>
@@ -1027,7 +1039,8 @@ document.write(`
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.update_config"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.update_config">[docs]</a>    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.update_config"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.update_config">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">update_config</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">option_key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">new_info</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1156,7 +1169,8 @@ document.write(`
     <span class="c1"># Public Getters</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.show_local_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_local_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_path">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the projects local path.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1170,40 +1184,46 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_config_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_config_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_config_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_config_path">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the full path to the DataShuttle config file.</span>
 <span class="sd">        This is always formatted to UNIX style.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_central_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_central_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_central_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_central_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_central_path">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_central_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the project central path.</span>
 <span class="sd">        This is always formatted to UNIX style.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;central_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_configs"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_configs">[docs]</a>    <span class="k">def</span> <span class="nf">show_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_configs"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_configs">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the current configs to the terminal.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_logging_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_logging_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_logging_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_logging_path">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the path where datashuttle logs are written.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_local_tree"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_tree">[docs]</a>    <span class="k">def</span> <span class="nf">show_local_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.show_local_tree"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_local_tree">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_local_tree</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print a tree schematic of all files and folders</span>
 <span class="sd">        in the local project.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">print_tree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">])</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_top_level_folder"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_top_level_folder">[docs]</a>    <span class="k">def</span> <span class="nf">show_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DataShuttle.show_top_level_folder"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_top_level_folder">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print the current working top level folder (e.g.</span>
 <span class="sd">        &#39;rawdata&#39;, &#39;derivatives&#39;)</span>
@@ -1222,7 +1242,8 @@ document.write(`
             <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_sub_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_sub_number">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a suggested value for the next available subject number.</span>
 <span class="sd">        The local and central repository will be searched, and the</span>
@@ -1246,14 +1267,15 @@ document.write(`
             <span class="sa">f</span><span class="s2">&quot;The suggested new subject number is: </span><span class="si">{</span><span class="n">suggested_new_num</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_ses_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_ses_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_ses_number">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">show_next_ses_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a suggested value for the next session number of a</span>
 <span class="sd">        given subject. The local and central repository will be</span>
 <span class="sd">        searched, and the maximum session number + 1 will be suggested.</span>
 
 <span class="sd">        In the case where there are multiple &#39;local&#39; machines interacting</span>
-<span class="sd">        with a central central repository, this function will not detect</span>
+<span class="sd">        with a central repository, this function will not detect</span>
 <span class="sd">        session numbers of other &#39;local&#39; machines. For example, if there</span>
 <span class="sd">        is one machine for behavioural and another for electrophysiological</span>
 <span class="sd">        data collection, connected to a central server that is &#39;central&#39;.</span>
