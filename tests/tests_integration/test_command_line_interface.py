@@ -550,7 +550,7 @@ class TestCommandLineInterface:
     def test_set_top_level_folder(self, setup_project, sep):
         """
         Test that the top level folder is "rawdata" by default,
-        setting the top level folder to a new folder ("code")
+        setting the top level folder to a new folder ("derivatives")
         updates the top level folder correctly. Finally, test
         passing a not-allowed top-level-folder to
         set-top-level-folder raises an error.
@@ -562,17 +562,17 @@ class TestCommandLineInterface:
         assert "rawdata" in stdout
 
         stdout, _ = test_utils.run_cli(
-            f"set{sep}top{sep}level{sep}folder code",
+            f"set{sep}top{sep}level{sep}folder derivatives",
             setup_project.project_name,
         )
 
-        assert "code" in stdout
+        assert "derivatives" in stdout
 
         stdout, _ = test_utils.run_cli(
             f"show{sep}top{sep}level{sep}folder", setup_project.project_name
         )
 
-        assert "code" in stdout
+        assert "derivatives" in stdout
 
         _, stderr = test_utils.run_cli(
             f"set{sep}top{sep}level{sep}folder NOT_RECOGNISED",
