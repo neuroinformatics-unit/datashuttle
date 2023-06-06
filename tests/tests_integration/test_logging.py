@@ -244,12 +244,15 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
-        suffix = "_all" if use_all_alias else "_data"
+        suffix = "_working_folder" if use_all_alias else ""
 
-        assert (
-            f"Starting logging for command {upload_or_download}{suffix}" in log
-        )
-
+        try:
+            assert (
+                f"Starting logging for command {upload_or_download}{suffix}"
+                in log
+            )
+        except:
+            breakpoint()
         if use_all_alias:
             assert (
                 "VariablesState:\nlocals: {'dry_run': False}\ncfg: {'local_path':"
@@ -303,7 +306,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            f"Starting logging for command {upload_or_download}_project_folder_or_file"
+            f"Starting logging for command {upload_or_download}_specific_folder_or_file"
             in log
         )
         assert (

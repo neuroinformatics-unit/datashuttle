@@ -189,23 +189,35 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_upload_download_variables(self, upload_or_download, sep):
+    @pytest.mark.parametrize("shortcut_flags", [True, False])
+    def test_upload_download_variables(
+        self, upload_or_download, sep, shortcut_flags
+    ):
         """
         As upload and download take identical args,
         test both together.
         """
+        if shortcut_flags:
+            sub_flag = f"--sub{sep}names"
+            ses_flag = f"--ses{sep}names"
+            data_type_flag = f"--data{sep}type"
+        else:
+            sub_flag = "-sub"
+            ses_flag = "-ses"
+            data_type_flag = "-dt"
+
         stdout, _ = test_utils.run_cli(
-            f" {upload_or_download}{sep}data "
-            f"--data{sep}type all "
-            f"--sub{sep}names one "
-            f"--ses{sep}names two"
+            f" {upload_or_download} "
+            f"{sub_flag} one "
+            f"{ses_flag} two "
+            f"{data_type_flag} all"
         )
 
         args_, kwargs_ = self.decode(stdout)
         self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
         stdout, _ = test_utils.run_cli(
-            f" {upload_or_download}_data "
+            f" {upload_or_download} "
             f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two "
@@ -228,7 +240,8 @@ class TestCommandLineInterface:
         but without wasting time with seps.
         """
         stdout, stderr = test_utils.run_cli(
-            f"{upload_or_download}{sep}all", setup_project.project_name
+            f"{upload_or_download}{sep}working{sep}folder",
+            setup_project.project_name,
         )
 
         assert stderr == ""
@@ -255,7 +268,7 @@ class TestCommandLineInterface:
         As upload_folder_or_file and download_folder_or_file
         take identical args, test both together"""
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file /fake/filepath"
+            f" {upload_or_download}{sep}specific{sep}folder{sep}or{sep}file /fake/filepath"
         )
         args_, kwargs_ = self.decode(stdout)
 
@@ -263,7 +276,7 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is False
 
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file "
+            f" {upload_or_download}{sep}specific{sep}folder{sep}or{sep}file "
             f"/fake/filepath --dry{sep}run"
         )
 
@@ -444,12 +457,12 @@ class TestCommandLineInterface:
 
         if transfer_method == "all_alias":
             test_utils.run_cli(
-                f"{upload_or_download}-all",
+                f"{upload_or_download}-working-folder",
                 setup_project.project_name,
             )
         elif transfer_method == "standard":
             test_utils.run_cli(
-                f"{upload_or_download}_data "
+                f"{upload_or_download} "
                 f"--data_type all "
                 f"--sub_names all "
                 f"--ses_names all",
@@ -457,7 +470,7 @@ class TestCommandLineInterface:
             )
         elif transfer_method == "entire_project":
             test_utils.run_cli(
-                f"{upload_or_download}_entire_project",
+                f"{upload_or_download}-entire-project",
                 setup_project.project_name,
             )
 
@@ -494,7 +507,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_folder_or_file {subs[1]}/{sessions[0]}/ephys/*",
+            f"{upload_or_download}_specific_folder_or_file {subs[1]}/{sessions[0]}/ephys/*",
             setup_project.project_name,
         )
 
