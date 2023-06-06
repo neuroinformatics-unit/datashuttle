@@ -119,7 +119,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gefdfb56</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g65ea016</p>
   
 </a></div>
     
@@ -678,9 +678,9 @@ path to transfer to Rclone’s include flag.</p>
 <h3>set-top-level-folder (set_top_level_folder)<a class="headerlink" href="#set-top-level-folder (set_top_level_folder)" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Set the working top level folder (e.g. ‘rawdata’, ‘derivatives’).</p>
-<p>The top level folder defines in which top level folder folders
-are made (e.g. make_sub_folders) or at which level folders
-are transferred with the commands upload_data / download_data
+<p>The top_level_folder defines in which top level folder new
+subfolders will be made (e.g. make_sub_folders) or at which level
+folders  are transferred with the commands upload_data / download_data
 and upload_all / download all.</p>
 <p>To upload the entire project (i.e. every top level
 folder), use the ‘command upload_entire_project’ or
@@ -771,10 +771,11 @@ in the local project.</p>
 <blockquote>
 <div><p>Print the current working top level folder (e.g.
 ‘rawdata’, ‘derivatives’)</p>
-<p>The top level folder defines in which top level folder folders
-are made (e.g. make_sub_folders) or at which level folders
-are transferred with the commands upload_data / download_data
-and upload_all / download all.</p>
+<p>The top_level_folder defines in which top level folder new
+subfolders will be made (e.g. make_sub_folders) or
+at which level folders are transferred with the commands
+upload_data / download_data and upload_all / download all.
+upload_project_folder_or_file / download_project_folder_or_file.</p>
 <p>To upload the entire project (i.e. every top level
 folder), use the ‘command upload_entire_project’ or
 ‘download_entire_project’.</p>

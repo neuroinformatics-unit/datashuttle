@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gefdfb56</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g65ea016</p>
   
 </a></div>
     
@@ -445,9 +445,9 @@ document.write(`
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the working top level folder (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
 
-<span class="sd">        The top level folder defines in which top level folder folders</span>
-<span class="sd">        are made (e.g. make_sub_folders) or at which level folders</span>
-<span class="sd">        are transferred with the commands upload_data / download_data</span>
+<span class="sd">        The top_level_folder defines in which top level folder new</span>
+<span class="sd">        sub-folders will be made (e.g. make_sub_folders) or at which level</span>
+<span class="sd">        folders  are transferred with the commands upload_data / download_data</span>
 <span class="sd">        and upload_all / download all.</span>
 
 <span class="sd">        To upload the entire project (i.e. every top level</span>
@@ -620,7 +620,7 @@ document.write(`
 <span class="sd">            a subject name / list of subject names. These must</span>
 <span class="sd">            be prefixed with &quot;sub-&quot;, or the prefix will be</span>
 <span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
-<span class="sd">            &quot;all&quot; will search for all subfolders in the</span>
+<span class="sd">            &quot;all&quot; will search for all sub-folders in the</span>
 <span class="sd">            data type folder to upload.</span>
 <span class="sd">        ses_names :</span>
 <span class="sd">            a session name / list of session names, similar to</span>
@@ -1228,10 +1228,11 @@ document.write(`
 <span class="sd">        Print the current working top level folder (e.g.</span>
 <span class="sd">        &#39;rawdata&#39;, &#39;derivatives&#39;)</span>
 
-<span class="sd">        The top level folder defines in which top level folder folders</span>
-<span class="sd">        are made (e.g. make_sub_folders) or at which level folders</span>
-<span class="sd">        are transferred with the commands upload_data / download_data</span>
-<span class="sd">        and upload_all / download all.</span>
+<span class="sd">        The top_level_folder defines in which top level folder new</span>
+<span class="sd">        sub-folders will be made (e.g. make_sub_folders) or</span>
+<span class="sd">        at which level folders are transferred with the commands</span>
+<span class="sd">        upload_data / download_data and upload_all / download all.</span>
+<span class="sd">        upload_project_folder_or_file / download_project_folder_or_file.</span>
 
 <span class="sd">        To upload the entire project (i.e. every top level</span>
 <span class="sd">        folder), use the &#39;command upload_entire_project&#39; or</span>
