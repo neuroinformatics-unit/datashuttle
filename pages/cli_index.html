@@ -119,7 +119,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g78e7134</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gc32e7f4</p>
   
 </a></div>
     
@@ -360,13 +360,13 @@ get the full path to the saved config file.</p>
 <p>Use update_config() to update a single config, and
 supply_config() to use an existing config file.</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">make</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="nb">id</span> <span class="n">REMOTE_HOST_ID</span><span class="p">]</span>
-                             <span class="p">[</span><span class="o">--</span><span class="n">remote</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="n">username</span> <span class="n">REMOTE_HOST_USERNAME</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">make</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">central</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="nb">id</span> <span class="n">CENTRAL_HOST_ID</span><span class="p">]</span>
+                             <span class="p">[</span><span class="o">--</span><span class="n">central</span><span class="o">-</span><span class="n">host</span><span class="o">-</span><span class="n">username</span> <span class="n">CENTRAL_HOST_USERNAME</span><span class="p">]</span>
                              <span class="p">[</span><span class="o">--</span><span class="n">overwrite</span><span class="o">-</span><span class="n">old</span><span class="o">-</span><span class="n">files</span><span class="p">]</span>
                              <span class="p">[</span><span class="o">--</span><span class="n">transfer</span><span class="o">-</span><span class="n">verbosity</span> <span class="n">TRANSFER_VERBOSITY</span><span class="p">]</span>
                              <span class="p">[</span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">transfer</span><span class="o">-</span><span class="n">progress</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span><span class="p">]</span>
                              <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">funcimg</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span><span class="p">]</span>
-                             <span class="n">local_path</span> <span class="n">remote_path</span> <span class="n">connection_method</span>
+                             <span class="n">local_path</span> <span class="n">central_path</span> <span class="n">connection_method</span>
 </pre></div>
 </div>
 <section id="positional-arguments_repeat1">
@@ -375,7 +375,7 @@ supply_config() to use an existing config file.</p>
 <dt><kbd>local_path</kbd></dt>
 <dd><p>Required: (str)</p>
 </dd>
-<dt><kbd>remote_path</kbd></dt>
+<dt><kbd>central_path</kbd></dt>
 <dd><p>Required: (str)</p>
 </dd>
 <dt><kbd>connection_method</kbd></dt>
@@ -386,10 +386,10 @@ supply_config() to use an existing config file.</p>
 <section id="named-arguments:">
 <h4>named arguments:<a class="headerlink" href="#named-arguments:" title="Permalink to this heading">#</a></h4>
 <dl class="option-list">
-<dt><kbd>--remote-host-id, --remote_host_id</kbd></dt>
+<dt><kbd>--central-host-id, --central_host_id</kbd></dt>
 <dd><p>(str)</p>
 </dd>
-<dt><kbd>--remote-host-username, --remote_host_username</kbd></dt>
+<dt><kbd>--central-host-username, --central_host_username</kbd></dt>
 <dd><p>(str)</p>
 </dd>
 <dt><kbd>--overwrite-old-files, --overwrite_old_files</kbd></dt>
@@ -429,8 +429,8 @@ supply_config() to use an existing config file.</p>
 entry in the saved configs file and be used for all future
 datashuttle sessions.</p>
 </div></blockquote>
-<p>The option key should be in the form of config file keys(e.g. remote_path, local_path)
-EXAMPLE: datashuttle test update_config remote_path ‘test_path’</p>
+<p>The option key should be in the form of config file keys(e.g. central_path, local_path)
+EXAMPLE: datashuttle test update_config central_path ‘test_path’</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">update</span><span class="o">-</span><span class="n">config</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="n">option_key</span> <span class="n">new_info</span>
 </pre></div>
 </div>
@@ -446,20 +446,20 @@ EXAMPLE: datashuttle test update_config remote_path ‘test_path’</p>
 </dl>
 </section>
 </section>
-<section id="setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)">
-<h3>setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)<a class="headerlink" href="#setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)" title="Permalink to this heading">#</a></h3>
+<section id="setup-ssh-connection-to-central-server (setup_ssh_connection_to_central_server)">
+<h3>setup-ssh-connection-to-central-server (setup_ssh_connection_to_central_server)<a class="headerlink" href="#setup-ssh-connection-to-central-server (setup_ssh_connection_to_central_server)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Setup a connection to the remote server using SSH.
-Assumes the remote_host_id and remote_host_username
+<div><p>Setup a connection to the central server using SSH.
+Assumes the central_host_id and central_host_username
 are set in configs (see make_config_file() and update_config())</p>
 <p>First, the server key will be displayed, requiring
 verification of the server ID. This will store the
 hostkey for all future use.</p>
-<p>Next, prompt to input their password for the remote
+<p>Next, prompt to input their password for the central
 cluster. Once input, SSH private / public key pair
 will be setup.</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">setup</span><span class="o">-</span><span class="n">ssh</span><span class="o">-</span><span class="n">connection</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">setup</span><span class="o">-</span><span class="n">ssh</span><span class="o">-</span><span class="n">connection</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">central</span><span class="o">-</span><span class="n">server</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
@@ -493,10 +493,10 @@ folder.</p>
 <section id="upload-data (upload_data)">
 <h3>upload-data (upload_data)<a class="headerlink" href="#upload-data (upload_data)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Upload data from a local project to the remote project
+<div><p>Upload data from a local project to the central project
 folder. In the case that a file / folder exists on
-the remote and local, the remote will not be overwritten
-even if the remote file is an older version. Data
+the central and local, the central will not be overwritten
+even if the central file is an older version. Data
 transfer logs are saved to the logging folder).</p>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">data</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span>
@@ -539,7 +539,7 @@ transfer logs are saved to the logging folder).</p>
 <section id="upload-entire-project (upload_entire_project)">
 <h3>upload-entire-project (upload_entire_project)<a class="headerlink" href="#upload-entire-project (upload_entire_project)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Upload the entire project (from ‘local’ to ‘remote’),
+<div><p>Upload the entire project (from ‘local’ to ‘central’),
 i.e. including every top level folder (e.g. ‘rawdata’,
 ‘derivatives’, ‘code’, ‘analysis’).</p>
 </div></blockquote>
@@ -550,14 +550,14 @@ i.e. including every top level folder (e.g. ‘rawdata’,
 <section id="download-data (download_data)">
 <h3>download-data (download_data)<a class="headerlink" href="#download-data (download_data)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Download data from the remote project folder to the
+<div><p>Download data from the central project folder to the
 local project folder. In the case that a file / folder
-exists on the remote and local, the local will
-not be overwritten even if the remote file is an
+exists on the central and local, the local will
+not be overwritten even if the central file is an
 older version.</p>
 <p>This function is identical to upload_data() but with the direction
 of data transfer reversed. Please see upload_data() for arguments.
-“all” arguments will search the remote project for sub / ses to download.</p>
+“all” arguments will search the central project for sub / ses to download.</p>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">data</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span>
                           <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span> <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
@@ -596,7 +596,7 @@ of data transfer reversed. Please see upload_data() for arguments.
 <section id="download-entire-project (download_entire_project)">
 <h3>download-entire-project (download_entire_project)<a class="headerlink" href="#download-entire-project (download_entire_project)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Download the entire project (from ‘remote’ to ‘local’),
+<div><p>Download the entire project (from ‘central’ to ‘local’),
 i.e. including every top level folder (e.g. ‘rawdata’,
 ‘derivatives’, ‘code’, ‘analysis’).</p>
 </div></blockquote>
@@ -728,13 +728,13 @@ This is always formatted to UNIX style.</p>
 </pre></div>
 </div>
 </section>
-<section id="show-remote-path (show_remote_path)">
-<h3>show-remote-path (show_remote_path)<a class="headerlink" href="#show-remote-path (show_remote_path)" title="Permalink to this heading">#</a></h3>
+<section id="show-central-path (show_central_path)">
+<h3>show-central-path (show_central_path)<a class="headerlink" href="#show-central-path (show_central_path)" title="Permalink to this heading">#</a></h3>
 <blockquote>
-<div><p>Print the project remote path.
+<div><p>Print the project central path.
 This is always formatted to UNIX style.</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">show</span><span class="o">-</span><span class="n">remote</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">show</span><span class="o">-</span><span class="n">central</span><span class="o">-</span><span class="n">path</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
 </div>
 </section>
@@ -787,13 +787,13 @@ folder), use the ‘command upload_entire_project’ or
 <h3>show-next-sub-number (show_next_sub_number)<a class="headerlink" href="#show-next-sub-number (show_next_sub_number)" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Show a suggested value for the next available subject number.
-The local and remote repository will be searched, and the
+The local and central repository will be searched, and the
 maximum existing subject number + 1 will be suggested.</p>
 <p>In the case where there are multiple ‘local’ machines interacting
-with a central remote repository, this function will not detect
+with a central central repository, this function will not detect
 subject numbers of other ‘local’ machines. For example, if there
 is one machine for behavioural and another for electrophysiological
-data collection, connected to a central server that is ‘remote’.
+data collection, connected to a central server that is ‘central’.
 If run on the behavioural data collection machine, this function
 will suggest the next number based on the subjects found on the
 behavioural machine and central machine, but not the
@@ -807,13 +807,13 @@ electrophysiological machine.</p>
 <h3>show-next-ses-number (show_next_ses_number)<a class="headerlink" href="#show-next-ses-number (show_next_ses_number)" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Show a suggested value for the next session number of a
-given subject. The local and remote repository will be
+given subject. The local and central repository will be
 searched, and the maximum session number + 1 will be suggested.</p>
 <p>In the case where there are multiple ‘local’ machines interacting
-with a central remote repository, this function will not detect
+with a central central repository, this function will not detect
 session numbers of other ‘local’ machines. For example, if there
 is one machine for behavioural and another for electrophysiological
-data collection, connected to a central server that is ‘remote’.
+data collection, connected to a central server that is ‘central’.
 If run on the behavioural data collection machine, this function
 will suggest the next number based on the sessions found on the
 behavioural machine and central machine, but not the
@@ -930,7 +930,7 @@ for how this is handled.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments_repeat2">Positional Arguments</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)">setup-ssh-connection-to-remote-server (setup_ssh_connection_to_remote_server)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#setup-ssh-connection-to-central-server (setup_ssh_connection_to_central_server)">setup-ssh-connection-to-central-server (setup_ssh_connection_to_central_server)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#make-sub-folders (make_sub_folders)">make-sub-folders (make_sub_folders)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments:_repeat1">named arguments:</a></li>
 </ul>
@@ -964,7 +964,7 @@ for how this is handled.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-local-path (show_local_path)">show-local-path (show_local_path)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-datashuttle-path (show_datashuttle_path)">show-datashuttle-path (show_datashuttle_path)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-config-path (show_config_path)">show-config-path (show_config_path)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-remote-path (show_remote_path)">show-remote-path (show_remote_path)</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-central-path (show_central_path)">show-central-path (show_central_path)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-configs (show_configs)">show-configs (show_configs)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-logging-path (show_logging_path)">show-logging-path (show_logging_path)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#show-local-tree (show_local_tree)">show-local-tree (show_local_tree)</a></li>

@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g78e7134</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gc32e7f4</p>
   
 </a></div>
     
@@ -360,7 +360,7 @@ document.write(`
 <span class="sd">    project management and data transfer in BIDS format.</span>
 
 <span class="sd">    The expected organisation is a central repository</span>
-<span class="sd">    on a remote machine  (&#39;remote&#39;) that contains all</span>
+<span class="sd">    on a central machine  (&#39;central&#39;) that contains all</span>
 <span class="sd">    project data. This is connected to multiple local</span>
 <span class="sd">    machines (&#39;local&#39;). These can each contain a subset of</span>
 <span class="sd">    the full project (e.g. machine for electrophysiology</span>
@@ -375,8 +375,8 @@ document.write(`
 <span class="sd">    To get the path to datashuttle logs, use</span>
 <span class="sd">    cfgs.make_and_get_logging_path().</span>
 
-<span class="sd">    For transferring data between a remote data storage</span>
-<span class="sd">    with SSH, use setup setup_ssh_connection_to_remote_server().</span>
+<span class="sd">    For transferring data between a central data storage</span>
+<span class="sd">    with SSH, use setup setup_ssh_connection_to_central_server().</span>
 <span class="sd">    This will allow you to check the server key, add host key to</span>
 <span class="sd">    profile if accepted, and setup ssh key pair.</span>
 
@@ -603,10 +603,10 @@ document.write(`
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload data from a local project to the remote project</span>
+<span class="sd">        Upload data from a local project to the central project</span>
 <span class="sd">        folder. In the case that a file / folder exists on</span>
-<span class="sd">        the remote and local, the remote will not be overwritten</span>
-<span class="sd">        even if the remote file is an older version. Data</span>
+<span class="sd">        the central and local, the central will not be overwritten</span>
+<span class="sd">        even if the central file is an older version. Data</span>
 <span class="sd">        transfer logs are saved to the logging folder).</span>
 
 <span class="sd">        Parameters</span>
@@ -674,15 +674,15 @@ document.write(`
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download data from the remote project folder to the</span>
+<span class="sd">        Download data from the central project folder to the</span>
 <span class="sd">        local project folder. In the case that a file / folder</span>
-<span class="sd">        exists on the remote and local, the local will</span>
-<span class="sd">        not be overwritten even if the remote file is an</span>
+<span class="sd">        exists on the central and local, the local will</span>
+<span class="sd">        not be overwritten even if the central file is an</span>
 <span class="sd">        older version.</span>
 
 <span class="sd">        This function is identical to upload_data() but with the direction</span>
 <span class="sd">        of data transfer reversed. Please see upload_data() for arguments.</span>
-<span class="sd">        &quot;all&quot; arguments will search the remote project for sub / ses to download.</span>
+<span class="sd">        &quot;all&quot; arguments will search the central project for sub / ses to download.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_data&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
@@ -724,7 +724,7 @@ document.write(`
 
 <div class="viewcode-block" id="DataShuttle.upload_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_entire_project">[docs]</a>    <span class="k">def</span> <span class="nf">upload_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload the entire project (from &#39;local&#39; to &#39;remote&#39;),</span>
+<span class="sd">        Upload the entire project (from &#39;local&#39; to &#39;central&#39;),</span>
 <span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
 <span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -732,7 +732,7 @@ document.write(`
 
 <div class="viewcode-block" id="DataShuttle.download_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_entire_project">[docs]</a>    <span class="k">def</span> <span class="nf">download_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download the entire project (from &#39;remote&#39; to &#39;local&#39;),</span>
+<span class="sd">        Download the entire project (from &#39;central&#39; to &#39;local&#39;),</span>
 <span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
 <span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -820,7 +820,7 @@ document.write(`
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_project_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_folder</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_folder</span><span class="p">(</span><span class="s2">&quot;remote&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_folder</span><span class="p">(</span><span class="s2">&quot;central&quot;</span><span class="p">),</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
         <span class="p">)</span>
 
@@ -840,27 +840,27 @@ document.write(`
     <span class="c1"># SSH</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.setup_ssh_connection_to_remote_server"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_remote_server">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
-    <span class="k">def</span> <span class="nf">setup_ssh_connection_to_remote_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.setup_ssh_connection_to_central_server"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_central_server">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
+    <span class="k">def</span> <span class="nf">setup_ssh_connection_to_central_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Setup a connection to the remote server using SSH.</span>
-<span class="sd">        Assumes the remote_host_id and remote_host_username</span>
+<span class="sd">        Setup a connection to the central server using SSH.</span>
+<span class="sd">        Assumes the central_host_id and central_host_username</span>
 <span class="sd">        are set in configs (see make_config_file() and update_config())</span>
 
 <span class="sd">        First, the server key will be displayed, requiring</span>
 <span class="sd">        verification of the server ID. This will store the</span>
 <span class="sd">        hostkey for all future use.</span>
 
-<span class="sd">        Next, prompt to input their password for the remote</span>
+<span class="sd">        Next, prompt to input their password for the central</span>
 <span class="sd">        cluster. Once input, SSH private / public key pair</span>
 <span class="sd">        will be setup.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-            <span class="s2">&quot;setup_ssh_connection_to_remote_server&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
+            <span class="s2">&quot;setup_ssh_connection_to_central_server&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
         <span class="p">)</span>
 
-        <span class="n">verified</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">verify_ssh_remote_host</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_host_id&quot;</span><span class="p">],</span>
+        <span class="n">verified</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">verify_ssh_central_host</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;central_host_id&quot;</span><span class="p">],</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">hostkeys_path</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -899,10 +899,10 @@ document.write(`
 <div class="viewcode-block" id="DataShuttle.make_config_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_config_file">[docs]</a>    <span class="k">def</span> <span class="nf">make_config_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">local_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">remote_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">central_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">connection_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">remote_host_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">remote_host_username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">central_host_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">central_host_username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">overwrite_old_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">transfer_verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
         <span class="n">show_transfer_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -931,26 +931,26 @@ document.write(`
 <span class="sd">        local_path :</span>
 <span class="sd">            path to project folder on local machine</span>
 
-<span class="sd">        remote_path :</span>
-<span class="sd">            Filepath to remote project.</span>
+<span class="sd">        central_path :</span>
+<span class="sd">            Filepath to central project.</span>
 <span class="sd">            If this is local (i.e. connection_method = &quot;local_filesystem&quot;),</span>
 <span class="sd">            this is the full path on the local filesystem</span>
 <span class="sd">            Otherwise, if this is via ssh (i.e. connection method = &quot;ssh&quot;),</span>
-<span class="sd">            this is the path to the project folder on remote machine.</span>
-<span class="sd">            This should be a full path to remote folder i.e. this cannot</span>
+<span class="sd">            this is the path to the project folder on central machine.</span>
+<span class="sd">            This should be a full path to central folder i.e. this cannot</span>
 <span class="sd">            include ~ home folder syntax, must contain the full path</span>
 <span class="sd">            (e.g. /nfs/nhome/live/jziminski)</span>
 
 <span class="sd">        connection_method :</span>
-<span class="sd">            The method used to connect to the remote project filesystem,</span>
+<span class="sd">            The method used to connect to the central project filesystem,</span>
 <span class="sd">            e.g. &quot;local_filesystem&quot; (e.g. mounted drive) or &quot;ssh&quot;</span>
 
-<span class="sd">        remote_host_id :</span>
-<span class="sd">            server address for remote host for ssh connection</span>
+<span class="sd">        central_host_id :</span>
+<span class="sd">            server address for central host for ssh connection</span>
 <span class="sd">            e.g. &quot;ssh.swc.ucl.ac.uk&quot;</span>
 
-<span class="sd">        remote_host_username :</span>
-<span class="sd">            username for which to log in to remote host.</span>
+<span class="sd">        central_host_username :</span>
+<span class="sd">            username for which to log in to central host.</span>
 <span class="sd">            e.g. &quot;jziminski&quot;</span>
 
 <span class="sd">        overwrite_old_files :</span>
@@ -995,10 +995,10 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="p">,</span>
             <span class="p">{</span>
                 <span class="s2">&quot;local_path&quot;</span><span class="p">:</span> <span class="n">local_path</span><span class="p">,</span>
-                <span class="s2">&quot;remote_path&quot;</span><span class="p">:</span> <span class="n">remote_path</span><span class="p">,</span>
+                <span class="s2">&quot;central_path&quot;</span><span class="p">:</span> <span class="n">central_path</span><span class="p">,</span>
                 <span class="s2">&quot;connection_method&quot;</span><span class="p">:</span> <span class="n">connection_method</span><span class="p">,</span>
-                <span class="s2">&quot;remote_host_id&quot;</span><span class="p">:</span> <span class="n">remote_host_id</span><span class="p">,</span>
-                <span class="s2">&quot;remote_host_username&quot;</span><span class="p">:</span> <span class="n">remote_host_username</span><span class="p">,</span>
+                <span class="s2">&quot;central_host_id&quot;</span><span class="p">:</span> <span class="n">central_host_id</span><span class="p">,</span>
+                <span class="s2">&quot;central_host_username&quot;</span><span class="p">:</span> <span class="n">central_host_username</span><span class="p">,</span>
                 <span class="s2">&quot;overwrite_old_files&quot;</span><span class="p">:</span> <span class="n">overwrite_old_files</span><span class="p">,</span>
                 <span class="s2">&quot;transfer_verbosity&quot;</span><span class="p">:</span> <span class="n">transfer_verbosity</span><span class="p">,</span>
                 <span class="s2">&quot;show_transfer_progress&quot;</span><span class="p">:</span> <span class="n">show_transfer_progress</span><span class="p">,</span>
@@ -1016,7 +1016,7 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_remote_local_filesystem_config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_central_local_filesystem_config</span><span class="p">()</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span>
             <span class="s2">&quot;Configuration file has been saved and &quot;</span>
@@ -1177,12 +1177,12 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="DataShuttle.show_remote_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_remote_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_remote_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.show_central_path"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_central_path">[docs]</a>    <span class="k">def</span> <span class="nf">show_central_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print the project remote path.</span>
+<span class="sd">        Print the project central path.</span>
 <span class="sd">        This is always formatted to UNIX style.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;remote_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;central_path&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">as_posix</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="DataShuttle.show_configs"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_configs">[docs]</a>    <span class="k">def</span> <span class="nf">show_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1225,14 +1225,14 @@ document.write(`
 <div class="viewcode-block" id="DataShuttle.show_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_sub_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_sub_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a suggested value for the next available subject number.</span>
-<span class="sd">        The local and remote repository will be searched, and the</span>
+<span class="sd">        The local and central repository will be searched, and the</span>
 <span class="sd">        maximum existing subject number + 1 will be suggested.</span>
 
 <span class="sd">        In the case where there are multiple &#39;local&#39; machines interacting</span>
-<span class="sd">        with a central remote repository, this function will not detect</span>
+<span class="sd">        with a central central repository, this function will not detect</span>
 <span class="sd">        subject numbers of other &#39;local&#39; machines. For example, if there</span>
 <span class="sd">        is one machine for behavioural and another for electrophysiological</span>
-<span class="sd">        data collection, connected to a central server that is &#39;remote&#39;.</span>
+<span class="sd">        data collection, connected to a central server that is &#39;central&#39;.</span>
 <span class="sd">        If run on the behavioural data collection machine, this function</span>
 <span class="sd">        will suggest the next number based on the subjects found on the</span>
 <span class="sd">        behavioural machine and central machine, but not the</span>
@@ -1241,7 +1241,7 @@ document.write(`
         <span class="n">suggested_new_num</span><span class="p">,</span> <span class="n">latest_existing_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_sub_number</span><span class="p">()</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
-            <span class="s2">&quot;Local and Remote repository searched. &quot;</span>
+            <span class="s2">&quot;Local and Central repository searched. &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;The most recent subject number found is: </span><span class="si">{</span><span class="n">latest_existing_num</span><span class="si">}</span><span class="s2">. &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;The suggested new subject number is: </span><span class="si">{</span><span class="n">suggested_new_num</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
@@ -1249,14 +1249,14 @@ document.write(`
 <div class="viewcode-block" id="DataShuttle.show_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_ses_number">[docs]</a>    <span class="k">def</span> <span class="nf">show_next_ses_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sub</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Show a suggested value for the next session number of a</span>
-<span class="sd">        given subject. The local and remote repository will be</span>
+<span class="sd">        given subject. The local and central repository will be</span>
 <span class="sd">        searched, and the maximum session number + 1 will be suggested.</span>
 
 <span class="sd">        In the case where there are multiple &#39;local&#39; machines interacting</span>
-<span class="sd">        with a central remote repository, this function will not detect</span>
+<span class="sd">        with a central central repository, this function will not detect</span>
 <span class="sd">        session numbers of other &#39;local&#39; machines. For example, if there</span>
 <span class="sd">        is one machine for behavioural and another for electrophysiological</span>
-<span class="sd">        data collection, connected to a central server that is &#39;remote&#39;.</span>
+<span class="sd">        data collection, connected to a central server that is &#39;central&#39;.</span>
 <span class="sd">        If run on the behavioural data collection machine, this function</span>
 <span class="sd">        will suggest the next number based on the sessions found on the</span>
 <span class="sd">        behavioural machine and central machine, but not the</span>
@@ -1270,7 +1270,7 @@ document.write(`
         <span class="n">latest_existing_num</span><span class="p">,</span> <span class="n">suggested_new_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_ses_number</span><span class="p">(</span><span class="n">sub</span><span class="p">)</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Local and Remote repository searched for sessions for </span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Local and Central repository searched for sessions for </span><span class="si">{</span><span class="n">sub</span><span class="si">}</span><span class="s2">. &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;The most recent session number found is: </span><span class="si">{</span><span class="n">latest_existing_num</span><span class="si">}</span><span class="s2">. &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;The suggested new session number is: </span><span class="si">{</span><span class="n">suggested_new_num</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
@@ -1320,7 +1320,7 @@ document.write(`
 <span class="sd">        ----------</span>
 
 <span class="sd">        direction : direction to transfer the data, either &quot;upload&quot; (from</span>
-<span class="sd">                    local to remote) or &quot;download&quot; (from remote to local).</span>
+<span class="sd">                    local to central) or &quot;download&quot; (from central to local).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">transfer_all_func</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">upload_all</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;upload&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_all</span>
@@ -1345,7 +1345,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">ssh</span><span class="o">.</span><span class="n">setup_ssh_key</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_remote_ssh_config</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup_rclone_central_ssh_config</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Utils</span>
@@ -1362,7 +1362,7 @@ document.write(`
         <span class="k">if</span> <span class="n">connection_method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">connection_method</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;connection_method&quot;</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;remote_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">connection_method</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;central_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_name</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">connection_method</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">def</span> <span class="nf">_start_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1473,8 +1473,8 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">folders</span><span class="o">.</span><span class="n">make_folders</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">project_metadata_path</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_rclone_remote_ssh_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
-        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_setup_rclone_central_ssh_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">log</span><span class="p">):</span>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_central_as_rclone_target</span><span class="p">(</span>
             <span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;ssh&quot;</span><span class="p">),</span>
@@ -1482,8 +1482,8 @@ document.write(`
             <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
         <span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_setup_rclone_remote_local_filesystem_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_remote_as_rclone_target</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_setup_rclone_central_local_filesystem_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">rclone</span><span class="o">.</span><span class="n">setup_central_as_rclone_target</span><span class="p">(</span>
             <span class="s2">&quot;local_filesystem&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_rclone_config_name</span><span class="p">(</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">),</span>
