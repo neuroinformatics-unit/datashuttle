@@ -20,10 +20,10 @@ class TransferData:
 
         self.cfg = cfg
         self.upload_or_download = upload_or_download
-        self.local_or_remote = (
-            "local" if upload_or_download == "upload" else "remote"
+        self.local_or_central = (
+            "local" if upload_or_download == "upload" else "central"
         )
-        self.base_folder = self.cfg.get_base_folder(self.local_or_remote)
+        self.base_folder = self.cfg.get_base_folder(self.local_or_central)
 
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
@@ -135,8 +135,8 @@ class TransferData:
     ):
         top_level_folders, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_folder(self.local_or_remote),
-            self.local_or_remote,
+            self.cfg.get_base_folder(self.local_or_central),
+            self.local_or_central,
             search_str="*",
         )
 
@@ -153,8 +153,8 @@ class TransferData:
         """ """
         sub_level_folders, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_folder(self.local_or_remote),
-            self.local_or_remote,
+            self.cfg.get_base_folder(self.local_or_central),
+            self.local_or_central,
             sub=sub,
             search_str="*",
         )
@@ -183,8 +183,8 @@ class TransferData:
             ses_level_filenames,
         ) = folders.search_sub_or_ses_level(
             self.cfg,
-            self.cfg.get_base_folder(self.local_or_remote),
-            self.local_or_remote,
+            self.cfg.get_base_folder(self.local_or_central),
+            self.local_or_central,
             sub=sub,
             ses=ses,
             search_str="*",
@@ -222,7 +222,7 @@ class TransferData:
         )
 
         data_type_items = self.cfg.items_from_data_type_input(
-            self.local_or_remote, data_type, sub, ses
+            self.local_or_central, data_type, sub, ses
         )
 
         level = "ses" if ses else "sub"
@@ -303,7 +303,7 @@ class TransferData:
         any wildcard entries searched.
 
         Otherwise, if "all" or a variant, the local or
-        remote folder (depending on upload vs. download)
+        central folder (depending on upload vs. download)
         will be searched to determine what files exist to transfer,
         and the sub / ses names list generated.
 
@@ -324,7 +324,7 @@ class TransferData:
             processed_names = folders.search_sub_or_ses_level(
                 self.cfg,
                 self.base_folder,
-                self.local_or_remote,
+                self.local_or_central,
                 sub,
                 search_str=f"{search_prefix}*",
             )[0]
@@ -339,7 +339,7 @@ class TransferData:
             processed_names = folders.search_for_wildcards(
                 self.cfg,
                 self.base_folder,
-                self.local_or_remote,
+                self.local_or_central,
                 processed_names,
                 sub=sub,
             )

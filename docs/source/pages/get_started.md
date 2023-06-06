@@ -30,15 +30,15 @@ from datashuttle.datashuttle import DataShuttle
 project = DataShuttle("my_project")
 ```
 
-DataShuttle helps to manage and transfer a project with many "local" machines all connected to a central "remote" machine.
+DataShuttle helps to manage and transfer a project with many "local" machines all connected to a central "central" machine.
 DataShuttle requires a path to the local project folder (this is typically empty on first use and should include the name of the project
-e.g. local_path="/path/to/my_project"). Also, remote project folder and method to connect to the remote project (either "local_filesystem" or
+e.g. local_path="/path/to/my_project"). Also, central project folder and method to connect to the central project (either "local_filesystem" or
 "ssh").
 
 It is also required to specify the data types (e.g. behav, ephys, funcimg, histology) used on the local PC. If data_type flags are not set to True, it will not be possible
 to create folders of these data types.
 
-If connection_method used is "ssh", it is necessary to also input the remote_host_id and remote_host_username configs.
+If connection_method used is "ssh", it is necessary to also input the central_host_id and central_host_username configs.
 
 The settings "overwrite_old_files_on_transfer", "transfer_verbosity" and "show_transfer_progress" determine
 the behaviour during file transfer. Please see the Data Transfer section of the full documentation for more information.
@@ -49,10 +49,10 @@ An example call:
 ```
 project.make_config_file(
 local_path="/path/to/my/my_project",
-remote_path="/nfs/nhome/live/username/",
+central_path="/nfs/nhome/live/username/",
 connection_method="ssh",
-remote_host_id="ssh.swc.ucl.ac.uk",
-remote_host_username="username",
+central_host_id="ssh.swc.ucl.ac.uk",
+central_host_username="username",
 overwrite_old_files_on_transfer=True,
 transfer_verbosity="v",
 show_transfer_progress=False,
@@ -70,8 +70,8 @@ make_config_file \
 /path/to/my/project \
 /nfs/nhome/live/username/ \
 ssh \
---remote_host_id ssh.swc.ucl.ac.uk \
---remote_host_username username \
+--central_host_id ssh.swc.ucl.ac.uk \
+--central_host_username username \
 --transfer_verbosity v \
 --use-ephys --use-behav --use-histology --overwrite_old_files_on_transfer
 ```
@@ -80,8 +80,8 @@ Individual settings can be updated using update_config(), and an existing config
 
 ### Setting up an SSH Connection
 
-Once configurations are set, if the "connection_method" is "ssh", the function setup_ssh_connection_to_remote_server() must be run to setup
-the ssh connection to the remote server. This will allow visual confirmation of the server key, and setup a SSH key pair. This means
+Once configurations are set, if the "connection_method" is "ssh", the function setup_ssh_connection_to_central_server() must be run to setup
+the ssh connection to the central server. This will allow visual confirmation of the server key, and setup a SSH key pair. This means
 your password will have to be enterred only once, when setting up this connection.
 
 
@@ -144,7 +144,7 @@ will create the folder structure:
 
 ## Data Transfer
 
-Data transfer can be either from the local project to the remote project ("upload") or from the remote to local project("download"). Data
+Data transfer can be either from the local project to the central project ("upload") or from the central to local project("download"). Data
 transfers are primarily managed using the upload_data() and download_data() functions.
 
 By default, uploading or downloading data will never overwrite files when transferring data. If an

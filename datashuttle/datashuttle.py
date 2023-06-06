@@ -38,7 +38,7 @@ class DataShuttle:
     project management and data transfer in BIDS format.
 
     The expected organisation is a central repository
-    on a remote machine  ('remote') that contains all
+    on a central machine  ('central') that contains all
     project data. This is connected to multiple local
     machines ('local'). These can each contain a subset of
     the full project (e.g. machine for electrophysiology
@@ -53,8 +53,8 @@ class DataShuttle:
     To get the path to datashuttle logs, use
     cfgs.make_and_get_logging_path().
 
-    For transferring data between a remote data storage
-    with SSH, use setup setup_ssh_connection_to_remote_server().
+    For transferring data between a central data storage
+    with SSH, use setup setup_ssh_connection_to_central_server().
     This will allow you to check the server key, add host key to
     profile if accepted, and setup ssh key pair.
 
@@ -281,10 +281,10 @@ class DataShuttle:
         init_log: bool = True,
     ) -> None:
         """
-        Upload data from a local project to the remote project
+        Upload data from a local project to the central project
         folder. In the case that a file / folder exists on
-        the remote and local, the remote will not be overwritten
-        even if the remote file is an older version. Data
+        the central and local, the central will not be overwritten
+        even if the central file is an older version. Data
         transfer logs are saved to the logging folder).
 
         Parameters
@@ -352,15 +352,15 @@ class DataShuttle:
         init_log: bool = True,
     ) -> None:
         """
-        Download data from the remote project folder to the
+        Download data from the central project folder to the
         local project folder. In the case that a file / folder
-        exists on the remote and local, the local will
-        not be overwritten even if the remote file is an
+        exists on the central and local, the local will
+        not be overwritten even if the central file is an
         older version.
 
         This function is identical to upload_data() but with the direction
         of data transfer reversed. Please see upload_data() for arguments.
-        "all" arguments will search the remote project for sub / ses to download.
+        "all" arguments will search the central project for sub / ses to download.
         """
         if init_log:
             self._start_log("download_data", local_vars=locals())
@@ -402,7 +402,7 @@ class DataShuttle:
 
     def upload_entire_project(self):
         """
-        Upload the entire project (from 'local' to 'remote'),
+        Upload the entire project (from 'local' to 'central'),
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
@@ -410,7 +410,7 @@ class DataShuttle:
 
     def download_entire_project(self):
         """
-        Download the entire project (from 'remote' to 'local'),
+        Download the entire project (from 'central' to 'local'),
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
@@ -498,7 +498,7 @@ class DataShuttle:
         self._start_log("download_project_folder_or_file", local_vars=locals())
 
         processed_filepath = utils.get_path_after_base_folder(
-            self.cfg.get_base_folder("remote"),
+            self.cfg.get_base_folder("central"),
             Path(filepath),
         )
 
@@ -519,26 +519,26 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @requires_ssh_configs
-    def setup_ssh_connection_to_remote_server(self) -> None:
+    def setup_ssh_connection_to_central_server(self) -> None:
         """
-        Setup a connection to the remote server using SSH.
-        Assumes the remote_host_id and remote_host_username
+        Setup a connection to the central server using SSH.
+        Assumes the central_host_id and central_host_username
         are set in configs (see make_config_file() and update_config())
 
         First, the server key will be displayed, requiring
         verification of the server ID. This will store the
         hostkey for all future use.
 
-        Next, prompt to input their password for the remote
+        Next, prompt to input their password for the central
         cluster. Once input, SSH private / public key pair
         will be setup.
         """
         self._start_log(
-            "setup_ssh_connection_to_remote_server", local_vars=locals()
+            "setup_ssh_connection_to_central_server", local_vars=locals()
         )
 
-        verified = ssh.verify_ssh_remote_host(
-            self.cfg["remote_host_id"],
+        verified = ssh.verify_ssh_central_host(
+            self.cfg["central_host_id"],
             self.cfg.hostkeys_path,
             log=True,
         )
@@ -577,10 +577,10 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        remote_path: str,
+        central_path: str,
         connection_method: str,
-        remote_host_id: Optional[str] = None,
-        remote_host_username: Optional[str] = None,
+        central_host_id: Optional[str] = None,
+        central_host_username: Optional[str] = None,
         overwrite_old_files: bool = False,
         transfer_verbosity: str = "v",
         show_transfer_progress: bool = False,
@@ -609,26 +609,26 @@ class DataShuttle:
         local_path :
             path to project folder on local machine
 
-        remote_path :
-            Filepath to remote project.
+        central_path :
+            Filepath to central project.
             If this is local (i.e. connection_method = "local_filesystem"),
             this is the full path on the local filesystem
             Otherwise, if this is via ssh (i.e. connection method = "ssh"),
-            this is the path to the project folder on remote machine.
-            This should be a full path to remote folder i.e. this cannot
+            this is the path to the project folder on central machine.
+            This should be a full path to central folder i.e. this cannot
             include ~ home folder syntax, must contain the full path
             (e.g. /nfs/nhome/live/jziminski)
 
         connection_method :
-            The method used to connect to the remote project filesystem,
+            The method used to connect to the central project filesystem,
             e.g. "local_filesystem" (e.g. mounted drive) or "ssh"
 
-        remote_host_id :
-            server address for remote host for ssh connection
+        central_host_id :
+            server address for central host for ssh connection
             e.g. "ssh.swc.ucl.ac.uk"
 
-        remote_host_username :
-            username for which to log in to remote host.
+        central_host_username :
+            username for which to log in to central host.
             e.g. "jziminski"
 
         overwrite_old_files :
@@ -673,10 +673,10 @@ class DataShuttle:
             self._config_path,
             {
                 "local_path": local_path,
-                "remote_path": remote_path,
+                "central_path": central_path,
                 "connection_method": connection_method,
-                "remote_host_id": remote_host_id,
-                "remote_host_username": remote_host_username,
+                "central_host_id": central_host_id,
+                "central_host_username": central_host_username,
                 "overwrite_old_files": overwrite_old_files,
                 "transfer_verbosity": transfer_verbosity,
                 "show_transfer_progress": show_transfer_progress,
@@ -694,7 +694,7 @@ class DataShuttle:
 
         self._set_attributes_after_config_load()
 
-        self._setup_rclone_remote_local_filesystem_config()
+        self._setup_rclone_central_local_filesystem_config()
 
         utils.log_and_message(
             "Configuration file has been saved and "
@@ -855,12 +855,12 @@ class DataShuttle:
         """
         utils.print_message_to_user(self._config_path.as_posix())
 
-    def show_remote_path(self) -> None:
+    def show_central_path(self) -> None:
         """
-        Print the project remote path.
+        Print the project central path.
         This is always formatted to UNIX style.
         """
-        utils.print_message_to_user(self.cfg["remote_path"].as_posix())
+        utils.print_message_to_user(self.cfg["central_path"].as_posix())
 
     def show_configs(self) -> None:
         """
@@ -903,14 +903,14 @@ class DataShuttle:
     def show_next_sub_number(self) -> None:
         """
         Show a suggested value for the next available subject number.
-        The local and remote repository will be searched, and the
+        The local and central repository will be searched, and the
         maximum existing subject number + 1 will be suggested.
 
         In the case where there are multiple 'local' machines interacting
-        with a central remote repository, this function will not detect
+        with a central central repository, this function will not detect
         subject numbers of other 'local' machines. For example, if there
         is one machine for behavioural and another for electrophysiological
-        data collection, connected to a central server that is 'remote'.
+        data collection, connected to a central server that is 'central'.
         If run on the behavioural data collection machine, this function
         will suggest the next number based on the subjects found on the
         behavioural machine and central machine, but not the
@@ -919,7 +919,7 @@ class DataShuttle:
         suggested_new_num, latest_existing_num = self.get_next_sub_number()
 
         utils.print_message_to_user(
-            "Local and Remote repository searched. "
+            "Local and Central repository searched. "
             f"The most recent subject number found is: {latest_existing_num}. "
             f"The suggested new subject number is: {suggested_new_num}"
         )
@@ -927,14 +927,14 @@ class DataShuttle:
     def show_next_ses_number(self, sub: Optional[str]) -> None:
         """
         Show a suggested value for the next session number of a
-        given subject. The local and remote repository will be
+        given subject. The local and central repository will be
         searched, and the maximum session number + 1 will be suggested.
 
         In the case where there are multiple 'local' machines interacting
-        with a central remote repository, this function will not detect
+        with a central central repository, this function will not detect
         session numbers of other 'local' machines. For example, if there
         is one machine for behavioural and another for electrophysiological
-        data collection, connected to a central server that is 'remote'.
+        data collection, connected to a central server that is 'central'.
         If run on the behavioural data collection machine, this function
         will suggest the next number based on the sessions found on the
         behavioural machine and central machine, but not the
@@ -948,7 +948,7 @@ class DataShuttle:
         latest_existing_num, suggested_new_num = self.get_next_ses_number(sub)
 
         utils.print_message_to_user(
-            f"Local and Remote repository searched for sessions for {sub}. "
+            f"Local and Central repository searched for sessions for {sub}. "
             f"The most recent session number found is: {latest_existing_num}. "
             f"The suggested new session number is: {suggested_new_num}"
         )
@@ -998,7 +998,7 @@ class DataShuttle:
         ----------
 
         direction : direction to transfer the data, either "upload" (from
-                    local to remote) or "download" (from remote to local).
+                    local to central) or "download" (from central to local).
         """
         transfer_all_func = (
             self.upload_all if direction == "upload" else self.download_all
@@ -1023,7 +1023,7 @@ class DataShuttle:
         """
         ssh.setup_ssh_key(self.cfg, log=log)
 
-        self._setup_rclone_remote_ssh_config(log)
+        self._setup_rclone_central_ssh_config(log)
 
     # -------------------------------------------------------------------------
     # Utils
@@ -1040,7 +1040,7 @@ class DataShuttle:
         if connection_method is None:
             connection_method = self.cfg["connection_method"]
 
-        return f"remote_{self.cfg.project_name}_{connection_method}"
+        return f"central_{self.cfg.project_name}_{connection_method}"
 
     def _start_log(
         self,
@@ -1151,8 +1151,8 @@ class DataShuttle:
         """
         folders.make_folders(self.cfg.project_metadata_path, log=False)
 
-    def _setup_rclone_remote_ssh_config(self, log):
-        rclone.setup_remote_as_rclone_target(
+    def _setup_rclone_central_ssh_config(self, log):
+        rclone.setup_central_as_rclone_target(
             "ssh",
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
@@ -1160,8 +1160,8 @@ class DataShuttle:
             log=log,
         )
 
-    def _setup_rclone_remote_local_filesystem_config(self):
-        rclone.setup_remote_as_rclone_target(
+    def _setup_rclone_central_local_filesystem_config(self):
+        rclone.setup_central_as_rclone_target(
             "local_filesystem",
             self.cfg,
             self.cfg.get_rclone_config_name("local_filesystem"),

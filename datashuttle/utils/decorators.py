@@ -12,12 +12,12 @@ def requires_ssh_configs(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if (
-            not args[0].cfg["remote_host_id"]
-            or not args[0].cfg["remote_host_username"]
+            not args[0].cfg["central_host_id"]
+            or not args[0].cfg["central_host_username"]
         ):
             log_and_raise_error(
-                "Cannot setup SSH connection, 'remote_host_id' "
-                "or 'remote_host_username' is not set in "
+                "Cannot setup SSH connection, 'central_host_id' "
+                "or 'central_host_username' is not set in "
                 "the configuration file."
             )
         else:

@@ -26,7 +26,7 @@ def setup_ssh_key(
 ) -> None:
     """
     Set up an SSH private / public key pair with
-    remote server. First, a private key is generated
+    central server. First, a private key is generated
     and saved in the .datashuttle config path.
     Next a connection requiring input
     password made, and the public part of the key
@@ -48,13 +48,13 @@ def setup_ssh_key(
     generate_and_write_ssh_key(cfg.ssh_key_path)
 
     password = getpass.getpass(
-        "Please enter password to your remote host to add the public key. "
+        "Please enter password to your central host to add the public key. "
         "You will not have to enter your password again."
     )
 
     key = paramiko.RSAKey.from_private_key_file(cfg.ssh_key_path.as_posix())
 
-    add_public_key_to_remote_authorized_keys(cfg, password, key)
+    add_public_key_to_central_authorized_keys(cfg, password, key)
 
     success_message = (
         f"SSH key pair setup successfully. "
@@ -73,7 +73,7 @@ def connect_client(
     password: Optional[str] = None,
 ) -> None:
     """
-    Connect client to remote server using paramiko.
+    Connect client to central server using paramiko.
     Accept either password or path to private key, but not both.
     Paramiko does not support pathlib.
     """
@@ -81,8 +81,8 @@ def connect_client(
         client.get_host_keys().load(cfg.hostkeys_path.as_posix())
         client.set_missing_host_key_policy(paramiko.RejectPolicy())
         client.connect(
-            cfg["remote_host_id"],
-            username=cfg["remote_host_username"],
+            cfg["central_host_id"],
+            username=cfg["central_host_username"],
             password=password,
             key_filename=cfg.ssh_key_path.as_posix()
             if isinstance(cfg.ssh_key_path, Path)
@@ -90,26 +90,26 @@ def connect_client(
             look_for_keys=True,
         )
         utils.print_message_to_user(
-            f"Connection to { cfg['remote_host_id']} made successfully."
+            f"Connection to { cfg['central_host_id']} made successfully."
         )
 
     except Exception:
         utils.log_and_raise_error(
             f"Could not connect to server. Ensure that \n"
-            f"1) You have run setup_ssh_connection_to_remote_server() \n"
+            f"1) You have run setup_ssh_connection_to_central_server() \n"
             f"2) You are on VPN network if required. \n"
-            f"3) The remote_host_id: {cfg['remote_host_id']} is"
+            f"3) The central_host_id: {cfg['central_host_id']} is"
             f" correct.\n"
-            f"4) The remote username:"
-            f" {cfg['remote_host_username']}, and password are correct."
+            f"4) The central username:"
+            f" {cfg['central_host_username']}, and password are correct."
         )
 
 
-def add_public_key_to_remote_authorized_keys(
+def add_public_key_to_central_authorized_keys(
     cfg: Configs, password: str, key: paramiko.RSAKey
 ) -> None:
     """
-    Append the public part of key to remote server ~/.ssh/authorized_keys.
+    Append the public part of key to central server ~/.ssh/authorized_keys.
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
@@ -126,8 +126,8 @@ def add_public_key_to_remote_authorized_keys(
         client.exec_command("chmod 700 ~/.ssh/")
 
 
-def verify_ssh_remote_host(
-    remote_host_id: str, hostkeys_path: Path, log: bool = True
+def verify_ssh_central_host(
+    central_host_id: str, hostkeys_path: Path, log: bool = True
 ) -> bool:
     """
     Similar to connecting with other SSH manager e.g. putty,
@@ -135,13 +135,13 @@ def verify_ssh_remote_host(
     for manual validation.
     """
     transport: paramiko.Transport
-    with paramiko.Transport(remote_host_id) as transport:
+    with paramiko.Transport(central_host_id) as transport:
         transport.connect()
         key = transport.get_remote_server_key()
 
     message = (
         f"The host key is not cached for this server: "
-        f"{remote_host_id}.\nYou have no guarantee "
+        f"{central_host_id}.\nYou have no guarantee "
         f"that the server is the computer you think it is.\n"
         f"The server's {key.get_name()} key fingerprint is: "
         f"{key.get_base64()}\nIf you trust this host, to connect"
@@ -151,7 +151,7 @@ def verify_ssh_remote_host(
 
     if input_ == "y":
         client = paramiko.SSHClient()
-        client.get_host_keys().add(remote_host_id, key.get_name(), key)
+        client.get_host_keys().add(central_host_id, key.get_name(), key)
         client.get_host_keys().save(hostkeys_path.as_posix())
         success = True
         utils.print_message_to_user("Host accepted.")
@@ -174,7 +174,7 @@ def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
     key.write_private_key_file(ssh_key_path.as_posix())
 
 
-def search_ssh_remote_for_folders(
+def search_ssh_central_for_folders(
     search_path: Path,
     search_prefix: str,
     cfg: Configs,
@@ -216,7 +216,7 @@ def get_list_of_folder_names_over_sftp(
     ----------
 
     stfp : connected paramiko stfp object
-        (see search_ssh_remote_for_folders())
+        (see search_ssh_central_for_folders())
 
     search_path : path to search for folders in
 

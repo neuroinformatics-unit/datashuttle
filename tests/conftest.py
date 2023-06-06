@@ -21,12 +21,12 @@ import test_utils
 
 test_ssh = False
 username = "jziminski"
-remote_host_id = "hpc-gw1.hpc.swc.ucl.ac.uk"
+central_host_id = "hpc-gw1.hpc.swc.ucl.ac.uk"
 server_path = r"/ceph/neuroinformatics/neuroinformatics/scratch/datashuttle_tests/fake_data"
 
 
 if platform.system() == "Windows":
-    ssh_key_path = r"C:\Users\Joe\.datashuttle\test_file_conflicts_ssh_key"
+    ssh_key_path = r"C:\Users\User\.datashuttle\test_file_conflicts_ssh_key"
     filesystem_path = "X:/neuroinformatics/scratch/datashuttle_tests/fake_data"
 
 else:
@@ -39,7 +39,7 @@ def pytest_configure(config):
         TEST_SSH=test_ssh,
         SSH_KEY_PATH=ssh_key_path,
         USERNAME=username,
-        REMOTE_HOST_ID=remote_host_id,
+        CENTRAL_HOST_ID=central_host_id,
         FILESYSTEM_PATH=filesystem_path,  # FILESYSTEM_PATH and SERVER_PATH these must point to the same folder on the HPC, filesystem
         SERVER_PATH=server_path,  # as a mounted drive and server as the linux path to connect through SSH
     )

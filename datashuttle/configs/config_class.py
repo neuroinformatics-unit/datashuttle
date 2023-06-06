@@ -44,7 +44,7 @@ class Configs(UserDict):
 
         self.keys_str_on_file_but_path_in_class = [
             "local_path",
-            "remote_path",
+            "central_path",
         ]
         self.sub_prefix = "sub"
         self.ses_prefix = "ses"
@@ -146,15 +146,15 @@ class Configs(UserDict):
                 f"{option_key} has been updated to {new_info}"
             )
 
-            if option_key in ["connection_method", "remote_path"]:
+            if option_key in ["connection_method", "central_path"]:
                 if self["connection_method"] == "ssh":
                     utils.log_and_message(
-                        f"SSH will be used to connect to project folder at: {self['remote_path']}"
+                        f"SSH will be used to connect to project folder at: {self['central_path']}"
                     )
                 elif self["connection_method"] == "local_filesystem":
                     utils.log_and_message(
                         f"Local filesystem will be used to connect to project "
-                        f"folder at: {self['remote_path'].as_posix()}"
+                        f"folder at: {self['central_path'].as_posix()}"
                     )
         else:
             self[option_key] = original_value
@@ -219,7 +219,7 @@ class Configs(UserDict):
         Parameters
         ----------
 
-        base: "local", "remote" or "datashuttle"
+        base: "local", "central" or "datashuttle"
 
         sub_folders: a list (or string for 1) of
             folder names to be joined into a path.
@@ -250,13 +250,13 @@ class Configs(UserDict):
         Parameters
         ----------
 
-        base : base path, "local", "remote" or "datashuttle"
+        base : base path, "local", "central" or "datashuttle"
 
         """
         if base == "local":
             base_folder = self["local_path"] / self.top_level_folder
-        elif base == "remote":
-            base_folder = self["remote_path"] / self.top_level_folder
+        elif base == "central":
+            base_folder = self["central_path"] / self.top_level_folder
         elif base == "datashuttle":
             base_folder, _ = utils.get_datashuttle_path(self.project_name)
         return base_folder
@@ -272,7 +272,7 @@ class Configs(UserDict):
         if connection_method is None:
             connection_method = self["connection_method"]
 
-        return f"remote_{self.project_name}_{connection_method}"
+        return f"central_{self.project_name}_{connection_method}"
 
     def make_rclone_transfer_options(self, dry_run: bool):
         return {
@@ -330,7 +330,7 @@ class Configs(UserDict):
 
     def items_from_data_type_input(
         self,
-        local_or_remote: str,
+        local_or_central: str,
         data_type: Union[list, str],
         sub: str,
         ses: Optional[str] = None,
@@ -345,7 +345,7 @@ class Configs(UserDict):
 
         see _transfer_data_type() for parameters.
         """
-        base_folder = self.get_base_folder(local_or_remote)
+        base_folder = self.get_base_folder(local_or_central)
 
         if data_type not in [
             "all",
@@ -360,7 +360,7 @@ class Configs(UserDict):
             data_type_items = folders.search_data_folders_sub_or_ses_level(
                 self,
                 base_folder,
-                local_or_remote,
+                local_or_central,
                 sub,
                 ses,
             )

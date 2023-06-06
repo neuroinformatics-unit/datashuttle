@@ -96,7 +96,7 @@ def get_path_after_base_folder(base_folder: Path, path_: Path) -> Path:
     ----------
 
     base_folder : base folder that should be removed, usually
-        local_path or remote_path
+        local_path or central_path
 
     path_ : path after base_folder that should be isolated
     """

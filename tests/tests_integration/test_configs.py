@@ -82,40 +82,41 @@ class TestConfigs:
         with pytest.raises(BaseException) as e:
             project.make_config_file(
                 "test_local_path",
-                "test_remote_path",
+                "test_central_path",
                 "ssh",
                 use_behav=True,
             )
 
         assert (
-            str(e.value) == "'remote_host_id' and 'remote_host_username' are "
+            str(e.value)
+            == "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'."
         )
 
     @pytest.mark.parametrize(
         "argument_type",
-        ["none", "remote_host_id", "remote_host_username", "both"],
+        ["none", "central_host_id", "central_host_username", "both"],
     )
     def test_no_ssh_options_set_update_config(
         self, project, argument_type, tmp_path
     ):
         """
         Check every config option missing does not allow
-        switching on ssh_to_remote unless all options
+        switching on ssh_to_central unless all options
         are set.
         """
         project.make_config_file(
             tmp_path / "test_local_path",
-            tmp_path / "test_remote_path",
+            tmp_path / "test_central_path",
             "local_filesystem",
             use_behav=True,
         )
 
-        if argument_type in ["remote_host_id", "both"]:
-            project.update_config("remote_host_id", "fake_id")
+        if argument_type in ["central_host_id", "both"]:
+            project.update_config("central_host_id", "fake_id")
 
-        if argument_type in ["remote_host_username", "both"]:
-            project.update_config("remote_host_username", "fake_username")
+        if argument_type in ["central_host_username", "both"]:
+            project.update_config("central_host_username", "fake_username")
 
         if argument_type == "both":
             project.update_config("connection_method", "ssh")
@@ -126,7 +127,7 @@ class TestConfigs:
 
             assert (
                 str(e.value)
-                == "\n'remote_host_id' and 'remote_host_username' are required "
+                == "\n'central_host_id' and 'central_host_username' are required "
                 "if 'connection_method' is 'ssh'.\nconnection_method was not updated."
             )
             assert project.cfg["connection_method"] == "local_filesystem"
@@ -136,7 +137,7 @@ class TestConfigs:
 
     def test_required_configs(self, project, tmp_path):
         """
-        Set the required arguments of the config (local_path, remote_path,
+        Set the required arguments of the config (local_path, central_path,
         connection_method and check they are set correctly in both
         the project.cfg dict and config.yaml file.
         """

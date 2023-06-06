@@ -422,17 +422,17 @@ class TestMakeFolders:
         """
         Test that the next subject number is suggested correctly.
         This takes the union of subjects available in the local and
-        remote repository. As such test the case where either are
+        central repository. As such test the case where either are
         empty, or when they have different subjects in.
         """
-        # Create local folders, remote is empty
+        # Create local folders, central is empty
         project.make_sub_folders(["001", "002", "003"])
         new_num, old_num = project.get_next_sub_number()
 
         assert new_num == 4
         assert old_num == 3
 
-        # Upload to remote, now local and remote folders match
+        # Upload to central, now local and central folders match
         project.upload_all()
         new_num, old_num = project.get_next_sub_number()
         assert new_num == 4

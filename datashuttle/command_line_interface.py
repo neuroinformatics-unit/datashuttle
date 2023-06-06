@@ -176,10 +176,10 @@ def update_config(project: DataShuttle, args: Any) -> None:
 # -----------------------------------------------------------------------------
 
 
-def setup_ssh_connection_to_remote_server(*args: Any) -> None:
+def setup_ssh_connection_to_central_server(*args: Any) -> None:
     """"""
     project = args[0]
-    project.setup_ssh_connection_to_remote_server()
+    project.setup_ssh_connection_to_central_server()
 
 
 # -----------------------------------------------------------------------------
@@ -345,13 +345,13 @@ def show_config_path(*args: Any) -> None:
     project.show_config_path()
 
 
-# Get Remote Path -------------------------------------------------------------
+# Get Central Path -------------------------------------------------------------
 
 
-def show_remote_path(*args: Any) -> None:
+def show_central_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.show_remote_path()
+    project.show_central_path()
 
 
 # Show Configs ----------------------------------------------------------------
@@ -472,7 +472,7 @@ def construct_parser():
     )
 
     make_config_file_parser.add_argument(
-        "remote_path", type=str, help=help("required_str")
+        "central_path", type=str, help=help("required_str")
     )
 
     make_config_file_parser.add_argument(
@@ -484,15 +484,15 @@ def construct_parser():
     )  # type: ignore
 
     make_config_file_parser.add_argument(
-        "--remote-host-id",
-        "--remote_host_id",
+        "--central-host-id",
+        "--central_host_id",
         required=False,
         type=str,
         help="(str)",
     )
     make_config_file_parser.add_argument(
-        "--remote-host-username",
-        "--remote_host_username",
+        "--central-host-username",
+        "--central_host_username",
         required=False,
         help="(str)",
     )
@@ -550,8 +550,8 @@ def construct_parser():
         aliases=["update_config"],
         description=f"{process_docstring(DataShuttle.update_config.__doc__)} "
         f"\nThe option key should be in the form of config file keys"
-        f"(e.g. remote_path, local_path)\n"
-        f"EXAMPLE: datashuttle test update_config remote_path 'test_path'",
+        f"(e.g. central_path, local_path)\n"
+        f"EXAMPLE: datashuttle test update_config central_path 'test_path'",
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
@@ -568,20 +568,20 @@ def construct_parser():
         help="(str or bool) depending on option key",
     )
 
-    # SSH connection to remote server
+    # SSH connection to central server
     # ----------------------------------------------------------------------
 
-    setup_ssh_connection_to_remote_server_parser = subparsers.add_parser(
-        "setup-ssh-connection-to-remote-server",
-        aliases=["setup_ssh_connection_to_remote_server"],
+    setup_ssh_connection_to_central_server_parser = subparsers.add_parser(
+        "setup-ssh-connection-to-central-server",
+        aliases=["setup_ssh_connection_to_central_server"],
         description=process_docstring(
-            DataShuttle.setup_ssh_connection_to_remote_server.__doc__
+            DataShuttle.setup_ssh_connection_to_central_server.__doc__
         ),
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    setup_ssh_connection_to_remote_server_parser.set_defaults(
-        func=setup_ssh_connection_to_remote_server
+    setup_ssh_connection_to_central_server_parser.set_defaults(
+        func=setup_ssh_connection_to_central_server
     )
 
     # Make Sub Folder
@@ -881,16 +881,16 @@ def construct_parser():
     )
     show_config_path_parser.set_defaults(func=show_config_path)
 
-    # Get Remote Path
+    # Get Central Path
     # -------------------------------------------------------------------------
 
-    show_remote_path_parser = subparsers.add_parser(
-        "show-remote-path",
-        aliases=["show_remote_path"],
-        description=process_docstring(DataShuttle.show_remote_path.__doc__),
+    show_central_path_parser = subparsers.add_parser(
+        "show-central-path",
+        aliases=["show_central_path"],
+        description=process_docstring(DataShuttle.show_central_path.__doc__),
         help="",
     )
-    show_remote_path_parser.set_defaults(func=show_remote_path)
+    show_central_path_parser.set_defaults(func=show_central_path)
 
     # Show Configs
     # -------------------------------------------------------------------------

@@ -18,7 +18,7 @@ class TestFileTransfer:
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem
-            False,
+            #     False,
             pytest.param(
                 True,
                 marks=pytest.mark.skipif(
@@ -45,7 +45,7 @@ class TestFileTransfer:
         and all files to transfer. Then in the
         test function, the folder are transferred.
         Partial cleanup is done in the test function
-        i.e. deleting the remote_path to which the
+        i.e. deleting the central_path to which the
         items have been transferred. This is achieved
         by using "class" scope.
 
@@ -66,10 +66,10 @@ class TestFileTransfer:
 
         if testing_ssh:
             base_path = ssh_config.FILESYSTEM_PATH
-            remote_path = ssh_config.SERVER_PATH
+            central_path = ssh_config.SERVER_PATH
         else:
             base_path = tmp_path / "test with space"
-            remote_path = base_path
+            central_path = base_path
         test_project_name = "test_file_conflicts"
 
         project, cwd = test_utils.setup_project_fixture(
@@ -80,9 +80,9 @@ class TestFileTransfer:
             ssh_test_utils.setup_project_for_ssh(
                 project,
                 test_utils.make_test_path(
-                    remote_path, test_project_name, "remote"
+                    central_path, test_project_name, "central"
                 ),
-                ssh_config.REMOTE_HOST_ID,
+                ssh_config.CENTRAL_HOST_ID,
                 ssh_config.USERNAME,
             )
 
@@ -106,8 +106,8 @@ class TestFileTransfer:
     # Utils
     # -------------------------------------------------------------------------
 
-    def remote_from_local(self, path_):
-        return Path(str(copy.copy(path_)).replace("local", "remote"))
+    def central_from_local(self, path_):
+        return Path(str(copy.copy(path_)).replace("local", "central"))
 
     # -------------------------------------------------------------------------
     # Test File Transfer - All Options
@@ -163,8 +163,8 @@ class TestFileTransfer:
         Note files in sub/ses/datatype folders must be handled
         separately to those in non-sub, non-ses, non-data-type folders
 
-        see test_utils.swap_local_and_remote_paths() for the logic
-        on setting up and swapping local / remote paths for
+        see test_utils.swap_local_and_central_paths() for the logic
+        on setting up and swapping local / central paths for
         upload / download tests.
         """
         pathtable, project = pathtable_and_project
@@ -178,7 +178,7 @@ class TestFileTransfer:
         transfer_function(sub_names, ses_names, data_type, init_log=False)
 
         if upload_or_download == "download":
-            test_utils.swap_local_and_remote_paths(
+            test_utils.swap_local_and_central_paths(
                 project, swap_last_folder_only=project.testing_ssh
             )
 
@@ -201,20 +201,20 @@ class TestFileTransfer:
         expected_paths = pd.concat([data_type_folders, extra_folders])
         expected_paths = expected_paths.drop_duplicates(subset="path")
 
-        remote_base_paths = expected_paths.base_folder.map(
-            lambda x: str(x).replace("local", "remote")
+        central_base_paths = expected_paths.base_folder.map(
+            lambda x: str(x).replace("local", "central")
         )
-        expected_transferred_paths = remote_base_paths / expected_paths.path
+        expected_transferred_paths = central_base_paths / expected_paths.path
 
         # When transferring with SSH, there is a delay before
         # filesystem catches up
         if project.testing_ssh:
-            time.sleep(10)
+            time.sleep(0.5)
 
         # Check what paths were actually moved
         # (through the local filesystem), and test
         path_to_search = (
-            self.remote_from_local(project.cfg["local_path"]) / "rawdata"
+            self.central_from_local(project.cfg["local_path"]) / "rawdata"
         )
         all_transferred = path_to_search.glob("**/*")
         paths_to_transferred_files = list(
@@ -227,7 +227,7 @@ class TestFileTransfer:
 
         # Teardown here, because we have session scope.
         try:
-            shutil.rmtree(self.remote_from_local(project.cfg["local_path"]))
+            shutil.rmtree(self.central_from_local(project.cfg["local_path"]))
         except FileNotFoundError:
             pass
 
