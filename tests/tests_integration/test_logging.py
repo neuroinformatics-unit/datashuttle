@@ -296,9 +296,9 @@ class TestCommandLineInterface:
         self.delete_log_files(setup_project.cfg.logging_path)
 
         if upload_or_download == "upload":
-            setup_project.upload_project_folder_or_file("sub-001/ses-001")
+            setup_project.upload_specific_folder_or_file("sub-001/ses-001")
         else:
-            setup_project.download_project_folder_or_file("sub-001/ses-001")
+            setup_project.download_specific_folder_or_file("sub-001/ses-001")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
