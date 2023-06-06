@@ -209,6 +209,8 @@ class DataShuttle:
         """
         self._start_log("make_sub_folders", local_vars=locals())
 
+        self.show_top_level_folder()
+
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
@@ -340,6 +342,8 @@ class DataShuttle:
         if init_log:
             self._start_log("upload_data", local_vars=locals())
 
+        self.show_top_level_folder()
+
         TransferData(
             self.cfg,
             "upload",
@@ -373,6 +377,8 @@ class DataShuttle:
         """
         if init_log:
             self._start_log("download_data", local_vars=locals())
+
+        self.show_top_level_folder()
 
         TransferData(
             self.cfg,
@@ -462,6 +468,8 @@ class DataShuttle:
         """
         self._start_log("upload_project_folder_or_file", local_vars=locals())
 
+        self.show_top_level_folder()
+
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("local"),
             Path(filepath),
@@ -511,6 +519,8 @@ class DataShuttle:
             to check which files will be moved on data transfer.
         """
         self._start_log("download_project_folder_or_file", local_vars=locals())
+
+        self.show_top_level_folder()
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("central"),
