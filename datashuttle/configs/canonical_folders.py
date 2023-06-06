@@ -99,4 +99,4 @@ def get_non_ses_names():
 
 
 def get_top_level_folders():
-    return ["rawdata", "derivatives", "analysis", "code"]
+    return ["rawdata", "derivatives"]
