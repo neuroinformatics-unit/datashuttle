@@ -438,18 +438,18 @@ def inconsistent_num_leading_zeros(
     if all_num_lens != [] and not identical_elements(all_num_lens):
         most_common_len = statistics.mode(all_num_lens)
 
-        larger_than_most_common_has_leading_zeros = [
+        larger_than_most_common_with_leading_zeros = [
             num
             for num in all_numbers
-            if (int(num) > most_common_len and num_leading_zeros(num) != 0)
-        ]
-        less_than_most_common = [
-            num for num in all_numbers if int(num) < most_common_len
+            if (len(num) > most_common_len and num_leading_zeros(num) != 0)
         ]
 
-        if (
-            any(less_than_most_common)
-            or larger_than_most_common_has_leading_zeros
+        less_than_most_common = [
+            num for num in all_numbers if len(num) < most_common_len
+        ]
+
+        if any(less_than_most_common) or any(
+            larger_than_most_common_with_leading_zeros
         ):
             return True
 
