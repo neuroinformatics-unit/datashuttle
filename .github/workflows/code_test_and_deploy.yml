@@ -47,7 +47,7 @@ jobs:
           pip install .[dev]
       - name: Test
         run: pytest
-  
+
   build_sdist_wheels:
     name: Build source distribution
     needs: [test]
