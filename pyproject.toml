@@ -17,6 +17,7 @@ dependencies = [
     "requests",
     "rich",
     "fancylog[git]",
+    "simplejson",
 ]
 
 classifiers = [
@@ -50,7 +51,6 @@ dev = [
     "pre-commit",
     "flake8",
     "setuptools_scm",
-    "simplejson",
     "types-requests",
     "types-PyYAML",
     "types-appdirs",
