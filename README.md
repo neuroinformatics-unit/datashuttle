@@ -9,6 +9,8 @@ Datashuttle includes tools for automated generation and transfer of neuroscience
 
 * Simplify data transfers by selecting only a sub-set of data to move (e.g. specific subjects, sessions or data types)
 
+![datashuttle_figure_machines](https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258)
+
 See the [Documentation Page] for more information, including how to [Get Started]
 
 ## Installation
