@@ -59,7 +59,7 @@ def format_names(
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
-    assert prefix in ["sub", "ses"], "`sub_or_ses` but be 'sub' or 'ses'."
+    assert prefix in ["sub", "ses"], "`sub_or_ses` must be 'sub' or 'ses'."
 
     if type(names) not in [str, list] or any(
         [not isinstance(ele, str) for ele in names]
