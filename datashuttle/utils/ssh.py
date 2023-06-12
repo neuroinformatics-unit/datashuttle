@@ -214,7 +214,10 @@ def search_ssh_central_for_folders(
         sftp = client.open_sftp()
 
         all_folder_names, all_filenames = get_list_of_folder_names_over_sftp(
-            sftp, search_path, search_prefix, verbose
+            sftp,
+            search_path,
+            search_prefix,
+            verbose,
         )
 
     return all_folder_names, all_filenames

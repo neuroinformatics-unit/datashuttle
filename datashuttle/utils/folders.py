@@ -254,7 +254,7 @@ def search_sub_or_ses_level(
         folder level.
 
     verbose : If `True`, if a search folder cannot be found, a message
-          will be printed with the un-found path.
+              will be printed with the un-found path.
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -388,6 +388,7 @@ def get_all_local_and_central_sub_and_ses_names(
         local_sub_foldernames,
         central_sub_foldernames,
     ) = get_local_and_central_sub_or_ses_names(cfg, None, "sub-*")
+
     all_sub_foldernames = local_sub_foldernames + central_sub_foldernames
 
     all_ses_foldernames = []
@@ -396,6 +397,7 @@ def get_all_local_and_central_sub_and_ses_names(
             local_ses_foldernames,
             central_ses_foldernames,
         ) = get_local_and_central_sub_or_ses_names(cfg, sub, "ses-*")
+
         all_ses_foldernames.extend(
             local_ses_foldernames + central_ses_foldernames
         )
@@ -497,10 +499,12 @@ def search_filesystem_path_for_folders(
     all_folder_names = []
     all_filenames = []
     for file_or_folder in glob.glob(search_path_with_prefix.as_posix()):
+
         if os.path.isdir(file_or_folder):
             all_folder_names.append(os.path.basename(file_or_folder))
         else:
             all_filenames.append(os.path.basename(file_or_folder))
+
     return all_folder_names, all_filenames
 
 
@@ -512,6 +516,11 @@ def get_local_and_central_sub_or_ses_names(
     The search string "sub-*" is suggested in this case. Otherwise, the subject,
     level folder for the specified subject will be searched. The search_str
     "ses-*" is suggested in this case.
+
+    Note `verbose` argument of `search_sub_or_ses_level()` is set to `False`,
+    as session folders for local subjects that are not yet on central
+    will be searched for on central, showing a confusing 'folder not found'
+    message.
     """
 
     # Search local and central for folders that begin with "sub-*"
@@ -521,6 +530,7 @@ def get_local_and_central_sub_or_ses_names(
         "local",
         sub=sub,
         search_str=search_str,
+        verbose=False,
     )
     central_foldernames, _ = search_sub_or_ses_level(
         cfg,
@@ -528,6 +538,7 @@ def get_local_and_central_sub_or_ses_names(
         "central",
         sub,
         search_str=search_str,
+        verbose=False,
     )
     return local_foldernames, central_foldernames
 
