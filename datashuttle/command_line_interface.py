@@ -1046,6 +1046,7 @@ def main() -> None:
     These command functions (all defined above) will process
     the CLI arguments and then call the appropriate API function
     through run_command().
+
     """
     args = parser.parse_args()
 
@@ -1055,7 +1056,7 @@ def main() -> None:
         warn = "default"
 
     warnings.filterwarnings(warn)  # type: ignore
-    project = DataShuttle(args.project_name)
+    project = DataShuttle(args.project_name, print_startup_message=False)
     warnings.filterwarnings("default")
 
     if len(vars(args)) > 1:
