@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g1fe3e40</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+geab761f</p>
   
 </a></div>
     
@@ -138,6 +138,26 @@
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pages/documentation.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pages/api_index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pages/cli_index.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
       
@@ -227,6 +247,26 @@ document.write(`
   </p>
   <ul class="bd-navbar-elements navbar-nav">
     
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pages/documentation.html">
+                        Getting Started
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pages/api_index.html">
+                        API Reference
+                      </a>
+                    </li>
+                
+
+                    <li class="nav-item">
+                      <a class="nav-link nav-internal" href="../../pages/cli_index.html">
+                        CLI Reference
+                      </a>
+                    </li>
+                
   </ul>
 </nav></div>
         
@@ -540,14 +580,10 @@ document.write(`
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Formatting Names...&quot;</span><span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">([</span><span class="s2">&quot;sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;ses_names&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">])</span>
 
-        <span class="n">sub_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span>
-        <span class="p">)</span>
+        <span class="n">sub_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span><span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">ses_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span>
-            <span class="p">)</span>
+            <span class="n">ses_names</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span><span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">(</span>
             <span class="p">[</span><span class="s2">&quot;formatted_sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;formatted_ses_names&quot;</span><span class="p">],</span>
@@ -1317,7 +1353,9 @@ document.write(`
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.check_name_formatting"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.check_name_formatting">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span>
+        <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
 <span class="sd">        for example as when passed to make_sub_folders() or upload_data()</span>

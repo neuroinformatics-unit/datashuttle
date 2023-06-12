@@ -1,4 +1,4 @@
-CLI Documentation
+CLI Reference
 -----------------
 
 .. argparse::
