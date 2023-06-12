@@ -1,3 +1,4 @@
+# Getting Started
 
 DataShuttle is a tool to streamline the management and standardisation of neuroscience project folders and files.
 
@@ -34,7 +35,7 @@ conda install -c conda-forge rclone
 See [the Rclone website](https://rclone.org/install/) for alternative installation methods.
 
 
-# Getting Started
+# Setup
 
 Datashuttle provides a cross-platform command line interface (CLI) used in the examples below, and a [Python API](#python-api-guide). Full references for the CLI ([CLI Reference](https://datashuttle.neuroinformatics.dev/pages/cli_index.html)) and API ([API Reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html)) are available.
 
@@ -180,7 +181,7 @@ upload
 
 Will *upload* (from *local* to *central* ) behavioural sessions 5 and 6, collected at any date, for subjects 1 to 3.
 
-The keyword `all` can be input in place of a -`sub`, `-ses` or data type argument `dt` to transfer all available subject, sessions or data types available. For example:
+The keyword `all` can be input in place of a `-sub`, `-ses` or data type argument `dt` to transfer all available subject, sessions or data types available. For example:
 
 ```
 datashuttle \
@@ -208,7 +209,7 @@ SWC-Blueprint defines two main *top-level folders*, `rawdata` and `derivatives`.
         └── ...
 ```
 
-In DataShuttle, the current working *top level folder* is by default `rawdata`. The working *top level folder* determines where folders are created (e.g. `make_sub_folders`), and from which folder data is transferred.
+In DataShuttle, th[index.md](..%2Findex.md)e current working *top level folder* is by default `rawdata`. The working *top level folder* determines where folders are created (e.g. `make_sub_folders`), and from which folder data is transferred.
 
 For example, `upload` or  `upload-working-folder` will transfer data with `rawdata` from *local* to *central*, if `rawdata` is the current *top level folder*. `upload` transfers the specified subset of folders, while `upload-working-folder` will upload the entire *top level folder*.
 

@@ -13,33 +13,35 @@ Any feedback is much appreciated, please open at [GitHub Issue](https://github.c
 ::::{grid} 4
 
 :::{grid-item-card} Get Started
-:link: pages/get_started
-:link-type: doc
-
-Get started with DataShuttle
-
-:::
-
-:::{grid-item-card} Full Documentation
 :link: pages/documentation
 :link-type: doc
 
-Explore the more detailed documentation
+Get started with DataShuttle.
 
 :::
 
-:::{grid-item-card} API Documentation
+:::{grid-item-card} Python API
 :link: pages/api_index
 :link-type: doc
 
-Check out the API documentation (to call from python)
+Check out the API reference.
 :::
 
-:::{grid-item-card} CLI Documentation
+:::{grid-item-card} Command-line interface
 :link: pages/cli_index
 :link-type: doc
 
-Documentation for Command line interface
+Use datashuttle with the CLI.
 :::
 
 ::::
+[documentation.md](pages%2Fdocumentation.md)
+```{toctree}
+:maxdepth: 2
+:caption: index
+:hidden:
+
+pages/documentation
+pages/api_index
+pages/cli_index
+```
