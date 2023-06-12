@@ -434,6 +434,22 @@ class TestMakeFolders:
         assert new_num == 6
         assert old_num == 5
 
+    def test_invalid_sub_and_ses_name(self, project):
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub_100")
+
+        assert "Invalid character in subject number: sub-sub_100" in str(
+            e.value
+        )
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub-001", "ses_100")
+
+        assert "Invalid character in subject number: ses-ses_100" in str(
+            e.value
+        )
+
     # ----------------------------------------------------------------------------------
     # Test Helpers
     # ----------------------------------------------------------------------------------
