@@ -443,7 +443,7 @@ class DataShuttle:
         self._transfer_entire_project("download")
 
     @check_configs_set
-    def upload_project_folder_or_file(
+    def upload_specific_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
@@ -472,7 +472,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("upload_project_folder_or_file", local_vars=locals())
+        self._start_log("upload_specific_folder_or_file", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -494,7 +494,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def download_project_folder_or_file(
+    def download_specific_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
         """
@@ -523,7 +523,9 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("download_project_folder_or_file", local_vars=locals())
+        self._start_log(
+            "download_specific_folder_or_file", local_vars=locals()
+        )
 
         self.show_top_level_folder()
 
@@ -929,7 +931,7 @@ class DataShuttle:
         sub-folders will be made (e.g. make_sub_folders) or
         at which level folders are transferred with the commands
         upload / download and upload_all / download all.
-        upload_project_folder_or_file / download_project_folder_or_file.
+        upload_specific_folder_or_file / download_specific_folder_or_file.
 
         To upload the entire project (i.e. every top level
         folder), use the 'command upload_entire_project' or
