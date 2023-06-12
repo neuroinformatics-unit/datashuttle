@@ -1,6 +1,6 @@
 import datetime
 import re
-from typing import List, Union
+from typing import List, Literal, Union
 
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.configs.config_class import Configs
@@ -20,9 +20,8 @@ RESERVED_KEYWORDS = [
 
 
 def check_and_format_names(
-    cfg: Configs,
     names: Union[list, str],
-    sub_or_ses: str,
+    sub_or_ses: Literal["sub", "ses"],
 ) -> List[str]:
     """
     Format a list of subject or session names, e.g.
@@ -38,15 +37,13 @@ def check_and_format_names(
 
     sub_or_ses: "sub" or "ses" - this defines the prefix checks.
     """
-    prefix = cfg.get_sub_or_ses_prefix(sub_or_ses)
-    formatted_names = format_names(names, prefix)
+    formatted_names = format_names(names, sub_or_ses)
 
     return formatted_names
 
 
 def format_names(
-    names: Union[List[str], str],
-    prefix: str,
+    names: Union[List[str], str], prefix: Literal["sub", "ses"]
 ) -> List[str]:
     """
     Check a single or list of input session or subject names.
@@ -62,6 +59,8 @@ def format_names(
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
+    assert prefix in ["sub", "ses"], "`sub_or_ses` but be 'sub' or 'ses'."
+
     if type(names) not in [str, list] or any(
         [not isinstance(ele, str) for ele in names]
     ):

@@ -214,14 +214,10 @@ class DataShuttle:
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
-        sub_names = formatting.check_and_format_names(
-            self.cfg, sub_names, "sub"
-        )
+        sub_names = formatting.check_and_format_names(sub_names, "sub")
 
         if ses_names is not None:
-            ses_names = formatting.check_and_format_names(
-                self.cfg, ses_names, "ses"
-            )
+            ses_names = formatting.check_and_format_names(ses_names, "ses")
 
         ds_logger.log_names(
             ["formatted_sub_names", "formatted_ses_names"],
@@ -991,7 +987,9 @@ class DataShuttle:
         )
 
     @staticmethod
-    def check_name_formatting(names: Union[str, list], prefix: str) -> None:
+    def check_name_formatting(
+        names: Union[str, list], prefix: Literal["sub", "ses"]
+    ) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
         for example as when passed to make_sub_folders() or upload_data()
