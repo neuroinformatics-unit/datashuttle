@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g0b5095d</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g6b5aeba</p>
   
 </a></div>
     
@@ -392,7 +392,7 @@ document.write(`
 <span class="sd">                   see the path to this folder.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">print_startup_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 
         <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">project_name</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
@@ -418,6 +418,10 @@ document.write(`
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_set_attributes_after_config_load</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">print_startup_message</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
         <span class="n">rclone</span><span class="o">.</span><span class="n">prompt_rclone_download_if_does_not_exist</span><span class="p">()</span>
 
@@ -526,6 +530,8 @@ document.write(`
 <span class="sd">                             [&quot;ephys&quot;, &quot;behav&quot;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;make_sub_folders&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Formatting Names...&quot;</span><span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">log_names</span><span class="p">([</span><span class="s2">&quot;sub_names&quot;</span><span class="p">,</span> <span class="s2">&quot;ses_names&quot;</span><span class="p">],</span> <span class="p">[</span><span class="n">sub_names</span><span class="p">,</span> <span class="n">ses_names</span><span class="p">])</span>
@@ -658,6 +664,8 @@ document.write(`
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_data&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
+
         <span class="n">TransferData</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
@@ -691,6 +699,8 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_data&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
         <span class="n">TransferData</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
@@ -780,6 +790,8 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_project_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
+
         <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_folder</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_folder</span><span class="p">(</span><span class="s2">&quot;local&quot;</span><span class="p">),</span>
             <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">),</span>
@@ -829,6 +841,8 @@ document.write(`
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_project_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
         <span class="n">processed_filepath</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_path_after_base_folder</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">get_base_folder</span><span class="p">(</span><span class="s2">&quot;central&quot;</span><span class="p">),</span>
@@ -1240,7 +1254,7 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">The working top level folder is: &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">top_level_folder</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.show_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_next_sub_number">[docs]</a>    <span class="nd">@check_configs_set</span>
