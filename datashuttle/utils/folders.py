@@ -376,7 +376,33 @@ def search_for_wildcards(
     return new_all_names
 
 
-# Search Datatypes
+def get_all_local_and_central_sub_and_ses_names(
+    cfg: Configs,
+) -> Tuple[List[str], List[str]]:
+    """
+    Get a list of every subject and session name in the project, both in the
+    local and central project folders. Local and central names are combined
+    into a single list, separately for subject and sessions.
+    """
+    (
+        local_sub_foldernames,
+        central_sub_foldernames,
+    ) = get_local_and_central_sub_or_ses_names(cfg, None, "sub-*")
+    all_sub_foldernames = local_sub_foldernames + central_sub_foldernames
+
+    all_ses_foldernames = []
+    for sub in all_sub_foldernames:
+        (
+            local_ses_foldernames,
+            central_ses_foldernames,
+        ) = get_local_and_central_sub_or_ses_names(cfg, sub, "ses-*")
+        all_ses_foldernames.extend(
+            local_ses_foldernames + central_ses_foldernames
+        )
+
+    return all_sub_foldernames, all_ses_foldernames
+
+# Search Data Types
 # -----------------------------------------------------------------------------
 
 
@@ -478,38 +504,15 @@ def search_filesystem_path_for_folders(
     return all_folder_names, all_filenames
 
 
-def get_next_sub_or_ses_number(
+def get_local_and_central_sub_or_ses_names(
     cfg: Configs, sub: Optional[str], search_str: str
-) -> Tuple[int, int]:
+) -> Tuple[List[str], List[str]]:
     """
-    Suggest the next available subject or session number. This function will
-    search the local repository, and the central repository, for all subject
-    or session folders (subject or session depending on inputs).
-    It will take the union of all folder names, find the relevant key-value
-    pair values, and return the maximum value + 1 as the new number.
-    A warning will be shown if the existing sub / session numbers are not
-    consecutive.
     If sub is None, the top-level level folder will be searched (i.e. for subjects).
     The search string "sub-*" is suggested in this case. Otherwise, the subject,
     level folder for the specified subject will be searched. The search_str
     "ses-*" is suggested in this case.
-    Parameters
-    ----------
-    cfg : datashuttle configs class
-    sub : subject name to search within if searching for sessions, otherwise None
-          to search for subjects
-    search_str : the string to search for within the top-level or subject-levle
-                 folder ("sub-*") or ("ses-*") are suggested, respectively.
-    Returns
-    -------
-    suggested_new_num : the new suggested sub / ses number.
-    latest_existing_num : the latest sub / ses number that currently
-                          exists in the project.
     """
-    if sub:
-        bids_key = "ses"
-    else:
-        bids_key = "sub"
 
     # Search local and central for folders that begin with "sub-*"
     local_foldernames, _ = search_sub_or_ses_level(
@@ -525,6 +528,49 @@ def get_next_sub_or_ses_number(
         "central",
         sub,
         search_str=search_str,
+    )
+    return local_foldernames, central_foldernames
+
+
+def get_next_sub_or_ses_number(
+    cfg: Configs, sub: Optional[str], search_str: str
+) -> Tuple[int, int]:
+    """
+    Suggest the next available subject or session number. This function will
+    search the local repository, and the central repository, for all subject
+    or session folders (subject or session depending on inputs).
+    It will take the union of all folder names, find the relevant key-value
+    pair values, and return the maximum value + 1 as the new number.
+    A warning will be shown if the existing sub / session numbers are not
+    consecutive.
+
+
+    Parameters
+    ----------
+    cfg : datashuttle configs class
+    sub : subject name to search within if searching for sessions, otherwise None
+          to search for subjects
+    search_str : the string to search for within the top-level or subject-levle
+                 folder ("sub-*") or ("ses-*") are suggested, respectively.
+    Returns
+    -------
+    suggested_new_num : the new suggested sub / ses number.
+    latest_existing_num : the latest sub / ses number that currently
+                          exists in the project.
+    """
+
+    if sub:
+        bids_key = "ses"
+    else:
+        bids_key = "sub"
+
+    (
+        local_foldernames,
+        central_foldernames,
+    ) = get_local_and_central_sub_or_ses_names(
+        cfg,
+        sub,
+        search_str,
     )
 
     # Convert subject values to a list of increasing-by-1 integers

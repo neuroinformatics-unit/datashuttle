@@ -99,6 +99,9 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
+            formatting.warn_on_inconsistent_sub_or_ses_leading_zeros(
+                self.cfg,
+            )
 
         if print_startup_message:
             if self.cfg:
@@ -543,6 +546,9 @@ class DataShuttle:
         utils.log(output.stderr.decode("utf-8"))
 
         ds_logger.close_log_filehandler()
+
+    def _show_pre_transfer_messages(self):
+        formatting.warn_on_inconsistent_sub_or_ses_leading_zeros(self.cfg)
 
     # -------------------------------------------------------------------------
     # SSH
