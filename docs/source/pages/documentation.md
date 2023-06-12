@@ -195,7 +195,7 @@ Will transfer *electrophysiology* data of the 5th sessions for *all* subjects fo
 
 The *download* command transfers data from the *central* to *local* PC. This can be useful in case you want to analyse a subset of data that is held in *central* storage.
 
-The main data transfer commands are: `upload`, `download`, `upload-working-folder`, `download-working-folder`, `upload-entire-project`, `download-entire-project`. To understand their behaviour, it is necessary to understand the concept of the *top level folder*.
+The main data transfer commands are: `upload`, `download`, `upload-all`, `download-all`, `upload-entire-project`, `download-entire-project`. To understand their behaviour, it is necessary to understand the concept of the *top level folder*.
 
 ### Understanding the 'Top Level Folder' and Transfer Methods
 
@@ -211,7 +211,7 @@ SWC-Blueprint defines two main *top-level folders*, `rawdata` and `derivatives`.
 
 In DataShuttle, th[index.md](..%2Findex.md)e current working *top level folder* is by default `rawdata`. The working *top level folder* determines where folders are created (e.g. `make_sub_folders`), and from which folder data is transferred.
 
-For example, `upload` or  `upload-working-folder` will transfer data with `rawdata` from *local* to *central*, if `rawdata` is the current *top level folder*. `upload` transfers the specified subset of folders, while `upload-working-folder` will upload the entire *top level folder*.
+For example, `upload` or  `upload-all` will transfer data with `rawdata` from *local* to *central*, if `rawdata` is the current *top level folder*. `upload` transfers the specified subset of folders, while `upload-all` will upload the entire *top level folder*.
 
 To change the *top level folder*, the command `set-top-level-folder` can be used. e.g.
 
@@ -221,7 +221,7 @@ datashuttle my_first_project set-top-level-folder derivatives
 
 The *top level folder* setting will remain across DataShuttle sessions.
 
-After this change, *upload* or `upload-working-folder` will transfer data in the the `derivatives` folder.
+After this change, *upload* or `upload-all` will transfer data in the `derivatives` folder.
 
 To see the current *top level folder*, the command `show-top-level-folder` can be used.
 
