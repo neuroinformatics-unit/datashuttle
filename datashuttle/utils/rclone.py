@@ -147,7 +147,7 @@ def handle_rclone_arguments(rclone_options, include_list):
     Construct the extra arguments to pass to RClone based on the
     current configs.
     """
-    extra_arguments_list = [rclone_args("create_empty_src_dirs")]
+    extra_arguments_list = []
 
     extra_arguments_list += ["-" + rclone_options["transfer_verbosity"]]
 
@@ -173,9 +173,6 @@ def rclone_args(name: str) -> str:
     """
     if name == "dry_run":
         arg = "--dry-run"
-
-    if name == "create_empty_src_dirs":
-        arg = ""  # --create-empty-src-dirs"
 
     if name == "copy":
         arg = "copy"

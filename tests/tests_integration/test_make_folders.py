@@ -367,7 +367,10 @@ class TestMakeFolders:
         empty, or when they have different subjects in.
         """
         # Create local folders, central is empty
-        project.make_sub_folders(["001", "002", "003"])
+        test_utils.make_local_folders_with_files_in(
+            project, ["001", "002", "003"]
+        )
+
         new_num, old_num = project.get_next_sub_number()
 
         assert new_num == 4
@@ -403,7 +406,9 @@ class TestMakeFolders:
         above but reduces readability, so leave with some duplication.
         """
         sub = "sub-3"
-        project.make_sub_folders(sub, ["001", "002", "003"])
+        test_utils.make_local_folders_with_files_in(
+            project, sub, ["001", "002", "003"]
+        )
         new_num, old_num = project.get_next_sub_number()
 
         assert new_num == 4

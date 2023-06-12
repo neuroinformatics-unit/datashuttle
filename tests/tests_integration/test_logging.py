@@ -269,7 +269,6 @@ class TestCommandLineInterface:
         assert """ "--include" "sub-11/histology/**" """ in log
         assert """/test_logging/central/rawdata""" in log
         assert "Waiting for checks to finish" in log
-        assert "Transferred:   	          0 B / 0 B, -, 0 B/s, ETA -" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_folder_or_file(
@@ -307,13 +306,12 @@ class TestCommandLineInterface:
             in log
         )
         assert (
-            "\n\nVariablesState:\nlocals: {'filepath': 'sub-001/ses-001', 'dry_run': False}\ncfg: {'local_path':"
-            in log
+            "\n\nVariablesState:\nlocals: {'filepath': 'sub-001/ses-001', "
+            "'dry_run': False}\ncfg: {'local_path':" in log
         )
         assert """sub-001/ses-001"]""" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
-        assert "DEBUG : sub-001: Making directory\n" in log
 
     # ----------------------------------------------------------------------------------------------------------
     # Check errors propagate
