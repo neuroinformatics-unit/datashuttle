@@ -17,7 +17,7 @@ from test_file_conflicts_pathtable import get_pathtable
 class TestFileTransfer:
     @pytest.fixture(
         scope="class",
-        params=[  # Set running SSH or local filesystem
+        params=[  # Set running SSH or local filesystem (see docstring).
             False,
             pytest.param(
                 True,
@@ -49,10 +49,18 @@ class TestFileTransfer:
         items have been transferred. This is achieved
         by using "class" scope.
 
-        pathtable is a convenient way to represent
-        file paths for testing against.
+        NOTES
+        -----
+        - Pytest params - The `params` key sets the
+        `params` attribute on the pytest `request` fixture.
+        This attribute is used to set the `testing_ssh` variable
+        to `True` or `False`. In the first run, this is set to
+        `False`, meaning local filesystem tests are run. In the
+        second run, this is set with a pytest parameter that is
+        `True` (i.e. SSH tests are run) but is skipped if `TEST_SSH`
+        in `ssh_config` (set in conftest.py` is `False`.
 
-        NOTE: for convenient, files are transferred
+        - For convenience, files are transferred
         with SSH and then checked through the local filesystem
         mount. This is significantly easier than checking
         everything through SFTP. However, on Windows the
