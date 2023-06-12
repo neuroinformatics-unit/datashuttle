@@ -196,51 +196,6 @@ The *download* command transfers data from the *central* to *local* PC. This can
 
 The main data transfer commands are: `upload`, `download`, `upload-working-folder`, `download-working-folder`, `upload-entire-project`, `download-entire-project`. To understand their behaviour, it is necessary to understand the concept of the *top level folder*.
 
-### Transferring files that are not within data-type folders
-
-In some cases, files related to metadata may be stored outside of *data-type* folders.  When the `all` flag is used, files outside of folders at the *top level folder* (for `-sub`), *subject* level (for `-ses`) and *session* level (`for -dt`) will be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.
-
-The **key example** below exemplifies how the `all` argument works during data transfer. For example, given the project folder:
-
-```
-└── rawdata/
-    ├── sub-001/
-    │   ├── sub-001_extrafile-sub.json
-    │   └── ses-001/
-    │       ├── sub-001_ses-001_extrafile-ses.json
-    │       ├── behav/
-    │       │   └── ...
-    │       └── sub-001_ses-001_extrafile-dtype.json
-    └── a_project_file.json
-```
-
-The command:
-
-```
-datashuttle \
-my_first_project \
-upload \
--sub all
--ses-001
--dt all
-
-```
-
-will move:
-
-- The file `a_project_file.json` (and any other files at this level) and search all *subjects* for the specified *sessions* */ data-types*.
-
-- Only *sessions* called `001`, but not any other files or folders at this (i.e. `sub-001_ses-001_extrafile-ses.json`) will not be transferred.
-
-- All *data-types* and non-*data-types* at the session level. For example, `behav` and `sub-001_ses-001_extrafile-dtype.json` (that reside in *session* folders called `ses-001`) will be transferred.
-
-For convenience, it is suggested to keep all files within *data-type* level folders. However, the `all` argument, as well as the additional available arguments: `all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_data_type` are available, as [detailed below](#flexible-transfers-with-keyword-arguments)
-
-
-### Transferring a specific file or folder
-
-The functions `upload-project-folder-or-file` or `download-project-folder-or-file` can be used to transfer an individual file or folder. The path to the file or folder (either full or relative to the working *top-level folder*) should be input.
-
 ### Understanding the 'Top Level Folder' and Transfer Methods
 
 SWC-Blueprint defines two main *top-level folders*, `rawdata` and `derivatives`. The purpose of `rawdata` is to store data directly as acquired. The `derivatives` folder is used to store the results of processing the `rawdata`. This distinction ensures that `rawdata` is not overwritten during processing, and makes sharing of `rawdata` simpler.
@@ -291,6 +246,52 @@ run on the folder tree:
 ```
 
 will transfer all data in both the `rawdata` and `derivatives` folders from the *local* machine to the *central* machine.
+
+### Transferring files that are not within data-type folders
+
+In some cases, files related to metadata may be stored outside of *data-type* folders.  When the `all` flag is used, files outside of folders at the *top level folder* (for `-sub`), *subject* level (for `-ses`) and *session* level (`for -dt`) will be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.
+
+The **key example** below exemplifies how the `all` argument works during data transfer. For example, given the project folder:
+
+```
+└── rawdata/
+    ├── sub-001/
+    │   ├── sub-001_extrafile-sub.json
+    │   └── ses-001/
+    │       ├── sub-001_ses-001_extrafile-ses.json
+    │       ├── behav/
+    │       │   └── ...
+    │       └── sub-001_ses-001_extrafile-dtype.json
+    └── a_project_file.json
+```
+
+The command:
+
+```
+datashuttle \
+my_first_project \
+upload \
+-sub all
+-ses-001
+-dt all
+
+```
+
+will move:
+
+- The file `a_project_file.json` (and any other files at this level) and search all *subjects* for the specified *sessions* */ data-types*.
+
+- Only *sessions* called `001`, but not any other files or folders at this (i.e. `sub-001_ses-001_extrafile-ses.json`) will not be transferred.
+
+- All *data-types* and non-*data-types* at the session level. For example, `behav` and `sub-001_ses-001_extrafile-dtype.json` (that reside in *session* folders called `ses-001`) will be transferred.
+
+For convenience, it is suggested to keep all files within *data-type* level folders. However, the `all` argument, as well as the additional available arguments: `all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_data_type` are available, as [detailed below](#flexible-transfers-with-keyword-arguments)
+
+
+### Transferring a specific file or folder
+
+The functions `upload-project-folder-or-file` or `download-project-folder-or-file` can be used to transfer an individual file or folder. The path to the file or folder (either full or relative to the working *top-level folder*) should be input.
+
 
 ## Summary
 
