@@ -1,6 +1,8 @@
 # DataShuttle
 
-Datashuttle is a work in progress as is currently in alpha release v0.1.0.
+Datashuttle is a work in progress and is currently in alpha release v0.1.0.
+
+![datashuttle_figure_machines](https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258)
 
 Datashuttle includes tools for automated generation and transfer of neuroscience project folders formatted to the [SWC-Blueprint specification](https://swc-blueprint.neuroinformatics.dev/).
 

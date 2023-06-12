@@ -39,3 +39,10 @@ html[data-theme=light] {
     flex-wrap: wrap;
     justify-content: space-between;
 }
+
+.img-responsive {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 5px auto;
+}
