@@ -244,7 +244,7 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
-        suffix = "_all" if use_all_alias else "_data"
+        suffix = "_all" if use_all_alias else ""
 
         assert (
             f"Starting logging for command {upload_or_download}{suffix}" in log
@@ -302,7 +302,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            f"Starting logging for command {upload_or_download}_project_folder_or_file"
+            f"Starting logging for command {upload_or_download}_specific_folder_or_file"
             in log
         )
         assert (

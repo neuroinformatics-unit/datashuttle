@@ -205,7 +205,7 @@ class TestCommandLineInterface:
         self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
         stdout, _ = test_utils.run_cli(
-            f" {upload_or_download}_data "
+            f" {upload_or_download} "
             f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two "
@@ -494,7 +494,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_folder_or_file {subs[1]}/{sessions[0]}/ephys/**",
+            f"{upload_or_download}_specific_folder_or_file {subs[1]}/{sessions[0]}/ephys/**",
             setup_project.project_name,
         )
 
