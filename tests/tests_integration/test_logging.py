@@ -208,7 +208,7 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("use_all_alias", [True, False])
-    def test_logs_upload_and_download_data(
+    def test_logs_upload_and_download(
         self, setup_project, upload_or_download, use_all_alias
     ):
         """

@@ -89,7 +89,7 @@ class TestFileTransfer:
         """
         For each possible top level folder (e.g. rawdata, derivatives)
         (parametrized) create a folder tree in every top-level folder,
-        then transfer using upload_data / download_data and
+        then transfer using upload / download and
         upload_all / download_all that only the working top-level folder
         is transferred.
         """

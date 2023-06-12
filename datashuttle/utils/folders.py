@@ -332,7 +332,7 @@ def search_for_wildcards(
     sub: Optional[str] = None,
 ) -> List[str]:
     """
-    Handle wildcard flag in upload_data or download_data.
+    Handle wildcard flag in upload or download.
 
     All names in name are searched for @*@ string, and replaced
     with single * for glob syntax. If sub is passed, it is

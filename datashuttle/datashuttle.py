@@ -133,7 +133,7 @@ class DataShuttle:
 
         The top_level_folder defines in which top level folder new
         sub-folders will be made (e.g. make_sub_folders) or at which level
-        folders  are transferred with the commands upload_data / download_data
+        folders  are transferred with the commands upload / download
         and upload_all / download all.
 
         To upload the entire project (i.e. every top level
@@ -291,7 +291,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def upload_data(
+    def upload(
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
@@ -349,7 +349,7 @@ class DataShuttle:
               (on the 1st january, 2022).
         """
         if init_log:
-            self._start_log("upload_data", local_vars=locals())
+            self._start_log("upload", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -365,7 +365,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def download_data(
+    def download(
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
@@ -380,12 +380,12 @@ class DataShuttle:
         not be overwritten even if the central file is an
         older version.
 
-        This function is identical to upload_data() but with the direction
-        of data transfer reversed. Please see upload_data() for arguments.
+        This function is identical to upload() but with the direction
+        of data transfer reversed. Please see upload() for arguments.
         "all" arguments will search the central project for sub / ses to download.
         """
         if init_log:
-            self._start_log("download_data", local_vars=locals())
+            self._start_log("download", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -406,24 +406,22 @@ class DataShuttle:
         Convenience function to upload all data.
 
         Alias for:
-            project.upload_data("all", "all", "all")
+            project.upload("all", "all", "all")
         """
         self._start_log("upload_all", local_vars=locals())
 
-        self.upload_data("all", "all", "all", dry_run=dry_run, init_log=False)
+        self.upload("all", "all", "all", dry_run=dry_run, init_log=False)
 
     @check_configs_set
     def download_all(self, dry_run: bool = False):
         """
         Convenience function to download all data.
 
-        Alias for : project.download_data("all", "all", "all")
+        Alias for : project.download("all", "all", "all")
         """
         self._start_log("download_all", local_vars=locals())
 
-        self.download_data(
-            "all", "all", "all", dry_run=dry_run, init_log=False
-        )
+        self.download("all", "all", "all", dry_run=dry_run, init_log=False)
         ds_logger.close_log_filehandler()
 
     @check_configs_set
@@ -930,7 +928,7 @@ class DataShuttle:
         The top_level_folder defines in which top level folder new
         sub-folders will be made (e.g. make_sub_folders) or
         at which level folders are transferred with the commands
-        upload_data / download_data and upload_all / download all.
+        upload / download and upload_all / download all.
         upload_project_folder_or_file / download_project_folder_or_file.
 
         To upload the entire project (i.e. every top level
@@ -1003,8 +1001,8 @@ class DataShuttle:
     ) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to make_sub_folders() or upload_data()
-        or download_data()
+        for example as when passed to make_sub_folders() or upload()
+        or download()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
         This method will print the formatted list of names,
