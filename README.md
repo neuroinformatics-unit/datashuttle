@@ -1,17 +1,16 @@
 # DataShuttle
 
-Datashuttle is a work in progress as has not been officially released. It is not ready for use
-as documented, please await first official release.
+Datashuttle is a work in progress and is currently in alpha release v0.1.0.
 
 ![datashuttle_figure_machines](https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258)
 
-Datashuttle includes tools for automated generation and transfer of neuroscience project folders formatted to the [SWC-BIDS specification](https://swc-bids.neuroinformatics.dev/).
+Datashuttle includes tools for automated generation and transfer of neuroscience project folders formatted to the [SWC-Blueprint specification](https://swc-blueprint.neuroinformatics.dev/).
 
 * Manage files across multiple data-collection computers by synchronising all data to with a centrally stored project.
 
 * Simplify data transfers by selecting only a sub-set of data to move (e.g. specific subjects, sessions or data types)
 
-See the [Documentation Page] for more information, including how to [Get Started]
+See the [DataShuttle Documentation](https://datashuttle.neuroinformatics.dev) to get started.
 
 ## Installation
 
