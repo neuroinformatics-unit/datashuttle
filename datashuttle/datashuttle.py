@@ -68,6 +68,10 @@ class DataShuttle:
                    a .datashuttle folder in the user home
                    folder. Use show_datashuttle_path() to
                    see the path to this folder.
+
+    print_startup_message : If `True`, a start-up message displaying the
+                            current state of the program (e.g. persistent
+                            settings such as the 'top-level folder') is shown.
     """
 
     def __init__(self, project_name: str, print_startup_message: bool = True):

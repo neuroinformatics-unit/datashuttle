@@ -1046,7 +1046,6 @@ def main() -> None:
     These command functions (all defined above) will process
     the CLI arguments and then call the appropriate API function
     through run_command().
-
     """
     args = parser.parse_args()
 
