@@ -3,21 +3,23 @@ DataShuttle is a tool to streamline the management and standardisation of neuros
 
 DataShuttle's goal is to alleviate the burden researchers face in adhering to standardised file and folder specifications during the execution of intricate and demanding experimental projects. It will:
 
-- Eliminate the need to manually integrate datasets collected across different machines (e.g. behaviour and electrophysiology acquisition machines).
+- Eliminate the need to manually integrate datasets collected across different machines (e.g. *behaviour* and *electrophysiology* acquisition machines).
 - Allow convenient transfer of data between machines. This may be between a central project storage and analysis machine (e.g. ''*I want to transfer subjects 1-5, sessions 5 and 10, behavioural data only to my laptop*.'')
 - Avoid re-naming and re-formatting of project folders for collaboration or dataset publication.
 
 DataShuttle aims to integrate seamlessly into existing neuroscience data collection and analysis workflows, providing tools to:
 
-- Create folder trees that adhere to [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/), a data management specification based on and aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.
-- Transfer data between machines used for data collection and analysis, and a central storage repository.
+- Create folder trees that adhere to [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/), a data management specification aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.
+- Transfer data between machines used for data collection or analysis, and a central storage repository.
 
 <img src="https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258" alt="datashuttle central and local machines" class="img-responsive"/>
 
 
-DataShuttle requires a one-time setup of project name and configurations.  Next, subjects, session and data-type folder trees can be conveniently created during experimental acquisition. Once acquisition is complete, data can be easily transferred from acquisition computers to a central storage machine.
+DataShuttle requires a [one-time setup](#initial-setup-with-configurations) of project name and configurations.  Next, subjects, session and data-type folder trees can be [created](#creating-subject-and-session-folders) during experimental acquisition.
 
-### Installation
+Once acquisition is complete, data can be easily [transferred](#data-transfer) from acquisition computers to a central storage machine.
+
+# Installation
 
 DataShuttle is hosted on  [PyPI](https://pypi.org/project/datashuttle/) and can be installed with pip.
 
@@ -32,21 +34,21 @@ conda install -c conda-forge rclone
 See [the Rclone website](https://rclone.org/install/) for alternative installation methods.
 
 
-## Getting Started
+# Getting Started
 
-Datashuttle provides a Python API and cross-platform command line interface (CLI). In this guide examples will be shown using the command line, but corresponding methods can be found in the [API Reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html).
+Datashuttle provides a cross-platform command line interface (CLI) used in the examples below, and a [Python API](#python-api-guide). Full references for the CLI ([CLI Reference](https://datashuttle.neuroinformatics.dev/pages/cli_index.html)) and API ([API Reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html)) are available.
 
 The first thing to do when using DataShuttle is to setup a new project on a *local* machine.
 
-#### *local* machines and the *central* machine
+## *local* machines and the *central* machine
 
 DataShuttle makes the distinction between (possibly multiple) *local* machines and a single *central* machine. DataShuttle needs to be setup once for each *local* machine, but requires no setup on the *central* machine.
 
-A typical use case is an experiment in which behavioural data and electrophysiological data are collected on acquisition PCs. They send the data to a central server where it is stored.
+A typical use case is an experiment in which _behavioural_ data and _electrophysiological_ data are collected on acquisition PCs. They send the data to a central server where it is stored.
 
-Later, a subset of the data is transferred to a third machine for analysis. In this case, the behavioural and electrophysiological acquisition machine and analysis machines are 'local'. The central storage machine is the *central* machine.
+Later, a subset of the data is transferred to a third machine for analysis. In this case, the _behavioural_ and _electrophysiological_ acquisition machine and analysis machines are _local_ . The central storage machine is the *central* machine.
 
-### One-time project setup on a *local* machine
+## Initial setup with _configurations_
 
 A one-time setup on each *local* machine used is required, specifying the *project name* and *configurations*.
 
@@ -67,17 +69,17 @@ The command `make-config-file` is used for the initial setup of the project. The
 
 Finally, the *data-type* flags `--use_ephys`, `--use_funcimg`, `--use_histology`, `--use_behav` set the types of data required for the project on the local machine. While individual flags are optional, at least one must be chosen when initialising the project.
 
-**Optional Arguments**
+### Optional Arguments
 
-If connection method is `ssh`, the `central_host_id`, `central_host_username` must be set, and a one-time SSH setup command run (see the [SSH section][#### SSH] for details).
+If connection method is `ssh`, the `central_host_id`, `central_host_username` must be set, and a one-time SSH setup command run (see the [SSH section](#ssh) for details).
 
-The optional arguments `overwrite_old_files`, `transfer_verbosity` and `show_transfer_progress` determine how *data transfer* is performed (see the [Data Transfer section](#### Data Transfer) for details).
+The optional arguments `overwrite_old_files`, `transfer_verbosity` and `show_transfer_progress` determine how *data transfer* is performed (see the [Data Transfer](#data-transfer) section for details).
 
-**Example**
-
-All examples are given using the command-line interface (see the [TODO API] section for identical Python API command). Note that in the terminal, `\` indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). [TODO can somone check if this is the case on windows].
+### Example
 
 An example call to `make-config-file` below created s a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/`, sets the required SSH configurations, and indicates that *behavioural*, electrophysiological and *histological* data will be used on this machine for this project.
+
+Note that in the terminal, ``\`` indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). On Windows, the `^` character is used instead.
 
 ```
 datashuttle \
@@ -93,17 +95,18 @@ ssh \
 ```
 
 
-Now setup is complete! Configuration settings can be edited at any time with the `update-config` command [(TODO LINK)]. Alternatively, custom *configuration* files can be supplied using the `supply-config` command[(TODO LINK)] (this greatly simplifies setting up projects across multiple *local* machines).
+Now setup is complete! _Configuration_ settings can be edited at any time with the `update-config` command. Alternatively, custom *configuration* files can be supplied using the `supply-config` command (this simplifies setting up projects across multiple *local* machines).
 
-Next, we can start setting up the project by automatically creating project folder trees that conform to a standardised specification.
+Next, we can start setting up the project by automatically creating standardised project folder trees.
 
-### Creating *subject* and *session* folders
+## Creating *subject* and *session* folders
 
-In a typical neuroscience experiment, a data-collection session begins by creating the folder for the current subject name (e.g. mouse, rat) and current session name. Once created, the data for this session is stored in the created folder.
+In a typical neuroscience experiment, a data-collection session begins by creating the folder for the current subject (e.g. mouse, rat) and current session. Once created, the data for this session is stored in the created folder.
 
-The command `make-sub-folders` can be used automatically create folder trees that adhere to the SWC-Blueprint (and correspondingly, BIDS) specification. The linked specifications contain more detail, but at it's heart this requires:
+The command `make-sub-folders` can be used automatically create folder trees that adhere to the [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/) specification. The linked specifications contain more detail, but at it's heart this requires:
 
-All subjects are given a numerical (integer) number that is prefixed with the key `sub-`. All sessions are also given a numerical (integer) number that is prefixed with the key `ses-`.
+- All subjects are given a numerical (integer) number that is prefixed with the key `sub-`.
+- All sessions are also given a numerical (integer) number that is prefixed with the key `ses-`.
 
 Following this, optional information can be included in the form of key-value pairs. For example, a folder tree for *subject 1*, *session 1*  with *behavioural* data that includes the date of each session in the *session* folder name would be:
 
@@ -154,7 +157,13 @@ When the `all` argument is used for `--data_type` (`-dt`), the folders created d
 ```
 
 
-### Data Transfer
+### Data Types Folders
+
+In [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/specification.html), *data-types* specify where acquired experimental data of currently supported types (`behav`, `ephys`, `funcimg` and `histology`) is stored. See the [*data-types* section of the SWC-Blueprint for more details](https://swc-blueprint.neuroinformatics.dev/specification.html#datatype).
+
+At present, `histology` is saved to the `sub-` level, as it is assumed `histology` is conducted *ex vivo* and so session will be possible. Please don't hesitate to get into contact if you have an alternative use case.
+
+## Data Transfer
 
 Once a local machine is setup, created folders can be filled with acquired experimental data. Once data collection is complete, it is often required to transfer this data to a central storage machine. This is especially important if data of different types (e.g. *behaviour*, *electrophysiology*) is acquired across multiple local machines.
 
@@ -187,11 +196,9 @@ The *download* command transfers data from the *central* to *local* PC. This can
 
 The main data transfer commands are: `upload`, `download`, `upload-working-folder`, `download-working-folder`, `upload-entire-project`, `download-entire-project`. To understand their behaviour, it is necessary to understand the concept of the *top level folder*.
 
-### Transfer of files outside of data-type folders
+### Transferring files that are not within data-type folders
 
-In some cases, files related to metadata may be stored outside of *data-type* folders [TODO is it worth mentioning previously that files should be in data-type, or is this something we don't want to even suggest is not done?]. In most common cases, the alias `upload-working-folder` can be used to update any folders that are on the *local* machine to the *central* machine, as by default any files transferred that are already only the *central* machine will not be overwritten [TODO: see configuration below]. Identically, the alias `download-working-folder` can be used to update any folders that are on the *central* machine to the *local* machine, as existing *local* machine files will not be overwritten.
-
-When the `all` flag is used, files outside of folders at the *top level folder* (for `-sub`), *subject* level (for `-ses`) and *session* level (`for -dt`) will be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.
+In some cases, files related to metadata may be stored outside of *data-type* folders.  When the `all` flag is used, files outside of folders at the *top level folder* (for `-sub`), *subject* level (for `-ses`) and *session* level (`for -dt`) will be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.
 
 The **key example** below exemplifies how the `all` argument works during data transfer. For example, given the project folder:
 
@@ -227,16 +234,14 @@ will move:
 
 - All *data-types* and non-*data-types* at the session level. For example, `behav` and `sub-001_ses-001_extrafile-dtype.json` (that reside in *session* folders called `ses-001`) will be transferred.
 
-[TODO - not sure on this sentence] For convenience and clarity, it is suggested to keep all files within *data-type* level folders. However, the `all` argument, as well as the additional available arguments: `all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_data_type` are available. See [BELOW SECTION] for more details.
+For convenience, it is suggested to keep all files within *data-type* level folders. However, the `all` argument, as well as the additional available arguments: `all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_data_type` are available, as [detailed below](#flexible-transfers-with-keyword-arguments)
 
 
-### [Transferring a specific file or folder
+### Transferring a specific file or folder
 
-The functions upload_project_folder_or_file() or download_project_folder_or_file() can be used to
-transfer a particular, individual file or folder. The path to the file / folder, either full
-or relative to the project top level folder, should be input.]
+The functions `upload-project-folder-or-file` or `download-project-folder-or-file` can be used to transfer an individual file or folder. The path to the file or folder (either full or relative to the working *top-level folder*) should be input.
 
-#### Understanding the 'Top Level Folder' and Transfer Methods
+### Understanding the 'Top Level Folder' and Transfer Methods
 
 SWC-Blueprint defines two main *top-level folders*, `rawdata` and `derivatives`. The purpose of `rawdata` is to store data directly as acquired. The `derivatives` folder is used to store the results of processing the `rawdata`. This distinction ensures that `rawdata` is not overwritten during processing, and makes sharing of `rawdata` simpler.
 
@@ -264,7 +269,7 @@ After this change, *upload* or `upload-working-folder` will transfer data in the
 
 To see the current *top level folder*, the command `show-top-level-folder` can be used.
 
-#### Transferring the entire project
+### Transferring the entire project
 
 If you want to quickly transfer an entire project (i.e. all data in both `rawdata` and `derivatives`), the command `upload-entire-project` or `download-entire-project` can be used.
 
@@ -287,7 +292,7 @@ run on the folder tree:
 
 will transfer all data in both the `rawdata` and `derivatives` folders from the *local* machine to the *central* machine.
 
-### Summary
+## Summary
 
 This concludes the *Get Started* part of the documentation. Hopefully, you are now equipped to manage an experimental project folder aligned to community standards with a few short commands. Say goodbye to the days of manual copying and pasting!
 
@@ -297,10 +302,10 @@ To discuss, contribute or give feedback on DataShuttle, please check out our dis
 
 
 
-## Advanced Usage
+# Advanced Usage
 
 
-### API Guide  [ TODO: these example commands have not been tested]
+## Python API Guide
 
 DataShuttle can be used through the command line interface (as exampled in the *Get Started* section) or through a Python API. All commands shown in the *Get Started* guide can be used similarly in the Python API (with hypens replaced by underscores).
 
@@ -320,7 +325,7 @@ project.make_config_file(
 	connection_method="ssh",
 	central_host_id="ssh.swc.ucl.ac.uk",
 	central_host_username="username",
-	overwrite_over_files=True,
+	overwrite_old_files=True,
 	transfer_verbosity="v",
 	use_ephys=True,
 	use_behav=True,
@@ -346,22 +351,17 @@ project.upload(
 )
 ```
 
+## Setting up the connection to *central*
 
-### Data Types
-
-[TODO] Link to SWC-Blueprint here, no need to re-invent the wheel. Mention how `histology` is subject-level but all others are `session`. This is actually easy to re-configure by adapting a value in the source code, but it (currently) is not exposed.
-
-### Setting up the connection to *central*
-
-#### Local Filesystem
+### Local Filesystem
 
 Local filesystem transfers are typically used when the *central* machine is setup as a mounted drive. This is a common form of communication between client machines and a central server, such as a high-performance computer (HPC, also often called *clusters*).
 
-When a *central* machine is mounted to the *Local* machine, it acts as if is available as a local-filesystem folder. In this case, the `central_path` configuration (see `make_config_file`) can simply be set to the path directing to the mounted drive.  [TODO: example]
+When a *central* machine is mounted to the *Local* machine, it acts as if is available as a local-filesystem folder. In this case, the `central_path` configuration (see `make_config_file`) can simply be set to the path directing to the mounted drive.
 
 With the `connection_method` set to `local_filesystem`, data transfer will proceed between the *local* machine filesystem and mounted drive.
 
-#### SSH
+### SSH
 
 One method of connecting with the *central* machine is the Secure Shell (SSH) protocol, that enables communication between two machines. In DataShuttle, SSH can be used as a method of communication between *local* and *central* machines.
 
@@ -373,10 +373,9 @@ This command sets up SSH key pairs between *local* and *central* machines. Passw
 
 In DataShuttle, the `connection_method` configuration must be set to `"ssh"` to use the SSH protocol for data transfers.
 
-### Convenience tags
+## Convenience tags
 
-
-**Automatically include Date, Time or Datetime**
+### Automatically include Date, Time or Datetime
 *Used when making subject or session folders*
 
 When creating subject or session folders, it is often desirable to include the *date*, *time*, or *datetime* as a key-value pair in the folder name. For example:
@@ -408,7 +407,7 @@ will create the folder tree (assuming the *top level folder* is `rawdata`):
 ```
 
 
-**Specify ranges with the @TO@ flag**
+### Specify ranges with the `@TO@` flag
 *When making subject or session folders and transferring data*
 
 Often it is desirable to specify a range of subject or session names to make folders for, or transfer.
@@ -436,7 +435,7 @@ make_sub_folders \
 
 will create the subject folders `sub-0001` and `sub-0002`.
 
-**The wildcard flag, @\*@**
+### The wildcard flag `@*@`
 *Used when transferring data*
 
 When specifying the names of subjects or sessions to transfer, we often want to ignore matching portions of the name which may un-predictable. For example, we may be interested in a particular session across experimental subjects, for example the 5th session, that was run on a different day for each subject. For example, consider two subjects whose test session 5 was collected on different days:
@@ -464,15 +463,16 @@ upload \
 
 Which would selectively upload session 5 from subjects 1 and 2.
 
+If using macOS (or, in general, the `z-shell (zsh)`, names including the `@*@` flag must be wrapped in quotation marks, for example `--ses "005_condition-test_date-@*@"`.
+
 Similarly, if the test session was on different session numbers for different sessions, we could use `-ses @*@condition-test@*@` (as the `-ses` argument above) to selectively transfer test sessions only.
 
-[TODO] all links are probably broken.
 
 ## Data Transfer Options
 
 Behind the scenes, DataShuttle uses the software [Rclone](https://rclone.org/) to transfer data. A number of Rclone options are exposed in DataShuttle to allow for more flexible data transfer. These are set in the *configurations* during project initialisation and can be edited with the command `update-config`.
 
-#### Overwriting existing files
+### Overwriting existing files
 
 The most important optional configuration, `overwrite_old_files` determines whether folders and files are overwritten during transfer. By default, DataShuttle does not overwrite during data transfer.
 
@@ -481,24 +481,25 @@ For example, if the file `sub-001_ses-001_measure-trajectories.csv` has been tra
 To change this behaviour, the configuration `overwrite_old_files` can be set to `True`. In this case, files in which the timestamp of the target directory (e.g. *central* when performing `upload`) will be overwritten if their timestamp is older than the corresponding file in the source directory (e.g. *local* when performing `upload`.
 )
 
-#### Additional Transfer Configurations
+### Additional Transfer Configurations
 
 `transfer_verbosity` : set to `"vv"` for a extensive detail on the transfer operation. Set to `"v"` to only see each file that is transferred as well as significant events that occur during transfer.
 
 `show_transfer_progress` : When `True`, real-time transfer statistics will be reported and logged.
 
-#### Specifying transfers with keyword arguments [TODO better name]
+### Flexible transfers with keyword arguments
 
 DataShuttle provides a number of keyword arguments to allow separate handling of files that are not found in *data-type* folders.
-**For use with the `-sub` / `--sub-names` flag**
+
+#### For use with the `-sub` / `--sub-names` flag
 
 `all` : All *subject* and non-*subject* files and folders within the *top level folder* (e.g. `rawdata`) will be transferred.
 
-`all_sub` : *Subject*  <u>folders</u> only (i.e. prefixed with `-sub)` will be transferred.
+`all_sub` : *Subject*  <u>folders</u> only (i.e. prefixed with `-sub`) will be transferred.
 
 `all_non_sub` : All files and folders that are not prefixed with `-sub` will be transferred. Any folders prefixed with `-sub` will not be transferred.
 
-**For use with the `-ses` / `--ses-names` flag**
+#### For use with the `-ses` / `--ses-names` flag
 
 `all` : All *session* and non-*session* files and folders within a *subject* level folder (e.g. `sub-001`) will be transferred.
 
@@ -506,7 +507,7 @@ DataShuttle provides a number of keyword arguments to allow separate handling of
 
 `all_non_ses` : All files and folders that are not prefixed with `-sub` will be transferred. Any folders prefixed with `-ses` will not be transferred.
 
-**For use with the `-dt` / `--data-type` flag**
+#### For use with the `-dt` / `--data-type` flag
 
 `all` : All *data-type* folders at the *subject* or *session* folder level will be transferred, as well as all files and folders within selected *session* folders.
 
@@ -539,8 +540,6 @@ Below, a number of examples are given to exemplify how these arguments effect da
 			└── ephys/
 				└── ...
 ```
-
-[ TODO] Add note: in the below examples, there is a bug in which empty data-type folders that are not transferred are still transferred. No actual files are transferred, but his is super confusing.
 
 1) The first example indicates the effect of selectively transferring non-*data-type* sessions. The command:
 
@@ -608,14 +607,14 @@ Would upload:
 
 - the file `a_project_related_file.json` only.
 
-#### Query DataShuttle for current *configurations*
+## Query DataShuttle for current *configurations*
 
 It is possible to query DataShuttle for the current *configurations* and relevant file paths,
 for example the `show-local-path` command will print the currently set *local* path to the terminal.
 
-Similarly, the command `show-configs` will print all currently set *configurations*. A number of additional convenience functions exist (for example `show-remote-path`, `show-top-level-folder`, `show-config-path`). For a full list, see our API reference [TODO: link].
+Similarly, the command `show-configs` will print all currently set *configurations*. A number of additional convenience functions exist (for example `show-remote-path`, `show-top-level-folder`, `show-config-path`). For a full list, see our [CLI reference](https://datashuttle.neuroinformatics.dev/pages/cli_index.html) or [API reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html).
 
-### Logging
+## Logging
 
 Detailed logs of all configuration changes, folder creation and data transfers are logged
 to the `.datashuttle` folder that is created in the *local* project folder.

@@ -13,7 +13,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Documentation.md",
+                "file": "documentation.md",
                 "mode": "source",
                 "source": false
               }
@@ -85,7 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Documentation.md",
+                "file": "documentation.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -102,7 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "Documentation.md",
+                "file": "documentation.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -125,7 +125,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "Documentation.md"
+                "file": "documentation.md"
               }
             }
           }
@@ -146,6 +146,10 @@
       "command-palette:Open command palette": false
     }
   },
-  "active": "030e05d76e50aaca",
-  "lastOpenFiles": []
+  "active": "f2f8b2cb0599a537",
+  "lastOpenFiles": [
+    "[.md",
+    "documentation.md",
+    "Documentation.md"
+  ]
 }
