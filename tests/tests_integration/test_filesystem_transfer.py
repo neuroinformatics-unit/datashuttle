@@ -73,6 +73,11 @@ class TestFileTransfer:
             test_utils.get_default_folder_used(),
         )
 
+    def test_empty_folder_is_not_transferred(self, project):
+        project.make_sub_folders("sub-001")
+        project.upload_all()
+        assert not (project.cfg["central_path"] / "sub-001").is_dir()
+
     @pytest.mark.parametrize(
         "folder_name", canonical_folders.get_top_level_folders()
     )

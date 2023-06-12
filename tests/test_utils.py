@@ -422,8 +422,17 @@ def make_and_check_local_project_folders(
     """
     Make a local project folder tree with the specified data_type,
     subs, sessions and check it is made successfully.
+
+    Since empty folders are not transferred, it is necessary
+    to write a placeholder file in all bottom-level
+    directories so ensure they are transferred.
     """
     project.make_sub_folders(subs, sessions, data_type)
+
+    for root, dirs, files in os.walk(project.cfg["local_path"]):
+        if not dirs:
+            path_ = Path(root) / "placeholder_file.txt"
+            write_file(path_, contents="placeholder")
 
     check_folder_tree_is_correct(
         project,

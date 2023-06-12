@@ -175,7 +175,7 @@ def rclone_args(name: str) -> str:
         arg = "--dry-run"
 
     if name == "create_empty_src_dirs":
-        arg = "--create-empty-src-dirs"
+        arg = ""  # --create-empty-src-dirs"
 
     if name == "copy":
         arg = "copy"
