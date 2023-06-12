@@ -13,8 +13,7 @@ DataShuttle aims to integrate seamlessly into the  neuroscience data collection 
 - Create folder trees that adhere to SWC-Blueprint, a data management specification based on and aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.
 - Convenient transfer of between machines used for data collection and analysis, and a central storage repository.
 
-[IMAGE OF PCS]
-[TODO] - make clear that backlash means newline in CLI (not always clear in guides)
+![datashuttle_figure_machines](https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258)
 
 
 DataShuttle requires a one-time setup of project name and configurations.  Next, subjects, session and data-type folder trees can be conveniently created during experimental acquisition. Once acquisition is complete, data can be easily transferred from acquisition computers to a central storage machine.
