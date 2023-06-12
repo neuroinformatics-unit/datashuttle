@@ -73,6 +73,11 @@ class TestFileTransfer:
             test_utils.get_default_folder_used(),
         )
 
+    def test_empty_folder_is_not_transferred(self, project):
+        project.make_sub_folders("sub-001")
+        project.upload_all()
+        assert not (project.cfg["central_path"] / "sub-001").is_dir()
+
     @pytest.mark.parametrize(
         "folder_name", canonical_folders.get_top_level_folders()
     )
@@ -293,7 +298,9 @@ class TestFileTransfer:
         subs = ["001", f"02{tags('to')}03"]
         sessions = [f"ses-01{tags('to')}003_{tags('datetime')}"]
 
-        project.make_sub_folders(subs, sessions, "all")
+        test_utils.make_local_folders_with_files_in(
+            project, subs, sessions, "all"
+        )
 
         (
             transfer_function,
@@ -338,7 +345,9 @@ class TestFileTransfer:
             "003_date-20220601",
         ]
 
-        project.make_sub_folders(subs, sessions, "all")
+        test_utils.make_local_folders_with_files_in(
+            project, subs, sessions, "all"
+        )
 
         (
             transfer_function,
@@ -383,7 +392,9 @@ class TestFileTransfer:
         rclone is called with the arguments set in configs
         as expected. verbosity itself is tested in another method.
         """
-        project.make_sub_folders(["sub-001"], ["ses-002"], ["behav"])
+        test_utils.make_local_folders_with_files_in(
+            project, ["sub-001"], ["ses-002"], ["behav"]
+        )
 
         project.update_config("overwrite_old_files", overwrite_old_files)
         project.update_config("transfer_verbosity", "vv")
@@ -393,8 +404,6 @@ class TestFileTransfer:
         project.upload_all(dry_run=dry_run)
 
         log = capsys.readouterr().out
-
-        assert "--create-empty-src-dirs" in log
 
         if overwrite_old_files:
             assert "--ignore-existing" not in log

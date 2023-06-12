@@ -445,8 +445,7 @@ class DataShuttle:
         required (see 'filepath' input). If a folder,
         wildcards "*" or "**" must be used to transfer
         all files in the folder ("*") or all files
-        and sub-folders ("**"), otherwise the empty folder
-        only will be transferred.
+        and sub-folders ("**").
 
         e.g. "sub-001/ses-002/my_folder/**"
 
@@ -497,8 +496,7 @@ class DataShuttle:
         required (see 'filepath' input). If a folder,
         wildcards "*" or "**" must be used to transfer
         all files in the folder ("*") or all files
-        and sub-folders ("**"), otherwise the empty folder
-        only will be transferred.
+        and sub-folders ("**").
 
         e.g. "sub-001/ses-002/my_folder/**"
 

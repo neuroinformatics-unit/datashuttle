@@ -494,7 +494,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_folder_or_file {subs[1]}/{sessions[0]}/ephys/*",
+            f"{upload_or_download}_project_folder_or_file {subs[1]}/{sessions[0]}/ephys/**",
             setup_project.project_name,
         )
 
