@@ -88,12 +88,6 @@ def format_names(
 
     update_names_with_datetime(prefixed_names)
 
-    # This will raise error if invalid and cannot convert sub
-    # or ses to `int`.
-    utils.get_values_from_bids_formatted_name(
-        prefixed_names, prefix, return_as_int=True
-    )
-
     return prefixed_names
 
 

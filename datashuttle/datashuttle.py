@@ -238,6 +238,15 @@ class DataShuttle:
         if ses_names is None:
             ses_names = []
 
+        # This will raise error if invalid and cannot convert sub
+        # or ses to `int`.
+        utils.get_values_from_bids_formatted_name(
+            sub_names, "sub", return_as_int=True
+        )
+        utils.get_values_from_bids_formatted_name(
+            ses_names, "ses", return_as_int=True
+        )
+
         utils.log("\nMaking folders...")
         folders.make_folder_trees(
             self.cfg,

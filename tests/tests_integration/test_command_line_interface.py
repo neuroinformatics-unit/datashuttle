@@ -176,16 +176,16 @@ class TestCommandLineInterface:
         stdout, _ = test_utils.run_cli(
             f" make{sep}sub{sep}folders "
             f"--data_type all "
-            f"--sub_names one "
-            f"--ses_names two "
+            f"--sub_names 001 "
+            f"--ses_names 002 "
         )
 
         args_, kwargs_ = self.decode(stdout)
 
         assert args_ == []
         assert kwargs_["data_type"] == ["all"]
-        assert kwargs_["sub_names"] == ["one"]
-        assert kwargs_["ses_names"] == ["two"]
+        assert kwargs_["sub_names"] == ["001"]
+        assert kwargs_["ses_names"] == ["002"]
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
@@ -398,7 +398,7 @@ class TestCommandLineInterface:
         """
         see test_filesystem_transfer.py
         """
-        subs = ["sub-1_1", "sub-two", "sub-3_3-3"]
+        subs = ["sub-011", "sub-002", "sub-333"]
         ses = ["ses-123", "ses-999"]
 
         test_utils.run_cli(

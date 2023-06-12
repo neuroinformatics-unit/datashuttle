@@ -338,7 +338,7 @@ class TestFileTransfer:
         Transfer a subset of define subject and session
         and check only the expected folders are there.
         """
-        subs = ["sub-hello", "sub-hullo", "sub-world"]
+        subs = ["sub-389", "sub-989", "sub-445"]
         sessions = [
             "001_date-20220501",
             "002_date-20220516",
@@ -355,7 +355,7 @@ class TestFileTransfer:
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
         transfer_function(
-            f"sub-h{tags('*')}llo",
+            f"sub-{tags('*')}89",
             f"ses-{tags('*')}_date-202205{tags('*')}",
             ["ephys", "behav", "funcimg"],
         )
@@ -363,8 +363,8 @@ class TestFileTransfer:
         transferred_subs = test_utils.glob_basenames(
             (base_path_to_check / "rawdata" / "*").as_posix()
         )
-        expected_subs = ["sub-hello", "sub-hullo"]
-        assert transferred_subs == ["sub-hello", "sub-hullo"]
+        expected_subs = ["sub-389", "sub-989"]
+        assert transferred_subs == expected_subs
 
         for sub in expected_subs:
             transferred_ses = test_utils.glob_basenames(
