@@ -46,8 +46,6 @@ class Configs(UserDict):
             "local_path",
             "central_path",
         ]
-        self.sub_prefix = "sub"
-        self.ses_prefix = "ses"
 
         self.top_level_folder: str
 
@@ -366,14 +364,3 @@ class Configs(UserDict):
             )
 
         return data_type_items
-
-    def get_sub_or_ses_prefix(self, sub_or_ses: str) -> str:
-        """
-        Get the sub / ses prefix (default is "sub-" and "ses-") set in cfgs.
-        These should always be "sub-" or "ses-" by SWC-BIDS.
-        """
-        if sub_or_ses == "sub":
-            prefix = self.sub_prefix
-        elif sub_or_ses == "ses":
-            prefix = self.ses_prefix
-        return prefix

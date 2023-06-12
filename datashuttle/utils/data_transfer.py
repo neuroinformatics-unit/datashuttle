@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List, Literal, Optional, Union
 
 from datashuttle.configs.config_class import Configs
 
@@ -313,12 +313,11 @@ class TransferData:
         see transfer_sub_ses_data()
 
         """
+        sub_or_ses: Literal["sub", "ses"]
         if sub is None:
             sub_or_ses = "sub"
-            search_prefix = self.cfg.sub_prefix + "-"
         else:
             sub_or_ses = "ses"
-            search_prefix = self.cfg.ses_prefix + "-"
 
         if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
             processed_names = folders.search_sub_or_ses_level(
@@ -326,7 +325,7 @@ class TransferData:
                 self.base_folder,
                 self.local_or_central,
                 sub,
-                search_str=f"{search_prefix}*",
+                search_str=f"{sub_or_ses}-*",
             )[0]
 
             if names_checked == ["all"]:
@@ -334,7 +333,7 @@ class TransferData:
 
         else:
             processed_names = formatting.check_and_format_names(
-                self.cfg, names_checked, sub_or_ses
+                names_checked, sub_or_ses
             )
             processed_names = folders.search_for_wildcards(
                 self.cfg,
