@@ -321,7 +321,6 @@ def search_data_folders_sub_or_ses_level(
         search_results,
         cfg.data_type_folders,
     )
-
     return data_folders
 
 
