@@ -344,6 +344,10 @@ class TransferData:
                 sub=sub,
             )
 
+        utils.log_and_message(
+            f"The {sub_or_ses} names to transfer are: {processed_names}"
+        )
+
         return processed_names
 
     def transfer_non_data_type(self, data_type_checked: List[str]) -> bool:
