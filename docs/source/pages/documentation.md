@@ -1,17 +1,16 @@
-# Documentation
 
 DataShuttle is a tool to streamline the management and standardisation of neuroscience project folders and files.
 
-DataShuttle's goal is to alleviate the burden researchers face in adhering to standardized file and folder specifications during the execution of intricate and demanding experimental projects. It will:
+DataShuttle's goal is to alleviate the burden researchers face in adhering to standardised file and folder specifications during the execution of intricate and demanding experimental projects. It will:
 
 - Eliminate the need to manually integrate datasets collected across different machines (e.g. behaviour and electrophysiology acquisition machines).
 - Allow convenient transfer of data between machines. This may be between a central project storage and analysis machine (e.g. ''*I want to transfer subjects 1-5, sessions 5 and 10, behavioural data only to my laptop*.'')
-- Avoids re-naming and re-formatting of project folders for collaboration or dataset publication.
+- Avoid re-naming and re-formatting of project folders for collaboration or dataset publication.
 
-DataShuttle aims to integrate seamlessly into the  neuroscience data collection and analysis workflows and eliminate the need to manually , providing tools to:
+DataShuttle aims to integrate seamlessly into existing neuroscience data collection and analysis workflows, providing tools to:
 
-- Create folder trees that adhere to SWC-Blueprint, a data management specification based on and aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.
-- Convenient transfer of between machines used for data collection and analysis, and a central storage repository.
+- Create folder trees that adhere to [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/), a data management specification based on and aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.
+- Transfer data between machines used for data collection and analysis, and a central storage repository.
 
 [IMAGE OF PCS]
 [TODO] - make clear that backlash means newline in CLI (not always clear in guides)
@@ -36,7 +35,7 @@ See [the Rclone website](https://rclone.org/install/) for alternative installati
 
 ## Getting Started
 
-Datashuttle provides a Python API and cross-platform command line interface (CLI). In this guide examples will be down using the command line, but corresponding methods can be found in the [API Reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html).
+Datashuttle provides a Python API and cross-platform command line interface (CLI). In this guide examples will be shown using the command line, but corresponding methods can be found in the [API Reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html).
 
 The first thing to do when using DataShuttle is to setup a new project on a *local* machine.
 
@@ -57,13 +56,13 @@ The configurations tell DataShuttle
 - The paths to the *local* and *central* folders that contain the project.
 - How to connect to the central project.
 - The settings that specify how data is transferred.
-- The *data-types* (e.g. *behaviour* (`behav`), *electrophysiology* (`ephys`)) that will be used in the project.
+- The *data-types* that will be used in the project, e.g. *behaviour* (`behav`) or *electrophysiology* (`ephys`).
 
 The command `make-config-file` is used for the initial setup of the project. The **required arguments** are:
 
-`local_path`: The full filepath to the project folder on the *local* machine. For example, if you wanted to make a new project called `my_first_project` in the folder `C:\User\my_projects`, the local path would be `C:\User\my_projects`.
+`local_path`: The full file-path to the project folder on the *local* machine. For example, if you wanted to make a new project called `my_first_project` in the folder `C:\User\my_projects`, the local path would be `C:\User\my_projects`.
 
-`central_path`: The path on the *central* machine to the central project. For example, if connecting to a remote linux server, this may be `/hpc/home/user/my_projects`.
+`central_path`: The path on the *central* machine to the central project. For example, if connecting to a remote Linux server, this may be `/hpc/home/user/my_projects`.
 
 `connection_method`: `local_filesystem` or `ssh`. Local filesystem can be used if the *central* storage is mounted to the local machine. Otherwise `ssh` can be used.
 
@@ -73,13 +72,13 @@ Finally, the *data-type* flags `--use_ephys`, `--use_funcimg`, `--use_histology`
 
 If connection method is `ssh`, the `central_host_id`, `central_host_username` must be set, and a one-time SSH setup command run (see the [SSH section][#### SSH] for details).
 
-The optional arguments `ovewrite_old_files`, `transfer_verbosity` and `show_transfer_progress` determine how *data transfer* is performed (see the [Data Transfer section](#### Data Transfer) for details).
+The optional arguments `overwrite_old_files`, `transfer_verbosity` and `show_transfer_progress` determine how *data transfer* is performed (see the [Data Transfer section](#### Data Transfer) for details).
 
 **Example**
 
 All examples are given using the command-line interface (see the [TODO API] section for identical Python API command). Note that in the terminal, `\` indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). [TODO can somone check if this is the case on windows].
 
-An example call to `make-config-file` below sets makes a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/`, sets the required SSH configurations, and indicates that *behavioural*, electrophysiological and *histological* data will be used on this machine for this project.
+An example call to `make-config-file` below created s a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/`, sets the required SSH configurations, and indicates that *behavioural*, electrophysiological and *histological* data will be used on this machine for this project.
 
 ```
 datashuttle \
@@ -299,7 +298,7 @@ To discuss, contribute or give feedback on DataShuttle, please check out our dis
 
 
 
-## Documentation
+## Advanced Usage
 
 
 ### API Guide  [ TODO: these example commands have not been tested]
@@ -359,7 +358,7 @@ project.upload(
 
 Local filesystem transfers are typically used when the *central* machine is setup as a mounted drive. This is a common form of communication between client machines and a central server, such as a high-performance computer (HPC, also often called *clusters*).
 
-When a *central* machine is mounted to the *Local* machine, it acts as it is available as a local-filesystem folder. In this case, the `central_path` configuration (see `make_config_file`) can simply be set to the path directing to the mounted drive.  [TODO: example]
+When a *central* machine is mounted to the *Local* machine, it acts as if is available as a local-filesystem folder. In this case, the `central_path` configuration (see `make_config_file`) can simply be set to the path directing to the mounted drive.  [TODO: example]
 
 With the `connection_method` set to `local_filesystem`, data transfer will proceed between the *local* machine filesystem and mounted drive.
 
@@ -485,7 +484,7 @@ To change this behaviour, the configuration `overwrite_old_files` can be set to 
 
 #### Additional Transfer Configurations
 
-`transfer_verbosity` : set to `"vv"` for a extensive detail on the transfer operation. Set to `"v"` to see simply each file that is transferred as well as significant events that occur during transfer.
+`transfer_verbosity` : set to `"vv"` for a extensive detail on the transfer operation. Set to `"v"` to only see each file that is transferred as well as significant events that occur during transfer.
 
 `show_transfer_progress` : When `True`, real-time transfer statistics will be reported and logged.
 
@@ -504,7 +503,7 @@ DataShuttle provides a number of keyword arguments to allow separate handling of
 
 `all` : All *session* and non-*session* files and folders within a *subject* level folder (e.g. `sub-001`) will be transferred.
 
-`all_sub` : *Session* <u>folders</u> only (i.e. prefixed with `-ses`) will be transferred. Note that the only exception is the `histology` folder, the transfer of which is determined by the `-dt` flag (below).
+`all_ses` : *Session* <u>folders</u> only (i.e. prefixed with `-ses`) will be transferred. Note that the only exception is the `histology` folder, the transfer of which is determined by the `-dt` flag (below).
 
 `all_non_ses` : All files and folders that are not prefixed with `-sub` will be transferred. Any folders prefixed with `-ses` will not be transferred.
 
@@ -620,7 +619,7 @@ Similarly, the command `show-configs` will print all currently set *configuratio
 ### Logging
 
 Detailed logs of all configuration changes, folder creation and data transfers are logged
-to the `.datashuttle` folder in the that is created in the *local* project folder.
+to the `.datashuttle` folder that is created in the *local* project folder.
 
 For each command run, a log of that command is placed in the logs folder, with the time and date of the command. The log itself contains relevant information pertaining to that command. For example, if the commands `make_sub_folders`, `upload`, `download` were run sequentially, the logs output folder would look like:
 
