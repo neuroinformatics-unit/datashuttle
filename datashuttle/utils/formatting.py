@@ -366,10 +366,17 @@ def warn_on_inconsistent_sub_or_ses_leading_zeros(
     subject or session names, the number of leading zeros must be consistent
     across local and central projects.
     """
-    (
-        subs_are_inconsistent,
-        ses_are_inconsistent,
-    ) = project_has_inconsistent_num_leading_zeros(cfg)
+    try:
+        (
+            subs_are_inconsistent,
+            ses_are_inconsistent,
+        ) = project_has_inconsistent_num_leading_zeros(cfg)
+    except:
+        warnings.warn(
+            "Could not search local and remote respoistories. "
+            "Leading zero consistency checks not performed."
+        )
+        return
 
     failing_cases = list(
         compress(["sub", "ses"], [subs_are_inconsistent, ses_are_inconsistent])
