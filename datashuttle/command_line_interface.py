@@ -1055,7 +1055,7 @@ def main() -> None:
         warn = "default"
 
     warnings.filterwarnings(warn)  # type: ignore
-    project = DataShuttle(args.project_name)
+    project = DataShuttle(args.project_name, print_startup_message=False)
     warnings.filterwarnings("default")
 
     if len(vars(args)) > 1:
