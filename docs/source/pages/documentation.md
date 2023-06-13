@@ -53,10 +53,10 @@ Later, a subset of the data is transferred to a third machine for analysis. In t
 
 A one-time setup on each *local* machine used is required, specifying the *project name* and *configurations*.
 
-The configurations tell DataShuttle
+The _configurations_ tell DataShuttle:
 
 - The paths to the *local* and *central* folders that contain the project.
-- How to connect to the central project.
+- How to connect to the _central_ machine.
 - The settings that specify how data is transferred.
 - The *data-types* that will be used in the project, e.g. *behaviour* (`behav`) or *electrophysiology* (`ephys`).
 
@@ -78,7 +78,7 @@ The optional arguments `overwrite_old_files`, `transfer_verbosity` and `show_tra
 
 ### Example
 
-An example call to `make-config-file` below created s a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/`, sets the required SSH configurations, and indicates that *behavioural*, electrophysiological and *histological* data will be used on this machine for this project.
+An example call to `make-config-file` below creates a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/`, the required SSH configurations, and indicates that *behavioural*, _electrophysiological_ and *histological* data will be used on this machine for this project.
 
 Note that in the terminal, ``\`` indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). On Windows, the `^` character is used instead.
 
@@ -109,13 +109,13 @@ The command `make-sub-folders` can be used automatically create folder trees tha
 - All subjects are given a numerical (integer) number that is prefixed with the key `sub-`.
 - All sessions are also given a numerical (integer) number that is prefixed with the key `ses-`.
 
-Following this, optional information can be included in the form of key-value pairs. For example, a folder tree for *subject 1*, *session 1*  with *behavioural* data that includes the date of each session in the *session* folder name would be:
+Following this, optional information can be included in the form of key-value pairs. For example, a folder tree for *subject 1*, *session 1*  with *behavioural* data that includes the date of the session in the *session* folder name would be:
 
 ```
 └── sub-001/
-    └── ses-001_date_20230516/
+    └── ses-001_date-20230516/
         └── behav/
-            └── sub-001_ses-001_recording.mp4
+            └── sub-001_ses-001_camera-top.mp4
 ```
 
 In DataShuttle, this folder tree (excluding the .mp4 file which must be saved using third-party software) can be created (assuming today's date is `20220516`), with the command
@@ -126,7 +126,8 @@ my_first_project \
 make-sub-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```
 
-The leading `sub-` or `ses-` is optional when specifying folders to create. It is possible to automatically create date, time or datetime key-value pairs with the days `@DATE@`, `@TIME@` or `@DATETIME@` respectively.
+The leading `sub-` or `ses-` is optional when specifying folders to create (e.g. both `-sub 001` and `-sub sub-001` are valid inputs). It is possible to automatically create date, time or datetime key-value pairs with the days `@DATE@`, `@TIME@` or `@DATETIME@` respectively (see the [below section](#automatically-include-date-time-or-datetime
+) for more detail).
 
 Another example call, which creates a range of subject and session folders, is shown below:
 
@@ -173,29 +174,29 @@ DataShuttle offers a convenient way of transferring entire project folders, or s
 ```
 datashuttle \
 my_first_project \
-upload
--sub 001@TO@003
--ses 005_date-@*@ 006_date-@*@*
+upload \
+-sub 001@TO@003 \
+-ses 005_date-@*@ 006_date-@*@* \
 -dt behav
 ```
 
-Will *upload* (from *local* to *central* ) behavioural sessions 5 and 6, collected at any date, for subjects 1 to 3.
+Will *upload* (from *local* to *central* ) _behavioural_ _sessions_ 5 and 6, collected at any date, for _subjects_ 1 to 3.
 
-The keyword `all` can be input in place of a `-sub`, `-ses` or data type argument `dt` to transfer all available subject, sessions or data types available. For example:
+The keyword `all` can be input in place of a `-sub`, `-ses` or _data-type_ argument `dt` to transfer all available subject, sessions or data types available. For example:
 
 ```
 datashuttle \
 my_first_project \
-download
--sub all
--ses 005
+download \
+-sub all \
+-ses 005 \
 -dt ephys
 ```
 Will transfer *electrophysiology* data of the 5th sessions for *all* subjects found on the *central* machine.
 
 The *download* command transfers data from the *central* to *local* PC. This can be useful in case you want to analyse a subset of data that is held in *central* storage.
 
-The main data transfer commands are: `upload`, `download`, `upload-all`, `download-all`, `upload-entire-project`, `download-entire-project`. To understand their behaviour, it is necessary to understand the concept of the *top level folder*.
+The main data transfer commands are: `upload`, `download`, `upload-all`, `download-all`, `upload-entire-project`, `download-entire-project`. To understand their behaviour, it is necessary to understand the concept of the *top-level folder*.
 
 ### Understanding the 'Top Level Folder' and Transfer Methods
 
@@ -209,21 +210,21 @@ SWC-Blueprint defines two main *top-level folders*, `rawdata` and `derivatives`.
         └── ...
 ```
 
-In DataShuttle, th[index.md](..%2Findex.md)e current working *top level folder* is by default `rawdata`. The working *top level folder* determines where folders are created (e.g. `make_sub_folders`), and from which folder data is transferred.
+In DataShuttle, the current working *top level folder* is by default `rawdata`. The working *top level folder* determines where folders are created (e.g. `make_sub_folders`), and from which folder data is transferred.
 
-For example, `upload` or  `upload-all` will transfer data with `rawdata` from *local* to *central*, if `rawdata` is the current *top level folder*. `upload` transfers the specified subset of folders, while `upload-all` will upload the entire *top level folder*.
+For example, `upload` or  `upload-all` will transfer data with `rawdata` from *local* to *central*, if `rawdata` is the current *top-level folder*. `upload` transfers the specified subset of folders, while `upload-all` will upload the entire *top-level folder*.
 
-To change the *top level folder*, the command `set-top-level-folder` can be used. e.g.
+To change the *top-level folder*, the command `set-top-level-folder` can be used. e.g.
 
 ```
 datashuttle my_first_project set-top-level-folder derivatives
 ```
 
-The *top level folder* setting will remain across DataShuttle sessions.
+The *top-level folder* setting will remain across DataShuttle sessions.
 
 After this change, *upload* or `upload-all` will transfer data in the `derivatives` folder.
 
-To see the current *top level folder*, the command `show-top-level-folder` can be used.
+To see the current *top-level folder*, the command `show-top-level-folder` can be used.
 
 ### Transferring the entire project
 
@@ -250,9 +251,9 @@ will transfer all data in both the `rawdata` and `derivatives` folders from the 
 
 ### Transferring files that are not within data-type folders
 
-In some cases, files related to metadata may be stored outside of *data-type* folders.  When the `all` flag is used, files outside of folders at the *top level folder* (for `-sub`), *subject* level (for `-ses`) and *session* level (`for -dt`) will be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.
+In some cases, files related to metadata may be stored outside of *data-type* folders.  When the `all` flag is used, files outside of folders at the *top-level folder* (for `-sub`), *subject* level (for `-ses`) and *session* level (`for -dt`) will also be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.
 
-The **key example** below exemplifies how the `all` argument works during data transfer. For example, given the project folder:
+The example below exemplifies how the `all` argument works during data transfer. For example, given the project folder:
 
 ```
 └── rawdata/
@@ -272,8 +273,8 @@ The command:
 datashuttle \
 my_first_project \
 upload \
--sub all
--ses-001
+-sub all \
+-ses-001 \
 -dt all
 
 ```
@@ -282,7 +283,7 @@ will move:
 
 - The file `a_project_file.json` (and any other files at this level) and search all *subjects* for the specified *sessions* */ data-types*.
 
-- Only *sessions* called `001`, but not any other files or folders at this (i.e. `sub-001_ses-001_extrafile-ses.json`) will not be transferred.
+- Only *sessions* called `001`, but not any other files or folders at this level (i.e. `sub-001_ses-001_extrafile-ses.json` will not be transferred).
 
 - All *data-types* and non-*data-types* at the session level. For example, `behav` and `sub-001_ses-001_extrafile-dtype.json` (that reside in *session* folders called `ses-001`) will be transferred.
 
@@ -296,9 +297,9 @@ The functions `upload-specific-folder-or-file` or `download-specific-folder-or-f
 
 ## Summary
 
-This concludes the *Get Started* part of the documentation. Hopefully, you are now equipped to manage an experimental project folder aligned to community standards with a few short commands. Say goodbye to the days of manual copying and pasting!
+This concludes the *Get Started* part of the documentation. Hopefully, you are now equipped to manage an experimental project folder aligned to community standards with a few short commands.
 
-Continue reading the documentation for a full overview of DataShuttle functionalities. This includes XXX, XXX, XXX.
+Continue reading the documentation for a full overview of DataShuttle functionalities.
 
 To discuss, contribute or give feedback on DataShuttle, please check out our discussions page and GitHub repository. Any feedback is welcomed and greatly appreciated!
 
@@ -397,7 +398,7 @@ make_sub_folders \
 -dt behav
 ```
 
-will create the folder tree (assuming the *top level folder* is `rawdata`):
+will create the folder tree (assuming the *top-level folder* is `rawdata`):
 
 ```
 └── rawdata/
@@ -495,7 +496,7 @@ DataShuttle provides a number of keyword arguments to allow separate handling of
 
 #### For use with the `-sub` / `--sub-names` flag
 
-`all` : All *subject* and non-*subject* files and folders within the *top level folder* (e.g. `rawdata`) will be transferred.
+`all` : All *subject* and non-*subject* files and folders within the *top-level folder* (e.g. `rawdata`) will be transferred.
 
 `all_sub` : *Subject*  <u>folders</u> only (i.e. prefixed with `-sub`) will be transferred.
 
@@ -556,7 +557,7 @@ upload
 
 Would upload:
 
-- All non-*subject* files in the *top level* folder (`rawdata`)
+- All non-*subject* files in the *top-level* folder (`rawdata`)
 - The `sub-001_extra_file.json` and `sub-002_extra_file.json`
 - For `sub-001`, the file `ses-001_extra_file.json`. For `sub-002`, no other files are transferred because there is no non-*data-type* files at the *session* level.
 
