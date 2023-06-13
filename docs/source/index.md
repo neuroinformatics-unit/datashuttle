@@ -10,7 +10,8 @@ Any feedback is much appreciated, please open at [GitHub Issue](https://github.c
 
 ## Explore the Documentation
 
-::::{grid} 4
+::::{grid} 1 2 2 3
+:gutter: 3
 
 :::{grid-item-card} Get Started
 :link: pages/documentation
