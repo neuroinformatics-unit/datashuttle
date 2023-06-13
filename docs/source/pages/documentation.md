@@ -291,7 +291,7 @@ For convenience, it is suggested to keep all files within *data-type* level fold
 
 ### Transferring a specific file or folder
 
-The functions `upload-project-folder-or-file` or `download-project-folder-or-file` can be used to transfer an individual file or folder. The path to the file or folder (either full or relative to the working *top-level folder*) should be input.
+The functions `upload-specific-folder-or-file` or `download-specific-folder-or-file` can be used to transfer an individual file or folder. The path to the file or folder (either full or relative to the working *top-level folder*) should be input.
 
 
 ## Summary

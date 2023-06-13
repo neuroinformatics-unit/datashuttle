@@ -189,13 +189,13 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_upload_download_data_variables(self, upload_or_download, sep):
+    def test_upload_download_variables(self, upload_or_download, sep):
         """
-        As upload_data and download_data take identical args,
+        As upload and download take identical args,
         test both together.
         """
         stdout, _ = test_utils.run_cli(
-            f" {upload_or_download}{sep}data "
+            f" {upload_or_download} "
             f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two"
@@ -205,7 +205,7 @@ class TestCommandLineInterface:
         self.check_upload_download_args(args_, kwargs_, dry_run_is=False)
 
         stdout, _ = test_utils.run_cli(
-            f" {upload_or_download}_data "
+            f" {upload_or_download} "
             f"--data{sep}type all "
             f"--sub{sep}names one "
             f"--ses{sep}names two "
@@ -224,7 +224,7 @@ class TestCommandLineInterface:
         """
         To quickly check whether this runs with both seps by only
         checking if no error is raised. This is also tested
-        more thoroughly in test_upload_and_download_data()
+        more thoroughly in test_upload_and_download()
         but without wasting time with seps.
         """
         stdout, stderr = test_utils.run_cli(
@@ -252,10 +252,10 @@ class TestCommandLineInterface:
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_upload_download_folder_or_file(self, upload_or_download, sep):
         """
-        As upload_data_folder_or_file and download_data_folder_or_file
+        As upload_folder_or_file and download_folder_or_file
         take identical args, test both together"""
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file /fake/filepath"
+            f" {upload_or_download}{sep}specific{sep}folder{sep}or{sep}file /fake/filepath"
         )
         args_, kwargs_ = self.decode(stdout)
 
@@ -263,7 +263,7 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is False
 
         stdout, stderr = test_utils.run_cli(
-            f" {upload_or_download}{sep}project{sep}folder{sep}or{sep}file "
+            f" {upload_or_download}{sep}specific{sep}folder{sep}or{sep}file "
             f"/fake/filepath --dry{sep}run"
         )
 
@@ -273,7 +273,7 @@ class TestCommandLineInterface:
         assert kwargs_["dry_run"] is True
 
     @pytest.mark.parametrize(
-        "command", ["make_sub_folders", "upload_data", "download_data"]
+        "command", ["make_sub_folders", "upload", "download"]
     )
     def test_multiple_inputs(self, command):
         """
@@ -418,7 +418,7 @@ class TestCommandLineInterface:
     @pytest.mark.parametrize(
         "transfer_method", ["standard", "all_alias", "entire_project"]
     )
-    def test_upload_and_download_data(
+    def test_upload_and_download(
         self, setup_project, upload_or_download, transfer_method
     ):
         """
@@ -427,7 +427,7 @@ class TestCommandLineInterface:
         "_" vs. "-" command separators are not tested here to avoid
         adding another enumeration, as these tests are slow.
         Testing that the command runs with both separators is done above,
-        in test_upload_download_all_variables() and test_upload_download_data_variables()
+        in test_upload_download_all_variables() and test_upload_download_variables()
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
@@ -449,7 +449,7 @@ class TestCommandLineInterface:
             )
         elif transfer_method == "standard":
             test_utils.run_cli(
-                f"{upload_or_download}_data "
+                f"{upload_or_download} "
                 f"--data_type all "
                 f"--sub_names all "
                 f"--ses_names all",
@@ -494,7 +494,7 @@ class TestCommandLineInterface:
         )
 
         test_utils.run_cli(
-            f"{upload_or_download}_project_folder_or_file {subs[1]}/{sessions[0]}/ephys/**",
+            f"{upload_or_download}_specific_folder_or_file {subs[1]}/{sessions[0]}/ephys/**",
             setup_project.project_name,
         )
 
