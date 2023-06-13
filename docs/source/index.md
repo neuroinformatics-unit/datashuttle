@@ -36,7 +36,7 @@ Use datashuttle with the CLI.
 :::
 
 ::::
-[documentation.md](pages%2Fdocumentation.md)
+
 ```{toctree}
 :maxdepth: 2
 :caption: index
