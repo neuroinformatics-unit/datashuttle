@@ -32,11 +32,10 @@ classifiers = [
 ]
 
 [project.urls]
-homepage = "https://github.com/neuroinformatics-unit/datashuttle"
-bug_tracker = "https://github.com/neuroinformatics-unit/datashuttle/issues"
-documentation = "https://github.com/neuroinformatics-unit/datashuttle"
-source_code = "https://github.com/neuroinformatics-unit/datashuttle"
-user_support = "https://github.com/neuroinformatics-unit/datashuttle/issues"
+"Bug Tracker" = "https://github.com/neuroinformatics-unit/datashuttle/issues"
+Documentation = "https://datashuttle.neuroinformatics.dev"
+"Source Code" = "https://github.com/neuroinformatics-unit/datashuttle"
+"User support" = "https://github.com/neuroinformatics-unit/datashuttle/discussions"
 
 [project.optional-dependencies]
 dev = [
