@@ -121,7 +121,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gc3a018f</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gb00f8aa</p>
   
 </a></div>
     
@@ -405,18 +405,18 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.check_name_formatting" title="datashuttle.datashuttle.DataShuttle.check_name_formatting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_name_formatting</span></code></a>(names, prefix)</p></td>
-<td><p>Pass list of names to check how these will be auto-formatted, for example as when passed to make_sub_folders() or upload_data() or download_data()</p></td>
+<td><p>Pass list of names to check how these will be auto-formatted, for example as when passed to make_sub_folders() or upload() or download()</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_all" title="datashuttle.datashuttle.DataShuttle.download_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_all</span></code></a>([dry_run])</p></td>
-<td><p>Convenience function to download all data.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_data" title="datashuttle.datashuttle.DataShuttle.download_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_data</span></code></a>(sub_names, ses_names[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download" title="datashuttle.datashuttle.DataShuttle.download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code></a>(sub_names, ses_names[, data_type, ...])</p></td>
 <td><p>Download data from the central project folder to the local project folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_all" title="datashuttle.datashuttle.DataShuttle.download_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_all</span></code></a>([dry_run])</p></td>
+<td><p>Convenience function to download all data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_entire_project" title="datashuttle.datashuttle.DataShuttle.download_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_entire_project</span></code></a>()</p></td>
 <td><p>Download the entire project (from 'central' to 'local'), i.e. including every top level folder (e.g.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file" title="datashuttle.datashuttle.DataShuttle.download_project_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_project_folder_or_file</span></code></a>(filepath[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_specific_folder_or_file" title="datashuttle.datashuttle.DataShuttle.download_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
 <td><p>Download a specific file or folder.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.get_next_ses_number" title="datashuttle.datashuttle.DataShuttle.get_next_ses_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_ses_number</span></code></a>(sub)</p></td>
@@ -473,16 +473,16 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.update_config" title="datashuttle.datashuttle.DataShuttle.update_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config</span></code></a>(option_key, new_info)</p></td>
 <td><p>Update a single config entry.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_all" title="datashuttle.datashuttle.DataShuttle.upload_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_all</span></code></a>([dry_run])</p></td>
-<td><p>Convenience function to upload all data.</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_data" title="datashuttle.datashuttle.DataShuttle.upload_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_data</span></code></a>(sub_names, ses_names[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload" title="datashuttle.datashuttle.DataShuttle.upload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload</span></code></a>(sub_names, ses_names[, data_type, ...])</p></td>
 <td><p>Upload data from a local project to the central project folder.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_all" title="datashuttle.datashuttle.DataShuttle.upload_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_all</span></code></a>([dry_run])</p></td>
+<td><p>Convenience function to upload all data.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_entire_project" title="datashuttle.datashuttle.DataShuttle.upload_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_entire_project</span></code></a>()</p></td>
 <td><p>Upload the entire project (from 'local' to 'central'), i.e. including every top level folder (e.g.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file" title="datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_project_folder_or_file</span></code></a>(filepath[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file" title="datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
 <td><p>Upload a specific file or folder.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.write_public_key" title="datashuttle.datashuttle.DataShuttle.write_public_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_public_key</span></code></a>(filepath)</p></td>
@@ -496,7 +496,7 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <dd><p>Set the working top level folder (e.g. ‘rawdata’, ‘derivatives’).</p>
 <p>The top_level_folder defines in which top level folder new
 sub-folders will be made (e.g. make_sub_folders) or at which level
-folders  are transferred with the commands upload_data / download_data
+folders  are transferred with the commands upload / download
 and upload_all / download all.</p>
 <p>To upload the entire project (i.e. every top level
 folder), use the ‘command upload_entire_project’ or
@@ -580,8 +580,8 @@ to find the next session number.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload_data">
-<span class="sig-name descname"><span class="pre">upload_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.upload_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload_data" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload">
+<span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload" title="Permalink to this definition">#</a></dt>
 <dd><p>Upload data from a local project to the central project
 folder. In the case that a file / folder exists on
 the central and local, the central will not be overwritten
@@ -628,15 +628,15 @@ is permitted. e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download_data">
-<span class="sig-name descname"><span class="pre">download_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.download_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download_data" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download">
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download" title="Permalink to this definition">#</a></dt>
 <dd><p>Download data from the central project folder to the
 local project folder. In the case that a file / folder
 exists on the central and local, the local will
 not be overwritten even if the central file is an
 older version.</p>
-<p>This function is identical to upload_data() but with the direction
-of data transfer reversed. Please see upload_data() for arguments.
+<p>This function is identical to upload() but with the direction
+of data transfer reversed. Please see upload() for arguments.
 “all” arguments will search the central project for sub / ses to download.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -650,7 +650,7 @@ of data transfer reversed. Please see upload_data() for arguments.
 <span class="sig-name descname"><span class="pre">upload_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.upload_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload_all" title="Permalink to this definition">#</a></dt>
 <dd><p>Convenience function to upload all data.</p>
 <dl class="simple">
-<dt>Alias for:</dt><dd><p>project.upload_data(“all”, “all”, “all”)</p>
+<dt>Alias for:</dt><dd><p>project.upload(“all”, “all”, “all”)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -659,7 +659,7 @@ of data transfer reversed. Please see upload_data() for arguments.
 <dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download_all">
 <span class="sig-name descname"><span class="pre">download_all</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.download_all"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download_all" title="Permalink to this definition">#</a></dt>
 <dd><p>Convenience function to download all data.</p>
-<p>Alias for : project.download_data(“all”, “all”, “all”)</p>
+<p>Alias for : project.download(“all”, “all”, “all”)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -679,8 +679,8 @@ i.e. including every top level folder (e.g. ‘rawdata’,
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file">
-<span class="sig-name descname"><span class="pre">upload_project_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.upload_project_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file">
+<span class="sig-name descname"><span class="pre">upload_specific_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.upload_specific_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file" title="Permalink to this definition">#</a></dt>
 <dd><p>Upload a specific file or folder. If transferring
 a single file, the path including the filename is
 required (see ‘filepath’ input). If a folder,
@@ -709,8 +709,8 @@ to check which files will be moved on data transfer.</p></li>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download_project_folder_or_file">
-<span class="sig-name descname"><span class="pre">download_project_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.download_project_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download_specific_folder_or_file">
+<span class="sig-name descname"><span class="pre">download_specific_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.download_specific_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download_specific_folder_or_file" title="Permalink to this definition">#</a></dt>
 <dd><p>Download a specific file or folder. If transferring
 a single file, the path including the filename is
 required (see ‘filepath’ input). If a folder,
@@ -971,8 +971,8 @@ in the local project.</p>
 <p>The top_level_folder defines in which top level folder new
 sub-folders will be made (e.g. make_sub_folders) or
 at which level folders are transferred with the commands
-upload_data / download_data and upload_all / download all.
-upload_project_folder_or_file / download_project_folder_or_file.</p>
+upload / download and upload_all / download all.
+upload_specific_folder_or_file / download_specific_folder_or_file.</p>
 <p>To upload the entire project (i.e. every top level
 folder), use the ‘command upload_entire_project’ or
 ‘download_entire_project’.</p>
@@ -1029,8 +1029,8 @@ electrophysiological machine.</p>
 <dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.check_name_formatting">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_name_formatting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.check_name_formatting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.check_name_formatting" title="Permalink to this definition">#</a></dt>
 <dd><p>Pass list of names to check how these will be auto-formatted,
-for example as when passed to make_sub_folders() or upload_data()
-or download_data()</p>
+for example as when passed to make_sub_folders() or upload()
+or download()</p>
 <p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
 This method will print the formatted list of names,</p>
 <dl class="field-list simple">
@@ -1103,14 +1103,14 @@ e.g. “sub-” or “ses-”</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_sub_folders"><code class="docutils literal notranslate"><span class="pre">DataShuttle.make_sub_folders()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_next_sub_number"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_next_sub_number()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_next_ses_number"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_next_ses_number()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_data"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_data()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_data"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_data()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_all"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_all()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_all"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_all()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_entire_project"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_entire_project()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_entire_project"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_entire_project()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_project_folder_or_file()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_project_folder_or_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload_specific_folder_or_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.download_specific_folder_or_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.download_specific_folder_or_file()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_central_server"><code class="docutils literal notranslate"><span class="pre">DataShuttle.setup_ssh_connection_to_central_server()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.write_public_key"><code class="docutils literal notranslate"><span class="pre">DataShuttle.write_public_key()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_config_file"><code class="docutils literal notranslate"><span class="pre">DataShuttle.make_config_file()</span></code></a></li>

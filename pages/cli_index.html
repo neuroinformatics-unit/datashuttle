@@ -120,7 +120,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gc3a018f</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gb00f8aa</p>
   
 </a></div>
     
@@ -531,8 +531,8 @@ folder.</p>
 </dl>
 </section>
 </section>
-<section id="upload-data (upload_data)">
-<h3>upload-data (upload_data)<a class="headerlink" href="#upload-data (upload_data)" title="Permalink to this heading">#</a></h3>
+<section id="upload">
+<h3>upload<a class="headerlink" href="#upload" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Upload data from a local project to the central project
 folder. In the case that a file / folder exists on
@@ -540,9 +540,9 @@ the central and local, the central will not be overwritten
 even if the central file is an older version. Data
 transfer logs are saved to the logging folder).</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">data</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span>
-                        <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
-                        <span class="p">[</span><span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">DATA_TYPE</span> <span class="p">[</span><span class="n">DATA_TYPE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span>
+                   <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
+                   <span class="p">[</span><span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">DATA_TYPE</span> <span class="p">[</span><span class="n">DATA_TYPE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="named-arguments:_repeat2">
@@ -569,7 +569,7 @@ transfer logs are saved to the logging folder).</p>
 <blockquote>
 <div><p>Convenience function to upload all data.</p>
 <dl class="simple">
-<dt>Alias for:</dt><dd><p>project.upload_data(“all”, “all”, “all”)</p>
+<dt>Alias for:</dt><dd><p>project.upload(“all”, “all”, “all”)</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -588,21 +588,21 @@ i.e. including every top level folder (e.g. ‘rawdata’,
 </pre></div>
 </div>
 </section>
-<section id="download-data (download_data)">
-<h3>download-data (download_data)<a class="headerlink" href="#download-data (download_data)" title="Permalink to this heading">#</a></h3>
+<section id="download">
+<h3>download<a class="headerlink" href="#download" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Download data from the central project folder to the
 local project folder. In the case that a file / folder
 exists on the central and local, the local will
 not be overwritten even if the central file is an
 older version.</p>
-<p>This function is identical to upload_data() but with the direction
-of data transfer reversed. Please see upload_data() for arguments.
+<p>This function is identical to upload() but with the direction
+of data transfer reversed. Please see upload() for arguments.
 “all” arguments will search the central project for sub / ses to download.</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">data</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span>
-                          <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span> <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
-                          <span class="p">[</span><span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">DATA_TYPE</span> <span class="p">[</span><span class="n">DATA_TYPE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="o">--</span><span class="n">sub</span><span class="o">-</span><span class="n">names</span> <span class="n">SUB_NAMES</span> <span class="p">[</span><span class="n">SUB_NAMES</span> <span class="o">...</span><span class="p">]</span> <span class="o">--</span><span class="n">ses</span><span class="o">-</span><span class="n">names</span>
+                     <span class="n">SES_NAMES</span> <span class="p">[</span><span class="n">SES_NAMES</span> <span class="o">...</span><span class="p">]</span>
+                     <span class="p">[</span><span class="o">--</span><span class="n">data</span><span class="o">-</span><span class="nb">type</span> <span class="n">DATA_TYPE</span> <span class="p">[</span><span class="n">DATA_TYPE</span> <span class="o">...</span><span class="p">]]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span>
 </pre></div>
 </div>
 <section id="named-arguments:_repeat3">
@@ -628,7 +628,7 @@ of data transfer reversed. Please see upload_data() for arguments.
 <h3>download-all (download_all)<a class="headerlink" href="#download-all (download_all)" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Convenience function to download all data.</p>
-<p>Alias for : project.download_data(“all”, “all”, “all”)</p>
+<p>Alias for : project.download(“all”, “all”, “all”)</p>
 </div></blockquote>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="nb">all</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span>
 </pre></div>
@@ -645,8 +645,8 @@ i.e. including every top level folder (e.g. ‘rawdata’,
 </pre></div>
 </div>
 </section>
-<section id="upload-project-folder-or-file (upload_project_folder_or_file)">
-<h3>upload-project-folder-or-file (upload_project_folder_or_file)<a class="headerlink" href="#upload-project-folder-or-file (upload_project_folder_or_file)" title="Permalink to this heading">#</a></h3>
+<section id="upload-specific-folder-or-file (upload_specific_folder_or_file)">
+<h3>upload-specific-folder-or-file (upload_specific_folder_or_file)<a class="headerlink" href="#upload-specific-folder-or-file (upload_specific_folder_or_file)" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Upload a specific file or folder. If transferring
 a single file, the path including the filename is
@@ -658,7 +658,7 @@ and subfolders (“**”).</p>
 <p>This function works by passing the file / folder
 path to transfer to Rclone’s include flag.</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">folder</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">upload</span><span class="o">-</span><span class="n">specific</span><span class="o">-</span><span class="n">folder</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
 </pre></div>
 </div>
 <section id="positional-arguments_repeat3">
@@ -679,8 +679,8 @@ path to transfer to Rclone’s include flag.</p>
 </dl>
 </section>
 </section>
-<section id="download-project-folder-or-file (download_project_folder_or_file)">
-<h3>download-project-folder-or-file (download_project_folder_or_file)<a class="headerlink" href="#download-project-folder-or-file (download_project_folder_or_file)" title="Permalink to this heading">#</a></h3>
+<section id="download-specific-folder-or-file (download_specific_folder_or_file)">
+<h3>download-specific-folder-or-file (download_specific_folder_or_file)<a class="headerlink" href="#download-specific-folder-or-file (download_specific_folder_or_file)" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Download a specific file or folder. If transferring
 a single file, the path including the filename is
@@ -692,7 +692,7 @@ and subfolders (“**”).</p>
 <p>This function works by passing the file / folder
 path to transfer to Rclone’s include flag.</p>
 </div></blockquote>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">project</span><span class="o">-</span><span class="n">folder</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">download</span><span class="o">-</span><span class="n">specific</span><span class="o">-</span><span class="n">folder</span><span class="o">-</span><span class="ow">or</span><span class="o">-</span><span class="n">file</span> <span class="p">[</span><span class="o">-</span><span class="n">h</span><span class="p">]</span> <span class="p">[</span><span class="o">--</span><span class="n">dry</span><span class="o">-</span><span class="n">run</span><span class="p">]</span> <span class="n">filepath</span>
 </pre></div>
 </div>
 <section id="positional-arguments_repeat4">
@@ -719,7 +719,7 @@ path to transfer to Rclone’s include flag.</p>
 <div><p>Set the working top level folder (e.g. ‘rawdata’, ‘derivatives’).</p>
 <p>The top_level_folder defines in which top level folder new
 subfolders will be made (e.g. make_sub_folders) or at which level
-folders  are transferred with the commands upload_data / download_data
+folders  are transferred with the commands upload / download
 and upload_all / download all.</p>
 <p>To upload the entire project (i.e. every top level
 folder), use the ‘command upload_entire_project’ or
@@ -813,8 +813,8 @@ in the local project.</p>
 <p>The top_level_folder defines in which top level folder new
 subfolders will be made (e.g. make_sub_folders) or
 at which level folders are transferred with the commands
-upload_data / download_data and upload_all / download all.
-upload_project_folder_or_file / download_project_folder_or_file.</p>
+upload / download and upload_all / download all.
+upload_specific_folder_or_file / download_specific_folder_or_file.</p>
 <p>To upload the entire project (i.e. every top level
 folder), use the ‘command upload_entire_project’ or
 ‘download_entire_project’.</p>
@@ -875,8 +875,8 @@ electrophysiological machine.</p>
 <h3>check-name-formatting (check_name_formatting)<a class="headerlink" href="#check-name-formatting (check_name_formatting)" title="Permalink to this heading">#</a></h3>
 <blockquote>
 <div><p>Pass list of names to check how these will be autoformatted,
-for example as when passed to make_sub_folders() or upload_data()
-or download_data()</p>
+for example as when passed to make_sub_folders() or upload()
+or download()</p>
 <p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
 This method will print the formatted list of names,</p>
 </div></blockquote>
@@ -984,24 +984,24 @@ for how this is handled.</p>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments:_repeat1">named arguments:</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upload-data (upload_data)">upload-data (upload_data)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upload">upload</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments:_repeat2">named arguments:</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upload-all (upload_all)">upload-all (upload_all)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upload-entire-project (upload_entire_project)">upload-entire-project (upload_entire_project)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-data (download_data)">download-data (download_data)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download">download</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments:_repeat3">named arguments:</a></li>
 </ul>
 </li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-all (download_all)">download-all (download_all)</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-entire-project (download_entire_project)">download-entire-project (download_entire_project)</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upload-project-folder-or-file (upload_project_folder_or_file)">upload-project-folder-or-file (upload_project_folder_or_file)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#upload-specific-folder-or-file (upload_specific_folder_or_file)">upload-specific-folder-or-file (upload_specific_folder_or_file)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments_repeat3">Positional Arguments</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments">Named Arguments</a></li>
 </ul>
 </li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-project-folder-or-file (download_project_folder_or_file)">download-project-folder-or-file (download_project_folder_or_file)</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#download-specific-folder-or-file (download_specific_folder_or_file)">download-specific-folder-or-file (download_specific_folder_or_file)</a><ul class="nav section-nav flex-column">
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#positional-arguments_repeat4">Positional Arguments</a></li>
 <li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#named-arguments_repeat1">Named Arguments</a></li>
 </ul>

@@ -118,7 +118,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gc3a018f</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+gb00f8aa</p>
   
 </a></div>
     
@@ -495,7 +495,7 @@ document.write(`
 
 <span class="sd">        The top_level_folder defines in which top level folder new</span>
 <span class="sd">        sub-folders will be made (e.g. make_sub_folders) or at which level</span>
-<span class="sd">        folders  are transferred with the commands upload_data / download_data</span>
+<span class="sd">        folders  are transferred with the commands upload / download</span>
 <span class="sd">        and upload_all / download all.</span>
 
 <span class="sd">        To upload the entire project (i.e. every top level</span>
@@ -600,6 +600,15 @@ document.write(`
         <span class="k">if</span> <span class="n">ses_names</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">ses_names</span> <span class="o">=</span> <span class="p">[]</span>
 
+        <span class="c1"># This will raise error if invalid and cannot convert sub</span>
+        <span class="c1"># or ses to `int`.</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">get_values_from_bids_formatted_name</span><span class="p">(</span>
+            <span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="n">return_as_int</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">get_values_from_bids_formatted_name</span><span class="p">(</span>
+            <span class="n">ses_names</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">,</span> <span class="n">return_as_int</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Making folders...&quot;</span><span class="p">)</span>
         <span class="n">folders</span><span class="o">.</span><span class="n">make_folder_trees</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
@@ -643,8 +652,8 @@ document.write(`
     <span class="c1"># Public File Transfer</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.upload_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_data">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">upload_data</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
@@ -702,7 +711,7 @@ document.write(`
 <span class="sd">              (on the 1st january, 2022).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_data&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
@@ -717,8 +726,8 @@ document.write(`
         <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_data"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_data">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">download_data</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
@@ -733,12 +742,12 @@ document.write(`
 <span class="sd">        not be overwritten even if the central file is an</span>
 <span class="sd">        older version.</span>
 
-<span class="sd">        This function is identical to upload_data() but with the direction</span>
-<span class="sd">        of data transfer reversed. Please see upload_data() for arguments.</span>
+<span class="sd">        This function is identical to upload() but with the direction</span>
+<span class="sd">        of data transfer reversed. Please see upload() for arguments.</span>
 <span class="sd">        &quot;all&quot; arguments will search the central project for sub / ses to download.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_data&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
@@ -759,24 +768,22 @@ document.write(`
 <span class="sd">        Convenience function to upload all data.</span>
 
 <span class="sd">        Alias for:</span>
-<span class="sd">            project.upload_data(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
+<span class="sd">            project.upload(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">upload_data</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="nd">@check_configs_set</span>
     <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function to download all data.</span>
 
-<span class="sd">        Alias for : project.download_data(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
+<span class="sd">        Alias for : project.download(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">download_data</span><span class="p">(</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.upload_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_entire_project">[docs]</a>    <span class="nd">@check_configs_set</span>
@@ -797,8 +804,8 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_project_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">upload_project_folder_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_specific_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_specific_folder_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -827,7 +834,7 @@ document.write(`
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_project_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_specific_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
@@ -848,8 +855,8 @@ document.write(`
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download_project_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_project_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">download_project_folder_or_file</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download_specific_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_specific_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_specific_folder_or_file</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -878,7 +885,9 @@ document.write(`
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_project_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+            <span class="s2">&quot;download_specific_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
+        <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
@@ -1283,8 +1292,8 @@ document.write(`
 <span class="sd">        The top_level_folder defines in which top level folder new</span>
 <span class="sd">        sub-folders will be made (e.g. make_sub_folders) or</span>
 <span class="sd">        at which level folders are transferred with the commands</span>
-<span class="sd">        upload_data / download_data and upload_all / download all.</span>
-<span class="sd">        upload_project_folder_or_file / download_project_folder_or_file.</span>
+<span class="sd">        upload / download and upload_all / download all.</span>
+<span class="sd">        upload_specific_folder_or_file / download_specific_folder_or_file.</span>
 
 <span class="sd">        To upload the entire project (i.e. every top level</span>
 <span class="sd">        folder), use the &#39;command upload_entire_project&#39; or</span>
@@ -1356,8 +1365,8 @@ document.write(`
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
-<span class="sd">        for example as when passed to make_sub_folders() or upload_data()</span>
-<span class="sd">        or download_data()</span>
+<span class="sd">        for example as when passed to make_sub_folders() or upload()</span>
+<span class="sd">        or download()</span>
 
 <span class="sd">        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.</span>
 <span class="sd">        This method will print the formatted list of names,</span>
