@@ -121,7 +121,7 @@
     <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g826e4d4</p>
+    <p class="title logo__title">DataShuttle. version: 0.1.dev1+g350d4ef</p>
   
 </a></div>
     
@@ -404,10 +404,10 @@ document.write(`
 <section id="initial-setup-with-configurations">
 <h2>Initial setup with <em>configurations</em><a class="headerlink" href="#initial-setup-with-configurations" title="Permalink to this heading">#</a></h2>
 <p>A one-time setup on each <em>local</em> machine used is required, specifying the <em>project name</em> and <em>configurations</em>.</p>
-<p>The configurations tell DataShuttle</p>
+<p>The <em>configurations</em> tell DataShuttle:</p>
 <ul class="simple">
 <li><p>The paths to the <em>local</em> and <em>central</em> folders that contain the project.</p></li>
-<li><p>How to connect to the central project.</p></li>
+<li><p>How to connect to the <em>central</em> machine.</p></li>
 <li><p>The settings that specify how data is transferred.</p></li>
 <li><p>The <em>data-types</em> that will be used in the project, e.g. <em>behaviour</em> (<code class="docutils literal notranslate"><span class="pre">behav</span></code>) or <em>electrophysiology</em> (<code class="docutils literal notranslate"><span class="pre">ephys</span></code>).</p></li>
 </ul>
@@ -423,7 +423,7 @@ document.write(`
 </section>
 <section id="example">
 <h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
-<p>An example call to <code class="docutils literal notranslate"><span class="pre">make-config-file</span></code> below created s a new project called <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code>, sets the <em>local</em> project path to <code class="docutils literal notranslate"><span class="pre">/path/to/my/project</span></code>, the <em>central</em> path (to a remote Linux server) to <code class="docutils literal notranslate"><span class="pre">/nfs/nhome/live/username/</span></code>, sets the required SSH configurations, and indicates that <em>behavioural</em>, electrophysiological and <em>histological</em> data will be used on this machine for this project.</p>
+<p>An example call to <code class="docutils literal notranslate"><span class="pre">make-config-file</span></code> below creates a new project called <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code>, sets the <em>local</em> project path to <code class="docutils literal notranslate"><span class="pre">/path/to/my/project</span></code>, the <em>central</em> path (to a remote Linux server) to <code class="docutils literal notranslate"><span class="pre">/nfs/nhome/live/username/</span></code>, the required SSH configurations, and indicates that <em>behavioural</em>, <em>electrophysiological</em> and <em>histological</em> data will be used on this machine for this project.</p>
 <p>Note that in the terminal, <code class="docutils literal notranslate"><span class="pre">\</span></code> indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). On Windows, the <code class="docutils literal notranslate"><span class="pre">^</span></code> character is used instead.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
 <span class="n">my_first_project</span> \
@@ -449,11 +449,11 @@ document.write(`
 <li><p>All subjects are given a numerical (integer) number that is prefixed with the key <code class="docutils literal notranslate"><span class="pre">sub-</span></code>.</p></li>
 <li><p>All sessions are also given a numerical (integer) number that is prefixed with the key <code class="docutils literal notranslate"><span class="pre">ses-</span></code>.</p></li>
 </ul>
-<p>Following this, optional information can be included in the form of key-value pairs. For example, a folder tree for <em>subject 1</em>, <em>session 1</em>  with <em>behavioural</em> data that includes the date of each session in the <em>session</em> folder name would be:</p>
+<p>Following this, optional information can be included in the form of key-value pairs. For example, a folder tree for <em>subject 1</em>, <em>session 1</em>  with <em>behavioural</em> data that includes the date of the session in the <em>session</em> folder name would be:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── sub-001/
-    └── ses-001_date_20230516/
+    └── ses-001_date-20230516/
         └── behav/
-            └── sub-001_ses-001_recording.mp4
+            └── sub-001_ses-001_camera-top.mp4
 </pre></div>
 </div>
 <p>In DataShuttle, this folder tree (excluding the .mp4 file which must be saved using third-party software) can be created (assuming today’s date is <code class="docutils literal notranslate"><span class="pre">20220516</span></code>), with the command</p>
@@ -462,7 +462,7 @@ document.write(`
 <span class="n">make</span><span class="o">-</span><span class="n">sub</span><span class="o">-</span><span class="n">folders</span> <span class="o">-</span><span class="n">sub</span> <span class="mi">001</span> <span class="o">-</span><span class="n">ses</span> <span class="mi">001</span><span class="n">_</span><span class="nd">@DATE</span><span class="o">@</span> <span class="o">-</span><span class="n">dt</span> <span class="n">behav</span>
 </pre></div>
 </div>
-<p>The leading <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> is optional when specifying folders to create. It is possible to automatically create date, time or datetime key-value pairs with the days <code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;TIME&#64;</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;DATETIME&#64;</span></code> respectively.</p>
+<p>The leading <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> is optional when specifying folders to create (e.g. both <code class="docutils literal notranslate"><span class="pre">-sub</span> <span class="pre">001</span></code> and <code class="docutils literal notranslate"><span class="pre">-sub</span> <span class="pre">sub-001</span></code> are valid inputs). It is possible to automatically create date, time or datetime key-value pairs with the days <code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;TIME&#64;</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;DATETIME&#64;</span></code> respectively (see the <a class="reference internal" href="#automatically-include-date-time-or-datetime"><span class="std std-ref">below section</span></a> for more detail).</p>
 <p>Another example call, which creates a range of subject and session folders, is shown below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
 <span class="n">my_first_project</span> \
@@ -500,25 +500,25 @@ document.write(`
 <p>DataShuttle offers a convenient way of transferring entire project folders, or subsets of data. For example, the call</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
 <span class="n">my_first_project</span> \
-<span class="n">upload</span>
-<span class="o">-</span><span class="n">sub</span> <span class="mi">001</span><span class="nd">@TO</span><span class="o">@</span><span class="mi">003</span>
-<span class="o">-</span><span class="n">ses</span> <span class="mi">005</span><span class="n">_date</span><span class="o">-@*@</span> <span class="mi">006</span><span class="n">_date</span><span class="o">-@*@*</span>
+<span class="n">upload</span> \
+<span class="o">-</span><span class="n">sub</span> <span class="mi">001</span><span class="nd">@TO</span><span class="o">@</span><span class="mi">003</span> \
+<span class="o">-</span><span class="n">ses</span> <span class="mi">005</span><span class="n">_date</span><span class="o">-@*@</span> <span class="mi">006</span><span class="n">_date</span><span class="o">-@*@*</span> \
 <span class="o">-</span><span class="n">dt</span> <span class="n">behav</span>
 </pre></div>
 </div>
-<p>Will <em>upload</em> (from <em>local</em> to <em>central</em> ) behavioural sessions 5 and 6, collected at any date, for subjects 1 to 3.</p>
-<p>The keyword <code class="docutils literal notranslate"><span class="pre">all</span></code> can be input in place of a <code class="docutils literal notranslate"><span class="pre">-sub</span></code>, <code class="docutils literal notranslate"><span class="pre">-ses</span></code> or data type argument <code class="docutils literal notranslate"><span class="pre">dt</span></code> to transfer all available subject, sessions or data types available. For example:</p>
+<p>Will <em>upload</em> (from <em>local</em> to <em>central</em> ) <em>behavioural</em> <em>sessions</em> 5 and 6, collected at any date, for <em>subjects</em> 1 to 3.</p>
+<p>The keyword <code class="docutils literal notranslate"><span class="pre">all</span></code> can be input in place of a <code class="docutils literal notranslate"><span class="pre">-sub</span></code>, <code class="docutils literal notranslate"><span class="pre">-ses</span></code> or <em>data-type</em> argument <code class="docutils literal notranslate"><span class="pre">dt</span></code> to transfer all available subject, sessions or data types available. For example:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
 <span class="n">my_first_project</span> \
-<span class="n">download</span>
-<span class="o">-</span><span class="n">sub</span> <span class="nb">all</span>
-<span class="o">-</span><span class="n">ses</span> <span class="mi">005</span>
+<span class="n">download</span> \
+<span class="o">-</span><span class="n">sub</span> <span class="nb">all</span> \
+<span class="o">-</span><span class="n">ses</span> <span class="mi">005</span> \
 <span class="o">-</span><span class="n">dt</span> <span class="n">ephys</span>
 </pre></div>
 </div>
 <p>Will transfer <em>electrophysiology</em> data of the 5th sessions for <em>all</em> subjects found on the <em>central</em> machine.</p>
 <p>The <em>download</em> command transfers data from the <em>central</em> to <em>local</em> PC. This can be useful in case you want to analyse a subset of data that is held in <em>central</em> storage.</p>
-<p>The main data transfer commands are: <code class="docutils literal notranslate"><span class="pre">upload</span></code>, <code class="docutils literal notranslate"><span class="pre">download</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-all</span></code>, <code class="docutils literal notranslate"><span class="pre">download-all</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-entire-project</span></code>, <code class="docutils literal notranslate"><span class="pre">download-entire-project</span></code>. To understand their behaviour, it is necessary to understand the concept of the <em>top level folder</em>.</p>
+<p>The main data transfer commands are: <code class="docutils literal notranslate"><span class="pre">upload</span></code>, <code class="docutils literal notranslate"><span class="pre">download</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-all</span></code>, <code class="docutils literal notranslate"><span class="pre">download-all</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-entire-project</span></code>, <code class="docutils literal notranslate"><span class="pre">download-entire-project</span></code>. To understand their behaviour, it is necessary to understand the concept of the <em>top-level folder</em>.</p>
 <section id="understanding-the-top-level-folder-and-transfer-methods">
 <h3>Understanding the ‘Top Level Folder’ and Transfer Methods<a class="headerlink" href="#understanding-the-top-level-folder-and-transfer-methods" title="Permalink to this heading">#</a></h3>
 <p>SWC-Blueprint defines two main <em>top-level folders</em>, <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>. The purpose of <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> is to store data directly as acquired. The <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> folder is used to store the results of processing the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>. This distinction ensures that <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> is not overwritten during processing, and makes sharing of <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> simpler.</p>
@@ -529,15 +529,15 @@ document.write(`
         └── ...
 </pre></div>
 </div>
-<p>In DataShuttle, th<a class="reference internal" href="#..%2Findex.md"><span class="xref myst">index.md</span></a>e current working <em>top level folder</em> is by default <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>. The working <em>top level folder</em> determines where folders are created (e.g. <code class="docutils literal notranslate"><span class="pre">make_sub_folders</span></code>), and from which folder data is transferred.</p>
-<p>For example, <code class="docutils literal notranslate"><span class="pre">upload</span></code> or  <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will transfer data with <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> from <em>local</em> to <em>central</em>, if <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> is the current <em>top level folder</em>. <code class="docutils literal notranslate"><span class="pre">upload</span></code> transfers the specified subset of folders, while <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will upload the entire <em>top level folder</em>.</p>
-<p>To change the <em>top level folder</em>, the command <code class="docutils literal notranslate"><span class="pre">set-top-level-folder</span></code> can be used. e.g.</p>
+<p>In DataShuttle, the current working <em>top level folder</em> is by default <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>. The working <em>top level folder</em> determines where folders are created (e.g. <code class="docutils literal notranslate"><span class="pre">make_sub_folders</span></code>), and from which folder data is transferred.</p>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">upload</span></code> or  <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will transfer data with <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> from <em>local</em> to <em>central</em>, if <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> is the current <em>top-level folder</em>. <code class="docutils literal notranslate"><span class="pre">upload</span></code> transfers the specified subset of folders, while <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will upload the entire <em>top-level folder</em>.</p>
+<p>To change the <em>top-level folder</em>, the command <code class="docutils literal notranslate"><span class="pre">set-top-level-folder</span></code> can be used. e.g.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">my_first_project</span> <span class="nb">set</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">level</span><span class="o">-</span><span class="n">folder</span> <span class="n">derivatives</span>
 </pre></div>
 </div>
-<p>The <em>top level folder</em> setting will remain across DataShuttle sessions.</p>
+<p>The <em>top-level folder</em> setting will remain across DataShuttle sessions.</p>
 <p>After this change, <em>upload</em> or <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will transfer data in the <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> folder.</p>
-<p>To see the current <em>top level folder</em>, the command <code class="docutils literal notranslate"><span class="pre">show-top-level-folder</span></code> can be used.</p>
+<p>To see the current <em>top-level folder</em>, the command <code class="docutils literal notranslate"><span class="pre">show-top-level-folder</span></code> can be used.</p>
 </section>
 <section id="transferring-the-entire-project">
 <h3>Transferring the entire project<a class="headerlink" href="#transferring-the-entire-project" title="Permalink to this heading">#</a></h3>
@@ -560,8 +560,8 @@ document.write(`
 </section>
 <section id="transferring-files-that-are-not-within-data-type-folders">
 <h3>Transferring files that are not within data-type folders<a class="headerlink" href="#transferring-files-that-are-not-within-data-type-folders" title="Permalink to this heading">#</a></h3>
-<p>In some cases, files related to metadata may be stored outside of <em>data-type</em> folders.  When the <code class="docutils literal notranslate"><span class="pre">all</span></code> flag is used, files outside of folders at the <em>top level folder</em> (for <code class="docutils literal notranslate"><span class="pre">-sub</span></code>), <em>subject</em> level (for <code class="docutils literal notranslate"><span class="pre">-ses</span></code>) and <em>session</em> level (<code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">-dt</span></code>) will be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.</p>
-<p>The <strong>key example</strong> below exemplifies how the <code class="docutils literal notranslate"><span class="pre">all</span></code> argument works during data transfer. For example, given the project folder:</p>
+<p>In some cases, files related to metadata may be stored outside of <em>data-type</em> folders.  When the <code class="docutils literal notranslate"><span class="pre">all</span></code> flag is used, files outside of folders at the <em>top-level folder</em> (for <code class="docutils literal notranslate"><span class="pre">-sub</span></code>), <em>subject</em> level (for <code class="docutils literal notranslate"><span class="pre">-ses</span></code>) and <em>session</em> level (<code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">-dt</span></code>) will also be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.</p>
+<p>The example below exemplifies how the <code class="docutils literal notranslate"><span class="pre">all</span></code> argument works during data transfer. For example, given the project folder:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── rawdata/
     ├── sub-001/
     │   ├── sub-001_extrafile-sub.json
@@ -577,8 +577,8 @@ document.write(`
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
 <span class="n">my_first_project</span> \
 <span class="n">upload</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="nb">all</span>
-<span class="o">-</span><span class="n">ses</span><span class="o">-</span><span class="mi">001</span>
+<span class="o">-</span><span class="n">sub</span> <span class="nb">all</span> \
+<span class="o">-</span><span class="n">ses</span><span class="o">-</span><span class="mi">001</span> \
 <span class="o">-</span><span class="n">dt</span> <span class="nb">all</span>
 
 </pre></div>
@@ -586,7 +586,7 @@ document.write(`
 <p>will move:</p>
 <ul class="simple">
 <li><p>The file <code class="docutils literal notranslate"><span class="pre">a_project_file.json</span></code> (and any other files at this level) and search all <em>subjects</em> for the specified <em>sessions</em> <em>/ data-types</em>.</p></li>
-<li><p>Only <em>sessions</em> called <code class="docutils literal notranslate"><span class="pre">001</span></code>, but not any other files or folders at this (i.e. <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_extrafile-ses.json</span></code>) will not be transferred.</p></li>
+<li><p>Only <em>sessions</em> called <code class="docutils literal notranslate"><span class="pre">001</span></code>, but not any other files or folders at this level (i.e. <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_extrafile-ses.json</span></code> will not be transferred).</p></li>
 <li><p>All <em>data-types</em> and non-<em>data-types</em> at the session level. For example, <code class="docutils literal notranslate"><span class="pre">behav</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_extrafile-dtype.json</span></code> (that reside in <em>session</em> folders called <code class="docutils literal notranslate"><span class="pre">ses-001</span></code>) will be transferred.</p></li>
 </ul>
 <p>For convenience, it is suggested to keep all files within <em>data-type</em> level folders. However, the <code class="docutils literal notranslate"><span class="pre">all</span></code> argument, as well as the additional available arguments: <code class="docutils literal notranslate"><span class="pre">all_sub</span></code> and <code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> (for <code class="docutils literal notranslate"><span class="pre">-sub</span></code>), <code class="docutils literal notranslate"><span class="pre">all_ses</span></code> and <code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> (for <code class="docutils literal notranslate"><span class="pre">-ses</span></code>) and <code class="docutils literal notranslate"><span class="pre">-all_ses_level_non_data_type</span></code> are available, as <a class="reference internal" href="#flexible-transfers-with-keyword-arguments"><span class="std std-ref">detailed below</span></a></p>
@@ -598,8 +598,8 @@ document.write(`
 </section>
 <section id="summary">
 <h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
-<p>This concludes the <em>Get Started</em> part of the documentation. Hopefully, you are now equipped to manage an experimental project folder aligned to community standards with a few short commands. Say goodbye to the days of manual copying and pasting!</p>
-<p>Continue reading the documentation for a full overview of DataShuttle functionalities. This includes XXX, XXX, XXX.</p>
+<p>This concludes the <em>Get Started</em> part of the documentation. Hopefully, you are now equipped to manage an experimental project folder aligned to community standards with a few short commands.</p>
+<p>Continue reading the documentation for a full overview of DataShuttle functionalities.</p>
 <p>To discuss, contribute or give feedback on DataShuttle, please check out our discussions page and GitHub repository. Any feedback is welcomed and greatly appreciated!</p>
 </section>
 </section>
@@ -679,7 +679,7 @@ document.write(`
 <span class="o">-</span><span class="n">dt</span> <span class="n">behav</span>
 </pre></div>
 </div>
-<p>will create the folder tree (assuming the <em>top level folder</em> is <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>):</p>
+<p>will create the folder tree (assuming the <em>top-level folder</em> is <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── rawdata/
     └── sub-001_date-20230606/
         ├── ses-001_time-202701/
@@ -759,7 +759,7 @@ document.write(`
 <p>DataShuttle provides a number of keyword arguments to allow separate handling of files that are not found in <em>data-type</em> folders.</p>
 <section id="for-use-with-the-sub-sub-names-flag">
 <h4>For use with the <code class="docutils literal notranslate"><span class="pre">-sub</span></code> / <code class="docutils literal notranslate"><span class="pre">--sub-names</span></code> flag<a class="headerlink" href="#for-use-with-the-sub-sub-names-flag" title="Permalink to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All <em>subject</em> and non-<em>subject</em> files and folders within the <em>top level folder</em> (e.g. <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>) will be transferred.</p>
+<p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All <em>subject</em> and non-<em>subject</em> files and folders within the <em>top-level folder</em> (e.g. <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>) will be transferred.</p>
 <p><code class="docutils literal notranslate"><span class="pre">all_sub</span></code> : <em>Subject</em>  <u>folders</u> only (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">-sub</span></code>) will be transferred.</p>
 <p><code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> : All files and folders that are not prefixed with <code class="docutils literal notranslate"><span class="pre">-sub</span></code> will be transferred. Any folders prefixed with <code class="docutils literal notranslate"><span class="pre">-sub</span></code> will not be transferred.</p>
 </section>
@@ -811,7 +811,7 @@ transferred. Non-<em>data-type</em> folders at the <em>session</em> level will n
 </div>
 <p>Would upload:</p>
 <ul class="simple">
-<li><p>All non-<em>subject</em> files in the <em>top level</em> folder (<code class="docutils literal notranslate"><span class="pre">rawdata</span></code>)</p></li>
+<li><p>All non-<em>subject</em> files in the <em>top-level</em> folder (<code class="docutils literal notranslate"><span class="pre">rawdata</span></code>)</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">sub-001_extra_file.json</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-002_extra_file.json</span></code></p></li>
 <li><p>For <code class="docutils literal notranslate"><span class="pre">sub-001</span></code>, the file <code class="docutils literal notranslate"><span class="pre">ses-001_extra_file.json</span></code>. For <code class="docutils literal notranslate"><span class="pre">sub-002</span></code>, no other files are transferred because there is no non-<em>data-type</em> files at the <em>session</em> level.</p></li>
 </ul>
