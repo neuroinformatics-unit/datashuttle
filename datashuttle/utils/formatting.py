@@ -112,9 +112,7 @@ def update_names_with_range_to_flag(
     new_names = []
 
     for i, name in enumerate(names):
-
         if tags("to") in name:
-
             check_name_is_formatted_correctly(name, prefix)
 
             prefix_tag = re.search(f"{prefix}-[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
@@ -224,7 +222,6 @@ def update_names_with_datetime(names: List[str]) -> None:
     format_time = f"time-{time_}"
 
     for i, name in enumerate(names):
-
         if tags("datetime") in name:  # must come first
             name = add_underscore_before_after_if_not_there(
                 name, tags("datetime")
@@ -320,7 +317,6 @@ def check_data_type_is_valid(
 def check_dashes_and_underscore_alternate_correctly(all_names):
     """ """
     for name in all_names:
-
         if name in RESERVED_KEYWORDS:
             continue
 

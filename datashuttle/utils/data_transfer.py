@@ -17,7 +17,6 @@ class TransferData:
         dry_run: bool,
         log: bool,
     ):
-
         self.cfg = cfg
         self.upload_or_download = upload_or_download
         self.local_or_central = (
@@ -34,7 +33,6 @@ class TransferData:
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
         if any(include_list):
-
             output = rclone.transfer_data(
                 cfg,
                 upload_or_download,
@@ -62,7 +60,6 @@ class TransferData:
         extra_filenames: List[str] = []
 
         for sub in processed_sub_names:
-
             # subjects at top level folder ---------------------------------------
 
             if sub == "all_non_sub":
@@ -82,7 +79,6 @@ class TransferData:
             processed_ses_names = self.get_processed_names(self.ses_names, sub)
 
             for ses in processed_ses_names:
-
                 if ses == "all_non_ses":
                     self.update_list_with_non_ses_sub_level_folders(
                         extra_folder_names, extra_filenames, sub
@@ -120,9 +116,14 @@ class TransferData:
             return []
 
         if recursive:
-            include_arg = lambda ele: f""" --include "{ele}/**" """
+
+            def include_arg(ele):
+                return f' --include "{ele}/**" '
+
         else:
-            include_arg = lambda ele: f""" --include "{ele}" """
+
+            def include_arg(ele):
+                return f' --include "{ele}" '
 
         return ["".join([include_arg(ele) for ele in list_of_paths])]
 
@@ -177,7 +178,6 @@ class TransferData:
     def update_list_with_non_dtype_ses_level_folders(
         self, extra_folder_names, extra_filenames, sub, ses
     ):
-
         (
             ses_level_folders,
             ses_level_filenames,
@@ -228,7 +228,6 @@ class TransferData:
         level = "ses" if ses else "sub"
 
         for data_type_key, data_type_folder in data_type_items:  # type: ignore
-
             if data_type_folder.level == level:
                 if ses:
                     filepath = Path(sub) / ses / data_type_folder.name

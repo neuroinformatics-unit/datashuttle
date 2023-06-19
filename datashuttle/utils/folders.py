@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from datashuttle.datashuttle import DataShuttle
     from datashuttle.configs.config_class import Configs
+    from datashuttle.datashuttle import DataShuttle
 
 import glob
 import os
@@ -52,7 +52,6 @@ def make_folder_trees(
         formatting.check_data_type_is_valid(cfg, data_type, error_on_fail=True)
 
     for sub in sub_names:
-
         sub_path = cfg.make_path(
             "local",
             sub,
@@ -64,7 +63,6 @@ def make_folder_trees(
             make_data_type_folders(cfg, data_type, sub_path, "sub")
 
         for ses in ses_names:
-
             ses_path = cfg.make_path(
                 "local",
                 [sub, ses],
@@ -108,7 +106,6 @@ def make_data_type_folders(
     data_type_items = cfg.get_data_type_items(data_type)
 
     for data_type_key, data_type_folder in data_type_items:  # type: ignore
-
         if data_type_folder.used and data_type_folder.level == level:
             data_type_path = sub_or_ses_level_path / data_type_folder.name
 
@@ -137,7 +134,6 @@ def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
         paths = [paths]
 
     for path_ in paths:
-
         if not path_.is_dir():
             path_.mkdir(parents=True)
             if log:
@@ -223,7 +219,6 @@ def check_no_duplicate_sub_ses_key_values(
                 "ses",
                 return_as_int=True,
             ):
-
                 if new_ses in existing_ses_values:
                     utils.log_and_raise_error(
                         f"Cannot make folders. "
@@ -446,14 +441,12 @@ def search_for_folders(  # TODO: change name
     search_prefix : file / folder name to search (e.g. "sub-*")
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
-
         all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
             search_path,
             search_prefix,
             cfg,
         )
     else:
-
         if not search_path.exists():
             utils.log_and_message(f"No file found at {search_path.as_posix()}")
             return [], []

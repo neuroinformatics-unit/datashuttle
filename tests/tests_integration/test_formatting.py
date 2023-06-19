@@ -97,7 +97,6 @@ class TestMakeFolders:
         ]
 
     def test_warning_non_consecutive_numbers(self, project):
-
         project.make_sub_folders(
             ["sub-01", "sub-2", "sub-04"], ["ses-05", "ses-10"]
         )

@@ -75,7 +75,6 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str, print_startup_message: bool = True):
-
         if " " in project_name:
             utils.log_and_raise_error(
                 "'project_name' must not include spaces."

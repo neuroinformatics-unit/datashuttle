@@ -51,7 +51,6 @@ class TestUnit:
         ],
     )
     def test_spaces_in_format_names(self, prefix_and_names):
-
         prefix, names = prefix_and_names
         with pytest.raises(BaseException) as e:
             formatting.format_names(names, prefix)

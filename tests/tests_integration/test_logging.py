@@ -62,7 +62,6 @@ class TestCommandLineInterface:
     # ----------------------------------------------------------------------------------------------------------
 
     def read_log_file(self, logging_path):
-
         log_filepath = glob.glob(str(logging_path / "*.log"))
 
         assert len(log_filepath) == 1, (
@@ -102,7 +101,6 @@ class TestCommandLineInterface:
         assert "Update successful. New config file:" in log
 
     def test_logs_update_config(self, setup_project):
-
         setup_project.update_config("central_host_id", "test_id")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
@@ -137,7 +135,6 @@ class TestCommandLineInterface:
         )
 
     def test_make_sub_folders(self, setup_project):
-
         subs = ["sub-11", f"sub-002{tags('to')}004"]
         ses = ["ses-123", "ses-101"]
 
