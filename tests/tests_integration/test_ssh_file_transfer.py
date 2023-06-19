@@ -295,7 +295,6 @@ class TestFileTransfer:
         extra_arguments = []
 
         for sub in sub_names:
-
             if sub == "all_non_sub":
                 extra_arguments += ["is_non_sub == True"]
             else:
@@ -305,13 +304,11 @@ class TestFileTransfer:
                     ]
 
                 for ses in ses_names:
-
                     if ses == "all_non_ses":
                         extra_arguments += [
                             f"(parent_sub == '{sub}' & is_non_ses == True)"
                         ]
                     else:
-
                         for dtype in data_type:
                             if dtype == "all_ses_level_non_data_type":
                                 extra_arguments += [

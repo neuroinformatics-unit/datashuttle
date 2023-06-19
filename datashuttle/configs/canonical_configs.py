@@ -205,7 +205,6 @@ def check_config_types(config_dict: Configs) -> None:
     fail = False
 
     for key in config_dict.keys():
-
         expected_type = required_types[key]
 
         if get_origin(expected_type) is Literal:

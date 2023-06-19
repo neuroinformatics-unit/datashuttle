@@ -158,7 +158,6 @@ def get_values_from_bids_formatted_name(
     """
     all_values = []
     for name in all_names:
-
         if key not in name:
             raise_error(f"The key {key} is not found in {name}")
 
@@ -209,7 +208,6 @@ def unpack_nested_list(main_list):
 
 
 def integers_are_consecutive(list_of_ints: List[int]) -> bool:
-
     diff_between_ints = diff(list_of_ints)
     return all([diff == 1 for diff in diff_between_ints])
 

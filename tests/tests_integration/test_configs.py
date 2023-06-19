@@ -213,7 +213,6 @@ class TestConfigs:
     # -------------------------------------------------------------
 
     def test_supplied_config_file_bad_path(self, setup_project):
-
         # Test path supplied that doesn't exist
 
         non_existant_path = setup_project._datashuttle_path / "fake.file"
@@ -248,7 +247,6 @@ class TestConfigs:
         test_utils.dump_config(missing_key_configs, bad_configs_path)
 
         with pytest.raises(BaseException) as e:
-
             setup_project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
@@ -281,7 +279,6 @@ class TestConfigs:
         bad_configs_path = setup_project._datashuttle_path / "bad_config.yaml"
 
         for key in setup_project.cfg.keys():
-
             if key in setup_project.cfg.keys_str_on_file_but_path_in_class:
                 continue
 
@@ -320,7 +317,6 @@ class TestConfigs:
     def test_supplied_config_file_changes_wrong_order(
         self, setup_project, tmp_path
     ):
-
         bad_order_configs_path = (
             setup_project._datashuttle_path / "new_configs.yaml"
         )

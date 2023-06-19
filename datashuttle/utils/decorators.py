@@ -35,7 +35,6 @@ def check_configs_set(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-
         if args[0].cfg is None:
             log_and_raise_error(
                 "Must set configs with make_config_file() "

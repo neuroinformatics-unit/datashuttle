@@ -435,7 +435,6 @@ class TestMakeFolders:
         assert old_num == 5
 
     def test_invalid_sub_and_ses_name(self, project):
-
         with pytest.raises(BaseException) as e:
             project.make_sub_folders("sub_100")
 
