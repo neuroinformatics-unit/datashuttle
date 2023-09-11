@@ -412,7 +412,6 @@ def show_next_ses_number(project: DataShuttle, args: Any) -> None:
 
 
 def check_name_formatting(project: DataShuttle, args: Any) -> None:
-
     kwargs = make_kwargs(args)
 
     run_command(
@@ -427,7 +426,6 @@ def check_name_formatting(project: DataShuttle, args: Any) -> None:
 
 
 def supply_config_file(project: DataShuttle, args: Any) -> None:
-
     kwargs = make_kwargs(args)
 
     run_command(

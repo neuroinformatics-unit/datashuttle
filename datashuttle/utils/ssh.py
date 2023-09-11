@@ -113,7 +113,6 @@ def add_public_key_to_central_authorized_keys(
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
-
         connect_client(client, cfg, password=password)
 
         client.exec_command("mkdir -p ~/.ssh/")
@@ -227,7 +226,6 @@ def get_list_of_folder_names_over_sftp(
     all_filenames = []
     try:
         for file_or_folder in sftp.listdir_attr(search_path.as_posix()):
-
             if fnmatch.fnmatch(file_or_folder.filename, search_prefix):
                 if stat.S_ISDIR(file_or_folder.st_mode):
                     all_folder_names.append(file_or_folder.filename)
