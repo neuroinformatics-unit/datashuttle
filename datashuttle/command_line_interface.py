@@ -1031,7 +1031,7 @@ def main() -> None:
     should match the datashuttle API function name.
 
     Next, initialise a datashuttle project using the API.
-    Supress the warning that a config file must
+    Suppress the warning that a config file must
     be made on project initialisation when
     a config is being made.
 

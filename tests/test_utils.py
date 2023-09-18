@@ -510,7 +510,7 @@ def get_top_level_folder_path(
 
     assert (
         folder_name in canonical_folders.get_top_level_folders()
-    ), "folder_name must be cannonical e.g. rawdata"
+    ), "folder_name must be canonical e.g. rawdata"
 
     if local_or_central == "local":
         base_path = project.cfg["local_path"]

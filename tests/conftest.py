@@ -10,7 +10,7 @@ and it will be copied to the project test folder before testing.
 
 FILESYSTEM_PATH and SERVER_PATH these must point
 to the same folder on the HPC, filesystem,
-as a moutned drive and server as the linux path to
+as a mounted drive and server as the linux path to
 connect through SSH
 """
 import platform

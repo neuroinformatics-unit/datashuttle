@@ -310,7 +310,7 @@ To discuss, contribute or give feedback on DataShuttle, please check out our dis
 
 ## Python API Guide
 
-DataShuttle can be used through the command line interface (as exampled in the *Get Started* section) or through a Python API. All commands shown in the *Get Started* guide can be used similarly in the Python API (with hypens replaced by underscores).
+DataShuttle can be used through the command line interface (as exampled in the *Get Started* section) or through a Python API. All commands shown in the *Get Started* guide can be used similarly in the Python API (with hyphens replaced by underscores).
 
 To start a project in Python, import DataShuttle and initialise the project class:
 

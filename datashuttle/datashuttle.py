@@ -317,7 +317,7 @@ class DataShuttle:
             data type folder to upload.
         ses_names :
             a session name / list of session names, similar to
-            sub_names but requring a "ses-" prefix.
+            sub_names but requiring a "ses-" prefix.
         dry_run :
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
