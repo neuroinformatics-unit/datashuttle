@@ -313,9 +313,7 @@ class TestFileTransfer:
             project.cfg["local_path"],
             project.cfg["central_path"],
         ]:
-
             for sub in ["sub-001", "sub-02", "sub-03"]:
-
                 sessions_in_path = test_utils.glob_basenames(
                     (base_local / "rawdata" / sub / "ses*").as_posix()
                 )

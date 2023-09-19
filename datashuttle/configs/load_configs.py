@@ -50,7 +50,6 @@ def make_config_file_attempt_load(
         new_cfg.load_from_file()
 
     except BaseException:
-
         new_cfg = None
 
         utils.log_and_raise_error(
@@ -144,7 +143,6 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
     here. This assumes bool are always passed as flags.
     """
     if key in canonical_configs.get_flags():
-
         if value in ["None", "none", None]:
             value = False
 

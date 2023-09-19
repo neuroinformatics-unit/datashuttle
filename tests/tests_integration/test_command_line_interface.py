@@ -172,7 +172,6 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_make_sub_folders_variable(self, sep):
-
         stdout, _ = test_utils.run_cli(
             f" make{sep}sub{sep}folders "
             f"--data_type all "
@@ -335,7 +334,6 @@ class TestCommandLineInterface:
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
         for key, value in not_set_configs.items():
-
             format_value = (
                 test_utils.add_quotes(value) if "path" in key else value
             )
@@ -624,9 +622,7 @@ class TestCommandLineInterface:
 
         kwargs_list = []
         for key, value in kwargs.items():
-
             if key not in positionals:
-
                 if "path" in key:
                     value = test_utils.add_quotes(value)
                 else:
@@ -646,13 +642,11 @@ class TestCommandLineInterface:
         return prepend_positionals + kwargs_list
 
     def check_kwargs(self, required_options, kwargs_):
-
         for key in required_options.keys():
             assert kwargs_.pop(key) == required_options[key]
         assert kwargs_ == {}
 
     def check_upload_download_args(self, args_, kwargs_, dry_run_is):
-
         assert kwargs_["data_type"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]

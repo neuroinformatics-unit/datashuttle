@@ -64,7 +64,6 @@ def setup_central_as_rclone_target(
         call_rclone(f"config create {rclone_config_name} local", pipe_std=True)
 
     elif connection_method == "ssh":
-
         call_rclone(
             f"config create "
             f"{rclone_config_name} "
@@ -124,7 +123,6 @@ def transfer_data(
     )  # TODO: fix this is not a list
 
     if upload_or_download == "upload":
-
         output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:{central_filepath}" {extra_arguments}',
@@ -132,7 +130,6 @@ def transfer_data(
         )
 
     elif upload_or_download == "download":
-
         output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:{central_filepath}" "{local_filepath}"  {extra_arguments}',

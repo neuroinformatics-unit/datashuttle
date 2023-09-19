@@ -284,17 +284,14 @@ def check_folder_tree_is_correct(
     as this doesn't explicitly test this.
     """
     for sub in subs:
-
         path_to_sub_folder = join(base_folder, sub)
         check_and_cd_folder(path_to_sub_folder)
 
         for ses in sessions:
-
             path_to_ses_folder = join(base_folder, sub, ses)
             check_and_cd_folder(path_to_ses_folder)
 
             for key, folder in project.cfg.data_type_folders.items():
-
                 assert key in folder_used.keys(), (
                     "Key not found in folder_used. "
                     "Update folder used and hard-coded tests: "
@@ -304,7 +301,6 @@ def check_folder_tree_is_correct(
                 if check_folder_is_used(
                     base_folder, folder, folder_used, key, sub, ses
                 ):
-
                     if folder.level == "sub":
                         data_type_path = join(path_to_sub_folder, folder.name)
                     elif folder.level == "ses":
@@ -369,7 +365,6 @@ def check_data_type_sub_ses_uploaded_correctly(
 
         # Check ses are all uploaded + histology if transferred
         if ses_to_upload:
-
             for sub in subs_to_upload:
                 ses_names = glob_basenames(
                     join(
@@ -477,7 +472,6 @@ def check_project_configs(
     Paths are stored as pathlib in the cfg but str in the .yaml
     """
     for arg_name, value in kwargs[0].items():
-
         if arg_name in project.cfg.keys_str_on_file_but_path_in_class:
             assert type(project.cfg[arg_name]) in [
                 pathlib.PosixPath,
@@ -501,6 +495,7 @@ def check_config_file(config_path, *kwargs):
 # -----------------------------------------------------------------------------
 # Test Helpers
 # -----------------------------------------------------------------------------
+
 
 # TODO: rename this 'top level folder path'
 def get_top_level_folder_path(
@@ -534,7 +529,6 @@ def handle_upload_or_download(
     local machine to central, but using the download function).
     """
     if upload_or_download == "download":
-
         central_path = swap_local_and_central_paths(
             project, swap_last_folder_only
         )
