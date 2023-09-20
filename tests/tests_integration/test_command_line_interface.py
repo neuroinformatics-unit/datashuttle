@@ -278,7 +278,7 @@ class TestCommandLineInterface:
         """
         To process lists, a syntax "<>" is used
         to specify input is list. Check the passed
-        varialbes are processed as expected.
+        variables are processed as expected.
         """
         stdout, stderr = test_utils.run_cli(
             f"{command} "

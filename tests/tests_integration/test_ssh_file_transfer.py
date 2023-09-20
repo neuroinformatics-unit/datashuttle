@@ -167,7 +167,7 @@ class TestFileTransfer:
     ):
         """
         Parse the arguments to filter the pathtable, getting
-        the files expected to be transferred pased on the arguments
+        the files expected to be transferred passed on the arguments
         Note files in sub/ses/datatype folders must be handled
         separately to those in non-sub, non-ses, non-data-type folders
 

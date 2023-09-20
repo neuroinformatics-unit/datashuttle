@@ -112,3 +112,8 @@ ignore = [
 
 [project.scripts]
 datashuttle = "datashuttle.command_line_interface:main"
+
+[tool.codespell]
+skip = '.git,*.pdf,*.svg'
+#
+# ignore-words-list = ''
