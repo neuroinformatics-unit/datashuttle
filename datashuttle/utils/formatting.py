@@ -226,7 +226,7 @@ def update_names_with_datetime(names: List[str]) -> None:
             name = add_underscore_before_after_if_not_there(
                 name, tags("datetime")
             )
-            datetime_ = f"{format_date}_{format_time}"
+            datetime_ = f"{format_date}T{format_time}"
             names[i] = name.replace(tags("datetime"), datetime_)
 
         elif tags("date") in name:
