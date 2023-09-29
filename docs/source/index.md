@@ -6,7 +6,7 @@ This website includes the documentation and API documentation for DataShuttle.
 
 For additional information, please visit the [GitHub Page](https://github.com/neuroinformatics-unit/datashuttle).
 
-Any feedback is much appreciated, please open at [GitHub Issue](https://github.com/neuroinformatics-unit/datashuttle/issues) if you have any problems or suggestions.
+Any feedback is much appreciated, please open at [GitHub Issue](https://github.com/neuroinformatics-unit/datashuttle/issues) or join our [Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle) if you have any problems or suggestions.
 
 ## Explore the Documentation
 
