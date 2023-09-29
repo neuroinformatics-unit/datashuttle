@@ -181,6 +181,7 @@ def get_test_config_arguments_dict(
     tmp_path,
     set_as_defaults=False,
     required_arguments_only=False,
+    project_name="test_configs",  # TODO: this is not good as this is only defined here.
 ):
     """
     Retrieve configs, either the required configs

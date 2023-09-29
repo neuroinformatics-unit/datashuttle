@@ -343,7 +343,7 @@ class TestConfigs:
 
     def test_supplied_config_file_updates(self, setup_project, tmp_path):
         """
-        This will check everything
+        This will check every config.
         """
         (
             new_configs_path,
@@ -353,6 +353,30 @@ class TestConfigs:
         setup_project.supply_config_file(new_configs_path, warn=False)
 
         test_utils.check_configs(setup_project, new_configs)
+
+    @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
+    def test_supplied_config_wrong_project_name(
+        self, project, path_type, tmp_path
+    ):
+        """ """
+        bad_name_configs = test_utils.get_test_config_arguments_dict(tmp_path)
+
+        from pathlib import Path
+
+        bad_name = "wrong_project_name"
+        bad_name_configs[path_type] = (
+            Path(bad_name_configs[path_type]) / bad_name
+        )
+
+        with pytest.raises(BaseException) as e:
+            project.make_config_file(**bad_name_configs)
+        try:
+            assert (
+                f"The {path_type} does not end in the project name: {project.project_name}."
+                in str(e.value)
+            )
+        except:
+            breakpoint()
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
