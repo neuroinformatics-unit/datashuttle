@@ -200,7 +200,7 @@ class Configs(UserDict):
                     config_dict[path_key] = Path(value)
 
                 elif direction == "path_to_str":
-                    if type(value) != str:
+                    if not isinstance(value, str):
                         config_dict[path_key] = value.as_posix()
 
                 else:
@@ -311,7 +311,7 @@ class Configs(UserDict):
         Get the .items() structure of the data type, either all of
         them (stored in self.data_type_folders) or as a single item.
         """
-        if type(data_type) == str:
+        if isinstance(data_type, str):
             data_type = [data_type]
 
         items: Union[ItemsView, zip]
