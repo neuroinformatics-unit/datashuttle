@@ -62,9 +62,9 @@ The _configurations_ tell DataShuttle:
 
 The command `make-config-file` is used for the initial setup of the project. The **required arguments** are:
 
-`local_path`: The full file-path to the project folder on the *local* machine. For example, if you wanted to make a new project called `my_first_project` in the folder `C:\User\my_projects`, the local path would be `C:\User\my_projects`.
+`local_path`: The full file path to the project folder on the *local* machine, including the project folder. The project folder must have the same name as the datashuttle project. For example, if your project name is `my_first_project`, and the project folder resides in `C:\User\my_projects`, the `local_path` should be `C:\User\my_projects\my_first_project`.
 
-`central_path`: The path on the *central* machine to the central project. For example, if connecting to a remote Linux server, this may be `/hpc/home/user/my_projects`.
+`central_path`: The path on the *central* machine to the project folder. Similar to the `local_path`, the path must point to the project folder that has the same name as the project name in datashuttle. For example, if your project is called `my_first_project`, connecting to a remote Linux server, the `central_path` may be `/hpc/home/user/my_projects/my_first_project`.
 
 `connection_method`: `local_filesystem` or `ssh`. Local filesystem can be used if the *central* storage is mounted to the local machine. Otherwise `ssh` can be used.
 
@@ -78,7 +78,7 @@ The optional arguments `overwrite_old_files`, `transfer_verbosity` and `show_tra
 
 ### Example
 
-An example call to `make-config-file` below creates a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/`, the required SSH configurations, and indicates that *behavioural*, _electrophysiological_ and *histological* data will be used on this machine for this project.
+An example call to `make-config-file` below creates a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project/my_first_project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/my_first_project`, the required SSH configurations, and indicates that *behavioural*, _electrophysiological_ and *histological* data will be used on this machine for this project.
 
 Note that in the terminal, ``\`` indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). On Windows, the `^` character is used instead.
 
@@ -86,8 +86,8 @@ Note that in the terminal, ``\`` indicates a new-line (allowing a single command
 datashuttle \
 my_first_project \
 make-config-file \
-/path/to/my/project \
-/nfs/nhome/live/username/ \
+/path/to/my/project/my_first_project \
+/nfs/nhome/live/username/my_first_project \
 ssh \
 --central_host_id ssh.swc.ucl.ac.uk \
 --central_host_username username \
@@ -323,8 +323,8 @@ project = DataShuttle("my_first_project")
 The configuration file can be setup similarly to the *Get Started* example:
 ```
 project.make_config_file(
-	local_path="/path/to/my/project",
-	central_path="/nfs/nhome/live/username/",
+	local_path="/path/to/my/project/my_first_project",
+	central_path="/nfs/nhome/live/username/my_first_project",
 	connection_method="ssh",
 	central_host_id="ssh.swc.ucl.ac.uk",
 	central_host_username="username",
