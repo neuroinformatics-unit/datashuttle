@@ -91,7 +91,7 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(project.cfg.logging_path)
 
-        assert "Starting logging for command make_config_file" in log
+        assert "Starting logging for command make-config-file" in log
         assert "\nVariablesState:\nlocals: {'local_path':" in log
         assert "Successfully created rclone config." in log
         assert (
@@ -105,7 +105,7 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
-        assert "Starting logging for command update_config" in log
+        assert "Starting logging for command update-config" in log
         assert (
             "\n\nVariablesState:\nlocals: {'option_key': 'central_host_id'"
             in log
@@ -126,7 +126,7 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(orig_project_path)
 
-        assert "supply_config_file" in log
+        assert "supply-config-file" in log
         assert "\n\nVariablesState:\nlocals: {'input_path_to_config':" in log
         assert "Update successful. New config file: " in log
         assert (
@@ -241,7 +241,7 @@ class TestCommandLineInterface:
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
-        suffix = "_all" if use_all_alias else ""
+        suffix = "-all" if use_all_alias else ""
 
         assert (
             f"Starting logging for command {upload_or_download}{suffix}" in log
@@ -299,7 +299,7 @@ class TestCommandLineInterface:
         log = self.read_log_file(setup_project.cfg.logging_path)
 
         assert (
-            f"Starting logging for command {upload_or_download}_specific_folder_or_file"
+            f"Starting logging for command {upload_or_download}-specific-folder-or-file"
             in log
         )
         assert (
@@ -363,7 +363,7 @@ class TestCommandLineInterface:
         tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
 
         assert len(tmp_path_logs) == 1
-        assert "make_config_file" in tmp_path_logs[0]
+        assert "make-config-file" in tmp_path_logs[0]
 
     def test_temp_log_folder_moved_make_config_file(
         self, clean_project_name, tmp_path
@@ -382,7 +382,7 @@ class TestCommandLineInterface:
 
         assert len(tmp_path_logs) == 0
         assert len(project_path_logs) == 1
-        assert "make_config_file" in project_path_logs[0]
+        assert "make-config-file" in project_path_logs[0]
 
     @pytest.mark.skipif("not IS_WINDOWS")
     @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
