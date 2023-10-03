@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 import copy
 import logging
+from datetime import datetime
 from pathlib import Path
 
 from fancylog import fancylog
@@ -31,18 +32,30 @@ def start(
     """
     Call fancylog to initialise logging.
     """
+    filename = get_logging_filename(name)
+
     fancylog.start_logging(
         path_to_log,
         package_to_log,
-        filename=name,
+        filename=filename,
         variables=variables,
         verbose=verbose,
-        timestamp=True,
+        timestamp=False,
         file_log_level="DEBUG",
         write_git=True,
         log_to_console=False,
     )
     logging.info(f"Starting logging for command {name}")
+
+
+def get_logging_filename(name: str) -> str:
+    """
+    Get the filename to which the log will be saved. This
+    starts with ISO8601-formatted datetime, so logs are stored
+    in datetime order.
+    """
+    filename = datetime.now().strftime(f"%Y%m%dT%H%M%S_{name}")
+    return filename
 
 
 def print_tree(project_path: Path) -> None:
