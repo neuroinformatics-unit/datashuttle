@@ -216,26 +216,29 @@ def update_names_with_datetime(names: List[str]) -> None:
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
     date = str(datetime.datetime.now().date().strftime("%Y%m%d"))
-    format_date = f"date-{date}"
+    date_with_key= f"date-{date}"
 
     time_ = datetime.datetime.now().time().strftime("%H%M%S")
-    format_time = f"time-{time_}"
+    time_with_key = f"time-{time_}"
+
+    datetime_with_key = f"datetime-{date}T{time_}"
 
     for i, name in enumerate(names):
-        if tags("datetime") in name:  # must come first
+
+        # datetime conditional must come first.
+        if tags("datetime") in name:
             name = add_underscore_before_after_if_not_there(
                 name, tags("datetime")
             )
-            datetime_ = f"{format_date}T{format_time}"
-            names[i] = name.replace(tags("datetime"), datetime_)
+            names[i] = name.replace(tags("datetime"), datetime_with_key)
 
         elif tags("date") in name:
             name = add_underscore_before_after_if_not_there(name, tags("date"))
-            names[i] = name.replace(tags("date"), format_date)
+            names[i] = name.replace(tags("date"), date_with_key)
 
         elif tags("time") in name:
             name = add_underscore_before_after_if_not_there(name, tags("time"))
-            names[i] = name.replace(tags("time"), format_time)
+            names[i] = name.replace(tags("time"), time_with_key)
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
