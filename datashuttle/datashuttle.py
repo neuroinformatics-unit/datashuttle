@@ -1089,7 +1089,7 @@ class DataShuttle:
 
     def _start_log(
         self,
-        name: str,
+        command_name: str,
         local_vars: Optional[dict] = None,
         store_in_temp_folder: bool = False,
         temp_folder_path: Union[str, Path] = "",
@@ -1103,8 +1103,7 @@ class DataShuttle:
         Parameters
         ----------
 
-        name : name of the log output files. Typically, the
-            name of the function logged e.g. "update_config"
+        command_name : name of the command, for the log output files.
 
         local_vars : local_vars are passed to fancylog variables argument.
                  see ds_logger.wrap_variables_for_fancylog for more info
@@ -1135,7 +1134,7 @@ class DataShuttle:
         else:
             path_to_save = self.cfg.logging_path
 
-        ds_logger.start(path_to_save, name, variables, verbose)
+        ds_logger.start(path_to_save, command_name, variables, verbose)
 
     def _move_logs_from_temp_folder(self):
         """

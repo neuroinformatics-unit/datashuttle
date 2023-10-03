@@ -25,14 +25,14 @@ from . import utils
 
 def start(
     path_to_log: Path,
-    name: str,
+    command_name: str,
     variables: Optional[List[Any]],
     verbose: bool = True,
 ) -> None:
     """
     Call fancylog to initialise logging.
     """
-    filename = get_logging_filename(name)
+    filename = get_logging_filename(command_name)
 
     fancylog.start_logging(
         path_to_log,
@@ -45,16 +45,16 @@ def start(
         write_git=True,
         log_to_console=False,
     )
-    logging.info(f"Starting logging for command {name}")
+    logging.info(f"Starting logging for command {command_name}")
 
 
-def get_logging_filename(name: str) -> str:
+def get_logging_filename(command_name: str) -> str:
     """
     Get the filename to which the log will be saved. This
     starts with ISO8601-formatted datetime, so logs are stored
     in datetime order.
     """
-    filename = datetime.now().strftime(f"%Y%m%dT%H%M%S_{name}")
+    filename = datetime.now().strftime(f"%Y%m%dT%H%M%S_{command_name}")
     return filename
 
 
