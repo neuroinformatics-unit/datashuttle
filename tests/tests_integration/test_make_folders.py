@@ -317,8 +317,8 @@ class TestMakeFolders:
         )
 
         # Convert the minutes to regexp as could change during test runtime
-        regexp_time = r"\d\d\d\d\d\d"
-        datetime_regexp = f"{date}_time-{regexp_time}"
+        regexp_time = r"\d{6}"
+        datetime_regexp = f"datetime-{date}T{regexp_time}"
 
         assert all([re.search(datetime_regexp, name) for name in ses_names])
         assert all([tags("time") not in name for name in ses_names])
