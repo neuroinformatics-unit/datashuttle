@@ -616,8 +616,7 @@ def construct_parser():
         help="Optional: (str, single or multiple) (selection of data types, or 'all')",
     )
     make_sub_folders_parser.add_argument(
-        "--data-type",
-        "--data_type",
+        "--datatype",
         "-dt",
         type=str,
         nargs="+",
@@ -659,8 +658,7 @@ def construct_parser():
         help=help("required_str_single_or_multiple_or_all"),
     )
     upload_parser.add_argument(
-        "--data-type",
-        "--data_type",
+        "--datatype",
         "-dt",
         type=str,
         nargs="+",
@@ -732,8 +730,7 @@ def construct_parser():
         help=help("required_str_single_or_multiple_or_all"),
     )
     download_parser.add_argument(
-        "--data-type",
-        "--data_type",
+        "--datatype",
         "-dt",
         type=str,
         nargs="+",
