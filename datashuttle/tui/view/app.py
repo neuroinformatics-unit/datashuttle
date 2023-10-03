@@ -10,7 +10,7 @@ class MyApp(App):
     TITLE = "DataShuttle"
 
     tui_path = Path(__file__).parents[1]
-    CSS_PATH = rf"{tui_path}\css\tab_content.tcss"
+    CSS_PATH = tui_path / "css" / "tab_content.tcss"
 
     def compose(self) -> ComposeResult:
         yield Header()
