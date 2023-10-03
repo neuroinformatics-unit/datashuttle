@@ -1,0 +1,9 @@
+Screen {
+    padding: 0;
+}
+TabbedContent {
+    width: 100%
+}
+#create_text {
+    text-style: italic;
+}
