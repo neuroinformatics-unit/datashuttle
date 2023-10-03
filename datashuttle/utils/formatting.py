@@ -216,7 +216,7 @@ def update_names_with_datetime(names: List[str]) -> None:
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
     date = str(datetime.datetime.now().date().strftime("%Y%m%d"))
-    date_with_key= f"date-{date}"
+    date_with_key = f"date-{date}"
 
     time_ = datetime.datetime.now().time().strftime("%H%M%S")
     time_with_key = f"time-{time_}"
@@ -224,7 +224,6 @@ def update_names_with_datetime(names: List[str]) -> None:
     datetime_with_key = f"datetime-{date}T{time_}"
 
     for i, name in enumerate(names):
-
         # datetime conditional must come first.
         if tags("datetime") in name:
             name = add_underscore_before_after_if_not_there(
