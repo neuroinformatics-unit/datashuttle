@@ -611,7 +611,7 @@ class TestCommandLineInterface:
         Take a list of key-value pairs that make up
         the arguments we want to pass to CLI, and
         put them in correct format. This involves
-        pre-pending "--argument_name" for non-positional
+        prepending "--argument_name" for non-positional
         arguments, and wrapping paths in quotes.
         """
         positionals = ["local_path", "central_path", "connection_method"]
