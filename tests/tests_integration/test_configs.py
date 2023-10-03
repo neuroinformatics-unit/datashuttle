@@ -42,7 +42,7 @@ class TestConfigs:
         )
 
         default_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, TEST_PROJECT_NAME, set_as_defaults=True
         )
         setup_project.make_config_file(**default_configs)
 
@@ -81,8 +81,8 @@ class TestConfigs:
         """
         with pytest.raises(BaseException) as e:
             project.make_config_file(
-                "test_local_path",
-                "test_central_path",
+                project.project_name,
+                project.project_name,
                 "ssh",
                 use_behav=True,
             )
@@ -106,8 +106,8 @@ class TestConfigs:
         are set.
         """
         project.make_config_file(
-            tmp_path / "test_local_path",
-            tmp_path / "test_central_path",
+            tmp_path / "test_local_path" / project.project_name,
+            tmp_path / "test_central_path" / project.project_name,
             "local_filesystem",
             use_behav=True,
         )
@@ -142,7 +142,7 @@ class TestConfigs:
         the project.cfg dict and config.yaml file.
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, required_arguments_only=True
+            tmp_path, TEST_PROJECT_NAME, required_arguments_only=True
         )
 
         project.make_config_file(**required_options)
@@ -158,13 +158,13 @@ class TestConfigs:
         (see get_test_config_arguments_dict()) for tested defaults.
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, required_arguments_only=True
+            tmp_path, TEST_PROJECT_NAME, required_arguments_only=True
         )
 
         project.make_config_file(**required_options)
 
         default_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, TEST_PROJECT_NAME, set_as_defaults=True
         )
 
         test_utils.check_configs(project, default_options)
@@ -175,7 +175,7 @@ class TestConfigs:
         config file and check file and project.cfg are set correctly.
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, TEST_PROJECT_NAME, set_as_defaults=False
         )
 
         project.make_config_file(**changed_configs)
@@ -193,13 +193,13 @@ class TestConfigs:
         the option is updated at project.cfg and the yaml file.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, TEST_PROJECT_NAME, set_as_defaults=True
         )
 
         project.make_config_file(**default_configs)
 
         not_set_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, TEST_PROJECT_NAME, set_as_defaults=False
         )
 
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
@@ -239,7 +239,7 @@ class TestConfigs:
         """
         bad_configs_path = setup_project._datashuttle_path / "bad_config.yaml"
         missing_key_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path
+            tmp_path, TEST_PROJECT_NAME
         )
 
         del missing_key_configs["use_histology"]
@@ -261,7 +261,9 @@ class TestConfigs:
         """
         bad_configs_path = setup_project._datashuttle_path / "bad_config.yaml"
 
-        wrong_key_configs = test_utils.get_test_config_arguments_dict(tmp_path)
+        wrong_key_configs = test_utils.get_test_config_arguments_dict(
+            tmp_path, TEST_PROJECT_NAME
+        )
         wrong_key_configs["use_mismology"] = "wrong"
         test_utils.dump_config(wrong_key_configs, bad_configs_path)
 
@@ -283,7 +285,7 @@ class TestConfigs:
                 continue
 
             bad_type_configs = test_utils.get_test_config_arguments_dict(
-                tmp_path
+                tmp_path, TEST_PROJECT_NAME
             )
 
             bad_type_configs[key] = DataShuttle  # arbitrary bad type
@@ -321,7 +323,7 @@ class TestConfigs:
             setup_project._datashuttle_path / "new_configs.yaml"
         )
         good_order_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path
+            tmp_path, TEST_PROJECT_NAME
         )
 
         bad_order_configs = {
@@ -355,11 +357,11 @@ class TestConfigs:
         test_utils.check_configs(setup_project, new_configs)
 
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
-    def test_supplied_config_wrong_project_name(
-        self, project, path_type, tmp_path
-    ):
+    def test_config_wrong_project_name(self, project, path_type, tmp_path):
         """ """
-        bad_name_configs = test_utils.get_test_config_arguments_dict(tmp_path)
+        bad_name_configs = test_utils.get_test_config_arguments_dict(
+            tmp_path, TEST_PROJECT_NAME
+        )
 
         from pathlib import Path
 
@@ -370,13 +372,11 @@ class TestConfigs:
 
         with pytest.raises(BaseException) as e:
             project.make_config_file(**bad_name_configs)
-        try:
-            assert (
-                f"The {path_type} does not end in the project name: {project.project_name}."
-                in str(e.value)
-            )
-        except:
-            breakpoint()
+
+        assert (
+            f"The {path_type} does not end in the project name: {project.project_name}."
+            in str(e.value)
+        )
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils

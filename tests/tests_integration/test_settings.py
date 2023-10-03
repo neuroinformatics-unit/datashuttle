@@ -22,7 +22,7 @@ class TestPersistentSettings:
         )
 
         default_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, TEST_PROJECT_NAME, set_as_defaults=True
         )
         setup_project.make_config_file(**default_configs)
 

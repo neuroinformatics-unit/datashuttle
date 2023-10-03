@@ -42,7 +42,7 @@ def setup_project_default_configs(
     project = DataShuttle(project_name)
 
     default_configs = get_test_config_arguments_dict(
-        tmp_path, set_as_defaults=True
+        tmp_path, project_name, set_as_defaults=True
     )
 
     if all_datatype_on:
@@ -60,11 +60,12 @@ def setup_project_default_configs(
     warnings.filterwarnings("default")
 
     project.update_config(
-        "local_path", project._datashuttle_path / "base_folder"
+        "local_path", project._datashuttle_path / "base_folder" / project_name
     )
 
     if local_path:
         project.update_config("local_path", local_path)
+
         delete_all_folders_in_local_path(project)
         project.cfg.make_and_get_logging_path()
 
@@ -133,7 +134,9 @@ def make_correct_supply_config_file(
 ):
     """"""
     new_configs_path = setup_project._datashuttle_path / "new_configs.yaml"
-    new_configs = get_test_config_arguments_dict(tmp_path)
+    new_configs = get_test_config_arguments_dict(
+        tmp_path, setup_project.project_name
+    )
 
     canonical_config_dict = canonical_configs.get_canonical_config_dict()
     new_configs = {key: new_configs[key] for key in canonical_config_dict}
@@ -156,16 +159,16 @@ def setup_project_fixture(tmp_path, test_project_name):
     project = setup_project_default_configs(
         test_project_name,
         tmp_path,
-        local_path=make_test_path(tmp_path, test_project_name, "local"),
-        central_path=make_test_path(tmp_path, test_project_name, "central"),
+        local_path=make_test_path(tmp_path, "local", test_project_name),
+        central_path=make_test_path(tmp_path, "central", test_project_name),
     )
 
     cwd = os.getcwd()
     return project, cwd
 
 
-def make_test_path(base_path, test_project_name, local_or_central):
-    return Path(base_path) / test_project_name / local_or_central
+def make_test_path(base_path, local_or_central, test_project_name):
+    return Path(base_path) / local_or_central / test_project_name
 
 
 def get_protected_test_folder():
@@ -179,9 +182,9 @@ def get_protected_test_folder():
 
 def get_test_config_arguments_dict(
     tmp_path,
+    project_name,
     set_as_defaults=False,
     required_arguments_only=False,
-    project_name="test_configs",  # TODO: this is not good as this is only defined here.
 ):
     """
     Retrieve configs, either the required configs
@@ -194,8 +197,8 @@ def get_test_config_arguments_dict(
     tmp_path = Path(tmp_path).as_posix()
 
     dict_ = {
-        "local_path": f"{tmp_path}/not/a/re al/local/folder",
-        "central_path": f"{tmp_path}/a/re al/central_ local/folder",
+        "local_path": f"{tmp_path}/not/a/re al/local/folder/{project_name}",
+        "central_path": f"{tmp_path}/a/re al/central_ local/folder/{project_name}",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
         # but at least 1 use_x must be true, so
@@ -221,8 +224,8 @@ def get_test_config_arguments_dict(
     else:
         dict_.update(
             {
-                "local_path": f"{tmp_path}/test/test_ local/test_edit",
-                "central_path": f"{tmp_path}/nfs/test folder/test_edit2",
+                "local_path": f"{tmp_path}/test/test_ local/test_edit/{project_name}",
+                "central_path": f"{tmp_path}/nfs/test folder/test_edit2/{project_name}",
                 "connection_method": "ssh",
                 "central_host_id": "test_central_host_id",
                 "central_host_username": "test_central_host_username",

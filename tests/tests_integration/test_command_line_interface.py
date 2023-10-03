@@ -31,6 +31,8 @@ from datashuttle.command_line_interface import construct_parser
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.canonical_tags import tags
 
+# This is a special, protected project name.
+# CLI commands with this project will output all arguments as simplejson
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 
@@ -132,7 +134,7 @@ class TestCommandLineInterface:
         that is tested again (because, these are stripped in the CLI code)
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, required_arguments_only=True
+            tmp_path, PROTECTED_TEST_PROJECT_NAME, required_arguments_only=True
         )
 
         stdout, stderr = test_utils.run_cli(
@@ -145,7 +147,7 @@ class TestCommandLineInterface:
         # Remove items that are stripped from configs because they
         # default to None on the CLI
         default_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, PROTECTED_TEST_PROJECT_NAME, set_as_defaults=True
         )
         del default_options["central_host_id"]
         del default_options["central_host_username"]
@@ -159,7 +161,7 @@ class TestCommandLineInterface:
         are correctly processed.
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, PROTECTED_TEST_PROJECT_NAME, set_as_defaults=False
         )
 
         stdout, stderr = test_utils.run_cli(
@@ -317,7 +319,7 @@ class TestCommandLineInterface:
         workflow here, with both separators.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, clean_project_name, set_as_defaults=True
         )
 
         test_utils.run_cli(
@@ -327,7 +329,7 @@ class TestCommandLineInterface:
         )
 
         not_set_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, clean_project_name, set_as_defaults=False
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -354,7 +356,7 @@ class TestCommandLineInterface:
         See test_config_defaults in test_configs.py
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, required_arguments_only=True
+            tmp_path, clean_project_name, required_arguments_only=True
         )
 
         test_utils.run_cli(
@@ -364,7 +366,7 @@ class TestCommandLineInterface:
         )
 
         default_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, clean_project_name, set_as_defaults=True
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -380,7 +382,7 @@ class TestCommandLineInterface:
         see test_config_defaults in test_configs.py
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, clean_project_name, set_as_defaults=False
         )
 
         test_utils.run_cli(
@@ -522,7 +524,7 @@ class TestCommandLineInterface:
         Check that error from API are propagated to CLI
         """
         _, stderr = test_utils.run_cli(
-            "make_config_file test_local_path test_central_path ssh --use_behav",
+            f"make_config_file {clean_project_name} {clean_project_name} ssh --use_behav",
             clean_project_name,
         )
 
