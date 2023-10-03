@@ -10,7 +10,7 @@ import glob
 import os
 import warnings
 from pathlib import Path
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Literal, Optional, Tuple, Union
 
 from datashuttle.configs import canonical_folders, canonical_tags
 
@@ -167,51 +167,77 @@ def check_no_duplicate_sub_ses_key_values(
     if new_ses_names == []:
         new_ses_names = None
 
-    if new_ses_names is None:
-        existing_sub_names = search_sub_or_ses_level(
+    for new_sub in new_sub_names:
+        existing_names = search_sub_or_ses_level(
             project.cfg, base_folder, "local", search_str="*sub-*"
         )[0]
 
-        existing_sub_values = utils.get_values_from_bids_formatted_name(
-            existing_sub_names,
-            "sub",
-            return_as_int=True,
+        check_new_subject_does_not_duplicate_existing(
+            new_sub, existing_names, "sub"
         )
 
-        for new_sub in utils.get_values_from_bids_formatted_name(
-            new_sub_names,
-            "sub",
-            return_as_int=True,
-        ):
-            if new_sub in existing_sub_values:
-                utils.log_and_raise_error(
-                    f"Cannot make folders. "
-                    f"The key sub-{new_sub} (possibly with leading zeros) "
-                    f"already exists in the project"
-                )
-    else:
-        # for each subject, check session level
+    if new_ses_names is not None:
         for sub in new_sub_names:
-            existing_ses_names = search_sub_or_ses_level(
-                project.cfg, base_folder, "local", sub, search_str="*ses-*"
-            )[0]
+            for new_ses in new_ses_names:
+                existing_names = search_sub_or_ses_level(
+                    project.cfg, base_folder, "local", sub, search_str="*ses-*"
+                )[0]
 
-            existing_ses_values = utils.get_values_from_bids_formatted_name(
-                existing_ses_names,
-                "ses",
-                return_as_int=True,
+                check_new_subject_does_not_duplicate_existing(
+                    new_ses, existing_names, "ses"
+                )
+
+
+def check_new_subject_does_not_duplicate_existing(
+    new_name: str, existing_names: List[str], sub_or_ses: Literal["sub", "ses"]
+) -> None:
+    """
+    Check that a subject or session does not already exist
+    that shares a sub / ses id with the new_name.
+
+    When creating new subject or session files, if the
+    sub or ses id already exists, the full subject or session
+    name should match exactly.
+
+    For example, if "sub-001" exists, we can pass
+    "sub-001" as a valid subject name (for example, when making sessions).
+    However, if "sub-001_another-tag" exists, we should throw an
+    error, because this shares the same subject id but refers to
+    a different subject.
+    """
+    # For every existing subject / session name,
+    # check whether the id matches the new name. If it
+    # does, add the full name to `matched_existing_names`.
+    matched_existing_names = []
+    for exist_name in existing_names:
+        exist_name_id = utils.get_values_from_bids_formatted_name(
+            [exist_name], sub_or_ses, return_as_int=True
+        )[0]
+        new_name_id = utils.get_values_from_bids_formatted_name(
+            [new_name], sub_or_ses, return_as_int=True
+        )[0]
+
+        if exist_name_id == new_name_id:
+            matched_existing_names.append(exist_name)
+
+    # We expect either zero matches (subject or session with matching id
+    # does not exist. We can pass this case, as file will be made).
+    # If more than 1 duplicates already exist, raise.
+    # If exactly one exists, check it matches the new name exactly. Otherwise,
+    # it is a duplicate.
+    if len(matched_existing_names) > 1:
+        utils.log_and_raise_error(
+            f"Cannot make folders. Multiple {sub_or_ses} ids exists: {matched_existing_names}. This should"
+            f"never happen. Check the {sub_or_ses} ids and ensure unique {sub_or_ses} "
+            f"ids (e.g. sub-001) appear only once."
+        )
+
+    if len(matched_existing_names) == 1:
+        if new_name != matched_existing_names[0]:
+            utils.log_and_raise_error(
+                f"Cannot make folders. A {sub_or_ses} already exists with the same {sub_or_ses} id as {new_name}. "
+                f"The existing folder is {matched_existing_names[0]}."
             )
-            for new_ses in utils.get_values_from_bids_formatted_name(
-                new_ses_names,
-                "ses",
-                return_as_int=True,
-            ):
-                if new_ses in existing_ses_values:
-                    utils.log_and_raise_error(
-                        f"Cannot make folders. "
-                        f"The key ses-{new_ses} for {sub} (possibly with leading "
-                        f"zeros) already exists in the project"
-                    )
 
 
 # -----------------------------------------------------------------------------
