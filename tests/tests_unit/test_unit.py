@@ -23,6 +23,8 @@ class TestUnit:
         keywords with the date / time / datetime. Also, it will
         pre/append underscores to the tags if they are not
         already there (e.g if user input "sub-001@DATE").
+        Note cannot use regex \d{8} format because we are in an
+        f-string.
         """
         start = "sub-001"
         end = "other-tag"
@@ -34,13 +36,15 @@ class TestUnit:
             regex = re.compile(rf"{start}_time-\d\d\d\d\d\d_{end}")
         elif key == tags("datetime"):
             regex = re.compile(
-                rf"{start}_date-\d\d\d\d\d\d\d\d_time-\d\d\d\d\d\d_{end}"
+                rf"{start}_datetime-\d\d\d\d\d\d\d\dT\d\d\d\d\d\d_{end}"
             )
 
         name_list = [name]
         formatting.update_names_with_datetime(name_list)
 
-        assert re.search(regex, name_list[0]) is not None
+        assert (
+            re.search(regex, name_list[0]) is not None
+        ), "datetime formatting is incorrect."
 
     @pytest.mark.parametrize(
         "prefix_and_names",
