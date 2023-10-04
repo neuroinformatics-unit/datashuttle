@@ -1,6 +1,7 @@
 import glob
 import os
 import platform
+import re
 from pathlib import Path
 
 import pytest
@@ -80,6 +81,22 @@ class TestCommandLineInterface:
         logs = glob.glob((str(logging_path / "*.log")))
         for log in logs:
             os.remove(log)
+
+    def test_log_filename(self, setup_project):
+        """
+        Check the log filename is formatted correctly, for
+        `update_config`, an arbitrary command
+        """
+        setup_project.update_config("central_host_id", "test_id")
+
+        log_search = list(setup_project.cfg.logging_path.glob("*.log"))
+        assert (
+            len(log_search) == 1
+        ), "should only be 1 log in this test environment."
+        log_filename = log_search[0].name
+
+        regex = re.compile(r"\d{8}T\d{6}_update-config.log")
+        assert re.search(regex, log_filename) is not None
 
     def test_logs_make_config_file(self, clean_project_name, tmp_path):
         """"""
