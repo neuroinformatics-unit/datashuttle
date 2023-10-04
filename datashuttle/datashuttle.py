@@ -99,9 +99,6 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
-            formatting.warn_on_inconsistent_sub_or_ses_leading_zeros(
-                self.cfg,
-            )
 
         if print_startup_message:
             if self.cfg:
@@ -352,7 +349,7 @@ class DataShuttle:
         if init_log:
             self._start_log("upload", local_vars=locals())
 
-        self._show_pre_transfer_messages()
+        self.show_top_level_folder()
 
         TransferData(
             self.cfg,
@@ -388,7 +385,7 @@ class DataShuttle:
         if init_log:
             self._start_log("download", local_vars=locals())
 
-        self._show_pre_transfer_messages()
+        self.show_top_level_folder()
 
         TransferData(
             self.cfg,
@@ -475,7 +472,7 @@ class DataShuttle:
         """
         self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
-        self._show_pre_transfer_messages()
+        self.show_top_level_folder()
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("local"),
@@ -528,7 +525,7 @@ class DataShuttle:
             "download-specific-folder-or-file", local_vars=locals()
         )
 
-        self._show_pre_transfer_messages()
+        self.show_top_level_folder()
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("central"),
@@ -546,11 +543,6 @@ class DataShuttle:
         utils.log(output.stderr.decode("utf-8"))
 
         ds_logger.close_log_filehandler()
-
-    def _show_pre_transfer_messages(self, include_top_level_folder=True):
-        formatting.warn_on_inconsistent_sub_or_ses_leading_zeros(self.cfg)
-        if include_top_level_folder:
-            self.show_top_level_folder()
 
     # -------------------------------------------------------------------------
     # SSH
@@ -1043,7 +1035,7 @@ class DataShuttle:
         direction : direction to transfer the data, either "upload" (from
                     local to central) or "download" (from central to local).
         """
-        self._show_pre_transfer_messages(include_top_level_folder=False)
+        self.show_top_level_folder(include_top_level_folder=False)
 
         transfer_all_func = (
             self.upload_all if direction == "upload" else self.download_all
