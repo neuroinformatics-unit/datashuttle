@@ -94,7 +94,6 @@ class TestFormatting(BaseTest):
     def test_warn_on_inconsistent_leading_zeros_subjects(
         self, project, bad_sub_name
     ):
-
         project.make_sub_folders(
             ["sub-001", "sub-010", "sub-100_date-20221314", "sub-1000"],
             ["ses-001_id-1231"],
@@ -134,7 +133,6 @@ class TestFormatting(BaseTest):
     def run_warn_on_consistentent_leading_zeros_sub_or_ses(
         self, project, sub_name, ses_name
     ):
-
         with warnings.catch_warnings():
             warnings.simplefilter("error")
             project._show_pre_transfer_messages()
@@ -149,7 +147,6 @@ class TestFormatting(BaseTest):
         self.check_inconsistent_sub_or_ses_level_warning(project, "sub")
 
     def check_inconsistent_sub_or_ses_level_warning(self, project, sub_or_ses):
-
         with pytest.warns(UserWarning) as w:
             project._show_pre_transfer_messages()
 

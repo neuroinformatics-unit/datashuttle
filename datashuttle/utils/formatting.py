@@ -383,7 +383,6 @@ def warn_on_inconsistent_sub_or_ses_leading_zeros(
     )
 
     for fail_name in failing_cases:
-
         message = (
             f"Inconsistent number of leading zeros for "
             f"{fail_name} names in the project found. It is crucial "

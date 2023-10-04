@@ -499,7 +499,6 @@ def search_filesystem_path_for_folders(
     all_folder_names = []
     all_filenames = []
     for file_or_folder in glob.glob(search_path_with_prefix.as_posix()):
-
         if os.path.isdir(file_or_folder):
             all_folder_names.append(os.path.basename(file_or_folder))
         else:
