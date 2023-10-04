@@ -1042,8 +1042,6 @@ class DataShuttle:
         direction : direction to transfer the data, either "upload" (from
                     local to central) or "download" (from central to local).
         """
-        self.show_top_level_folder(include_top_level_folder=False)
-
         transfer_all_func = (
             self.upload_all if direction == "upload" else self.download_all
         )
