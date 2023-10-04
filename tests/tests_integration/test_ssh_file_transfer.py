@@ -169,7 +169,7 @@ class TestFileTransfer:
         Parse the arguments to filter the pathtable, getting
         the files expected to be transferred passed on the arguments
         Note files in sub/ses/datatype folders must be handled
-        separately to those in non-sub, non-ses, non-data-type folders
+        separately to those in non-sub, non-ses, non-datatype folders
 
         see test_utils.swap_local_and_central_paths() for the logic
         on setting up and swapping local / central paths for

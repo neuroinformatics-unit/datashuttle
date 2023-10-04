@@ -251,7 +251,7 @@ class TransferData:
         """
         Check the sub / session names passed. The checking here
         is stricter than for make_sub_folderss / formatting.check_and_format_names
-        because we want to ensure that a) non-data-type arguments are not
+        because we want to ensure that a) non-datatype arguments are not
         passed at the wrong input (e.g. all_non_ses as a subject name).
 
         We also want to limit the possible combinations of inputs, such
@@ -350,7 +350,7 @@ class TransferData:
 
     def transfer_non_data_type(self, data_type_checked: List[str]) -> bool:
         """
-        Convenience function, bool if all non-data-type folders
+        Convenience function, bool if all non-datatype folders
         are to be transferred
         """
         return any(
