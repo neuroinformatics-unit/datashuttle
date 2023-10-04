@@ -88,7 +88,7 @@ def make_datatype_folders(
 
     Parameters
     ----------
-    datatype : data type (e.g. "behav", "all") to use. Use
+    datatype : datatype (e.g. "behav", "all") to use. Use
         empty string ("") for none.
 
     sub_or_ses_level_path : Full path to the subject
@@ -382,7 +382,7 @@ def search_for_wildcards(
     return new_all_names
 
 
-# Search Data Types
+# Search Datatypes
 # -----------------------------------------------------------------------------
 
 

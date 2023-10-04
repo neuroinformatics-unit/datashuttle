@@ -246,7 +246,7 @@ class TestMakeFolders:
     def test_datatypes_subsection(self, project, files_to_test):
         """
         Check that combinations of datatypes passed to make file folder
-        make the correct combination of data types.
+        make the correct combination of datatypes.
 
         Note this will fail when new top level folders are added, and should be
         updated.

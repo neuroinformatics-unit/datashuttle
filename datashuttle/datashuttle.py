@@ -313,7 +313,7 @@ class DataShuttle:
             be prefixed with "sub-", or the prefix will be
             automatically added. "@*@" can be used as a wildcard.
             "all" will search for all sub-folders in the
-            data type folder to upload.
+            datatype folder to upload.
         ses_names :
             a session name / list of session names, similar to
             sub_names but requiring a "ses-" prefix.

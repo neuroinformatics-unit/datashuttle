@@ -308,7 +308,7 @@ class Configs(UserDict):
         self, datatype: Union[str, list]
     ) -> Union[ItemsView, zip]:
         """
-        Get the .items() structure of the data type, either all of
+        Get the .items() structure of the datatype, either all of
         them (stored in self.datatype_folders) or as a single item.
         """
         if isinstance(datatype, str):

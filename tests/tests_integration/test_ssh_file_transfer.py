@@ -285,7 +285,7 @@ class TestFileTransfer:
         create the table of only transferred sub, ses and datatype.
 
         Two arguments must be created, one of all sub / ses / datatypes
-        and the other of all non sub/ non ses / non data type
+        and the other of all non sub/ non ses / non datatype
         folders. These must be handled separately as they are
         mutually exclusive.
         """

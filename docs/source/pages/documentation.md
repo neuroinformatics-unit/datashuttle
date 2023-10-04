@@ -159,7 +159,7 @@ When the `all` argument is used for `--datatype` (`-dt`), the folders created de
 ```
 
 
-### Data Types Folders
+### Datatype Folders
 
 In [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/specification.html), *datatypes* specify where acquired experimental data of currently supported types (`behav`, `ephys`, `funcimg` and `histology`) is stored. See the [*datatypes* section of the SWC-Blueprint for more details](https://swc-blueprint.neuroinformatics.dev/specification.html#datatype).
 
@@ -182,7 +182,7 @@ upload \
 
 Will *upload* (from *local* to *central* ) _behavioural_ _sessions_ 5 and 6, collected at any date, for _subjects_ 1 to 3.
 
-The keyword `all` can be input in place of a `-sub`, `-ses` or _datatype_ argument `-dt` to transfer all available subject, sessions or data types available. For example:
+The keyword `all` can be input in place of a `-sub`, `-ses` or _datatype_ argument `-dt` to transfer all available subject, sessions or datatypes available. For example:
 
 ```
 datashuttle \

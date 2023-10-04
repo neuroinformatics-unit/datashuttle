@@ -153,7 +153,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     if not any([config_dict[key] for key in get_datatypes()]):
         utils.log_and_raise_error(
-            f"At least one data type must be True in "
+            f"At least one datatype must be True in "
             f"configs, from: {' '.join(get_datatypes())}."
         )
 
