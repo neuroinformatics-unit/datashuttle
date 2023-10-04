@@ -144,16 +144,16 @@ class TestFileTransfer:
         ],
     )
     @pytest.mark.parametrize(
-        "data_type",
+        "datatype",
         [
             ["all"],
-            ["all_ses_level_non_data_type"],
-            ["all_data_type"],
+            ["all_ses_level_non_datatype"],
+            ["all_datatype"],
             ["behav"],
             ["ephys"],
             ["histology"],
             ["funcimg"],
-            ["histology", "behav", "all_ses_level_non_data_type"],
+            ["histology", "behav", "all_ses_level_non_datatype"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -162,7 +162,7 @@ class TestFileTransfer:
         pathtable_and_project,
         sub_names,
         ses_names,
-        data_type,
+        datatype,
         upload_or_download,
     ):
         """
@@ -183,7 +183,7 @@ class TestFileTransfer:
             swap_last_folder_only=project.testing_ssh,
         )[0]
 
-        transfer_function(sub_names, ses_names, data_type, init_log=False)
+        transfer_function(sub_names, ses_names, datatype, init_log=False)
 
         if upload_or_download == "download":
             test_utils.swap_local_and_central_paths(
@@ -192,21 +192,19 @@ class TestFileTransfer:
 
         sub_names = self.parse_arguments(pathtable, sub_names, "sub")
         ses_names = self.parse_arguments(pathtable, ses_names, "ses")
-        data_type = self.parse_arguments(pathtable, data_type, "data_type")
+        datatype = self.parse_arguments(pathtable, datatype, "datatype")
 
         # Filter pathtable to get files that were expected
         # to be transferred
         (
             sub_ses_dtype_arguments,
             extra_arguments,
-        ) = self.make_pathtable_search_filter(sub_names, ses_names, data_type)
+        ) = self.make_pathtable_search_filter(sub_names, ses_names, datatype)
 
-        data_type_folders = self.query_table(
-            pathtable, sub_ses_dtype_arguments
-        )
+        datatype_folders = self.query_table(pathtable, sub_ses_dtype_arguments)
         extra_folders = self.query_table(pathtable, extra_arguments)
 
-        expected_paths = pd.concat([data_type_folders, extra_folders])
+        expected_paths = pd.concat([datatype_folders, extra_folders])
         expected_paths = expected_paths.drop_duplicates(subset="path")
 
         central_base_paths = expected_paths.base_folder.map(
@@ -268,8 +266,8 @@ class TestFileTransfer:
             if list_of_names == ["all"]:
                 entries += (
                     [f"all_non_{field}"]
-                    if field != "data_type"
-                    else ["all_ses_level_non_data_type"]
+                    if field != "datatype"
+                    else ["all_ses_level_non_datatype"]
                 )
             list_of_names = entries
         return list_of_names
@@ -281,10 +279,10 @@ class TestFileTransfer:
             filepath.parents[0].mkdir(parents=True, exist_ok=True)
             test_utils.write_file(filepath, contents="test_entry")
 
-    def make_pathtable_search_filter(self, sub_names, ses_names, data_type):
+    def make_pathtable_search_filter(self, sub_names, ses_names, datatype):
         """
         Create a string of arguments to pass to pd.query() that will
-        create the table of only transferred sub, ses and data_type.
+        create the table of only transferred sub, ses and datatype.
 
         Two arguments must be created, one of all sub / ses / datatypes
         and the other of all non sub/ non ses / non data type
@@ -298,9 +296,9 @@ class TestFileTransfer:
             if sub == "all_non_sub":
                 extra_arguments += ["is_non_sub == True"]
             else:
-                if "histology" in data_type:
+                if "histology" in datatype:
                     sub_ses_dtype_arguments += [
-                        f"(parent_sub == '{sub}' & (parent_data_type == 'histology' | parent_data_type == 'histology'))"
+                        f"(parent_sub == '{sub}' & (parent_datatype == 'histology' | parent_datatype == 'histology'))"
                     ]
 
                 for ses in ses_names:
@@ -309,14 +307,14 @@ class TestFileTransfer:
                             f"(parent_sub == '{sub}' & is_non_ses == True)"
                         ]
                     else:
-                        for dtype in data_type:
-                            if dtype == "all_ses_level_non_data_type":
+                        for dtype in datatype:
+                            if dtype == "all_ses_level_non_datatype":
                                 extra_arguments += [
-                                    f"(parent_sub == '{sub}' & parent_ses == '{ses}' & is_ses_level_non_data_type == True)"
+                                    f"(parent_sub == '{sub}' & parent_ses == '{ses}' & is_ses_level_non_datatype == True)"
                                 ]
                             else:
                                 sub_ses_dtype_arguments += [
-                                    f"(parent_sub == '{sub}' & parent_ses == '{ses}' & (parent_data_type == '{dtype}' | parent_data_type == '{dtype}'))"
+                                    f"(parent_sub == '{sub}' & parent_ses == '{ses}' & (parent_datatype == '{dtype}' | parent_datatype == '{dtype}'))"
                                 ]
 
         return sub_ses_dtype_arguments, extra_arguments

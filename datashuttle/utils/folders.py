@@ -25,13 +25,13 @@ def make_folder_trees(
     cfg: Configs,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
-    data_type: str,
+    datatype: str,
     log: bool = True,
 ) -> None:
     """
     Entry method to make a full folder tree. It will
     iterate through all passed subjects, then sessions, then
-    subfolders within a data_type folder. This
+    subfolders within a datatype folder. This
     permits flexible creation of folders (e.g.
     to make subject only, do not pass session name.
 
@@ -41,15 +41,15 @@ def make_folder_trees(
     Parameters
     ----------
 
-    sub_names, ses_names, data_type : see make_sub_folders()
+    sub_names, ses_names, datatype : see make_sub_folders()
 
     log : whether to log or not. If True, logging must
         already be initialised.
     """
-    data_type_passed = data_type not in [[""], ""]
+    datatype_passed = datatype not in [[""], ""]
 
-    if data_type_passed:
-        formatting.check_data_type_is_valid(cfg, data_type, error_on_fail=True)
+    if datatype_passed:
+        formatting.check_datatype_is_valid(cfg, datatype, error_on_fail=True)
 
     for sub in sub_names:
         sub_path = cfg.make_path(
@@ -59,8 +59,8 @@ def make_folder_trees(
 
         make_folders(sub_path, log)
 
-        if data_type_passed:
-            make_data_type_folders(cfg, data_type, sub_path, "sub")
+        if datatype_passed:
+            make_datatype_folders(cfg, datatype, sub_path, "sub")
 
         for ses in ses_names:
             ses_path = cfg.make_path(
@@ -70,27 +70,25 @@ def make_folder_trees(
 
             make_folders(ses_path, log)
 
-            if data_type_passed:
-                make_data_type_folders(
-                    cfg, data_type, ses_path, "ses", log=log
-                )
+            if datatype_passed:
+                make_datatype_folders(cfg, datatype, ses_path, "ses", log=log)
 
 
-def make_data_type_folders(
+def make_datatype_folders(
     cfg: Configs,
-    data_type: Union[list, str],
+    datatype: Union[list, str],
     sub_or_ses_level_path: Path,
     level: str,
     log: bool = True,
 ) -> None:
     """
-    Make data_type folder (e.g. behav) at the sub or ses
+    Make datatype folder (e.g. behav) at the sub or ses
     level. Checks folder_class.Folders attributes,
-    whether the data_type is used and at the current level.
+    whether the datatype is used and at the current level.
 
     Parameters
     ----------
-    data_type : data type (e.g. "behav", "all") to use. Use
+    datatype : data type (e.g. "behav", "all") to use. Use
         empty string ("") for none.
 
     sub_or_ses_level_path : Full path to the subject
@@ -103,15 +101,15 @@ def make_data_type_folders(
     log : whether to log on or not (if True, logging must
         already be initialised).
     """
-    data_type_items = cfg.get_data_type_items(data_type)
+    datatype_items = cfg.get_datatype_items(datatype)
 
-    for data_type_key, data_type_folder in data_type_items:  # type: ignore
-        if data_type_folder.used and data_type_folder.level == level:
-            data_type_path = sub_or_ses_level_path / data_type_folder.name
+    for datatype_key, datatype_folder in datatype_items:  # type: ignore
+        if datatype_folder.used and datatype_folder.level == level:
+            datatype_path = sub_or_ses_level_path / datatype_folder.name
 
-            make_folders(data_type_path, log)
+            make_folders(datatype_path, log)
 
-            make_datashuttle_metadata_folder(data_type_path, log)
+            make_datashuttle_metadata_folder(datatype_path, log)
 
 
 # Make Folders Helpers --------------------------------------------------------
@@ -296,25 +294,25 @@ def search_data_folders_sub_or_ses_level(
 ) -> zip:
     """
     Search  a subject or session folder specifically
-    for data_types. First searches for all folders / files
+    for datatypes. First searches for all folders / files
     in the folder, and then returns any folders that
-    match data_type name.
+    match datatype name.
 
     see folders.search_sub_or_ses_level() for full
     parameters list.
 
     Returns
     -------
-    Find the data_type files and return in
+    Find the datatype files and return in
     a format that mirrors dict.items()
     """
     search_results = search_sub_or_ses_level(
         cfg, base_folder, local_or_central, sub, ses
     )[0]
 
-    data_folders = process_glob_to_find_data_type_folders(
+    data_folders = process_glob_to_find_datatype_folders(
         search_results,
-        cfg.data_type_folders,
+        cfg.datatype_folders,
     )
     return data_folders
 
@@ -388,9 +386,9 @@ def search_for_wildcards(
 # -----------------------------------------------------------------------------
 
 
-def process_glob_to_find_data_type_folders(
+def process_glob_to_find_datatype_folders(
     folder_names: list,
-    data_type_folders: dict,
+    datatype_folders: dict,
 ) -> zip:
     """
     Process the results of glob on a sub or session level,
@@ -400,21 +398,21 @@ def process_glob_to_find_data_type_folders(
 
     Returns
     -------
-    Find the data_type files and return in
+    Find the datatype files and return in
     a format that mirrors dict.items()
     """
     ses_folder_keys = []
     ses_folder_values = []
     for name in folder_names:
-        data_type_key = [
+        datatype_key = [
             key
-            for key, value in data_type_folders.items()
+            for key, value in datatype_folders.items()
             if value.name == name
         ]
 
-        if data_type_key:
-            ses_folder_keys.append(data_type_key[0])
-            ses_folder_values.append(data_type_folders[data_type_key[0]])
+        if datatype_key:
+            ses_folder_keys.append(datatype_key[0])
+            ses_folder_values.append(datatype_folders[datatype_key[0]])
 
     return zip(ses_folder_keys, ses_folder_values)
 

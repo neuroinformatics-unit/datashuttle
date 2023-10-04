@@ -49,7 +49,7 @@ class Configs(UserDict):
 
         self.top_level_folder: str
 
-        self.data_type_folders: dict
+        self.datatype_folders: dict
         self.logging_path: Path
         self.hostkeys_path: Path
         self.ssh_key_path: Path
@@ -300,62 +300,62 @@ class Configs(UserDict):
         folders.make_folders(logging_path)
         return logging_path
 
-    def init_data_type_folders(self):
+    def init_datatype_folders(self):
         """"""
-        self.data_type_folders = canonical_folders.get_data_type_folders(self)
+        self.datatype_folders = canonical_folders.get_datatype_folders(self)
 
-    def get_data_type_items(
-        self, data_type: Union[str, list]
+    def get_datatype_items(
+        self, datatype: Union[str, list]
     ) -> Union[ItemsView, zip]:
         """
         Get the .items() structure of the data type, either all of
-        them (stored in self.data_type_folders) or as a single item.
+        them (stored in self.datatype_folders) or as a single item.
         """
-        if isinstance(data_type, str):
-            data_type = [data_type]
+        if isinstance(datatype, str):
+            datatype = [datatype]
 
         items: Union[ItemsView, zip]
 
-        if "all" in data_type:
-            items = self.data_type_folders.items()
+        if "all" in datatype:
+            items = self.datatype_folders.items()
         else:
             items = zip(
-                data_type,
-                [self.data_type_folders[key] for key in data_type],
+                datatype,
+                [self.datatype_folders[key] for key in datatype],
             )
 
         return items
 
-    def items_from_data_type_input(
+    def items_from_datatype_input(
         self,
         local_or_central: str,
-        data_type: Union[list, str],
+        datatype: Union[list, str],
         sub: str,
         ses: Optional[str] = None,
     ) -> Union[ItemsView, zip]:
         """
-        Get the list of data_types to transfer, either
+        Get the list of datatypes to transfer, either
         directly from user input, or by searching
         what is available if "all" is passed.
 
         Parameters
         ----------
 
-        see _transfer_data_type() for parameters.
+        see _transfer_datatype() for parameters.
         """
         base_folder = self.get_base_folder(local_or_central)
 
-        if data_type not in [
+        if datatype not in [
             "all",
             ["all"],
-            "all_data_type",
-            ["all_data_type"],
+            "all_datatype",
+            ["all_datatype"],
         ]:
-            data_type_items = self.get_data_type_items(
-                data_type,
+            datatype_items = self.get_datatype_items(
+                datatype,
             )
         else:
-            data_type_items = folders.search_data_folders_sub_or_ses_level(
+            datatype_items = folders.search_data_folders_sub_or_ses_level(
                 self,
                 base_folder,
                 local_or_central,
@@ -363,4 +363,4 @@ class Configs(UserDict):
                 ses,
             )
 
-        return data_type_items
+        return datatype_items

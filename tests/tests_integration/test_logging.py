@@ -138,7 +138,7 @@ class TestCommandLineInterface:
         subs = ["sub-11", f"sub-002{tags('to')}004"]
         ses = ["ses-123", "ses-101"]
 
-        setup_project.make_sub_folders(subs, ses, data_type="all")
+        setup_project.make_sub_folders(subs, ses, datatype="all")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
@@ -147,7 +147,7 @@ class TestCommandLineInterface:
         assert (
             "\n\nVariablesState:\nlocals: {'sub_names': ['sub-11', "
             "'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-101'], "
-            "'data_type': 'all'}\ncfg: {'local_path':" in log
+            "'datatype': 'all'}\ncfg: {'local_path':" in log
         )
 
         assert f"sub_names: ['sub-11', 'sub-002{tags('to')}004']" in log
@@ -254,7 +254,7 @@ class TestCommandLineInterface:
             )
         else:
             assert (
-                "VariablesState:\nlocals: {'sub_names': 'all', 'ses_names': 'all', 'data_type': 'all', 'dry_run': False, 'init_log': True}\ncfg: {'local_path': "
+                "VariablesState:\nlocals: {'sub_names': 'all', 'ses_names': 'all', 'datatype': 'all', 'dry_run': False, 'init_log': True}\ncfg: {'local_path': "
                 in log
             )
 
@@ -279,7 +279,7 @@ class TestCommandLineInterface:
             setup_project,
             subs=["sub-001"],
             sessions=["ses-001"],
-            data_type="all",
+            datatype="all",
         )
 
         setup_project.update_config("show_transfer_progress", False)
@@ -334,11 +334,11 @@ class TestCommandLineInterface:
 
     def test_logs_bad_make_sub_folders_error(self, setup_project):
         """"""
-        setup_project.make_sub_folders("sub-001", data_type="all")
+        setup_project.make_sub_folders("sub-001", datatype="all")
         self.delete_log_files(setup_project.cfg.logging_path)
 
         with pytest.raises(BaseException):
-            setup_project.make_sub_folders("sub-001", data_type="all")
+            setup_project.make_sub_folders("sub-001", datatype="all")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 

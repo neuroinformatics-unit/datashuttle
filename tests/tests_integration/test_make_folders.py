@@ -173,7 +173,7 @@ class TestMakeFolders:
     def test_turn_off_specific_folder_used(self, project, folder_key):
         """
         Whether or not a folder is made is held in the .used key of the
-        folder class (stored in project.cfg.data_type_folders).
+        folder class (stored in project.cfg.datatype_folders).
         """
 
         # Overwrite configs to make specified folder not used.
@@ -201,10 +201,10 @@ class TestMakeFolders:
         ensure they are made correctly.
         """
         # Change folder names to custom names
-        project.cfg.data_type_folders["ephys"].name = "change_ephys"
-        project.cfg.data_type_folders["behav"].name = "change_behav"
-        project.cfg.data_type_folders["histology"].name = "change_histology"
-        project.cfg.data_type_folders["funcimg"].name = "change_funcimg"
+        project.cfg.datatype_folders["ephys"].name = "change_ephys"
+        project.cfg.datatype_folders["behav"].name = "change_behav"
+        project.cfg.datatype_folders["histology"].name = "change_histology"
+        project.cfg.datatype_folders["funcimg"].name = "change_funcimg"
 
         # Make the folders
         sub = "sub-001"
@@ -243,9 +243,9 @@ class TestMakeFolders:
             ["funcimg"],
         ],
     )
-    def test_data_types_subsection(self, project, files_to_test):
+    def test_datatypes_subsection(self, project, files_to_test):
         """
-        Check that combinations of data_types passed to make file folder
+        Check that combinations of datatypes passed to make file folder
         make the correct combination of data types.
 
         Note this will fail when new top level folders are added, and should be

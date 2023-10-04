@@ -400,7 +400,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-999"]
 
         test_utils.run_cli(
-            f"make_sub_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
             setup_project.project_name,
         )
 
@@ -459,13 +459,13 @@ class TestCommandLineInterface:
                 setup_project.project_name,
             )
 
-        test_utils.check_data_type_sub_ses_uploaded_correctly(
+        test_utils.check_datatype_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
                 base_path_to_check, setup_project.cfg.top_level_folder
             ),
-            data_type_to_transfer=[
+            datatype_to_transfer=[
                 flag.split("use_")[1]
-                for flag in canonical_configs.get_data_types()
+                for flag in canonical_configs.get_datatypes()
             ],
             subs_to_upload=subs,
             ses_to_upload=sessions,

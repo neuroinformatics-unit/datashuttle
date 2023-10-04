@@ -119,7 +119,7 @@ class DataShuttle:
 
         self._make_project_metadata_if_does_not_exist()
 
-        self.cfg.init_data_type_folders()
+        self.cfg.init_datatype_folders()
 
     # -------------------------------------------------------------------------
     # Public Folder Makers
@@ -159,7 +159,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
-        data_type: str = "all",
+        datatype: str = "all",
     ) -> None:
         """
         Create a subject / session folder tree in the project
@@ -178,12 +178,12 @@ class DataShuttle:
                 (if not already, these will be prefixed with
                 "ses-"). If no session is provided, no session-level
                 folders are made.
-        data_type :
-                The data_type to make in the sub / ses folders.
-                (e.g. "ephys", "behav", "histology"). Only data_types
+        datatype :
+                The datatype to make in the sub / ses folders.
+                (e.g. "ephys", "behav", "histology"). Only datatypes
                 that are enabled in the configs (e.g. use_behav) will be
                 created. If "all" is selected, folders will be created
-                for all data_type enabled in config. Use empty string "" for
+                for all datatype enabled in config. Use empty string "" for
                 none.
 
         Notes
@@ -204,7 +204,7 @@ class DataShuttle:
 
         Examples
         --------
-        project.make_sub_folders("sub-001", data_type="all")
+        project.make_sub_folders("sub-001", datatype="all")
 
         project.make_sub_folders("sub-002@TO@005",
                              ["ses-001", "ses-002"],
@@ -251,7 +251,7 @@ class DataShuttle:
             self.cfg,
             sub_names,
             ses_names,
-            data_type,
+            datatype,
             log=True,
         )
 
@@ -294,7 +294,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        data_type: str = "all",
+        datatype: str = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -321,7 +321,7 @@ class DataShuttle:
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
-        data_type :
+        datatype :
             see make_sub_folders()
 
         init_log :
@@ -357,7 +357,7 @@ class DataShuttle:
             "upload",
             sub_names,
             ses_names,
-            data_type,
+            datatype,
             dry_run,
             log=True,
         )
@@ -368,7 +368,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        data_type: str = "all",
+        datatype: str = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -393,7 +393,7 @@ class DataShuttle:
             "download",
             sub_names,
             ses_names,
-            data_type,
+            datatype,
             dry_run,
             log=True,
         )

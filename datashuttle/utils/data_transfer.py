@@ -13,7 +13,7 @@ class TransferData:
         upload_or_download: str,
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
-        data_type: Union[str, List[str]],
+        datatype: Union[str, List[str]],
         dry_run: bool,
         log: bool,
     ):
@@ -26,7 +26,7 @@ class TransferData:
 
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
-        self.data_type = self.to_list(data_type)
+        self.datatype = self.to_list(datatype)
 
         self.check_input_arguments()
 
@@ -70,7 +70,7 @@ class TransferData:
 
             self.update_list_with_dtype_paths(
                 sub_ses_dtype_include,
-                self.data_type,
+                self.datatype,
                 sub,
             )
 
@@ -88,14 +88,14 @@ class TransferData:
 
                 # Datatype (sub and ses level) --------------------------------
 
-                if self.transfer_non_data_type(self.data_type):
+                if self.transfer_non_datatype(self.datatype):
                     self.update_list_with_non_dtype_ses_level_folders(
                         extra_folder_names, extra_filenames, sub, ses
                     )
 
                 self.update_list_with_dtype_paths(
                     sub_ses_dtype_include,
-                    self.data_type,
+                    self.datatype,
                     sub,
                     ses,
                 )
@@ -161,7 +161,7 @@ class TransferData:
         )
         sub_level_dtype = [
             dtype.name
-            for dtype in self.cfg.data_type_folders.values()
+            for dtype in self.cfg.datatype_folders.values()
             if dtype.level == "sub"
         ]
 
@@ -192,7 +192,7 @@ class TransferData:
 
         ses_level_dtype = [
             dtype.name
-            for dtype in self.cfg.data_type_folders.values()
+            for dtype in self.cfg.datatype_folders.values()
             if dtype.level == "ses"
         ]
         filt_ses_level_folders = filter(
@@ -206,33 +206,33 @@ class TransferData:
         ]
 
     # -------------------------------------------------------------------------
-    # Update list with path to sub and ses level data_type folders
+    # Update list with path to sub and ses level datatype folders
     # -------------------------------------------------------------------------
 
     def update_list_with_dtype_paths(
         self,
         sub_ses_dtype_include,
-        data_type: List[str],
+        datatype: List[str],
         sub: str,
         ses: Optional[str] = None,
     ) -> None:
         """ """
-        data_type = list(
-            filter(lambda x: x != "all_ses_level_non_data_type", data_type)
+        datatype = list(
+            filter(lambda x: x != "all_ses_level_non_datatype", datatype)
         )
 
-        data_type_items = self.cfg.items_from_data_type_input(
-            self.local_or_central, data_type, sub, ses
+        datatype_items = self.cfg.items_from_datatype_input(
+            self.local_or_central, datatype, sub, ses
         )
 
         level = "ses" if ses else "sub"
 
-        for data_type_key, data_type_folder in data_type_items:  # type: ignore
-            if data_type_folder.level == level:
+        for datatype_key, datatype_folder in datatype_items:  # type: ignore
+            if datatype_folder.level == level:
                 if ses:
-                    filepath = Path(sub) / ses / data_type_folder.name
+                    filepath = Path(sub) / ses / datatype_folder.name
                 else:
-                    filepath = Path(sub) / data_type_folder.name
+                    filepath = Path(sub) / datatype_folder.name
 
                 sub_ses_dtype_include.append(filepath.as_posix())
 
@@ -278,11 +278,11 @@ class TransferData:
                 "'ses_names' must only include 'all' or 'all_ses' if these options are used."
             )
 
-        if len(self.data_type) > 1 and any(
-            [name in ["all", "all_data_type"] for name in self.data_type]
+        if len(self.datatype) > 1 and any(
+            [name in ["all", "all_datatype"] for name in self.datatype]
         ):
             utils.log_and_raise_error(
-                "'data_type' must only include 'all' or 'all_data_type' if these options are used."
+                "'datatype' must only include 'all' or 'all_datatype' if these options are used."
             )
 
     # -----------------------------------------------------------------------------
@@ -348,14 +348,14 @@ class TransferData:
 
         return processed_names
 
-    def transfer_non_data_type(self, data_type_checked: List[str]) -> bool:
+    def transfer_non_datatype(self, datatype_checked: List[str]) -> bool:
         """
         Convenience function, bool if all non-datatype folders
         are to be transferred
         """
         return any(
             [
-                name in ["all_ses_level_non_data_type", "all"]
-                for name in data_type_checked
+                name in ["all_ses_level_non_datatype", "all"]
+                for name in datatype_checked
             ]
         )

@@ -16,7 +16,7 @@ DataShuttle aims to integrate seamlessly into existing neuroscience data collect
 <img src="https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258" alt="datashuttle central and local machines" class="img-responsive"/>
 
 
-DataShuttle requires a [one-time setup](#initial-setup-with-configurations) of project name and configurations.  Next, subjects, session and data-type folder trees can be [created](#creating-subject-and-session-folders) during experimental acquisition.
+DataShuttle requires a [one-time setup](#initial-setup-with-configurations) of project name and configurations.  Next, subjects, session and datatype folder trees can be [created](#creating-subject-and-session-folders) during experimental acquisition.
 
 Once acquisition is complete, data can be easily [transferred](#data-transfer) from acquisition computers to a central storage machine.
 
@@ -137,7 +137,7 @@ my_first_project \
 make-sub-folders -sub 001@TO@003 -ses 010_@TIME@ -dt all
 ```
 
-When the `all` argument is used for `--data_type` (`-dt`), the folders created depend on the *datatypes* specified during *configuration* setup. For example, if
+When the `all` argument is used for `--datatype` (`-dt`), the folders created depend on the *datatypes* specified during *configuration* setup. For example, if
 `--use_behav`, `--use_funcimg`, `--use_histology` were set during *configuration* setup, the folder tree from the above command (assuming the time is `4.02.48 PM`), would look like:
 
 ```
@@ -287,7 +287,7 @@ will move:
 
 - All *datatypes* and non-*datatypes* at the session level. For example, `behav` and `sub-001_ses-001_extrafile-dtype.json` (that reside in *session* folders called `ses-001`) will be transferred.
 
-For convenience, it is suggested to keep all files within *datatype* level folders. However, the `all` argument, as well as the additional available arguments: `all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_data_type` are available, as [detailed below](#flexible-transfers-with-keyword-arguments)
+For convenience, it is suggested to keep all files within *datatype* level folders. However, the `all` argument, as well as the additional available arguments: `all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_datatype` are available, as [detailed below](#flexible-transfers-with-keyword-arguments)
 
 
 ### Transferring a specific file or folder
@@ -336,13 +336,13 @@ project.make_config_file(
 )
 ```
 
-and methods for making subject folders and transferring data accessed similarly. Note that the shortcut arguments `-sub`, `-ses`, `-dt` are not available through the Python API, and the full argument names (`sub_names`, `ses_names`, `data_type`) must be used.
+and methods for making subject folders and transferring data accessed similarly. Note that the shortcut arguments `-sub`, `-ses`, `-dt` are not available through the Python API, and the full argument names (`sub_names`, `ses_names`, `datatype`) must be used.
 
 ```
 project.make_sub_folders(
 	sub_names="sub-001@TO@002",
 	ses_names="ses-001_@DATE@",
-	data_type="all"
+	datatype="all"
 )
 ```
 
@@ -350,7 +350,7 @@ project.make_sub_folders(
 project.upload(
 	sub_names="001@TO@003",
 	ses_names=["005_date-@*@", "006_date-@*@"],
-	data_type="behav"
+	datatype="behav"
 )
 ```
 
@@ -514,10 +514,10 @@ DataShuttle provides a number of keyword arguments to allow separate handling of
 
 `all` : All *datatype* folders at the *subject* or *session* folder level will be transferred, as well as all files and folders within selected *session* folders.
 
-`all_data_type` : All *datatype* folders (i.e. folders with the pre-determined name: `behav`, `ephys`, `funcimg`, `histology`) residing at either the *subject* or *session* level will be
+`all_datatype` : All *datatype* folders (i.e. folders with the pre-determined name: `behav`, `ephys`, `funcimg`, `histology`) residing at either the *subject* or *session* level will be
 transferred. Non-*datatype* folders at the *session* level will not be transferred
 
-`all_ses_level_non_data_type` : Non *datatype* folders at the *session* level will not be transferred
+`all_ses_level_non_datatype` : Non *datatype* folders at the *session* level will not be transferred
 
 Below, a number of examples are given to exemplify how these arguments effect data transfer. Given the *local* project folder:
 
@@ -552,7 +552,7 @@ my_first_project \
 upload
 -sub all
 -ses all
--dt all_ses_level_non_data_type
+-dt all_ses_level_non_datatype
 ```
 
 Would upload:
@@ -562,7 +562,7 @@ Would upload:
 - For `sub-001`, the file `ses-001_extra_file.json`. For `sub-002`, no other files are transferred because there is no non-*datatype* files at the *session* level.
 
 
-2) The next two examples show the effect of selecting `-dt all` vs. `-dt all_data_type`. The command:
+2) The next two examples show the effect of selecting `-dt all` vs. `-dt all_datatype`. The command:
 
 ```
 datashuttle \
@@ -587,7 +587,7 @@ my_first_project \
 upload
 -sub 001
 -ses all_sub
--dt all_data_type
+-dt all_datatype
 ```
 
 Would upload:
