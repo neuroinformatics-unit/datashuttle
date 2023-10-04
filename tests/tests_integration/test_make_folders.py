@@ -30,9 +30,8 @@ class TestMakeFolders(BaseTest):
             project.make_folders("sub-001_id-125")
 
         assert (
-            str(e.value) == "Cannot make folders. "
-            "The key sub-1 (possibly with leading zeros) "
-            "already exists in the project"
+            "Cannot make folders. A sub already "
+            "exists with the same sub id as sub-001_id-125" in str(e.value)
         )
 
         project.make_folders("sub-003")
@@ -45,13 +44,11 @@ class TestMakeFolders(BaseTest):
             project.make_folders("sub-001_id-123", "ses-002_date-1607")
 
         assert (
-            str(e.value)
-            == "Cannot make folders. The key ses-2 for sub-001_id-123 "
-            "(possibly with leading zeros) already exists "
-            "in the project"
+            "Cannot make folders. A ses already exists with the same "
+            "ses id as ses-002_date-1607" in str(e.value)
         )
 
-        project.make_folders("sub-001", "ses-003")
+        project.make_folders("sub-001_id-123", "ses-003")
 
     def test_duplicate_sub_and_ses_num_leading_zeros(self, project):
         """
@@ -65,9 +62,9 @@ class TestMakeFolders(BaseTest):
             project.make_folders("sub-1")
 
         assert (
-            str(e.value) == "Cannot make folders. The key sub-1 "
-            "(possibly with leading zeros) already exists "
-            "in the project"
+            str(e.value) == "Cannot make folders. "
+            "A sub already exists with the same sub id as sub-1. "
+            "The existing folder is sub-001."
         )
 
         project.make_folders("sub-001", "ses-3")
@@ -76,9 +73,57 @@ class TestMakeFolders(BaseTest):
             project.make_folders("sub-001", "ses-003")
 
         assert (
-            str(e.value) == "Cannot make folders. The key ses-3 for"
-            " sub-001 (possibly with leading zeros) "
-            "already exists in the project"
+            str(e.value) == "Cannot make folders. A ses already exists with "
+            "the same ses id as ses-003. The existing folder is ses-3."
+        )
+
+    def test_duplicate_sub_when_creating_session(self, project):
+        """
+        Check the unique case that a duplicate subject is
+        introduced when the session is made, because this
+        was not checked until the function
+        `check_new_subject_does_not_duplicate_existing()`
+        was introduced.
+        """
+        project.make_sub_folders("sub-001")
+
+        for bad_sub_name in ["sub-1", "sub-1_@DATE", "sub-001_extra-key"]:
+            with pytest.raises(BaseException) as e:
+                project.make_sub_folders(bad_sub_name, "ses-001")
+            assert "Cannot make folders. A sub already exists" in str(e.value)
+
+        project.make_sub_folders("sub-001", "ses-001")
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub-001", "ses-001_extra-key", "behav")
+        assert (
+            "Cannot make folders. A ses already exists with the same ses id as ses-001"
+            in str(e.value)
+        )
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders("sub-001_extra-key", "ses-001", "behav")
+        assert "Cannot make folders. A sub already exists " in str(e.value)
+
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders(
+                "sub-001_extra-key", "ses-001_@DATE@", "behav"
+            )
+        assert "Cannot make folders. A sub already exists " in str(e.value)
+
+        project.make_sub_folders("sub-001", "ses-001", "behav")
+
+        project.make_sub_folders("sub-001", ["ses-001", "ses-002"])
+
+        # Finally check that in a list of subjects, only the correct subject
+        # with duplicate session is caught.
+        with pytest.raises(BaseException) as e:
+            project.make_sub_folders(
+                ["sub-001", "sub-002"], "ses-002_@DATE@", "ephys"
+            )
+        assert (
+            "Cannot make folders. A ses already exists with the same ses id as ses-002"
+            in str(e.value)
         )
 
     def test_generate_folders_default_ses(self, project):
