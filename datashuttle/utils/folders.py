@@ -253,8 +253,7 @@ def search_sub_or_ses_level(
     str : glob-format search string to search at the
         folder level.
 
-    verbose : If `True`, when a search folder cannot be found, a message
-          will be printed with the missing path.
+    verbose : If `True`, if a search folder cannot be found, a message
           will be printed with the un-found path.
     """
     if ses and not sub:
@@ -433,8 +432,12 @@ def search_for_folders(  # TODO: change name
     local_or_central : "local" or "central"
     search_path : full filepath to search in
     search_prefix : file / folder name to search (e.g. "sub-*")
+<<<<<<< HEAD
     verbose : If `True`, when a search folder cannot be found, a message
           will be printed with the missing path.
+=======
+    verbose : If `True`, if a search folder cannot be found, a message
+>>>>>>> 15e7660 (Add verbose option to searching folders functions.)
               will be printed with the un-found path.
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
