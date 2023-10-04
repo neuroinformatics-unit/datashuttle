@@ -69,16 +69,25 @@ def raise_error(message: str) -> None:
     raise BaseException(message)
 
 
-def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
+def get_datashuttle_path():
     """
-    Get the datashuttle path where configuration files are stored.
+    Get the datashuttle path where all project
+    configs are stored.
+    """
+    return Path.home() / ".datashuttle"
+
+
+def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
+    """
+    Get the datashuttle path for the project,
+    where configuration files are stored.
     Also, return a temporary path in this for logging in
     some cases where local_path location is not clear.
 
     The datashuttle configuration path is stored in the user home
     folder.
     """
-    base_path = Path.home() / ".datashuttle" / project_name
+    base_path = get_datashuttle_path() / project_name
     temp_logs_path = base_path / "temp_logs"
 
     folders.make_folders(base_path)
