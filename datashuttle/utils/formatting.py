@@ -373,7 +373,7 @@ def warn_on_inconsistent_sub_or_ses_leading_zeros(
         ) = project_has_inconsistent_num_leading_zeros(cfg)
     except:
         warnings.warn(
-            "Could not search local and remote respoistories. "
+            "Could not search local and remote repositories. "
             "Leading zero consistency checks not performed."
         )
         return
