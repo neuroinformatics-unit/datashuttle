@@ -1,3 +1,4 @@
+import os
 import warnings
 
 import pytest
@@ -377,6 +378,61 @@ class TestConfigs:
             f"The {path_type} does not end in the project name: {project.project_name}."
             in str(e.value)
         )
+
+    def test_exiting_projects(self, setup_project, monkeypatch, tmp_path):
+        """
+        Test existing projects are correctly found based on whether
+        they exist in the home directory and contain a config.yaml.
+
+        By default, datashuttle saves project folders to
+        Path.home() / .datashuttle. In order to not mess with
+        the home directory during this test the `get_datashuttle_path()`
+        function is monkeypatched in order to point to a tmp_path.
+
+        The tmp_path / "projects" is filled with a mix of project folders
+        with and without config, and tested against accordingly. The `local_path`
+        and `central_path` specified in the DataShuttle config are arbitrarily put in
+        `tmp_path`.
+        """
+
+        def patch_get_datashuttle_path():
+            return tmp_path / "projects"
+
+        monkeypatch.setattr(
+            "datashuttle.datashuttle.utils.get_datashuttle_path",
+            patch_get_datashuttle_path,
+        )
+
+        project_1 = DataShuttle("project_1")
+        project_1.make_config_file(
+            tmp_path / "project_1",
+            tmp_path / "project_1",
+            "local_filesystem",
+            use_behav=True,
+        )
+
+        # project 2 will not be found, because it does not
+        # have a config file.
+        os.mkdir(tmp_path / "projects" / "project_2")
+
+        project_2 = DataShuttle("project_3")
+        project_2.make_config_file(
+            tmp_path / "project_3",
+            tmp_path / "project_2",
+            "local_filesystem",
+            use_behav=True,
+        )
+
+        (
+            project_names,
+            project_paths,
+        ) = setup_project.get_existing_project_paths_and_names()
+
+        assert project_names == ["project_1", "project_3"]
+        assert project_paths == [
+            (tmp_path / "projects" / "project_1"),
+            (tmp_path / "projects" / "project_3"),
+        ]
 
     # --------------------------------------------------------------------------------------------------------------------
     # Utils
