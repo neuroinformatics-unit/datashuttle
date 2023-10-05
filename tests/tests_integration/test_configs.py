@@ -381,8 +381,7 @@ class TestConfigs:
             in str(e.value)
         )
 
-    def test_exiting_projects(self, monkeypatch, tmp_path):
-
+    def test_existing_projects(self, monkeypatch, tmp_path):
         """
         Test existing projects are correctly found based on whether
         they exist in the home directory and contain a config.yaml.
@@ -431,8 +430,8 @@ class TestConfigs:
             project_paths,
         ) = folders.get_existing_project_paths_and_names()
 
-        assert project_names == ["project_1", "project_3"]
-        assert project_paths == [
+        assert sorted(project_names) == ["project_1", "project_3"]
+        assert sorted(project_paths) == [
             (tmp_path / "projects" / "project_1"),
             (tmp_path / "projects" / "project_3"),
         ]
