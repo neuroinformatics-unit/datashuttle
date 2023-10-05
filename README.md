@@ -8,7 +8,7 @@ Datashuttle includes tools for automated generation and transfer of neuroscience
 
 * Manage files across multiple data-collection computers by synchronising all data to with a centrally stored project.
 
-* Simplify data transfers by selecting only a sub-set of data to move (e.g. specific subjects, sessions or data types)
+* Simplify data transfers by selecting only a sub-set of data to move (e.g. specific subjects, sessions or datatypes)
 
 See the [DataShuttle Documentation](https://datashuttle.neuroinformatics.dev) to get started or join the [Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle) to discuss any questions, comments or feedback.
 
