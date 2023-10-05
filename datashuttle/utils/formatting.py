@@ -290,26 +290,24 @@ def ensure_prefixes_on_list_of_names(
     return new_names
 
 
-def check_data_type_is_valid(
-    cfg: Configs, data_type: str, error_on_fail: bool
+def check_datatype_is_valid(
+    cfg: Configs, datatype: str, error_on_fail: bool
 ) -> bool:
     """
-    Check the passed data_type is valid (must
+    Check the passed datatype is valid (must
     be a key on self.ses_folders e.g. "behav", or "all")
     """
-    if isinstance(data_type, list):
-        valid_keys = list(cfg.data_type_folders.keys()) + ["all"]
-        is_valid = all([type in valid_keys for type in data_type])
+    if isinstance(datatype, list):
+        valid_keys = list(cfg.datatype_folders.keys()) + ["all"]
+        is_valid = all([type in valid_keys for type in datatype])
     else:
-        is_valid = (
-            data_type in cfg.data_type_folders.keys() or data_type == "all"
-        )
+        is_valid = datatype in cfg.datatype_folders.keys() or datatype == "all"
 
     if error_on_fail and not is_valid:
         utils.log_and_raise_error(
-            f"data_type: '{data_type}' "
+            f"datatype: '{datatype}' "
             f"is not valid. Must be one of"
-            f" {list(cfg.data_type_folders.keys())}. or 'all'"
+            f" {list(cfg.datatype_folders.keys())}. or 'all'"
             f" No folders were made."
         )
 

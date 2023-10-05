@@ -8,7 +8,7 @@ if TYPE_CHECKING:
 from datashuttle.utils.folder_class import Folder
 
 
-def get_data_type_folders(cfg: Configs) -> dict:
+def get_datatype_folders(cfg: Configs) -> dict:
     """
     This function holds the canonical folders
     managed by datashuttle.
@@ -23,12 +23,12 @@ def get_data_type_folders(cfg: Configs) -> dict:
 
     When adding a new folder, the
     key should be the canonical key used to refer
-    to the data_type in datashuttle and SWC-BIDs.
+    to the datatype in datashuttle and SWC-BIDs.
 
     The value is a Folder() class instance with
     the required fields
 
-    name : The display name for the data_type, that will
+    name : The display name for the datatype, that will
         be used for making and transferring files in practice.
         This should always match the canonical name, but left as
         an option for rare cases in which advanced users want to change it.
@@ -80,8 +80,8 @@ def get_non_sub_names():
     return [
         "all_ses",
         "all_non_ses",
-        "all_data_type",
-        "all_ses_level_non_data_type",
+        "all_datatype",
+        "all_ses_level_non_datatype",
     ]
 
 
@@ -93,8 +93,8 @@ def get_non_ses_names():
     return [
         "all_sub",
         "all_non_sub",
-        "all_data_type",
-        "all_ses_level_non_data_type",
+        "all_datatype",
+        "all_ses_level_non_datatype",
     ]
 
 

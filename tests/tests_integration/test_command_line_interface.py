@@ -174,7 +174,7 @@ class TestCommandLineInterface:
     def test_make_sub_folders_variable(self, sep):
         stdout, _ = test_utils.run_cli(
             f" make{sep}sub{sep}folders "
-            f"--data_type all "
+            f"--datatype all "
             f"--sub_names 001 "
             f"--ses_names 002 "
         )
@@ -182,7 +182,7 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_ == []
-        assert kwargs_["data_type"] == ["all"]
+        assert kwargs_["datatype"] == ["all"]
         assert kwargs_["sub_names"] == ["001"]
         assert kwargs_["ses_names"] == ["002"]
 
@@ -195,7 +195,7 @@ class TestCommandLineInterface:
         """
         stdout, _ = test_utils.run_cli(
             f" {upload_or_download} "
-            f"--data{sep}type all "
+            f"--datatype all "
             f"--sub{sep}names one "
             f"--ses{sep}names two"
         )
@@ -205,7 +205,7 @@ class TestCommandLineInterface:
 
         stdout, _ = test_utils.run_cli(
             f" {upload_or_download} "
-            f"--data{sep}type all "
+            f"--datatype all "
             f"--sub{sep}names one "
             f"--ses{sep}names two "
             f"--dry{sep}run"
@@ -282,14 +282,14 @@ class TestCommandLineInterface:
         """
         stdout, stderr = test_utils.run_cli(
             f"{command} "
-            f"--data_type all "
+            f"--datatype all "
             f"--sub_names one  two 3 sub-004 sub-w23@ "
             f"--ses_names 5 06 007"
         )
 
         _, kwargs_ = self.decode(stdout)
 
-        assert kwargs_["data_type"] == ["all"]
+        assert kwargs_["datatype"] == ["all"]
         assert kwargs_["sub_names"] == [
             "one",
             "two",
@@ -400,7 +400,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-999"]
 
         test_utils.run_cli(
-            f"make_sub_folders --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
             setup_project.project_name,
         )
 
@@ -448,7 +448,7 @@ class TestCommandLineInterface:
         elif transfer_method == "standard":
             test_utils.run_cli(
                 f"{upload_or_download} "
-                f"--data_type all "
+                f"--datatype all "
                 f"--sub_names all "
                 f"--ses_names all",
                 setup_project.project_name,
@@ -459,13 +459,13 @@ class TestCommandLineInterface:
                 setup_project.project_name,
             )
 
-        test_utils.check_data_type_sub_ses_uploaded_correctly(
+        test_utils.check_datatype_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
                 base_path_to_check, setup_project.cfg.top_level_folder
             ),
-            data_type_to_transfer=[
+            datatype_to_transfer=[
                 flag.split("use_")[1]
-                for flag in canonical_configs.get_data_types()
+                for flag in canonical_configs.get_datatypes()
             ],
             subs_to_upload=subs,
             ses_to_upload=sessions,
@@ -647,7 +647,7 @@ class TestCommandLineInterface:
         assert kwargs_ == {}
 
     def check_upload_download_args(self, args_, kwargs_, dry_run_is):
-        assert kwargs_["data_type"] == ["all"]
+        assert kwargs_["datatype"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
         assert kwargs_["dry_run"] is dry_run_is
