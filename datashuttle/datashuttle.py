@@ -84,7 +84,7 @@ class DataShuttle:
         (
             self._datashuttle_path,
             self._temp_log_path,
-        ) = utils.get_project_datashuttle_path(self.project_name)
+        ) = canonical_folders.get_project_datashuttle_path(self.project_name)
 
         self._config_path = self._datashuttle_path / "config.yaml"
 
@@ -1003,7 +1003,7 @@ class DataShuttle:
         folder in the home / .datashuttle folder that contains a
         config.yaml file.
         """
-        datashuttle_path = utils.get_datashuttle_path()
+        datashuttle_path = canonical_folders.get_datashuttle_path()
 
         all_folders, _ = folders.search_filesystem_path_for_folders(
             datashuttle_path / "*"

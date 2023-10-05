@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
     from .config_class import Configs
+
+from pathlib import Path
+
+from datashutt.utils import folders
 
 from datashuttle.utils.folder_class import Folder
 
@@ -100,3 +104,30 @@ def get_non_ses_names():
 
 def get_top_level_folders():
     return ["rawdata", "derivatives"]
+
+
+def get_datashuttle_path():
+    """
+    Get the datashuttle path where all project
+    configs are stored.
+    """
+    return Path.home() / ".datashuttle"
+
+
+def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
+    """
+    Get the datashuttle path for the project,
+    where configuration files are stored.
+    Also, return a temporary path in this for logging in
+    some cases where local_path location is not clear.
+
+    The datashuttle configuration path is stored in the user home
+    folder.
+    """
+    base_path = get_datashuttle_path() / project_name
+    temp_logs_path = base_path / "temp_logs"
+
+    folders.make_folders(base_path)
+    folders.make_folders(temp_logs_path)
+
+    return base_path, temp_logs_path

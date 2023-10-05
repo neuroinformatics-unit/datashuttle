@@ -399,7 +399,7 @@ class TestConfigs:
             return tmp_path / "projects"
 
         monkeypatch.setattr(
-            "datashuttle.datashuttle.utils.get_datashuttle_path",
+            "datashuttle.datashuttle.configs.canonical_folders.get_datashuttle_path",
             patch_get_datashuttle_path,
         )
 
