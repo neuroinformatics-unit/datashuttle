@@ -7,8 +7,7 @@ if TYPE_CHECKING:
 
 from pathlib import Path
 
-from datashutt.utils import folders
-
+from datashuttle.utils import folders
 from datashuttle.utils.folder_class import Folder
 
 

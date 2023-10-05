@@ -9,6 +9,7 @@ from datashuttle.configs.canonical_configs import (
     get_canonical_config_required_types,
 )
 from datashuttle.datashuttle import DataShuttle
+from datashuttle.utils import folders
 
 TEST_PROJECT_NAME = "test_configs"
 
@@ -357,6 +358,7 @@ class TestConfigs:
 
         test_utils.check_configs(setup_project, new_configs)
 
+
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
     def test_config_wrong_project_name(self, project, path_type, tmp_path):
         """ """
@@ -379,7 +381,8 @@ class TestConfigs:
             in str(e.value)
         )
 
-    def test_exiting_projects(self, setup_project, monkeypatch, tmp_path):
+    def test_exiting_projects(self, monkeypatch, tmp_path):
+
         """
         Test existing projects are correctly found based on whether
         they exist in the home directory and contain a config.yaml.
@@ -399,7 +402,7 @@ class TestConfigs:
             return tmp_path / "projects"
 
         monkeypatch.setattr(
-            "datashuttle.datashuttle.configs.canonical_folders.get_datashuttle_path",
+            "datashuttle.configs.canonical_folders.get_datashuttle_path",
             patch_get_datashuttle_path,
         )
 
@@ -426,7 +429,7 @@ class TestConfigs:
         (
             project_names,
             project_paths,
-        ) = setup_project.get_existing_project_paths_and_names()
+        ) = folders.get_existing_project_paths_and_names()
 
         assert project_names == ["project_1", "project_3"]
         assert project_paths == [

@@ -996,45 +996,13 @@ class DataShuttle:
             f"The suggested new session number is: {suggested_new_num}"
         )
 
-    def get_existing_project_paths_and_names(self):
-        """
-        Return full path and names of datashuttle projects on
-        this local machine. A project is determined by a project
-        folder in the home / .datashuttle folder that contains a
-        config.yaml file.
-        """
-        datashuttle_path = canonical_folders.get_datashuttle_path()
-
-        all_folders, _ = folders.search_filesystem_path_for_folders(
-            datashuttle_path / "*"
-        )
-
-        existing_project_paths = []
-        existing_project_names = []
-        for folder_name in all_folders:
-            config_file = list(
-                (datashuttle_path / folder_name).glob("config.yaml")
-            )
-
-            if len(config_file) > 1:
-                utils.raise_error(
-                    f"There are two config files in project"
-                    f"{folder_name} at path {datashuttle_path}. There "
-                    f"should only ever be one config per project. "
-                )
-            elif len(config_file) == 1:
-                existing_project_paths.append(datashuttle_path / folder_name)
-                existing_project_names.append(folder_name)
-
-        return existing_project_names, existing_project_paths
-
     def show_existing_projects(self):
         """
         Print a list of existing project names found on the local machine.
         This is based on project folders in the "home / .datashuttle" folder
         that valid config.yaml files.
         """
-        project_names, _ = self.get_existing_project_paths_and_names()
+        project_names, _ = folders.get_existing_project_paths_and_names()
         utils.print_message_to_user(
             f"The existing project names are {project_names}."
         )
