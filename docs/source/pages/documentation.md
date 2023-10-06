@@ -625,7 +625,7 @@ to the `.datashuttle` folder that is created in the *local* project folder.
 For each command run, a log of that command is placed in the logs folder, with the time and date of the command. The log itself contains relevant information pertaining to that command. For example, if the commands `make_sub_folders`, `upload`, `download` were run sequentially, the logs output folder would look like:
 
 ```
-make_sub_folders_2023-06-08_09-55-14.log
-upload_data_2023-06-08_09-55-45.log
-download_data_2023-06-08_09-56-19.log
+20230608T095514_make-sub-folders.log
+20230608T095545_upload-data.log
+20230608T095621_download-data.log
 ```

@@ -210,7 +210,7 @@ class DataShuttle:
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make_sub_folders", local_vars=locals())
+        self._start_log("make-sub-folders", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -407,7 +407,7 @@ class DataShuttle:
         Alias for:
             project.upload("all", "all", "all")
         """
-        self._start_log("upload_all", local_vars=locals())
+        self._start_log("upload-all", local_vars=locals())
 
         self.upload("all", "all", "all", dry_run=dry_run, init_log=False)
 
@@ -418,7 +418,7 @@ class DataShuttle:
 
         Alias for : project.download("all", "all", "all")
         """
-        self._start_log("download_all", local_vars=locals())
+        self._start_log("download-all", local_vars=locals())
 
         self.download("all", "all", "all", dry_run=dry_run, init_log=False)
         ds_logger.close_log_filehandler()
@@ -471,7 +471,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("upload_specific_folder_or_file", local_vars=locals())
+        self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -523,7 +523,7 @@ class DataShuttle:
             to check which files will be moved on data transfer.
         """
         self._start_log(
-            "download_specific_folder_or_file", local_vars=locals()
+            "download-specific-folder-or-file", local_vars=locals()
         )
 
         self.show_top_level_folder()
@@ -565,7 +565,7 @@ class DataShuttle:
         will be setup.
         """
         self._start_log(
-            "setup_ssh_connection_to_central_server", local_vars=locals()
+            "setup-ssh-connection-to-central-server", local_vars=locals()
         )
 
         verified = ssh.verify_ssh_central_host(
@@ -694,7 +694,7 @@ class DataShuttle:
             if True, will allow behav folder creation
         """
         self._start_log(
-            "make_config_file",
+            "make-config-file",
             local_vars=locals(),
             store_in_temp_folder=True,
             temp_folder_path="default",
@@ -772,14 +772,14 @@ class DataShuttle:
 
         if store_logs_in_temp_folder:
             self._start_log(
-                "update_config",
+                "update-config",
                 local_vars=locals(),
                 store_in_temp_folder=True,
                 temp_folder_path="default",
             )
         else:
             self._start_log(
-                "update_config",
+                "update-config",
                 local_vars=locals(),
                 store_in_temp_folder=False,
             )
@@ -834,14 +834,14 @@ class DataShuttle:
         store_logs_in_temp_folder = not self._local_path_exists()
         if store_logs_in_temp_folder:
             self._start_log(
-                "supply_config_file",
+                "supply-config-file",
                 local_vars=locals(),
                 store_in_temp_folder=True,
                 temp_folder_path="default",
             )
         else:
             self._start_log(
-                "supply_config_file",
+                "supply-config-file",
                 local_vars=locals(),
                 store_in_temp_folder=False,
             )
@@ -1089,7 +1089,7 @@ class DataShuttle:
 
     def _start_log(
         self,
-        name: str,
+        command_name: str,
         local_vars: Optional[dict] = None,
         store_in_temp_folder: bool = False,
         temp_folder_path: Union[str, Path] = "",
@@ -1103,8 +1103,7 @@ class DataShuttle:
         Parameters
         ----------
 
-        name : name of the log output files. Typically, the
-            name of the function logged e.g. "update_config"
+        command_name : name of the command, for the log output files.
 
         local_vars : local_vars are passed to fancylog variables argument.
                  see ds_logger.wrap_variables_for_fancylog for more info
@@ -1135,7 +1134,7 @@ class DataShuttle:
         else:
             path_to_save = self.cfg.logging_path
 
-        ds_logger.start(path_to_save, name, variables, verbose)
+        ds_logger.start(path_to_save, command_name, variables, verbose)
 
     def _move_logs_from_temp_folder(self):
         """
