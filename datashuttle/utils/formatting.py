@@ -40,13 +40,16 @@ def check_and_format_names(
     """
     formatted_names = format_names(names, prefix)
 
-    check_names(formatted_names, prefix)
+    validate_names(formatted_names)
 
     return formatted_names
 
 
-def check_names(all_names, prefix):
-    """"""
+def validate_names(all_names):
+    """
+    Validate a list of subject or session names, ensuring
+    they are formatted as per NeuroBlueprint.
+    """
     names_to_check = [
         name for name in all_names if name not in RESERVED_KEYWORDS
     ]
@@ -58,10 +61,6 @@ def check_names(all_names, prefix):
         )
 
     check_dashes_and_underscore_alternate_correctly(names_to_check)
-
-    names_to_check = update_names_with_range_to_flag(names_to_check, prefix)
-
-    update_names_with_datetime(names_to_check)
 
 
 def format_names(
@@ -97,6 +96,10 @@ def format_names(
         utils.log_and_raise_error("sub or ses names cannot include spaces.")
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
+
+    prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
+
+    update_names_with_datetime(prefixed_names)
 
     return prefixed_names
 
