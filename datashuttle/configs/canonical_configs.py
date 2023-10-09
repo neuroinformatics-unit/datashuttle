@@ -144,11 +144,18 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             "'connection method' must be 'ssh' or 'local_filesystem'."
         )
 
-    for path_ in ["local_path", "central_path"]:
-        if config_dict[path_].as_posix()[0] == "~":
+    for path_type in ["local_path", "central_path"]:
+        if config_dict[path_type].as_posix()[0] == "~":
             utils.log_and_raise_error(
-                f"{path_} must contain the full folder path "
+                f"{path_type} must contain the full folder path "
                 "with no ~ syntax."
+            )
+        project_name = config_dict.project_name
+        if config_dict[path_type].stem != project_name:
+            utils.log_and_raise_error(
+                f"The {path_type} does not end in the project name: {project_name}. \n"
+                f"The last folder in the passed {path_type} should be {project_name}.\n"
+                f"The passed path was {config_dict[path_type]}"
             )
 
     if not any([config_dict[key] for key in get_datatypes()]):
