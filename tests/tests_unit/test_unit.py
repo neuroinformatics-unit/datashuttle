@@ -199,6 +199,39 @@ class TestUnit:
             assert formatting.num_leading_zeros("sub-" + "1".zfill(i + 1)) == i
             assert formatting.num_leading_zeros("ses-" + "1".zfill(i + 1)) == i
 
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    def test_inconsistent_leading_zeros_in_list_of_names(self, prefix):
+        """
+        Ensure a list of sub / ses names that contain inconsistent leading zeros
+        (e.g. ["sub-001", "sub-02"]) leads to an error.
+        """
+        names = [f"{prefix}-001", f"{prefix}-02", f"{prefix}-003"]
+
+        with pytest.raises(BaseException) as e:
+            formatting.format_names(names, prefix)
+
+        assert (
+            str(e.value)
+            == f"The number of leading zeros within {prefix} names must "
+            f"be consistent across all {prefix} names."
+        )
+
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    def test_duplicate_ids_in_list_of_names(self, prefix):
+        """
+        Ensure a list of sub / ses names that contain duplicate sub / ses
+        ids (e.g. ["sub-001", "sub-001_@DATE@"]) leads to an error.
+        """
+        names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-001_@DATE@"]
+
+        with pytest.raises(BaseException) as e:
+            formatting.format_names(names, prefix)
+
+        assert (
+            str(e.value) == f"{prefix} names must all have unique "
+            f"integer ids after the {prefix} prefix."
+        )
+
     # ----------------------------------------------------------------------
     # Utlis
     # ----------------------------------------------------------------------
