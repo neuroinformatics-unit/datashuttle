@@ -131,7 +131,7 @@ def check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
 
     if not all_identical(leading_zeros):
         utils.log_and_raise_error(
-            f"The number of leading zeros within {prefix} names must be"
+            f"The number of leading zeros within {prefix} names must be "
             f"consistent across all {prefix} names."
         )
 

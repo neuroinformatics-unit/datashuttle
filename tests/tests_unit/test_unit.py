@@ -59,7 +59,7 @@ class TestUnit:
         with pytest.raises(BaseException) as e:
             formatting.check_and_format_names(names, prefix)
 
-        assert str(e.value) == "sub or ses names cannot include spaces."
+        assert str(e.value) == f"{prefix} names cannot include spaces."
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_to_keyword_in_sub_input(self, prefix):
@@ -208,7 +208,7 @@ class TestUnit:
         names = [f"{prefix}-001", f"{prefix}-02", f"{prefix}-003"]
 
         with pytest.raises(BaseException) as e:
-            formatting.format_names(names, prefix)
+            formatting.check_and_format_names(names, prefix)
 
         assert (
             str(e.value)
@@ -225,7 +225,7 @@ class TestUnit:
         names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-001_@DATE@"]
 
         with pytest.raises(BaseException) as e:
-            formatting.format_names(names, prefix)
+            formatting.check_and_format_names(names, prefix)
 
         assert (
             str(e.value) == f"{prefix} names must all have unique "
