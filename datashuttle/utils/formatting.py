@@ -54,9 +54,12 @@ def validate_names(all_names):
         name for name in all_names if name not in RESERVED_KEYWORDS
     ]
 
+    # Note this check will fail on formatted @DATETIME@ tags because
+    # ["sub-001_@DATETIME@", "sub-001_@DATETIME@"] will be formatted
+    # slightly different. Remove this in
     if len(names_to_check) != len(set(names_to_check)):
         utils.log_and_raise_error(
-            "Subject and session names but all be unique (i.e. there are no"
+            "Subject and session names must all be unique (i.e. there are no"
             " duplicates in list input)."
         )
 

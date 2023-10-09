@@ -32,10 +32,12 @@ class TestFormatting(BaseTest):
         is passed to format_names().
         """
         with pytest.raises(BaseException) as e:
-            formatting.format_names(["1", "2", "3", "3", "4"], prefix)
+            formatting.check_and_format_names(
+                ["1", "2", "3", "3", "4"], prefix
+            )
 
         assert (
-            "Subject and session names but all be unique "
+            "Subject and session names must all be unique "
             "(i.e. there are no duplicates in list input)." == str(e.value)
         )
 
