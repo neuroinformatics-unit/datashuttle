@@ -323,7 +323,7 @@ project = DataShuttle("my_first_project")
 The configuration file can be setup similarly to the *Get Started* example:
 ```
 project.make_config_file(
-	local_path="/path/to/my/my_projects/my_first_project",
+	local_path="/path/to/my_projects/my_first_project",
 	central_path="/nfs/nhome/live/username/my_projects/my_first_project",
 	connection_method="ssh",
 	central_host_id="ssh.swc.ucl.ac.uk",
