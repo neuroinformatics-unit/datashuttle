@@ -76,7 +76,7 @@ def validate_names(all_names, prefix):
     check_dashes_and_underscore_alternate_correctly(all_names)
 
     check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
-        prefixed_names, prefix
+        names_to_check, prefix
     )
 
 def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
