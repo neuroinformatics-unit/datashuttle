@@ -86,7 +86,7 @@ Note that in the terminal, ``\`` indicates a new-line (allowing a single command
 datashuttle \
 my_first_project \
 make-config-file \
-/path/to/my/my_projects/my_first_project \
+/path/to/my_projects/my_first_project \
 /nfs/nhome/live/username/my_projects/my_first_project \
 ssh \
 --central_host_id ssh.swc.ucl.ac.uk \
