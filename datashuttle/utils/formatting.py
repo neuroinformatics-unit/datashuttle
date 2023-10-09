@@ -4,6 +4,10 @@ import warnings
 from itertools import compress
 from typing import Any, Dict, List, Literal, Union
 
+from datashuttle.configs.canonical_folders import (
+    get_non_ses_names,
+    get_non_sub_names,
+)
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.configs.config_class import Configs
 
@@ -13,12 +17,7 @@ from . import folders, utils
 # Format Sub / Ses Names
 # --------------------------------------------------------------------------------------------------------------------
 
-RESERVED_KEYWORDS = [
-    "all_sub",
-    "all_ses",
-    "all_non_sub",
-    "all_non_ses",
-]  # TODO: add to configs
+RESERVED_KEYWORDS = get_non_sub_names() + get_non_ses_names()
 
 
 def check_and_format_names(
@@ -41,7 +40,28 @@ def check_and_format_names(
     """
     formatted_names = format_names(names, sub_or_ses)
 
+    check_names(formatted_names, sub_or_ses)
+
     return formatted_names
+
+
+def check_names(all_names, prefix):
+    """"""
+    names_to_check = [
+        name for name in all_names if name not in RESERVED_KEYWORDS
+    ]
+
+    if len(names_to_check) != len(set(names_to_check)):
+        utils.log_and_raise_error(
+            "Subject and session names but all be unique (i.e. there are no"
+            " duplicates in list input)."
+        )
+
+    check_dashes_and_underscore_alternate_correctly(names_to_check)
+
+    names_to_check = update_names_with_range_to_flag(names_to_check, prefix)
+
+    update_names_with_datetime(names_to_check)
 
 
 def format_names(
@@ -77,18 +97,6 @@ def format_names(
         utils.log_and_raise_error("sub or ses names cannot include spaces.")
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
-
-    if len(prefixed_names) != len(set(prefixed_names)):
-        utils.log_and_raise_error(
-            "Subject and session names but all be unique (i.e. there are no"
-            " duplicates in list input)."
-        )
-
-    check_dashes_and_underscore_alternate_correctly(prefixed_names)
-
-    prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
-
-    update_names_with_datetime(prefixed_names)
 
     return prefixed_names
 
