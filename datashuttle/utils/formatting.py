@@ -72,6 +72,8 @@ def validate_names(all_names, prefix):
             "Subject and session names must all be unique (i.e. there are no"
             " duplicates in list input)."
         )
+    if len(names_to_check) == 0:
+        return
 
     check_dashes_and_underscore_alternate_correctly(all_names)
 
