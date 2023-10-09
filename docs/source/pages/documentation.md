@@ -78,7 +78,7 @@ The optional arguments `overwrite_old_files`, `transfer_verbosity` and `show_tra
 
 ### Example
 
-An example call to `make-config-file` below creates a new project called `my_first_project`, sets the *local* project path to `/path/to/my/project/my_first_project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/my_first_project`, the required SSH configurations, and indicates that *behavioural*, _electrophysiological_ and *histological* data will be used on this machine for this project.
+An example call to `make-config-file` below creates a new project called `my_first_project`, sets the *local* project path to `/path/to/my_projects/my_first_project`, the *central* path (to a remote Linux server) to `/nfs/nhome/live/username/my_projects/my_first_project`, the required SSH configurations, and indicates that *behavioural*, _electrophysiological_ and *histological* data will be used on this machine for this project.
 
 Note that in the terminal, ``\`` indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). On Windows, the `^` character is used instead.
 
@@ -86,8 +86,8 @@ Note that in the terminal, ``\`` indicates a new-line (allowing a single command
 datashuttle \
 my_first_project \
 make-config-file \
-/path/to/my/project/my_first_project \
-/nfs/nhome/live/username/my_first_project \
+/path/to/my/my_projects/my_first_project \
+/nfs/nhome/live/username/my_projects/my_first_project \
 ssh \
 --central_host_id ssh.swc.ucl.ac.uk \
 --central_host_username username \
@@ -323,8 +323,8 @@ project = DataShuttle("my_first_project")
 The configuration file can be setup similarly to the *Get Started* example:
 ```
 project.make_config_file(
-	local_path="/path/to/my/project/my_first_project",
-	central_path="/nfs/nhome/live/username/my_first_project",
+	local_path="/path/to/my/my_projects/my_first_project",
+	central_path="/nfs/nhome/live/username/my_projects/my_first_project",
 	connection_method="ssh",
 	central_host_id="ssh.swc.ucl.ac.uk",
 	central_host_username="username",
