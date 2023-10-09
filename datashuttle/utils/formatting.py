@@ -22,7 +22,7 @@ RESERVED_KEYWORDS = get_non_sub_names() + get_non_ses_names()
 
 def check_and_format_names(
     names: Union[list, str],
-    sub_or_ses: Literal["sub", "ses"],
+    prefix: Literal["sub", "ses"],
 ) -> List[str]:
     """
     Format a list of subject or session names, e.g.
@@ -36,11 +36,11 @@ def check_and_format_names(
     names: str or list containing sub or ses names
                   (e.g. to make folders)
 
-    sub_or_ses: "sub" or "ses" - this defines the prefix checks.
+    prefix: "sub" or "ses" - this defines the prefix checks.
     """
-    formatted_names = format_names(names, sub_or_ses)
+    formatted_names = format_names(names, prefix)
 
-    check_names(formatted_names, sub_or_ses)
+    check_names(formatted_names, prefix)
 
     return formatted_names
 
@@ -81,7 +81,7 @@ def format_names(
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
-    assert prefix in ["sub", "ses"], "`sub_or_ses` must be 'sub' or 'ses'."
+    assert prefix in ["sub", "ses"], "`prefix` must be 'sub' or 'ses'."
 
     if type(names) not in [str, list] or any(
         [not isinstance(ele, str) for ele in names]
