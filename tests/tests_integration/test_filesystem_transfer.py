@@ -4,36 +4,13 @@ from pathlib import Path
 
 import pytest
 import test_utils
+from base import BaseTest
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
 
-class TestFileTransfer:
-    @pytest.fixture(scope="function")
-    def project(test, tmp_path):
-        """
-        Create a project with default configs loaded.
-        This makes a fresh project for each function,
-        saved in the appdir path for platform independent
-        and to avoid path setup on new machine.
-
-        Ensure change folder at end of session otherwise it
-        is not possible to delete project.
-        """
-        tmp_path = tmp_path / "test with space"
-
-        test_project_name = "test_filesystem_transfer"
-        project, cwd = test_utils.setup_project_fixture(
-            tmp_path, test_project_name
-        )
-        yield project
-        test_utils.teardown_project(cwd, project)
-
-    # ----------------------------------------------------------------------------------------------------------
-    # Tests
-    # ----------------------------------------------------------------------------------------------------------
-
+class TestFileTransfer(BaseTest):
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("use_all_alias", [True, False])
     def test_transfer_empty_folder_structure(
