@@ -1109,10 +1109,9 @@ class DataShuttle:
                  see ds_logger.wrap_variables_for_fancylog for more info
 
         store_in_temp_folder :
-            if False, existing logging path will be used
-            (local project .datashuttle). If "default"", the temp
-            log backup will be used. Otherwise, expect a path / string
-            to the new path to make the logs at.
+            if `False`, existing logging path will be used
+            (local project .datashuttle). if `True`, path is
+            read from `temp_folder_path`.
 
         temp_folder_path :
             if "default", use the default temp folder path stored at
@@ -1126,6 +1125,9 @@ class DataShuttle:
             )
 
         if store_in_temp_folder:
+            assert (
+                temp_folder_path != ""
+            ), "`temp_folder_path` must be 'default' or a filepath."
             path_to_save = (
                 self._temp_log_path
                 if temp_folder_path == "default"
