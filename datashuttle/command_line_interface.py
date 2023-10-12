@@ -613,11 +613,10 @@ def construct_parser():
         nargs="+",
         type=str,
         required=False,
-        help="Optional: (str, single or multiple) (selection of data types, or 'all')",
+        help="Optional: (str, single or multiple) (selection of datatypes, or 'all')",
     )
     make_sub_folders_parser.add_argument(
-        "--data-type",
-        "--data_type",
+        "--datatype",
         "-dt",
         type=str,
         nargs="+",
@@ -659,13 +658,12 @@ def construct_parser():
         help=help("required_str_single_or_multiple_or_all"),
     )
     upload_parser.add_argument(
-        "--data-type",
-        "--data_type",
+        "--datatype",
         "-dt",
         type=str,
         nargs="+",
         required=False,
-        help="Optional: (str, single or multiple) (selection of data types, or 'all') (default 'all')",
+        help="Optional: (str, single or multiple) (selection of datatypes, or 'all') (default 'all')",
     )
     upload_parser.add_argument(
         "--dry-run",
@@ -732,8 +730,7 @@ def construct_parser():
         help=help("required_str_single_or_multiple_or_all"),
     )
     download_parser.add_argument(
-        "--data-type",
-        "--data_type",
+        "--datatype",
         "-dt",
         type=str,
         nargs="+",

@@ -25,13 +25,13 @@ def setup_project_default_configs(
     tmp_path,
     local_path=False,
     central_path=False,
-    all_data_type_on=True,
+    all_datatype_on=True,
 ):
     """
     Set up a fresh project to test on
 
     local_path / central_path: provide the config paths to set
-    all_data_type_on: by default, all data_type flags are False.
+    all_datatype_on: by default, all datatype flags are False.
                      for testing, it is preferable to have all True
                      so set this if this argument is True.
     """
@@ -42,11 +42,11 @@ def setup_project_default_configs(
     project = DataShuttle(project_name)
 
     default_configs = get_test_config_arguments_dict(
-        tmp_path, set_as_defaults=True
+        tmp_path, project_name, set_as_defaults=True
     )
 
-    if all_data_type_on:
-        default_configs.update(get_all_data_types_on("kwargs"))
+    if all_datatype_on:
+        default_configs.update(get_all_datatypes_on("kwargs"))
 
     project.make_config_file(**default_configs)
 
@@ -60,11 +60,12 @@ def setup_project_default_configs(
     warnings.filterwarnings("default")
 
     project.update_config(
-        "local_path", project._datashuttle_path / "base_folder"
+        "local_path", project._datashuttle_path / "base_folder" / project_name
     )
 
     if local_path:
         project.update_config("local_path", local_path)
+
         delete_all_folders_in_local_path(project)
         project.cfg.make_and_get_logging_path()
 
@@ -133,7 +134,9 @@ def make_correct_supply_config_file(
 ):
     """"""
     new_configs_path = setup_project._datashuttle_path / "new_configs.yaml"
-    new_configs = get_test_config_arguments_dict(tmp_path)
+    new_configs = get_test_config_arguments_dict(
+        tmp_path, setup_project.project_name
+    )
 
     canonical_config_dict = canonical_configs.get_canonical_config_dict()
     new_configs = {key: new_configs[key] for key in canonical_config_dict}
@@ -156,16 +159,16 @@ def setup_project_fixture(tmp_path, test_project_name):
     project = setup_project_default_configs(
         test_project_name,
         tmp_path,
-        local_path=make_test_path(tmp_path, test_project_name, "local"),
-        central_path=make_test_path(tmp_path, test_project_name, "central"),
+        local_path=make_test_path(tmp_path, "local", test_project_name),
+        central_path=make_test_path(tmp_path, "central", test_project_name),
     )
 
     cwd = os.getcwd()
     return project, cwd
 
 
-def make_test_path(base_path, test_project_name, local_or_central):
-    return Path(base_path) / test_project_name / local_or_central
+def make_test_path(base_path, local_or_central, test_project_name):
+    return Path(base_path) / local_or_central / test_project_name
 
 
 def get_protected_test_folder():
@@ -179,6 +182,7 @@ def get_protected_test_folder():
 
 def get_test_config_arguments_dict(
     tmp_path,
+    project_name,
     set_as_defaults=False,
     required_arguments_only=False,
 ):
@@ -193,8 +197,8 @@ def get_test_config_arguments_dict(
     tmp_path = Path(tmp_path).as_posix()
 
     dict_ = {
-        "local_path": f"{tmp_path}/not/a/re al/local/folder",
-        "central_path": f"{tmp_path}/a/re al/central_ local/folder",
+        "local_path": f"{tmp_path}/not/a/re al/local/folder/{project_name}",
+        "central_path": f"{tmp_path}/a/re al/central_ local/folder/{project_name}",
         "connection_method": "local_filesystem",
         "use_behav": True,  # This is not explicitly required,
         # but at least 1 use_x must be true, so
@@ -220,8 +224,8 @@ def get_test_config_arguments_dict(
     else:
         dict_.update(
             {
-                "local_path": f"{tmp_path}/test/test_ local/test_edit",
-                "central_path": f"{tmp_path}/nfs/test folder/test_edit2",
+                "local_path": f"{tmp_path}/test/test_ local/test_edit/{project_name}",
+                "central_path": f"{tmp_path}/nfs/test folder/test_edit2/{project_name}",
                 "connection_method": "ssh",
                 "central_host_id": "test_central_host_id",
                 "central_host_username": "test_central_host_username",
@@ -269,13 +273,13 @@ def check_folder_tree_is_correct(
     Automated test that folders are made based
     on the structure specified on project itself.
 
-    Cycle through all data_types (defined in
-    project.cfg.data_type_folders()), sub, sessions and check that
+    Cycle through all datatypes (defined in
+    project.cfg.datatype_folders()), sub, sessions and check that
     the expected file exists. For  subfolders, recursively
     check all exist.
 
     Folders in which folder_used[key] (where key
-    is the canonical dict key in project.cfg.data_type_folders())
+    is the canonical dict key in project.cfg.datatype_folders())
     is not used are expected  not to be made, and this
      is checked.
 
@@ -291,7 +295,7 @@ def check_folder_tree_is_correct(
             path_to_ses_folder = join(base_folder, sub, ses)
             check_and_cd_folder(path_to_ses_folder)
 
-            for key, folder in project.cfg.data_type_folders.items():
+            for key, folder in project.cfg.datatype_folders.items():
                 assert key in folder_used.keys(), (
                     "Key not found in folder_used. "
                     "Update folder used and hard-coded tests: "
@@ -302,13 +306,13 @@ def check_folder_tree_is_correct(
                     base_folder, folder, folder_used, key, sub, ses
                 ):
                     if folder.level == "sub":
-                        data_type_path = join(path_to_sub_folder, folder.name)
+                        datatype_path = join(path_to_sub_folder, folder.name)
                     elif folder.level == "ses":
-                        data_type_path = join(path_to_ses_folder, folder.name)
+                        datatype_path = join(path_to_ses_folder, folder.name)
 
-                    check_and_cd_folder(data_type_path)
+                    check_and_cd_folder(datatype_path)
                     check_and_cd_folder(
-                        join(data_type_path, ".datashuttle_meta")
+                        join(datatype_path, ".datashuttle_meta")
                     )
 
 
@@ -344,16 +348,16 @@ def check_and_cd_folder(path_):
     os.chdir(path_)
 
 
-def check_data_type_sub_ses_uploaded_correctly(
+def check_datatype_sub_ses_uploaded_correctly(
     base_path_to_check,
-    data_type_to_transfer,
+    datatype_to_transfer,
     subs_to_upload=None,
     ses_to_upload=None,
 ):
     """
-    Iterate through the project (data_type > ses > sub) and
+    Iterate through the project (datatype > ses > sub) and
     check that the folders at each level match those that are
-    expected (passed in data_type / sub / ses to upload). Folders
+    expected (passed in datatype / sub / ses to upload). Folders
     are searched with wildcard glob.
 
     Note: might be easier to flatten entire path with glob(**)
@@ -373,56 +377,56 @@ def check_data_type_sub_ses_uploaded_correctly(
                         "*",
                     )
                 )
-                if data_type_to_transfer == ["histology"]:
+                if datatype_to_transfer == ["histology"]:
                     assert ses_names == ["histology"]
                     return  # handle the case in which histology
                     # only is transferred,
                     # and there are no sessions to transfer.
 
-                copy_data_type_to_transfer = (
+                copy_datatype_to_transfer = (
                     check_and_strip_within_sub_data_folders(
-                        ses_names, data_type_to_transfer
+                        ses_names, datatype_to_transfer
                     )
                 )
                 assert ses_names == sorted(ses_to_upload)
 
-                # check data_type folders in session folder
-                if copy_data_type_to_transfer:
+                # check datatype folders in session folder
+                if copy_datatype_to_transfer:
                     for ses in ses_names:
                         data_names = glob_basenames(
                             join(base_path_to_check, sub, ses, "*")
                         )
-                        assert data_names == sorted(copy_data_type_to_transfer)
+                        assert data_names == sorted(copy_datatype_to_transfer)
 
 
-def check_and_strip_within_sub_data_folders(ses_names, data_type_to_transfer):
+def check_and_strip_within_sub_data_folders(ses_names, datatype_to_transfer):
     """
-    Check if data_type folders at the sub level are picked
+    Check if datatype folders at the sub level are picked
     up when sessions are searched for with wildcard. Remove
     so that sessions can be explicitly tested next.
     """
-    if "histology" in data_type_to_transfer:
+    if "histology" in datatype_to_transfer:
         assert "histology" in ses_names
 
         ses_names.remove("histology")
-        copy_ = copy.deepcopy(data_type_to_transfer)
+        copy_ = copy.deepcopy(datatype_to_transfer)
         copy_.remove("histology")
         return copy_
-    return data_type_to_transfer
+    return datatype_to_transfer
 
 
 def make_and_check_local_project_folders(
-    project, subs, sessions, data_type, folder_name="rawdata"
+    project, subs, sessions, datatype, folder_name="rawdata"
 ):
     """
-    Make a local project folder tree with the specified data_type,
+    Make a local project folder tree with the specified datatype,
     subs, sessions and check it is made successfully.
 
     Since empty folders are not transferred, it is necessary
     to write a placeholder file in all bottom-level
     directories so ensure they are transferred.
     """
-    make_local_folders_with_files_in(project, subs, sessions, data_type)
+    make_local_folders_with_files_in(project, subs, sessions, datatype)
 
     check_folder_tree_is_correct(
         project,
@@ -434,9 +438,9 @@ def make_and_check_local_project_folders(
 
 
 def make_local_folders_with_files_in(
-    project, subs, sessions=None, data_type="all"
+    project, subs, sessions=None, datatype="all"
 ):
-    project.make_sub_folders(subs, sessions, data_type)
+    project.make_sub_folders(subs, sessions, datatype)
     for root, dirs, files in os.walk(project.cfg["local_path"]):
         if not dirs:
             path_ = Path(root) / "placeholder_file.txt"
@@ -613,17 +617,17 @@ def run_cli(command, project_name=None):
     return stdout.decode("utf8"), stderr.decode("utf8")
 
 
-def get_all_data_types_on(kwargs_or_flags):
+def get_all_datatypes_on(kwargs_or_flags):
     """
-    Get all data_types (e.g. --use_behav) in on form,
+    Get all datatypes (e.g. --use_behav) in on form,
     either as kwargs for API or str of flags for
     CLI.
     """
-    data_types = canonical_configs.get_data_types()
+    datatypes = canonical_configs.get_datatypes()
     if kwargs_or_flags == "flags":
-        return f"{' '.join(['--' + flag for flag in data_types])}"
+        return f"{' '.join(['--' + flag for flag in datatypes])}"
     else:
-        return dict(zip(data_types, [True] * len(data_types)))
+        return dict(zip(datatypes, [True] * len(datatypes)))
 
 
 def move_some_keys_to_end_of_dict(config):

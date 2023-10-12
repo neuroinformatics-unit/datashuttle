@@ -31,6 +31,8 @@ from datashuttle.command_line_interface import construct_parser
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.canonical_tags import tags
 
+# This is a special, protected project name.
+# CLI commands with this project will output all arguments as simplejson
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 
@@ -132,7 +134,7 @@ class TestCommandLineInterface:
         that is tested again (because, these are stripped in the CLI code)
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, required_arguments_only=True
+            tmp_path, PROTECTED_TEST_PROJECT_NAME, required_arguments_only=True
         )
 
         stdout, stderr = test_utils.run_cli(
@@ -145,7 +147,7 @@ class TestCommandLineInterface:
         # Remove items that are stripped from configs because they
         # default to None on the CLI
         default_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, PROTECTED_TEST_PROJECT_NAME, set_as_defaults=True
         )
         del default_options["central_host_id"]
         del default_options["central_host_username"]
@@ -159,7 +161,7 @@ class TestCommandLineInterface:
         are correctly processed.
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, PROTECTED_TEST_PROJECT_NAME, set_as_defaults=False
         )
 
         stdout, stderr = test_utils.run_cli(
@@ -174,7 +176,7 @@ class TestCommandLineInterface:
     def test_make_sub_folders_variable(self, sep):
         stdout, _ = test_utils.run_cli(
             f" make{sep}sub{sep}folders "
-            f"--data_type all "
+            f"--datatype all "
             f"--sub_names 001 "
             f"--ses_names 002 "
         )
@@ -182,7 +184,7 @@ class TestCommandLineInterface:
         args_, kwargs_ = self.decode(stdout)
 
         assert args_ == []
-        assert kwargs_["data_type"] == ["all"]
+        assert kwargs_["datatype"] == ["all"]
         assert kwargs_["sub_names"] == ["001"]
         assert kwargs_["ses_names"] == ["002"]
 
@@ -195,7 +197,7 @@ class TestCommandLineInterface:
         """
         stdout, _ = test_utils.run_cli(
             f" {upload_or_download} "
-            f"--data{sep}type all "
+            f"--datatype all "
             f"--sub{sep}names one "
             f"--ses{sep}names two"
         )
@@ -205,7 +207,7 @@ class TestCommandLineInterface:
 
         stdout, _ = test_utils.run_cli(
             f" {upload_or_download} "
-            f"--data{sep}type all "
+            f"--datatype all "
             f"--sub{sep}names one "
             f"--ses{sep}names two "
             f"--dry{sep}run"
@@ -282,14 +284,14 @@ class TestCommandLineInterface:
         """
         stdout, stderr = test_utils.run_cli(
             f"{command} "
-            f"--data_type all "
+            f"--datatype all "
             f"--sub_names one  two 3 sub-004 sub-w23@ "
             f"--ses_names 5 06 007"
         )
 
         _, kwargs_ = self.decode(stdout)
 
-        assert kwargs_["data_type"] == ["all"]
+        assert kwargs_["datatype"] == ["all"]
         assert kwargs_["sub_names"] == [
             "one",
             "two",
@@ -317,7 +319,7 @@ class TestCommandLineInterface:
         workflow here, with both separators.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, clean_project_name, set_as_defaults=True
         )
 
         test_utils.run_cli(
@@ -327,7 +329,7 @@ class TestCommandLineInterface:
         )
 
         not_set_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, clean_project_name, set_as_defaults=False
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -354,7 +356,7 @@ class TestCommandLineInterface:
         See test_config_defaults in test_configs.py
         """
         required_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, required_arguments_only=True
+            tmp_path, clean_project_name, required_arguments_only=True
         )
 
         test_utils.run_cli(
@@ -364,7 +366,7 @@ class TestCommandLineInterface:
         )
 
         default_options = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=True
+            tmp_path, clean_project_name, set_as_defaults=True
         )
 
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
@@ -380,7 +382,7 @@ class TestCommandLineInterface:
         see test_config_defaults in test_configs.py
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, set_as_defaults=False
+            tmp_path, clean_project_name, set_as_defaults=False
         )
 
         test_utils.run_cli(
@@ -400,7 +402,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-999"]
 
         test_utils.run_cli(
-            f"make_sub_folders --data_type all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",  # noqa
+            f"make_sub_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
             setup_project.project_name,
         )
 
@@ -448,7 +450,7 @@ class TestCommandLineInterface:
         elif transfer_method == "standard":
             test_utils.run_cli(
                 f"{upload_or_download} "
-                f"--data_type all "
+                f"--datatype all "
                 f"--sub_names all "
                 f"--ses_names all",
                 setup_project.project_name,
@@ -459,13 +461,13 @@ class TestCommandLineInterface:
                 setup_project.project_name,
             )
 
-        test_utils.check_data_type_sub_ses_uploaded_correctly(
+        test_utils.check_datatype_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
                 base_path_to_check, setup_project.cfg.top_level_folder
             ),
-            data_type_to_transfer=[
+            datatype_to_transfer=[
                 flag.split("use_")[1]
-                for flag in canonical_configs.get_data_types()
+                for flag in canonical_configs.get_datatypes()
             ],
             subs_to_upload=subs,
             ses_to_upload=sessions,
@@ -522,7 +524,7 @@ class TestCommandLineInterface:
         Check that error from API are propagated to CLI
         """
         _, stderr = test_utils.run_cli(
-            "make_config_file test_local_path test_central_path ssh --use_behav",
+            f"make_config_file {clean_project_name} {clean_project_name} ssh --use_behav",
             clean_project_name,
         )
 
@@ -647,7 +649,7 @@ class TestCommandLineInterface:
         assert kwargs_ == {}
 
     def check_upload_download_args(self, args_, kwargs_, dry_run_is):
-        assert kwargs_["data_type"] == ["all"]
+        assert kwargs_["datatype"] == ["all"]
         assert kwargs_["sub_names"] == ["one"]
         assert kwargs_["ses_names"] == ["two"]
         assert kwargs_["dry_run"] is dry_run_is

@@ -38,15 +38,15 @@ def get_canonical_config_dict() -> dict:
         "show_transfer_progress": None,
     }
 
-    data_type_configs = get_data_types(as_dict=True)
-    config_dict.update(data_type_configs)
+    datatype_configs = get_datatypes(as_dict=True)
+    config_dict.update(datatype_configs)
 
     return config_dict
 
 
-def get_data_types(as_dict: bool = False):
+def get_datatypes(as_dict: bool = False):
     """
-    Canonical list of data_type flags. This is used
+    Canonical list of datatype flags. This is used
     to define get_canonical_config_dict() as well
     as in testing.
     """
@@ -63,7 +63,7 @@ def get_flags() -> List[str]:
     Return all configs that are bool flags. This is used in
     testing and type checking config inputs.
     """
-    return get_data_types() + [
+    return get_datatypes() + [
         "overwrite_old_files",
         "show_transfer_progress",
     ]
@@ -144,17 +144,24 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             "'connection method' must be 'ssh' or 'local_filesystem'."
         )
 
-    for path_ in ["local_path", "central_path"]:
-        if config_dict[path_].as_posix()[0] == "~":
+    for path_type in ["local_path", "central_path"]:
+        if config_dict[path_type].as_posix()[0] == "~":
             utils.log_and_raise_error(
-                f"{path_} must contain the full folder path "
+                f"{path_type} must contain the full folder path "
                 "with no ~ syntax."
             )
+        project_name = config_dict.project_name
+        if config_dict[path_type].stem != project_name:
+            utils.log_and_raise_error(
+                f"The {path_type} does not end in the project name: {project_name}. \n"
+                f"The last folder in the passed {path_type} should be {project_name}.\n"
+                f"The passed path was {config_dict[path_type]}"
+            )
 
-    if not any([config_dict[key] for key in get_data_types()]):
+    if not any([config_dict[key] for key in get_datatypes()]):
         utils.log_and_raise_error(
-            f"At least one data type must be True in "
-            f"configs, from: {' '.join(get_data_types())}."
+            f"At least one datatype must be True in "
+            f"configs, from: {' '.join(get_datatypes())}."
         )
 
     # Check SSH settings

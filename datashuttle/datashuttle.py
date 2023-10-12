@@ -119,7 +119,7 @@ class DataShuttle:
 
         self._make_project_metadata_if_does_not_exist()
 
-        self.cfg.init_data_type_folders()
+        self.cfg.init_datatype_folders()
 
     # -------------------------------------------------------------------------
     # Public Folder Makers
@@ -159,7 +159,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
-        data_type: str = "all",
+        datatype: str = "all",
     ) -> None:
         """
         Create a subject / session folder tree in the project
@@ -178,12 +178,12 @@ class DataShuttle:
                 (if not already, these will be prefixed with
                 "ses-"). If no session is provided, no session-level
                 folders are made.
-        data_type :
-                The data_type to make in the sub / ses folders.
-                (e.g. "ephys", "behav", "histology"). Only data_types
+        datatype :
+                The datatype to make in the sub / ses folders.
+                (e.g. "ephys", "behav", "histology"). Only datatypes
                 that are enabled in the configs (e.g. use_behav) will be
                 created. If "all" is selected, folders will be created
-                for all data_type enabled in config. Use empty string "" for
+                for all datatype enabled in config. Use empty string "" for
                 none.
 
         Notes
@@ -204,13 +204,13 @@ class DataShuttle:
 
         Examples
         --------
-        project.make_sub_folders("sub-001", data_type="all")
+        project.make_sub_folders("sub-001", datatype="all")
 
         project.make_sub_folders("sub-002@TO@005",
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make_sub_folders", local_vars=locals())
+        self._start_log("make-sub-folders", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -251,7 +251,7 @@ class DataShuttle:
             self.cfg,
             sub_names,
             ses_names,
-            data_type,
+            datatype,
             log=True,
         )
 
@@ -294,7 +294,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        data_type: str = "all",
+        datatype: str = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -313,7 +313,7 @@ class DataShuttle:
             be prefixed with "sub-", or the prefix will be
             automatically added. "@*@" can be used as a wildcard.
             "all" will search for all sub-folders in the
-            data type folder to upload.
+            datatype folder to upload.
         ses_names :
             a session name / list of session names, similar to
             sub_names but requiring a "ses-" prefix.
@@ -321,7 +321,7 @@ class DataShuttle:
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
-        data_type :
+        datatype :
             see make_sub_folders()
 
         init_log :
@@ -357,7 +357,7 @@ class DataShuttle:
             "upload",
             sub_names,
             ses_names,
-            data_type,
+            datatype,
             dry_run,
             log=True,
         )
@@ -368,7 +368,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        data_type: str = "all",
+        datatype: str = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -393,7 +393,7 @@ class DataShuttle:
             "download",
             sub_names,
             ses_names,
-            data_type,
+            datatype,
             dry_run,
             log=True,
         )
@@ -407,7 +407,7 @@ class DataShuttle:
         Alias for:
             project.upload("all", "all", "all")
         """
-        self._start_log("upload_all", local_vars=locals())
+        self._start_log("upload-all", local_vars=locals())
 
         self.upload("all", "all", "all", dry_run=dry_run, init_log=False)
 
@@ -418,7 +418,7 @@ class DataShuttle:
 
         Alias for : project.download("all", "all", "all")
         """
-        self._start_log("download_all", local_vars=locals())
+        self._start_log("download-all", local_vars=locals())
 
         self.download("all", "all", "all", dry_run=dry_run, init_log=False)
         ds_logger.close_log_filehandler()
@@ -471,7 +471,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("upload_specific_folder_or_file", local_vars=locals())
+        self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -523,7 +523,7 @@ class DataShuttle:
             to check which files will be moved on data transfer.
         """
         self._start_log(
-            "download_specific_folder_or_file", local_vars=locals()
+            "download-specific-folder-or-file", local_vars=locals()
         )
 
         self.show_top_level_folder()
@@ -565,7 +565,7 @@ class DataShuttle:
         will be setup.
         """
         self._start_log(
-            "setup_ssh_connection_to_central_server", local_vars=locals()
+            "setup-ssh-connection-to-central-server", local_vars=locals()
         )
 
         verified = ssh.verify_ssh_central_host(
@@ -694,7 +694,7 @@ class DataShuttle:
             if True, will allow behav folder creation
         """
         self._start_log(
-            "make_config_file",
+            "make-config-file",
             local_vars=locals(),
             store_in_temp_folder=True,
             temp_folder_path="default",
@@ -772,14 +772,14 @@ class DataShuttle:
 
         if store_logs_in_temp_folder:
             self._start_log(
-                "update_config",
+                "update-config",
                 local_vars=locals(),
                 store_in_temp_folder=True,
                 temp_folder_path="default",
             )
         else:
             self._start_log(
-                "update_config",
+                "update-config",
                 local_vars=locals(),
                 store_in_temp_folder=False,
             )
@@ -834,14 +834,14 @@ class DataShuttle:
         store_logs_in_temp_folder = not self._local_path_exists()
         if store_logs_in_temp_folder:
             self._start_log(
-                "supply_config_file",
+                "supply-config-file",
                 local_vars=locals(),
                 store_in_temp_folder=True,
                 temp_folder_path="default",
             )
         else:
             self._start_log(
-                "supply_config_file",
+                "supply-config-file",
                 local_vars=locals(),
                 store_in_temp_folder=False,
             )
@@ -1089,7 +1089,7 @@ class DataShuttle:
 
     def _start_log(
         self,
-        name: str,
+        command_name: str,
         local_vars: Optional[dict] = None,
         store_in_temp_folder: bool = False,
         temp_folder_path: Union[str, Path] = "",
@@ -1103,17 +1103,15 @@ class DataShuttle:
         Parameters
         ----------
 
-        name : name of the log output files. Typically, the
-            name of the function logged e.g. "update_config"
+        command_name : name of the command, for the log output files.
 
         local_vars : local_vars are passed to fancylog variables argument.
                  see ds_logger.wrap_variables_for_fancylog for more info
 
         store_in_temp_folder :
-            if False, existing logging path will be used
-            (local project .datashuttle). If "default"", the temp
-            log backup will be used. Otherwise, expect a path / string
-            to the new path to make the logs at.
+            if `False`, existing logging path will be used
+            (local project .datashuttle). if `True`, path is
+            read from `temp_folder_path`.
 
         temp_folder_path :
             if "default", use the default temp folder path stored at
@@ -1127,6 +1125,9 @@ class DataShuttle:
             )
 
         if store_in_temp_folder:
+            assert (
+                temp_folder_path != ""
+            ), "`temp_folder_path` must be 'default' or a filepath."
             path_to_save = (
                 self._temp_log_path
                 if temp_folder_path == "default"
@@ -1135,7 +1136,7 @@ class DataShuttle:
         else:
             path_to_save = self.cfg.logging_path
 
-        ds_logger.start(path_to_save, name, variables, verbose)
+        ds_logger.start(path_to_save, command_name, variables, verbose)
 
     def _move_logs_from_temp_folder(self):
         """
