@@ -55,10 +55,10 @@ class TestMakeFolders:
         """
         # Check trying to make sub only
         subs = ["sub-001_id-123", "sub-002_id-124"]
-        project.make_sub_folders(subs)
+        project.make_folders(subs)
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders("sub-001_id-125")
+            project.make_folders("sub-001_id-125")
 
         assert (
             str(e.value) == "Cannot make folders. "
@@ -66,14 +66,14 @@ class TestMakeFolders:
             "already exists in the project"
         )
 
-        project.make_sub_folders("sub-003")
+        project.make_folders("sub-003")
 
         # check try and make ses within a sub
         sessions = ["ses-001_date-1605", "ses-002_date-1606"]
-        project.make_sub_folders(subs, sessions)
+        project.make_folders(subs, sessions)
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders("sub-001_id-123", "ses-002_date-1607")
+            project.make_folders("sub-001_id-123", "ses-002_date-1607")
 
         assert (
             str(e.value)
@@ -82,7 +82,7 @@ class TestMakeFolders:
             "in the project"
         )
 
-        project.make_sub_folders("sub-001", "ses-003")
+        project.make_folders("sub-001", "ses-003")
 
     def test_duplicate_sub_and_ses_num_leading_zeros(self, project):
         """
@@ -90,10 +90,10 @@ class TestMakeFolders:
         but explicitly check that error is raised if the same
         number is used with different number of leading zeros.
         """
-        project.make_sub_folders("sub-001")
+        project.make_folders("sub-001")
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders("sub-1")
+            project.make_folders("sub-1")
 
         assert (
             str(e.value) == "Cannot make folders. The key sub-1 "
@@ -101,10 +101,10 @@ class TestMakeFolders:
             "in the project"
         )
 
-        project.make_sub_folders("sub-001", "ses-3")
+        project.make_folders("sub-001", "ses-3")
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders("sub-001", "ses-003")
+            project.make_folders("sub-001", "ses-003")
 
         assert (
             str(e.value) == "Cannot make folders. The key ses-3 for"
@@ -123,7 +123,7 @@ class TestMakeFolders:
         """
         subs = ["11", "sub-002", "30303"]
 
-        project.make_sub_folders(subs)
+        project.make_folders(subs)
 
         test_utils.check_folder_tree_is_correct(
             project,
@@ -144,7 +144,7 @@ class TestMakeFolders:
         """
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "50432"]
-        project.make_sub_folders(subs, sessions)
+        project.make_folders(subs, sessions)
         base_folder = test_utils.get_top_level_folder_path(project)
 
         for sub in subs:
@@ -184,7 +184,7 @@ class TestMakeFolders:
         # Make folder tree
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
-        project.make_sub_folders(subs, sessions)
+        project.make_folders(subs, sessions)
 
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
@@ -209,7 +209,7 @@ class TestMakeFolders:
         # Make the folders
         sub = "sub-001"
         ses = "ses-001"
-        project.make_sub_folders(sub, ses)
+        project.make_folders(sub, ses)
 
         # Check the folders were not made / made.
         base_folder = test_utils.get_top_level_folder_path(project)
@@ -253,7 +253,7 @@ class TestMakeFolders:
         """
         sub = "sub-001"
         ses = "ses-001"
-        project.make_sub_folders(sub, ses, files_to_test)
+        project.make_folders(sub, ses, files_to_test)
 
         base_folder = test_utils.get_top_level_folder_path(project)
 
@@ -284,7 +284,7 @@ class TestMakeFolders:
         """
         date, time_ = self.get_formatted_date_and_time()
 
-        project.make_sub_folders(
+        project.make_folders(
             ["sub-001", "sub-002"],
             [f"ses-001_{tags('date')}", f"002_{tags('date')}"],
             "ephys",
@@ -305,7 +305,7 @@ class TestMakeFolders:
         """
         date, time_ = self.get_formatted_date_and_time()
 
-        project.make_sub_folders(
+        project.make_folders(
             ["sub-001", "sub-002"],
             [f"ses-001_{tags('datetime')}", f"002_{tags('datetime')}"],
             "ephys",
