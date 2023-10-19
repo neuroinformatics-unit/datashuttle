@@ -358,7 +358,6 @@ class TestConfigs:
 
         test_utils.check_configs(setup_project, new_configs)
 
-
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
     def test_config_wrong_project_name(self, project, path_type, tmp_path):
         """ """
