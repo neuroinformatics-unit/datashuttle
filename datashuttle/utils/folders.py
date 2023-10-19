@@ -564,7 +564,7 @@ def get_next_sub_or_ses_number(
     return suggested_new_num, latest_existing_num
 
 
-def get_existing_project_paths_and_names():
+def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
     """
     Return full path and names of datashuttle projects on
     this local machine. A project is determined by a project
