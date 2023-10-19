@@ -256,7 +256,9 @@ class Configs(UserDict):
         elif base == "central":
             base_folder = self["central_path"] / self.top_level_folder
         elif base == "datashuttle":
-            base_folder, _ = utils.get_datashuttle_path(self.project_name)
+            base_folder, _ = canonical_folders.get_project_datashuttle_path(
+                self.project_name
+            )
         return base_folder
 
     def get_rclone_config_name(

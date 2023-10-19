@@ -12,9 +12,9 @@ import warnings
 from pathlib import Path
 from typing import Any, List, Optional, Tuple, Union
 
-from datashuttle.configs.canonical_tags import tags
+from datashuttle.configs import canonical_folders, canonical_tags
 
-from . import formatting, ssh, utils
+from . import folders, formatting, ssh, utils
 
 # -----------------------------------------------------------------------------
 # Make Folders
@@ -368,8 +368,8 @@ def search_for_wildcards(
     """
     new_all_names = []
     for name in all_names:
-        if tags("*") in name:
-            name = name.replace(tags("*"), "*")
+        if canonical_tags.tags("*") in name:
+            name = name.replace(canonical_tags.tags("*"), "*")
 
             if sub:
                 matching_names = search_sub_or_ses_level(
@@ -562,3 +562,36 @@ def get_next_sub_or_ses_number(
     suggested_new_num = latest_existing_num + 1
 
     return suggested_new_num, latest_existing_num
+
+
+def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
+    """
+    Return full path and names of datashuttle projects on
+    this local machine. A project is determined by a project
+    folder in the home / .datashuttle folder that contains a
+    config.yaml file.
+    """
+    datashuttle_path = canonical_folders.get_datashuttle_path()
+
+    all_folders, _ = folders.search_filesystem_path_for_folders(
+        datashuttle_path / "*"
+    )
+
+    existing_project_paths = []
+    existing_project_names = []
+    for folder_name in all_folders:
+        config_file = list(
+            (datashuttle_path / folder_name).glob("config.yaml")
+        )
+
+        if len(config_file) > 1:
+            utils.raise_error(
+                f"There are two config files in project"
+                f"{folder_name} at path {datashuttle_path}. There "
+                f"should only ever be one config per project. "
+            )
+        elif len(config_file) == 1:
+            existing_project_paths.append(datashuttle_path / folder_name)
+            existing_project_names.append(folder_name)
+
+    return existing_project_names, existing_project_paths
