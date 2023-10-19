@@ -447,7 +447,8 @@ def search_for_folders(  # TODO: change name
     local_or_central : "local" or "central"
     search_path : full filepath to search in
     search_prefix : file / folder name to search (e.g. "sub-*")
-    verbose : If `True`, if a search folder cannot be found, a message
+    verbose : If `True`, when a search folder cannot be found, a message
+          will be printed with the missing path.
               will be printed with the un-found path.
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
