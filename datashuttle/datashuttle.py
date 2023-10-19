@@ -1000,7 +1000,7 @@ class DataShuttle:
         """
         Print a list of existing project names found on the local machine.
         This is based on project folders in the "home / .datashuttle" folder
-        that valid config.yaml files.
+        that contain valid config.yaml files.
         """
         project_names, _ = folders.get_existing_project_paths_and_names()
         utils.print_message_to_user(
