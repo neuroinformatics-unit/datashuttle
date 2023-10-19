@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 import test_utils
 
+from datashuttle import DataShuttle
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
 TEST_PROJECT_NAME = "test_logging"

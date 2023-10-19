@@ -315,7 +315,7 @@ DataShuttle can be used through the command line interface (as exampled in the *
 To start a project in Python, import DataShuttle and initialise the project class:
 
 ```
-from datashuttle.datashuttle import DataShuttle
+from datashuttle import DataShuttle
 
 project = DataShuttle("my_first_project")
 ```

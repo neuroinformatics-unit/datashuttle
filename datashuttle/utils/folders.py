@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from datashuttle import DataShuttle
     from datashuttle.configs.config_class import Configs
-    from datashuttle.datashuttle import DataShuttle
 
 import glob
 import os

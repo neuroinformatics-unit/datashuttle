@@ -4,11 +4,12 @@ import warnings
 import pytest
 import test_utils
 
+from datashuttle import DataShuttle
 from datashuttle.configs.canonical_configs import (
     get_canonical_config_dict,
     get_canonical_config_required_types,
 )
-from datashuttle.datashuttle import DataShuttle
+
 from datashuttle.utils import folders
 
 TEST_PROJECT_NAME = "test_configs"

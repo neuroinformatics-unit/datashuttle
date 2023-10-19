@@ -4,8 +4,8 @@ from typing import Any, Callable
 
 import simplejson
 
+from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import utils
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
