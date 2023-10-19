@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import paramiko
 import yaml
@@ -159,7 +159,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
-        datatype: str = "all",
+        datatype: Union[List[str], str] = "all",
     ) -> None:
         """
         Create a subject / session folder tree in the project
@@ -294,7 +294,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        datatype: str = "all",
+        datatype: Union[List[str], str] = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -368,7 +368,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        datatype: str = "all",
+        datatype: Union[List[str], str] = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:

@@ -291,7 +291,7 @@ def ensure_prefixes_on_list_of_names(
 
 
 def check_datatype_is_valid(
-    cfg: Configs, datatype: str, error_on_fail: bool
+    cfg: Configs, datatype: Union[List[str], str], error_on_fail: bool
 ) -> bool:
     """
     Check the passed datatype is valid (must

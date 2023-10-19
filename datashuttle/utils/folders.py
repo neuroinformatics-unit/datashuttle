@@ -25,7 +25,7 @@ def make_folder_trees(
     cfg: Configs,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
-    datatype: str,
+    datatype: Union[List[str], str],
     log: bool = True,
 ) -> None:
     """
