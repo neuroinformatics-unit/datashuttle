@@ -419,7 +419,7 @@ class TestConfigs:
         project_2 = DataShuttle("project_3")
         project_2.make_config_file(
             tmp_path / "project_3",
-            tmp_path / "project_2",
+            tmp_path / "project_3",
             "local_filesystem",
             use_behav=True,
         )
