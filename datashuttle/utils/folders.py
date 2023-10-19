@@ -240,6 +240,7 @@ def search_sub_or_ses_level(
     sub: Optional[str] = None,
     ses: Optional[str] = None,
     search_str: str = "*",
+    verbose: bool = True,
 ) -> Tuple[List[str], List[str]]:
     """
     Search project folder at the subject or session level.
@@ -259,12 +260,16 @@ def search_sub_or_ses_level(
     sub : either a subject name (string) or None. If None, the search
         is performed at the top_level_folder level
 
-    ses: either a session name (string) or None, This must not
+    ses : either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)
         then the session folder is searched
 
-    str: glob-format search string to search at the
+    str : glob-format search string to search at the
         folder level.
+
+    verbose : If `True`, when a search folder cannot be found, a message
+          will be printed with the missing path.
+          will be printed with the un-found path.
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -279,7 +284,11 @@ def search_sub_or_ses_level(
         base_folder = base_folder / ses
 
     all_folder_names, all_filenames = search_for_folders(
-        cfg, base_folder, local_or_central, search_str
+        cfg,
+        base_folder,
+        local_or_central,
+        search_str,
+        verbose,
     )
 
     return all_folder_names, all_filenames
@@ -426,6 +435,7 @@ def search_for_folders(  # TODO: change name
     search_path: Path,
     local_or_central: str,
     search_prefix: str,
+    verbose: bool = True,
 ) -> Tuple[List[Any], List[Any]]:
     """
     Wrapper to determine the method used to search for search
@@ -437,16 +447,23 @@ def search_for_folders(  # TODO: change name
     local_or_central : "local" or "central"
     search_path : full filepath to search in
     search_prefix : file / folder name to search (e.g. "sub-*")
+    verbose : If `True`, when a search folder cannot be found, a message
+          will be printed with the missing path.
+              will be printed with the un-found path.
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
         all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
             search_path,
             search_prefix,
             cfg,
+            verbose,
         )
     else:
         if not search_path.exists():
-            utils.log_and_message(f"No file found at {search_path.as_posix()}")
+            if verbose:
+                utils.log_and_message(
+                    f"No file found at {search_path.as_posix()}"
+                )
             return [], []
 
         all_folder_names, all_filenames = search_filesystem_path_for_folders(
