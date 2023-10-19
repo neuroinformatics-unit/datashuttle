@@ -41,7 +41,7 @@ def make_folder_trees(
     Parameters
     ----------
 
-    sub_names, ses_names, datatype : see make_sub_folders()
+    sub_names, ses_names, datatype : see make_folders()
 
     log : whether to log or not. If True, logging must
         already be initialised.
