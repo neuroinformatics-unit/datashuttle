@@ -267,7 +267,8 @@ def search_sub_or_ses_level(
     str : glob-format search string to search at the
         folder level.
 
-    verbose : If `True`, if a search folder cannot be found, a message
+    verbose : If `True`, when a search folder cannot be found, a message
+          will be printed with the missing path.
           will be printed with the un-found path.
     """
     if ses and not sub:
