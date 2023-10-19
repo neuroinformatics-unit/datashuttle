@@ -177,6 +177,7 @@ def search_ssh_central_for_folders(
     search_path: Path,
     search_prefix: str,
     cfg: Configs,
+    verbose: bool = True,
 ) -> Tuple[List[Any], List[Any]]:
     """
     Search for the search prefix in the search path over SSH.
@@ -190,6 +191,9 @@ def search_ssh_central_for_folders(
     search_prefix : search prefix for folder names e.g. "sub-*"
 
     cfg : see connect_client()
+
+    verbose : If `True`, if a search folder cannot be found, a message
+              will be printed with the un-found path.
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
@@ -198,14 +202,17 @@ def search_ssh_central_for_folders(
         sftp = client.open_sftp()
 
         all_folder_names, all_filenames = get_list_of_folder_names_over_sftp(
-            sftp, search_path, search_prefix
+            sftp, search_path, search_prefix, verbose
         )
 
     return all_folder_names, all_filenames
 
 
 def get_list_of_folder_names_over_sftp(
-    sftp, search_path: Path, search_prefix: str
+    sftp,
+    search_path: Path,
+    search_prefix: str,
+    verbose: bool = True,
 ) -> Tuple[List[Any], List[Any]]:
     """
     Use paramiko's sftp to search a path
@@ -221,6 +228,9 @@ def get_list_of_folder_names_over_sftp(
 
     search_prefix : prefix (can include wildcards)
         to search folder names.
+
+    verbose : If `True`, if a search folder cannot be found, a message
+          will be printed with the un-found path.
     """
     all_folder_names = []
     all_filenames = []
@@ -233,6 +243,7 @@ def get_list_of_folder_names_over_sftp(
                     all_filenames.append(file_or_folder.filename)
 
     except FileNotFoundError:
-        utils.log_and_message(f"No file found at {search_path.as_posix()}")
+        if verbose:
+            utils.log_and_message(f"No file found at {search_path.as_posix()}")
 
     return all_folder_names, all_filenames
