@@ -53,7 +53,7 @@ def get_datatype_folders(cfg: Configs) -> dict:
         ),
         "anat": Folder(
             name="anat",
-            level="sub",
+            level="ses",
         ),
     }
 

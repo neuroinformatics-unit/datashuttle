@@ -331,42 +331,15 @@ def check_datatype_sub_ses_uploaded_correctly(
                         "*",
                     )
                 )
-                if datatype_to_transfer == ["anat"]:
-                    assert ses_names == ["anat"]
-                    return  # handle the case in which anat
-                    # only is transferred,
-                    # and there are no sessions to transfer.
-
-                copy_datatype_to_transfer = (
-                    check_and_strip_within_sub_data_folders(
-                        ses_names, datatype_to_transfer
-                    )
-                )
                 assert ses_names == sorted(ses_to_upload)
 
                 # check datatype folders in session folder
-                if copy_datatype_to_transfer:
+                if datatype_to_transfer:
                     for ses in ses_names:
                         data_names = glob_basenames(
                             join(base_path_to_check, sub, ses, "*")
                         )
-                        assert data_names == sorted(copy_datatype_to_transfer)
-
-
-def check_and_strip_within_sub_data_folders(ses_names, datatype_to_transfer):
-    """
-    Check if datatype folders at the sub level are picked
-    up when sessions are searched for with wildcard. Remove
-    so that sessions can be explicitly tested next.
-    """
-    if "anat" in datatype_to_transfer:
-        assert "anat" in ses_names
-
-        ses_names.remove("anat")
-        copy_ = copy.deepcopy(datatype_to_transfer)
-        copy_.remove("anat")
-        return copy_
-    return datatype_to_transfer
+                        assert data_names == sorted(datatype_to_transfer)
 
 
 def make_and_check_local_project_folders(
