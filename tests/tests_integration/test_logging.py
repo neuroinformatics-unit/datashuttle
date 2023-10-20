@@ -271,7 +271,8 @@ class TestLogging:
 
         assert "Using config file from" in log
         assert "Local file system at" in log
-        assert """ "--include" "sub-11/histology/**" """ in log
+
+        assert """ "--include" "sub-11/anat/**" """ in log
         assert """/central/test_project/rawdata""" in log
         assert "Waiting for checks to finish" in log
 

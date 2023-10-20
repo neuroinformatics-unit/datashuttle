@@ -321,7 +321,7 @@ def check_datatype_sub_ses_uploaded_correctly(
         sub_names = glob_basenames(join(base_path_to_check, "*"))
         assert sub_names == sorted(subs_to_upload)
 
-        # Check ses are all uploaded + histology if transferred
+        # Check ses are all uploaded + anat if transferred
         if ses_to_upload:
             for sub in subs_to_upload:
                 ses_names = glob_basenames(
@@ -331,9 +331,9 @@ def check_datatype_sub_ses_uploaded_correctly(
                         "*",
                     )
                 )
-                if datatype_to_transfer == ["histology"]:
-                    assert ses_names == ["histology"]
-                    return  # handle the case in which histology
+                if datatype_to_transfer == ["anat"]:
+                    assert ses_names == ["anat"]
+                    return  # handle the case in which anat
                     # only is transferred,
                     # and there are no sessions to transfer.
 
@@ -359,12 +359,12 @@ def check_and_strip_within_sub_data_folders(ses_names, datatype_to_transfer):
     up when sessions are searched for with wildcard. Remove
     so that sessions can be explicitly tested next.
     """
-    if "histology" in datatype_to_transfer:
-        assert "histology" in ses_names
+    if "anat" in datatype_to_transfer:
+        assert "anat" in ses_names
 
-        ses_names.remove("histology")
+        ses_names.remove("anat")
         copy_ = copy.deepcopy(datatype_to_transfer)
-        copy_.remove("histology")
+        copy_.remove("anat")
         return copy_
     return datatype_to_transfer
 

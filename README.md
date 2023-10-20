@@ -38,14 +38,14 @@ See the SWC-BIDS [specification](https://swc-bids.neuroinformatics.dev/) for mor
         │   └── ses-001/
         │   │   ├── ephys/
         │   │   └── behav/
-        │   └── histology/
+        │   └── anat/
         └── sub-002/
             └── ses-001/
             │   ├── behav/
             │   └── imaging/
             └── ses-002/
             │   └── behav/
-            └── histology/
+            └── anat/
 ```
 
 
@@ -56,12 +56,12 @@ See the SWC-BIDS [specification](https://swc-bids.neuroinformatics.dev/) for mor
         │   ├── ses-001/
         │   │   ├── ephys
         │   │   └── behav
-        │   └── histology
+        │   └── anat
         └── sub-002/
             ├── ses-001/
             │   ├── behav
             │   └── imaging
             ├── ses-002/
             │   └── behav
-            └── histology
+            └── anat
 ```
