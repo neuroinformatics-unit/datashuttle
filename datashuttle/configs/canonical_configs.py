@@ -145,11 +145,21 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
     for path_type in ["local_path", "central_path"]:
-        if config_dict[path_type].as_posix()[0] == "~":
+        path_name = config_dict[path_type].as_posix()
+        if path_name[0] == "~":
             utils.log_and_raise_error(
                 f"{path_type} must contain the full folder path "
                 "with no ~ syntax."
             )
+
+        # pathlib strips "./" so not checked.
+        for bad_start in [".", "../"]:
+            if path_name.startswith(bad_start):
+                utils.log_and_raise_error(
+                    f"{path_type} must contain the full folder path "
+                    "with no dot syntax."
+                )
+
         project_name = config_dict.project_name
         if config_dict[path_type].stem != project_name:
             utils.log_and_raise_error(
