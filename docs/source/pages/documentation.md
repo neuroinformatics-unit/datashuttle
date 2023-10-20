@@ -132,9 +132,8 @@ Another example call, which creates a range of subject and session folders, is s
 ```
 datashuttle \
 my_first_project \
-make-sub-folders -sub 001@TO@003 -ses 010_@TIME@ -dt behav funcimg anat
+make-folders -sub 001@TO@003 -ses 010_@TIME@ -dt behav funcimg anat
 ```
-
 
 ```
 ├── sub-001/

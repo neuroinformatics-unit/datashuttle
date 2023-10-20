@@ -323,7 +323,9 @@ class TestConfigs(BaseTest):
                     f"Config file was not updated."
                 )
 
-    def test_supplied_config_file_changes_wrong_order(self, project, tmp_path):
+    def test_supplied_config_file_changes_wrong_order(
+        self, project, tmp_path
+    ):
         """
         Test the situation when a config file is passed with variables in
         the wrong order.
