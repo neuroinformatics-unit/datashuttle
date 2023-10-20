@@ -520,34 +520,6 @@ def construct_parser():
         action="store_true",
         help=help("flag_default_false"),
     )
-    make_config_file_parser.add_argument(
-        "--use-ephys",
-        "--use_ephys",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
-    make_config_file_parser.add_argument(
-        "--use-behav",
-        "--use_behav",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
-    make_config_file_parser.add_argument(
-        "--use-funcimg",
-        "--use_funcimg",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
-    make_config_file_parser.add_argument(
-        "--use-histology",
-        "--use_histology",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
 
     make_config_file_parser = subparsers.add_parser(
         "update-config",
