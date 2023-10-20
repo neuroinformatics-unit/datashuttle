@@ -85,40 +85,40 @@ class TestMakeFolders(BaseTest):
         `check_new_subject_does_not_duplicate_existing()`
         was introduced.
         """
-        project.make_sub_folders("sub-001")
+        project.make_folders("sub-001")
 
         for bad_sub_name in ["sub-1", "sub-1_@DATE", "sub-001_extra-key"]:
             with pytest.raises(BaseException) as e:
-                project.make_sub_folders(bad_sub_name, "ses-001")
+                project.make_folders(bad_sub_name, "ses-001")
             assert "Cannot make folders. A sub already exists" in str(e.value)
 
-        project.make_sub_folders("sub-001", "ses-001")
+        project.make_folders("sub-001", "ses-001")
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders("sub-001", "ses-001_extra-key", "behav")
+            project.make_folders("sub-001", "ses-001_extra-key", "behav")
         assert (
             "Cannot make folders. A ses already exists with the same ses id as ses-001"
             in str(e.value)
         )
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders("sub-001_extra-key", "ses-001", "behav")
+            project.make_folders("sub-001_extra-key", "ses-001", "behav")
         assert "Cannot make folders. A sub already exists " in str(e.value)
 
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders(
+            project.make_folders(
                 "sub-001_extra-key", "ses-001_@DATE@", "behav"
             )
         assert "Cannot make folders. A sub already exists " in str(e.value)
 
-        project.make_sub_folders("sub-001", "ses-001", "behav")
+        project.make_folders("sub-001", "ses-001", "behav")
 
-        project.make_sub_folders("sub-001", ["ses-001", "ses-002"])
+        project.make_folders("sub-001", ["ses-001", "ses-002"])
 
         # Finally check that in a list of subjects, only the correct subject
         # with duplicate session is caught.
         with pytest.raises(BaseException) as e:
-            project.make_sub_folders(
+            project.make_folders(
                 ["sub-001", "sub-002"], "ses-002_@DATE@", "ephys"
             )
         assert (
