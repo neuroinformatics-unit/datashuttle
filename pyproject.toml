@@ -38,6 +38,7 @@ Documentation = "https://datashuttle.neuroinformatics.dev"
 "User support" = "https://github.com/neuroinformatics-unit/datashuttle/discussions"
 
 [project.optional-dependencies]
+tui = ["textual"]
 dev = [
     "pandas",
     "pytest",
