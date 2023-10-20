@@ -84,7 +84,7 @@ class DataShuttle:
         (
             self._datashuttle_path,
             self._temp_log_path,
-        ) = utils.get_datashuttle_path(self.project_name)
+        ) = canonical_folders.get_project_datashuttle_path(self.project_name)
 
         self._config_path = self._datashuttle_path / "config.yaml"
 
@@ -994,6 +994,17 @@ class DataShuttle:
             f"Local and Central repository searched for sessions for {sub}. "
             f"The most recent session number found is: {latest_existing_num}. "
             f"The suggested new session number is: {suggested_new_num}"
+        )
+
+    def show_existing_projects(self):
+        """
+        Print a list of existing project names found on the local machine.
+        This is based on project folders in the "home / .datashuttle" folder
+        that contain valid config.yaml files.
+        """
+        project_names, _ = folders.get_existing_project_paths_and_names()
+        utils.print_message_to_user(
+            f"The existing project names are {project_names}."
         )
 
     @staticmethod

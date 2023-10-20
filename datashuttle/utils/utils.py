@@ -4,11 +4,9 @@ import logging
 import re
 import traceback
 from pathlib import Path
-from typing import List, Literal, Tuple, Union, overload
+from typing import List, Literal, Union, overload
 
 from rich import print as rich_print
-
-from . import folders
 
 # --------------------------------------------------------------------------------------
 # General Utils
@@ -67,24 +65,6 @@ def raise_error(message: str) -> None:
     Temporary centralized way to raise and error
     """
     raise BaseException(message)
-
-
-def get_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
-    """
-    Get the datashuttle path where configuration files are stored.
-    Also, return a temporary path in this for logging in
-    some cases where local_path location is not clear.
-
-    The datashuttle configuration path is stored in the user home
-    folder.
-    """
-    base_path = Path.home() / ".datashuttle" / project_name
-    temp_logs_path = base_path / "temp_logs"
-
-    folders.make_folders(base_path)
-    folders.make_folders(temp_logs_path)
-
-    return base_path, temp_logs_path
 
 
 def get_path_after_base_folder(base_folder: Path, path_: Path) -> Path:
