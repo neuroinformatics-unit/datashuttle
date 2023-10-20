@@ -160,7 +160,7 @@ class TestLogging:
         subs = ["sub-11", f"sub-002{tags('to')}004"]
         ses = ["ses-123", "ses-101"]
 
-        project.make_sub_folders(subs, ses, datatype="all")
+        project.make_folders(subs, ses, datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -356,13 +356,13 @@ class TestLogging:
         )
         assert "connection_method was not updated" in log
 
-    def test_logs_bad_make_sub_folders_error(self, project):
+    def test_logs_bad_make_folders_error(self, project):
         """"""
         project.make_folders("sub-001", datatype="all")
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(BaseException):
-            project.make_sub_folders("sub-001", datatype="all")
+            project.make_folders("sub-001", datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
 
