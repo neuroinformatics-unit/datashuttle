@@ -159,7 +159,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
-        datatype: Union[List[str], str] = "all",
+        datatype: str = "",
     ) -> None:
         """
         Create a subject / session folder tree in the project
@@ -182,7 +182,8 @@ class DataShuttle:
                 The datatype to make in the sub / ses folders.
                 (e.g. "ephys", "behav", "histology"). If "all"
                 is selected, all datatypes permitted in
-                NeuroBlueprint will be created.
+                NeuroBlueprint will be created. If "" is passed
+                no datatype will be created.
 
         Notes
         -----

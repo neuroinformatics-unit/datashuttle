@@ -599,7 +599,7 @@ def construct_parser():
         type=str,
         nargs="+",
         required=False,
-        default="all",  # TODO: this is not nice, should read the default from API NOT duplicate in CLI
+        default="",  # TODO: this is not nice, should read the default from API NOT duplicate in CLI
         help=help("required_str_single_or_multiple_or_all"),
     )
 

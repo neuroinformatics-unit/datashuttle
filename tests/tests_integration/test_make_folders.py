@@ -113,7 +113,8 @@ class TestMakeFolders(BaseTest):
         """
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "50432"]
-        project.make_folders(subs, sessions)
+
+        project.make_folders(subs, sessions, "all")
         base_folder = test_utils.get_top_level_folder_path(project)
 
         for sub in subs:
@@ -193,7 +194,8 @@ class TestMakeFolders(BaseTest):
         # Make the folders
         sub = "sub-001"
         ses = "ses-001"
-        project.make_folders(sub, ses)
+
+        project.make_folders(sub, ses, "all")
 
         # Check the folders were not made / made.
         base_folder = test_utils.get_top_level_folder_path(project)
@@ -328,7 +330,7 @@ class TestMakeFolders(BaseTest):
         subs = ["sub-001", "sub-2"]
         sessions = ["ses-001", "ses-03"]
 
-        project.make_folders(subs, sessions)
+        project.make_folders(subs, sessions, "all")
 
         # Check folder tree is made in the desired top level folder
         test_utils.check_working_top_level_folder_only_exists(
