@@ -164,7 +164,7 @@ class TestMakeFolders(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
 
-        project.make_sub_folders(subs, sessions, datatypes_to_make)
+        project.make_folders(subs, sessions, datatypes_to_make)
 
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
