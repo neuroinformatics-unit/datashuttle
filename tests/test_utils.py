@@ -13,8 +13,6 @@ import yaml
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, canonical_folders
-
-from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger, rclone
 
 # -----------------------------------------------------------------------------
