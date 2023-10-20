@@ -16,11 +16,11 @@
     layout: grid;
     grid-size: 2 2;
     grid-columns: 25;
+    min-height: 5;
 }
-TypeBox > Checkbox {
-    width: 18;
+TypeBox > ToggleButton {
+    height: 3;
+    margin: 0 0 3 1;
     content-align: left middle;
-}
-#make_folder {
-    margin: 1 0 0 0;
+    width: 18;
 }
