@@ -390,6 +390,12 @@ def show_top_level_folder(*args: Any) -> None:
     project.show_top_level_folder()
 
 
+def show_existing_projects(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.show_existing_projects()
+
+
 # Show Next Sub Number -------------------------------------------------------
 
 
@@ -930,6 +936,19 @@ def construct_parser():
         help="",
     )
     show_top_level_folder_parser.set_defaults(func=show_top_level_folder)
+
+    # Show Existing Projects
+    # -------------------------------------------------------------------------
+
+    show_existing_projects_parser = subparsers.add_parser(
+        "show-existing-projects",
+        aliases=["show_existing_projects"],
+        description=process_docstring(
+            DataShuttle.show_existing_projects.__doc__
+        ),
+        help="",
+    )
+    show_existing_projects_parser.set_defaults(func=show_existing_projects)
 
     # Show Next Sub Number
     # -------------------------------------------------------------------------

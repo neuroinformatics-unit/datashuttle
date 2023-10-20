@@ -13,7 +13,7 @@ import yaml
 
 from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.datashuttle import DataShuttle
-from datashuttle.utils import ds_logger, rclone, utils
+from datashuttle.utils import ds_logger, rclone
 
 # -----------------------------------------------------------------------------
 # Setup and Teardown Test Project
@@ -121,7 +121,9 @@ def delete_all_folders_in_project_path(project, local_or_central):
 
 def delete_project_if_it_exists(project_name):
     """"""
-    config_path, _ = utils.get_datashuttle_path(project_name)
+    config_path, _ = canonical_folders.get_project_datashuttle_path(
+        project_name
+    )
 
     if config_path.is_dir():
         ds_logger.close_log_filehandler()
