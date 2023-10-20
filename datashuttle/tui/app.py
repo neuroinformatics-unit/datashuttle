@@ -19,9 +19,8 @@ from textual.widgets import (
 
 from datashuttle.datashuttle import DataShuttle
 
-project = DataShuttle(
-    "test_project"
-)  # Change this to any local DataShuttle project for testing!
+# Change this to any local DataShuttle project for testing!
+project = DataShuttle("test_project")
 
 
 class TypeBox(Static):
@@ -108,8 +107,7 @@ class TuiApp(App):
         """
 
         click_time = monotonic()
-
-        if click_time - self.prev_time < 0.5:
+        if click_time - self.prev_click_time < 0.5:
             if event.path.stem.startswith("sub-"):
                 self.query_one("#subject").value = str(event.path.stem)
             if event.path.stem.startswith("ses-"):
@@ -118,6 +116,11 @@ class TuiApp(App):
         self.prev_time = click_time
 
     def on_button_pressed(self, event: Button.Pressed):
+        """
+        Enables the Make Folder button to read out current input values
+        and use these to call project.make_sub_folders().
+        """
+
         if event.button.id == "make_folder":
             sub_dir = self.query_one("#subject").value
             ses_dir = self.query_one("#session").value
