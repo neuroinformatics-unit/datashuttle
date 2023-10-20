@@ -54,7 +54,7 @@ def get_flags() -> List[str]:
     Return all configs that are bool flags. This is used in
     testing and type checking config inputs.
     """
-    return get_datatypes() + [
+    return [
         "overwrite_old_files",
         "show_transfer_progress",
     ]

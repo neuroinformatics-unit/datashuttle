@@ -108,7 +108,6 @@ class TestLogging:
             tmp_path / clean_project_name,
             clean_project_name,
             "local_filesystem",
-            use_behav=True,
         )
 
         log = self.read_log_file(project.cfg.logging_path)

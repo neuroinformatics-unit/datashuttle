@@ -87,7 +87,6 @@ class TestConfigs(BaseTest):
                 no_cfg_project.project_name,
                 no_cfg_project.project_name,
                 "ssh",
-                use_behav=True,
             )
 
         assert (
@@ -112,7 +111,6 @@ class TestConfigs(BaseTest):
             tmp_path / "test_local_path" / no_cfg_project.project_name,
             tmp_path / "test_central_path" / no_cfg_project.project_name,
             "local_filesystem",
-            use_behav=True,
         )
 
         if argument_type in ["central_host_id", "both"]:
@@ -249,7 +247,7 @@ class TestConfigs(BaseTest):
             tmp_path, project.project_name
         )
 
-        del missing_key_configs["use_histology"]
+        del missing_key_configs["transfer_verbosity"]
 
         test_utils.dump_config(missing_key_configs, bad_configs_path)
 
@@ -258,7 +256,7 @@ class TestConfigs(BaseTest):
 
         assert (
             str(e.value) == "Loading Failed. "
-            "The key 'use_histology' was not found in "
+            "The key 'transfer_verbosity' was not found in "
             "the config. Config file was not updated."
         )
 
@@ -271,7 +269,7 @@ class TestConfigs(BaseTest):
         wrong_key_configs = test_utils.get_test_config_arguments_dict(
             tmp_path, project.project_name
         )
-        wrong_key_configs["use_mismology"] = "wrong"
+        wrong_key_configs["transfer_merbosity"] = "wrong"
         test_utils.dump_config(wrong_key_configs, bad_configs_path)
 
         with pytest.raises(BaseException) as e:
@@ -279,12 +277,15 @@ class TestConfigs(BaseTest):
 
         assert (
             str(e.value) == "The config contains an "
-            "invalid key: use_mismology. "
+            "invalid key: transfer_merbosity. "
             "Config file was not updated."
         )
 
     def test_supplied_config_file_bad_types(self, project, tmp_path):
-        """ """
+        """
+        Test the situation when configs with incorrect types are passed
+        in a supplied config.
+        """
         bad_configs_path = project._datashuttle_path / "bad_config.yaml"
 
         for key in project.cfg.keys():
@@ -323,8 +324,19 @@ class TestConfigs(BaseTest):
                     f"Config file was not updated."
                 )
 
-    def test_supplied_config_file_changes_wrong_order(self, project, tmp_path):
-        bad_order_configs_path = project._datashuttle_path / "new_configs.yaml"
+    def test_supplied_config_file_changes_wrong_order(
+        self, project, tmp_path
+    ):
+        """
+        Test the situation when a config file is passed with variables in
+        the wrong order.
+
+        TODO: why should this matter? They should be able to be in
+        any order and just converted to dict?
+        """
+        bad_order_configs_path = (
+            project._datashuttle_path / "new_configs.yaml"
+        )
         good_order_configs = test_utils.get_test_config_arguments_dict(
             tmp_path, project.project_name
         )
@@ -410,7 +422,6 @@ class TestConfigs(BaseTest):
             tmp_path / "project_1",
             tmp_path / "project_1",
             "local_filesystem",
-            use_behav=True,
         )
 
         # project 2 will not be found, because it does not
@@ -422,7 +433,6 @@ class TestConfigs(BaseTest):
             tmp_path / "project_3",
             tmp_path / "project_3",
             "local_filesystem",
-            use_behav=True,
         )
 
         (

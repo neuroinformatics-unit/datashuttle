@@ -68,8 +68,6 @@ The command `make-config-file` is used for the initial setup of the project. The
 
 `connection_method`: `local_filesystem` or `ssh`. Local filesystem can be used if the *central* storage is mounted to the local machine. Otherwise `ssh` can be used.
 
-Finally, the *datatype* flags `--use_ephys`, `--use_funcimg`, `--use_histology`, `--use_behav` set the types of data required for the project on the local machine. While individual flags are optional, at least one must be chosen when initialising the project.
-
 ### Optional Arguments
 
 If connection method is `ssh`, the `central_host_id`, `central_host_username` must be set, and a one-time SSH setup command run (see the [SSH section](#ssh) for details).
@@ -134,11 +132,10 @@ Another example call, which creates a range of subject and session folders, is s
 ```
 datashuttle \
 my_first_project \
-make-folders -sub 001@TO@003 -ses 010_@TIME@ -dt all
-```
 
-When the `all` argument is used for `--datatype` (`-dt`), the folders created depend on the *datatypes* specified during *configuration* setup. For example, if
-`--use_behav`, `--use_funcimg`, `--use_histology` were set during *configuration* setup, the folder tree from the above command (assuming the time is `4.02.48 PM`), would look like:
+make-sub-folders -sub 001@TO@003 -ses 010_@TIME@ -dt behav funcimg histology
+
+When the `all` argument is used for `--datatype` (`-dt`), the folders created depend on the *datatypes* specified during *configuration* setup.
 
 ```
 ├── sub-001/
@@ -330,9 +327,6 @@ project.make_config_file(
 	central_host_username="username",
 	overwrite_old_files=True,
 	transfer_verbosity="v",
-	use_ephys=True,
-	use_behav=True,
-	use_histology=True,
 )
 ```
 

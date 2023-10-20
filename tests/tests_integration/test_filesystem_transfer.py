@@ -47,7 +47,7 @@ class TestFileTransfer(BaseTest):
             os.path.join(base_path_to_check, project.cfg.top_level_folder),
             subs,
             sessions,
-            test_utils.get_default_folder_used(),
+            test_utils.get_all_folders_used(),
         )
 
     def test_empty_folder_is_not_transferred(self, project):
@@ -128,7 +128,7 @@ class TestFileTransfer(BaseTest):
                 os.path.join(base_path_to_check, project.cfg.top_level_folder),
                 subs,
                 sessions,
-                test_utils.get_default_folder_used(),
+                test_utils.get_all_folders_used(),
             )
 
     @pytest.mark.parametrize(
