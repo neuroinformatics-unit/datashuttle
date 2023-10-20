@@ -173,9 +173,9 @@ class TestCommandLineInterface:
         self.check_kwargs(changed_configs, kwargs_)
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_sub_folders_variable(self, sep):
+    def test_make_folders_variable(self, sep):
         stdout, _ = test_utils.run_cli(
-            f" make{sep}sub{sep}folders "
+            f" make{sep}folders "
             f"--datatype all "
             f"--sub_names 001 "
             f"--ses_names 002 "
@@ -273,9 +273,7 @@ class TestCommandLineInterface:
         assert args_[0] == "/fake/filepath"
         assert kwargs_["dry_run"] is True
 
-    @pytest.mark.parametrize(
-        "command", ["make_sub_folders", "upload", "download"]
-    )
+    @pytest.mark.parametrize("command", ["make_folders", "upload", "download"])
     def test_multiple_inputs(self, command):
         """
         To process lists, a syntax "<>" is used
@@ -394,7 +392,7 @@ class TestCommandLineInterface:
 
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_make_sub_folders(self, setup_project):
+    def test_make_folders(self, setup_project):
         """
         see test_filesystem_transfer.py
         """
@@ -402,7 +400,7 @@ class TestCommandLineInterface:
         ses = ["ses-123", "ses-999"]
 
         test_utils.run_cli(
-            f"make_sub_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
+            f"make_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
             setup_project.project_name,
         )
 

@@ -74,7 +74,7 @@ class TestFileTransfer:
         )
 
     def test_empty_folder_is_not_transferred(self, project):
-        project.make_sub_folders("sub-001")
+        project.make_folders("sub-001")
         project.upload_all()
         assert not (project.cfg["central_path"] / "sub-001").is_dir()
 
@@ -290,7 +290,7 @@ class TestFileTransfer:
         """
         Test the @TO@ keyword is accepted properly when making a session and
         transferring it. First pass @TO@-formatted sub and sessions to
-        make_sub_folders. Then transfer the files (upload or download).
+        make_folders. Then transfer the files (upload or download).
 
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
@@ -425,7 +425,7 @@ class TestFileTransfer:
         """
         see test_rclone_options()
         """
-        project.make_sub_folders(["sub-001"], ["ses-002"], ["behav"])
+        project.make_folders(["sub-001"], ["ses-002"], ["behav"])
         project.update_config("transfer_verbosity", transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
@@ -455,7 +455,7 @@ class TestFileTransfer:
             Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
         )
 
-        project.make_sub_folders("sub-001")
+        project.make_folders("sub-001")
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         central_test_file_path = (
             project.cfg["central_path"] / path_to_test_file
@@ -554,7 +554,7 @@ class TestFileTransfer:
 
     def setup_specific_file_or_folder_files(self, project):
         """ """
-        project.make_sub_folders(["sub-001", "sub-002"], "ses-003")
+        project.make_folders(["sub-001", "sub-002"], "ses-003")
 
         path_to_test_file_behav = (
             Path("rawdata")
