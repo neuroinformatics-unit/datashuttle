@@ -66,7 +66,7 @@ class TuiApp(App):
         """
 
         click_time = monotonic()
-        if click_time - self.prev_time < 0.5:
+        if click_time - self.prev_click_time < 0.5:
             self.query_one("#subject").value = str(event.path)
         self.prev_click_time = click_time
 
