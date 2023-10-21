@@ -429,10 +429,10 @@ class TestFileTransfer(BaseTest):
         the version in source is newer than target.
         """
         path_to_test_file = (
-            Path("rawdata") / "sub-001" / "anat" / "test_file.txt"
+            Path("rawdata") / "sub-001" / "ses-001" / "anat" / "test_file.txt"
         )
 
-        project.make_folders("sub-001", datatype="anat")
+        project.make_folders("sub-001", "ses-001", datatype="anat")
 
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         central_test_file_path = (

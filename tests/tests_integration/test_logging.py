@@ -271,9 +271,9 @@ class TestLogging:
 
         assert "Using config file from" in log
         assert "Local file system at" in log
-
-        assert """ "--include" "sub-11/anat/**" """ in log
-        assert """/central/test_project/rawdata""" in log
+        assert "--include" in log
+        assert "sub-11/ses-123/anat/**" in log
+        assert "/central/test_project/rawdata" in log
         assert "Waiting for checks to finish" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])

@@ -296,11 +296,6 @@ class TestFileTransfer:
             if sub == "all_non_sub":
                 extra_arguments += ["is_non_sub == True"]
             else:
-                if "anat" in datatype:
-                    sub_ses_dtype_arguments += [
-                        f"(parent_sub == '{sub}' & (parent_datatype == 'anat' | parent_datatype == 'anat'))"
-                    ]
-
                 for ses in ses_names:
                     if ses == "all_non_ses":
                         extra_arguments += [

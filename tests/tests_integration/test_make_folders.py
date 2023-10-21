@@ -133,7 +133,9 @@ class TestMakeFolders(BaseTest):
                 test_utils.check_and_cd_folder(
                     join(base_folder, sub, ses, "funcimg")
                 )
-                test_utils.check_and_cd_folder(join(base_folder, sub, "anat"))
+                test_utils.check_and_cd_folder(
+                    join(base_folder, sub, ses, "anat")
+                )
 
     @pytest.mark.parametrize("behav", [True, False])
     @pytest.mark.parametrize("ephys", [True, False])
@@ -210,7 +212,9 @@ class TestMakeFolders(BaseTest):
             join(base_folder, sub, ses, "change_funcimg")
         )
 
-        test_utils.check_and_cd_folder(join(base_folder, sub, "change_anat"))
+        test_utils.check_and_cd_folder(
+            join(base_folder, sub, ses, "change_anat")
+        )
 
     @pytest.mark.parametrize(
         "files_to_test",
@@ -238,13 +242,10 @@ class TestMakeFolders(BaseTest):
         base_folder = test_utils.get_top_level_folder_path(project)
 
         # Check at the subject level
-        sub_file_names = test_utils.glob_basenames(
+        test_utils.glob_basenames(
             join(base_folder, sub, "*"),
             exclude=ses,
         )
-        if "anat" in files_to_test:
-            assert "anat" in sub_file_names
-            files_to_test.remove("anat")
 
         # Check at the session level
         ses_file_names = test_utils.glob_basenames(
@@ -253,7 +254,9 @@ class TestMakeFolders(BaseTest):
         )
 
         if files_to_test == ["all"]:
-            assert ses_file_names == sorted(["ephys", "behav", "funcimg"])
+            assert ses_file_names == sorted(
+                ["ephys", "behav", "funcimg", "anat"]
+            )
         else:
             assert ses_file_names == sorted(files_to_test)
 
