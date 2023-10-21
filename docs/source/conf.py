@@ -75,7 +75,7 @@ numpydoc_class_members_toctree = False  # stops stubs warning
 #toc_object_entries_show_parents = "all"
 html_show_sourcelink = False
 
-#html_sidebars = {  # grr this is not working...
+#html_sidebars = {  this is not working...
 #  "index": [],
 #  "**": [],
 #}
@@ -139,9 +139,9 @@ html_theme_options = {
     },
     "footer_start": ["footer_start"],
     "footer_end": ["footer_end"],
-#    "show_toc_level": 2  # sidebar levels that are expanded before scrolling
+    "show_toc_level": 2,  # sidebar levels that are expanded before scrolling
 #    "secondary_sidebar_items": [],
-#    "page_sidebar_items": [],
+ #   "page_sidebar_items": [],
 }
 
 # Redirect the webpage to another URL
@@ -149,4 +149,4 @@ html_theme_options = {
 # The default is the URL of the GitHub pages
 # https://www.sphinx-doc.org/en/master/usage/extensions/githubpages.html
 github_user = "JoeZiminski"
-html_baseurl = "https://datashuttle.neuroinformatics.dev/"  # f"http(s)://{github_user}.github.io/{project}"
+html_baseurl = "https://datashuttle.neuroinformatics.dev/"
