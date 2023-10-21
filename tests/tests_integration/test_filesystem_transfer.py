@@ -272,7 +272,7 @@ class TestFileTransfer(BaseTest):
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
         """
-        subs = ["001", f"02{tags('to')}03"]
+        subs = ["001", f"02{tags('to')}003"]
         sessions = [f"ses-01{tags('to')}003_{tags('datetime')}"]
 
         test_utils.make_local_folders_with_files_in(
@@ -290,7 +290,7 @@ class TestFileTransfer(BaseTest):
             project.cfg["local_path"],
             project.cfg["central_path"],
         ]:
-            for sub in ["sub-001", "sub-02", "sub-03"]:
+            for sub in ["sub-001", "sub-002", "sub-003"]:
                 sessions_in_path = test_utils.glob_basenames(
                     (base_local / "rawdata" / sub / "ses*").as_posix()
                 )

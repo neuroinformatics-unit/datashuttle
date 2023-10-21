@@ -90,14 +90,14 @@ class TestMakeFolders(BaseTest):
         a dict that indicates if each subfolder is used (to avoid
         circular testing from the project itself).
         """
-        subs = ["11", "sub-002", "30303"]
+        subs = ["00011", "sub-00002", "30303"]
 
         project.make_folders(subs)
 
         test_utils.check_folder_tree_is_correct(
             project,
             base_folder=test_utils.get_top_level_folder_path(project),
-            subs=["sub-11", "sub-002", "sub-30303"],
+            subs=["sub-00011", "sub-00002", "sub-30303"],
             sessions=[],
             folder_used=test_utils.get_all_folders_used(),
         )
@@ -112,13 +112,15 @@ class TestMakeFolders(BaseTest):
         This is highlighted in an assert in check_and_cd_folder()
         """
         subs = ["sub-001", "sub-002"]
-        sessions = ["ses-001", "50432"]
+
+        sessions = ["ses-00001", "50432"]
 
         project.make_folders(subs, sessions, "all")
+
         base_folder = test_utils.get_top_level_folder_path(project)
 
         for sub in subs:
-            for ses in ["ses-001", "ses-50432"]:
+            for ses in ["ses-00001", "ses-50432"]:
                 test_utils.check_and_cd_folder(
                     join(base_folder, sub, ses, "ephys")
                 )
@@ -324,8 +326,8 @@ class TestMakeFolders(BaseTest):
         """
         project.cfg.top_level_folder = folder_name
 
-        subs = ["sub-001", "sub-2"]
-        sessions = ["ses-001", "ses-03"]
+        subs = ["sub-001", "sub-002"]
+        sessions = ["ses-001", "ses-003"]
 
         project.make_folders(subs, sessions, "all")
 
@@ -412,7 +414,7 @@ class TestMakeFolders(BaseTest):
         assert new_num == 4
         assert old_num == 3
 
-        project.make_folders(sub, ["04", "0005"])
+        project.make_folders(sub, ["004", "005"])
         new_num, old_num = project.get_next_ses_number(sub)
         assert new_num == 6
         assert old_num == 5

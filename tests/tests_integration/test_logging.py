@@ -155,8 +155,13 @@ class TestLogging:
             in log
         )
 
+<<<<<<< HEAD
     def test_make_folders(self, project):
         subs = ["sub-11", f"sub-002{tags('to')}004"]
+=======
+    def test_make_folders(self, setup_project):
+        subs = ["sub-111", f"sub-002{tags('to')}004"]
+>>>>>>> e368a22 (Fix tests.)
         ses = ["ses-123", "ses-101"]
 
         project.make_folders(subs, ses, datatype="all")
@@ -166,22 +171,27 @@ class TestLogging:
         assert "Formatting Names..." in log
 
         assert (
-            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-11', "
+            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-111', "
             "'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-101'], "
             "'datatype': 'all'}\ncfg: {'local_path':" in log
         )
 
-        assert f"sub_names: ['sub-11', 'sub-002{tags('to')}004']" in log
+        assert f"sub_names: ['sub-111', 'sub-002{tags('to')}004']" in log
         assert "ses_names: ['ses-123', 'ses-101']" in log
         assert (
-            "formatted_sub_names: ['sub-11', 'sub-002', 'sub-003', 'sub-004']"
+            "formatted_sub_names: ['sub-111', 'sub-002', 'sub-003', 'sub-004']"
             in log
         )
         assert "formatted_ses_names: ['ses-123', 'ses-101']" in log
         assert "Made folder at path:" in log
 
         assert (
-            str(Path("local") / project.project_name / "rawdata" / "sub-11")
+            str(
+                Path("local")
+                / project.project_name
+                / "rawdata"
+                / "sub-111"
+            )
             in log
         )
         assert (

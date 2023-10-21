@@ -66,12 +66,15 @@ def validate_names(all_names, prefix):
     """
     Validate a list of subject or session names, ensuring
     they are formatted as per NeuroBlueprint.
+
+    We cannot validate names with "@*@" tags in.
     """
     if len(all_names) != len(set(all_names)):
         utils.log_and_raise_error(
             "Subject and session names must all be unique (i.e. there are no"
             " duplicates in list input)."
         )
+
     if len(names_to_check) == 0:
         return
 
@@ -127,17 +130,19 @@ def check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
     prefix_values = utils.get_values_from_bids_formatted_name(
         names, prefix, return_as_int=False
     )
+    value_len = [len(value) for value in prefix_values]
 
-    leading_zeros = [num_leading_zeros(value) for value in prefix_values]
-    int_values = [int(value) for value in prefix_values]
+    int_values = utils.get_values_from_bids_formatted_name(
+        names, prefix, return_as_int=True
+    )  # can't just convert to the above to int as need extra validation
 
-    if not all_identical(leading_zeros):
+    if not all_identical(value_len):
         utils.log_and_raise_error(
             f"The number of leading zeros within {prefix} names must be "
             f"consistent across all {prefix} names."
         )
 
-    if not all_identical(int_values):
+    if not all_unique(int_values):
         utils.log_and_raise_error(
             f"{prefix} names must all have unique integer ids"
             f" after the {prefix} prefix."
