@@ -23,6 +23,8 @@ class TypeBox(Static):
     """
     Dynamically-populated checkbox widget for convenient datatype selection during folder creation.
     """
+    type_out = reactive("all")
+
     def __init__(self, project_cfg):
         super(TypeBox, self).__init__()
 
@@ -31,8 +33,6 @@ class TypeBox(Static):
             for k, v in zip(project_cfg.data.keys(), project_cfg.data.values())
             if "use_" in k and v is True
         ]
-
-        self.type_out = reactive("all")  # I'm not sure what this is supposed to do or if I have broken it :'D
 
     def compose(self):
 
