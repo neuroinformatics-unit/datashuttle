@@ -1,7 +1,7 @@
 import pytest
 import test_utils
 
-from datashuttle.datashuttle import DataShuttle
+from datashuttle import DataShuttle
 
 TEST_PROJECT_NAME = "test_persistent_settings"
 
