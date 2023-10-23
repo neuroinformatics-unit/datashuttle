@@ -19,26 +19,25 @@ from textual.widgets import (
 
 from datashuttle import DataShuttle
 
-# Change this to any local DataShuttle project for testing!
-project = DataShuttle("test_project")
-
-
 class TypeBox(Static):
     """
     Dynamically-populated checkbox widget for convenient datatype selection during folder creation.
     """
+    def __init__(self, project_cfg):
+        super(TypeBox, self).__init__()
 
-    type_config = [
-        k.removeprefix("use_")
-        for k, v in zip(project.cfg.data.keys(), project.cfg.data.values())
-        if "use_" in k and v is True
-    ]
+        self.type_config = [
+            k.removeprefix("use_")
+            for k, v in zip(project_cfg.data.keys(), project_cfg.data.values())
+            if "use_" in k and v is True
+        ]
+
+        self.type_out = reactive("all")  # I'm not sure what this is supposed to do or if I have broken it :'D
 
     def compose(self):
+
         for type in self.type_config:
             yield Checkbox(type.title(), id=type, value=1)
-
-    type_out = reactive("all")
 
     def on_checkbox_changed(self, event: Checkbox.Changed):
         type_dict = {
@@ -72,6 +71,9 @@ class TuiApp(App):
 
     prev_click_time = 0.0
 
+    # Change this to any local DataShuttle project for testing!
+    project = DataShuttle("test_project")
+
     def compose(self) -> ComposeResult:
         """
         Composes widgets to the TUI in the order specified.
@@ -81,7 +83,7 @@ class TuiApp(App):
         with TabbedContent():
             with TabPane("Create", id="create"):
                 yield DirectoryTree(
-                    str(project.cfg.data["local_path"]), id="FileTree"
+                    str(self.project.cfg.data["local_path"]), id="FileTree"
                 )
                 yield Label("Subject(s)", id="sub_label")
                 yield Input(id="subject", placeholder="e.g. sub-001")
@@ -90,7 +92,7 @@ class TuiApp(App):
                 yield Label("Session(s)")
                 yield Input(id="session", placeholder="e.g. ses-001")
                 yield Label("Datatype(s)")
-                yield TypeBox()
+                yield TypeBox(self.project.cfg)
                 yield Button("Make Folders", id="make_folder")
             with TabPane("Transfer", id="transfer"):
                 yield Label("Transfer; Seems to work!")
@@ -124,7 +126,7 @@ class TuiApp(App):
         if event.button.id == "make_folder":
             sub_dir = self.query_one("#subject").value
             ses_dir = self.query_one("#session").value
-            project.make_folders(
+            self.project.make_folders(
                 sub_names=sub_dir,
                 ses_names=ses_dir,
                 datatype=self.query_one("TypeBox").type_out,
