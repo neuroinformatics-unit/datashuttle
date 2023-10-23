@@ -1,3 +1,18 @@
+TabScreen {
+    align: center middle;
+}
+TabbedContent {
+    width: 70%;
+    height: 100%
+}
+TabScreen > #return {
+    layer: top;
+    dock: right;
+    margin: 2 1 0 0;
+}
+TabScreen > Header {
+    margin: 0 0 1 0;
+}
 #FileTree {
     dock: left;
     width: 35%;

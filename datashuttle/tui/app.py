@@ -4,6 +4,7 @@ from time import monotonic
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.reactive import reactive
+from textual.screen import Screen
 from textual.widgets import (
     Button,
     Checkbox,
@@ -18,6 +19,35 @@ from textual.widgets import (
 )
 
 from datashuttle import DataShuttle
+from datashuttle.utils.folders import get_existing_project_paths_and_names
+
+
+class ProjectSelect(Screen):
+    """
+    This Screen contains DataShuttle's project selection splashscreen.
+    From here, the user can select an existing project or begin
+    initializing a new project.
+    """
+
+    TITLE = "Select Project"
+
+    def __init__(self):
+        super(ProjectSelect, self).__init__()
+        self.project_names = get_existing_project_paths_and_names()[0]
+
+    def compose(self):
+        yield Label("DataShuttle", id="main_title")
+        yield Label("Select project", id="name_label")
+        for name in self.project_names:
+            yield Button(name, id=name)
+        yield Button("New project", id="new_project")
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == "new_project":
+            pass
+        else:
+            app.project = DataShuttle(str(event.button.id))
+            app.push_screen(TabScreen())
 
 
 class TypeBox(Static):
@@ -71,37 +101,27 @@ class TypeBox(Static):
         ]
 
 
-class TuiApp(App):
+class TabScreen(Screen):
     """
-    The main app page for the DataShuttle TUI.
-
-    Running this application in a main block as below
-    if __name__ == __main__:
-         app = MyApp()
-         app.run()
-
-    Initialises the TUI event loop and starts the application.
+    Screen containing the Create and Transfer tabs. This is
+    the primary screen within which the user interacts with
+    a pre-configured project.
     """
 
     TITLE = "DataShuttle"
 
-    tui_path = Path(__file__).parent
-    CSS_PATH = tui_path / "css" / "tab_content.tcss"
-
-    BINDINGS = [
-        Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
-    ]
-
     prev_click_time = 0.0
 
-    # Change this to any local DataShuttle project for testing!
-    project = DataShuttle("test_project")
+    def __init__(self):
+        super(TabScreen, self).__init__()
+        self.project = app.project
 
     def compose(self) -> ComposeResult:
         """
         Composes widgets to the TUI in the order specified.
         """
         yield Header()
+        yield Button("Return", id="return")
         with TabbedContent():
             with TabPane("Create", id="create"):
                 yield DirectoryTree(
@@ -159,6 +179,33 @@ class TuiApp(App):
             except BaseException as e:
                 self.query_one("#errors_on_create_page").value = str(e)
 
+        if event.button.id == "return":
+            app.pop_screen()
+
+
+class TuiApp(App):
+    """
+    The main app page for the DataShuttle TUI.
+
+    Running this application in a main block as below
+    if __name__ == __main__:
+         app = MyApp()
+         app.run()
+
+    Initialises the TUI event loop and starts the application.
+    """
+
+    tui_path = Path(__file__).parent
+    CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
+
+    BINDINGS = [
+        Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
+    ]
+
+    def on_ready(self):
+        self.push_screen(ProjectSelect())
+
 
 if __name__ == "__main__":
-    TuiApp().run()
+    app = TuiApp()
+    app.run()
