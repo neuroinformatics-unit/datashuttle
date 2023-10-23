@@ -39,6 +39,10 @@ class TypeBox(Static):
             yield Checkbox(type.title(), id=type, value=1)
 
     def on_checkbox_changed(self):
+        """
+        When a checkbox is clicked, update the `type_out` attribute
+        with the datatypes to pass to `make_folders` datatype argument.
+        """
         type_dict = {
             type: self.query_one(f"#{type}").value for type in self.type_config
         }
