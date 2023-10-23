@@ -167,7 +167,6 @@ class TabScreen(Screen):
                 self.query_one("#subject").value = str(event.path.stem)
             if event.path.stem.startswith("ses-"):
                 self.query_one("#session").value = str(event.path.stem)
-                self.query_one("#subject").value = str(event.path.parent.stem)
         self.prev_click_time = click_time
 
     def on_button_pressed(self, event: Button.Pressed):
