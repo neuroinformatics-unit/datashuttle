@@ -47,7 +47,7 @@ class TypeBox(Static):
             type: self.query_one(f"#{type}").value for type in self.type_config
         }
         self.type_out = [
-            x for x, v in zip(type_dict.keys(), type_dict.values()) if v == 1
+            datatype for datatype, is_on in zip(type_dict.keys(), type_dict.values()) if is_on
         ]
 
 
