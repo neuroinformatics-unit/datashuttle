@@ -40,6 +40,7 @@ class TypeBox(Static):
     type_config:
         List of datatypes that were set as 'True' during datashuttle project setup
     """
+
     type_out = reactive("all")
 
     def __init__(self, project_cfg):
@@ -64,7 +65,9 @@ class TypeBox(Static):
             type: self.query_one(f"#{type}").value for type in self.type_config
         }
         self.type_out = [
-            datatype for datatype, is_on in zip(type_dict.keys(), type_dict.values()) if is_on
+            datatype
+            for datatype, is_on in zip(type_dict.keys(), type_dict.values())
+            if is_on
         ]
 
 
