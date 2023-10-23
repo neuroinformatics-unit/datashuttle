@@ -155,10 +155,9 @@ class TuiApp(App):
                     ses_names=ses_dir,
                     datatype=self.query_one("TypeBox").type_out,
                 )
+                self.query_one("#FileTree").reload()
             except BaseException as e:
                 self.query_one("#errors_on_create_page").value = str(e)
-
-            self.query_one("#FileTree").reload()
 
 
 if __name__ == "__main__":
