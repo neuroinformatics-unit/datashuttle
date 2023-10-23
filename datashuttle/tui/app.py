@@ -101,7 +101,6 @@ class TuiApp(App):
         """
         Composes widgets to the TUI in the order specified.
         """
-
         yield Header()
         with TabbedContent():
             with TabPane("Create", id="create"):
@@ -115,7 +114,10 @@ class TuiApp(App):
                 yield Label("Datatype(s)")
                 yield TypeBox(self.project.cfg)
                 yield Button("Make Folders", id="make_folder")
-                yield Input(id="create_page_errors", placeholder="Errors are printed here.")
+                yield Input(
+                    id="errors_on_create_page",
+                    placeholder="Errors are printed here.",
+                )
             with TabPane("Transfer", id="transfer"):
                 yield Label("Transfer; Seems to work!")
         yield Footer()
@@ -129,7 +131,6 @@ class TuiApp(App):
         with directory name. Double-click time is set to the
         Windows default (500 ms).
         """
-
         click_time = monotonic()
         if click_time - self.prev_click_time < 0.5:
             if event.path.stem.startswith("sub-"):
@@ -144,7 +145,6 @@ class TuiApp(App):
         Enables the Make Folder button to read out current input values
         and use these to call project.make_folders().
         """
-
         if event.button.id == "make_folder":
             sub_dir = self.query_one("#subject").value
             ses_dir = self.query_one("#session").value
@@ -156,7 +156,7 @@ class TuiApp(App):
                     datatype=self.query_one("TypeBox").type_out,
                 )
             except BaseException as e:
-                self.query_one('#create_page_errors').value = str(e)
+                self.query_one("#errors_on_create_page").value = str(e)
 
             self.query_one("#FileTree").reload()
 
