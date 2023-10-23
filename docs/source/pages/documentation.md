@@ -93,7 +93,6 @@ ssh \
 --overwrite_old_files
 ```
 
-
 Now setup is complete! _Configuration_ settings can be edited at any time with the `update-config` command. Alternatively, custom *configuration* files can be supplied using the `supply-config` command (this simplifies setting up projects across multiple *local* machines).
 
 Next, we can start setting up the project by automatically creating standardised project folder trees.
@@ -154,12 +153,9 @@ make-folders -sub 001@TO@003 -ses 010_@TIME@ -dt behav funcimg anat
     └── anat
 ```
 
-
 ### Datatype Folders
 
 In [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/specification.html), *datatypes* specify where acquired experimental data of currently supported types (`behav`, `ephys`, `funcimg` and `anat`) is stored. See the [*datatypes* section of the SWC-Blueprint for more details](https://swc-blueprint.neuroinformatics.dev/specification.html#datatype).
-
-At present, `anat` is saved to the `sub-` level, as it is assumed `anat` is conducted *ex vivo* and so session will be possible. Please don't hesitate to get into contact if you have an alternative use case.
 
 ## Data Transfer
 
@@ -499,7 +495,7 @@ DataShuttle provides a number of keyword arguments to allow separate handling of
 
 `all` : All *session* and non-*session* files and folders within a *subject* level folder (e.g. `sub-001`) will be transferred.
 
-`all_ses` : *Session* <u>folders</u> only (i.e. prefixed with `-ses`) will be transferred. Note that the only exception is the `anat` folder, the transfer of which is determined by the `-dt` flag (below).
+`all_ses` : *Session* <u>folders</u> only (i.e. prefixed with `-ses`) will be transferred.
 
 `all_non_ses` : All files and folders that are not prefixed with `-sub` will be transferred. Any folders prefixed with `-ses` will not be transferred.
 
@@ -507,7 +503,7 @@ DataShuttle provides a number of keyword arguments to allow separate handling of
 
 `all` : All *datatype* folders at the *subject* or *session* folder level will be transferred, as well as all files and folders within selected *session* folders.
 
-`all_datatype` : All *datatype* folders (i.e. folders with the pre-determined name: `behav`, `ephys`, `funcimg`, `anat`) residing at either the *subject* or *session* level will be
+`all_datatype` : All *datatype* folders (i.e. folders with the pre-determined name: `behav`, `ephys`, `funcimg`, `anat`) residing at the *session* level will be
 transferred. Non-*datatype* folders at the *session* level will not be transferred
 
 `all_ses_level_non_datatype` : Non *datatype* folders at the *session* level will not be transferred
