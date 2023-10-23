@@ -30,7 +30,7 @@ class TypeBox(Static):
 
         self.type_config = [
             key.removeprefix("use_")
-            for key, value in zip(project_cfg.data.keys(), project_cfg.data.values())
+            for key, value in zip(project_cfg.keys(), project_cfg.values())
             if "use_" in key and value is True
         ]
 
