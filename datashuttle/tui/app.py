@@ -37,6 +37,10 @@ class ProjectSelect(Screen):
 
     def compose(self):
         yield Label("DataShuttle", id="main_title")
+        yield Input(
+            id="project_select_error_input",
+            placeholder="For testing, errors are shown here.",
+        )
         yield Label("Select project", id="name_label")
         for name in self.project_names:
             yield Button(name, id=name)
@@ -46,7 +50,13 @@ class ProjectSelect(Screen):
         if event.button.id == "project_select_new_project_button":
             pass
         else:
-            app.project = DataShuttle(str(event.button.id))
+            try:
+                app.project = DataShuttle(
+                    str(event.button.id)
+                )  # TODO: handle error
+            except BaseException as e:
+                self.query_one("#project_select_error_input").value = str(e)
+                return
             app.push_screen(TabScreen())
 
 
