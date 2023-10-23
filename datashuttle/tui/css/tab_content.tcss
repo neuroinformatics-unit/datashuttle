@@ -2,8 +2,19 @@ Screen {
     padding: 0;
 }
 TabbedContent {
-    width: 100%
+    width: 100%;
 }
-#create_text {
-    text-style: italic;
+#FileTree {
+    dock: left;
+    width: 35%;
+    padding: 1 2;
+    margin: 0 4 0 0;
+}
+#create > Label {
+    width: 100%;
+    margin: 0 0 1 1;
+    text-style: bold;
+}
+#create > Input {
+    color: $text;
 }
