@@ -1,20 +1,26 @@
-Screen {
-    padding: 0;
-}
-TabbedContent {
-    width: 100%;
-}
 #FileTree {
     dock: left;
     width: 35%;
-    padding: 1 2;
+    padding: 1 2 1 2;
     margin: 0 4 0 0;
 }
 #create > Label {
     width: 100%;
-    margin: 0 0 1 1;
+    margin: 1 0 1 1;
     text-style: bold;
 }
-#create > Input {
-    color: $text;
+#create > #sub_label {
+    margin: 0 0 1 1;
+}
+#create > TypeBox {
+    layout: grid;
+    grid-size: 2 2;
+    grid-columns: 25;
+    min-height: 5;
+}
+TypeBox > ToggleButton {
+    height: 3;
+    margin: 0 0 3 1;
+    content-align: left middle;
+    width: 18;
 }
