@@ -29,9 +29,9 @@ class TypeBox(Static):
         super(TypeBox, self).__init__()
 
         self.type_config = [
-            key.removeprefix("use_")
-            for key, value in zip(project_cfg.keys(), project_cfg.values())
-            if "use_" in key and value is True
+            config.removeprefix("use_")
+            for config, is_on in zip(project_cfg.keys(), project_cfg.values())
+            if "use_" in config and is_on
         ]
 
     def compose(self):
