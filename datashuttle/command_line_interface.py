@@ -4,8 +4,8 @@ from typing import Any, Callable
 
 import simplejson
 
+from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import utils
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
@@ -187,13 +187,13 @@ def setup_ssh_connection_to_central_server(*args: Any) -> None:
 # -----------------------------------------------------------------------------
 
 
-def make_sub_folders(project: DataShuttle, args: Any) -> None:
+def make_folders(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
     filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
 
-    run_command(project, project.make_sub_folders, **filtered_kwargs)
+    run_command(project, project.make_folders, **filtered_kwargs)
 
 
 # -----------------------------------------------------------------------------
@@ -591,19 +591,19 @@ def construct_parser():
     # Make Sub Folder
     # ----------------------------------------------------------------------
 
-    make_sub_folders_parser = subparsers.add_parser(
-        "make-sub-folders",
-        aliases=["make_sub_folders"],
-        description=process_docstring(DataShuttle.make_sub_folders.__doc__),
+    make_folders_parser = subparsers.add_parser(
+        "make-folders",
+        aliases=["make_folders"],
+        description=process_docstring(DataShuttle.make_folders.__doc__),
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    make_sub_folders_parser = make_sub_folders_parser.add_argument_group(
+    make_folders_parser = make_folders_parser.add_argument_group(
         "named arguments:"
     )  # type: ignore
-    make_sub_folders_parser.set_defaults(func=make_sub_folders)
+    make_folders_parser.set_defaults(func=make_folders)
 
-    make_sub_folders_parser.add_argument(
+    make_folders_parser.add_argument(
         "--sub-names",
         "--sub_names",
         "-sub",
@@ -612,7 +612,7 @@ def construct_parser():
         required=True,
         help=help("required_str_single_or_multiple_or_all"),
     )
-    make_sub_folders_parser.add_argument(
+    make_folders_parser.add_argument(
         "--ses-names",
         "--ses_names",
         "-ses",
@@ -621,7 +621,7 @@ def construct_parser():
         required=False,
         help="Optional: (str, single or multiple) (selection of datatypes, or 'all')",
     )
-    make_sub_folders_parser.add_argument(
+    make_folders_parser.add_argument(
         "--datatype",
         "-dt",
         type=str,

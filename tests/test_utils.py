@@ -11,8 +11,8 @@ from pathlib import Path
 
 import yaml
 
+from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, canonical_folders
-from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger, rclone
 
 # -----------------------------------------------------------------------------
@@ -442,7 +442,7 @@ def make_and_check_local_project_folders(
 def make_local_folders_with_files_in(
     project, subs, sessions=None, datatype="all"
 ):
-    project.make_sub_folders(subs, sessions, datatype)
+    project.make_folders(subs, sessions, datatype)
     for root, dirs, files in os.walk(project.cfg["local_path"]):
         if not dirs:
             path_ = Path(root) / "placeholder_file.txt"

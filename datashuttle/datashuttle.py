@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import paramiko
 import yaml
@@ -131,7 +131,7 @@ class DataShuttle:
         Set the working top level folder (e.g. 'rawdata', 'derivatives').
 
         The top_level_folder defines in which top level folder new
-        sub-folders will be made (e.g. make_sub_folders) or at which level
+        sub-folders will be made (e.g. make_folders) or at which level
         folders  are transferred with the commands upload / download
         and upload_all / download all.
 
@@ -155,11 +155,11 @@ class DataShuttle:
         self.show_top_level_folder()
 
     @check_configs_set
-    def make_sub_folders(
+    def make_folders(
         self,
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
-        datatype: str = "all",
+        datatype: Union[List[str], str] = "all",
     ) -> None:
         """
         Create a subject / session folder tree in the project
@@ -204,13 +204,13 @@ class DataShuttle:
 
         Examples
         --------
-        project.make_sub_folders("sub-001", datatype="all")
+        project.make_folders("sub-001", datatype="all")
 
-        project.make_sub_folders("sub-002@TO@005",
+        project.make_folders("sub-002@TO@005",
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make-sub-folders", local_vars=locals())
+        self._start_log("make-folders", local_vars=locals())
 
         self.show_top_level_folder()
 
@@ -294,7 +294,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        datatype: str = "all",
+        datatype: Union[List[str], str] = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -322,7 +322,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         datatype :
-            see make_sub_folders()
+            see make_folders()
 
         init_log :
             (Optional). Whether to start the logger. This should
@@ -368,7 +368,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
-        datatype: str = "all",
+        datatype: Union[List[str], str] = "all",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -927,7 +927,7 @@ class DataShuttle:
         'rawdata', 'derivatives')
 
         The top_level_folder defines in which top level folder new
-        sub-folders will be made (e.g. make_sub_folders) or
+        sub-folders will be made (e.g. make_folders) or
         at which level folders are transferred with the commands
         upload / download and upload_all / download all.
         upload_specific_folder_or_file / download_specific_folder_or_file.
@@ -1013,7 +1013,7 @@ class DataShuttle:
     ) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to make_sub_folders() or upload()
+        for example as when passed to make_folders() or upload()
         or download()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.

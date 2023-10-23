@@ -49,7 +49,7 @@ dev = [
     "isort",
     "mypy",
     "pre-commit",
-    "flake8",
+    "ruff",
     "setuptools_scm",
     "types-requests",
     "types-PyYAML",

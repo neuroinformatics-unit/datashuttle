@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from datashuttle import DataShuttle
     from datashuttle.configs.config_class import Configs
-    from datashuttle.datashuttle import DataShuttle
 
 import glob
 import os
@@ -25,7 +25,7 @@ def make_folder_trees(
     cfg: Configs,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
-    datatype: str,
+    datatype: Union[List[str], str],
     log: bool = True,
 ) -> None:
     """
@@ -41,7 +41,7 @@ def make_folder_trees(
     Parameters
     ----------
 
-    sub_names, ses_names, datatype : see make_sub_folders()
+    sub_names, ses_names, datatype : see make_folders()
 
     log : whether to log or not. If True, logging must
         already be initialised.

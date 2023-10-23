@@ -104,7 +104,7 @@ Next, we can start setting up the project by automatically creating standardised
 
 In a typical neuroscience experiment, a data-collection session begins by creating the folder for the current subject (e.g. mouse, rat) and current session. Once created, the data for this session is stored in the created folder.
 
-The command `make-sub-folders` can be used automatically create folder trees that adhere to the [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/) specification. The linked specifications contain more detail, but at it's heart this requires:
+The command `make-folders` can be used automatically create folder trees that adhere to the [SWC-Blueprint](https://swc-blueprint.neuroinformatics.dev/) specification. The linked specifications contain more detail, but at it's heart this requires:
 
 - All subjects are given a numerical (integer) number that is prefixed with the key `sub-`.
 - All sessions are also given a numerical (integer) number that is prefixed with the key `ses-`.
@@ -123,7 +123,7 @@ In DataShuttle, this folder tree (excluding the .mp4 file which must be saved us
 ```
 datashuttle \
 my_first_project \
-make-sub-folders -sub 001 -ses 001_@DATE@ -dt behav
+make-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```
 
 The leading `sub-` or `ses-` is optional when specifying folders to create (e.g. both `-sub 001` and `-sub sub-001` are valid inputs). It is possible to automatically create date, time or datetime key-value pairs with the days `@DATE@`, `@TIME@` or `@DATETIME@` respectively (see the [below section](#automatically-include-date-time-or-datetime
@@ -134,7 +134,7 @@ Another example call, which creates a range of subject and session folders, is s
 ```
 datashuttle \
 my_first_project \
-make-sub-folders -sub 001@TO@003 -ses 010_@TIME@ -dt all
+make-folders -sub 001@TO@003 -ses 010_@TIME@ -dt all
 ```
 
 When the `all` argument is used for `--datatype` (`-dt`), the folders created depend on the *datatypes* specified during *configuration* setup. For example, if
@@ -210,7 +210,7 @@ SWC-Blueprint defines two main *top-level folders*, `rawdata` and `derivatives`.
         └── ...
 ```
 
-In DataShuttle, the current working *top level folder* is by default `rawdata`. The working *top level folder* determines where folders are created (e.g. `make_sub_folders`), and from which folder data is transferred.
+In DataShuttle, the current working *top level folder* is by default `rawdata`. The working *top level folder* determines where folders are created (e.g. `make_folders`), and from which folder data is transferred.
 
 For example, `upload` or  `upload-all` will transfer data with `rawdata` from *local* to *central*, if `rawdata` is the current *top-level folder*. `upload` transfers the specified subset of folders, while `upload-all` will upload the entire *top-level folder*.
 
@@ -315,7 +315,7 @@ DataShuttle can be used through the command line interface (as exampled in the *
 To start a project in Python, import DataShuttle and initialise the project class:
 
 ```
-from datashuttle.datashuttle import DataShuttle
+from datashuttle import DataShuttle
 
 project = DataShuttle("my_first_project")
 ```
@@ -339,7 +339,7 @@ project.make_config_file(
 and methods for making subject folders and transferring data accessed similarly. Note that the shortcut arguments `-sub`, `-ses`, `-dt` are not available through the Python API, and the full argument names (`sub_names`, `ses_names`, `datatype`) must be used.
 
 ```
-project.make_sub_folders(
+project.make_folders(
 	sub_names="sub-001@TO@002",
 	ses_names="ses-001_@DATE@",
 	datatype="all"
@@ -392,7 +392,7 @@ For example, the command:
 ```
 datashuttle \
 my_first_project \
-make_sub_folders \
+make_folders \
 -sub sub_001@DATE@ \
 -ses 001@TIME@ 002@DATETIME@
 -dt behav
@@ -432,7 +432,7 @@ Note when making folders with the `@TO@` tag, the maximum number of leading zero
 ```
 datashuttle \
 my_first_project \
-make_sub_folders \
+make_folders \
 -sub 0001@TO@02
 ```
 
@@ -622,10 +622,10 @@ Similarly, the command `show-configs` will print all currently set *configuratio
 Detailed logs of all configuration changes, folder creation and data transfers are logged
 to the `.datashuttle` folder that is created in the *local* project folder.
 
-For each command run, a log of that command is placed in the logs folder, with the time and date of the command. The log itself contains relevant information pertaining to that command. For example, if the commands `make_sub_folders`, `upload`, `download` were run sequentially, the logs output folder would look like:
+For each command run, a log of that command is placed in the logs folder, with the time and date of the command. The log itself contains relevant information pertaining to that command. For example, if the commands `make_folders`, `upload`, `download` were run sequentially, the logs output folder would look like:
 
 ```
-20230608T095514_make-sub-folders.log
+20230608T095514_make-folders.log
 20230608T095545_upload-data.log
 20230608T095621_download-data.log
 ```

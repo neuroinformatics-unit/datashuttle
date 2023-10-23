@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 import test_utils
 
+from datashuttle import DataShuttle
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.datashuttle import DataShuttle
 from datashuttle.utils import ds_logger
 
 TEST_PROJECT_NAME = "test_logging"
@@ -156,11 +156,11 @@ class TestCommandLineInterface:
             in log
         )
 
-    def test_make_sub_folders(self, setup_project):
+    def test_make_folders(self, setup_project):
         subs = ["sub-11", f"sub-002{tags('to')}004"]
         ses = ["ses-123", "ses-101"]
 
-        setup_project.make_sub_folders(subs, ses, datatype="all")
+        setup_project.make_folders(subs, ses, datatype="all")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
@@ -361,13 +361,13 @@ class TestCommandLineInterface:
         )
         assert "connection_method was not updated" in log
 
-    def test_logs_bad_make_sub_folders_error(self, setup_project):
+    def test_logs_bad_make_folders_error(self, setup_project):
         """"""
-        setup_project.make_sub_folders("sub-001", datatype="all")
+        setup_project.make_folders("sub-001", datatype="all")
         self.delete_log_files(setup_project.cfg.logging_path)
 
         with pytest.raises(BaseException):
-            setup_project.make_sub_folders("sub-001", datatype="all")
+            setup_project.make_folders("sub-001", datatype="all")
 
         log = self.read_log_file(setup_project.cfg.logging_path)
 
