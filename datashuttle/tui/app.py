@@ -115,7 +115,10 @@ class TuiApp(App):
                 yield Label("Datatype(s)")
                 yield TypeBox(self.project.cfg)
                 yield Button("Make Folders", id="make_folder")
-                yield Input(id="create_page_errors", placeholder="Errors are printed here.")
+                yield Input(
+                    id="create_page_errors",
+                    placeholder="Errors are printed here.",
+                )
             with TabPane("Transfer", id="transfer"):
                 yield Label("Transfer; Seems to work!")
         yield Footer()
@@ -156,7 +159,7 @@ class TuiApp(App):
                     datatype=self.query_one("TypeBox").type_out,
                 )
             except BaseException as e:
-                self.query_one('#create_page_errors').value = str(e)
+                self.query_one("#create_page_errors").value = str(e)
 
             self.query_one("#FileTree").reload()
 
