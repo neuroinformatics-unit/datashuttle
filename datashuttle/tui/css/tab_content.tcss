@@ -27,13 +27,13 @@ TabScreen > Header {
 #create > #sub_label {
     margin: 0 0 1 1;
 }
-#create > TypeBox {
+#create > TypeBox_Dynamic {
     layout: grid;
     grid-size: 2 2;
     grid-columns: 25;
     min-height: 5;
 }
-TypeBox > ToggleButton {
+TypeBox_Dynamic > ToggleButton {
     height: 3;
     margin: 0 0 3 1;
     content-align: left middle;

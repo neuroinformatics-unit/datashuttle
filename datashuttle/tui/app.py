@@ -13,6 +13,7 @@ from textual.widgets import (
     Header,
     Input,
     Label,
+    Select,
     Static,
     TabbedContent,
     TabPane,
@@ -20,6 +21,58 @@ from textual.widgets import (
 
 from datashuttle import DataShuttle
 from datashuttle.utils.folders import get_existing_project_paths_and_names
+
+
+class TypeBox_Static(Static):
+    def compose(self):
+        yield Checkbox("Ephys", id="ephys")
+        yield Checkbox("Behav", id="behav")
+        yield Checkbox("FuncImg", id="funcimg")
+        yield Checkbox("Histology", id="histo")
+
+
+class NewProject(Screen):
+    """
+    Screen object from which a new datashuttle project can be initialized.
+    Appears when 'New Project' is clicked on the project selection screen.
+    """
+
+    def compose(self):
+        yield Label("Configure New Project", id="title")
+        yield Label("Project Name")
+        yield Input(placeholder="e.g. MyProject123", id="ProjectName")
+        yield Label("Local Path")
+        yield Input(placeholder="e.g. C:/User/Documents", id="LocalPath")
+        yield Label("Central Path")
+        yield Input(placeholder="e.g. X:/Some/Path", id="CentralPath")
+        yield Label("Connection Method")
+        yield Select(
+            [("SSH", "ssh"), ("Local Filesystem", "local_filesystem")],
+            prompt="Select connection method",
+            id="ConnectMethod",
+        )
+        yield Label("Select Datatypes")
+        yield TypeBox_Static()
+        yield Button("Configure Project", id="config")
+        yield Button("Return", id="return")
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == "return":
+            app.pop_screen()
+        if event.button.id == "config":
+            pass
+            # project = DataShuttle(self.query_one("#ProjectName").value)
+            # project.make_config_file(
+            #     local_path = self.query_one("#LocalPath").value,
+            #     central_path = self.query_one("#CentralPath").value,
+            #     connection_method = self.query_one("#ConnectMethod"),
+            #     use_ephys = bool(self.query_one("TypeBox_Static").query_one("#ephys").value),
+            #     use_behav = bool(self.query_one("TypeBox_Static").query_one("#behav").value),
+            #     use_funcimg = bool(self.query_one("TypeBox_Static").query_one("#funcimg").value),
+            #     use_histology = bool(self.query_one("TypeBox_Static").query_one("#histo").value)
+            # )
+            # app.project = project
+            # app.switch_screen(TabScreen())
 
 
 class ProjectSelect(Screen):
@@ -44,13 +97,13 @@ class ProjectSelect(Screen):
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "new_project":
-            pass
+            app.push_screen(NewProject())
         else:
             app.project = DataShuttle(str(event.button.id))
             app.push_screen(TabScreen())
 
 
-class TypeBox(Static):
+class TypeBox_Dynamic(Static):
     """
     Dynamically-populated checkbox widget for convenient datatype
     selection during folder creation.
@@ -74,7 +127,7 @@ class TypeBox(Static):
     type_out = reactive("all")
 
     def __init__(self, project_cfg):
-        super(TypeBox, self).__init__()
+        super(TypeBox_Dynamic, self).__init__()
 
         self.type_config = [
             config.removeprefix("use_")
@@ -132,7 +185,7 @@ class TabScreen(Screen):
                 yield Label("Session(s)")
                 yield Input(id="session", placeholder="e.g. ses-001")
                 yield Label("Datatype(s)")
-                yield TypeBox(self.project.cfg)
+                yield TypeBox_Dynamic(self.project.cfg)
                 yield Button("Make Folders", id="make_folder")
                 yield Input(
                     id="errors_on_create_page",

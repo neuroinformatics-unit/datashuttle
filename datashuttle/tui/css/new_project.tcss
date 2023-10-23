@@ -1,0 +1,45 @@
+NewProject {
+    align: center middle;
+}
+NewProject > #title {
+    text-style: bold;
+    content-align: center middle;
+    border: hkey $secondary-darken-1;
+    width: 60%;
+    height: 5;
+}
+NewProject > Label {
+    margin: 2 0 1 0;
+}
+NewProject > Input {
+    width: 60%;
+    align-horizontal: center;
+}
+NewProject > Select {
+    width: 60%
+}
+NewProject > #config {
+    content-align: center middle;
+    align-horizontal: center;
+    margin: 2 0 1 0;
+    height: 4;
+    width: 60%;
+}
+NewProject > #return {
+    dock: right;
+    margin: 1 1 1 2;
+    layer: top;
+}
+TypeBox_Static {
+    layout: grid;
+    grid-size: 2 2;
+    grid-columns: 25;
+    min-height: 5;
+    width: 60%
+}
+TypeBox_Static > ToggleButton {
+    height: 3;
+    margin: 0 0 2 1;
+    content-align: left middle;
+    width: 18;
+}
