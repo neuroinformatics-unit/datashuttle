@@ -17,7 +17,7 @@ from textual.widgets import (
     TabPane,
 )
 
-from datashuttle.datashuttle import DataShuttle
+from datashuttle import DataShuttle
 
 # Change this to any local DataShuttle project for testing!
 project = DataShuttle("test_project")
@@ -118,13 +118,13 @@ class TuiApp(App):
     def on_button_pressed(self, event: Button.Pressed):
         """
         Enables the Make Folder button to read out current input values
-        and use these to call project.make_sub_folders().
+        and use these to call project.make_folders().
         """
 
         if event.button.id == "make_folder":
             sub_dir = self.query_one("#subject").value
             ses_dir = self.query_one("#session").value
-            project.make_sub_folders(
+            project.make_folders(
                 sub_names=sub_dir,
                 ses_names=ses_dir,
                 datatype=self.query_one("TypeBox").type_out,
