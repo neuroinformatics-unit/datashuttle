@@ -40,10 +40,10 @@ class ProjectSelect(Screen):
         yield Label("Select project", id="name_label")
         for name in self.project_names:
             yield Button(name, id=name)
-        yield Button("New project", id="new_project")
+        yield Button("New project", id="project_select_new_project_button")
 
     def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "new_project":
+        if event.button.id == "project_select_new_project_button":
             pass
         else:
             app.project = DataShuttle(str(event.button.id))
