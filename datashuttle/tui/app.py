@@ -85,8 +85,6 @@ class TuiApp(App):
                 )
                 yield Label("Subject(s)", id="sub_label")
                 yield Input(id="subject", placeholder="e.g. sub-001")
-
-                # delete/move before committing
                 yield Label("Session(s)")
                 yield Input(id="session", placeholder="e.g. ses-001")
                 yield Label("Datatype(s)")
