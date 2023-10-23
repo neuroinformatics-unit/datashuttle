@@ -126,10 +126,10 @@ class TuiApp(App):
         self, event: DirectoryTree.DirectorySelected
     ):
         """
-        After double-clicking a directory within the directory-tree
-        widget, replaces contents of the \'Subject\' input widget
-        with directory name. Double-click time is set to the
-        Windows default (500 ms).
+        Enables double-clicking a directory within the directory-tree
+        widget to replace contents of the \'Subject\' and/or \'Session\'
+        input widgets depending on the prefix of the directory selected.
+        Double-click time is set to the Windows default duration (500 ms).
         """
         click_time = monotonic()
         if click_time - self.prev_click_time < 0.5:
