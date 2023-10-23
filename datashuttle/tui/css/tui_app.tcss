@@ -20,6 +20,13 @@
     margin: 0 0 1 0;
     background: $primary-background
 }
+#test_id > Input {
+    width: 50%;
+    content-align: left middle;
+    margin: 0 0 1 0;
+    background: $primary-background
+}
+
 #test_id > #new_project {
     text-style: italic;
     outline: none;
