@@ -19,9 +19,26 @@ from textual.widgets import (
 
 from datashuttle import DataShuttle
 
+
 class TypeBox(Static):
     """
-    Dynamically-populated checkbox widget for convenient datatype selection during folder creation.
+    Dynamically-populated checkbox widget for convenient datatype
+    selection during folder creation.
+
+    Parameters
+    ---------
+
+    project_config: ConfigsClass
+        Configuration dictionary from datashuttle (i.e. `project.cfg`).
+
+    Attributes
+    ----------
+
+    type_out:
+        List of datatypes (e.g. "behav" that will be passed to `make-folders`.)
+
+    type_config:
+        List of datatypes that were set as 'True' during datashuttle project setup
     """
     type_out = reactive("all")
 
