@@ -1,7 +1,7 @@
-ProjectSelect {
+#test_id {
     align: center middle;
 }
-ProjectSelect > #main_title {
+#test_id > #main_title {
     border: hkey $primary;
     content-align: center middle;
     text-style: italic bold;
@@ -11,16 +11,16 @@ ProjectSelect > #main_title {
     height: 5;
     margin: 0 0 2 0;
 }
-ProjectSelect > Label {
+#test_id > Label {
     margin: 0 0 1 0;
 }
-ProjectSelect > Button {
+#test_id > Button {
     width: 50%;
     content-align: left middle;
     margin: 0 0 1 0;
     background: $primary-background
 }
-ProjectSelect > #new_project {
+#test_id > #new_project {
     text-style: italic;
     outline: none;
     background: $primary-background-lighten-1;

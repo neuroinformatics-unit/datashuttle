@@ -3,6 +3,7 @@ from time import monotonic
 
 from textual.app import App, ComposeResult
 from textual.binding import Binding
+from textual.containers import Container
 from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import (
@@ -20,44 +21,6 @@ from textual.widgets import (
 
 from datashuttle import DataShuttle
 from datashuttle.utils.folders import get_existing_project_paths_and_names
-
-
-class ProjectSelect(Screen):
-    """
-    This Screen contains DataShuttle's project selection splashscreen.
-    From here, the user can select an existing project or begin
-    initializing a new project.
-    """
-
-    TITLE = "Select Project"
-
-    def __init__(self):
-        super(ProjectSelect, self).__init__()
-        self.project_names = get_existing_project_paths_and_names()[0]
-
-    def compose(self):
-        yield Label("DataShuttle", id="main_title")
-        yield Input(
-            id="project_select_error_input",
-            placeholder="For testing, errors are shown here.",
-        )
-        yield Label("Select project", id="name_label")
-        for name in self.project_names:
-            yield Button(name, id=name)
-        yield Button("New project", id="project_select_new_project_button")
-
-    def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "project_select_new_project_button":
-            pass
-        else:
-            try:
-                app.project = DataShuttle(
-                    str(event.button.id)
-                )  # TODO: handle error
-            except BaseException as e:
-                self.query_one("#project_select_error_input").value = str(e)
-                return
-            app.push_screen(TabScreen())
 
 
 class TypeBox(Static):
@@ -122,9 +85,9 @@ class TabScreen(Screen):
 
     prev_click_time = 0.0
 
-    def __init__(self):
+    def __init__(self, project):
         super(TabScreen, self).__init__()
-        self.project = app.project
+        self.project = project
 
     def compose(self) -> ComposeResult:
         """
@@ -189,7 +152,7 @@ class TabScreen(Screen):
                 self.query_one("#errors_on_create_page").value = str(e)
 
         if event.button.id == "return":
-            app.pop_screen()
+            self.dismiss()
 
 
 class TuiApp(App):
@@ -202,6 +165,15 @@ class TuiApp(App):
          app.run()
 
     Initialises the TUI event loop and starts the application.
+
+    COMBINED WITH
+
+    This Screen contains DataShuttle's project selection splashscreen.
+    From here, the user can select an existing project or begin
+    initializing a new project.
+
+    TODO: the responsibility for this window is to return a valid project
+    or indicate a new project must be made.
     """
 
     tui_path = Path(__file__).parent
@@ -211,8 +183,35 @@ class TuiApp(App):
         Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
     ]
 
-    def on_ready(self):
-        self.push_screen(ProjectSelect())
+    project_names = get_existing_project_paths_and_names()[
+        0
+    ]  # TODO: need to reload this dynamically when new project added
+
+    def compose(self):
+        yield Container(
+            Label("DataShuttle", id="main_title"),
+            Input(
+                id="project_select_error_input",
+                placeholder="For testing, errors are shown here.",
+            ),
+            Label("Select project", id="name_label"),
+            *[Button(name, id=name) for name in self.project_names],
+            Button("New project", id="project_select_new_project_button"),
+            id="test_id",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == "project_select_new_project_button":
+            pass
+        else:
+            try:
+                # TODO: handle error properly
+                project = DataShuttle(str(event.button.id))
+                self.push_screen(TabScreen(project))
+
+            except BaseException as e:
+                self.query_one("#project_select_error_input").value = str(e)
+                return
 
 
 if __name__ == "__main__":
