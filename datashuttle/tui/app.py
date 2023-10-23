@@ -35,11 +35,10 @@ class TypeBox(Static):
         ]
 
     def compose(self):
-
         for type in self.type_config:
             yield Checkbox(type.title(), id=type, value=1)
 
-    def on_checkbox_changed(self, event: Checkbox.Changed):
+    def on_checkbox_changed(self):
         type_dict = {
             type: self.query_one(f"#{type}").value for type in self.type_config
         }
