@@ -51,9 +51,9 @@ def get_datatype_folders(cfg: Configs) -> dict:
             name="funcimg",
             level="ses",
         ),
-        "histology": Folder(
-            name="histology",
-            level="sub",
+        "anat": Folder(
+            name="anat",
+            level="ses",
         ),
     }
 

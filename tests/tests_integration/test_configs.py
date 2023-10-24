@@ -332,6 +332,7 @@ class TestConfigs(BaseTest):
         any order and just converted to dict?
         """
         bad_order_configs_path = project._datashuttle_path / "new_configs.yaml"
+
         good_order_configs = test_utils.get_test_config_arguments_dict(
             tmp_path, project.project_name
         )

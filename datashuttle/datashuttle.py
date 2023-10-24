@@ -180,7 +180,7 @@ class DataShuttle:
                 folders are made.
         datatype :
                 The datatype to make in the sub / ses folders.
-                (e.g. "ephys", "behav", "histology"). If "all"
+                (e.g. "ephys", "behav", "anat"). If "all"
                 is selected, all datatypes permitted in
                 NeuroBlueprint will be created. If "" is passed
                 no datatype will be created.

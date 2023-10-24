@@ -36,32 +36,32 @@ See the SWC-BIDS [specification](https://swc-bids.neuroinformatics.dev/) for mor
     └── raw_data/
         ├── sub-001/
         │   └── ses-001/
-        │   │   ├── ephys/
-        │   │   └── behav/
-        │   └── histology/
+        │       ├── ephys/
+        │       └── behav/
+        │       └── anat/
         └── sub-002/
             └── ses-001/
             │   ├── behav/
             │   └── imaging/
             └── ses-002/
-            │   └── behav/
-            └── histology/
+                └── behav/
+                └── anat/
 ```
 
 
 ```+
 └── project_name/
-    └── rawdata/
+    └── rawdata/[test_utils.py](tests%2Ftest_utils.py)
         ├── sub-001  /
-        │   ├── ses-001/
-        │   │   ├── ephys
-        │   │   └── behav
-        │   └── histology
+        │   └── ses-001/
+        │       ├── ephys
+        │       └── behav
+        │       └── anat
         └── sub-002/
             ├── ses-001/
             │   ├── behav
             │   └── imaging
-            ├── ses-002/
-            │   └── behav
-            └── histology
+            └── ses-002/
+                └── behav
+                └── anat
 ```

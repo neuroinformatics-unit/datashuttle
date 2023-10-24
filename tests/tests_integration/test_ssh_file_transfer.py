@@ -151,9 +151,9 @@ class TestFileTransfer:
             ["all_datatype"],
             ["behav"],
             ["ephys"],
-            ["histology"],
+            ["anat"],
             ["funcimg"],
-            ["histology", "behav", "all_ses_level_non_datatype"],
+            ["anat", "behav", "all_ses_level_non_datatype"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -296,11 +296,6 @@ class TestFileTransfer:
             if sub == "all_non_sub":
                 extra_arguments += ["is_non_sub == True"]
             else:
-                if "histology" in datatype:
-                    sub_ses_dtype_arguments += [
-                        f"(parent_sub == '{sub}' & (parent_datatype == 'histology' | parent_datatype == 'histology'))"
-                    ]
-
                 for ses in ses_names:
                     if ses == "all_non_ses":
                         extra_arguments += [

@@ -321,7 +321,7 @@ def check_datatype_sub_ses_uploaded_correctly(
         sub_names = glob_basenames(join(base_path_to_check, "*"))
         assert sub_names == sorted(subs_to_upload)
 
-        # Check ses are all uploaded + histology if transferred
+        # Check ses are all uploaded
         if ses_to_upload:
             for sub in subs_to_upload:
                 ses_names = glob_basenames(
@@ -331,42 +331,15 @@ def check_datatype_sub_ses_uploaded_correctly(
                         "*",
                     )
                 )
-                if datatype_to_transfer == ["histology"]:
-                    assert ses_names == ["histology"]
-                    return  # handle the case in which histology
-                    # only is transferred,
-                    # and there are no sessions to transfer.
-
-                copy_datatype_to_transfer = (
-                    check_and_strip_within_sub_data_folders(
-                        ses_names, datatype_to_transfer
-                    )
-                )
                 assert ses_names == sorted(ses_to_upload)
 
                 # check datatype folders in session folder
-                if copy_datatype_to_transfer:
+                if datatype_to_transfer:
                     for ses in ses_names:
                         data_names = glob_basenames(
                             join(base_path_to_check, sub, ses, "*")
                         )
-                        assert data_names == sorted(copy_datatype_to_transfer)
-
-
-def check_and_strip_within_sub_data_folders(ses_names, datatype_to_transfer):
-    """
-    Check if datatype folders at the sub level are picked
-    up when sessions are searched for with wildcard. Remove
-    so that sessions can be explicitly tested next.
-    """
-    if "histology" in datatype_to_transfer:
-        assert "histology" in ses_names
-
-        ses_names.remove("histology")
-        copy_ = copy.deepcopy(datatype_to_transfer)
-        copy_.remove("histology")
-        return copy_
-    return datatype_to_transfer
+                        assert data_names == sorted(datatype_to_transfer)
 
 
 def make_and_check_local_project_folders(

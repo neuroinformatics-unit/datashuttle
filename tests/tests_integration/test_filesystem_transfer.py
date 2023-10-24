@@ -137,12 +137,12 @@ class TestFileTransfer(BaseTest):
             ["behav"],
             ["ephys"],
             ["funcimg"],
-            ["histology"],
+            ["anat"],
             ["behav", "ephys"],
-            ["ephys", "histology"],
-            ["behav", "ephys", "histology"],
-            ["funcimg", "histology", "behav"],
-            ["behav", "ephys", "funcimg", "histology"],
+            ["ephys", "anat"],
+            ["behav", "ephys", "anat"],
+            ["funcimg", "anat", "behav"],
+            ["behav", "ephys", "funcimg", "anat"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -179,10 +179,10 @@ class TestFileTransfer(BaseTest):
     @pytest.mark.parametrize(
         "datatype_to_transfer",
         [
-            ["histology"],
+            ["anat"],
             ["behav", "ephys"],
-            ["funcimg", "histology", "behav"],
-            ["behav", "ephys", "funcimg", "histology"],
+            ["funcimg", "anat", "behav"],
+            ["behav", "ephys", "funcimg", "anat"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload" "download"])
@@ -223,7 +223,7 @@ class TestFileTransfer(BaseTest):
     @pytest.mark.parametrize("sub_idx_to_upload", [[0], [1, 2], [0, 1, 2]])
     @pytest.mark.parametrize(
         "datatype_to_transfer",
-        [["ephys"], ["funcimg", "histology", "behav"]],
+        [["ephys"], ["funcimg", "anat", "behav"]],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_specific_ses(
@@ -429,10 +429,10 @@ class TestFileTransfer(BaseTest):
         the version in source is newer than target.
         """
         path_to_test_file = (
-            Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
+            Path("rawdata") / "sub-001" / "ses-001" / "anat" / "test_file.txt"
         )
 
-        project.make_folders("sub-001", datatype="histology")
+        project.make_folders("sub-001", "ses-001", datatype="anat")
 
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         central_test_file_path = (

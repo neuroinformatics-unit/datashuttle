@@ -46,7 +46,7 @@ def get_datatypes() -> List[str]:
     Canonical list of datatype flags based on
     NeuroBlueprint.
     """
-    return ["ephys", "behav", "funcimg", "histology"]
+    return ["ephys", "behav", "funcimg", "anat"]
 
 
 def get_flags() -> List[str]:

@@ -134,16 +134,14 @@ class TestMakeFolders(BaseTest):
                     join(base_folder, sub, ses, "funcimg")
                 )
                 test_utils.check_and_cd_folder(
-                    join(base_folder, sub, "histology")
+                    join(base_folder, sub, ses, "anat")
                 )
 
     @pytest.mark.parametrize("behav", [True, False])
     @pytest.mark.parametrize("ephys", [True, False])
     @pytest.mark.parametrize("funcimg", [True, False])
-    @pytest.mark.parametrize("histology", [True, False])
-    def test_every_datatype_passed(
-        self, project, behav, ephys, funcimg, histology
-    ):
+    @pytest.mark.parametrize("anat", [True, False])
+    def test_every_datatype_passed(self, project, behav, ephys, funcimg, anat):
         """
         Check every combination of data type used and ensure only the
         correct ones are made.
@@ -157,8 +155,8 @@ class TestMakeFolders(BaseTest):
             datatypes_to_make.append("ephys")
         if funcimg:
             datatypes_to_make.append("funcimg")
-        if histology:
-            datatypes_to_make.append("histology")
+        if anat:
+            datatypes_to_make.append("anat")
 
         # Make folder tree
         subs = ["sub-001", "sub-002"]
@@ -176,7 +174,7 @@ class TestMakeFolders(BaseTest):
                 "behav": behav,
                 "ephys": ephys,
                 "funcimg": funcimg,
-                "histology": histology,
+                "anat": anat,
             },
         )
 
@@ -188,7 +186,7 @@ class TestMakeFolders(BaseTest):
         # Change folder names to custom names
         project.cfg.datatype_folders["ephys"].name = "change_ephys"
         project.cfg.datatype_folders["behav"].name = "change_behav"
-        project.cfg.datatype_folders["histology"].name = "change_histology"
+        project.cfg.datatype_folders["anat"].name = "change_anat"
         project.cfg.datatype_folders["funcimg"].name = "change_funcimg"
 
         # Make the folders
@@ -215,7 +213,7 @@ class TestMakeFolders(BaseTest):
         )
 
         test_utils.check_and_cd_folder(
-            join(base_folder, sub, "change_histology")
+            join(base_folder, sub, ses, "change_anat")
         )
 
     @pytest.mark.parametrize(
@@ -223,8 +221,8 @@ class TestMakeFolders(BaseTest):
         [
             ["all"],
             ["ephys", "behav"],
-            ["ephys", "behav", "histology"],
-            ["ephys", "behav", "histology", "funcimg"],
+            ["ephys", "behav", "anat"],
+            ["ephys", "behav", "anat", "funcimg"],
             ["funcimg", "ephys"],
             ["funcimg"],
         ],
@@ -244,13 +242,10 @@ class TestMakeFolders(BaseTest):
         base_folder = test_utils.get_top_level_folder_path(project)
 
         # Check at the subject level
-        sub_file_names = test_utils.glob_basenames(
+        test_utils.glob_basenames(
             join(base_folder, sub, "*"),
             exclude=ses,
         )
-        if "histology" in files_to_test:
-            assert "histology" in sub_file_names
-            files_to_test.remove("histology")
 
         # Check at the session level
         ses_file_names = test_utils.glob_basenames(
@@ -259,7 +254,9 @@ class TestMakeFolders(BaseTest):
         )
 
         if files_to_test == ["all"]:
-            assert ses_file_names == sorted(["ephys", "behav", "funcimg"])
+            assert ses_file_names == sorted(
+                ["ephys", "behav", "funcimg", "anat"]
+            )
         else:
             assert ses_file_names == sorted(files_to_test)
 
