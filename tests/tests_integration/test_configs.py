@@ -38,9 +38,9 @@ class TestConfigs(BaseTest):
     @pytest.mark.parametrize(
         "bad_pattern",
         [
-            f"~/my/path/{TEST_PROJECT_NAME}",
+            "~/my/path",
             ".",
-            f"../my/path/{TEST_PROJECT_NAME}",
+            "../my/path",
         ],
     )
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
@@ -56,7 +56,10 @@ class TestConfigs(BaseTest):
 
         Note pathlib strips "./" so not checked.
         """
-        good_pattern = f"/my/path/{TEST_PROJECT_NAME}"
+        if bad_pattern != ".":
+            bad_pattern = f"{bad_pattern}/{project.project_name}"
+        good_pattern = f"/my/path/{project.project_name}"
+
         if path_type == "local_path":
             local_path = bad_pattern
             central_path = good_pattern
