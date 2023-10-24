@@ -137,15 +137,15 @@ make-folders -sub 001@TO@003 -ses 010_@TIME@ -dt behav funcimg anat
 
 ```
 ├── sub-001/
-│   ├── ses-010_time-160248/
-│   │   ├── behav
-│   │   └── funcimg
-│   └── anat
+│   └── ses-010_time-160248/
+│       ├── behav
+│       └── funcimg
+│       └── anat
 ├── sub-002/
-│   ├── ses-010_time-160248/
-│   │   ├── behav
-│   │   └── funcimg
-│   └── anat
+│   └── ses-010_time-160248/
+│       └── behav
+│       └── funcimg
+│       └── anat
 └── sub-003/
     └── ses-010_time-160248/
         ├── behav
@@ -516,7 +516,6 @@ Below, a number of examples are given to exemplify how these arguments effect da
     ├── a_project_related_file.json
     ├── sub-001/
     │   ├── sub-001_extra-file.json
-    │   ├── anat
     │   └── ses-001/
     │       ├── ses-001_extra-file.json
     │       ├── behav/
@@ -525,7 +524,6 @@ Below, a number of examples are given to exemplify how these arguments effect da
     │           └── ...
     └── sub-002/
         ├── sub-002_extra-file.json
-        ├── anat
         └── ses-001/
 			├── behav/
 			│   └── ...
