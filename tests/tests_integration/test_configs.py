@@ -35,6 +35,48 @@ class TestConfigs(BaseTest):
             "Use make_config_file() to setup before continuing."
         )
 
+    @pytest.mark.parametrize(
+        "bad_pattern",
+        [
+            "~/my/path",
+            ".",
+            "../my/path",
+        ],
+    )
+    @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
+    def test_bad_paths(self, project, bad_pattern, path_type):
+        """
+        "~", "." and "../" syntax is not supported because
+        it does not work with rclone. Theoretically it
+        could be supported by checking for "." etc. and
+        filling in manually, but it does not seem robust.
+
+        Here check an error is raised when path contains
+        incorrect syntax.
+
+        Note pathlib strips "./" so not checked.
+        """
+        if bad_pattern != ".":
+            bad_pattern = f"{bad_pattern}/{project.project_name}"
+        good_pattern = f"/my/path/{project.project_name}"
+
+        if path_type == "local_path":
+            local_path = bad_pattern
+            central_path = good_pattern
+        else:
+            local_path = good_pattern
+            central_path = bad_pattern
+
+        with pytest.raises(BaseException) as e:
+            project.make_config_file(
+                local_path,
+                central_path,
+                "local_filesystem",
+                use_behav=True,
+            )
+
+        assert "must contain the full folder path with no " in str(e.value)
+
     def test_no_ssh_options_set_on_make_config_file(self, no_cfg_project):
         """
         Check that program will assert if not all ssh options
