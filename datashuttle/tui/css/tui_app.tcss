@@ -53,8 +53,8 @@ QuitScreen {
 QuitScreen > #quitscreen_top_container {
     height: 15;
     width: 65;
-    border: thick $background 80%;
-    background: $surface;
+    border: thick rgb(140, 12, 0);
+    background: $primary-background;
     align: center middle;
  }
 
