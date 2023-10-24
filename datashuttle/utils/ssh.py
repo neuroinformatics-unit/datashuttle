@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 import fnmatch
 import getpass
 import stat
+import sys
 from pathlib import Path
 from typing import Any, List, Optional, Tuple
 
@@ -45,6 +46,17 @@ def setup_ssh_key(
 
     log : log if True, logger must already be initialised.
     """
+    if not sys.stdin.isatty():
+        utils.raise_error(
+            f"Attempting to run outside of a TTY terminal. "
+            f"This may happen if attempting to run in an IDE console. "
+            f"`getpass` (used for ssh password input) cannot run. "
+            f"Try running using the command-line-interface with "
+            f"'datashuttle {cfg.project_name} "
+            f"setup-ssh-connection-to-central-server' "
+            f"or in a terminal rather than IDE console."
+        )
+
     generate_and_write_ssh_key(cfg.ssh_key_path)
 
     password = getpass.getpass(
