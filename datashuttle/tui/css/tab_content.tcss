@@ -28,7 +28,6 @@ DirectoryTree > .directory-tree--folder:focus {
 
 #tabscreen_directorytree:focus .tree--cursor {
     background: $panel-lighten-2;
-}
 
 #tabscreen_directorytree:focus .tree--guides-selected {
     color: $success;
