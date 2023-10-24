@@ -23,7 +23,10 @@ from datashuttle.utils.folders import get_existing_project_paths_and_names
 
 
 class QuitScreen(ModalScreen):
-    """Screen with a dialog to quit."""
+    """
+    Screen that renders a modal dialog window (a pop up window that
+    means no other widgets can be changed until it is closed).
+    """
 
     def __init__(self, message):
         super(QuitScreen, self).__init__()
@@ -189,21 +192,16 @@ class TuiApp(App):
     """
     The main app page for the DataShuttle TUI.
 
+    This Screen contains DataShuttle's project selection splashscreen.
+    From here, the user can select an existing project or begin
+    initializing a new project.
+
     Running this application in a main block as below
     if __name__ == __main__:
          app = MyApp()
          app.run()
 
     Initialises the TUI event loop and starts the application.
-
-    COMBINED WITH
-
-    This Screen contains DataShuttle's project selection splashscreen.
-    From here, the user can select an existing project or begin
-    initializing a new project.
-
-    TODO: the responsibility for this window is to return a valid project
-    or indicate a new project must be made.
     """
 
     tui_path = Path(__file__).parent
