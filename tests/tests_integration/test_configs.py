@@ -54,7 +54,7 @@ class TestConfigs(BaseTest):
         Here check an error is raised when path contains
         incorrect syntax.
 
-        Note pathlib strings "./" so not checked.
+        Note pathlib strips "./" so not checked.
         """
         good_pattern = f"/my/path/{TEST_PROJECT_NAME}"
         if path_type == "local_path":
