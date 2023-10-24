@@ -72,7 +72,6 @@ class TestConfigs(BaseTest):
                 local_path,
                 central_path,
                 "local_filesystem",
-                use_behav=True,
             )
 
         assert "must contain the full folder path with no " in str(e.value)
