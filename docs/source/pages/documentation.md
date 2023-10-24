@@ -910,9 +910,10 @@ project.upload("all", "all", "all_ses_level_non_datatype")
 
 Would upload:
 
-- All non-*subject* files in the *top-level* folder (_rawdata_)
+- All non-*subject* files in the *top-level* folder (i.e. `a_project_related_file.json`.)
 - The `sub-001_extra_file.json` and `sub-002_extra_file.json`
-- For `sub-001`, the file `ses-001_extra_file.json`. For `sub-002`, no other files are transferred because there is no non-*datatype* files at the *session* level.
+- For `sub-001`, the file `ses-001_extra_file.json`.
+For `sub-002`, no other files are transferred because there is no non-*datatype* files at the *session* level.
 
 
 2) The next two examples show the effect of selecting `-dt all` vs. `-dt all_datatype`. The command:
@@ -925,7 +926,7 @@ datashuttle \
 my_first_project \
 upload \
 -sub 001 \
--ses all_non_ses \
+-ses all \
 -dt all
 ```
 :::
@@ -936,14 +937,14 @@ datashuttle ^
 my_first_project ^
 upload ^
 -sub 001 ^
--ses all_non_ses ^
+-ses all ^
 -dt all
 ```
 :::
 
 :::{tab-item} Python API
 ```{code-block} console
-project.upload("sub-001", "all_non_ses", "all")
+project.upload("sub-001", "all", "all")
 ```
 :::
 ::::
@@ -951,8 +952,8 @@ project.upload("sub-001", "all_non_ses", "all")
 Would upload:
 
 - Contents residing in the `sub-001` folder only.
--  The file `sub-001_extra-file.json`
-- All *datatype* folder contents (`anat`, `behav`, `ephys`)
+-  The file `sub-001_extra-file.json` and *session* folders.
+- All *datatype* folder contents (`behav`, `ephys`) and non-*datatype* files (`ses-001_extra-file.json`).
 
 The command:
 
@@ -964,7 +965,7 @@ datashuttle \
 my_first_project \
 upload \
 -sub 001 \
--ses all_sub \
+-ses all \
 -dt all_datatype
 ```
 :::
@@ -975,7 +976,7 @@ datashuttle ^
 my_first_project ^
 upload ^
 -sub 001 ^
--ses all_sub ^
+-ses all ^
 -dt all_datatype
 ```
 :::
@@ -984,7 +985,7 @@ upload ^
 ```{code-block} python
 project.make_folders(
 	sub_names="001",
-	ses_names="all_sub",
+	ses_names="all",
 	datatype="all_datatype"
 )
 ```
@@ -996,7 +997,8 @@ project.make_folders(
 Would upload:
 
 - Contents residing in the `sub-001` folder only.
-- All *datatype* folder contents (`anat`, `behav`, `ephys`)
+- The *session* folder and all *datatype* folder contents (`behav`, `ephys`)
+but not the non-*datatype* file `ses-001_extra-file.json`.
 
 3) The final example shows the effect of transferring `all_non_sub` files only. The command:
 
