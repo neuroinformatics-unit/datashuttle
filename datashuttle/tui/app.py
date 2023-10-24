@@ -142,8 +142,6 @@ class TabScreen(Screen):
             with TabPane("Transfer", id="tabscreen_transfer_tab"):
                 yield Label("Transfer; Seems to work!")
 
-    # yield Footer()
-
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
     ):
