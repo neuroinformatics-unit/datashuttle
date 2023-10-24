@@ -107,7 +107,7 @@ class TabScreen(Screen):
     a pre-configured project.
     """
 
-    TITLE = "DataShuttle"
+    TITLE = "Manage Project"
 
     prev_click_time = 0.0
 
@@ -122,7 +122,7 @@ class TabScreen(Screen):
         """
         yield Header()
         yield Button("Main Menu", id="tabscreen_main_menu_button")
-        with TabbedContent():
+        with TabbedContent(id="tabscreen_tabbed_content"):
             with TabPane("Create", id="tabscreen_create_tab"):
                 yield DirectoryTree(
                     str(self.project.cfg.data["local_path"]),
@@ -186,13 +186,44 @@ class TabScreen(Screen):
             self.dismiss()
 
 
+class ProjectSelector(Screen):
+    """
+    This Screen contains DataShuttle's project selection screen.
+    From here, the user can select an existing project or begin
+    initializing a new project.
+    """
+
+    TITLE = "Select Project"
+
+    def __init__(self, mainwindow):
+        super(ProjectSelector, self).__init__()
+
+        self.project_names = get_existing_project_paths_and_names()[0]
+        self.mainwindow = mainwindow
+
+    def compose(self):
+        yield Header(id="project_select_header")
+        yield Button("Main Menu", id="project_select_main_menu_button")
+        yield Container(
+            *[Button(name, id=name) for name in self.project_names],
+            id="project_select_top_container",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id in self.project_names:
+            try:
+                project = DataShuttle(str(event.button.id))
+            except BaseException as e:
+                self.mainwindow.show_modal_error_dialog(str(e))
+                return
+            self.dismiss(project)
+        elif event.button.id == "project_select_main_menu_button":
+            self.dismiss(False)
+
+
 class TuiApp(App):
     """
     The main app page for the DataShuttle TUI.
-
-    This Screen contains DataShuttle's project selection splashscreen.
-    From here, the user can select an existing project or begin
-    initializing a new project.
 
     Running this application in a main block as below
     if __name__ == __main__:
@@ -209,27 +240,25 @@ class TuiApp(App):
         Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
     ]
 
-    # TODO: need to reload this dynamically when new project added
-    project_names = get_existing_project_paths_and_names()[0]
-
     def compose(self):
         yield Container(
-            Label("DataShuttle", id="mainwindow_main_title_label"),
-            Label("Select project", id="mainwindow_select_project_label"),
-            *[Button(name, id=name) for name in self.project_names],
-            Button("New project", id="mainwindow_select_new_project_button"),
-            id="mainwindow_top_container",
+            Label("DataShuttle", id="mainwindow_banner_label"),
+            Button(
+                "Select Existing Project",
+                id="mainwindow_existing_project_button",
+            ),
+            Button("Make New Project", id="mainwindow_new_project_button"),
+            Button("Settings", id="mainwindow_settings_button"),
+            Button("Get Help", id="mainwindow_get_help_button"),
+            id="mainwindow_contents_container",
         )
 
     def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "mainwindow_select_new_project_button":
-            pass
-        elif event.button.id in self.project_names:
-            try:
-                project = DataShuttle(str(event.button.id))
-            except BaseException as e:
-                self.show_modal_error_dialog(str(e))
-                return
+        if event.button.id == "mainwindow_existing_project_button":
+            self.push_screen(ProjectSelector(self), self.load_project_page)
+
+    def load_project_page(self, project):
+        if project:
             self.push_screen(TabScreen(self, project))
 
     def show_modal_error_dialog(self, message):

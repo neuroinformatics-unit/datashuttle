@@ -1,22 +1,68 @@
-#mainwindow_top_container {
-    align: center middle;
-    overflow: scroll;
+
+/* Mainwindow ------------------------------------------------------ */
+
+#mainwindow_contents_container {
+    align: center top;
+    padding: 1 0 0 0;
 }
-#mainwindow_top_container > #mainwindow_main_title_label {
+
+/* TODO: avoid reuse of button CSS */
+#mainwindow_contents_container > Button {
+    width: 50%;
+    align: center middle;
+    content-align: center middle;
+    margin: 0 0 1 0;
+    background: $panel;
+    border-top: tall $panel-lighten-1;
+    border-bottom: tall $panel-lighten-1;
+    border-left: tall $panel-lighten-1;
+    border-right: tall $panel-lighten-1;
+}
+#mainwindow_contents_container > Button:focus {
+    text-style: bold;
+}
+#mainwindow_contents_container > Button:hover {
+    background: $panel-lighten-2;
+}
+#mainwindow_banner_label {
     border: hkey $primary;
     content-align: center middle;
     text-style: italic bold;
     color: $text;
-    width: 49%;
-    padding: 1 0 0 0;
+    width: 50%;
+    padding: 0 0 0 0;
     height: 5;
     margin: 0 0 2 0;
+    align: center middle;
 }
-#mainwindow_top_container > Label {
+
+/* Project Select ------------------------------------------------------ */
+
+#project_select_main_menu_button {
+    layer: top;
+    dock: right;
+    margin: 0 0 0 0;
+    padding: 0 0 0 0;
+    height: 3;
+}
+#project_select_header {
     margin: 0 0 1 0;
 }
-#mainwindow_top_container > Button {
+#project_select_main_menu_container{
+    width: 100%;
+    align: right middle;
+    height: 4;
+    padding: 1 4 0 0;
+}
+#project_select_top_container {
+    align: center middle;
+    overflow: scroll;
+    margin: 5 2 0 0;
+    content-align: center middle;
+}
+#project_select_top_container > Button {
     width: 50%;
+    align: center middle;
     content-align: left middle;
     margin: 0 0 1 0;
     background: $panel;
@@ -25,26 +71,27 @@
     border-left: tall $panel-lighten-1;
     border-right: tall $panel-lighten-1;
 }
-#mainwindow_top_container > Button:focus {
+#project_select_top_container > Button:focus {
     text-style: bold;
 }
-#mainwindow_top_container > Button:hover {
+#project_select_top_container > Button:hover {
     background: $panel-lighten-2;
 }
 
-#mainwindow_top_container > Input {
+#project_select_top_container > Input {
     width: 50%;
     content-align: left middle;
     margin: 0 0 1 0;
     background: $primary-background
 }
 
-#mainwindow_top_container > #mainwindow_select_new_project_button {
+#project_select_top_container > #mainwindow_existing_project_button {
     text-style: italic;
     outline: none;
     background: $primary-background-lighten-1;
 }
 
+/* Quit Screen ------------------------------------------------------ */
 
 QuitScreen {
     align: center middle;
