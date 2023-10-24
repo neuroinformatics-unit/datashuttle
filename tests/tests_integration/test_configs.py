@@ -324,9 +324,7 @@ class TestConfigs(BaseTest):
                     f"Config file was not updated."
                 )
 
-    def test_supplied_config_file_changes_wrong_order(
-        self, project, tmp_path
-    ):
+    def test_supplied_config_file_changes_wrong_order(self, project, tmp_path):
         """
         Test the situation when a config file is passed with variables in
         the wrong order.
@@ -334,9 +332,7 @@ class TestConfigs(BaseTest):
         TODO: why should this matter? They should be able to be in
         any order and just converted to dict?
         """
-        bad_order_configs_path = (
-            project._datashuttle_path / "new_configs.yaml"
-        )
+        bad_order_configs_path = project._datashuttle_path / "new_configs.yaml"
         good_order_configs = test_utils.get_test_config_arguments_dict(
             tmp_path, project.project_name
         )
