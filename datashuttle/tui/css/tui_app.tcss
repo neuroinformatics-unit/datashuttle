@@ -1,8 +1,8 @@
-#test_id {
+#mainwindow_top_container {
     align: center middle;
     overflow: scroll;
 }
-#test_id > #main_title {
+#mainwindow_top_container > #mainwindow_main_title_label {
     border: hkey $primary;
     content-align: center middle;
     text-style: italic bold;
@@ -12,10 +12,10 @@
     height: 5;
     margin: 0 0 2 0;
 }
-#test_id > Label {
+#mainwindow_top_container > Label {
     margin: 0 0 1 0;
 }
-#test_id > Button {
+#mainwindow_top_container > Button {
     width: 50%;
     content-align: left middle;
     margin: 0 0 1 0;
@@ -25,21 +25,21 @@
     border-left: tall $panel-lighten-1;
     border-right: tall $panel-lighten-1;
 }
-#test_id > Button:focus {
+#mainwindow_top_container > Button:focus {
     text-style: bold;
 }
-#test_id > Button:hover {
+#mainwindow_top_container > Button:hover {
     background: $panel-lighten-2;
 }
 
-#test_id > Input {
+#mainwindow_top_container > Input {
     width: 50%;
     content-align: left middle;
     margin: 0 0 1 0;
     background: $primary-background
 }
 
-#test_id > #new_project {
+#mainwindow_top_container > #mainwindow_select_new_project_button {
     text-style: italic;
     outline: none;
     background: $primary-background-lighten-1;
@@ -50,7 +50,7 @@ QuitScreen {
     align: center middle;
 }
 
-QuitScreen > #dialog {
+QuitScreen > #quitscreen_top_container {
     height: 15;
     width: 65;
     border: thick $background 80%;
@@ -58,15 +58,15 @@ QuitScreen > #dialog {
     align: center middle;
  }
 
-#label_x {
+#quitscreen_message_container {
     align: center middle;
     overflow: hidden scroll;
 }
 
-#real_label {
+#quitscreen_message_label {
     text-align: center;
 }
 
-#button_x {
+#quitscreen_ok_button {
     align: center bottom
 }

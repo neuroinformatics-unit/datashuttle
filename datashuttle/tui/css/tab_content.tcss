@@ -5,7 +5,7 @@ TabScreen > TabbedContent {
     width: 90%;
     height: 100%
 }
-TabScreen > #return {
+TabScreen > #tabscreen_main_menu_button {
     layer: top;
     dock: right;
     margin: 2 1 0 0;
@@ -18,7 +18,7 @@ DirectoryTree > .directory-tree--folder:focus {
     color: $success;
 }
 
-#FileTree {
+#tabscreen_directorytree {
     dock: left;
     width: 45%;
     padding: 1 2 1 2;
@@ -26,11 +26,11 @@ DirectoryTree > .directory-tree--folder:focus {
     border: tall wide $panel-lighten-1;
 }
 
-#FileTree:focus .tree--cursor {
-    background: $panel;
+#tabscreen_directorytree:focus .tree--cursor {
+    background: $panel-lighten-2;
 }
 
-#FileTree:focus .tree--guides-selected {
+#tabscreen_directorytree:focus .tree--guides-selected {
     color: $success;
     background: $panel;
 }
@@ -40,18 +40,18 @@ DirectoryTree > .directory-tree--folder:focus {
 /* Unfortunately there is a bug with Input and hover, the response is very slow.
 and it also effects other widgets */
 
-#create > Input {
+#tabscreen_create_tab > Input {
     border: tall $panel-lighten-1;
 }
 
 /* Labels ------------------------------------------------------------------- */
 
-#create > Label {
+#tabscreen_create_tab > Label {
     width: 100%;
     margin: 1 0 1 1;
     text-style: bold;
 }
-#create > #sub_label {
+#tabscreen_create_tab > #tabscreen_subject_label {
     margin: 1 0 1 1;
     text-style: bold;
 }
@@ -59,13 +59,13 @@ and it also effects other widgets */
 
 /* Toggle Buttons ----------------------------------------------------------- */
 
-#create > TypeBox {
+#tabscreen_create_tab > TabScreenCheckboxes {
     layout: grid;
     grid-size: 4 1;
     grid-columns: 15;
     grid_rows: 5;
 }
-TypeBox > ToggleButton {
+TabScreenCheckboxes > ToggleButton {
     margin: 0 0 2 1 ;
     content-align: left middle;
     width: 15;
@@ -74,16 +74,16 @@ TypeBox > ToggleButton {
     border: transparent;
 }
 
-TypeBox > ToggleButton:focus {
+TabScreenCheckboxes > ToggleButton:focus {
     border: transparent;
 }
-TypeBox > ToggleButton:focus > .toggle--label {
+TabScreenCheckboxes > ToggleButton:focus > .toggle--label {
     text-style: none;
 }
-TypeBox > ToggleButton.-on > .toggle--button {
+TabScreenCheckboxes > ToggleButton.-on > .toggle--button {
     color: $success;
 }
-TypeBox > ToggleButton:hover > .toggle--button {
+TabScreenCheckboxes > ToggleButton:hover > .toggle--button {
     background: $panel-lighten-3;
 }
 
