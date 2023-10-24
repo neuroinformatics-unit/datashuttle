@@ -104,7 +104,7 @@ def make_datatype_folders(
     datatype_items = cfg.get_datatype_items(datatype)
 
     for datatype_key, datatype_folder in datatype_items:  # type: ignore
-        if datatype_folder.used and datatype_folder.level == level:
+        if datatype_folder.level == level:
             datatype_path = sub_or_ses_level_path / datatype_folder.name
 
             make_folders(datatype_path, log)

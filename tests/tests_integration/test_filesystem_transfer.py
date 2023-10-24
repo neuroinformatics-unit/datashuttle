@@ -47,7 +47,7 @@ class TestFileTransfer(BaseTest):
             os.path.join(base_path_to_check, project.cfg.top_level_folder),
             subs,
             sessions,
-            test_utils.get_default_folder_used(),
+            test_utils.get_all_folders_used(),
         )
 
     def test_empty_folder_is_not_transferred(self, project):
@@ -128,7 +128,7 @@ class TestFileTransfer(BaseTest):
                 os.path.join(base_path_to_check, project.cfg.top_level_folder),
                 subs,
                 sessions,
-                test_utils.get_default_folder_used(),
+                test_utils.get_all_folders_used(),
             )
 
     @pytest.mark.parametrize(
@@ -432,7 +432,8 @@ class TestFileTransfer(BaseTest):
             Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
         )
 
-        project.make_folders("sub-001")
+        project.make_folders("sub-001", datatype="histology")
+
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         central_test_file_path = (
             project.cfg["central_path"] / path_to_test_file
@@ -531,7 +532,9 @@ class TestFileTransfer(BaseTest):
 
     def setup_specific_file_or_folder_files(self, project):
         """ """
-        project.make_folders(["sub-001", "sub-002"], "ses-003")
+        project.make_folders(
+            ["sub-001", "sub-002"], "ses-003", ["behav", "ephys"]
+        )
 
         path_to_test_file_behav = (
             Path("rawdata")

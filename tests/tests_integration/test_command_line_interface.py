@@ -93,8 +93,6 @@ class TestCommandLineInterface(BaseTest):
         CLI to make config file with defaults and check
         the internal arguments are ordered and in
         the expected form. Strip flags that are always false.
-        Note use_behav is always on as a required argument,
-        as at least one use_x argument must be true.
 
         Note any bool option is automatically included in the kwargs
         output from the CLI and passed to API. This is because initially
@@ -382,7 +380,7 @@ class TestCommandLineInterface(BaseTest):
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=subs,
             sessions=ses,
-            folder_used=test_utils.get_default_folder_used(),
+            folder_used=test_utils.get_all_folders_used(),
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -436,10 +434,7 @@ class TestCommandLineInterface(BaseTest):
             base_path_to_check=os.path.join(
                 base_path_to_check, project.cfg.top_level_folder
             ),
-            datatype_to_transfer=[
-                flag.split("use_")[1]
-                for flag in canonical_configs.get_datatypes()
-            ],
+            datatype_to_transfer=canonical_configs.get_datatypes(),
             subs_to_upload=subs,
             ses_to_upload=sessions,
         )
@@ -495,7 +490,7 @@ class TestCommandLineInterface(BaseTest):
         Check that error from API are propagated to CLI
         """
         _, stderr = test_utils.run_cli(
-            f"make_config_file {clean_project_name} {clean_project_name} ssh --use_behav",
+            f"make_config_file {clean_project_name} {clean_project_name} ssh",
             clean_project_name,
         )
 

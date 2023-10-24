@@ -159,7 +159,7 @@ class DataShuttle:
         self,
         sub_names: Union[str, list],
         ses_names: Optional[Union[str, list]] = None,
-        datatype: Union[List[str], str] = "all",
+        datatype: str = "",
     ) -> None:
         """
         Create a subject / session folder tree in the project
@@ -180,11 +180,10 @@ class DataShuttle:
                 folders are made.
         datatype :
                 The datatype to make in the sub / ses folders.
-                (e.g. "ephys", "behav", "histology"). Only datatypes
-                that are enabled in the configs (e.g. use_behav) will be
-                created. If "all" is selected, folders will be created
-                for all datatype enabled in config. Use empty string "" for
-                none.
+                (e.g. "ephys", "behav", "histology"). If "all"
+                is selected, all datatypes permitted in
+                NeuroBlueprint will be created. If "" is passed
+                no datatype will be created.
 
         Notes
         -----
@@ -616,10 +615,6 @@ class DataShuttle:
         overwrite_old_files: bool = False,
         transfer_verbosity: str = "v",
         show_transfer_progress: bool = False,
-        use_ephys: bool = False,
-        use_behav: bool = False,
-        use_funcimg: bool = False,
-        use_histology: bool = False,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -680,18 +675,6 @@ class DataShuttle:
 
         show_transfer_progress :
             If true, the real-time progress of file transfers will be printed.
-
-        use_ephys :
-            if True, will allow ephys folder creation
-
-        use_funcimg :
-            if True, will allow funcimg folder creation
-
-        use_histology :
-            if True, will allow histology folder creation
-
-        use_behav :
-            if True, will allow behav folder creation
         """
         self._start_log(
             "make-config-file",
@@ -712,10 +695,6 @@ class DataShuttle:
                 "overwrite_old_files": overwrite_old_files,
                 "transfer_verbosity": transfer_verbosity,
                 "show_transfer_progress": show_transfer_progress,
-                "use_ephys": use_ephys,
-                "use_behav": use_behav,
-                "use_funcimg": use_funcimg,
-                "use_histology": use_histology,
             },
         )
 
