@@ -32,16 +32,19 @@ class QuitScreen(ModalScreen):
 
     def compose(self) -> ComposeResult:
         yield Container(
-            Container(Static(self.message, id="real_label"), id="label_x"),
-            Container(Button("OK"), id="button_x"),
-            id="dialog",
+            Container(
+                Static(self.message, id="quitscreen_message_label"),
+                id="quitscreen_message_container",
+            ),
+            Container(Button("OK"), id="quitscreen_ok_button"),
+            id="quitscreen_top_container",
         )
 
     def on_button_pressed(self) -> None:
         self.dismiss()
 
 
-class TypeBox(Static):
+class TabScreenCheckboxes(Static):
     """
     Dynamically-populated checkbox widget for convenient datatype
     selection during folder creation.
@@ -65,7 +68,7 @@ class TypeBox(Static):
     type_out = reactive("all")
 
     def __init__(self, project_cfg):
-        super(TypeBox, self).__init__()
+        super(TabScreenCheckboxes, self).__init__()
 
         self.type_config = [
             config.removeprefix("use_")
@@ -75,7 +78,9 @@ class TypeBox(Static):
 
     def compose(self):
         for type in self.type_config:
-            yield Checkbox(type.title(), id=type, value=1)
+            yield Checkbox(
+                type.title(), id=f"tabscreen_{type}_checkbox", value=1
+            )
 
     def on_checkbox_changed(self):
         """
@@ -113,20 +118,25 @@ class TabScreen(Screen):
         Composes widgets to the TUI in the order specified.
         """
         yield Header()
-        yield Button("Main Menu", id="return")
+        yield Button("Main Menu", id="tabscreen_main_menu_button")
         with TabbedContent():
-            with TabPane("Create", id="create"):
+            with TabPane("Create", id="tabscreen_create_tab"):
                 yield DirectoryTree(
-                    str(self.project.cfg.data["local_path"]), id="FileTree"
+                    str(self.project.cfg.data["local_path"]),
+                    id="tabscreen_directorytree",
                 )
-                yield Label("Subject(s)", id="sub_label")
-                yield Input(id="subject", placeholder="e.g. sub-001")
+                yield Label("Subject(s)", id="tabscreen_subject_label")
+                yield Input(
+                    id="tabscreen_subject_input", placeholder="e.g. sub-001"
+                )
                 yield Label("Session(s)")
-                yield Input(id="session", placeholder="e.g. ses-001")
+                yield Input(
+                    id="tabscreen_session_input", placeholder="e.g. ses-001"
+                )
                 yield Label("Datatype(s)")
-                yield TypeBox(self.project.cfg)
-                yield Button("Make Folders", id="make_folder")
-            with TabPane("Transfer", id="transfer"):
+                yield TabScreenCheckboxes(self.project.cfg)
+                yield Button("Make Folders", id="tabscreen_make_folder_button")
+            with TabPane("Transfer", id="tabscreen_transfer_tab"):
                 yield Label("Transfer; Seems to work!")
 
     # yield Footer()
@@ -143,9 +153,13 @@ class TabScreen(Screen):
         click_time = monotonic()
         if click_time - self.prev_click_time < 0.5:
             if event.path.stem.startswith("sub-"):
-                self.query_one("#subject").value = str(event.path.stem)
+                self.query_one("#tabscreen_subject_input").value = str(
+                    event.path.stem
+                )
             if event.path.stem.startswith("ses-"):
-                self.query_one("#session").value = str(event.path.stem)
+                self.query_one("#tabscreen_session_input").value = str(
+                    event.path.stem
+                )
         self.prev_click_time = click_time
 
     def on_button_pressed(self, event: Button.Pressed):
@@ -153,21 +167,21 @@ class TabScreen(Screen):
         Enables the Make Folder button to read out current input values
         and use these to call project.make_folders().
         """
-        if event.button.id == "make_folder":
-            sub_dir = self.query_one("#subject").value
-            ses_dir = self.query_one("#session").value
+        if event.button.id == "tabscreen_make_folder_button":
+            sub_dir = self.query_one("#tabscreen_subject_input").value
+            ses_dir = self.query_one("#tabscreen_session_input").value
 
             try:
                 self.project.make_folders(
                     sub_names=sub_dir,
                     ses_names=ses_dir,
-                    datatype=self.query_one("TypeBox").type_out,
+                    datatype=self.query_one("TabScreenCheckboxes").type_out,
                 )
-                self.query_one("#FileTree").reload()
+                self.query_one("#tabscreen_directorytree").reload()
             except BaseException as e:
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return
-        if event.button.id == "return":
+        if event.button.id == "tabscreen_main_menu_button":
             self.dismiss()
 
 
@@ -204,15 +218,15 @@ class TuiApp(App):
 
     def compose(self):
         yield Container(
-            Label("DataShuttle", id="main_title"),
-            Label("Select project", id="name_label"),
+            Label("DataShuttle", id="mainwindow_main_title_label"),
+            Label("Select project", id="mainwindow_select_project_label"),
             *[Button(name, id=name) for name in self.project_names],
-            Button("New project", id="project_select_new_project_button"),
-            id="test_id",
+            Button("New project", id="mainwindow_select_new_project_button"),
+            id="mainwindow_top_container",
         )
 
     def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "project_select_new_project_button":
+        if event.button.id == "mainwindow_select_new_project_button":
             pass
         elif event.button.id in self.project_names:
             try:
