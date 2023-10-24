@@ -5,12 +5,11 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container
 from textual.reactive import reactive
-from textual.screen import Screen
+from textual.screen import ModalScreen, Screen
 from textual.widgets import (
     Button,
     Checkbox,
     DirectoryTree,
-    Footer,
     Header,
     Input,
     Label,
@@ -21,6 +20,25 @@ from textual.widgets import (
 
 from datashuttle import DataShuttle
 from datashuttle.utils.folders import get_existing_project_paths_and_names
+
+
+class QuitScreen(ModalScreen):
+    """Screen with a dialog to quit."""
+
+    def __init__(self, message):
+        super(QuitScreen, self).__init__()
+
+        self.message = message
+
+    def compose(self) -> ComposeResult:
+        yield Container(
+            Container(Static(self.message, id="real_label"), id="label_x"),
+            Container(Button("OK"), id="button_x"),
+            id="dialog",
+        )
+
+    def on_button_pressed(self) -> None:
+        self.dismiss()
 
 
 class TypeBox(Static):
@@ -85,8 +103,9 @@ class TabScreen(Screen):
 
     prev_click_time = 0.0
 
-    def __init__(self, project):
+    def __init__(self, mainwindow, project):
         super(TabScreen, self).__init__()
+        self.mainwindow = mainwindow
         self.project = project
 
     def compose(self) -> ComposeResult:
@@ -94,7 +113,7 @@ class TabScreen(Screen):
         Composes widgets to the TUI in the order specified.
         """
         yield Header()
-        yield Button("Return", id="return")
+        yield Button("Main Menu", id="return")
         with TabbedContent():
             with TabPane("Create", id="create"):
                 yield DirectoryTree(
@@ -107,13 +126,10 @@ class TabScreen(Screen):
                 yield Label("Datatype(s)")
                 yield TypeBox(self.project.cfg)
                 yield Button("Make Folders", id="make_folder")
-                yield Input(
-                    id="errors_on_create_page",
-                    placeholder="Errors are printed here.",
-                )
             with TabPane("Transfer", id="transfer"):
                 yield Label("Transfer; Seems to work!")
-        yield Footer()
+
+    # yield Footer()
 
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
@@ -149,8 +165,8 @@ class TabScreen(Screen):
                 )
                 self.query_one("#FileTree").reload()
             except BaseException as e:
-                self.query_one("#errors_on_create_page").value = str(e)
-
+                self.mainwindow.show_modal_error_dialog(str(e))
+                return
         if event.button.id == "return":
             self.dismiss()
 
@@ -183,17 +199,12 @@ class TuiApp(App):
         Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
     ]
 
-    project_names = get_existing_project_paths_and_names()[
-        0
-    ]  # TODO: need to reload this dynamically when new project added
+    # TODO: need to reload this dynamically when new project added
+    project_names = get_existing_project_paths_and_names()[0]
 
     def compose(self):
         yield Container(
             Label("DataShuttle", id="main_title"),
-            Input(
-                id="project_select_error_input",
-                placeholder="For testing, errors are shown here.",
-            ),
             Label("Select project", id="name_label"),
             *[Button(name, id=name) for name in self.project_names],
             Button("New project", id="project_select_new_project_button"),
@@ -203,15 +214,19 @@ class TuiApp(App):
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "project_select_new_project_button":
             pass
-        else:
+        elif event.button.id in self.project_names:
             try:
-                # TODO: handle error properly
                 project = DataShuttle(str(event.button.id))
-                self.push_screen(TabScreen(project))
-
             except BaseException as e:
-                self.query_one("#project_select_error_input").value = str(e)
+                self.show_modal_error_dialog(str(e))
                 return
+            self.push_screen(TabScreen(self, project))
+
+    def show_modal_error_dialog(self, message):
+        # TODO: This `replace()` is super hacky. Will have to handle assert
+        # messages centrally , depending on whether piping to GUI
+        # or API / CLI.
+        self.push_screen(QuitScreen(message.replace(". ", ".\n\n")))
 
 
 if __name__ == "__main__":

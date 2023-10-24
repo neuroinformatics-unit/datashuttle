@@ -1,5 +1,6 @@
 #test_id {
     align: center middle;
+    overflow: scroll;
 }
 #test_id > #main_title {
     border: hkey $primary;
@@ -18,8 +19,19 @@
     width: 50%;
     content-align: left middle;
     margin: 0 0 1 0;
-    background: $primary-background
+    background: $panel;
+    border-top: tall $panel-lighten-1;
+    border-bottom: tall $panel-lighten-1;
+    border-left: tall $panel-lighten-1;
+    border-right: tall $panel-lighten-1;
 }
+#test_id > Button:focus {
+    text-style: bold;
+}
+#test_id > Button:hover {
+    background: $panel-lighten-2;
+}
+
 #test_id > Input {
     width: 50%;
     content-align: left middle;
@@ -31,4 +43,30 @@
     text-style: italic;
     outline: none;
     background: $primary-background-lighten-1;
+}
+
+
+QuitScreen {
+    align: center middle;
+}
+
+QuitScreen > #dialog {
+    height: 15;
+    width: 65;
+    border: thick $background 80%;
+    background: $surface;
+    align: center middle;
+ }
+
+#label_x {
+    align: center middle;
+    overflow: hidden scroll;
+}
+
+#real_label {
+    text-align: center;
+}
+
+#button_x {
+    align: center bottom
 }
