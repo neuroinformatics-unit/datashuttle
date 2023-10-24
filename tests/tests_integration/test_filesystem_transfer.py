@@ -4,36 +4,13 @@ from pathlib import Path
 
 import pytest
 import test_utils
+from base import BaseTest
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
 
-class TestFileTransfer:
-    @pytest.fixture(scope="function")
-    def project(test, tmp_path):
-        """
-        Create a project with default configs loaded.
-        This makes a fresh project for each function,
-        saved in the appdir path for platform independent
-        and to avoid path setup on new machine.
-
-        Ensure change folder at end of session otherwise it
-        is not possible to delete project.
-        """
-        tmp_path = tmp_path / "test with space"
-
-        test_project_name = "test_filesystem_transfer"
-        project, cwd = test_utils.setup_project_fixture(
-            tmp_path, test_project_name
-        )
-        yield project
-        test_utils.teardown_project(cwd, project)
-
-    # ----------------------------------------------------------------------------------------------------------
-    # Tests
-    # ----------------------------------------------------------------------------------------------------------
-
+class TestFileTransfer(BaseTest):
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("use_all_alias", [True, False])
     def test_transfer_empty_folder_structure(
@@ -70,7 +47,7 @@ class TestFileTransfer:
             os.path.join(base_path_to_check, project.cfg.top_level_folder),
             subs,
             sessions,
-            test_utils.get_default_folder_used(),
+            test_utils.get_all_folders_used(),
         )
 
     def test_empty_folder_is_not_transferred(self, project):
@@ -151,7 +128,7 @@ class TestFileTransfer:
                 os.path.join(base_path_to_check, project.cfg.top_level_folder),
                 subs,
                 sessions,
-                test_utils.get_default_folder_used(),
+                test_utils.get_all_folders_used(),
             )
 
     @pytest.mark.parametrize(
@@ -160,12 +137,12 @@ class TestFileTransfer:
             ["behav"],
             ["ephys"],
             ["funcimg"],
-            ["histology"],
+            ["anat"],
             ["behav", "ephys"],
-            ["ephys", "histology"],
-            ["behav", "ephys", "histology"],
-            ["funcimg", "histology", "behav"],
-            ["behav", "ephys", "funcimg", "histology"],
+            ["ephys", "anat"],
+            ["behav", "ephys", "anat"],
+            ["funcimg", "anat", "behav"],
+            ["behav", "ephys", "funcimg", "anat"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -202,10 +179,10 @@ class TestFileTransfer:
     @pytest.mark.parametrize(
         "datatype_to_transfer",
         [
-            ["histology"],
+            ["anat"],
             ["behav", "ephys"],
-            ["funcimg", "histology", "behav"],
-            ["behav", "ephys", "funcimg", "histology"],
+            ["funcimg", "anat", "behav"],
+            ["behav", "ephys", "funcimg", "anat"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload" "download"])
@@ -246,7 +223,7 @@ class TestFileTransfer:
     @pytest.mark.parametrize("sub_idx_to_upload", [[0], [1, 2], [0, 1, 2]])
     @pytest.mark.parametrize(
         "datatype_to_transfer",
-        [["ephys"], ["funcimg", "histology", "behav"]],
+        [["ephys"], ["funcimg", "anat", "behav"]],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_specific_ses(
@@ -452,10 +429,11 @@ class TestFileTransfer:
         the version in source is newer than target.
         """
         path_to_test_file = (
-            Path("rawdata") / "sub-001" / "histology" / "test_file.txt"
+            Path("rawdata") / "sub-001" / "ses-001" / "anat" / "test_file.txt"
         )
 
-        project.make_folders("sub-001")
+        project.make_folders("sub-001", "ses-001", datatype="anat")
+
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         central_test_file_path = (
             project.cfg["central_path"] / path_to_test_file
@@ -554,7 +532,9 @@ class TestFileTransfer:
 
     def setup_specific_file_or_folder_files(self, project):
         """ """
-        project.make_folders(["sub-001", "sub-002"], "ses-003")
+        project.make_folders(
+            ["sub-001", "sub-002"], "ses-003", ["behav", "ephys"]
+        )
 
         path_to_test_file_behav = (
             Path("rawdata")

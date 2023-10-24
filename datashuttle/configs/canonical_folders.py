@@ -36,41 +36,24 @@ def get_datatype_folders(cfg: Configs) -> dict:
         This should always match the canonical name, but left as
         an option for rare cases in which advanced users want to change it.
 
-    used : whether the folder is used or not (see make_config_file)
-        if False, the folder will not be made in make_folders
-        even if selected.
-
     level : "sub" or "ses", level to make the folder at.
-
-    Notes
-    ------
-
-    In theory, adding a new  folder should only require
-    adding an entry to this dictionary. However, this will not
-    update configs e.g. use_xxx. This has not been
-    directly tested yet, but if it does not work when attempted
-    it should be configured to from then on.
     """
     return {
         "ephys": Folder(
             name="ephys",
-            used=cfg["use_ephys"],
             level="ses",
         ),
         "behav": Folder(
             name="behav",
-            used=cfg["use_behav"],
             level="ses",
         ),
         "funcimg": Folder(
             name="funcimg",
-            used=cfg["use_funcimg"],
             level="ses",
         ),
-        "histology": Folder(
-            name="histology",
-            used=cfg["use_histology"],
-            level="sub",
+        "anat": Folder(
+            name="anat",
+            level="ses",
         ),
     }
 

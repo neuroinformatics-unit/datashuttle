@@ -520,34 +520,6 @@ def construct_parser():
         action="store_true",
         help=help("flag_default_false"),
     )
-    make_config_file_parser.add_argument(
-        "--use-ephys",
-        "--use_ephys",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
-    make_config_file_parser.add_argument(
-        "--use-behav",
-        "--use_behav",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
-    make_config_file_parser.add_argument(
-        "--use-funcimg",
-        "--use_funcimg",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
-    make_config_file_parser.add_argument(
-        "--use-histology",
-        "--use_histology",
-        required=False,
-        action="store_true",
-        help=help("flag_default_false"),
-    )
 
     make_config_file_parser = subparsers.add_parser(
         "update-config",
@@ -627,7 +599,7 @@ def construct_parser():
         type=str,
         nargs="+",
         required=False,
-        default="all",  # TODO: this is not nice, should read the default from API NOT duplicate in CLI
+        default="",  # TODO: this is not nice, should read the default from API NOT duplicate in CLI
         help=help("required_str_single_or_multiple_or_all"),
     )
 

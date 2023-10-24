@@ -25,15 +25,11 @@ def setup_project_default_configs(
     tmp_path,
     local_path=False,
     central_path=False,
-    all_datatype_on=True,
 ):
     """
     Set up a fresh project to test on
 
     local_path / central_path: provide the config paths to set
-    all_datatype_on: by default, all datatype flags are False.
-                     for testing, it is preferable to have all True
-                     so set this if this argument is True.
     """
     delete_project_if_it_exists(project_name)
 
@@ -44,9 +40,6 @@ def setup_project_default_configs(
     default_configs = get_test_config_arguments_dict(
         tmp_path, project_name, set_as_defaults=True
     )
-
-    if all_datatype_on:
-        default_configs.update(get_all_datatypes_on("kwargs"))
 
     project.make_config_file(**default_configs)
 
@@ -202,9 +195,6 @@ def get_test_config_arguments_dict(
         "local_path": f"{tmp_path}/not/a/re al/local/folder/{project_name}",
         "central_path": f"{tmp_path}/a/re al/central_ local/folder/{project_name}",
         "connection_method": "local_filesystem",
-        "use_behav": True,  # This is not explicitly required,
-        # but at least 1 use_x must be true, so
-        # for tests always set use_behav=True
     }
 
     if required_arguments_only:
@@ -218,9 +208,6 @@ def get_test_config_arguments_dict(
                 "overwrite_old_files": False,
                 "transfer_verbosity": "v",
                 "show_transfer_progress": False,
-                "use_ephys": False,
-                "use_histology": False,
-                "use_funcimg": False,
             }
         )
     else:
@@ -234,23 +221,15 @@ def get_test_config_arguments_dict(
                 "overwrite_old_files": True,
                 "transfer_verbosity": "vv",
                 "show_transfer_progress": True,
-                "use_ephys": True,
-                "use_behav": False,
-                "use_histology": True,
-                "use_funcimg": True,
             }
         )
 
     return dict_
 
 
-def get_default_folder_used():
-    return {
-        "ephys": True,
-        "behav": True,
-        "funcimg": True,
-        "histology": True,
-    }
+def get_all_folders_used():
+    datatype_names = canonical_configs.get_datatypes()
+    return {name: True for name in datatype_names}
 
 
 def get_config_path_with_cli(project_name=None):
@@ -304,40 +283,13 @@ def check_folder_tree_is_correct(
                     "test_custom_folder_names(), test_explicitly_session_list()"
                 )
 
-                if check_folder_is_used(
-                    base_folder, folder, folder_used, key, sub, ses
-                ):
+                if folder_used[key]:
                     if folder.level == "sub":
                         datatype_path = join(path_to_sub_folder, folder.name)
                     elif folder.level == "ses":
                         datatype_path = join(path_to_ses_folder, folder.name)
 
                     check_and_cd_folder(datatype_path)
-                    check_and_cd_folder(
-                        join(datatype_path, ".datashuttle_meta")
-                    )
-
-
-def check_folder_is_used(base_folder, folder, folder_used, key, sub, ses):
-    """
-    Test whether the .used flag on the Folder class matched the expected
-    state (provided in folder_used dict). If folder is not used, check
-    it does not exist.
-
-    Use the pytest -s flag to print all tested paths
-    """
-    assert folder.used == folder_used[key]
-
-    is_used = folder.used
-
-    if not is_used:
-        print(
-            "Path was correctly not made: "
-            + join(base_folder, sub, ses, folder.name)
-        )
-        assert not os.path.isdir(join(base_folder, sub, ses, folder.name))
-
-    return is_used
 
 
 def check_and_cd_folder(path_):
@@ -369,7 +321,7 @@ def check_datatype_sub_ses_uploaded_correctly(
         sub_names = glob_basenames(join(base_path_to_check, "*"))
         assert sub_names == sorted(subs_to_upload)
 
-        # Check ses are all uploaded + histology if transferred
+        # Check ses are all uploaded
         if ses_to_upload:
             for sub in subs_to_upload:
                 ses_names = glob_basenames(
@@ -379,42 +331,15 @@ def check_datatype_sub_ses_uploaded_correctly(
                         "*",
                     )
                 )
-                if datatype_to_transfer == ["histology"]:
-                    assert ses_names == ["histology"]
-                    return  # handle the case in which histology
-                    # only is transferred,
-                    # and there are no sessions to transfer.
-
-                copy_datatype_to_transfer = (
-                    check_and_strip_within_sub_data_folders(
-                        ses_names, datatype_to_transfer
-                    )
-                )
                 assert ses_names == sorted(ses_to_upload)
 
                 # check datatype folders in session folder
-                if copy_datatype_to_transfer:
+                if datatype_to_transfer:
                     for ses in ses_names:
                         data_names = glob_basenames(
                             join(base_path_to_check, sub, ses, "*")
                         )
-                        assert data_names == sorted(copy_datatype_to_transfer)
-
-
-def check_and_strip_within_sub_data_folders(ses_names, datatype_to_transfer):
-    """
-    Check if datatype folders at the sub level are picked
-    up when sessions are searched for with wildcard. Remove
-    so that sessions can be explicitly tested next.
-    """
-    if "histology" in datatype_to_transfer:
-        assert "histology" in ses_names
-
-        ses_names.remove("histology")
-        copy_ = copy.deepcopy(datatype_to_transfer)
-        copy_.remove("histology")
-        return copy_
-    return datatype_to_transfer
+                        assert data_names == sorted(datatype_to_transfer)
 
 
 def make_and_check_local_project_folders(
@@ -435,7 +360,7 @@ def make_and_check_local_project_folders(
         get_top_level_folder_path(project, folder_name=folder_name),
         subs,
         sessions,
-        get_default_folder_used(),
+        get_all_folders_used(),
     )
 
 
@@ -619,28 +544,12 @@ def run_cli(command, project_name=None):
     return stdout.decode("utf8"), stderr.decode("utf8")
 
 
-def get_all_datatypes_on(kwargs_or_flags):
-    """
-    Get all datatypes (e.g. --use_behav) in on form,
-    either as kwargs for API or str of flags for
-    CLI.
-    """
-    datatypes = canonical_configs.get_datatypes()
-    if kwargs_or_flags == "flags":
-        return f"{' '.join(['--' + flag for flag in datatypes])}"
-    else:
-        return dict(zip(datatypes, [True] * len(datatypes)))
-
-
 def move_some_keys_to_end_of_dict(config):
     """
     Need to move connection method to the end
-    so ssh opts are already set before it is changed. Similarly,
-    use_behav must be turned off after at least one other use_
-    option is turned on.
+    so ssh opts are already set before it is changed.
     """
     config["connection_method"] = config.pop("connection_method")
-    config["use_behav"] = config.pop("use_behav")
 
 
 def clear_capsys(capsys):
@@ -694,7 +603,7 @@ def check_working_top_level_folder_only_exists(
         base_path_to_check,
         subs,
         sessions,
-        get_default_folder_used(),
+        get_all_folders_used(),
     )
 
     # Check other top-level folders are not made

@@ -9,9 +9,7 @@ class Folder:
     def __init__(
         self,
         name: str,
-        used: bool,
         level: str,
     ):
         self.name = name
-        self.used = used
         self.level = level

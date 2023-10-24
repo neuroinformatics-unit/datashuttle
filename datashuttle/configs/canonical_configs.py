@@ -38,24 +38,15 @@ def get_canonical_config_dict() -> dict:
         "show_transfer_progress": None,
     }
 
-    datatype_configs = get_datatypes(as_dict=True)
-    config_dict.update(datatype_configs)
-
     return config_dict
 
 
-def get_datatypes(as_dict: bool = False):
+def get_datatypes() -> List[str]:
     """
-    Canonical list of datatype flags. This is used
-    to define get_canonical_config_dict() as well
-    as in testing.
+    Canonical list of datatype flags based on
+    NeuroBlueprint.
     """
-    keys = ["use_ephys", "use_behav", "use_funcimg", "use_histology"]
-
-    if as_dict:
-        return dict(zip(keys, [None] * len(keys)))
-    else:
-        return keys
+    return ["ephys", "behav", "funcimg", "anat"]
 
 
 def get_flags() -> List[str]:
@@ -63,7 +54,7 @@ def get_flags() -> List[str]:
     Return all configs that are bool flags. This is used in
     testing and type checking config inputs.
     """
-    return get_datatypes() + [
+    return [
         "overwrite_old_files",
         "show_transfer_progress",
     ]
@@ -83,10 +74,6 @@ def get_canonical_config_required_types() -> dict:
         "overwrite_old_files": bool,
         "transfer_verbosity": Literal["v", "vv"],
         "show_transfer_progress": bool,
-        "use_ephys": bool,
-        "use_behav": bool,
-        "use_funcimg": bool,
-        "use_histology": bool,
     }
 
     assert (
@@ -145,11 +132,21 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
     for path_type in ["local_path", "central_path"]:
-        if config_dict[path_type].as_posix()[0] == "~":
+        path_name = config_dict[path_type].as_posix()
+        if path_name[0] == "~":
             utils.log_and_raise_error(
                 f"{path_type} must contain the full folder path "
                 "with no ~ syntax."
             )
+
+        # pathlib strips "./" so not checked.
+        for bad_start in [".", "../"]:
+            if path_name.startswith(bad_start):
+                utils.log_and_raise_error(
+                    f"{path_type} must contain the full folder path "
+                    "with no dot syntax."
+                )
+
         project_name = config_dict.project_name
         if config_dict[path_type].stem != project_name:
             utils.log_and_raise_error(
@@ -157,12 +154,6 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
                 f"The last folder in the passed {path_type} should be {project_name}.\n"
                 f"The passed path was {config_dict[path_type]}"
             )
-
-    if not any([config_dict[key] for key in get_datatypes()]):
-        utils.log_and_raise_error(
-            f"At least one datatype must be True in "
-            f"configs, from: {' '.join(get_datatypes())}."
-        )
 
     # Check SSH settings
     if config_dict["connection_method"] == "ssh" and (

@@ -1,48 +1,17 @@
 import datetime
-import os.path
 import re
 import shutil
 from os.path import join
 
 import pytest
 import test_utils
+from base import BaseTest
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
 
-class TestMakeFolders:
-    """"""
-
-    @pytest.fixture(scope="function")
-    def project(test, tmp_path):
-        """
-        Create a project with default configs loaded.
-        This makes a fresh project for each function,
-        saved in the appdir path for platform independent
-        and to avoid path setup on new machine.
-
-        Ensure change folder at end of session otherwise
-        it is not possible to delete project.
-        """
-        tmp_path = tmp_path / "test with space"
-
-        test_project_name = "test_make_folders"
-
-        project = test_utils.setup_project_default_configs(
-            test_project_name,
-            tmp_path,
-            local_path=tmp_path / test_project_name,
-        )
-
-        cwd = os.getcwd()
-        yield project
-        test_utils.teardown_project(cwd, project)
-
-    # ----------------------------------------------------------------------------------
-    # Tests
-    # ----------------------------------------------------------------------------------
-
+class TestMakeFolders(BaseTest):
     def test_duplicate_ses_or_sub_key_value_pair(self, project):
         """
         Test the check that if a duplicate key is attempt to be made
@@ -130,7 +99,7 @@ class TestMakeFolders:
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=["sub-11", "sub-002", "sub-30303"],
             sessions=[],
-            folder_used=test_utils.get_default_folder_used(),
+            folder_used=test_utils.get_all_folders_used(),
         )
 
     def test_explicitly_session_list(self, project):
@@ -144,7 +113,8 @@ class TestMakeFolders:
         """
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "50432"]
-        project.make_folders(subs, sessions)
+
+        project.make_folders(subs, sessions, "all")
         base_folder = test_utils.get_top_level_folder_path(project)
 
         for sub in subs:
@@ -164,27 +134,35 @@ class TestMakeFolders:
                     join(base_folder, sub, ses, "funcimg")
                 )
                 test_utils.check_and_cd_folder(
-                    join(base_folder, sub, "histology")
+                    join(base_folder, sub, ses, "anat")
                 )
 
-    @pytest.mark.parametrize(
-        "folder_key", test_utils.get_default_folder_used().keys()
-    )
-    def test_turn_off_specific_folder_used(self, project, folder_key):
+    @pytest.mark.parametrize("behav", [True, False])
+    @pytest.mark.parametrize("ephys", [True, False])
+    @pytest.mark.parametrize("funcimg", [True, False])
+    @pytest.mark.parametrize("anat", [True, False])
+    def test_every_datatype_passed(self, project, behav, ephys, funcimg, anat):
         """
-        Whether or not a folder is made is held in the .used key of the
-        folder class (stored in project.cfg.datatype_folders).
-        """
+        Check every combination of data type used and ensure only the
+        correct ones are made.
 
-        # Overwrite configs to make specified folder not used.
-        project.update_config("use_" + folder_key, False)
-        folder_used = test_utils.get_default_folder_used()
-        folder_used[folder_key] = False
+        NOTE: This test could be refactored to reduce code reuse.
+        """
+        datatypes_to_make = []
+        if behav:
+            datatypes_to_make.append("behav")
+        if ephys:
+            datatypes_to_make.append("ephys")
+        if funcimg:
+            datatypes_to_make.append("funcimg")
+        if anat:
+            datatypes_to_make.append("anat")
 
         # Make folder tree
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
-        project.make_folders(subs, sessions)
+
+        project.make_folders(subs, sessions, datatypes_to_make)
 
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
@@ -192,7 +170,12 @@ class TestMakeFolders:
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=subs,
             sessions=sessions,
-            folder_used=folder_used,
+            folder_used={
+                "behav": behav,
+                "ephys": ephys,
+                "funcimg": funcimg,
+                "anat": anat,
+            },
         )
 
     def test_custom_folder_names(self, project):
@@ -203,13 +186,14 @@ class TestMakeFolders:
         # Change folder names to custom names
         project.cfg.datatype_folders["ephys"].name = "change_ephys"
         project.cfg.datatype_folders["behav"].name = "change_behav"
-        project.cfg.datatype_folders["histology"].name = "change_histology"
+        project.cfg.datatype_folders["anat"].name = "change_anat"
         project.cfg.datatype_folders["funcimg"].name = "change_funcimg"
 
         # Make the folders
         sub = "sub-001"
         ses = "ses-001"
-        project.make_folders(sub, ses)
+
+        project.make_folders(sub, ses, "all")
 
         # Check the folders were not made / made.
         base_folder = test_utils.get_top_level_folder_path(project)
@@ -229,7 +213,7 @@ class TestMakeFolders:
         )
 
         test_utils.check_and_cd_folder(
-            join(base_folder, sub, "change_histology")
+            join(base_folder, sub, ses, "change_anat")
         )
 
     @pytest.mark.parametrize(
@@ -237,8 +221,8 @@ class TestMakeFolders:
         [
             ["all"],
             ["ephys", "behav"],
-            ["ephys", "behav", "histology"],
-            ["ephys", "behav", "histology", "funcimg"],
+            ["ephys", "behav", "anat"],
+            ["ephys", "behav", "anat", "funcimg"],
             ["funcimg", "ephys"],
             ["funcimg"],
         ],
@@ -258,13 +242,10 @@ class TestMakeFolders:
         base_folder = test_utils.get_top_level_folder_path(project)
 
         # Check at the subject level
-        sub_file_names = test_utils.glob_basenames(
+        test_utils.glob_basenames(
             join(base_folder, sub, "*"),
             exclude=ses,
         )
-        if "histology" in files_to_test:
-            assert "histology" in sub_file_names
-            files_to_test.remove("histology")
 
         # Check at the session level
         ses_file_names = test_utils.glob_basenames(
@@ -273,7 +254,9 @@ class TestMakeFolders:
         )
 
         if files_to_test == ["all"]:
-            assert ses_file_names == sorted(["ephys", "behav", "funcimg"])
+            assert ses_file_names == sorted(
+                ["ephys", "behav", "funcimg", "anat"]
+            )
         else:
             assert ses_file_names == sorted(files_to_test)
 
@@ -344,7 +327,7 @@ class TestMakeFolders:
         subs = ["sub-001", "sub-2"]
         sessions = ["ses-001", "ses-03"]
 
-        project.make_folders(subs, sessions)
+        project.make_folders(subs, sessions, "all")
 
         # Check folder tree is made in the desired top level folder
         test_utils.check_working_top_level_folder_only_exists(

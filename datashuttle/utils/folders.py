@@ -104,12 +104,10 @@ def make_datatype_folders(
     datatype_items = cfg.get_datatype_items(datatype)
 
     for datatype_key, datatype_folder in datatype_items:  # type: ignore
-        if datatype_folder.used and datatype_folder.level == level:
+        if datatype_folder.level == level:
             datatype_path = sub_or_ses_level_path / datatype_folder.name
 
             make_folders(datatype_path, log)
-
-            make_datashuttle_metadata_folder(datatype_path, log)
 
 
 # Make Folders Helpers --------------------------------------------------------
@@ -136,18 +134,6 @@ def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
             path_.mkdir(parents=True)
             if log:
                 utils.log(f"Made folder at path: {path_}")
-
-
-def make_datashuttle_metadata_folder(
-    full_path: Path, log: bool = True
-) -> None:
-    """
-    Make a .datashuttle folder (this is created
-    in the local_path for logs and User folder
-    for configs). See make_folders() for arguments.
-    """
-    meta_folder_path = full_path / ".datashuttle_meta"
-    make_folders(meta_folder_path, log)
 
 
 def check_no_duplicate_sub_ses_key_values(
