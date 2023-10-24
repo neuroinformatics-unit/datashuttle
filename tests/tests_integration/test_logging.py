@@ -185,21 +185,6 @@ class TestLogging:
             str(Path("local") / project.project_name / "rawdata" / "sub-11")
             in log
         )
-
-        assert (
-            str(
-                Path(
-                    "local",
-                    project.project_name,
-                    "rawdata",
-                    "sub-11",
-                    "ses-123",
-                    "funcimg",
-                    ".datashuttle_meta",
-                )
-            )
-            in log
-        )
         assert (
             str(
                 Path(

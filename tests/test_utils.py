@@ -313,9 +313,6 @@ def check_folder_tree_is_correct(
                         datatype_path = join(path_to_ses_folder, folder.name)
 
                     check_and_cd_folder(datatype_path)
-                    check_and_cd_folder(
-                        join(datatype_path, ".datashuttle_meta")
-                    )
 
 
 def check_folder_is_used(base_folder, folder, folder_used, key, sub, ses):
