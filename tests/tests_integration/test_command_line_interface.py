@@ -26,6 +26,7 @@ import os
 import pytest
 import simplejson
 import test_utils
+from base import BaseTest
 
 from datashuttle.command_line_interface import construct_parser
 from datashuttle.configs import canonical_configs
@@ -36,40 +37,12 @@ from datashuttle.configs.canonical_tags import tags
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
 
-class TestCommandLineInterface:
-    @pytest.fixture(scope="function")
-    def clean_project_name(self):
-        """
-        Create an empty project, but ensure no
-        configs already exists, and delete created configs
-        after test.
-        """
-        project_name = "test_configs"
-        test_utils.delete_project_if_it_exists(project_name)
-        yield project_name
-        test_utils.delete_project_if_it_exists(project_name)
-
-    @pytest.fixture(scope="function")
-    def setup_project(self, tmp_path):
-        """
-        Setup a project with default configs to use
-        for testing.
-
-        # Note this fixture is a duplicate of project()
-        in test_filesystem_transfer.py fixture
-        """
-        test_project_name = "test_command_line_interface"
-        setup_project, cwd = test_utils.setup_project_fixture(
-            tmp_path, test_project_name
-        )
-        yield setup_project
-        test_utils.teardown_project(cwd, setup_project)
-
-    # ----------------------------------------------------------------------------------------------------------
+class TestCommandLineInterface(BaseTest):
+    # ----------------------------------------------------------------------------------
     # Test CLI Variables are read and passed correctly
-    # ----------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
-    def test_all_commands_appear_in_help(self, setup_project):
+    def test_all_commands_appear_in_help(self):
         """
         Test that all subparsers defined in command_line_interface.py
         are displayed in the main --help list. This requires they have a help
@@ -220,7 +193,7 @@ class TestCommandLineInterface:
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_upload_download_all_variables(
-        self, setup_project, upload_or_download, sep
+        self, project, upload_or_download, sep
     ):
         """
         To quickly check whether this runs with both seps by only
@@ -229,7 +202,7 @@ class TestCommandLineInterface:
         but without wasting time with seps.
         """
         stdout, stderr = test_utils.run_cli(
-            f"{upload_or_download}{sep}all", setup_project.project_name
+            f"{upload_or_download}{sep}all", project.project_name
         )
 
         assert stderr == ""
@@ -237,14 +210,14 @@ class TestCommandLineInterface:
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_upload_download_entire_project_variables(
-        self, setup_project, upload_or_download, sep
+        self, project, upload_or_download, sep
     ):
         """
         see test_upload_download_all_variables()
         """
         stdout, stderr = test_utils.run_cli(
             f"{upload_or_download}{sep}entire{sep}project",
-            setup_project.project_name,
+            project.project_name,
         )
 
         assert stderr == ""
@@ -392,7 +365,7 @@ class TestCommandLineInterface:
 
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_make_folders(self, setup_project):
+    def test_make_folders(self, project):
         """
         see test_filesystem_transfer.py
         """
@@ -401,12 +374,12 @@ class TestCommandLineInterface:
 
         test_utils.run_cli(
             f"make_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
-            setup_project.project_name,
+            project.project_name,
         )
 
         test_utils.check_folder_tree_is_correct(
-            setup_project,
-            base_folder=test_utils.get_top_level_folder_path(setup_project),
+            project,
+            base_folder=test_utils.get_top_level_folder_path(project),
             subs=subs,
             sessions=ses,
             folder_used=test_utils.get_default_folder_used(),
@@ -417,7 +390,7 @@ class TestCommandLineInterface:
         "transfer_method", ["standard", "all_alias", "entire_project"]
     )
     def test_upload_and_download(
-        self, setup_project, upload_or_download, transfer_method
+        self, project, upload_or_download, transfer_method
     ):
         """
         This tests whether basic transfer works through CLI.
@@ -430,20 +403,20 @@ class TestCommandLineInterface:
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project_folders(
-            setup_project,
+            project,
             subs,
             sessions,
             "all",
         )
 
         _, base_path_to_check = test_utils.handle_upload_or_download(
-            setup_project, upload_or_download
+            project, upload_or_download
         )
 
         if transfer_method == "all_alias":
             test_utils.run_cli(
                 f"{upload_or_download}-all",
-                setup_project.project_name,
+                project.project_name,
             )
         elif transfer_method == "standard":
             test_utils.run_cli(
@@ -451,17 +424,17 @@ class TestCommandLineInterface:
                 f"--datatype all "
                 f"--sub_names all "
                 f"--ses_names all",
-                setup_project.project_name,
+                project.project_name,
             )
         elif transfer_method == "entire_project":
             test_utils.run_cli(
                 f"{upload_or_download}_entire_project",
-                setup_project.project_name,
+                project.project_name,
             )
 
         test_utils.check_datatype_sub_ses_uploaded_correctly(
             base_path_to_check=os.path.join(
-                base_path_to_check, setup_project.cfg.top_level_folder
+                base_path_to_check, project.cfg.top_level_folder
             ),
             datatype_to_transfer=[
                 flag.split("use_")[1]
@@ -473,7 +446,7 @@ class TestCommandLineInterface:
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_upload_and_download_folder_or_file(
-        self, setup_project, upload_or_download
+        self, project, upload_or_download
     ):
         """
         see test_filesystem_transfer.py
@@ -481,19 +454,19 @@ class TestCommandLineInterface:
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project_folders(
-            setup_project,
+            project,
             subs,
             sessions,
             "all",
         )
 
         _, base_path_to_check = test_utils.handle_upload_or_download(
-            setup_project, upload_or_download
+            project, upload_or_download
         )
 
         test_utils.run_cli(
             f"{upload_or_download}_specific_folder_or_file {subs[1]}/{sessions[0]}/ephys/**",
-            setup_project.project_name,
+            project.project_name,
         )
 
         path_to_check = (
@@ -545,7 +518,7 @@ class TestCommandLineInterface:
         assert "['sub-001', 'sub-01', 'sub-02']" in stdout
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_set_top_level_folder(self, setup_project, sep):
+    def test_set_top_level_folder(self, project, sep):
         """
         Test that the top level folder is "rawdata" by default,
         setting the top level folder to a new folder ("derivatives")
@@ -554,27 +527,27 @@ class TestCommandLineInterface:
         set-top-level-folder raises an error.
         """
         stdout, _ = test_utils.run_cli(
-            f"show{sep}top{sep}level{sep}folder", setup_project.project_name
+            f"show{sep}top{sep}level{sep}folder", project.project_name
         )
 
         assert "rawdata" in stdout
 
         stdout, _ = test_utils.run_cli(
             f"set{sep}top{sep}level{sep}folder derivatives",
-            setup_project.project_name,
+            project.project_name,
         )
 
         assert "derivatives" in stdout
 
         stdout, _ = test_utils.run_cli(
-            f"show{sep}top{sep}level{sep}folder", setup_project.project_name
+            f"show{sep}top{sep}level{sep}folder", project.project_name
         )
 
         assert "derivatives" in stdout
 
         _, stderr = test_utils.run_cli(
             f"set{sep}top{sep}level{sep}folder NOT_RECOGNISED",
-            setup_project.project_name,
+            project.project_name,
         )
 
         assert (

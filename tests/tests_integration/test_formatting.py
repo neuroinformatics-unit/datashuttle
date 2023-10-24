@@ -1,43 +1,10 @@
-import os.path
-
 import pytest
-import test_utils
+from base import BaseTest
 
 from datashuttle.utils import formatting
 
 
-class TestMakeFolders:
-    """"""
-
-    @pytest.fixture(scope="function")
-    def project(test, tmp_path):
-        """
-        Create a project with default configs loaded.
-        This makes a fresh project for each function,
-        saved in the appdir path for platform independent
-        and to avoid path setup on new machine.
-
-        Ensure change folder at end of session otherwise
-        it is not possible to delete project.
-        """
-        tmp_path = tmp_path / "test with space"
-
-        test_project_name = "test_make_folders"
-
-        project = test_utils.setup_project_default_configs(
-            test_project_name,
-            tmp_path,
-            local_path=tmp_path / test_project_name,
-        )
-
-        cwd = os.getcwd()
-        yield project
-        test_utils.teardown_project(cwd, project)
-
-    # ----------------------------------------------------------------------------------
-    # Tests
-    # ----------------------------------------------------------------------------------
-
+class TestFormatting(BaseTest):
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize(
         "input", [1, {"test": "one"}, 1.0, ["1", "2", ["three"]]]

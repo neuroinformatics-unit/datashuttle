@@ -10,8 +10,8 @@ import pandas as pd
 import pytest
 import ssh_test_utils
 import test_utils
+from file_conflicts_pathtable import get_pathtable
 from pytest import ssh_config
-from test_file_conflicts_pathtable import get_pathtable
 
 
 class TestFileTransfer:

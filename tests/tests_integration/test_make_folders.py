@@ -1,48 +1,17 @@
 import datetime
-import os.path
 import re
 import shutil
 from os.path import join
 
 import pytest
 import test_utils
+from base import BaseTest
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
 
-class TestMakeFolders:
-    """"""
-
-    @pytest.fixture(scope="function")
-    def project(test, tmp_path):
-        """
-        Create a project with default configs loaded.
-        This makes a fresh project for each function,
-        saved in the appdir path for platform independent
-        and to avoid path setup on new machine.
-
-        Ensure change folder at end of session otherwise
-        it is not possible to delete project.
-        """
-        tmp_path = tmp_path / "test with space"
-
-        test_project_name = "test_make_folders"
-
-        project = test_utils.setup_project_default_configs(
-            test_project_name,
-            tmp_path,
-            local_path=tmp_path / test_project_name,
-        )
-
-        cwd = os.getcwd()
-        yield project
-        test_utils.teardown_project(cwd, project)
-
-    # ----------------------------------------------------------------------------------
-    # Tests
-    # ----------------------------------------------------------------------------------
-
+class TestMakeFolders(BaseTest):
     def test_duplicate_ses_or_sub_key_value_pair(self, project):
         """
         Test the check that if a duplicate key is attempt to be made
