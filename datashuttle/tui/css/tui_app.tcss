@@ -1,0 +1,72 @@
+#mainwindow_top_container {
+    align: center middle;
+    overflow: scroll;
+}
+#mainwindow_top_container > #mainwindow_main_title_label {
+    border: hkey $primary;
+    content-align: center middle;
+    text-style: italic bold;
+    color: $text;
+    width: 49%;
+    padding: 1 0 0 0;
+    height: 5;
+    margin: 0 0 2 0;
+}
+#mainwindow_top_container > Label {
+    margin: 0 0 1 0;
+}
+#mainwindow_top_container > Button {
+    width: 50%;
+    content-align: left middle;
+    margin: 0 0 1 0;
+    background: $panel;
+    border-top: tall $panel-lighten-1;
+    border-bottom: tall $panel-lighten-1;
+    border-left: tall $panel-lighten-1;
+    border-right: tall $panel-lighten-1;
+}
+#mainwindow_top_container > Button:focus {
+    text-style: bold;
+}
+#mainwindow_top_container > Button:hover {
+    background: $panel-lighten-2;
+}
+
+#mainwindow_top_container > Input {
+    width: 50%;
+    content-align: left middle;
+    margin: 0 0 1 0;
+    background: $primary-background
+}
+
+#mainwindow_top_container > #mainwindow_select_new_project_button {
+    text-style: italic;
+    outline: none;
+    background: $primary-background-lighten-1;
+}
+
+
+QuitScreen {
+    align: center middle;
+}
+
+QuitScreen > #quitscreen_top_container {
+    height: 15;
+    width: 65;
+    border: thick rgb(140, 12, 0);
+    background: $primary-background;
+    align: center middle;
+ }
+
+#quitscreen_message_container {
+    align: center middle;
+    overflow: hidden scroll;
+}
+
+#quitscreen_message_label {
+    text-align: center;
+}
+
+#quitscreen_ok_button {
+    align: center bottom
+}
