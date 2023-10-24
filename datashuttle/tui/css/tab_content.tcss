@@ -53,27 +53,34 @@ and it also effects other widgets */
 
 /* Labels ------------------------------------------------------------------- */
 
-#tabscreen_create_tab > Label {
-    width: 100%;
-    margin: 1 0 1 1;
-    text-style: bold;
-}
-#tabscreen_create_tab > #tabscreen_subject_label {
-    margin: 1 0 1 1;
-    text-style: bold;
-}
 
+#tabscreen_create_tab > #tabscreen_subject_label {
+    padding: 1 0 1 1;
+    text-style: bold;
+}
+#tabscreen_create_tab > #tabscreen_session_label {
+    padding: 1 0 1 1;
+    text-style: bold;
+}
+#tabscreen_create_tab > #tabscreen_datatype_label {
+    padding: 1 0 0 1;
+    text-style: bold;
+}
 
 /* Toggle Buttons ----------------------------------------------------------- */
 
+TabScreenCheckboxes {
+    padding: 0 0 2 0;
+}
+
 #tabscreen_create_tab > TabScreenCheckboxes {
     layout: grid;
-    grid-size: 4 1;
+    grid-size: 2 2;
     grid-columns: 15;
-    grid_rows: 5;
+    grid_rows: 3;
 }
 TabScreenCheckboxes > ToggleButton {
-    margin: 0 0 2 1 ;
+    margin: 0 0 0 1 ;
     content-align: left middle;
     width: 15;
     background: $surface;

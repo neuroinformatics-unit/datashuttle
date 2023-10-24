@@ -19,6 +19,7 @@ from textual.widgets import (
 )
 
 from datashuttle import DataShuttle
+from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.utils.folders import get_existing_project_paths_and_names
 
 
@@ -70,14 +71,10 @@ class TabScreenCheckboxes(Static):
 
     type_out = reactive("all")
 
-    def __init__(self, project_cfg):
+    def __init__(self):
         super(TabScreenCheckboxes, self).__init__()
 
-        self.type_config = [
-            config.removeprefix("use_")
-            for config, is_on in zip(project_cfg.keys(), project_cfg.values())
-            if "use_" in config and is_on
-        ]
+        self.type_config = get_datatypes()
 
     def compose(self):
         for type in self.type_config:
@@ -132,12 +129,12 @@ class TabScreen(Screen):
                 yield Input(
                     id="tabscreen_subject_input", placeholder="e.g. sub-001"
                 )
-                yield Label("Session(s)")
+                yield Label("Session(s)", id="tabscreen_session_label")
                 yield Input(
                     id="tabscreen_session_input", placeholder="e.g. ses-001"
                 )
-                yield Label("Datatype(s)")
-                yield TabScreenCheckboxes(self.project.cfg)
+                yield Label("Datatype(s)", id="tabscreen_datatype_label")
+                yield TabScreenCheckboxes()
                 yield Button("Make Folders", id="tabscreen_make_folder_button")
             with TabPane("Transfer", id="tabscreen_transfer_tab"):
                 yield Label("Transfer; Seems to work!")
