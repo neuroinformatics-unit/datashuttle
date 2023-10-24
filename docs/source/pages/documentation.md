@@ -147,10 +147,10 @@ make-folders -sub 001@TO@003 -ses 010_@TIME@ -dt behav funcimg anat
 │   │   └── funcimg
 │   └── anat
 └── sub-003/
-    ├── ses-010_time-160248/
-    │   ├── behav
-    │   └── funcimg
-    └── anat
+    └── ses-010_time-160248/
+        ├── behav
+        ├── funcimg
+        └── anat
 ```
 
 ### Datatype Folders

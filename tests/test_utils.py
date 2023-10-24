@@ -321,7 +321,7 @@ def check_datatype_sub_ses_uploaded_correctly(
         sub_names = glob_basenames(join(base_path_to_check, "*"))
         assert sub_names == sorted(subs_to_upload)
 
-        # Check ses are all uploaded + anat if transferred
+        # Check ses are all uploaded
         if ses_to_upload:
             for sub in subs_to_upload:
                 ses_names = glob_basenames(
