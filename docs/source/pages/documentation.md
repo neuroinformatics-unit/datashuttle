@@ -90,7 +90,7 @@ ssh \
 --central_host_id ssh.swc.ucl.ac.uk \
 --central_host_username username \
 --transfer_verbosity v \
---use-ephys --use-behav --use-histology --overwrite_old_files
+--overwrite_old_files
 ```
 
 
@@ -134,8 +134,6 @@ datashuttle \
 my_first_project \
 
 make-sub-folders -sub 001@TO@003 -ses 010_@TIME@ -dt behav funcimg histology
-
-When the `all` argument is used for `--datatype` (`-dt`), the folders created depend on the *datatypes* specified during *configuration* setup.
 
 ```
 ├── sub-001/
