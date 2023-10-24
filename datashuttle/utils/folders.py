@@ -452,22 +452,17 @@ def search_for_folders(  # TODO: change name
     verbose: bool = True,
 ) -> Tuple[List[Any], List[Any]]:
     """
-        Wrapper to determine the method used to search for search
-        prefix folders in the search path.
+    Wrapper to determine the method used to search for search
+    prefix folders in the search path.
 
-        Parameters
-        ----------
+    Parameters
+    ----------
 
-        local_or_central : "local" or "central"
-        search_path : full filepath to search in
-        search_prefix : file / folder name to search (e.g. "sub-*")
-    <<<<<<< HEAD
-        verbose : If `True`, when a search folder cannot be found, a message
-              will be printed with the missing path.
-    =======
-        verbose : If `True`, if a search folder cannot be found, a message
-    >>>>>>> 15e7660 (Add verbose option to searching folders functions.)
-                  will be printed with the un-found path.
+    local_or_central : "local" or "central"
+    search_path : full filepath to search in
+    search_prefix : file / folder name to search (e.g. "sub-*")
+    verbose : If `True`, when a search folder cannot be found, a message
+          will be printed with the missing path.
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
         all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
