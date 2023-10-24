@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 from pathlib import Path
 
-from datashuttle.utils import folders
 from datashuttle.utils.folder_class import Folder
 
 
@@ -109,7 +108,8 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     base_path = get_datashuttle_path() / project_name
     temp_logs_path = base_path / "temp_logs"
 
-    folders.make_folders(base_path)
-    folders.make_folders(temp_logs_path)
+    # TODO: cannot use folders.makefoldesr due to circular import
+    base_path.mkdir(parents=True, exist_ok=True)
+    temp_logs_path.mkdir(parents=True, exist_ok=True)
 
     return base_path, temp_logs_path

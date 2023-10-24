@@ -1,15 +1,19 @@
+from __future__ import annotations
+
 import datetime
 import re
 import warnings
 from itertools import compress
-from typing import Any, Dict, List, Literal, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from datashuttle.configs.canonical_folders import (
     get_non_ses_names,
     get_non_sub_names,
 )
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.configs.config_class import Configs
+
+if TYPE_CHECKING:
+    from datashuttle.configs.config_class import Configs
 
 from . import folders, utils
 
