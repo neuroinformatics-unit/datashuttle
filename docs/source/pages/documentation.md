@@ -127,7 +127,7 @@ and a Python API are available (see [CLI](https://datashuttle.neuroinformatics.d
 and [API](https://datashuttle.neuroinformatics.dev/pages/api_index.html)
 for reference documentation).
 
-To setup, we can use the `make_config_file` command to tell Datashuttle our project details.
+To setup, we can use the `make-config-file` command to tell Datashuttle our project details.
 
 We need to tell Datashuttle:
 
@@ -168,6 +168,10 @@ local_filesystem
 
 :::{tab-item} Python API
 ```{code-block} python
+from datashuttle import DataShuttle
+
+project = DataShuttle("my_first_project")
+
 project.make_config_file(
 	local_path="/path/to/my_projects/my_first_project",
 	central_path="/central/live/username/my_projects/my_first_project",
@@ -224,7 +228,7 @@ client machines and a server, such as a high-performance computer
 
 When a *central* machine is mounted to the *local* machine, the folders of the
 *central* machine are available as if they were part of the *local* filesystem.
-In this case, the `central_path` configuration (see `make_config_file`)
+In this case, the `central_path` configuration (see `make-config-file`)
 can simply be set to the path directed to the mounted drive.
 
 With the `connection_method` set to `local_filesystem`, data transfer will
@@ -286,7 +290,9 @@ my_first_project \
 make-config-file \
 /path/to/my_projects/my_first_project \
 /central/live/username/my_projects/my_first_project \
-local_filesystem
+ssh \
+--central_host_id ssh.swc.ucl.ac.uk \
+--central_host_username username
 ```
 :::
 
@@ -297,22 +303,18 @@ datashuttle ^
 my_first_project ^
 make-config-file ^
 /path/to/my_projects/my_first_project ^
-/nfs/nhome/live/username/my_projects/my_first_project ^
+/central/live/username/my_projects/my_first_project ^
 ssh ^
 --central_host_id ssh.swc.ucl.ac.uk ^
---central_host_username username ^
+--central_host_username username
 ```
 :::
 
 :::{tab-item} Python API
 ```{code-block} python
-from datashuttle import DataShuttle
-
-project = DataShuttle("my_first_project")
-
 project.make_config_file(
 	local_path="/path/to/my_projects/my_first_project",
-	central_path="/nfs/nhome/live/username/my_projects/my_first_project",
+	central_path="/central/live/username/my_projects/my_first_project",
 	connection_method="ssh",
 	central_host_id="ssh.swc.ucl.ac.uk",
 	central_host_username="username",
@@ -358,7 +360,7 @@ project folder trees.
 In a typical neuroscience experiment, data collection sessions begin by
 creating the folder for the current *subject* (e.g. mouse, rat) and current *session*.
 
-The command `make-sub-folders` can be used automatically create standardised
+The command `make-folders` can be used automatically create standardised
 folder trees (see
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) for details on the standardisation scheme).
 
@@ -399,7 +401,7 @@ make-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```{code-block} python
 project.make_folders(
 	sub_names="001",
-	ses_names=" 001_@DATE@",
+	ses_names="001_@DATE@",
 	datatype="behav"
 )
 ```
@@ -760,7 +762,7 @@ This command would transfer session 5 from subject 001 and 002.
 
 ::: {warning}
 
-On macOS (or with the z-shell (zsh) in genereal), text
+On macOS (or with the z-shell (zsh) in general), text
 including the `@*@` tag must be wrapped in quotation marks.
 e.g. `--ses "005_condition-test_date-@*@"`)
 :::
@@ -982,7 +984,7 @@ upload ^
 ```{code-block} python
 project.make_folders(
 	sub_names="001",
-	ses_names=" all_sub",
+	ses_names="all_sub",
 	datatype="all_datatype"
 )
 ```
@@ -1061,5 +1063,4 @@ the logs output folder would look like:
 20230608T095514_make-folders.log
 20230608T095545_upload-data.log
 20230608T095621_download-data.log
-```
 ```
