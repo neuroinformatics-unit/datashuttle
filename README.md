@@ -26,7 +26,7 @@ conda install -c conda-forge rclone
 
 See [the Rclone website](https://rclone.org/install/) for alternative installation methods.
 
-## SWC-BIDS Folder Tree
+## NeuroBlueprint Folder Tree
 
 DataShuttle project folders are managed according to  [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/).
 
