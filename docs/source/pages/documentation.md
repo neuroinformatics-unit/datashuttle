@@ -795,8 +795,8 @@ This command would transfer session 5 from subject 001 and 002.
 
 ::: {warning}
 
-On macOS (or with the z-shell (zsh) in general), text
-including the `@*@` tag must be wrapped in quotation marks.
+If using the z-shell (zsh) - which is the default shell on macOS -
+text including the `@*@` tag must be wrapped in quotation marks.
 e.g. `--ses "005_condition-test_date-@*@"`)
 :::
 
