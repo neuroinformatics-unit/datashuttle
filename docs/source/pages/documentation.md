@@ -63,20 +63,53 @@ will facilitate conversion to full BIDS for data sharing if required.
 
 # Installation
 
-Datashuttle is hosted on  [PyPI](https://pypi.org/project/datashuttle/) and can
-be installed with [pip](https://realpython.com/what-is-pip/).
 
-`pip install datashuttle`
+We recommend you install Datashuttle inside a [conda](https://docs.conda.io/en/latest/)
+or [mamba](https://mamba.readthedocs.io/en/latest/index.html) environment.
 
-Datashuttle requires [Rclone](https://rclone.org/) to transfer data. The easiest way to install
-Rclone is using [Miniconda](https://docs.conda.io/en/main/miniconda.html):
+In the following we assume you have `conda` installed,
+but the same commands will also work with `mamba`/`micromamba`.
 
+First, create and activate an environment.
+You can call your environment whatever you like, we've used "datashuttle-env".
+
+```sh
+conda create -n datashuttle-env -c conda-forge python=3.10 rclone
+conda activate datashuttle-env
 ```
-conda install -c conda-forge rclone
+
+Next install the `datashuttle` package:
+
+::::{tab-set}
+
+:::{tab-item} Users
+To get the latest release from PyPI:
+
+```sh
+pip install datashuttle
+```
+If you have an older version of `datashuttle` installed in the same environment,
+you can update to the latest version with:
+
+```sh
+pip install --upgrade datashuttle
+```
+:::
+
+:::{tab-item} Developers
+To get the latest development version, clone the
+[GitHub repository](https://github.com/neuroinformatics-unit/datashuttle/)
+and then run from inside the repository:
+
+```sh
+pip install -e .[dev]  # works on most shells
+pip install -e '.[dev]'  # works on zsh (the default shell on macOS)
 ```
 
-See Rclone's [installation instructions](https://rclone.org/install/) for
-alternative installation methods.
+This will install the package in editable mode, including all `dev` dependencies.
+:::
+
+::::
 
 
 # Setup
