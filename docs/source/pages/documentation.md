@@ -410,7 +410,7 @@ project.make_folders(
 ::::
 
 The leading `sub-` or `ses-` in the provided *subject* and *session* names
-are optional in the command, these prefixed
+are optional in the command, these prefixes
 will always be added
 (i.e. both `-sub 001` and `-sub sub-001` are valid inputs).
 
