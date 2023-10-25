@@ -104,7 +104,7 @@ setup on the *central* machine.
 
 Imagine an experiment in which two different types of data, behavioural and
 electrophysiological, are collected on separate acquisition PCs.
-These data from are sent to a central server where it is combined
+These data are sent to a central server where it is combined
 and stored.
 
 Later, a subset of the data is transferred to a third machine for analysis. It is
