@@ -45,7 +45,7 @@ The most widely used specification for data-sharing in neuroscience is the [BIDS
 First developed  for human imaging, it has since been extended to other methodologies used in
 human experimental neuroscience (e.g. EEG, MEG) .
 
-Extensions to systems neuroscience datatypes is currently in progress
+Extensions to systems neuroscience datatypes are currently in progress
 (e.g. [microscopy](https://bids-specification.readthedocs.io/en/stable/04-modality-specific-files/10-microscopy.html),
 [electrophysiology BEP](https://bep032tools.readthedocs.io/en/latest/)).
 
