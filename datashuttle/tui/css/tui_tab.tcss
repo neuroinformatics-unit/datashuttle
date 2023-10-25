@@ -1,0 +1,79 @@
+
+/* Tab Content ------------------------------------------------------ */
+
+TabScreen {
+    align: center middle;
+}
+TabScreen > TabbedContent {
+    width: 90%;
+    height: 100%
+}
+TabScreen > #tabscreen_main_menu_button {
+    layer: top;
+    dock: right;
+    height: 3;
+}
+
+/* Directory Tree ------------------------------------------------------ */
+
+#tabscreen_directorytree {
+    dock: left;
+    width: 45%;
+    padding: 1 2;
+    margin: 0 4 0 0;
+    border: tall wide $panel-lighten-1;
+}
+#tabscreen_directorytree:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+
+/* Light mode Directory Tree ------------------------------------------------------ */
+
+#tabscreen_directorytree:light {
+    border: tall wide $panel-darken-3;
+    background: $boost;
+}
+
+#tabscreen_directorytree:light:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+
+/* Input ------------------------------------------------------------------- */
+
+/* Unfortunately there is a bug with Input and hover, the response is very slow.
+and it also effects other widgets */
+
+#tabscreen_create_tab > Input {
+    border: tall $panel-lighten-1;
+}
+
+#tabscreen_create_tab:light > Input {
+    border: tall $panel-darken-3;
+}
+
+/* Labels ------------------------------------------------------------------- */
+
+#tabscreen_create_tab > #tabscreen_subject_label {
+    padding: 1 0 1 1;
+    text-style: bold;
+}
+#tabscreen_create_tab > #tabscreen_session_label {
+    padding: 1 0 1 1;
+    text-style: bold;
+}
+#tabscreen_create_tab > #tabscreen_datatype_label {
+    padding: 1 0 0 1;
+    text-style: bold;
+}
+
+/* Checkboxes ----------------------------------------------------------- */
+
+TabScreenCheckboxes {
+    padding: 0 0 1 0;
+}
+#tabscreen_create_tab > TabScreenCheckboxes {
+    layout: grid;
+    grid-size: 2 2;
+    grid-columns: 15;
+    grid_rows: 3;
+}
