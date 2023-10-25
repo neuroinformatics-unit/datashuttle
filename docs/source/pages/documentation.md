@@ -416,7 +416,7 @@ will always be added
 
 It is possible to automatically create date, time or datetime key-value pairs with the tags
 `@DATE@`, `@TIME@` or `@DATETIME@` respectively.
-A range of *subjects* and *sessions* can be created with the `@TO@` flag can.
+A range of *subjects* and *sessions* can be created with the `@TO@` flag.
 See the [convenience tags](#convenience-tags) section for more details.
 
 
