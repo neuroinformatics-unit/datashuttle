@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
-    <title>Getting Started &#8212; datashuttle</title>
+    <title>User Guide &#8212; datashuttle</title>
   
   
   
@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=c5ced968eda925caa686" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=c5ced968eda925caa686"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -62,6 +63,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -102,7 +112,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -112,21 +123,21 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../_static/logo_light.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../_static/logo_light.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.0</p>
+    <p class="title logo__title">Datashuttle v0.2.0</p>
   
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -143,7 +154,7 @@
     
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="#">
-                        Getting Started
+                        User Guide
                       </a>
                     </li>
                 
@@ -171,23 +182,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -203,8 +216,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -214,18 +227,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -256,7 +271,7 @@ document.write(`
     
                     <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="#">
-                        Getting Started
+                        User Guide
                       </a>
                     </li>
                 
@@ -286,10 +301,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -305,8 +320,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -338,15 +353,15 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
-    <li class="breadcrumb-item active" aria-current="page">Getting Started</li>
+    <li class="breadcrumb-item active" aria-current="page">User Guide</li>
   </ul>
 </nav>
 </div>
@@ -363,165 +378,437 @@ document.write(`
 <div id="searchbox"></div>
                 <article class="bd-article" role="main">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="getting-started">
-<h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this heading">#</a></h1>
-<p>DataShuttle is a tool to streamline the management and standardisation of neuroscience project folders and files.</p>
-<p>DataShuttle’s goal is to alleviate the burden researchers face in adhering to standardised file and folder specifications during the execution of intricate and demanding experimental projects. It will:</p>
+  <section class="tex2jax_ignore mathjax_ignore" id="user-guide">
+<h1>User Guide<a class="headerlink" href="#user-guide" title="Permalink to this heading">#</a></h1>
+<p>Datashuttle is a tool to help standardise neuroscience project folders.</p>
+<p>Datashuttle’s goal is to alleviate the burden of maintaining
+sharable experimental project folders by:</p>
 <ul class="simple">
-<li><p>Eliminate the need to manually integrate datasets collected across different machines (e.g. <em>behaviour</em> and <em>electrophysiology</em> acquisition machines).</p></li>
-<li><p>Allow convenient transfer of data between machines. This may be between a central project storage and analysis machine (e.g. ‘‘<em>I want to transfer subjects 1-5, sessions 5 and 10, behavioural data only to my laptop</em>.’’)</p></li>
-<li><p>Avoid re-naming and re-formatting of project folders for collaboration or dataset publication.</p></li>
+<li><p>Automating the creation of standardised project folders.</p></li>
+<li><p>Allowing convenient transfer of data between machines.</p></li>
+<li><p>Eliminating the requirement to manually combine data collected across
+different acquisition machines.</p></li>
 </ul>
-<p>DataShuttle aims to integrate seamlessly into existing neuroscience data collection and analysis workflows, providing tools to:</p>
-<ul class="simple">
-<li><p>Create folder trees that adhere to <a class="reference external" href="https://swc-blueprint.neuroinformatics.dev/">SWC-Blueprint</a>, a data management specification aligned to the Brain Imaging Dataset Specification (BIDS), widely used in neuroscience.</p></li>
-<li><p>Transfer data between machines used for data collection or analysis, and a central storage repository.</p></li>
-</ul>
+<p>Datashuttle aims to integrate seamlessly into existing neuroscience data
+collection and analysis workflows.</p>
+<section id="datashuttles-place-in-neuroscience-pipelines">
+<h2>Datashuttle’s place in neuroscience pipelines<a class="headerlink" href="#datashuttles-place-in-neuroscience-pipelines" title="Permalink to this heading">#</a></h2>
+<p>A typical setup in systems neuroscience is that multiple acquisition
+machines collect experimental data (e.g. separate machines for acquiring
+behaviour and electrophysiology).</p>
+<p>The data from these separate machines are then combined
+in a central storage machine - this may be a particular computer
+in the lab or a high-performance computing (HPC) system.</p>
+<p>Following data collection, the entire project or subsets of the data are downloaded
+to other machines (e.g. a researcher’s laptop) for analysis.</p>
 <img alt="datashuttle central and local machines" class="img-responsive" src="https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258" />
-<p>DataShuttle requires a <a class="reference internal" href="#initial-setup-with-configurations"><span class="std std-ref">one-time setup</span></a> of project name and configurations.  Next, subjects, session and data-type folder trees can be <a class="reference internal" href="#creating-subject-and-session-folders"><span class="std std-ref">created</span></a> during experimental acquisition.</p>
-<p>Once acquisition is complete, data can be easily <a class="reference internal" href="#data-transfer"><span class="std std-ref">transferred</span></a> from acquisition computers to a central storage machine.</p>
+<p>Datashuttle facilitates the creation of standardised project folders and data transfer between
+acquisition, central storage and analysis machines.</p>
+<p>Datashuttle manages datasets that are formatted according to the
+<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> specification.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>Data specifications for neuroscience<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">A data specification details the folder structure and naming scheme for a project.
+The most widely used specification for data-sharing in neuroscience is the <a class="reference external" href="https://bids.neuroimaging.io/">BIDS</a> specification.
+First developed  for human imaging, it has since been extended to other methodologies used in
+human experimental neuroscience (e.g. EEG, MEG) .</p>
+<p class="sd-card-text">Extensions to systems neuroscience datatypes are currently in progress
+(e.g. <a class="reference external" href="https://bids-specification.readthedocs.io/en/stable/04-modality-specific-files/10-microscopy.html">microscopy</a>,
+<a class="reference external" href="https://bep032tools.readthedocs.io/en/latest/">electrophysiology BEP</a>).</p>
+<p class="sd-card-text">While BIDS is an excellent, extensive formal specification, the detailed requirements necessary for data-sharing
+are difficult to maintain during data-acquisition. It is also yet to be fully extended to
+systems neuroscience.</p>
+<p class="sd-card-text">Therefore, we have introduced <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a>,
+a lightweight specification heavily inspired by BIDS for use during data acquisition. Organising
+data according to <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> during acquisition
+will facilitate conversion to full BIDS for data sharing if required.</p>
+</div>
+</details><br>
+</section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this heading">#</a></h1>
-<p>DataShuttle is hosted on  <a class="reference external" href="https://pypi.org/project/datashuttle/">PyPI</a> and can be installed with pip.</p>
-<p><code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">datashuttle</span></code></p>
-<p>Datashuttle additionally requires Rclone for data transfers. The easiest way to install Rclone is using <a class="reference external" href="https://docs.conda.io/en/main/miniconda.html">Miniconda</a>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">install</span> <span class="o">-</span><span class="n">c</span> <span class="n">conda</span><span class="o">-</span><span class="n">forge</span> <span class="n">rclone</span>
+<p>We recommend you install Datashuttle inside a <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a>
+or <a class="reference external" href="https://mamba.readthedocs.io/en/latest/index.html">mamba</a> environment.</p>
+<p>In the following we assume you have <code class="docutils literal notranslate"><span class="pre">conda</span></code> installed,
+but the same commands will also work with <code class="docutils literal notranslate"><span class="pre">mamba</span></code>/<code class="docutils literal notranslate"><span class="pre">micromamba</span></code>.</p>
+<p>First, create and activate an environment.
+You can call your environment whatever you like, we’ve used “datashuttle-env”.</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>datashuttle-env<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10<span class="w"> </span>rclone
+conda<span class="w"> </span>activate<span class="w"> </span>datashuttle-env
 </pre></div>
 </div>
-<p>See <a class="reference external" href="https://rclone.org/install/">the Rclone website</a> for alternative installation methods.</p>
+<p>Next install the <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> package:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-0">
+Users</label><div class="sd-tab-content docutils">
+<p>To get the latest release from PyPI:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>datashuttle
+</pre></div>
+</div>
+<p>If you have an older version of <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> installed in the same environment,
+you can update to the latest version with:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>datashuttle
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-1">
+Developers</label><div class="sd-tab-content docutils">
+<p>To get the latest development version, clone the
+<a class="reference external" href="https://github.com/neuroinformatics-unit/datashuttle/">GitHub repository</a>
+and then run from inside the repository:</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span><span class="w">  </span><span class="c1"># works on most shells</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;.[dev]&#39;</span><span class="w">  </span><span class="c1"># works on zsh (the default shell on macOS)</span>
+</pre></div>
+</div>
+<p>This will install the package in editable mode, including all <code class="docutils literal notranslate"><span class="pre">dev</span></code> dependencies.</p>
+</div>
+</div>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="setup">
 <h1>Setup<a class="headerlink" href="#setup" title="Permalink to this heading">#</a></h1>
-<p>Datashuttle provides a cross-platform command line interface (CLI) used in the examples below, and a <a class="reference internal" href="#python-api-guide"><span class="std std-ref">Python API</span></a>. Full references for the CLI (<a class="reference external" href="https://datashuttle.neuroinformatics.dev/pages/cli_index.html">CLI Reference</a>) and API (<a class="reference external" href="https://datashuttle.neuroinformatics.dev/pages/api_index.html">API Reference</a>) are available.</p>
-<p>The first thing to do when using DataShuttle is to setup a new project on a <em>local</em> machine.</p>
+<p>The first thing to do when starting with Datashuttle is to setup a new project on a <em>local</em> machine.</p>
+<p>First, we need to tell Datashuttle the path to the project folder on our <em>local</em> machine
+and how we want to connect to the <em>central</em> storage machine.</p>
 <section id="local-machines-and-the-central-machine">
 <h2><em>local</em> machines and the <em>central</em> machine<a class="headerlink" href="#local-machines-and-the-central-machine" title="Permalink to this heading">#</a></h2>
-<p>DataShuttle makes the distinction between (possibly multiple) <em>local</em> machines and a single <em>central</em> machine. DataShuttle needs to be setup once for each <em>local</em> machine, but requires no setup on the <em>central</em> machine.</p>
-<p>A typical use case is an experiment in which <em>behavioural</em> data and <em>electrophysiological</em> data are collected on acquisition PCs. They send the data to a central server where it is stored.</p>
-<p>Later, a subset of the data is transferred to a third machine for analysis. In this case, the <em>behavioural</em> and <em>electrophysiological</em> acquisition machine and analysis machines are <em>local</em> . The central storage machine is the <em>central</em> machine.</p>
-</section>
-<section id="initial-setup-with-configurations">
-<h2>Initial setup with <em>configurations</em><a class="headerlink" href="#initial-setup-with-configurations" title="Permalink to this heading">#</a></h2>
-<p>A one-time setup on each <em>local</em> machine used is required, specifying the <em>project name</em> and <em>configurations</em>.</p>
-<p>The <em>configurations</em> tell DataShuttle:</p>
+<p>Datashuttle makes the distinction between  <em>local</em> machines and a single <em>central</em> machine.
+There may be multiple <em>local</em> machines, but only one <em>central</em> machine.</p>
+<p><em>local</em> machines are typically acquisition and analysis machines, whereas the
+<em>central</em> machine is used for data storage.</p>
+<p>Datashuttle needs to be setup once for each <em>local</em> machine, but requires no
+setup on the <em>central</em> machine.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>Example: Datashuttle use in a neuroscience project<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Imagine an experiment in which two different types of data, behavioural and
+electrophysiological, are collected on separate acquisition PCs.
+These data are sent to a central server where they are combined
+and stored.</p>
+<p class="sd-card-text">Later, a subset of the data is transferred to a third machine for analysis. It is
+usually necessary to only download  a subset of the data for particular analyses
+(e.g. “I want to transfer subjects 1-5, sessions 5, behavioural data
+to my laptop”.)</p>
+<p class="sd-card-text">In this case, the behavioural and electrophysiological acquisition machine and
+analysis machines are <em>local</em>; the central storage machine is the <em>central</em> machine.</p>
+</div>
+</details></section>
+<section id="setting-up-datashuttle">
+<h2>Setting up Datashuttle<a class="headerlink" href="#setting-up-datashuttle" title="Permalink to this heading">#</a></h2>
+<p>A one-time setup on each <em>local</em> machine used is required, specifying the
+<code class="docutils literal notranslate"><span class="pre">project_name</span></code> and configs (short for ‘configurations’).</p>
+<p>To interact with Datashuttle, a cross-platform command line interface (CLI)
+and a Python API are available (see <a class="reference internal" href="api_index.html#api-reference"><span class="std std-ref">API</span></a> and <a class="reference internal" href="cli_index.html#cli-reference"><span class="std std-ref">CLI</span></a>
+for reference documentation).</p>
+<p>To setup, we can use the <code class="docutils literal notranslate"><span class="pre">make-config-file</span></code> command to tell Datashuttle our project details.</p>
+<p>We need to tell Datashuttle:</p>
 <ul class="simple">
 <li><p>The paths to the <em>local</em> and <em>central</em> folders that contain the project.</p></li>
 <li><p>How to connect to the <em>central</em> machine.</p></li>
 <li><p>The settings that specify how data is transferred.</p></li>
-<li><p>The <em>data-types</em> that will be used in the project, e.g. <em>behaviour</em> (<code class="docutils literal notranslate"><span class="pre">behav</span></code>) or <em>electrophysiology</em> (<code class="docutils literal notranslate"><span class="pre">ephys</span></code>).</p></li>
+<li><p>The <em><a class="reference internal" href="#datatype-folders"><span class="std std-ref">datatypes</span></a></em> that will be used in the project, e.g. behaviour (<code class="docutils literal notranslate"><span class="pre">behav</span></code>) or electrophysiology (<code class="docutils literal notranslate"><span class="pre">ephys</span></code>).</p></li>
 </ul>
-<p>The command <code class="docutils literal notranslate"><span class="pre">make-config-file</span></code> is used for the initial setup of the project. The <strong>required arguments</strong> are:</p>
-<p><code class="docutils literal notranslate"><span class="pre">local_path</span></code>: The full file-path to the project folder on the <em>local</em> machine. For example, if you wanted to make a new project called <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code> in the folder <code class="docutils literal notranslate"><span class="pre">C:\User\my_projects</span></code>, the local path would be <code class="docutils literal notranslate"><span class="pre">C:\User\my_projects</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">central_path</span></code>: The path on the <em>central</em> machine to the central project. For example, if connecting to a remote Linux server, this may be <code class="docutils literal notranslate"><span class="pre">/hpc/home/user/my_projects</span></code>.</p>
-<p><code class="docutils literal notranslate"><span class="pre">connection_method</span></code>: <code class="docutils literal notranslate"><span class="pre">local_filesystem</span></code> or <code class="docutils literal notranslate"><span class="pre">ssh</span></code>. Local filesystem can be used if the <em>central</em> storage is mounted to the local machine. Otherwise <code class="docutils literal notranslate"><span class="pre">ssh</span></code> can be used.</p>
-<p>Finally, the <em>data-type</em> flags <code class="docutils literal notranslate"><span class="pre">--use_ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">--use_funcimg</span></code>, <code class="docutils literal notranslate"><span class="pre">--use_histology</span></code>, <code class="docutils literal notranslate"><span class="pre">--use_behav</span></code> set the types of data required for the project on the local machine. While individual flags are optional, at least one must be chosen when initialising the project.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-2">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datashuttle</span> <span class="kn">import</span> <span class="n">DataShuttle</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_first_project&quot;</span><span class="p">)</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+	<span class="n">local_path</span><span class="o">=</span><span class="s2">&quot;/path/to/my_projects/my_first_project&quot;</span><span class="p">,</span>
+	<span class="n">central_path</span><span class="o">=</span><span class="s2">&quot;/central/live/username/my_projects/my_first_project&quot;</span><span class="p">,</span>
+	<span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;local_filesystem&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-3">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<p>macOS and Linux, <code class="docutils literal notranslate"><span class="pre">\</span></code> allows the command to continue on a new line.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">make-config-file \</span>
+<span class="go">/path/to/my_projects/my_first_project \</span>
+<span class="go">/central/live/username/my_projects/my_first_project \</span>
+<span class="go">local_filesystem</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-4">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<p>On Windows, the <code class="docutils literal notranslate"><span class="pre">^</span></code> character allows the command to continue on a new line.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">make-config-file ^</span>
+<span class="go">C:\path\to\my_projects\my_first_project ^</span>
+<span class="go">/central/live/username/my_projects/my_first_project ^</span>
+<span class="go">local_filesystem</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="required-arguments">
+<h3>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this heading">#</a></h3>
+<p><strong>local_path</strong>: The full file path to the project folder on the <em>local</em> machine,
+including the project folder. The project folder must have the same name as the
+Datashuttle project. For example, if your project name is <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code>,
+and the project folder resides in <code class="docutils literal notranslate"><span class="pre">C:\User\my_projects</span></code>, the <code class="docutils literal notranslate"><span class="pre">local_path</span></code>
+should be <code class="docutils literal notranslate"><span class="pre">C:\User\my_projects\my_first_project</span></code>.</p>
+<p><strong>central_path</strong>: The path on the <em>central</em> machine to the project folder. Similar to the
+<code class="docutils literal notranslate"><span class="pre">local_path</span></code>, the path must point to the project folder that has the same name as
+the project in Datashuttle. For example, if your project is called <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code>,
+connecting to a remote Linux server, the <code class="docutils literal notranslate"><span class="pre">central_path</span></code> may be
+<code class="docutils literal notranslate"><span class="pre">/hpc/home/user/my_projects/my_first_project</span></code>.</p>
+<p><strong>connection_method</strong>: <code class="docutils literal notranslate"><span class="pre">local_filesystem</span></code> or <code class="docutils literal notranslate"><span class="pre">ssh</span></code>. Local filesystem can be used
+if the <em>central</em> storage is mounted to the local machine. Otherwise <code class="docutils literal notranslate"><span class="pre">ssh</span></code> can be used.
+See <a class="reference internal" href="#setting-up-the-connection-to-central"><span class="std std-ref">setting up the connection to central</span></a> for
+more information.</p>
+</section>
 <section id="optional-arguments">
 <h3>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this heading">#</a></h3>
-<p>If connection method is <code class="docutils literal notranslate"><span class="pre">ssh</span></code>, the <code class="docutils literal notranslate"><span class="pre">central_host_id</span></code>, <code class="docutils literal notranslate"><span class="pre">central_host_username</span></code> must be set, and a one-time SSH setup command run (see the <a class="reference internal" href="#ssh"><span class="std std-ref">SSH section</span></a> for details).</p>
-<p>The optional arguments <code class="docutils literal notranslate"><span class="pre">overwrite_old_files</span></code>, <code class="docutils literal notranslate"><span class="pre">transfer_verbosity</span></code> and <code class="docutils literal notranslate"><span class="pre">show_transfer_progress</span></code> determine how <em>data transfer</em> is performed (see the <a class="reference internal" href="#data-transfer"><span class="std std-ref">Data Transfer</span></a> section for details).</p>
-</section>
-<section id="example">
-<h3>Example<a class="headerlink" href="#example" title="Permalink to this heading">#</a></h3>
-<p>An example call to <code class="docutils literal notranslate"><span class="pre">make-config-file</span></code> below creates a new project called <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code>, sets the <em>local</em> project path to <code class="docutils literal notranslate"><span class="pre">/path/to/my/project</span></code>, the <em>central</em> path (to a remote Linux server) to <code class="docutils literal notranslate"><span class="pre">/nfs/nhome/live/username/</span></code>, the required SSH configurations, and indicates that <em>behavioural</em>, <em>electrophysiological</em> and <em>histological</em> data will be used on this machine for this project.</p>
-<p>Note that in the terminal, <code class="docutils literal notranslate"><span class="pre">\</span></code> indicates a new-line (allowing a single command to be spread across multiple lines for display purposes). On Windows, the <code class="docutils literal notranslate"><span class="pre">^</span></code> character is used instead.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">make</span><span class="o">-</span><span class="n">config</span><span class="o">-</span><span class="n">file</span> \
-<span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">my</span><span class="o">/</span><span class="n">project</span> \
-<span class="o">/</span><span class="n">nfs</span><span class="o">/</span><span class="n">nhome</span><span class="o">/</span><span class="n">live</span><span class="o">/</span><span class="n">username</span><span class="o">/</span> \
-<span class="n">ssh</span> \
-<span class="o">--</span><span class="n">central_host_id</span> <span class="n">ssh</span><span class="o">.</span><span class="n">swc</span><span class="o">.</span><span class="n">ucl</span><span class="o">.</span><span class="n">ac</span><span class="o">.</span><span class="n">uk</span> \
-<span class="o">--</span><span class="n">central_host_username</span> <span class="n">username</span> \
-<span class="o">--</span><span class="n">transfer_verbosity</span> <span class="n">v</span> \
-<span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">ephys</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">behav</span> <span class="o">--</span><span class="n">use</span><span class="o">-</span><span class="n">histology</span> <span class="o">--</span><span class="n">overwrite_old_files</span>
-</pre></div>
-</div>
-<p>Now setup is complete! <em>Configuration</em> settings can be edited at any time with the <code class="docutils literal notranslate"><span class="pre">update-config</span></code> command. Alternatively, custom <em>configuration</em> files can be supplied using the <code class="docutils literal notranslate"><span class="pre">supply-config</span></code> command (this simplifies setting up projects across multiple <em>local</em> machines).</p>
-<p>Next, we can start setting up the project by automatically creating standardised project folder trees.</p>
+<p>If connection method is <code class="docutils literal notranslate"><span class="pre">ssh</span></code>, the <strong>central_host_id</strong> and <strong>central_host_username</strong>
+must be set. See the <a class="reference internal" href="#ssh"><span class="std std-ref">SSH section</span></a> for details.</p>
+<p>The optional arguments <strong>overwrite_old_files</strong>, <strong>transfer_verbosity</strong> and
+<strong>show_transfer_progress</strong> determine how data transfer is performed
+(see the <a class="reference internal" href="#data-transfer"><span class="std std-ref">Data Transfer</span></a> section for details).</p>
+<p>Settings can be edited at any time with the <code class="docutils literal notranslate"><span class="pre">update-config</span></code> command.
+Alternatively, custom config files can be supplied using the <code class="docutils literal notranslate"><span class="pre">supply-config</span></code>
+command (this simplifies setting up projects across multiple <em>local</em> machines).</p>
 </section>
 </section>
-<section id="creating-subject-and-session-folders">
-<h2>Creating <em>subject</em> and <em>session</em> folders<a class="headerlink" href="#creating-subject-and-session-folders" title="Permalink to this heading">#</a></h2>
-<p>In a typical neuroscience experiment, a data-collection session begins by creating the folder for the current subject (e.g. mouse, rat) and current session. Once created, the data for this session is stored in the created folder.</p>
-<p>The command <code class="docutils literal notranslate"><span class="pre">make-sub-folders</span></code> can be used automatically create folder trees that adhere to the <a class="reference external" href="https://swc-blueprint.neuroinformatics.dev/">SWC-Blueprint</a> specification. The linked specifications contain more detail, but at it’s heart this requires:</p>
-<ul class="simple">
-<li><p>All subjects are given a numerical (integer) number that is prefixed with the key <code class="docutils literal notranslate"><span class="pre">sub-</span></code>.</p></li>
-<li><p>All sessions are also given a numerical (integer) number that is prefixed with the key <code class="docutils literal notranslate"><span class="pre">ses-</span></code>.</p></li>
-</ul>
-<p>Following this, optional information can be included in the form of key-value pairs. For example, a folder tree for <em>subject 1</em>, <em>session 1</em>  with <em>behavioural</em> data that includes the date of the session in the <em>session</em> folder name would be:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── sub-001/
-    └── ses-001_date-20230516/
-        └── behav/
-            └── sub-001_ses-001_camera-top.mp4
+<section id="setting-up-the-connection-to-central">
+<h2>Setting up the connection to <em>central</em><a class="headerlink" href="#setting-up-the-connection-to-central" title="Permalink to this heading">#</a></h2>
+<section id="local-filesystem">
+<h3>Local Filesystem<a class="headerlink" href="#local-filesystem" title="Permalink to this heading">#</a></h3>
+<p>Local filesystem transfers allow transfer of files and folders across the
+file system available to the machine. This is used when the <em>central</em> machine is
+setup as a mounted drive. This is a common form of communication between
+client machines and a server, such as a high-performance computer
+(HPC, also often called a <em>cluster</em>).</p>
+<p>When a <em>central</em> machine is mounted to the <em>local</em> machine, the folders of the
+<em>central</em> machine are available as if they were part of the <em>local</em> filesystem.
+In this case, the <code class="docutils literal notranslate"><span class="pre">central_path</span></code> configuration (see <code class="docutils literal notranslate"><span class="pre">make-config-file</span></code>)
+can simply be set to the path directed to the mounted drive.</p>
+<p>With the <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> set to <code class="docutils literal notranslate"><span class="pre">local_filesystem</span></code>, data transfer will
+proceed between the <em>local</em> machine filesystem and mounted drive.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>Local Filesystem Example<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">Imagine your <em>central</em> data store is a HPC cluster. Your projects are stored in your
+home drive, with the project folder at <code class="docutils literal notranslate"><span class="pre">/system/home/username/my_projects/my_first_project</span></code>.</p>
+<p class="sd-card-text">You have mounted your home drive, <code class="docutils literal notranslate"><span class="pre">/system/home/username</span></code> to your local filesystem,
+at the path <code class="docutils literal notranslate"><span class="pre">X:\username</span></code>.</p>
+<p class="sd-card-text">In this case, you can set the <code class="docutils literal notranslate"><span class="pre">central_path</span></code> to <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects\my_first_project</span></code>
+and set <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> to <code class="docutils literal notranslate"><span class="pre">local_filesystem</span></code> to transfer data from
+<em>local</em> to <em>central</em>.</p>
+</div>
+</details></section>
+<section id="ssh">
+<h3>SSH<a class="headerlink" href="#ssh" title="Permalink to this heading">#</a></h3>
+<p>An alternative method of connecting to the <em>central</em> machine is the Secure Shell (SSH).
+To use the SSH connection protocol, additional configs must be provided that
+tell Datashuttle how to connect.</p>
+<p><strong>central_host_id:</strong> This is the address of the server you want to connect to.</p>
+<p><strong>central_host_username:</strong> This is your profile name on the server you want to
+connect to.</p>
+<p>In Datashuttle, the
+<code class="docutils literal notranslate"><span class="pre">connection_method</span></code> configuration must be set to <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code>
+to use the SSH protocol for data transfers.</p>
+<p>Prior to using the SSH protocol, the host ID must be accepted and your
+user account password entered. This is only required once, following this
+SSH key-pairs will be used to connect via SSH. The
+command <code class="docutils literal notranslate"><span class="pre">setup-ssh-connection-to-central-server</span></code> can be used to
+setup an SSH connection to the <em>central</em> machine.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>SSH Example<div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">When setting up a project for SSH connection, the <code class="docutils literal notranslate"><span class="pre">central_host_id</span></code>
+and <code class="docutils literal notranslate"><span class="pre">central_host_username</span></code> must be provided:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-5">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
+	<span class="n">local_path</span><span class="o">=</span><span class="s2">&quot;/path/to/my_projects/my_first_project&quot;</span><span class="p">,</span>
+	<span class="n">central_path</span><span class="o">=</span><span class="s2">&quot;/central/live/username/my_projects/my_first_project&quot;</span><span class="p">,</span>
+	<span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
+	<span class="n">central_host_id</span><span class="o">=</span><span class="s2">&quot;ssh.swc.ucl.ac.uk&quot;</span><span class="p">,</span>
+	<span class="n">central_host_username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>In DataShuttle, this folder tree (excluding the .mp4 file which must be saved using third-party software) can be created (assuming today’s date is <code class="docutils literal notranslate"><span class="pre">20220516</span></code>), with the command</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">make</span><span class="o">-</span><span class="n">sub</span><span class="o">-</span><span class="n">folders</span> <span class="o">-</span><span class="n">sub</span> <span class="mi">001</span> <span class="o">-</span><span class="n">ses</span> <span class="mi">001</span><span class="n">_</span><span class="nd">@DATE</span><span class="o">@</span> <span class="o">-</span><span class="n">dt</span> <span class="n">behav</span>
+</div>
+<input id="sd-tab-item-6" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-6">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">make-config-file \</span>
+<span class="go">/path/to/my_projects/my_first_project \</span>
+<span class="go">/central/live/username/my_projects/my_first_project \</span>
+<span class="go">ssh \</span>
+<span class="go">--central_host_id ssh.swc.ucl.ac.uk \</span>
+<span class="go">--central_host_username username</span>
 </pre></div>
 </div>
-<p>The leading <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> is optional when specifying folders to create (e.g. both <code class="docutils literal notranslate"><span class="pre">-sub</span> <span class="pre">001</span></code> and <code class="docutils literal notranslate"><span class="pre">-sub</span> <span class="pre">sub-001</span></code> are valid inputs). It is possible to automatically create date, time or datetime key-value pairs with the days <code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;TIME&#64;</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;DATETIME&#64;</span></code> respectively (see the <a class="reference internal" href="#automatically-include-date-time-or-datetime"><span class="std std-ref">below section</span></a> for more detail).</p>
-<p>Another example call, which creates a range of subject and session folders, is shown below:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">make</span><span class="o">-</span><span class="n">sub</span><span class="o">-</span><span class="n">folders</span> <span class="o">-</span><span class="n">sub</span> <span class="mi">001</span><span class="nd">@TO</span><span class="o">@</span><span class="mi">003</span> <span class="o">-</span><span class="n">ses</span> <span class="mi">010</span><span class="n">_</span><span class="nd">@TIME</span><span class="o">@</span> <span class="o">-</span><span class="n">dt</span> <span class="nb">all</span>
+</div>
+<input id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-7">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">make-config-file ^</span>
+<span class="go">C:\path\to\my_projects\my_first_project ^</span>
+<span class="go">/central/live/username/my_projects/my_first_project ^</span>
+<span class="go">ssh ^</span>
+<span class="go">--central_host_id ssh.swc.ucl.ac.uk ^</span>
+<span class="go">--central_host_username username</span>
 </pre></div>
 </div>
-<p>When the <code class="docutils literal notranslate"><span class="pre">all</span></code> argument is used for <code class="docutils literal notranslate"><span class="pre">--data_type</span></code> (<code class="docutils literal notranslate"><span class="pre">-dt</span></code>), the folders created depend on the <em>data-types</em> specified during <em>configuration</em> setup. For example, if
-<code class="docutils literal notranslate"><span class="pre">--use_behav</span></code>, <code class="docutils literal notranslate"><span class="pre">--use_funcimg</span></code>, <code class="docutils literal notranslate"><span class="pre">--use_histology</span></code> were set during <em>configuration</em> setup, the folder tree from the above command (assuming the time is <code class="docutils literal notranslate"><span class="pre">4.02.48</span> <span class="pre">PM</span></code>), would look like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>├── sub-001/
-│   ├── ses-010_time-160248/
-│   │   ├── behav
-│   │   └── funcimg
-│   └── histology
-├── sub-002/
-│   ├── ses-010_time-160248/
-│   │   ├── behav
-│   │   └── funcimg
-│   └── histology
-└── sub-003/
-    ├── ses-010_time-160248/
-    │   ├── behav
-    │   └── funcimg
-    └── histology
+</div>
+</div>
+<p class="sd-card-text">Next, a one-time command to setup the SSH connection must be run:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-8" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-8">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">setup_ssh_connection_to_central_server</span><span class="p">()</span>
 </pre></div>
 </div>
-<section id="data-types-folders">
-<h3>Data Types Folders<a class="headerlink" href="#data-types-folders" title="Permalink to this heading">#</a></h3>
-<p>In <a class="reference external" href="https://swc-blueprint.neuroinformatics.dev/specification.html">SWC-Blueprint</a>, <em>data-types</em> specify where acquired experimental data of currently supported types (<code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">funcimg</span></code> and <code class="docutils literal notranslate"><span class="pre">histology</span></code>) is stored. See the <a class="reference external" href="https://swc-blueprint.neuroinformatics.dev/specification.html#datatype"><em>data-types</em> section of the SWC-Blueprint for more details</a>.</p>
-<p>At present, <code class="docutils literal notranslate"><span class="pre">histology</span></code> is saved to the <code class="docutils literal notranslate"><span class="pre">sub-</span></code> level, as it is assumed <code class="docutils literal notranslate"><span class="pre">histology</span></code> is conducted <em>ex vivo</em> and so session will be possible. Please don’t hesitate to get into contact if you have an alternative use case.</p>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-3" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-9">
+CLI (macOS / Linux / Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">my_new_project</span> <span class="n">setup</span><span class="o">-</span><span class="n">ssh</span><span class="o">-</span><span class="n">connection</span><span class="o">-</span><span class="n">to</span><span class="o">-</span><span class="n">central</span><span class="o">-</span><span class="n">server</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p class="sd-card-text">Running <code class="docutils literal notranslate"><span class="pre">setup-ssh-connection-to-central-server</span></code> will require verification
+that the SSH server connected to is correct (pressing <code class="docutils literal notranslate"><span class="pre">y</span></code> to proceed).</p>
+<p class="sd-card-text">Next, your password to the <em>central</em> machine will be requested.
+This command sets up SSH key pairs between <em>local</em> and <em>central</em> machines.</p>
+<p class="sd-card-text">Password-less SSH communication is setup and no further configuration should be
+necessary for SSH transfer.</p>
+</div>
+</details><p>Next, we can start setting up the project by automatically creating standardised
+project folder trees.</p>
 </section>
 </section>
-<section id="data-transfer">
-<h2>Data Transfer<a class="headerlink" href="#data-transfer" title="Permalink to this heading">#</a></h2>
-<p>Once a local machine is setup, created folders can be filled with acquired experimental data. Once data collection is complete, it is often required to transfer this data to a central storage machine. This is especially important if data of different types (e.g. <em>behaviour</em>, <em>electrophysiology</em>) is acquired across multiple local machines.</p>
-<p>DataShuttle offers a convenient way of transferring entire project folders, or subsets of data. For example, the call</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="mi">001</span><span class="nd">@TO</span><span class="o">@</span><span class="mi">003</span> \
-<span class="o">-</span><span class="n">ses</span> <span class="mi">005</span><span class="n">_date</span><span class="o">-@*@</span> <span class="mi">006</span><span class="n">_date</span><span class="o">-@*@*</span> \
-<span class="o">-</span><span class="n">dt</span> <span class="n">behav</span>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="creating-subject-and-session-folders">
+<h1>Creating <em>subject</em> and <em>session</em> folders<a class="headerlink" href="#creating-subject-and-session-folders" title="Permalink to this heading">#</a></h1>
+<p>In a typical neuroscience experiment, data collection sessions begin by
+creating the folder for the current <em>subject</em> (e.g. mouse, rat) and current <em>session</em>.</p>
+<p>The command <code class="docutils literal notranslate"><span class="pre">make-folders</span></code> can be used to automatically create standardised
+folder trees (see
+<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> for details on the standardisation scheme).</p>
+<p>An example project directory for the behavioural data for the first <em>subject</em>,
+first <em>session</em> of an experiment may look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── my_first_project/
+    └── rawdata/
+        └── sub-001/
+            └── ses-001_date-20230516/
+                └── behav
 </pre></div>
 </div>
-<p>Will <em>upload</em> (from <em>local</em> to <em>central</em> ) <em>behavioural</em> <em>sessions</em> 5 and 6, collected at any date, for <em>subjects</em> 1 to 3.</p>
-<p>The keyword <code class="docutils literal notranslate"><span class="pre">all</span></code> can be input in place of a <code class="docutils literal notranslate"><span class="pre">-sub</span></code>, <code class="docutils literal notranslate"><span class="pre">-ses</span></code> or <em>data-type</em> argument <code class="docutils literal notranslate"><span class="pre">dt</span></code> to transfer all available subject, sessions or data types available. For example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">download</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="nb">all</span> \
-<span class="o">-</span><span class="n">ses</span> <span class="mi">005</span> \
-<span class="o">-</span><span class="n">dt</span> <span class="n">ephys</span>
+<p>In Datashuttle, this folder tree can be created with the below command
+(assuming today’s date is <code class="docutils literal notranslate"><span class="pre">20230516</span></code>):</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-10" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-10">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_folders</span><span class="p">(</span>
+	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;001&quot;</span><span class="p">,</span>
+	<span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;001_@DATE@&quot;</span><span class="p">,</span>
+	<span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;behav&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>Will transfer <em>electrophysiology</em> data of the 5th sessions for <em>all</em> subjects found on the <em>central</em> machine.</p>
-<p>The <em>download</em> command transfers data from the <em>central</em> to <em>local</em> PC. This can be useful in case you want to analyse a subset of data that is held in <em>central</em> storage.</p>
-<p>The main data transfer commands are: <code class="docutils literal notranslate"><span class="pre">upload</span></code>, <code class="docutils literal notranslate"><span class="pre">download</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-all</span></code>, <code class="docutils literal notranslate"><span class="pre">download-all</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-entire-project</span></code>, <code class="docutils literal notranslate"><span class="pre">download-entire-project</span></code>. To understand their behaviour, it is necessary to understand the concept of the <em>top-level folder</em>.</p>
-<section id="understanding-the-top-level-folder-and-transfer-methods">
-<h3>Understanding the ‘Top Level Folder’ and Transfer Methods<a class="headerlink" href="#understanding-the-top-level-folder-and-transfer-methods" title="Permalink to this heading">#</a></h3>
-<p>SWC-Blueprint defines two main <em>top-level folders</em>, <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>. The purpose of <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> is to store data directly as acquired. The <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> folder is used to store the results of processing the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>. This distinction ensures that <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> is not overwritten during processing, and makes sharing of <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> simpler.</p>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-11">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">make-folders -sub 001 -ses 001_@DATE@ -dt behav</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-12" name="sd-tab-set-4" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-12">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">make-folders -sub 001 -ses 001_@DATE@ -dt behav</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The leading <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> in the provided <em>subject</em> and <em>session</em> names
+are optional in the command, these prefixes
+will always be added
+(i.e. both <code class="docutils literal notranslate"><span class="pre">-sub</span> <span class="pre">001</span></code> and <code class="docutils literal notranslate"><span class="pre">-sub</span> <span class="pre">sub-001</span></code> are valid inputs).</p>
+<p>It is possible to automatically create date, time or datetime key-value pairs with the tags
+<code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;TIME&#64;</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;DATETIME&#64;</span></code> respectively.
+A range of <em>subjects</em> and <em>sessions</em> can be created with the <code class="docutils literal notranslate"><span class="pre">&#64;TO&#64;</span></code> flag.
+See the <a class="reference internal" href="#convenience-tags"><span class="std std-ref">convenience tags</span></a> section for more details.</p>
+<section id="datatype-folders">
+<h2><em>Datatype</em> Folders<a class="headerlink" href="#datatype-folders" title="Permalink to this heading">#</a></h2>
+<p><em>Datatype</em> folders contain acquired experimental data and must be named either
+<code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">funcimg</span></code> or <code class="docutils literal notranslate"><span class="pre">anat</span></code>. <em>Datatype</em> folders must be placed
+within a <em>session</em> folder.
+See the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/specification.html#datatype"><em>datatype</em></a> section
+of NeuroBlueprint for details.</p>
+</section>
+</section>
+<section class="tex2jax_ignore mathjax_ignore" id="data-transfer">
+<h1>Data Transfer<a class="headerlink" href="#data-transfer" title="Permalink to this heading">#</a></h1>
+<p>Datashuttle offers a convenient way of transferring entire project folders or
+subsets of the data.</p>
+<p>The main data transfer commands are: <code class="docutils literal notranslate"><span class="pre">upload</span></code>, <code class="docutils literal notranslate"><span class="pre">download</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-all</span></code>,
+<code class="docutils literal notranslate"><span class="pre">download-all</span></code>, <code class="docutils literal notranslate"><span class="pre">upload-entire-project</span></code>, <code class="docutils literal notranslate"><span class="pre">download-entire-project</span></code>. The term <em>upload</em> refers to transfer from
+<em>local</em> to the <em>remote</em> machine, while <em>download</em> transfers in the opposite direction.</p>
+<p>These commands act differently in regard to the <em>top-level-folder</em>. In Datashuttle, the current working
+<em>top-level-folder</em> is by default <em>rawdata</em>. The working <em>top-level-folder</em> determines  where folders
+are created (e.g. <code class="docutils literal notranslate"><span class="pre">make_folders</span></code>) and how commands transfer data.</p>
+<details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
+<summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
+<span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span><em>top-level-folders</em><div class="sd-summary-down docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-down" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 8.72a.75.75 0 000 1.06l6.25 6.25a.75.75 0 001.06 0l6.25-6.25a.75.75 0 00-1.06-1.06L12 14.44 6.28 8.72a.75.75 0 00-1.06 0z"></path></svg></div>
+<div class="sd-summary-up docutils">
+<svg version="1.1" width="1.5em" height="1.5em" class="sd-octicon sd-octicon-chevron-up" viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M18.78 15.28a.75.75 0 000-1.06l-6.25-6.25a.75.75 0 00-1.06 0l-6.25 6.25a.75.75 0 101.06 1.06L12 9.56l5.72 5.72a.75.75 0 001.06 0z"></path></svg></div>
+</summary><div class="sd-summary-content sd-card-body docutils">
+<p class="sd-card-text">The top-level-folders are the folders immediately under the
+project root (i.e. the folders within the folder that has the name of the project).</p>
+<p class="sd-card-text"><a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> defines two main <em>top-level-folders</em>, <em>rawdata</em> and <em>derivatives</em>.
+The purpose of <em>rawdata</em> is to store data directly as acquired.
+The <em>derivatives</em> folder is used to store the results of processing the <em>rawdata</em>.
+This distinction ensures that <em>rawdata</em> is not overwritten during processing, and
+makes sharing of <em>rawdata</em> simpler.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── my_first_project/
     ├── rawdata/
     │   └── ...
@@ -529,22 +816,30 @@ document.write(`
         └── ...
 </pre></div>
 </div>
-<p>In DataShuttle, the current working <em>top level folder</em> is by default <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>. The working <em>top level folder</em> determines where folders are created (e.g. <code class="docutils literal notranslate"><span class="pre">make_sub_folders</span></code>), and from which folder data is transferred.</p>
-<p>For example, <code class="docutils literal notranslate"><span class="pre">upload</span></code> or  <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will transfer data with <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> from <em>local</em> to <em>central</em>, if <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> is the current <em>top-level folder</em>. <code class="docutils literal notranslate"><span class="pre">upload</span></code> transfers the specified subset of folders, while <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will upload the entire <em>top-level folder</em>.</p>
-<p>To change the <em>top-level folder</em>, the command <code class="docutils literal notranslate"><span class="pre">set-top-level-folder</span></code> can be used. e.g.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> <span class="n">my_first_project</span> <span class="nb">set</span><span class="o">-</span><span class="n">top</span><span class="o">-</span><span class="n">level</span><span class="o">-</span><span class="n">folder</span> <span class="n">derivatives</span>
+<p class="sd-card-text">To change the <em>top-level-folder</em>, the command <code class="docutils literal notranslate"><span class="pre">set-top-level-folder</span></code> can be used. e.g.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle my_first_project set-top-level-folder derivatives</span>
 </pre></div>
 </div>
-<p>The <em>top-level folder</em> setting will remain across DataShuttle sessions.</p>
-<p>After this change, <em>upload</em> or <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will transfer data in the <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> folder.</p>
-<p>To see the current <em>top-level folder</em>, the command <code class="docutils literal notranslate"><span class="pre">show-top-level-folder</span></code> can be used.</p>
-</section>
-<section id="transferring-the-entire-project">
-<h3>Transferring the entire project<a class="headerlink" href="#transferring-the-entire-project" title="Permalink to this heading">#</a></h3>
-<p>If you want to quickly transfer an entire project (i.e. all data in both <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>), the command <code class="docutils literal notranslate"><span class="pre">upload-entire-project</span></code> or <code class="docutils literal notranslate"><span class="pre">download-entire-project</span></code> can be used.</p>
-<p>e.g. the command
-<code class="docutils literal notranslate"><span class="pre">datashuttle</span> <span class="pre">my_first_project</span> <span class="pre">upload-entire-project</span></code></p>
-<p>run on the folder tree:</p>
+<p class="sd-card-text">The <em>top-level-folder</em> setting will remain across Datashuttle sessions.</p>
+<p class="sd-card-text">To see the current <em>top-level-folder</em>, the command <code class="docutils literal notranslate"><span class="pre">show-top-level-folder</span></code> can be used.</p>
+</div>
+</details><p>To quickly transfer the entire project (i.e. everything in all <em>top-level-folders</em>),  <code class="docutils literal notranslate"><span class="pre">upload-entire-project</span></code> and <code class="docutils literal notranslate"><span class="pre">download-entire-project</span></code> can be used.</p>
+<p>For example, the command:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-13" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-13">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_entire_project</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-14" name="sd-tab-set-5" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-14">
+CLI (macOS / Linux / Windows)</label><div class="sd-tab-content docutils">
+<p><code class="docutils literal notranslate"><span class="pre">datashuttle</span> <span class="pre">my_first_project</span> <span class="pre">upload-entire-project</span></code></p>
+</div>
+</div>
+<p>when run on the folder tree:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 └── my_first_project/
     ├── rawdata/
@@ -556,135 +851,131 @@ document.write(`
             └── tracking_video_results.csv
 </pre></div>
 </div>
-<p>will transfer all data in both the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> folders from the <em>local</em> machine to the <em>central</em> machine.</p>
-</section>
-<section id="transferring-files-that-are-not-within-data-type-folders">
-<h3>Transferring files that are not within data-type folders<a class="headerlink" href="#transferring-files-that-are-not-within-data-type-folders" title="Permalink to this heading">#</a></h3>
-<p>In some cases, files related to metadata may be stored outside of <em>data-type</em> folders.  When the <code class="docutils literal notranslate"><span class="pre">all</span></code> flag is used, files outside of folders at the <em>top-level folder</em> (for <code class="docutils literal notranslate"><span class="pre">-sub</span></code>), <em>subject</em> level (for <code class="docutils literal notranslate"><span class="pre">-ses</span></code>) and <em>session</em> level (<code class="docutils literal notranslate"><span class="pre">for</span> <span class="pre">-dt</span></code>) will also be transferred. However, if specific subject, session or data-type are selected, files outside of these will not be transferred.</p>
-<p>The example below exemplifies how the <code class="docutils literal notranslate"><span class="pre">all</span></code> argument works during data transfer. For example, given the project folder:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── rawdata/
-    ├── sub-001/
-    │   ├── sub-001_extrafile-sub.json
-    │   └── ses-001/
-    │       ├── sub-001_ses-001_extrafile-ses.json
-    │       ├── behav/
-    │       │   └── ...
-    │       └── sub-001_ses-001_extrafile-dtype.json
-    └── a_project_file.json
+<p>will transfer all files and folders in both the <em>rawdata</em> and <em>derivatives</em> folders from the
+<em>local</em> machine to the <em>central</em> machine.</p>
+<p>In contrast, <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> and <code class="docutils literal notranslate"><span class="pre">download-all</span></code> will transfer the entire <em>top-level-folder</em>.
+For example, if <em>rawdata</em> is the current <em>top-level-folder</em>, <code class="docutils literal notranslate"><span class="pre">upload-all</span></code> will transfer all contents of
+<em>rawdata</em> from <em>local</em> to <em>central</em>.</p>
+<section id="selective-transfer-of-data-with-upload-and-download">
+<h2>Selective transfer of data with <code class="docutils literal notranslate"><span class="pre">upload</span></code> and <code class="docutils literal notranslate"><span class="pre">download</span></code><a class="headerlink" href="#selective-transfer-of-data-with-upload-and-download" title="Permalink to this heading">#</a></h2>
+<p>Subsets of <em>subjects</em>, <em>sessions</em> and <em>datatypes</em> can be transferred with
+the <code class="docutils literal notranslate"><span class="pre">upload</span></code> and <code class="docutils literal notranslate"><span class="pre">download</span></code> commands.</p>
+<p>For example, the call:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-15">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;001@TO@003&quot;</span><span class="p">,</span>
+	<span class="n">ses_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;005_date-@*@&quot;</span><span class="p">,</span> <span class="s2">&quot;006_date-@*@&quot;</span><span class="p">],</span>
+	<span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;behav&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>The command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="nb">all</span> \
-<span class="o">-</span><span class="n">ses</span><span class="o">-</span><span class="mi">001</span> \
-<span class="o">-</span><span class="n">dt</span> <span class="nb">all</span>
-
+</div>
+<input id="sd-tab-item-16" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-16">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">upload \</span>
+<span class="go">-sub 001@TO@003 \</span>
+<span class="go">-ses 005_date-@*@ 006_date-@*@* \</span>
+<span class="go">-dt behav</span>
 </pre></div>
 </div>
-<p>will move:</p>
-<ul class="simple">
-<li><p>The file <code class="docutils literal notranslate"><span class="pre">a_project_file.json</span></code> (and any other files at this level) and search all <em>subjects</em> for the specified <em>sessions</em> <em>/ data-types</em>.</p></li>
-<li><p>Only <em>sessions</em> called <code class="docutils literal notranslate"><span class="pre">001</span></code>, but not any other files or folders at this level (i.e. <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_extrafile-ses.json</span></code> will not be transferred).</p></li>
-<li><p>All <em>data-types</em> and non-<em>data-types</em> at the session level. For example, <code class="docutils literal notranslate"><span class="pre">behav</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_extrafile-dtype.json</span></code> (that reside in <em>session</em> folders called <code class="docutils literal notranslate"><span class="pre">ses-001</span></code>) will be transferred.</p></li>
-</ul>
-<p>For convenience, it is suggested to keep all files within <em>data-type</em> level folders. However, the <code class="docutils literal notranslate"><span class="pre">all</span></code> argument, as well as the additional available arguments: <code class="docutils literal notranslate"><span class="pre">all_sub</span></code> and <code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> (for <code class="docutils literal notranslate"><span class="pre">-sub</span></code>), <code class="docutils literal notranslate"><span class="pre">all_ses</span></code> and <code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> (for <code class="docutils literal notranslate"><span class="pre">-ses</span></code>) and <code class="docutils literal notranslate"><span class="pre">-all_ses_level_non_data_type</span></code> are available, as <a class="reference internal" href="#flexible-transfers-with-keyword-arguments"><span class="std std-ref">detailed below</span></a></p>
+</div>
+<input id="sd-tab-item-17" name="sd-tab-set-6" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-17">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">upload ^</span>
+<span class="go">-sub 001@TO@003 ^</span>
+<span class="go">-ses 005_date-@*@ 006_date-@*@* ^</span>
+<span class="go">-dt behav</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>will <em>upload</em>
+behavioural sessions 5 and 6, collected on any date, for subjects 1 to 3.</p>
+<p>The keyword <code class="docutils literal notranslate"><span class="pre">all</span></code> can be input in place of a <code class="docutils literal notranslate"><span class="pre">-sub</span></code>, <code class="docutils literal notranslate"><span class="pre">-ses</span></code> or <em>datatype</em>
+argument <code class="docutils literal notranslate"><span class="pre">-dt</span></code> to transfer all available subject, sessions or datatypes available.</p>
+<p>Often additional files or folders may be stored outside of <em>datatype</em>
+folders. The <code class="docutils literal notranslate"><span class="pre">all</span></code> argument will transfer all files and folders at the
+specified level. Datashuttle offers a flexible argument syntax for
+selecting precise data subsets, see <a class="reference internal" href="#data-transfer-options"><span class="std std-ref">Data Transfer Options</span></a>
+for details.</p>
 </section>
 <section id="transferring-a-specific-file-or-folder">
-<h3>Transferring a specific file or folder<a class="headerlink" href="#transferring-a-specific-file-or-folder" title="Permalink to this heading">#</a></h3>
-<p>The functions <code class="docutils literal notranslate"><span class="pre">upload-specific-folder-or-file</span></code> or <code class="docutils literal notranslate"><span class="pre">download-specific-folder-or-file</span></code> can be used to transfer an individual file or folder. The path to the file or folder (either full or relative to the working <em>top-level folder</em>) should be input.</p>
-</section>
-</section>
-<section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading">#</a></h2>
-<p>This concludes the <em>Get Started</em> part of the documentation. Hopefully, you are now equipped to manage an experimental project folder aligned to community standards with a few short commands.</p>
-<p>Continue reading the documentation for a full overview of DataShuttle functionalities.</p>
-<p>To discuss, contribute or give feedback on DataShuttle, please check out our discussions page and GitHub repository. Any feedback is welcomed and greatly appreciated!</p>
+<h2>Transferring a specific file or folder<a class="headerlink" href="#transferring-a-specific-file-or-folder" title="Permalink to this heading">#</a></h2>
+<p>The functions <code class="docutils literal notranslate"><span class="pre">upload-specific-folder-or-file</span></code> or <code class="docutils literal notranslate"><span class="pre">download-specific-folder-or-file</span></code>
+can be used to transfer an individual file or folder.</p>
+<p>The path to the file or folder (either full or relative to the working <em>top-level-folder</em>)
+should be input.</p>
 </section>
 </section>
 <section class="tex2jax_ignore mathjax_ignore" id="advanced-usage">
 <h1>Advanced Usage<a class="headerlink" href="#advanced-usage" title="Permalink to this heading">#</a></h1>
-<section id="python-api-guide">
-<h2>Python API Guide<a class="headerlink" href="#python-api-guide" title="Permalink to this heading">#</a></h2>
-<p>DataShuttle can be used through the command line interface (as exampled in the <em>Get Started</em> section) or through a Python API. All commands shown in the <em>Get Started</em> guide can be used similarly in the Python API (with hypens replaced by underscores).</p>
-<p>To start a project in Python, import DataShuttle and initialise the project class:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datashuttle.datashuttle</span> <span class="kn">import</span> <span class="n">DataShuttle</span>
-
-<span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_first_project&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The configuration file can be setup similarly to the <em>Get Started</em> example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
-	<span class="n">local_path</span><span class="o">=</span><span class="s2">&quot;/path/to/my/project&quot;</span><span class="p">,</span>
-	<span class="n">central_path</span><span class="o">=</span><span class="s2">&quot;/nfs/nhome/live/username/&quot;</span><span class="p">,</span>
-	<span class="n">connection_method</span><span class="o">=</span><span class="s2">&quot;ssh&quot;</span><span class="p">,</span>
-	<span class="n">central_host_id</span><span class="o">=</span><span class="s2">&quot;ssh.swc.ucl.ac.uk&quot;</span><span class="p">,</span>
-	<span class="n">central_host_username</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">,</span>
-	<span class="n">overwrite_old_files</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-	<span class="n">transfer_verbosity</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">,</span>
-	<span class="n">use_ephys</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-	<span class="n">use_behav</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-	<span class="n">use_histology</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>and methods for making subject folders and transferring data accessed similarly. Note that the shortcut arguments <code class="docutils literal notranslate"><span class="pre">-sub</span></code>, <code class="docutils literal notranslate"><span class="pre">-ses</span></code>, <code class="docutils literal notranslate"><span class="pre">-dt</span></code> are not available through the Python API, and the full argument names (<code class="docutils literal notranslate"><span class="pre">sub_names</span></code>, <code class="docutils literal notranslate"><span class="pre">ses_names</span></code>, <code class="docutils literal notranslate"><span class="pre">data_type</span></code>) must be used.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_sub_folders</span><span class="p">(</span>
-	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;sub-001@TO@002&quot;</span><span class="p">,</span>
-	<span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;ses-001_@DATE@&quot;</span><span class="p">,</span>
-	<span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;all&quot;</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
-	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;001@TO@003&quot;</span><span class="p">,</span>
-	<span class="n">ses_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;005_date-@*@&quot;</span><span class="p">,</span> <span class="s2">&quot;006_date-@*@&quot;</span><span class="p">],</span>
-	<span class="n">data_type</span><span class="o">=</span><span class="s2">&quot;behav&quot;</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-</section>
-<section id="setting-up-the-connection-to-central">
-<h2>Setting up the connection to <em>central</em><a class="headerlink" href="#setting-up-the-connection-to-central" title="Permalink to this heading">#</a></h2>
-<section id="local-filesystem">
-<h3>Local Filesystem<a class="headerlink" href="#local-filesystem" title="Permalink to this heading">#</a></h3>
-<p>Local filesystem transfers are typically used when the <em>central</em> machine is setup as a mounted drive. This is a common form of communication between client machines and a central server, such as a high-performance computer (HPC, also often called <em>clusters</em>).</p>
-<p>When a <em>central</em> machine is mounted to the <em>Local</em> machine, it acts as if is available as a local-filesystem folder. In this case, the <code class="docutils literal notranslate"><span class="pre">central_path</span></code> configuration (see <code class="docutils literal notranslate"><span class="pre">make_config_file</span></code>) can simply be set to the path directing to the mounted drive.</p>
-<p>With the <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> set to <code class="docutils literal notranslate"><span class="pre">local_filesystem</span></code>, data transfer will proceed between the <em>local</em> machine filesystem and mounted drive.</p>
-</section>
-<section id="ssh">
-<h3>SSH<a class="headerlink" href="#ssh" title="Permalink to this heading">#</a></h3>
-<p>One method of connecting with the <em>central</em> machine is the Secure Shell (SSH) protocol, that enables communication between two machines. In DataShuttle, SSH can be used as a method of communication between <em>local</em> and <em>central</em> machines.</p>
-<p>The convenience command <code class="docutils literal notranslate"><span class="pre">setup-ssh-connection-to-central-server</span></code> can be used to setup an SSH connection to the <em>central</em> machine. The <em>central</em> machine must be a Linux-managed remote server. This command is only required to be run once.</p>
-<p>This command requires that all configurations related to SSH communication (<code class="docutils literal notranslate"><span class="pre">central_host_id</span></code>, <code class="docutils literal notranslate"><span class="pre">central_username</span></code>) are set (using <code class="docutils literal notranslate"><span class="pre">make-config-file</span></code>). Running <code class="docutils literal notranslate"><span class="pre">setup-ssh-connection-to-central-server</span></code> will require verification that the SSH server connected to is correct (pressing <code class="docutils literal notranslate"><span class="pre">y</span></code> to proceed). Following this, your password to the <em>central</em> machine will be requested.</p>
-<p>This command sets up SSH key pairs between <em>local</em> and <em>central</em> machines. Password-less SSH communication is setup and no further configuration should be necessary for SSH transfer.</p>
-<p>In DataShuttle, the <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> configuration must be set to <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code> to use the SSH protocol for data transfers.</p>
-</section>
-</section>
 <section id="convenience-tags">
 <h2>Convenience tags<a class="headerlink" href="#convenience-tags" title="Permalink to this heading">#</a></h2>
+<p>Datashuttle provides convenience tags that can be included in
+<em>subject</em> or <em>session</em> names during folder creation or transfer. These
+tags help automate repetitive routines and add flexibility to
+data transfers.</p>
 <section id="automatically-include-date-time-or-datetime">
-<h3>Automatically include Date, Time or Datetime<a class="headerlink" href="#automatically-include-date-time-or-datetime" title="Permalink to this heading">#</a></h3>
+<h3>Automatically include <em>date</em>, <em>time</em> or <em>datetime</em><a class="headerlink" href="#automatically-include-date-time-or-datetime" title="Permalink to this heading">#</a></h3>
 <p><em>Used when making subject or session folders</em></p>
-<p>When creating subject or session folders, it is often desirable to include the <em>date</em>, <em>time</em>, or <em>datetime</em> as a key-value pair in the folder name. For example:</p>
+<p>When creating subject or session folders, it is often desirable to include the
+<em>date</em>, <em>time</em>, or <em>datetime</em> as a key-value pair in the folder name. For example:</p>
 <p><code class="docutils literal notranslate"><span class="pre">ses-001_date-20230516</span></code></p>
-<p>DataShuttle provides convenience tags to automatically format a key-value pair with the current date or time (as determined from the machine <em>datetime</em>).</p>
+<p>Datashuttle provides convenience tags to automatically format a key-value pair
+with the current date or time (as determined from the machine <em>datetime</em>).</p>
 <p>For example, the command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">make_sub_folders</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="n">sub_001</span><span class="nd">@DATE</span><span class="o">@</span> \
-<span class="o">-</span><span class="n">ses</span> <span class="mi">001</span><span class="nd">@TIME</span><span class="o">@</span> <span class="mi">002</span><span class="nd">@DATETIME</span><span class="o">@</span>
-<span class="o">-</span><span class="n">dt</span> <span class="n">behav</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-18" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-18">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_folders</span><span class="p">(</span>
+	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;sub-001&quot;</span><span class="p">,</span>
+	<span class="n">ses_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;001_@DATETIME@&quot;</span><span class="p">,</span> <span class="s2">&quot;002_@DATETIME@&quot;</span><span class="p">],</span>
+	<span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;behav&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>will create the folder tree (assuming the <em>top-level folder</em> is <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>):</p>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-19">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">make_folders \</span>
+<span class="go">-sub sub-001 \</span>
+<span class="go">-ses 001_@DATETIME@ 002_@DATETIME@ \</span>
+<span class="go">-dt behav</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-20" name="sd-tab-set-7" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-20">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">make_folders ^</span>
+<span class="go">-sub sub-001 ^</span>
+<span class="go">-ses 001_@DATETIME@ 002_@DATETIME@ ^</span>
+<span class="go">-dt behav</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>creates the folder tree (assuming the <em>top-level-folder</em> is <em>rawdata</em>):</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── rawdata/
-    └── sub-001_date-20230606/
-        ├── ses-001_time-202701/
+    └── sub-001/
+        ├── ses-001_datetime-20230606T202701/
         │   └── behav
-        └── ses-002_date-20230606_time-202701/
+        └── ses-002_datetime-20230606T202701/
             └── behav
 </pre></div>
 </div>
@@ -692,29 +983,59 @@ document.write(`
 <section id="specify-ranges-with-the-to-flag">
 <h3>Specify ranges with the <code class="docutils literal notranslate"><span class="pre">&#64;TO&#64;</span></code> flag<a class="headerlink" href="#specify-ranges-with-the-to-flag" title="Permalink to this heading">#</a></h3>
 <p><em>When making subject or session folders and transferring data</em></p>
-<p>Often it is desirable to specify a range of subject or session names to make folders for, or transfer.</p>
-<p>For example, in a project with 50 subjects (<code class="docutils literal notranslate"><span class="pre">sub-001</span></code>, <code class="docutils literal notranslate"><span class="pre">sub-002</span></code>, <code class="docutils literal notranslate"><span class="pre">...</span></code>, <code class="docutils literal notranslate"><span class="pre">sub-050</span></code>), it may be desired to transfer the first 25 subjects. This can be achieved using the <code class="docutils literal notranslate"><span class="pre">TO</span></code> flag, for example:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="mi">001</span><span class="nd">@TO</span><span class="o">@</span><span class="mi">025</span> \
-<span class="o">-</span><span class="n">ses</span> <span class="nb">all</span> \
-<span class="o">-</span><span class="n">dt</span> <span class="nb">all</span>
+<p>Often it is desirable to specify a range of subject or session names for
+folder creation or data transfer.</p>
+<p>For example, in a project with 50 subjects (<code class="docutils literal notranslate"><span class="pre">sub-001</span></code>, <code class="docutils literal notranslate"><span class="pre">sub-002</span></code>, <code class="docutils literal notranslate"><span class="pre">...</span></code>, <code class="docutils literal notranslate"><span class="pre">sub-050</span></code>),
+the below command transfers only the first 25 subjects:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-21" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-21">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;001@TO@025&quot;</span><span class="p">,</span>
+	<span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+	<span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>Note when making folders with the <code class="docutils literal notranslate"><span class="pre">&#64;TO&#64;</span></code> tag, the maximum number of leading zeros found either side of the tag will be used for folder creation. For example, in the call:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">make_sub_folders</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="mi">0001</span><span class="nd">@TO</span><span class="o">@</span><span class="mi">02</span>
+</div>
+<input id="sd-tab-item-22" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-22">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">upload \</span>
+<span class="go">-sub 001@TO@025 \</span>
+<span class="go">-ses all \</span>
+<span class="go">-dt all</span>
 </pre></div>
 </div>
-<p>will create the subject folders <code class="docutils literal notranslate"><span class="pre">sub-0001</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-0002</span></code>.</p>
+</div>
+<input id="sd-tab-item-23" name="sd-tab-set-8" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-23">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">upload ^</span>
+<span class="go">-sub 001@TO@025 ^</span>
+<span class="go">-ses all ^</span>
+<span class="go">-dt all</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>When making folders with the <code class="docutils literal notranslate"><span class="pre">&#64;TO&#64;</span></code> tag, the maximum number of leading zeros
+found either side of the tag will be used for folder creation. For example,
+setting <code class="docutils literal notranslate"><span class="pre">-sub</span></code> to <code class="docutils literal notranslate"><span class="pre">0001&#64;TO&#64;02</span></code> will create the subject folders <code class="docutils literal notranslate"><span class="pre">sub-0001</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-0002</span></code>.</p>
 </section>
 <section id="the-wildcard-flag">
 <h3>The wildcard flag <code class="docutils literal notranslate"><span class="pre">&#64;*&#64;</span></code><a class="headerlink" href="#the-wildcard-flag" title="Permalink to this heading">#</a></h3>
 <p><em>Used when transferring data</em></p>
-<p>When specifying the names of subjects or sessions to transfer, we often want to ignore matching portions of the name which may un-predictable. For example, we may be interested in a particular session across experimental subjects, for example the 5th session, that was run on a different day for each subject. For example, consider two subjects whose test session 5 was collected on different days:</p>
+<p>When selected subjects and sessions for data transfer, it is often
+necessary to match only part of the folder name. In this case, wildcards
+can be included in the search term.</p>
+<p>For example, we may want to transfer the 5th session for all subjects
+in the project folder below:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>└── rawdata/
     ├── sub-001  /
     │   ├── ...
@@ -725,63 +1046,90 @@ document.write(`
             └── behav
 </pre></div>
 </div>
-<p>We can use the wildcard tag to match everything that comes after the <code class="docutils literal notranslate"><span class="pre">date</span></code> key. For example, to upload the these sessions from <em>local</em> to <em>central</em>, we can perform:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span> \
-<span class="o">-</span><span class="n">sub</span> <span class="mi">001</span> <span class="mi">002</span>
-<span class="o">-</span><span class="n">ses</span> <span class="mi">005</span><span class="n">_condition</span><span class="o">-</span><span class="n">test_date</span><span class="o">-@*@</span>
-<span class="o">-</span><span class="n">dt</span> <span class="n">behav</span>
+<p>We can use the wildcard tag in the <em>session</em> name to match
+everything that comes after the <code class="docutils literal notranslate"><span class="pre">date</span></code> key:</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-24" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-24">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+	<span class="n">sub_names</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;001&quot;</span><span class="p">,</span> <span class="s2">&quot;002&quot;</span><span class="p">],</span>
+	<span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;005_condition-test_date-@*@&quot;</span><span class="p">,</span>
+	<span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;behav&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
-<p>Which would selectively upload session 5 from subjects 1 and 2.</p>
-<p>If using macOS (or, in general, the <code class="docutils literal notranslate"><span class="pre">z-shell</span> <span class="pre">(zsh)</span></code>, names including the <code class="docutils literal notranslate"><span class="pre">&#64;*&#64;</span></code> flag must be wrapped in quotation marks, for example <code class="docutils literal notranslate"><span class="pre">--ses</span> <span class="pre">&quot;005_condition-test_date-&#64;*&#64;&quot;</span></code>.</p>
-<p>Similarly, if the test session was on different session numbers for different sessions, we could use <code class="docutils literal notranslate"><span class="pre">-ses</span> <span class="pre">&#64;*&#64;condition-test&#64;*&#64;</span></code> (as the <code class="docutils literal notranslate"><span class="pre">-ses</span></code> argument above) to selectively transfer test sessions only.</p>
+</div>
+<input id="sd-tab-item-25" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-25">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">upload \</span>
+<span class="go">-sub 001 002 \</span>
+<span class="go">-ses 005_condition-test_date-@*@ \</span>
+<span class="go">-dt behav</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-26" name="sd-tab-set-9" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-26">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">upload ^</span>
+<span class="go">-sub 001 002 ^</span>
+<span class="go">-ses 005_condition-test_date-@*@ ^</span>
+<span class="go">-dt behav</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This command would transfer session 5 from subject 001 and 002.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>If using the z-shell (zsh) - which is the default shell on macOS -
+text including the <code class="docutils literal notranslate"><span class="pre">&#64;*&#64;</span></code> tag must be wrapped in quotation marks.
+e.g. <code class="docutils literal notranslate"><span class="pre">--ses</span> <span class="pre">&quot;005_condition-test_date-&#64;*&#64;&quot;</span></code>)</p>
+</div>
 </section>
 </section>
 <section id="data-transfer-options">
 <h2>Data Transfer Options<a class="headerlink" href="#data-transfer-options" title="Permalink to this heading">#</a></h2>
-<p>Behind the scenes, DataShuttle uses the software <a class="reference external" href="https://rclone.org/">Rclone</a> to transfer data. A number of Rclone options are exposed in DataShuttle to allow for more flexible data transfer. These are set in the <em>configurations</em> during project initialisation and can be edited with the command <code class="docutils literal notranslate"><span class="pre">update-config</span></code>.</p>
+<p>A number of <a class="reference external" href="https://rclone.org/">Rclone</a> options are exposed in Datashuttle to facilitate flexible data transfer.</p>
 <section id="overwriting-existing-files">
 <h3>Overwriting existing files<a class="headerlink" href="#overwriting-existing-files" title="Permalink to this heading">#</a></h3>
-<p>The most important optional configuration, <code class="docutils literal notranslate"><span class="pre">overwrite_old_files</span></code> determines whether folders and files are overwritten during transfer. By default, DataShuttle does not overwrite during data transfer.</p>
-<p>For example, if the file <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_measure-trajectories.csv</span></code> has been transferred from <em>local</em> to the <em>remote</em> repository, it will never be over-written in the <em>remote</em> repository. If the file is edited locally, such that the timestamp on the file is more recent in <em>local</em> compared to <em>remote</em>, the <em>remote</em> version will still not be overwritten.</p>
-<p>To change this behaviour, the configuration <code class="docutils literal notranslate"><span class="pre">overwrite_old_files</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>. In this case, files in which the timestamp of the target directory (e.g. <em>central</em> when performing <code class="docutils literal notranslate"><span class="pre">upload</span></code>) will be overwritten if their timestamp is older than the corresponding file in the source directory (e.g. <em>local</em> when performing <code class="docutils literal notranslate"><span class="pre">upload</span></code>.
-)</p>
+<p><code class="docutils literal notranslate"><span class="pre">overwrite_old_files</span></code> determines whether folders and files are overwritten
+during transfer. By default, Datashuttle does not overwrite any existing
+folder during data transfer.</p>
+<p>For example, if the file <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_measure-trajectories.csv</span></code> exists on
+the <em>central</em> repository, it will never be over-written during upload
+from <em>local</em> to <em>central</em>, even if the version on <em>local</em> is newer.</p>
+<p>To change this behaviour, the configuration <code class="docutils literal notranslate"><span class="pre">overwrite_old_files</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
+In this case, files in which the  timestamp of the target directory (e.g. <em>central</em>
+in our example) will be overwritten if their timestamp is
+older than the corresponding file in the source directory.</p>
+<p>The configuration can be changed with the <code class="docutils literal notranslate"><span class="pre">update-config</span></code> command.</p>
 </section>
 <section id="additional-transfer-configurations">
 <h3>Additional Transfer Configurations<a class="headerlink" href="#additional-transfer-configurations" title="Permalink to this heading">#</a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">transfer_verbosity</span></code> : set to <code class="docutils literal notranslate"><span class="pre">&quot;vv&quot;</span></code> for a extensive detail on the transfer operation. Set to <code class="docutils literal notranslate"><span class="pre">&quot;v&quot;</span></code> to only see each file that is transferred as well as significant events that occur during transfer.</p>
+<p><code class="docutils literal notranslate"><span class="pre">transfer_verbosity</span></code> : set to <code class="docutils literal notranslate"><span class="pre">&quot;vv&quot;</span></code> for additional detail on the transfer operation.
+Set to <code class="docutils literal notranslate"><span class="pre">&quot;v&quot;</span></code> to only see each file that is transferred as well as significant events that occur during transfer.</p>
 <p><code class="docutils literal notranslate"><span class="pre">show_transfer_progress</span></code> : When <code class="docutils literal notranslate"><span class="pre">True</span></code>, real-time transfer statistics will be reported and logged.</p>
 </section>
 <section id="flexible-transfers-with-keyword-arguments">
 <h3>Flexible transfers with keyword arguments<a class="headerlink" href="#flexible-transfers-with-keyword-arguments" title="Permalink to this heading">#</a></h3>
-<p>DataShuttle provides a number of keyword arguments to allow separate handling of files that are not found in <em>data-type</em> folders.</p>
-<section id="for-use-with-the-sub-sub-names-flag">
-<h4>For use with the <code class="docutils literal notranslate"><span class="pre">-sub</span></code> / <code class="docutils literal notranslate"><span class="pre">--sub-names</span></code> flag<a class="headerlink" href="#for-use-with-the-sub-sub-names-flag" title="Permalink to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All <em>subject</em> and non-<em>subject</em> files and folders within the <em>top-level folder</em> (e.g. <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>) will be transferred.</p>
-<p><code class="docutils literal notranslate"><span class="pre">all_sub</span></code> : <em>Subject</em>  <u>folders</u> only (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">-sub</span></code>) will be transferred.</p>
-<p><code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> : All files and folders that are not prefixed with <code class="docutils literal notranslate"><span class="pre">-sub</span></code> will be transferred. Any folders prefixed with <code class="docutils literal notranslate"><span class="pre">-sub</span></code> will not be transferred.</p>
-</section>
-<section id="for-use-with-the-ses-ses-names-flag">
-<h4>For use with the <code class="docutils literal notranslate"><span class="pre">-ses</span></code> / <code class="docutils literal notranslate"><span class="pre">--ses-names</span></code> flag<a class="headerlink" href="#for-use-with-the-ses-ses-names-flag" title="Permalink to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All <em>session</em> and non-<em>session</em> files and folders within a <em>subject</em> level folder (e.g. <code class="docutils literal notranslate"><span class="pre">sub-001</span></code>) will be transferred.</p>
-<p><code class="docutils literal notranslate"><span class="pre">all_ses</span></code> : <em>Session</em> <u>folders</u> only (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">-ses</span></code>) will be transferred. Note that the only exception is the <code class="docutils literal notranslate"><span class="pre">histology</span></code> folder, the transfer of which is determined by the <code class="docutils literal notranslate"><span class="pre">-dt</span></code> flag (below).</p>
-<p><code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> : All files and folders that are not prefixed with <code class="docutils literal notranslate"><span class="pre">-sub</span></code> will be transferred. Any folders prefixed with <code class="docutils literal notranslate"><span class="pre">-ses</span></code> will not be transferred.</p>
-</section>
-<section id="for-use-with-the-dt-data-type-flag">
-<h4>For use with the <code class="docutils literal notranslate"><span class="pre">-dt</span></code> / <code class="docutils literal notranslate"><span class="pre">--data-type</span></code> flag<a class="headerlink" href="#for-use-with-the-dt-data-type-flag" title="Permalink to this heading">#</a></h4>
-<p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All <em>data-type</em> folders at the <em>subject</em> or <em>session</em> folder level will be transferred, as well as all files and folders within selected <em>session</em> folders.</p>
-<p><code class="docutils literal notranslate"><span class="pre">all_data_type</span></code> : All <em>data-type</em> folders (i.e. folders with the pre-determined name: <code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">funcimg</span></code>, <code class="docutils literal notranslate"><span class="pre">histology</span></code>) residing at either the <em>subject</em> or <em>session</em> level will be
-transferred. Non-<em>data-type</em> folders at the <em>session</em> level will not be transferred</p>
-<p><code class="docutils literal notranslate"><span class="pre">all_ses_level_non_data_type</span></code> : Non <em>-data-type</em> folders at the <em>session</em> level will not be transferred</p>
-<p>Below, a number of examples are given to exemplify how these arguments effect data transfer. Given the <em>local</em> project folder:</p>
+<p>Often additional files or folders may be stored outside <em>datatype</em>
+folders. The <code class="docutils literal notranslate"><span class="pre">all</span></code> argument will transfer all files and folders at the
+specified level.</p>
+<p>For example, consider the project below. This project has files
+stored within <em>datatype</em> folders, but additional files outside <em>datatype</em>
+folders at the <em>subject</em> and <em>session</em> levels.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
 └── rawdata/
     ├── a_project_related_file.json
     ├── sub-001/
     │   ├── sub-001_extra-file.json
-    │   ├── histology
     │   └── ses-001/
     │       ├── ses-001_extra-file.json
     │       ├── behav/
@@ -790,72 +1138,217 @@ transferred. Non-<em>data-type</em> folders at the <em>session</em> level will n
     │           └── ...
     └── sub-002/
         ├── sub-002_extra-file.json
-        ├── histology
         └── ses-001/
-			├── behav/
-			│   └── ...
-			└── ephys/
-				└── ...
+            ├── behav/
+            │   └── ...
+            ├── ephys/
+            │   └── ...
+            └── anat/
+                └── ...
 </pre></div>
 </div>
+<p>Datashuttle provides a number of keyword arguments to allow separate
+handling of files that are not found in <em>datatype</em> folders.</p>
+<p>These are:
+<code class="docutils literal notranslate"><span class="pre">all_sub</span></code> and <code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> (for <code class="docutils literal notranslate"><span class="pre">-sub</span></code>), <code class="docutils literal notranslate"><span class="pre">all_ses</span></code> and <code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> (for <code class="docutils literal notranslate"><span class="pre">-ses</span></code>) and <code class="docutils literal notranslate"><span class="pre">-all_ses_level_non_datatype</span></code> (for <code class="docutils literal notranslate"><span class="pre">-dt</span></code>).</p>
+<section id="for-use-with-the-sub-sub-names-flag">
+<h4>For use with the <code class="docutils literal notranslate"><span class="pre">-sub</span></code> / <code class="docutils literal notranslate"><span class="pre">--sub-names</span></code> flag<a class="headerlink" href="#for-use-with-the-sub-sub-names-flag" title="Permalink to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">all</span></code> - All <em>subject</em> and non-<em>subject</em> files and folders within the <em>top-level-folder</em>
+(e.g. <em>rawdata</em>) will be transferred.</p>
+<p><code class="docutils literal notranslate"><span class="pre">all_sub</span></code> - <em>Subject</em>  <u>folders</u> only (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">sub</span></code>) and everything
+within them will be transferred.</p>
+<p><code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> - All files and folders that are not prefixed with <code class="docutils literal notranslate"><span class="pre">sub</span></code>,
+within the <em>top-level-folder</em>, will be transferred.
+Any folders prefixed with <code class="docutils literal notranslate"><span class="pre">sub</span></code> at this level will not be transferred.</p>
+</section>
+<section id="for-use-with-the-ses-ses-names-flag">
+<h4>For use with the <code class="docutils literal notranslate"><span class="pre">-ses</span></code> / <code class="docutils literal notranslate"><span class="pre">--ses-names</span></code> flag<a class="headerlink" href="#for-use-with-the-ses-ses-names-flag" title="Permalink to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All <em>session</em> and non-<em>session</em> files and folders within a <em>subject</em> level folder
+(e.g. <code class="docutils literal notranslate"><span class="pre">sub-001</span></code>) will be transferred.</p>
+<p><code class="docutils literal notranslate"><span class="pre">all_ses</span></code> : <em>Session</em> <u>folders</u> only (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">ses</span></code>) and everything within
+them will be transferred.</p>
+<p><code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> : All files and folders that are not prefixed with <code class="docutils literal notranslate"><span class="pre">ses</span></code>, within a <em>subject</em> folder,
+will be transferred. Any folders prefixed with <code class="docutils literal notranslate"><span class="pre">ses</span></code> will not be transferred.</p>
+</section>
+<section id="for-use-with-the-dt-datatype-flag">
+<h4>For use with the <code class="docutils literal notranslate"><span class="pre">-dt</span></code> / <code class="docutils literal notranslate"><span class="pre">--datatype</span></code> flag<a class="headerlink" href="#for-use-with-the-dt-datatype-flag" title="Permalink to this heading">#</a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All <em>datatype</em> folders at the <em>subject</em> or <em>session</em> folder level will be transferred,
+as well as all files and folders within selected <em>session</em> folders.</p>
+<p><code class="docutils literal notranslate"><span class="pre">all_datatype</span></code> : All <em>datatype</em> folders (i.e. folders with the pre-determined name:
+<code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">funcimg</span></code>, <code class="docutils literal notranslate"><span class="pre">anat</span></code>) within a <em>session</em> folder will be
+transferred. Non-<em>datatype</em> folders at the <em>session</em> level will not be transferred</p>
+<p><code class="docutils literal notranslate"><span class="pre">all_ses_level_non_datatype</span></code> : Non-<em>datatype</em> folders within <em>session</em> folders only will be transferred</p>
+<p>Below, a number of examples are given to exemplify how these arguments effect data transfer.
+Given our example <em>local</em> project folder above:</p>
 <ol class="arabic simple">
-<li><p>The first example indicates the effect of selectively transferring non-<em>data-type</em> sessions. The command:</p></li>
+<li><p>The first example indicates the effect of selectively transferring non-<em>datatype</em> sessions.</p></li>
+<li><p>The command:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span>
-<span class="o">-</span><span class="n">sub</span> <span class="nb">all</span>
-<span class="o">-</span><span class="n">ses</span> <span class="nb">all</span>
-<span class="o">-</span><span class="n">dt</span> <span class="n">all_ses_level_non_data_type</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-27" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-27">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">project.upload(&quot;all&quot;, &quot;all&quot;, &quot;all_ses_level_non_datatype&quot;)</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-28" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-28">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">upload \</span>
+<span class="go">-sub all \</span>
+<span class="go">-ses all \</span>
+<span class="go">-dt all_ses_level_non_datatype</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-29" name="sd-tab-set-10" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-29">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">upload ^</span>
+<span class="go">-sub all ^</span>
+<span class="go">-ses all ^</span>
+<span class="go">-dt all_ses_level_non_datatype</span>
+</pre></div>
+</div>
+</div>
 </div>
 <p>Would upload:</p>
 <ul class="simple">
-<li><p>All non-<em>subject</em> files in the <em>top-level</em> folder (<code class="docutils literal notranslate"><span class="pre">rawdata</span></code>)</p></li>
+<li><p>All non-<em>subject</em> files in the <em>top-level</em> folder (i.e. <code class="docutils literal notranslate"><span class="pre">a_project_related_file.json</span></code>.)</p></li>
 <li><p>The <code class="docutils literal notranslate"><span class="pre">sub-001_extra_file.json</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-002_extra_file.json</span></code></p></li>
-<li><p>For <code class="docutils literal notranslate"><span class="pre">sub-001</span></code>, the file <code class="docutils literal notranslate"><span class="pre">ses-001_extra_file.json</span></code>. For <code class="docutils literal notranslate"><span class="pre">sub-002</span></code>, no other files are transferred because there is no non-<em>data-type</em> files at the <em>session</em> level.</p></li>
+<li><p>For <code class="docutils literal notranslate"><span class="pre">sub-001</span></code>, the file <code class="docutils literal notranslate"><span class="pre">ses-001_extra_file.json</span></code>.
+For <code class="docutils literal notranslate"><span class="pre">sub-002</span></code>, no other files are transferred because there is no non-<em>datatype</em> files at the <em>session</em> level.</p></li>
 </ul>
 <ol class="arabic simple" start="2">
-<li><p>The next two examples show the effect of selecting <code class="docutils literal notranslate"><span class="pre">-dt</span> <span class="pre">all</span></code> vs. <code class="docutils literal notranslate"><span class="pre">-dt</span> <span class="pre">all_data_type</span></code>. The command:</p></li>
+<li><p>The next two examples show the effect of selecting <code class="docutils literal notranslate"><span class="pre">-dt</span> <span class="pre">all</span></code> vs. <code class="docutils literal notranslate"><span class="pre">-dt</span> <span class="pre">all_datatype</span></code>. The command:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span>
-<span class="o">-</span><span class="n">sub</span> <span class="mi">001</span>
-<span class="o">-</span><span class="n">ses</span> <span class="n">all_non_ses</span>
-<span class="o">-</span><span class="n">dt</span> <span class="nb">all</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-30" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-30">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">project.upload(&quot;sub-001&quot;, &quot;all&quot;, &quot;all&quot;)</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-31" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-31">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">upload \</span>
+<span class="go">-sub 001 \</span>
+<span class="go">-ses all \</span>
+<span class="go">-dt all</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-32" name="sd-tab-set-11" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-32">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">upload ^</span>
+<span class="go">-sub 001 ^</span>
+<span class="go">-ses all ^</span>
+<span class="go">-dt all</span>
+</pre></div>
+</div>
+</div>
 </div>
 <p>Would upload:</p>
 <ul class="simple">
 <li><p>Contents residing in the <code class="docutils literal notranslate"><span class="pre">sub-001</span></code> folder only.</p></li>
-<li><p>The file <code class="docutils literal notranslate"><span class="pre">sub-001_extra-file.json</span></code></p></li>
-<li><p>All <em>data-type</em> folder contents (<code class="docutils literal notranslate"><span class="pre">histology</span></code>, <code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>)</p></li>
+<li><p>The file <code class="docutils literal notranslate"><span class="pre">sub-001_extra-file.json</span></code> and <em>session</em> folders.</p></li>
+<li><p>All <em>datatype</em> folder contents (<code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>) and non-<em>datatype</em> files (<code class="docutils literal notranslate"><span class="pre">ses-001_extra-file.json</span></code>).</p></li>
 </ul>
 <p>The command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span>
-<span class="o">-</span><span class="n">sub</span> <span class="mi">001</span>
-<span class="o">-</span><span class="n">ses</span> <span class="n">all_sub</span>
-<span class="o">-</span><span class="n">dt</span> <span class="n">all_data_type</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-33" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-33">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_folders</span><span class="p">(</span>
+	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;001&quot;</span><span class="p">,</span>
+	<span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+	<span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;all_datatype&quot;</span>
+<span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-34" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-34">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">upload \</span>
+<span class="go">-sub 001 \</span>
+<span class="go">-ses all \</span>
+<span class="go">-dt all_datatype</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-35" name="sd-tab-set-12" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-35">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">upload ^</span>
+<span class="go">-sub 001 ^</span>
+<span class="go">-ses all ^</span>
+<span class="go">-dt all_datatype</span>
+</pre></div>
+</div>
+</div>
 </div>
 <p>Would upload:</p>
 <ul class="simple">
 <li><p>Contents residing in the <code class="docutils literal notranslate"><span class="pre">sub-001</span></code> folder only.</p></li>
-<li><p>All <em>data-type</em> folder contents (<code class="docutils literal notranslate"><span class="pre">histology</span></code>, <code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>)</p></li>
+<li><p>The <em>session</em> folder and all <em>datatype</em> folder contents (<code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>)
+but not the non-<em>datatype</em> file <code class="docutils literal notranslate"><span class="pre">ses-001_extra-file.json</span></code>.</p></li>
 </ul>
 <ol class="arabic simple" start="3">
 <li><p>The final example shows the effect of transferring <code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> files only. The command:</p></li>
 </ol>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">datashuttle</span> \
-<span class="n">my_first_project</span> \
-<span class="n">upload</span>
-<span class="o">-</span><span class="n">sub</span> <span class="n">all_non_sub</span>
-<span class="o">-</span><span class="n">ses</span> <span class="nb">all</span>
-<span class="o">-</span><span class="n">dt</span> <span class="nb">all</span>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-36" name="sd-tab-set-13" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-36">
+Python API</label><div class="sd-tab-content docutils">
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_folders</span><span class="p">(</span>
+	<span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;all_non_sub&quot;</span><span class="p">,</span>
+	<span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span>
+	<span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;all&quot;</span>
+<span class="p">)</span>
 </pre></div>
+</div>
+</div>
+<input id="sd-tab-item-37" name="sd-tab-set-13" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-37">
+CLI (macOS / Linux)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle \</span>
+<span class="go">my_first_project \</span>
+<span class="go">upload \</span>
+<span class="go">-sub all_non_sub \</span>
+<span class="go">-ses all \</span>
+<span class="go">-dt all</span>
+</pre></div>
+</div>
+</div>
+<input id="sd-tab-item-38" name="sd-tab-set-13" type="radio">
+</input><label class="sd-tab-label" for="sd-tab-item-38">
+CLI (Windows)</label><div class="sd-tab-content docutils">
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">datashuttle ^</span>
+<span class="go">my_first_project ^</span>
+<span class="go">upload ^</span>
+<span class="go">-sub all_non_sub ^</span>
+<span class="go">-ses all ^</span>
+<span class="go">-dt all</span>
+</pre></div>
+</div>
+</div>
 </div>
 <p>Would upload:</p>
 <ul class="simple">
@@ -864,20 +1357,23 @@ transferred. Non-<em>data-type</em> folders at the <em>session</em> level will n
 </section>
 </section>
 </section>
-<section id="query-datashuttle-for-current-configurations">
-<h2>Query DataShuttle for current <em>configurations</em><a class="headerlink" href="#query-datashuttle-for-current-configurations" title="Permalink to this heading">#</a></h2>
-<p>It is possible to query DataShuttle for the current <em>configurations</em> and relevant file paths,
-for example the <code class="docutils literal notranslate"><span class="pre">show-local-path</span></code> command will print the currently set <em>local</em> path to the terminal.</p>
-<p>Similarly, the command <code class="docutils literal notranslate"><span class="pre">show-configs</span></code> will print all currently set <em>configurations</em>. A number of additional convenience functions exist (for example <code class="docutils literal notranslate"><span class="pre">show-remote-path</span></code>, <code class="docutils literal notranslate"><span class="pre">show-top-level-folder</span></code>, <code class="docutils literal notranslate"><span class="pre">show-config-path</span></code>). For a full list, see our <a class="reference external" href="https://datashuttle.neuroinformatics.dev/pages/cli_index.html">CLI reference</a> or <a class="reference external" href="https://datashuttle.neuroinformatics.dev/pages/api_index.html">API reference</a>.</p>
+<section id="query-datashuttle-for-current-settings">
+<h2>Query Datashuttle for current settings<a class="headerlink" href="#query-datashuttle-for-current-settings" title="Permalink to this heading">#</a></h2>
+<p>A number of commands exist to query Datashuttle’s current configs.
+For example the <code class="docutils literal notranslate"><span class="pre">show-local-path</span></code> command will print the currently set <em>local</em> path to the terminal.
+The command <code class="docutils literal notranslate"><span class="pre">show-configs</span></code> will print all currently set configs.</p>
+<p>For a full list of available commands, see the <a class="reference internal" href="api_index.html#api-reference"><span class="std std-ref">API reference</span></a> or <a class="reference internal" href="cli_index.html#cli-reference"><span class="std std-ref">CLI reference</span></a>.</p>
 </section>
 <section id="logging">
 <h2>Logging<a class="headerlink" href="#logging" title="Permalink to this heading">#</a></h2>
-<p>Detailed logs of all configuration changes, folder creation and data transfers are logged
+<p>Detailed logs of all configuration changes, folder creation and data transfers are stored
 to the <code class="docutils literal notranslate"><span class="pre">.datashuttle</span></code> folder that is created in the <em>local</em> project folder.</p>
-<p>For each command run, a log of that command is placed in the logs folder, with the time and date of the command. The log itself contains relevant information pertaining to that command. For example, if the commands <code class="docutils literal notranslate"><span class="pre">make_sub_folders</span></code>, <code class="docutils literal notranslate"><span class="pre">upload</span></code>, <code class="docutils literal notranslate"><span class="pre">download</span></code> were run sequentially, the logs output folder would look like:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make_sub_folders_2023</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">08_09</span><span class="o">-</span><span class="mi">55</span><span class="o">-</span><span class="mf">14.</span><span class="n">log</span>
-<span class="n">upload_data_2023</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">08_09</span><span class="o">-</span><span class="mi">55</span><span class="o">-</span><span class="mf">45.</span><span class="n">log</span>
-<span class="n">download_data_2023</span><span class="o">-</span><span class="mi">06</span><span class="o">-</span><span class="mi">08_09</span><span class="o">-</span><span class="mi">56</span><span class="o">-</span><span class="mf">19.</span><span class="n">log</span>
+<p>The log itself contains relevant information pertaining to that command.
+For example, if the commands <code class="docutils literal notranslate"><span class="pre">make_folders</span></code>, <code class="docutils literal notranslate"><span class="pre">upload</span></code>, <code class="docutils literal notranslate"><span class="pre">download</span></code> were run sequentially,
+the logs output folder would look like:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="mi">20230608</span><span class="n">T095514_make</span><span class="o">-</span><span class="n">folders</span><span class="o">.</span><span class="n">log</span>
+<span class="mi">20230608</span><span class="n">T095545_upload</span><span class="o">-</span><span class="n">data</span><span class="o">.</span><span class="n">log</span>
+<span class="mi">20230608</span><span class="n">T095621_download</span><span class="o">-</span><span class="n">data</span><span class="o">.</span><span class="n">log</span>
 </pre></div>
 </div>
 </section>
@@ -888,11 +1384,10 @@ to the <code class="docutils literal notranslate"><span class="pre">.datashuttle
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="../index.html"
@@ -912,10 +1407,7 @@ to the <code class="docutils literal notranslate"><span class="pre">.datashuttle
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -930,54 +1422,30 @@ to the <code class="docutils literal notranslate"><span class="pre">.datashuttle
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">Getting Started</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#">User Guide</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttles-place-in-neuroscience-pipelines">Datashuttle’s place in neuroscience pipelines</a></li>
+</ul>
+</li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#installation">Installation</a></li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#setup">Setup</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#local-machines-and-the-central-machine"><em>local</em> machines and the <em>central</em> machine</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#initial-setup-with-configurations">Initial setup with <em>configurations</em></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-arguments">Optional Arguments</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#example">Example</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-datashuttle">Setting up Datashuttle</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-connection-to-central">Setting up the connection to <em>central</em></a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-subject-and-session-folders">Creating <em>subject</em> and <em>session</em> folders</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#data-types-folders">Data Types Folders</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#creating-subject-and-session-folders">Creating <em>subject</em> and <em>session</em> folders</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datatype-folders"><em>Datatype</em> Folders</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer">Data Transfer</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#understanding-the-top-level-folder-and-transfer-methods">Understanding the ‘Top Level Folder’ and Transfer Methods</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transferring-the-entire-project">Transferring the entire project</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transferring-files-that-are-not-within-data-type-folders">Transferring files that are not within data-type folders</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#transferring-a-specific-file-or-folder">Transferring a specific file or folder</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+<li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer">Data Transfer</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#selective-transfer-of-data-with-upload-and-download">Selective transfer of data with <code class="docutils literal notranslate"><span class="pre">upload</span></code> and <code class="docutils literal notranslate"><span class="pre">download</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transferring-a-specific-file-or-folder">Transferring a specific file or folder</a></li>
 </ul>
 </li>
 <li class="toc-h1 nav-item toc-entry"><a class="reference internal nav-link" href="#advanced-usage">Advanced Usage</a><ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#python-api-guide">Python API Guide</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#setting-up-the-connection-to-central">Setting up the connection to <em>central</em></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#local-filesystem">Local Filesystem</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#ssh">SSH</a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convenience-tags">Convenience tags</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#automatically-include-date-time-or-datetime">Automatically include Date, Time or Datetime</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#specify-ranges-with-the-to-flag">Specify ranges with the <code class="docutils literal notranslate"><span class="pre">@TO@</span></code> flag</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#the-wildcard-flag">The wildcard flag <code class="docutils literal notranslate"><span class="pre">@*@</span></code></a></li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer-options">Data Transfer Options</a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#overwriting-existing-files">Overwriting existing files</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#additional-transfer-configurations">Additional Transfer Configurations</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#flexible-transfers-with-keyword-arguments">Flexible transfers with keyword arguments</a><ul class="nav section-nav flex-column">
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#for-use-with-the-sub-sub-names-flag">For use with the <code class="docutils literal notranslate"><span class="pre">-sub</span></code> / <code class="docutils literal notranslate"><span class="pre">--sub-names</span></code> flag</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#for-use-with-the-ses-ses-names-flag">For use with the <code class="docutils literal notranslate"><span class="pre">-ses</span></code> / <code class="docutils literal notranslate"><span class="pre">--ses-names</span></code> flag</a></li>
-<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#for-use-with-the-dt-data-type-flag">For use with the <code class="docutils literal notranslate"><span class="pre">-dt</span></code> / <code class="docutils literal notranslate"><span class="pre">--data-type</span></code> flag</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#query-datashuttle-for-current-configurations">Query DataShuttle for current <em>configurations</em></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#convenience-tags">Convenience tags</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#data-transfer-options">Data Transfer Options</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#query-datashuttle-for-current-settings">Query Datashuttle for current settings</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#logging">Logging</a></li>
 </ul>
 </li>
@@ -998,8 +1466,8 @@ to the <code class="docutils literal notranslate"><span class="pre">.datashuttle
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1013,10 +1481,11 @@ Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
 <p class="theme-version">
 Built with the
 <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
-0.13.3.
+0.14.2.
 </p></div>
       
     </div>
+  
   
   
     <div class="footer-items__end">

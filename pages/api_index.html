@@ -19,12 +19,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/styles/theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../_static/styles/bootstrap.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
 
   
-  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=c5ced968eda925caa686" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -34,8 +34,9 @@
     <link rel="stylesheet" type="text/css" href="../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686" />
+  <script src="../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=c5ced968eda925caa686"></script>
 
     <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
     <script src="../_static/jquery.js"></script>
@@ -51,7 +52,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="CLI Reference" href="cli_index.html" />
-    <link rel="prev" title="Getting Started" href="documentation.html" />
+    <link rel="prev" title="User Guide" href="documentation.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -62,6 +63,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -102,7 +112,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -112,21 +123,21 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../_static/logo_light.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../_static/logo_light.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.0</p>
+    <p class="title logo__title">Datashuttle v0.2.0</p>
   
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -143,7 +154,7 @@
     
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="documentation.html">
-                        Getting Started
+                        User Guide
                       </a>
                     </li>
                 
@@ -171,23 +182,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -203,8 +216,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -214,18 +227,20 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
   
-    <label class="sidebar-toggle secondary-toggle" for="__secondary">
+    <label class="sidebar-toggle secondary-toggle" for="__secondary" tabindex="0">
       <span class="fa-solid fa-outdent"></span>
     </label>
   
@@ -256,7 +271,7 @@ document.write(`
     
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="documentation.html">
-                        Getting Started
+                        User Guide
                       </a>
                     </li>
                 
@@ -286,10 +301,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -305,8 +320,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -338,8 +353,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../index.html" class="nav-link" aria-label="Home">
@@ -364,7 +379,7 @@ document.write(`
                 <article class="bd-article" role="main">
                   
   <section id="api-reference">
-<h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h1>
+<span id="id1"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">datashuttle.datashuttle.</span></span><span class="sig-name descname"><span class="pre">DataShuttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_startup_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle" title="Permalink to this definition">#</a></dt>
@@ -405,9 +420,9 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.check_name_formatting" title="datashuttle.datashuttle.DataShuttle.check_name_formatting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_name_formatting</span></code></a>(names, prefix)</p></td>
-<td><p>Pass list of names to check how these will be auto-formatted, for example as when passed to make_sub_folders() or upload() or download()</p></td>
+<td><p>Pass list of names to check how these will be auto-formatted, for example as when passed to make_folders() or upload() or download()</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download" title="datashuttle.datashuttle.DataShuttle.download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code></a>(sub_names, ses_names[, data_type, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download" title="datashuttle.datashuttle.DataShuttle.download"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download</span></code></a>(sub_names, ses_names[, datatype, ...])</p></td>
 <td><p>Download data from the central project folder to the local project folder.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.download_all" title="datashuttle.datashuttle.DataShuttle.download_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_all</span></code></a>([dry_run])</p></td>
@@ -428,7 +443,7 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.make_config_file" title="datashuttle.datashuttle.DataShuttle.make_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_config_file</span></code></a>(local_path, central_path, ...)</p></td>
 <td><p>Initialise the configurations for datashuttle to use on the local machine.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.make_sub_folders" title="datashuttle.datashuttle.DataShuttle.make_sub_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_sub_folders</span></code></a>(sub_names[, ses_names, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.make_folders" title="datashuttle.datashuttle.DataShuttle.make_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_folders</span></code></a>(sub_names[, ses_names, datatype])</p></td>
 <td><p>Create a subject / session folder tree in the project folder.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.set_top_level_folder" title="datashuttle.datashuttle.DataShuttle.set_top_level_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_top_level_folder</span></code></a>(folder_name)</p></td>
@@ -449,43 +464,46 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_datashuttle_path" title="datashuttle.datashuttle.DataShuttle.show_datashuttle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_datashuttle_path</span></code></a>()</p></td>
 <td><p>Print the path to the local datashuttle folder where configs another other datashuttle files are stored.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_path" title="datashuttle.datashuttle.DataShuttle.show_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_path</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_existing_projects" title="datashuttle.datashuttle.DataShuttle.show_existing_projects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_existing_projects</span></code></a>()</p></td>
+<td><p>Print a list of existing project names found on the local machine.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_path" title="datashuttle.datashuttle.DataShuttle.show_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_path</span></code></a>()</p></td>
 <td><p>Print the projects local path.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_tree" title="datashuttle.datashuttle.DataShuttle.show_local_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_tree</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_local_tree" title="datashuttle.datashuttle.DataShuttle.show_local_tree"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_local_tree</span></code></a>()</p></td>
 <td><p>Print a tree schematic of all files and folders in the local project.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_logging_path" title="datashuttle.datashuttle.DataShuttle.show_logging_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_logging_path</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_logging_path" title="datashuttle.datashuttle.DataShuttle.show_logging_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_logging_path</span></code></a>()</p></td>
 <td><p>Print the path where datashuttle logs are written.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_next_ses_number" title="datashuttle.datashuttle.DataShuttle.show_next_ses_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_next_ses_number</span></code></a>(sub)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_next_ses_number" title="datashuttle.datashuttle.DataShuttle.show_next_ses_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_next_ses_number</span></code></a>(sub)</p></td>
 <td><p>Show a suggested value for the next session number of a given subject.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_next_sub_number" title="datashuttle.datashuttle.DataShuttle.show_next_sub_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_next_sub_number</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_next_sub_number" title="datashuttle.datashuttle.DataShuttle.show_next_sub_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_next_sub_number</span></code></a>()</p></td>
 <td><p>Show a suggested value for the next available subject number.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_top_level_folder" title="datashuttle.datashuttle.DataShuttle.show_top_level_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_top_level_folder</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.show_top_level_folder" title="datashuttle.datashuttle.DataShuttle.show_top_level_folder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_top_level_folder</span></code></a>()</p></td>
 <td><p>Print the current working top level folder (e.g.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.supply_config_file" title="datashuttle.datashuttle.DataShuttle.supply_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">supply_config_file</span></code></a>(input_path_to_config[, warn])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.supply_config_file" title="datashuttle.datashuttle.DataShuttle.supply_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">supply_config_file</span></code></a>(input_path_to_config[, warn])</p></td>
 <td><p>Supply an existing config by passing the path the config file (.yaml).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.update_config" title="datashuttle.datashuttle.DataShuttle.update_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config</span></code></a>(option_key, new_info)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.update_config" title="datashuttle.datashuttle.DataShuttle.update_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config</span></code></a>(option_key, new_info)</p></td>
 <td><p>Update a single config entry.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload" title="datashuttle.datashuttle.DataShuttle.upload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload</span></code></a>(sub_names, ses_names[, data_type, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload" title="datashuttle.datashuttle.DataShuttle.upload"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload</span></code></a>(sub_names, ses_names[, datatype, ...])</p></td>
 <td><p>Upload data from a local project to the central project folder.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_all" title="datashuttle.datashuttle.DataShuttle.upload_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_all</span></code></a>([dry_run])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_all" title="datashuttle.datashuttle.DataShuttle.upload_all"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_all</span></code></a>([dry_run])</p></td>
 <td><p>Convenience function to upload all data.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_entire_project" title="datashuttle.datashuttle.DataShuttle.upload_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_entire_project</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_entire_project" title="datashuttle.datashuttle.DataShuttle.upload_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_entire_project</span></code></a>()</p></td>
 <td><p>Upload the entire project (from 'local' to 'central'), i.e. including every top level folder (e.g.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file" title="datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file" title="datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
 <td><p>Upload a specific file or folder.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.write_public_key" title="datashuttle.datashuttle.DataShuttle.write_public_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_public_key</span></code></a>(filepath)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.datashuttle.DataShuttle.write_public_key" title="datashuttle.datashuttle.DataShuttle.write_public_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_public_key</span></code></a>(filepath)</p></td>
 <td><p>By default, the SSH private key only is stored, in the datashuttle configs folder.</p></td>
 </tr>
 </tbody>
@@ -495,7 +513,7 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <span class="sig-name descname"><span class="pre">set_top_level_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">folder_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.set_top_level_folder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.set_top_level_folder" title="Permalink to this definition">#</a></dt>
 <dd><p>Set the working top level folder (e.g. ‘rawdata’, ‘derivatives’).</p>
 <p>The top_level_folder defines in which top level folder new
-sub-folders will be made (e.g. make_sub_folders) or at which level
+sub-folders will be made (e.g. make_folders) or at which level
 folders  are transferred with the commands upload / download
 and upload_all / download all.</p>
 <p>To upload the entire project (i.e. every top level
@@ -504,8 +522,8 @@ folder), use the ‘command upload_entire_project’ or
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.make_sub_folders">
-<span class="sig-name descname"><span class="pre">make_sub_folders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.make_sub_folders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.make_sub_folders" title="Permalink to this definition">#</a></dt>
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.make_folders">
+<span class="sig-name descname"><span class="pre">make_folders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.make_folders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.make_folders" title="Permalink to this definition">#</a></dt>
 <dd><p>Create a subject / session folder tree in the project
 folder.</p>
 <dl class="field-list simple">
@@ -519,12 +537,11 @@ within the top-level project folder
 (if not already, these will be prefixed with
 “ses-“). If no session is provided, no session-level
 folders are made.</p></li>
-<li><p><strong>data_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The data_type to make in the sub / ses folders.
-(e.g. “ephys”, “behav”, “histology”). Only data_types
-that are enabled in the configs (e.g. use_behav) will be
-created. If “all” is selected, folders will be created
-for all data_type enabled in config. Use empty string “” for
-none.</p></li>
+<li><p><strong>datatype</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – The datatype to make in the sub / ses folders.
+(e.g. “ephys”, “behav”, “anat”). If “all”
+is selected, all datatypes permitted in
+NeuroBlueprint will be created. If “” is passed
+no datatype will be created.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -547,9 +564,9 @@ is permitted. e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101
 </dl>
 </div></blockquote>
 <p class="rubric">Examples</p>
-<p>project.make_sub_folders(“sub-001”, data_type=”all”)</p>
+<p>project.make_folders(“sub-001”, datatype=”all”)</p>
 <dl class="simple">
-<dt>project.make_sub_folders(“sub-002&#64;TO&#64;005”,</dt><dd><p>[“ses-001”, “ses-002”],
+<dt>project.make_folders(“sub-002&#64;TO&#64;005”,</dt><dd><p>[“ses-001”, “ses-002”],
 [“ephys”, “behav”])</p>
 </dd>
 </dl>
@@ -581,7 +598,7 @@ to find the next session number.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.upload">
-<span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">upload</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.upload"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.upload" title="Permalink to this definition">#</a></dt>
 <dd><p>Upload data from a local project to the central project
 folder. In the case that a file / folder exists on
 the central and local, the central will not be overwritten
@@ -594,13 +611,13 @@ transfer logs are saved to the logging folder).</p>
 be prefixed with “sub-”, or the prefix will be
 automatically added. “&#64;*&#64;” can be used as a wildcard.
 “all” will search for all sub-folders in the
-data type folder to upload.</p></li>
+datatype folder to upload.</p></li>
 <li><p><strong>ses_names</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]) – a session name / list of session names, similar to
-sub_names but requring a “ses-” prefix.</p></li>
+sub_names but requiring a “ses-” prefix.</p></li>
 <li><p><strong>dry_run</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – perform a dry-run of upload. This will output as if file
 transfer was taking place, but no files will be moved. Useful
 to check which files will be moved on data transfer.</p></li>
-<li><p><strong>data_type</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>) – see make_sub_folders()</p></li>
+<li><p><strong>datatype</strong> (<code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]) – see make_folders()</p></li>
 <li><p><strong>init_log</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – (Optional). Whether to start the logger. This should
 always be True, unless logger has already been started
 (e.g. in a calling function).</p></li>
@@ -629,7 +646,7 @@ is permitted. e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.download">
-<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">download</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.download"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.download" title="Permalink to this definition">#</a></dt>
 <dd><p>Download data from the central project folder to the
 local project folder. In the case that a file / folder
 exists on the central and local, the local will
@@ -687,7 +704,7 @@ required (see ‘filepath’ input). If a folder,
 wildcards “*” or “**” must be used to transfer
 all files in the folder (“*”) or all files
 and sub-folders (“**”).</p>
-<p>e.g. “sub-001/ses-002/my_folder/<a href="#id1"><span class="problematic" id="id2">**</span></a>”</p>
+<p>e.g. “sub-001/ses-002/my_folder/<a href="#id2"><span class="problematic" id="id3">**</span></a>”</p>
 <p>This function works by passing the file / folder
 path to transfer to Rclone’s –include flag.</p>
 <dl class="field-list simple">
@@ -717,7 +734,7 @@ required (see ‘filepath’ input). If a folder,
 wildcards “*” or “**” must be used to transfer
 all files in the folder (“*”) or all files
 and sub-folders (“**”).</p>
-<p>e.g. “sub-001/ses-002/my_folder/<a href="#id3"><span class="problematic" id="id4">**</span></a>”</p>
+<p>e.g. “sub-001/ses-002/my_folder/<a href="#id4"><span class="problematic" id="id5">**</span></a>”</p>
 <p>This function works by passing the file / folder
 path to transfer to Rclone’s –include flag.</p>
 <dl class="field-list simple">
@@ -776,7 +793,7 @@ public key to.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.make_config_file">
-<span class="sig-name descname"><span class="pre">make_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_old_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer_verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_transfer_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_ephys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_behav</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_funcimg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_histology</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.make_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.make_config_file" title="Permalink to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">make_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_old_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer_verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'v'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_transfer_progress</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.make_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.make_config_file" title="Permalink to this definition">#</a></dt>
 <dd><p>Initialise the configurations for datashuttle to use on the
 local machine. Once initialised, these settings will be
 used each time the datashuttle is opened. This method
@@ -817,10 +834,6 @@ the source version of the file has a later timestamp.</p></li>
 significant events, “vv” will be very verbose and inform
 on all events.</p></li>
 <li><p><strong>show_transfer_progress</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – If true, the real-time progress of file transfers will be printed.</p></li>
-<li><p><strong>use_ephys</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, will allow ephys folder creation</p></li>
-<li><p><strong>use_funcimg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, will allow funcimg folder creation</p></li>
-<li><p><strong>use_histology</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, will allow histology folder creation</p></li>
-<li><p><strong>use_behav</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>) – if True, will allow behav folder creation</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -969,7 +982,7 @@ in the local project.</p>
 <dd><p>Print the current working top level folder (e.g.
 ‘rawdata’, ‘derivatives’)</p>
 <p>The top_level_folder defines in which top level folder new
-sub-folders will be made (e.g. make_sub_folders) or
+sub-folders will be made (e.g. make_folders) or
 at which level folders are transferred with the commands
 upload / download and upload_all / download all.
 upload_specific_folder_or_file / download_specific_folder_or_file.</p>
@@ -1026,10 +1039,18 @@ electrophysiological machine.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.show_existing_projects">
+<span class="sig-name descname"><span class="pre">show_existing_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.show_existing_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.show_existing_projects" title="Permalink to this definition">#</a></dt>
+<dd><p>Print a list of existing project names found on the local machine.
+This is based on project folders in the “home / .datashuttle” folder
+that contain valid config.yaml files.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.datashuttle.DataShuttle.check_name_formatting">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_name_formatting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle.html#DataShuttle.check_name_formatting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.datashuttle.DataShuttle.check_name_formatting" title="Permalink to this definition">#</a></dt>
 <dd><p>Pass list of names to check how these will be auto-formatted,
-for example as when passed to make_sub_folders() or upload()
+for example as when passed to make_folders() or upload()
 or download()</p>
 <p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
 This method will print the formatted list of names,</p>
@@ -1056,11 +1077,10 @@ e.g. “sub-” or “ses-”</p></li>
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
     <a class="left-prev"
        href="documentation.html"
@@ -1068,7 +1088,7 @@ e.g. “sub-” or “ses-”</p></li>
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">Getting Started</p>
+        <p class="prev-next-title">User Guide</p>
       </div>
     </a>
     <a class="right-next"
@@ -1080,10 +1100,7 @@ e.g. “sub-” or “ses-”</p></li>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1098,9 +1115,9 @@ e.g. “sub-” or “ses-”</p></li>
   </div>
   <nav class="bd-toc-nav page-toc">
     <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle"><code class="docutils literal notranslate"><span class="pre">DataShuttle</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle"><code class="docutils literal notranslate"><span class="pre">DataShuttle</span></code></a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.set_top_level_folder"><code class="docutils literal notranslate"><span class="pre">DataShuttle.set_top_level_folder()</span></code></a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_sub_folders"><code class="docutils literal notranslate"><span class="pre">DataShuttle.make_sub_folders()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.make_folders"><code class="docutils literal notranslate"><span class="pre">DataShuttle.make_folders()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_next_sub_number"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_next_sub_number()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.get_next_ses_number"><code class="docutils literal notranslate"><span class="pre">DataShuttle.get_next_ses_number()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.upload"><code class="docutils literal notranslate"><span class="pre">DataShuttle.upload()</span></code></a></li>
@@ -1126,6 +1143,7 @@ e.g. “sub-” or “ses-”</p></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_top_level_folder"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_top_level_folder()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_next_sub_number"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_next_sub_number()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_next_ses_number"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_next_ses_number()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.show_existing_projects"><code class="docutils literal notranslate"><span class="pre">DataShuttle.show_existing_projects()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#datashuttle.datashuttle.DataShuttle.check_name_formatting"><code class="docutils literal notranslate"><span class="pre">DataShuttle.check_name_formatting()</span></code></a></li>
 </ul>
 </li>
@@ -1145,8 +1163,8 @@ e.g. “sub-” or “ses-”</p></li>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686"></script>
+<script src="../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1160,10 +1178,11 @@ Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
 <p class="theme-version">
 Built with the
 <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
-0.13.3.
+0.14.2.
 </p></div>
       
     </div>
+  
   
   
     <div class="footer-items__end">

@@ -18,12 +18,12 @@
   </script>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/bootstrap.css?digest=e353d410970836974a52" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../../_static/styles/bootstrap.css?digest=c5ced968eda925caa686" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=c5ced968eda925caa686" rel="stylesheet" />
 
   
-  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=e353d410970836974a52" rel="stylesheet" />
+  <link href="../../_static/vendor/fontawesome/6.1.2/css/all.min.css?digest=c5ced968eda925caa686" rel="stylesheet" />
   <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-solid-900.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-brands-400.woff2" />
 <link rel="preload" as="font" type="font/woff2" crossorigin href="../../_static/vendor/fontawesome/6.1.2/webfonts/fa-regular-400.woff2" />
@@ -33,8 +33,9 @@
     <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css" />
   
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686" />
+  <script src="../../_static/vendor/fontawesome/6.1.2/js/all.min.js?digest=c5ced968eda925caa686"></script>
 
     <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
     <script src="../../_static/jquery.js"></script>
@@ -59,6 +60,15 @@
   
   
   <a class="skip-link" href="#main-content">Skip to main content</a>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>
+    Back to top
+  </button>
+
   
   <input type="checkbox"
           class="sidebar-toggle"
@@ -99,7 +109,8 @@
     <span class="fa-solid fa-bars"></span>
   </label>
   
-  <div class="navbar-header-items__start">
+  
+  <div class="col-lg-3 navbar-header-items__start">
     
       <div class="navbar-item">
   
@@ -109,21 +120,21 @@
   
   
   
+  
     
     
       
     
     
-    <img src="../../_static/logo_light.png" class="logo__image only-light" alt="Logo image"/>
-    <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt="Logo image"/>`);</script>
+    <img src="../../_static/logo_light.png" class="logo__image only-light" alt=""/>
+    <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">DataShuttle. version: 0.1.0</p>
+    <p class="title logo__title">Datashuttle v0.2.0</p>
   
 </a></div>
     
   </div>
-  
   
   <div class="col-lg-9 navbar-header-items">
     
@@ -140,7 +151,7 @@
     
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../pages/documentation.html">
-                        Getting Started
+                        User Guide
                       </a>
                     </li>
                 
@@ -168,23 +179,25 @@
       
         <div class="navbar-item navbar-persistent--container">
           
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
         </div>
       
       
         <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -200,8 +213,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -211,13 +224,15 @@ document.write(`
   
   
     <div class="navbar-persistent--mobile">
-<script>
-document.write(`
-  <button class="btn btn-sm navbar-btn search-button search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <script>
+ document.write(`
+   <button class="btn navbar-btn search-button-field search-button__button" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
     <i class="fa-solid fa-magnifying-glass"></i>
-  </button>
-`);
-</script>
+    <span class="search-button__default-text">Search</span>
+    <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+   </button>
+ `);
+ </script>
     </div>
   
 
@@ -249,7 +264,7 @@ document.write(`
     
                     <li class="nav-item">
                       <a class="nav-link nav-internal" href="../../pages/documentation.html">
-                        Getting Started
+                        User Guide
                       </a>
                     </li>
                 
@@ -279,10 +294,10 @@ document.write(`
           <div class="navbar-item">
 <script>
 document.write(`
-  <button class="theme-switch-button btn btn-sm btn-outline-primary navbar-btn rounded-circle" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
-    <span class="theme-switch" data-mode="light"><i class="fa-solid fa-sun"></i></span>
-    <span class="theme-switch" data-mode="dark"><i class="fa-solid fa-moon"></i></span>
-    <span class="theme-switch" data-mode="auto"><i class="fa-solid fa-circle-half-stroke"></i></span>
+  <button class="btn btn-sm navbar-btn theme-switch-button" title="light/dark" aria-label="light/dark" data-bs-placement="bottom" data-bs-toggle="tooltip">
+    <span class="theme-switch nav-link" data-mode="light"><i class="fa-solid fa-sun fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="dark"><i class="fa-solid fa-moon fa-lg"></i></span>
+    <span class="theme-switch nav-link" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg"></i></span>
   </button>
 `);
 </script></div>
@@ -298,8 +313,8 @@ document.write(`
           
           
           
-          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github"></i></span>
-            <label class="sr-only">GitHub</label></a>
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><span><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i></span>
+            <span class="sr-only">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -331,8 +346,8 @@ document.write(`
 
 
 
-<nav aria-label="Breadcrumbs">
-  <ul class="bd-breadcrumbs" role="navigation" aria-label="Breadcrumb">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
     
     <li class="breadcrumb-item breadcrumb-home">
       <a href="../../index.html" class="nav-link" aria-label="Home">
@@ -342,7 +357,7 @@ document.write(`
     
     <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page">datashuttle.datashuttle</li>
+    <li class="breadcrumb-item active" aria-current="page">datashuttle....</li>
   </ul>
 </nav>
 </div>
@@ -368,7 +383,7 @@ document.write(`
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">paramiko</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
@@ -437,7 +452,6 @@ document.write(`
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">print_startup_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
-
         <span class="k">if</span> <span class="s2">&quot; &quot;</span> <span class="ow">in</span> <span class="n">project_name</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;project_name&#39; must not include spaces.&quot;</span>
@@ -447,7 +461,7 @@ document.write(`
         <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">=</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_project_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">project_name</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span> <span class="o">/</span> <span class="s2">&quot;config.yaml&quot;</span>
 
@@ -482,7 +496,7 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_make_project_metadata_if_does_not_exist</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_data_type_folders</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_datatype_folders</span><span class="p">()</span>
 
     <span class="c1"># -------------------------------------------------------------------------</span>
     <span class="c1"># Public Folder Makers</span>
@@ -494,7 +508,7 @@ document.write(`
 <span class="sd">        Set the working top level folder (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
 
 <span class="sd">        The top_level_folder defines in which top level folder new</span>
-<span class="sd">        sub-folders will be made (e.g. make_sub_folders) or at which level</span>
+<span class="sd">        sub-folders will be made (e.g. make_folders) or at which level</span>
 <span class="sd">        folders  are transferred with the commands upload / download</span>
 <span class="sd">        and upload_all / download all.</span>
 
@@ -517,12 +531,12 @@ document.write(`
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.make_sub_folders"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_sub_folders">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">make_sub_folders</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.make_folders"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.make_folders">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">make_folders</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a subject / session folder tree in the project</span>
@@ -541,13 +555,12 @@ document.write(`
 <span class="sd">                (if not already, these will be prefixed with</span>
 <span class="sd">                &quot;ses-&quot;). If no session is provided, no session-level</span>
 <span class="sd">                folders are made.</span>
-<span class="sd">        data_type :</span>
-<span class="sd">                The data_type to make in the sub / ses folders.</span>
-<span class="sd">                (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;histology&quot;). Only data_types</span>
-<span class="sd">                that are enabled in the configs (e.g. use_behav) will be</span>
-<span class="sd">                created. If &quot;all&quot; is selected, folders will be created</span>
-<span class="sd">                for all data_type enabled in config. Use empty string &quot;&quot; for</span>
-<span class="sd">                none.</span>
+<span class="sd">        datatype :</span>
+<span class="sd">                The datatype to make in the sub / ses folders.</span>
+<span class="sd">                (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;anat&quot;). If &quot;all&quot;</span>
+<span class="sd">                is selected, all datatypes permitted in</span>
+<span class="sd">                NeuroBlueprint will be created. If &quot;&quot; is passed</span>
+<span class="sd">                no datatype will be created.</span>
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
@@ -567,13 +580,13 @@ document.write(`
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
-<span class="sd">        project.make_sub_folders(&quot;sub-001&quot;, data_type=&quot;all&quot;)</span>
+<span class="sd">        project.make_folders(&quot;sub-001&quot;, datatype=&quot;all&quot;)</span>
 
-<span class="sd">        project.make_sub_folders(&quot;sub-002@TO@005&quot;,</span>
+<span class="sd">        project.make_folders(&quot;sub-002@TO@005&quot;,</span>
 <span class="sd">                             [&quot;ses-001&quot;, &quot;ses-002&quot;],</span>
 <span class="sd">                             [&quot;ephys&quot;, &quot;behav&quot;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;make_sub_folders&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;make-folders&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
@@ -614,7 +627,7 @@ document.write(`
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
-            <span class="n">data_type</span><span class="p">,</span>
+            <span class="n">datatype</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
 
@@ -657,7 +670,7 @@ document.write(`
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -676,16 +689,16 @@ document.write(`
 <span class="sd">            be prefixed with &quot;sub-&quot;, or the prefix will be</span>
 <span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
 <span class="sd">            &quot;all&quot; will search for all sub-folders in the</span>
-<span class="sd">            data type folder to upload.</span>
+<span class="sd">            datatype folder to upload.</span>
 <span class="sd">        ses_names :</span>
 <span class="sd">            a session name / list of session names, similar to</span>
-<span class="sd">            sub_names but requring a &quot;ses-&quot; prefix.</span>
+<span class="sd">            sub_names but requiring a &quot;ses-&quot; prefix.</span>
 <span class="sd">        dry_run :</span>
 <span class="sd">            perform a dry-run of upload. This will output as if file</span>
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
-<span class="sd">        data_type :</span>
-<span class="sd">            see make_sub_folders()</span>
+<span class="sd">        datatype :</span>
+<span class="sd">            see make_folders()</span>
 
 <span class="sd">        init_log :</span>
 <span class="sd">            (Optional). Whether to start the logger. This should</span>
@@ -720,7 +733,7 @@ document.write(`
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
-            <span class="n">data_type</span><span class="p">,</span>
+            <span class="n">datatype</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -731,7 +744,7 @@ document.write(`
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
-        <span class="n">data_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">datatype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -756,7 +769,7 @@ document.write(`
             <span class="s2">&quot;download&quot;</span><span class="p">,</span>
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
-            <span class="n">data_type</span><span class="p">,</span>
+            <span class="n">datatype</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -770,7 +783,7 @@ document.write(`
 <span class="sd">        Alias for:</span>
 <span class="sd">            project.upload(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -781,7 +794,7 @@ document.write(`
 
 <span class="sd">        Alias for : project.download(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download_all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
@@ -834,7 +847,7 @@ document.write(`
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload_specific_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
 
@@ -886,7 +899,7 @@ document.write(`
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-            <span class="s2">&quot;download_specific_folder_or_file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
+            <span class="s2">&quot;download-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">show_top_level_folder</span><span class="p">()</span>
@@ -928,7 +941,7 @@ document.write(`
 <span class="sd">        will be setup.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-            <span class="s2">&quot;setup_ssh_connection_to_central_server&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
+            <span class="s2">&quot;setup-ssh-connection-to-central-server&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
         <span class="p">)</span>
 
         <span class="n">verified</span> <span class="o">=</span> <span class="n">ssh</span><span class="o">.</span><span class="n">verify_ssh_central_host</span><span class="p">(</span>
@@ -979,10 +992,6 @@ document.write(`
         <span class="n">overwrite_old_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">transfer_verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
         <span class="n">show_transfer_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">use_ephys</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">use_behav</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">use_funcimg</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">use_histology</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialise the configurations for datashuttle to use on the</span>
@@ -1043,21 +1052,9 @@ document.write(`
 
 <span class="sd">        show_transfer_progress :</span>
 <span class="sd">            If true, the real-time progress of file transfers will be printed.</span>
-
-<span class="sd">        use_ephys :</span>
-<span class="sd">            if True, will allow ephys folder creation</span>
-
-<span class="sd">        use_funcimg :</span>
-<span class="sd">            if True, will allow funcimg folder creation</span>
-
-<span class="sd">        use_histology :</span>
-<span class="sd">            if True, will allow histology folder creation</span>
-
-<span class="sd">        use_behav :</span>
-<span class="sd">            if True, will allow behav folder creation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-            <span class="s2">&quot;make_config_file&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;make-config-file&quot;</span><span class="p">,</span>
             <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
             <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">temp_folder_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
@@ -1075,10 +1072,6 @@ document.write(`
                 <span class="s2">&quot;overwrite_old_files&quot;</span><span class="p">:</span> <span class="n">overwrite_old_files</span><span class="p">,</span>
                 <span class="s2">&quot;transfer_verbosity&quot;</span><span class="p">:</span> <span class="n">transfer_verbosity</span><span class="p">,</span>
                 <span class="s2">&quot;show_transfer_progress&quot;</span><span class="p">:</span> <span class="n">show_transfer_progress</span><span class="p">,</span>
-                <span class="s2">&quot;use_ephys&quot;</span><span class="p">:</span> <span class="n">use_ephys</span><span class="p">,</span>
-                <span class="s2">&quot;use_behav&quot;</span><span class="p">:</span> <span class="n">use_behav</span><span class="p">,</span>
-                <span class="s2">&quot;use_funcimg&quot;</span><span class="p">:</span> <span class="n">use_funcimg</span><span class="p">,</span>
-                <span class="s2">&quot;use_histology&quot;</span><span class="p">:</span> <span class="n">use_histology</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
 
@@ -1135,14 +1128,14 @@ document.write(`
 
         <span class="k">if</span> <span class="n">store_logs_in_temp_folder</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-                <span class="s2">&quot;update_config&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;update-config&quot;</span><span class="p">,</span>
                 <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
                 <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">temp_folder_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-                <span class="s2">&quot;update_config&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;update-config&quot;</span><span class="p">,</span>
                 <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
                 <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1197,14 +1190,14 @@ document.write(`
         <span class="n">store_logs_in_temp_folder</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_local_path_exists</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">store_logs_in_temp_folder</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-                <span class="s2">&quot;supply_config_file&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;supply-config-file&quot;</span><span class="p">,</span>
                 <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
                 <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">temp_folder_path</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
-                <span class="s2">&quot;supply_config_file&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;supply-config-file&quot;</span><span class="p">,</span>
                 <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
                 <span class="n">store_in_temp_folder</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1290,7 +1283,7 @@ document.write(`
 <span class="sd">        &#39;rawdata&#39;, &#39;derivatives&#39;)</span>
 
 <span class="sd">        The top_level_folder defines in which top level folder new</span>
-<span class="sd">        sub-folders will be made (e.g. make_sub_folders) or</span>
+<span class="sd">        sub-folders will be made (e.g. make_folders) or</span>
 <span class="sd">        at which level folders are transferred with the commands</span>
 <span class="sd">        upload / download and upload_all / download all.</span>
 <span class="sd">        upload_specific_folder_or_file / download_specific_folder_or_file.</span>
@@ -1359,13 +1352,24 @@ document.write(`
             <span class="sa">f</span><span class="s2">&quot;The suggested new session number is: </span><span class="si">{</span><span class="n">suggested_new_num</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span></div>
 
+<div class="viewcode-block" id="DataShuttle.show_existing_projects"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.show_existing_projects">[docs]</a>    <span class="k">def</span> <span class="nf">show_existing_projects</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Print a list of existing project names found on the local machine.</span>
+<span class="sd">        This is based on project folders in the &quot;home / .datashuttle&quot; folder</span>
+<span class="sd">        that contain valid config.yaml files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">project_names</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">folders</span><span class="o">.</span><span class="n">get_existing_project_paths_and_names</span><span class="p">()</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The existing project names are </span><span class="si">{</span><span class="n">project_names</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span></div>
+
 <div class="viewcode-block" id="DataShuttle.check_name_formatting"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.check_name_formatting">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span>
         <span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
-<span class="sd">        for example as when passed to make_sub_folders() or upload()</span>
+<span class="sd">        for example as when passed to make_folders() or upload()</span>
 <span class="sd">        or download()</span>
 
 <span class="sd">        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.</span>
@@ -1452,7 +1456,7 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">_start_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">command_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">local_vars</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">store_in_temp_folder</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">temp_folder_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
@@ -1466,17 +1470,15 @@ document.write(`
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 
-<span class="sd">        name : name of the log output files. Typically, the</span>
-<span class="sd">            name of the function logged e.g. &quot;update_config&quot;</span>
+<span class="sd">        command_name : name of the command, for the log output files.</span>
 
 <span class="sd">        local_vars : local_vars are passed to fancylog variables argument.</span>
 <span class="sd">                 see ds_logger.wrap_variables_for_fancylog for more info</span>
 
 <span class="sd">        store_in_temp_folder :</span>
-<span class="sd">            if False, existing logging path will be used</span>
-<span class="sd">            (local project .datashuttle). If &quot;default&quot;&quot;, the temp</span>
-<span class="sd">            log backup will be used. Otherwise, expect a path / string</span>
-<span class="sd">            to the new path to make the logs at.</span>
+<span class="sd">            if `False`, existing logging path will be used</span>
+<span class="sd">            (local project .datashuttle). if `True`, path is</span>
+<span class="sd">            read from `temp_folder_path`.</span>
 
 <span class="sd">        temp_folder_path :</span>
 <span class="sd">            if &quot;default&quot;, use the default temp folder path stored at</span>
@@ -1490,6 +1492,9 @@ document.write(`
             <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">store_in_temp_folder</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="p">(</span>
+                <span class="n">temp_folder_path</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span>
+            <span class="p">),</span> <span class="s2">&quot;`temp_folder_path` must be &#39;default&#39; or a filepath.&quot;</span>
             <span class="n">path_to_save</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span>
                 <span class="k">if</span> <span class="n">temp_folder_path</span> <span class="o">==</span> <span class="s2">&quot;default&quot;</span>
@@ -1498,7 +1503,7 @@ document.write(`
         <span class="k">else</span><span class="p">:</span>
             <span class="n">path_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span>
 
-        <span class="n">ds_logger</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">command_name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_move_logs_from_temp_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1637,16 +1642,12 @@ document.write(`
               
               
               
-                <footer class="bd-footer-article">
-                  
-<div class="footer-article-items footer-article__inner">
-  
-    <div class="footer-article-item"><!-- Previous / next buttons -->
+              
+              
+                <footer class="prev-next-footer">
+                  <!-- Previous / next buttons -->
 <div class="prev-next-area">
-</div></div>
-  
 </div>
-
                 </footer>
               
             </div>
@@ -1664,8 +1665,8 @@ document.write(`
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script src="../../_static/scripts/bootstrap.js?digest=e353d410970836974a52"></script>
-<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=e353d410970836974a52"></script>
+  <script src="../../_static/scripts/bootstrap.js?digest=c5ced968eda925caa686"></script>
+<script src="../../_static/scripts/pydata-sphinx-theme.js?digest=c5ced968eda925caa686"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1679,10 +1680,11 @@ Created using <a href="https://sphinx-doc.org/">Sphinx</a> 5.3.0.
 <p class="theme-version">
 Built with the
 <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
-0.13.3.
+0.14.2.
 </p></div>
       
     </div>
+  
   
   
     <div class="footer-items__end">
