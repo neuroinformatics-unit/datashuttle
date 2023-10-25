@@ -422,7 +422,7 @@ See the [convenience tags](#convenience-tags) section for more details.
 
 ## *Datatype* Folders
 
-*Datatype* folders contain acquired experimental data and must named either
+*Datatype* folders contain acquired experimental data and must be named either
 `behav`, `ephys`, `funcimg` or `anat`. *Datatype* folders must be placed
 within a *session* folder.
 See the [*datatype*](https://neuroblueprint.neuroinformatics.dev/specification.html#datatype) section
