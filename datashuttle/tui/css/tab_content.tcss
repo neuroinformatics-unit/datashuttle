@@ -37,11 +37,17 @@ DirectoryTree > .directory-tree--folder:focus {
     background: $panel-lighten-2;
 }
 
-#tabscreen_directorytree:focus .tree--guides-selected {
-    color: $success;
-    background: $panel;
+/* Light mode Directory Tree ------------------------------------------------------ */
+
+
+#tabscreen_directorytree:light {
+    border: tall wide $panel-darken-3;
+    background: $boost;
 }
 
+#tabscreen_directorytree:light:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
 
 /* Input ------------------------------------------------------------------- */
 /* Unfortunately there is a bug with Input and hover, the response is very slow.
@@ -49,6 +55,10 @@ and it also effects other widgets */
 
 #tabscreen_create_tab > Input {
     border: tall $panel-lighten-1;
+}
+
+#tabscreen_create_tab:light > Input {
+    border: tall $panel-darken-3;
 }
 
 /* Labels ------------------------------------------------------------------- */
@@ -101,6 +111,17 @@ TabScreenCheckboxes > ToggleButton:hover > .toggle--button {
     background: $panel-lighten-3;
 }
 
+/* Light mode Toggle Buttons ----------------------------------------------------------- */
+
+
+TabScreenCheckboxes:light > ToggleButton.-on > .toggle--button {
+    color: $text;
+}
+TabScreenCheckboxes:light > ToggleButton:hover > .toggle--button {
+    background: $panel-darken-3;
+}
+
+
 /* Buttons ----------------------------------------------------------- */
 
 Button {
@@ -115,4 +136,20 @@ Button:focus {
 }
 Button:hover {
     background: $panel-lighten-2;
+}
+
+/* Light Mode Buttons */
+
+Button:light {
+    background: $boost;
+    border-top: tall $panel-darken-3;
+    border-bottom: tall $panel-darken-3;
+    border-left: tall $panel-darken-3;
+    border-right: tall $panel-darken-3;
+}
+Button:light:focus {
+    text-style: bold;
+}
+Button:light:hover {
+    background: $panel-darken-3;
 }

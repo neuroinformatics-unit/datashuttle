@@ -36,6 +36,19 @@
     align: center middle;
 }
 
+/* Light Mode Mainwindow ------------------------------------------------------ */
+
+#mainwindow_contents_container:light > Button {
+    background: $boost;
+    border-top: tall $panel-darken-3;
+    border-bottom: tall $panel-darken-3;
+    border-left: tall $panel-darken-3;
+    border-right: tall $panel-darken-3;
+}
+#mainwindow_contents_container:light > Button:hover {
+    background: $panel-darken-3;
+}
+
 /* Project Select ------------------------------------------------------ */
 
 #project_select_main_menu_button {
@@ -57,7 +70,7 @@
 #project_select_top_container {
     align: center middle;
     overflow: scroll;
-    margin: 5 2 0 0;
+    margin: 3 2 0 0;
     content-align: center middle;
 }
 #project_select_top_container > Button {
@@ -91,6 +104,27 @@
     background: $primary-background-lighten-1;
 }
 
+/* Light Mode Project Select ------------------------------------------------------ */
+
+#project_select_top_container > Button {
+    background: $boost;
+    border-top: tall $panel-darken-3;
+    border-bottom: tall $panel-darken-3;
+    border-left: tall $panel-darken-3;
+    border-right: tall $panel-darken-3;
+}
+#project_select_top_container > Button:hover {
+    background: $panel-darken-3;
+}
+#project_select_top_container > #mainwindow_existing_project_button {
+    text-style: italic;
+    outline: none;
+    background: $primary-background-lighten-1;
+}
+
+
+
+
 /* Quit Screen ------------------------------------------------------ */
 
 QuitScreen {
@@ -117,3 +151,11 @@ QuitScreen > #quitscreen_top_container {
 #quitscreen_ok_button {
     align: center bottom
 }
+
+/* Light Mode Quick Screen ------------------------------------------------------ */
+
+QuitScreen:light > #quitscreen_top_container {
+    border: thick rgb(209, 41, 25);
+    background: $boost;
+    align: center middle;
+ }
