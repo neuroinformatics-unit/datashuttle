@@ -19,28 +19,29 @@ from textual.widgets import (
 )
 
 from datashuttle import DataShuttle
+from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.utils.folders import get_existing_project_paths_and_names
 
 
-class QuitScreen(ModalScreen):
+class ErrorScreen(ModalScreen):
     """
     Screen that renders a modal dialog window (a pop up window that
     means no other widgets can be changed until it is closed).
     """
 
     def __init__(self, message):
-        super(QuitScreen, self).__init__()
+        super(ErrorScreen, self).__init__()
 
         self.message = message
 
     def compose(self) -> ComposeResult:
         yield Container(
             Container(
-                Static(self.message, id="quitscreen_message_label"),
-                id="quitscreen_message_container",
+                Static(self.message, id="errorscreen_message_label"),
+                id="errorscreen_message_container",
             ),
-            Container(Button("OK"), id="quitscreen_ok_button"),
-            id="quitscreen_top_container",
+            Container(Button("OK"), id="errorscreen_ok_button"),
+            id="errorscreen_top_container",
         )
 
     def on_button_pressed(self) -> None:
@@ -52,32 +53,23 @@ class TabScreenCheckboxes(Static):
     Dynamically-populated checkbox widget for convenient datatype
     selection during folder creation.
 
-    Parameters
-    ---------
-
-    project_config: ConfigsClass
-        Configuration dictionary from datashuttle (i.e. `project.cfg`).
-
     Attributes
     ----------
 
     type_out:
-        List of datatypes (e.g. "behav" that will be passed to `make-folders`.)
+        List of datatypes selected by the user to be passed to `make_folders`
+        (e.g. "behav" that will be passed to `make-folders`.)
 
     type_config:
-        List of datatypes that were set as 'True' during datashuttle project setup
+        List of datatypes supported by NeuroBlueprint
     """
 
     type_out = reactive("all")
 
-    def __init__(self, project_cfg):
+    def __init__(self):
         super(TabScreenCheckboxes, self).__init__()
 
-        self.type_config = [
-            config.removeprefix("use_")
-            for config, is_on in zip(project_cfg.keys(), project_cfg.values())
-            if "use_" in config and is_on
-        ]
+        self.type_config = get_datatypes()
 
     def compose(self):
         for type in self.type_config:
@@ -91,7 +83,8 @@ class TabScreenCheckboxes(Static):
         with the datatypes to pass to `make_folders` datatype argument.
         """
         type_dict = {
-            type: self.query_one(f"#{type}").value for type in self.type_config
+            type: self.query_one(f"#tabscreen_{type}_checkbox").value
+            for type in self.type_config
         }
         self.type_out = [
             datatype
@@ -107,7 +100,7 @@ class TabScreen(Screen):
     a pre-configured project.
     """
 
-    TITLE = "DataShuttle"
+    TITLE = "Manage Project"
 
     prev_click_time = 0.0
 
@@ -122,7 +115,7 @@ class TabScreen(Screen):
         """
         yield Header()
         yield Button("Main Menu", id="tabscreen_main_menu_button")
-        with TabbedContent():
+        with TabbedContent(id="tabscreen_tabbed_content"):
             with TabPane("Create", id="tabscreen_create_tab"):
                 yield DirectoryTree(
                     str(self.project.cfg.data["local_path"]),
@@ -132,12 +125,12 @@ class TabScreen(Screen):
                 yield Input(
                     id="tabscreen_subject_input", placeholder="e.g. sub-001"
                 )
-                yield Label("Session(s)")
+                yield Label("Session(s)", id="tabscreen_session_label")
                 yield Input(
                     id="tabscreen_session_input", placeholder="e.g. ses-001"
                 )
-                yield Label("Datatype(s)")
-                yield TabScreenCheckboxes(self.project.cfg)
+                yield Label("Datatype(s)", id="tabscreen_datatype_label")
+                yield TabScreenCheckboxes()
                 yield Button("Make Folders", id="tabscreen_make_folder_button")
             with TabPane("Transfer", id="tabscreen_transfer_tab"):
                 yield Label("Transfer; Seems to work!")
@@ -146,9 +139,9 @@ class TabScreen(Screen):
         self, event: DirectoryTree.DirectorySelected
     ):
         """
-        Enables double-clicking a directory within the directory-tree
-        widget to replace contents of the \'Subject\' and/or \'Session\'
-        input widgets depending on the prefix of the directory selected.
+        Upon double-clicking a directory within the directory-tree
+        widget, replace contents of the \'Subject\' and/or \'Session\'
+        input widgets, depending on the prefix of the directory selected.
         Double-click time is set to the Windows default duration (500 ms).
         """
         click_time = monotonic()
@@ -165,7 +158,7 @@ class TabScreen(Screen):
 
     def on_button_pressed(self, event: Button.Pressed):
         """
-        Enables the Make Folder button to read out current input values
+        Enables the Make Folders button to read out current input values
         and use these to call project.make_folders().
         """
         if event.button.id == "tabscreen_make_folder_button":
@@ -186,13 +179,43 @@ class TabScreen(Screen):
             self.dismiss()
 
 
+class ProjectSelector(Screen):
+    """
+    The DataShuttle TUI's project selection screen. Finds and displays
+    DataShuttle projects present on the local system.
+    """
+
+    TITLE = "Select Project"
+
+    def __init__(self, mainwindow):
+        super(ProjectSelector, self).__init__()
+
+        self.project_names = get_existing_project_paths_and_names()[0]
+        self.mainwindow = mainwindow
+
+    def compose(self):
+        yield Header(id="project_select_header")
+        yield Button("Main Menu", id="project_select_main_menu_button")
+        yield Container(
+            *[Button(name, id=name) for name in self.project_names],
+            id="project_select_top_container",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id in self.project_names:
+            try:
+                project = DataShuttle(str(event.button.id))
+            except BaseException as e:
+                self.mainwindow.show_modal_error_dialog(str(e))
+                return
+            self.dismiss(project)
+        elif event.button.id == "project_select_main_menu_button":
+            self.dismiss(False)
+
+
 class TuiApp(App):
     """
     The main app page for the DataShuttle TUI.
-
-    This Screen contains DataShuttle's project selection splashscreen.
-    From here, the user can select an existing project or begin
-    initializing a new project.
 
     Running this application in a main block as below
     if __name__ == __main__:
@@ -209,36 +232,33 @@ class TuiApp(App):
         Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
     ]
 
-    # TODO: need to reload this dynamically when new project added
-    project_names = get_existing_project_paths_and_names()[0]
-
     def compose(self):
         yield Container(
-            Label("DataShuttle", id="mainwindow_main_title_label"),
-            Label("Select project", id="mainwindow_select_project_label"),
-            *[Button(name, id=name) for name in self.project_names],
-            Button("New project", id="mainwindow_select_new_project_button"),
-            id="mainwindow_top_container",
+            Label("DataShuttle", id="mainwindow_banner_label"),
+            Button(
+                "Select Existing Project",
+                id="mainwindow_existing_project_button",
+            ),
+            Button("Make New Project", id="mainwindow_new_project_button"),
+            Button("Settings", id="mainwindow_settings_button"),
+            Button("Get Help", id="mainwindow_get_help_button"),
+            id="mainwindow_contents_container",
         )
 
     def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "mainwindow_select_new_project_button":
-            pass
-        elif event.button.id in self.project_names:
-            try:
-                project = DataShuttle(str(event.button.id))
-            except BaseException as e:
-                self.show_modal_error_dialog(str(e))
-                return
+        if event.button.id == "mainwindow_existing_project_button":
+            self.push_screen(ProjectSelector(self), self.load_project_page)
+
+    def load_project_page(self, project):
+        if project:
             self.push_screen(TabScreen(self, project))
 
     def show_modal_error_dialog(self, message):
         # TODO: This `replace()` is super hacky. Will have to handle assert
         # messages centrally , depending on whether piping to GUI
         # or API / CLI.
-        self.push_screen(QuitScreen(message.replace(". ", ".\n\n")))
+        self.push_screen(ErrorScreen(message.replace(". ", ".\n\n")))
 
 
 if __name__ == "__main__":
-    app = TuiApp()
-    app.run()
+    TuiApp().run()

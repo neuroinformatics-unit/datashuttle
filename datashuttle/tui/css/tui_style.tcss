@@ -1,0 +1,60 @@
+/* Buttons ----------------------------------------------------------- */
+
+Button {
+    background: $panel;
+    border: tall $panel-lighten-1;
+}
+Button:focus {
+    text-style: bold;
+}
+Button:hover {
+    background: $panel-lighten-2;
+}
+
+/* Light Mode Buttons */
+
+Button:light {
+    background: $boost;
+    border-top: tall $panel-darken-3;
+    border-bottom: tall $panel-darken-3;
+    border-left: tall $panel-darken-3;
+    border-right: tall $panel-darken-3;
+}
+Button:light:hover {
+    background: $panel-darken-3;
+}
+
+/* Header ----------------------------------------------------------- */
+
+Header {
+    margin: 0 0 1 0;
+}
+
+/* Checkboxes ----------------------------------------------------------- */
+
+ToggleButton {
+    margin: 0 0 0 1;
+    content-align: left middle;
+    width: 15;
+    background: transparent;
+    padding: 0;
+    border: transparent;
+}
+ToggleButton:focus > .toggle--label {
+    text-style: none;
+}
+ToggleButton.-on > .toggle--button {
+    color: $success;
+}
+ToggleButton:hover > .toggle--button {
+    background: $panel-lighten-3;
+}
+
+/* Light mode Checkboxes ----------------------------------------------------------- */
+
+ToggleButton:light.-on > .toggle--button {
+    color: $text;
+}
+ToggleButton:light:hover > .toggle--button {
+    background: $panel-darken-3;
+}
