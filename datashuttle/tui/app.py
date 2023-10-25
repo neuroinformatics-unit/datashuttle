@@ -88,7 +88,8 @@ class TabScreenCheckboxes(Static):
         with the datatypes to pass to `make_folders` datatype argument.
         """
         type_dict = {
-            type: self.query_one(f"#{type}").value for type in self.type_config
+            type: self.query_one(f"#tabscreen_{type}_checkbox").value
+            for type in self.type_config
         }
         self.type_out = [
             datatype
