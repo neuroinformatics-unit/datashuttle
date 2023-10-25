@@ -23,7 +23,7 @@ behaviour and electrophysiology).
 
 The data from these separate machines are then combined
 in a central storage machine - this may be a particular computer
-in the lab or  high-performance computing (HPC) system.
+in the lab or a high-performance computing (HPC) system.
 
 Following data collection, the entire project or subsets of the data are downloaded
 to other machines (e.g a researcher's laptop) for analysis.
