@@ -53,20 +53,15 @@ class TabScreenCheckboxes(Static):
     Dynamically-populated checkbox widget for convenient datatype
     selection during folder creation.
 
-    Parameters
-    ---------
-
-    project_config: ConfigsClass
-        Configuration dictionary from datashuttle (i.e. `project.cfg`).
-
     Attributes
     ----------
 
     type_out:
-        List of datatypes (e.g. "behav" that will be passed to `make-folders`.)
+        List of datatypes selected by the user to be passed to `make_folders`
+        (e.g. "behav" that will be passed to `make-folders`.)
 
     type_config:
-        List of datatypes that were set as 'True' during datashuttle project setup
+        List of datatypes supported by NeuroBlueprint
     """
 
     type_out = reactive("all")
