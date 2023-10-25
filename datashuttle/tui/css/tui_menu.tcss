@@ -1,0 +1,75 @@
+
+/* Mainwindow ------------------------------------------------------ */
+
+#mainwindow_contents_container {
+    align: center top;
+    padding: 1 0 0 0;
+}
+#mainwindow_contents_container > Button {
+    width: 50%;
+    content-align: center middle;
+    margin: 0 0 1 0;
+}
+#mainwindow_banner_label {
+    border: hkey $primary;
+    content-align: center middle;
+    text-style: italic bold;
+    color: $text;
+    width: 50%;
+    height: 5;
+    margin: 2 0 2 0;
+}
+
+/* Project Select ------------------------------------------------------ */
+
+#project_select_top_container {
+    align: center middle;
+    margin: 3 2 0 0;
+    content-align: center middle;
+}
+#project_select_main_menu_button {
+    layer: top;
+    dock: right;
+    height: 3;
+}
+#project_select_top_container > Button {
+    width: 50%;
+    align: center middle;
+    content-align: left middle;
+    margin: 0 0 1 0;
+}
+
+/* Error Screen ------------------------------------------------------ */
+
+ErrorScreen {
+    align: center middle;
+}
+
+ErrorScreen > #errorscreen_top_container {
+    height: 15;
+    width: 65;
+    border: thick rgb(140, 12, 0);
+    background: $primary-background;
+    align: center middle;
+ }
+
+#errorscreen_message_container {
+    align: center middle;
+    overflow: hidden scroll;
+}
+
+#errorscreen_message_label {
+    text-align: center;
+}
+
+#errorscreen_ok_button {
+    align: center bottom
+}
+
+/* Light Mode Error Screen ------------------------------------------------------ */
+
+ErrorScreen:light > #errorscreen_top_container {
+    border: thick rgb(209, 41, 25);
+    background: $boost;
+    align: center middle;
+ }

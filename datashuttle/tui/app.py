@@ -23,25 +23,25 @@ from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.utils.folders import get_existing_project_paths_and_names
 
 
-class QuitScreen(ModalScreen):
+class ErrorScreen(ModalScreen):
     """
     Screen that renders a modal dialog window (a pop up window that
     means no other widgets can be changed until it is closed).
     """
 
     def __init__(self, message):
-        super(QuitScreen, self).__init__()
+        super(ErrorScreen, self).__init__()
 
         self.message = message
 
     def compose(self) -> ComposeResult:
         yield Container(
             Container(
-                Static(self.message, id="quitscreen_message_label"),
-                id="quitscreen_message_container",
+                Static(self.message, id="errorscreen_message_label"),
+                id="errorscreen_message_container",
             ),
-            Container(Button("OK"), id="quitscreen_ok_button"),
-            id="quitscreen_top_container",
+            Container(Button("OK"), id="errorscreen_ok_button"),
+            id="errorscreen_top_container",
         )
 
     def on_button_pressed(self) -> None:
@@ -261,7 +261,7 @@ class TuiApp(App):
         # TODO: This `replace()` is super hacky. Will have to handle assert
         # messages centrally , depending on whether piping to GUI
         # or API / CLI.
-        self.push_screen(QuitScreen(message.replace(". ", ".\n\n")))
+        self.push_screen(ErrorScreen(message.replace(". ", ".\n\n")))
 
 
 if __name__ == "__main__":
