@@ -21,7 +21,7 @@ A typical setup in systems neuroscience is that multiple acquisition
 machines collect experimental data (e.g. separate machines for acquiring
 behaviour and electrophysiology).
 
-The data from these separate machines is then combined
+The data from these separate machines are then combined
 in a central storage machine - this may be a particular computer
 in the lab or  high-performance computing (HPC) system.
 
