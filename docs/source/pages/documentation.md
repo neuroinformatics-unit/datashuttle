@@ -1,6 +1,6 @@
 :tocdepth: 2
 
-# Getting Started
+# User Guide
 
 Datashuttle is a tool to help standardise neuroscience project folders.
 
