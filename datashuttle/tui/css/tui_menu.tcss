@@ -23,7 +23,7 @@
 /* Project Select ------------------------------------------------------ */
 
 #project_select_top_container {
-    align: center middle;
+    align: center top;
     margin: 3 2 0 0;
     content-align: center middle;
 }
