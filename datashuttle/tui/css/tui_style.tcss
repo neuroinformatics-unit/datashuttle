@@ -1,3 +1,4 @@
+
 /* Buttons ----------------------------------------------------------- */
 
 Button {
@@ -15,10 +16,7 @@ Button:hover {
 
 Button:light {
     background: $boost;
-    border-top: tall $panel-darken-3;
-    border-bottom: tall $panel-darken-3;
-    border-left: tall $panel-darken-3;
-    border-right: tall $panel-darken-3;
+    border: tall $panel-darken-3;
 }
 Button:light:hover {
     background: $panel-darken-3;
@@ -50,11 +48,21 @@ ToggleButton:hover > .toggle--button {
     background: $panel-lighten-3;
 }
 
-/* Light mode Checkboxes ----------------------------------------------------------- */
+/* Light mode Checkboxes */
 
 ToggleButton:light.-on > .toggle--button {
     color: $text;
 }
 ToggleButton:light:hover > .toggle--button {
     background: $panel-darken-3;
+}
+
+/* Input ----------------------------------------------------------- */
+
+Input {
+    border: tall $panel-lighten-1;
+}
+
+Input:light {
+    border: tall $panel-darken-3;
 }

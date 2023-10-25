@@ -27,7 +27,7 @@ TabScreen > #tabscreen_main_menu_button {
     background: $panel-lighten-2;
 }
 
-/* Light mode Directory Tree ------------------------------------------------------ */
+/* Light mode Directory Tree */
 
 #tabscreen_directorytree:light {
     border: tall wide $panel-darken-3;
@@ -68,12 +68,13 @@ and it also effects other widgets */
 
 /* Checkboxes ----------------------------------------------------------- */
 
-TabScreenCheckboxes {
+DatatypeCheckboxes {
     padding: 0 0 1 0;
 }
-#tabscreen_create_tab > TabScreenCheckboxes {
+#tabscreen_create_tab > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
     grid-columns: 15;
     grid_rows: 3;
+    width: auto;
 }

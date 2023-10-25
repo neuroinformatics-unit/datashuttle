@@ -13,6 +13,7 @@ from textual.widgets import (
     Header,
     Input,
     Label,
+    Select,
     Static,
     TabbedContent,
     TabPane,
@@ -48,7 +49,7 @@ class ErrorScreen(ModalScreen):
         self.dismiss()
 
 
-class TabScreenCheckboxes(Static):
+class DatatypeCheckboxes(Static):
     """
     Dynamically-populated checkbox widget for convenient datatype
     selection during folder creation.
@@ -67,7 +68,7 @@ class TabScreenCheckboxes(Static):
     type_out = reactive("all")
 
     def __init__(self):
-        super(TabScreenCheckboxes, self).__init__()
+        super(DatatypeCheckboxes, self).__init__()
 
         self.type_config = get_datatypes()
 
@@ -130,7 +131,7 @@ class TabScreen(Screen):
                     id="tabscreen_session_input", placeholder="e.g. ses-001"
                 )
                 yield Label("Datatype(s)", id="tabscreen_datatype_label")
-                yield TabScreenCheckboxes()
+                yield DatatypeCheckboxes()
                 yield Button("Make Folders", id="tabscreen_make_folder_button")
             with TabPane("Transfer", id="tabscreen_transfer_tab"):
                 yield Label("Transfer; Seems to work!")
@@ -169,7 +170,7 @@ class TabScreen(Screen):
                 self.project.make_folders(
                     sub_names=sub_dir,
                     ses_names=ses_dir,
-                    datatype=self.query_one("TabScreenCheckboxes").type_out,
+                    datatype=self.query_one("DatatypeCheckboxes").type_out,
                 )
                 self.query_one("#tabscreen_directorytree").reload()
             except BaseException as e:
@@ -177,6 +178,45 @@ class TabScreen(Screen):
                 return
         if event.button.id == "tabscreen_main_menu_button":
             self.dismiss()
+
+
+class NewProject(Screen):
+    """
+    Screen that enables the user to configure a new DataShuttle project.
+    """
+
+    def compose(self):
+        yield Container(
+            Label("Configure New Project", id="newproject_banner_label"),
+            Label("Project Name", id="newproject_name_label"),
+            Input(placeholder="e.g. MyProject123", id="newproject_name_input"),
+            Label("Local Path", id="newproject_locpath_label"),
+            Input(
+                placeholder="e.g. C:/User/Documents",
+                id="newproject_locpath_input",
+            ),
+            Label("Central Path", id="newproject_centpath_label"),
+            Input(
+                placeholder="e.g. X:/Some/Path", id="newproject_centpath_input"
+            ),
+            Label("Connection Method", id="newproject_connect_method_label"),
+            Select(
+                [("SSH", "ssh"), ("Local Filesystem", "local_filesystem")],
+                prompt="Select connection method",
+                id="newproject_connect_method_select",
+            ),
+            Label("Select Datatypes", id="newproject_datatype_label"),
+            DatatypeCheckboxes(),
+            Button("Configure Project", id="newproject_config_button"),
+            id="newproject_container",
+        )
+        yield Button("Main Menu", id="newproject_main_menu_button")
+
+    def on_button_pressed(self, event: Button.Pressed):
+        if event.button.id == "newproject_main_menu_button":
+            self.dismiss()
+        if event.button.id == "config":
+            pass
 
 
 class ProjectSelector(Screen):
@@ -248,6 +288,8 @@ class TuiApp(App):
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(ProjectSelector(self), self.load_project_page)
+        elif event.button.id == "mainwindow_new_project_button":
+            self.push_screen(NewProject())
 
     def load_project_page(self, project):
         if project:
