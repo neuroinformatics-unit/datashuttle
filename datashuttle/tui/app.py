@@ -143,9 +143,9 @@ class TabScreen(Screen):
         self, event: DirectoryTree.DirectorySelected
     ):
         """
-        Enables double-clicking a directory within the directory-tree
-        widget to replace contents of the \'Subject\' and/or \'Session\'
-        input widgets depending on the prefix of the directory selected.
+        Upon double-clicking a directory within the directory-tree
+        widget, replace contents of the \'Subject\' and/or \'Session\'
+        input widgets, depending on the prefix of the directory selected.
         Double-click time is set to the Windows default duration (500 ms).
         """
         click_time = monotonic()
@@ -162,7 +162,7 @@ class TabScreen(Screen):
 
     def on_button_pressed(self, event: Button.Pressed):
         """
-        Enables the Make Folder button to read out current input values
+        Enables the Make Folders button to read out current input values
         and use these to call project.make_folders().
         """
         if event.button.id == "tabscreen_make_folder_button":
@@ -185,9 +185,8 @@ class TabScreen(Screen):
 
 class ProjectSelector(Screen):
     """
-    This Screen contains DataShuttle's project selection screen.
-    From here, the user can select an existing project or begin
-    initializing a new project.
+    The DataShuttle TUI's project selection screen. Finds and displays
+    DataShuttle projects present on the local system.
     """
 
     TITLE = "Select Project"
@@ -266,5 +265,4 @@ class TuiApp(App):
 
 
 if __name__ == "__main__":
-    app = TuiApp()
-    app.run()
+    TuiApp().run()
