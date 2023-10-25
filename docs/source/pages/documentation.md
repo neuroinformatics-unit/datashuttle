@@ -360,7 +360,7 @@ project folder trees.
 In a typical neuroscience experiment, data collection sessions begin by
 creating the folder for the current *subject* (e.g. mouse, rat) and current *session*.
 
-The command `make-folders` can be used automatically create standardised
+The command `make-folders` can be used to automatically create standardised
 folder trees (see
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) for details on the standardisation scheme).
 
