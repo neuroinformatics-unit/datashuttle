@@ -641,8 +641,8 @@ For example, the command:
 datashuttle \
 my_first_project \
 make_folders \
--sub sub-001_@DATE@ \
--ses 001@TIME@ 002@DATETIME@ \
+-sub sub-001 \
+-ses 001_@DATETIME@ 002_@DATETIME@ \
 -dt behav
 ```
 :::
@@ -652,8 +652,8 @@ make_folders \
 datashuttle ^
 my_first_project ^
 make_folders ^
--sub sub-001_@DATE@ ^
--ses 001@TIME@ 002@DATETIME@ ^
+-sub sub-001 ^
+-ses 001_@DATETIME@ 002_@DATETIME@ ^
 -dt behav
 ```
 :::
@@ -661,8 +661,8 @@ make_folders ^
 :::{tab-item} Python API
 ```{code-block} python
 project.make_folders(
-	sub_names="sub-001_@DATE@",
-	ses_names=["001_@TIME@", "002_@DATETIME@"],
+	sub_names="sub-001",
+	ses_names=["001_@DATETIME@", "002_@DATETIME@"],
 	datatype="behav",
 )
 ```
@@ -674,8 +674,8 @@ creates the folder tree (assuming the *top-level-folder* is _rawdata_):
 
 ```
 └── rawdata/
-    └── sub-001_date-20230606/
-        ├── ses-001_time-202701/
+    └── sub-001/
+        ├── ses-001_datetime-20230606T202701/
         │   └── behav
         └── ses-002_datetime-20230606T202701/
             └── behav
