@@ -156,8 +156,7 @@ A one-time setup on each *local* machine used is required, specifying the
 `project_name` and configs (short for 'configurations').
 
 To interact with Datashuttle, a cross-platform command line interface (CLI)
-and a Python API are available (see [CLI](https://datashuttle.neuroinformatics.dev/pages/cli_index.html)
-and [API](https://datashuttle.neuroinformatics.dev/pages/api_index.html)
+and a Python API are available (see [API](API_Reference) and [CLI](CLI_Reference)
 for reference documentation).
 
 To setup, we can use the `make-config-file` command to tell Datashuttle our project details.
@@ -1082,7 +1081,7 @@ A number of commands exist to query Datashuttle's current configs.
 For example the `show-local-path` command will print the currently set *local* path to the terminal.
 The command `show-configs` will print all currently set configs.
 
-For a full list of available commands, see the [CLI reference](https://datashuttle.neuroinformatics.dev/pages/cli_index.html) or [API reference](https://datashuttle.neuroinformatics.dev/pages/api_index.html).
+For a full list of available commands, see the [API reference](API_Reference) or [CLI reference](CLI_Reference).
 
 
 ## Logging
