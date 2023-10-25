@@ -1,6 +1,6 @@
 from pathlib import Path
 from time import monotonic
-
+from textual import on
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container
@@ -105,21 +105,28 @@ class TabScreen(Screen):
 
     prev_click_time = 0.0
 
-    def __init__(self, mainwindow, project):
+    def __init__(self, mainwindow, project, init_project=False):
         super(TabScreen, self).__init__()
         self.mainwindow = mainwindow
         self.project = project
+        self.init_project = init_project
+        self.tab_content = None
+        self.connection_method = "ssh" # TODO: default value
 
     def compose(self) -> ComposeResult:
         """
         Composes widgets to the TUI in the order specified.
         """
+        directory_tree_root = "" if self.init_project else str(self.project.cfg.data["local_path"])
+        initial = "tabscreen_configs_tab" if self.init_project else "tabscreen_create_tab"
+        disable_create_and_transfer = True if self.init_project else False
+
         yield Header()
         yield Button("Main Menu", id="tabscreen_main_menu_button")
-        with TabbedContent(id="tabscreen_tabbed_content"):
-            with TabPane("Create", id="tabscreen_create_tab"):
+        with TabbedContent(id="tabscreen_tabbed_content",  initial=initial) as self.tab_content:
+            with TabPane("Create", id="tabscreen_create_tab", disabled=disable_create_and_transfer):
                 yield DirectoryTree(
-                    str(self.project.cfg.data["local_path"]),
+                    directory_tree_root,
                     id="tabscreen_directorytree",
                 )
                 yield Label("Subject(s)", id="tabscreen_subject_label")
@@ -133,8 +140,40 @@ class TabScreen(Screen):
                 yield Label("Datatype(s)", id="tabscreen_datatype_label")
                 yield DatatypeCheckboxes()
                 yield Button("Make Folders", id="tabscreen_make_folder_button")
-            with TabPane("Transfer", id="tabscreen_transfer_tab"):
+            with TabPane("Transfer", id="tabscreen_transfer_tab", disabled=disable_create_and_transfer):
                 yield Label("Transfer; Seems to work!")
+            with TabPane("Configs", id="tabscreen_configs_tab"):
+                widgets_to_include = [
+                    Label("Local Path", id="newproject_locpath_label"),
+                    Input(
+                        placeholder="e.g. C:/User/Documents",
+                        id="newproject_locpath_input",
+                    ),
+                    Label("Central Path", id="newproject_centpath_label"),
+                    Input(
+                        placeholder="e.g. X:/Some/Path", id="newproject_centpath_input"
+                    ),
+                    Label("Connection Method", id="newproject_connect_method_label"),
+                    Select(
+                        [("SSH", "ssh"), ("Local Filesystem", "local_filesystem")],
+                        prompt="Select connection method",
+                        id="newproject_connect_method_select",  # TODO: use radio button, set  default to self.conenction_method
+                    ),
+                    Button("Configure Project", id="newproject_config_button")
+                ]
+
+                if self.init_project:
+                    yield Container(Label("Set your configurations for a new project. For more "
+                                          "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
+                                          "documentation. Once configs are set, you will "
+                                          "be able\nto use the 'Create' and 'Transfer' tabs.",
+                                          id="newproject_info_label"),
+                              Label("Project Name", id="newproject_name_label"),
+                              Input(placeholder="e.g. MyProject123",
+                                          id="newproject_name_input"),
+                              *widgets_to_include, id = "newproject_container")
+                else:
+                    yield Container(*widgets_to_include, id = "newproject_container")
 
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
@@ -145,6 +184,7 @@ class TabScreen(Screen):
         input widgets, depending on the prefix of the directory selected.
         Double-click time is set to the Windows default duration (500 ms).
         """
+
         click_time = monotonic()
         if click_time - self.prev_click_time < 0.5:
             if event.path.stem.startswith("sub-"):
@@ -163,6 +203,7 @@ class TabScreen(Screen):
         and use these to call project.make_folders().
         """
         if event.button.id == "tabscreen_make_folder_button":
+            # TODO: own function
             sub_dir = self.query_one("#tabscreen_subject_input").value
             ses_dir = self.query_one("#tabscreen_session_input").value
 
@@ -176,47 +217,44 @@ class TabScreen(Screen):
             except BaseException as e:
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return
-        if event.button.id == "tabscreen_main_menu_button":
+        elif event.button.id == "tabscreen_main_menu_button":
             self.dismiss()
 
+        elif event.button.id == "newproject_config_button":
 
-class NewProject(Screen):
-    """
-    Screen that enables the user to configure a new DataShuttle project.
-    """
+            if self.init_project:
+                # TODO: own function
+                assert self.connection_method == "local_filesystem", "'ssh' connection method not implemented yet."
 
-    def compose(self):
-        yield Container(
-            Label("Configure New Project", id="newproject_banner_label"),
-            Label("Project Name", id="newproject_name_label"),
-            Input(placeholder="e.g. MyProject123", id="newproject_name_input"),
-            Label("Local Path", id="newproject_locpath_label"),
-            Input(
-                placeholder="e.g. C:/User/Documents",
-                id="newproject_locpath_input",
-            ),
-            Label("Central Path", id="newproject_centpath_label"),
-            Input(
-                placeholder="e.g. X:/Some/Path", id="newproject_centpath_input"
-            ),
-            Label("Connection Method", id="newproject_connect_method_label"),
-            Select(
-                [("SSH", "ssh"), ("Local Filesystem", "local_filesystem")],
-                prompt="Select connection method",
-                id="newproject_connect_method_select",
-            ),
-            Label("Select Datatypes", id="newproject_datatype_label"),
-            DatatypeCheckboxes(),
-            Button("Configure Project", id="newproject_config_button"),
-            id="newproject_container",
-        )
-        yield Button("Main Menu", id="newproject_main_menu_button")
+                try:
+                    project_name = self.query_one("#newproject_name_input").value
+                    from datashuttle import DataShuttle
 
-    def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "newproject_main_menu_button":
-            self.dismiss()
-        if event.button.id == "config":
-            pass
+                    project = DataShuttle(project_name)
+
+                    project.make_config_file(
+                        local_path=self.query_one("#newproject_locpath_input").value,
+                        central_path=self.query_one("#newproject_centpath_input").value,
+                        connection_method=self.connection_method,
+                    )
+                    self.mainwindow.show_modal_error_dialog("Project setup success")  # TODO: dont use error here.
+                    self.project = project
+                    self.tab_content.enable_tab("tabscreen_create_tab")
+                    self.tab_content.enable_tab("tabscreen_transfer_tab")
+                    self.init_project = False
+                    for widget_id in ["#newproject_name_input",
+                                      "#newproject_name_input",
+                                      "#newproject_info_label"]:
+                        widget = self.query(widget_id)
+                        widget.remove()
+                except BaseException as e:
+                    self.mainwindow.show_modal_error_dialog(str(e))
+            else:
+                raise NotImplementedError("setting configs for existing project not implemented.")
+
+    @on(Select.Changed)
+    def select_changed(self, event: Select.Changed) -> None:
+        self.connection_method = str(event.value)
 
 
 class ProjectSelector(Screen):
@@ -289,11 +327,11 @@ class TuiApp(App):
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(ProjectSelector(self), self.load_project_page)
         elif event.button.id == "mainwindow_new_project_button":
-            self.push_screen(NewProject())
+            self.load_project_page(True, init_project=True)  # TODO: jenky
 
-    def load_project_page(self, project):
+    def load_project_page(self, project, init_project=False):
         if project:
-            self.push_screen(TabScreen(self, project))
+            self.push_screen(TabScreen(self, project, init_project))
 
     def show_modal_error_dialog(self, message):
         # TODO: This `replace()` is super hacky. Will have to handle assert
