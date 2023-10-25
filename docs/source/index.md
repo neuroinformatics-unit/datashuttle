@@ -13,7 +13,7 @@ Any feedback is much appreciated, please open at [GitHub Issue](https://github.c
 ::::{grid} 1 2 2 3
 :gutter: 3
 
-:::{grid-item-card} Get Started
+:::{grid-item-card} User Guide
 :link: pages/documentation
 :link-type: doc
 

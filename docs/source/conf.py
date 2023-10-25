@@ -19,8 +19,11 @@ sys.path.insert(0, os.path.abspath("../.."))
 project = "datashuttle"
 copyright = "2022, Neuroinformatics Unit"
 author = "Neuroinformatics Unit"
+
+# Retrieve the version number from the package
 try:
     release = setuptools_scm.get_version(root="../..", relative_to=__file__)
+    release = release.split(".dev")[0]  # remove dev tag and git hash
 except LookupError:
     # if git is not initialised, still allow local build
     # with a dummy version
@@ -72,7 +75,7 @@ numpydoc_class_members_toctree = False  # stops stubs warning
 #toc_object_entries_show_parents = "all"
 html_show_sourcelink = False
 
-#html_sidebars = {  # grr this is not working...
+#html_sidebars = {  this is not working...
 #  "index": [],
 #  "**": [],
 #}
@@ -130,15 +133,15 @@ html_theme_options = {
         }
     ],
     "logo": {
-        "text": f"DataShuttle. version: {release}",
+        "text": f"Datashuttle v{release}",
         "image_light": "_static/logo_light.png",
         "image_dark": "_static/logo_dark.png",
     },
     "footer_start": ["footer_start"],
     "footer_end": ["footer_end"],
-#    "show_toc_level": 2  # sidebar levels that are expanded before scrolling
+    "show_toc_level": 2,  # sidebar levels that are expanded before scrolling
 #    "secondary_sidebar_items": [],
-#    "page_sidebar_items": [],
+ #   "page_sidebar_items": [],
 }
 
 # Redirect the webpage to another URL
@@ -146,4 +149,4 @@ html_theme_options = {
 # The default is the URL of the GitHub pages
 # https://www.sphinx-doc.org/en/master/usage/extensions/githubpages.html
 github_user = "JoeZiminski"
-html_baseurl = "https://datashuttle.neuroinformatics.dev/"  # f"http(s)://{github_user}.github.io/{project}"
+html_baseurl = "https://datashuttle.neuroinformatics.dev/"
