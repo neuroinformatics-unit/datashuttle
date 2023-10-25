@@ -243,7 +243,7 @@ class TabScreen(Screen):
                     self.tab_content.enable_tab("tabscreen_transfer_tab")
                     self.init_project = False
                     for widget_id in ["#newproject_name_input",
-                                      "#newproject_name_input",
+                                      "#newproject_name_label",
                                       "#newproject_info_label"]:
                         widget = self.query(widget_id)
                         widget.remove()
