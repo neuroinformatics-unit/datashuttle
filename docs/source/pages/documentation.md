@@ -26,7 +26,7 @@ in a central storage machine - this may be a particular computer
 in the lab or a high-performance computing (HPC) system.
 
 Following data collection, the entire project or subsets of the data are downloaded
-to other machines (e.g a researcher's laptop) for analysis.
+to other machines (e.g. a researcher's laptop) for analysis.
 
 <img src="https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258" alt="datashuttle central and local machines" class="img-responsive"/>
 
@@ -137,7 +137,7 @@ setup on the *central* machine.
 
 Imagine an experiment in which two different types of data, behavioural and
 electrophysiological, are collected on separate acquisition PCs.
-These data are sent to a central server where it is combined
+These data are sent to a central server where they are combined
 and stored.
 
 Later, a subset of the data is transferred to a third machine for analysis. It is
@@ -170,7 +170,21 @@ We need to tell Datashuttle:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+from datashuttle import DataShuttle
+
+project = DataShuttle("my_first_project")
+
+project.make_config_file(
+	local_path="/path/to/my_projects/my_first_project",
+	central_path="/central/live/username/my_projects/my_first_project",
+	connection_method="local_filesystem",
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 
 macOS and Linux, ``\`` allows the command to continue on a new line.
 
@@ -184,7 +198,7 @@ local_filesystem
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 
 On Windows, the `^` character allows the command to continue on a new line.
 
@@ -195,20 +209,6 @@ make-config-file ^
 C:\path\to\my_projects\my_first_project ^
 /central/live/username/my_projects/my_first_project ^
 local_filesystem
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} python
-from datashuttle import DataShuttle
-
-project = DataShuttle("my_first_project")
-
-project.make_config_file(
-	local_path="/path/to/my_projects/my_first_project",
-	central_path="/central/live/username/my_projects/my_first_project",
-	connection_method="local_filesystem",
-)
 ```
 :::
 
@@ -298,7 +298,7 @@ In Datashuttle, the
 `connection_method` configuration must be set to `"ssh"`
 to use the SSH protocol for data transfers.
 
-Prior to using the SSH protocol, the host id must be accepted and your
+Prior to using the SSH protocol, the host ID must be accepted and your
 user account password entered. This is only required once, following this
 SSH key-pairs will be used to connect via SSH. The
 command `setup-ssh-connection-to-central-server` can be used to
@@ -314,7 +314,19 @@ and `central_host_username` must be provided:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+project.make_config_file(
+	local_path="/path/to/my_projects/my_first_project",
+	central_path="/central/live/username/my_projects/my_first_project",
+	connection_method="ssh",
+	central_host_id="ssh.swc.ucl.ac.uk",
+	central_host_username="username",
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 
 ```{code-block} console
 datashuttle \
@@ -328,13 +340,13 @@ ssh \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 
 ```{code-block} console
 datashuttle ^
 my_first_project ^
 make-config-file ^
-/path/to/my_projects/my_first_project ^
+C:\path\to\my_projects\my_first_project ^
 /central/live/username/my_projects/my_first_project ^
 ssh ^
 --central_host_id ssh.swc.ucl.ac.uk ^
@@ -342,32 +354,21 @@ ssh ^
 ```
 :::
 
-:::{tab-item} Python API
-```{code-block} python
-project.make_config_file(
-	local_path="/path/to/my_projects/my_first_project",
-	central_path="/central/live/username/my_projects/my_first_project",
-	connection_method="ssh",
-	central_host_id="ssh.swc.ucl.ac.uk",
-	central_host_username="username",
-)
-```
-:::
 ::::
 
 Next, a one-time command to setup the SSH connection must be run:
 
 ::::{tab-set}
 
-:::{tab-item} CLI (macOS / Linux / Windows)
-```{code-block}
-datashuttle my_new_project setup-ssh-connection-to-central-server
-```
-:::
-
 :::{tab-item} Python API
 ```{code-block} python
 project.setup_ssh_connection_to_central_server()
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux / Windows)
+```{code-block}
+datashuttle my_new_project setup-ssh-connection-to-central-server
 ```
 :::
 
@@ -409,25 +410,9 @@ first *session* of an experiment may look like:
 ```
 
 In Datashuttle, this folder tree can be created with the below command
-(assuming today's date is `20220516`):
+(assuming today's date is `20230516`):
 
 ::::{tab-set}
-
-:::{tab-item} macOS / Linux
-```{code-block} console
-datashuttle \
-my_first_project \
-make-folders -sub 001 -ses 001_@DATE@ -dt behav
-```
-:::
-
-:::{tab-item} Windows
-```{code-block} console
-datashuttle ^
-my_first_project ^
-make-folders -sub 001 -ses 001_@DATE@ -dt behav
-```
-:::
 
 :::{tab-item} Python API
 ```{code-block} python
@@ -436,6 +421,22 @@ project.make_folders(
 	ses_names="001_@DATE@",
 	datatype="behav"
 )
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
+```{code-block} console
+datashuttle \
+my_first_project \
+make-folders -sub 001 -ses 001_@DATE@ -dt behav
+```
+:::
+
+:::{tab-item} CLI (Windows)
+```{code-block} console
+datashuttle ^
+my_first_project ^
+make-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```
 :::
 
@@ -514,14 +515,14 @@ For example, the command:
 
 ::::{tab-set}
 
-:::{tab-item} CLI (macOS / Linux / Windows)
-`datashuttle my_first_project upload-entire-project`
-:::
-
 :::{tab-item} Python API
 ```{code-block} python
 project.upload_entire_project()
 ```
+:::
+
+:::{tab-item} CLI (macOS / Linux / Windows)
+`datashuttle my_first_project upload-entire-project`
 :::
 
 ::::
@@ -557,7 +558,17 @@ For example, the call:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+project.upload(
+	sub_names="001@TO@003",
+	ses_names=["005_date-@*@", "006_date-@*@"],
+	datatype="behav"
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -568,7 +579,7 @@ upload \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -576,16 +587,6 @@ upload ^
 -sub 001@TO@003 ^
 -ses 005_date-@*@ 006_date-@*@* ^
 -dt behav
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} python
-project.upload(
-	sub_names="001@TO@003",
-	ses_names=["005_date-@*@", "006_date-@*@"],
-	datatype="behav"
-)
 ```
 :::
 
@@ -635,7 +636,17 @@ For example, the command:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+project.make_folders(
+	sub_names="sub-001",
+	ses_names=["001_@DATETIME@", "002_@DATETIME@"],
+	datatype="behav",
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -646,7 +657,7 @@ make_folders \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -654,16 +665,6 @@ make_folders ^
 -sub sub-001 ^
 -ses 001_@DATETIME@ 002_@DATETIME@ ^
 -dt behav
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} python
-project.make_folders(
-	sub_names="sub-001",
-	ses_names=["001_@DATETIME@", "002_@DATETIME@"],
-	datatype="behav",
-)
 ```
 :::
 
@@ -692,7 +693,17 @@ the below command transfers only the first 25 subjects:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+project.upload(
+	sub_names="001@TO@025",
+	ses_names="all",
+	datatype="all",
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -703,7 +714,7 @@ upload \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -711,16 +722,6 @@ upload ^
 -sub 001@TO@025 ^
 -ses all ^
 -dt all
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} python
-project.upload(
-	sub_names="001@TO@025",
-	ses_names="all",
-	datatype="all",
-)
 ```
 :::
 
@@ -756,7 +757,17 @@ everything that comes after the `date` key:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+project.upload(
+	sub_names=["001", "002"],
+	ses_names="005_condition-test_date-@*@",
+	datatype="behav",
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -767,7 +778,7 @@ upload \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -775,16 +786,6 @@ upload ^
 -sub 001 002 ^
 -ses 005_condition-test_date-@*@ ^
 -dt behav
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} python
-project.upload(
-	sub_names=["001", "002"],
-	ses_names="005_condition-test_date-@*@",
-	datatype="behav",
-)
 ```
 :::
 
@@ -909,7 +910,14 @@ Given our example *local* project folder above:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} console
+project.upload("all", "all", "all_ses_level_non_datatype")
+```
+:::
+
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -920,7 +928,7 @@ upload \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -928,12 +936,6 @@ upload ^
 -sub all ^
 -ses all ^
 -dt all_ses_level_non_datatype
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} console
-project.upload("all", "all", "all_ses_level_non_datatype")
 ```
 :::
 
@@ -952,7 +954,13 @@ For `sub-002`, no other files are transferred because there is no non-*datatype*
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} console
+project.upload("sub-001", "all", "all")
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -963,7 +971,7 @@ upload \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -974,11 +982,6 @@ upload ^
 ```
 :::
 
-:::{tab-item} Python API
-```{code-block} console
-project.upload("sub-001", "all", "all")
-```
-:::
 ::::
 
 Would upload:
@@ -991,7 +994,17 @@ The command:
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+project.make_folders(
+	sub_names="001",
+	ses_names="all",
+	datatype="all_datatype"
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -1002,7 +1015,7 @@ upload \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -1010,16 +1023,6 @@ upload ^
 -sub 001 ^
 -ses all ^
 -dt all_datatype
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} python
-project.make_folders(
-	sub_names="001",
-	ses_names="all",
-	datatype="all_datatype"
-)
 ```
 :::
 
@@ -1037,7 +1040,17 @@ but not the non-*datatype* file `ses-001_extra-file.json`.
 
 ::::{tab-set}
 
-:::{tab-item} macOS / Linux
+:::{tab-item} Python API
+```{code-block} python
+project.make_folders(
+	sub_names="all_non_sub",
+	ses_names="all",
+	datatype="all"
+)
+```
+:::
+
+:::{tab-item} CLI (macOS / Linux)
 ```{code-block} console
 datashuttle \
 my_first_project \
@@ -1048,7 +1061,7 @@ upload \
 ```
 :::
 
-:::{tab-item} Windows
+:::{tab-item} CLI (Windows)
 ```{code-block} console
 datashuttle ^
 my_first_project ^
@@ -1056,16 +1069,6 @@ upload ^
 -sub all_non_sub ^
 -ses all ^
 -dt all
-```
-:::
-
-:::{tab-item} Python API
-```{code-block} python
-project.make_folders(
-	sub_names="all_non_sub",
-	ses_names="all",
-	datatype="all"
-)
 ```
 :::
 

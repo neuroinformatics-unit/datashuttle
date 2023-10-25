@@ -133,7 +133,7 @@ html_theme_options = {
         }
     ],
     "logo": {
-        "text": f"DataShuttle. version: {release}",
+        "text": f"Datashuttle v{release}",
         "image_light": "_static/logo_light.png",
         "image_dark": "_static/logo_dark.png",
     },
