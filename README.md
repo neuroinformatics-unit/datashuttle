@@ -4,7 +4,7 @@ Datashuttle is a work in progress and is currently in alpha release v0.1.0.
 
 ![datashuttle_figure_machines](https://github.com/neuroinformatics-unit/datashuttle/assets/29216006/51b65a6d-492a-4047-ae7b-16273b58e258)
 
-Datashuttle includes tools for automated generation and transfer of neuroscience project folders formatted to the [SWC-Blueprint specification](https://swc-blueprint.neuroinformatics.dev/).
+Datashuttle includes tools for automated generation and transfer of neuroscience project folders formatted to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) specification.
 
 * Manage files across multiple data-collection computers by synchronising all data to with a centrally stored project.
 
@@ -26,10 +26,9 @@ conda install -c conda-forge rclone
 
 See [the Rclone website](https://rclone.org/install/) for alternative installation methods.
 
-## SWC-BIDS Folder Tree
+## NeuroBlueprint Folder Tree
 
-DataShuttle project folders are managed according to SWC-BIDS (example below).
-See the SWC-BIDS [specification](https://swc-bids.neuroinformatics.dev/) for more details.
+DataShuttle project folders are managed according to  [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/).
 
 ```
 └── project_name/
