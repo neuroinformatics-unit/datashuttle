@@ -133,7 +133,7 @@ setup on the *central* machine.
 
 ::: {dropdown} Example: Datashuttle use in a neuroscience project
 :color: info
-:icon: dot
+:icon: info
 
 Imagine an experiment in which two different types of data, behavioural and
 electrophysiological, are collected on separate acquisition PCs.
