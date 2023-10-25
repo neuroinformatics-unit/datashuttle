@@ -192,7 +192,7 @@ On Windows, the `^` character allows the command to continue on a new line.
 datashuttle ^
 my_first_project ^
 make-config-file ^
-/path/to/my_projects/my_first_project ^
+C:\path\to\my_projects\my_first_project ^
 /central/live/username/my_projects/my_first_project ^
 local_filesystem
 ```
