@@ -27,11 +27,6 @@
     margin: 3 2 0 0;
     content-align: center middle;
 }
-#project_select_main_menu_button {
-    layer: top;
-    dock: right;
-    height: 3;
-}
 #project_select_top_container > Button {
     width: 50%;
     align: center middle;
@@ -116,9 +111,8 @@ ErrorScreen:light > #errorscreen_top_container {
     grid_rows: 4;
     width: auto;
 }
-#newproject_main_menu_button {
+#main_menu_button {
     dock: right;
     height: 3;
     layer: top;
-    margin: 0 0;
 }

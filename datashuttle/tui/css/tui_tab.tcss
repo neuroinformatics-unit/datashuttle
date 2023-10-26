@@ -8,11 +8,6 @@ TabScreen > TabbedContent {
     width: 90%;
     height: 100%
 }
-TabScreen > #tabscreen_main_menu_button {
-    layer: top;
-    dock: right;
-    height: 3;
-}
 
 /* Directory Tree ------------------------------------------------------ */
 

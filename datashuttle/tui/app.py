@@ -101,9 +101,7 @@ class ConfigsContent(Container):
 
         self.project = project
         self.connection_method = "ssh"
-        self.config_ssh_widgets = (
-            None  # TODO: figure out best initialisation scheme
-        )
+        self.config_ssh_widgets = []  # TODO: check this is okay
 
     def compose(self):
         # Create the configs tab. If we are setting up a project
@@ -126,11 +124,6 @@ class ConfigsContent(Container):
             ),
         ]
 
-        if ssh_radiobutton_bool:
-            config_ssh_widgets_to_display = self.config_ssh_widgets
-        else:
-            config_ssh_widgets_to_display = []
-
         config_screen_widgets = [
             Label("Local Path", id="newproject_locpath_label"),
             Input(
@@ -150,7 +143,7 @@ class ConfigsContent(Container):
                 ),
                 id="newproject_connect_method_radioset",
             ),
-            *config_ssh_widgets_to_display,
+            *self.config_ssh_widgets,
             Container(
                 Checkbox(
                     "Overwrite Old Files",
@@ -167,9 +160,7 @@ class ConfigsContent(Container):
                 ),
                 id="config_transfer_options_container",
             ),
-            Button(
-                "Configure Project", id="newproject_config_button"
-            ),  # TODO: change this button depending on new project vs configure existing projects.
+            Button("Configure Project", id="newproject_config_button"),
         ]
 
         init_only_config_screen_widgets = [
@@ -187,7 +178,7 @@ class ConfigsContent(Container):
             ),
         ]
 
-        if not self.project:  # how to make this explicit
+        if not self.project:  # TODO: how to make this explicit?
             config_screen_widgets = (
                 init_only_config_screen_widgets + config_screen_widgets
             )
@@ -197,9 +188,35 @@ class ConfigsContent(Container):
     def on_mount(self):
         container = self.query_one("#config_transfer_options_container")
         container.border_title = "Transfer Options"
+        if self.project:
+            self.auto_fill_widgets_from_project_configs()
+        self.switch_ssh_widgets_display()
+
+    def auto_fill_widgets_from_project_configs(self):
+        # TODO: or could do during setup, but will get messy...
+        # Little bit redundant, but whatever...?
+        input = self.query_one("#newproject_locpath_input")
+        input.value = "test setup"
+
+        input = self.query_one("#newproject_centpath_label")
+        input.value = "test setup"
+
+        input = self.query_one("#newproject_locpath_input")
+        input.value = "test setup"
+
+        # SSH
+
+        input = self.query_one("#newproject_locpath_input")
+        input.value = "test setup"
+
+        input = self.query_one("#newproject_locpath_input")
+        input.value = "test setup"
+
+        # Checkboxes
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         # TODO: think if this formatting is robust enough.
+        # I think just if == "ssh" key == "ssh" else "local_filesystem".
         format_connection_method = (
             str(event.pressed.label).lower().replace(" ", "_")
         )
@@ -271,11 +288,11 @@ class MakeNewProjectScreen(Screen):
         # TODO: decide whether setup-relevant configs only
         # should be sown here? almost, certainly.
         yield Header(id="project_select_header")
-        yield Button("Main Menu", id="main_menu_buttons")
+        yield Button("Main Menu", id="main_menu_button")
         yield ConfigsContent(self.project)
 
     def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "main_menu_buttons":
+        if event.button.id == "main_menu_button":
             self.dismiss(False)
 
 
@@ -403,7 +420,7 @@ class ProjectSelector(Screen):
 
     def compose(self):
         yield Header(id="project_select_header")
-        yield Button("Main Menu", id="main_menu_buttons")
+        yield Button("Main Menu", id="main_menu_button")
         yield Container(
             *[Button(name, id=name) for name in self.project_names],
             id="project_select_top_container",
