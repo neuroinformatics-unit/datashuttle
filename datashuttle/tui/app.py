@@ -17,7 +17,8 @@ from textual.widgets import (
     Static,
     TabbedContent,
     TabPane,
-    RadioSet
+    RadioSet,
+    RadioButton
 )
 
 from datashuttle import DataShuttle
@@ -106,13 +107,19 @@ class TabScreen(Screen):
 
     prev_click_time = 0.0
 
-    def __init__(self, mainwindow, project, init_project=False):
+    def __init__(self, mainwindow, project, init_project=False):  # TODO: avoid weird project duck-typing if possible
         super(TabScreen, self).__init__()
         self.mainwindow = mainwindow
         self.project = project
         self.init_project = init_project
         self.tab_content = None
-        self.connection_method = "ssh" # TODO: default value
+
+        self.config_ssh_widgets = None # TODO: figure out best initialisation scheme
+
+        if self.init_project:
+            self.connection_method = "ssh" # TODO: default value
+        else:
+            self.connection_method = project.cfg["connection_method"]
 
     def compose(self) -> ComposeResult:
         """
@@ -151,6 +158,20 @@ class TabScreen(Screen):
                 # Create the configs tab. If we are setting up a project
                 # for the first time, Include widgets with information,
                 # and for setting the project name.
+                ssh_radiobutton_bool = True if self.connection_method == "ssh" else False
+                local_filesystem_radiobutton_bool = not ssh_radiobutton_bool
+
+                self.config_ssh_widgets = [
+                    Label("Central Host ID"),
+                    Input(placeholder="", id="configs_central_host_id_input"),  # TODO: placeholders
+                    Label("Central Host Username"),
+                    Input(placeholder="", id="configs_central_host_username_input")
+                ]
+
+                if ssh_radiobutton_bool:
+                    config_ssh_widgets_to_display = self.config_ssh_widgets
+                else:
+                    config_ssh_widgets_to_display = []
 
                 config_screen_widgets = [
                     Label("Local Path", id="newproject_locpath_label"),
@@ -162,12 +183,24 @@ class TabScreen(Screen):
                     Input(
                         placeholder="e.g. X:/Some/Path", id="newproject_centpath_input"
                     ),
-                    Label("Connection Method", id="newproject_connect_method_label"),
-                    RadioSet("SSH", "Local Filesystem",
-                        id="newproject_connect_method_radioset"
+                    Label("Connection Method",
+                          id="newproject_connect_method_label"),
+                    RadioSet(RadioButton("SSH", value=ssh_radiobutton_bool),
+                             RadioButton("Local Filesystem",
+                                         value=local_filesystem_radiobutton_bool),
+                             id="newproject_connect_method_radioset"
+                             ),
+                    *config_ssh_widgets_to_display,
+                    Container(
+                        Label("Transfer Options"),
+                        Checkbox("Overwrite Old Files", value=False, id="config_overwrite_files_checkbox"),
+                        Checkbox("Verbose", value=False, id="config_verbosity_checkbox"),
+                        Checkbox("Show Transfer Progress", value=False, id="config_transfer_progress_checkbox"),
+                        id="config_transfer_options_container"
                     ),
                     Button("Configure Project", id="newproject_config_button")
                 ]
+
 
                 init_only_config_screen_widgets = [
                     Label("Set your configurations for a new project. For more "
@@ -184,6 +217,9 @@ class TabScreen(Screen):
                     config_screen_widgets = init_only_config_screen_widgets + config_screen_widgets
 
                 yield Container(*config_screen_widgets, id="newproject_container")
+
+    def on_mount(self) -> None:
+        self.query_one("#newproject_connect_method_radioset").focus()
 
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
@@ -262,10 +298,15 @@ class TabScreen(Screen):
             else:
                 raise NotImplementedError("setting configs for existing project not implemented.")
 
-    @on(Select.Changed)
-    def select_changed(self, event: Select.Changed) -> None:
-        self.connection_method = str(event.value)
+    def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
+        # TODO: think if this formatting is robust enough.
+        format_connection_method = str(event.pressed.label).lower().replace(" ", "_")
+        self.connection_method = format_connection_method
+        self.switch_ssh_widgets_display()
 
+    def switch_ssh_widgets_display(self):
+        for widget in self.config_ssh_widgets:
+            widget.display = True if self.connection_method == "ssh" else False
 
 class ProjectSelector(Screen):
     """
