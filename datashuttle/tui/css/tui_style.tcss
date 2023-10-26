@@ -33,7 +33,7 @@ Header {
 ToggleButton {
     margin: 0 0 0 1;
     content-align: left middle;
-    width: 15;
+    width: auto;
     background: transparent;
     padding: 0;
     border: transparent;

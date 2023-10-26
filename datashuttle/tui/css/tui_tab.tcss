@@ -86,20 +86,19 @@ DatatypeCheckboxes {
     background: transparent;
 }
 
-#newproject_connect_method_radioset:focus {
-    border: none;
-}
-
 
 RadioButton {
     width: auto;
 }
-#config_transfer_options_container {
-    width: 100%;
-    height: auto;
-    margin: 2 0 0 0;
-    border: tall $panel-lighten-1;
+#newproject_connect_method_radioset:focus {
+    border: none;
 }
-#config_transfer_options_container > RadioButton {
+
+#config_transfer_options_container {
+    margin: 2 0 0 0;
+    padding: 1 1;
+    border: solid $panel-lighten-1;
+    border-title-color: $text;
     width: auto;
+    height: auto;
 }
