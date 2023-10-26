@@ -27,7 +27,7 @@
     margin: 3 2 0 0;
     content-align: center middle;
 }
-#main_menu_buttons {
+#project_select_main_menu_button {
     layer: top;
     dock: right;
     height: 3;
@@ -104,9 +104,10 @@ ErrorScreen:light > #errorscreen_top_container {
 #newproject_config_button {
     content-align: center middle;
     align-horizontal: center;
-    margin: 2 0 1 0;
-    height: 4;
+    margin: 2 0 2 25;  /* maybe this margin should not be so fixed, can't get it to align in the middle! */
+    padding: 0 4 0 4;
     width: 30%;
+    color: $success;  /* unsure about this */
 }
 #newproject_container > DatatypeCheckboxes {
     layout: grid;

@@ -1,6 +1,6 @@
 from pathlib import Path
 from time import monotonic
-from textual import on
+
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container
@@ -13,12 +13,11 @@ from textual.widgets import (
     Header,
     Input,
     Label,
-    Select,
+    RadioButton,
+    RadioSet,
     Static,
     TabbedContent,
     TabPane,
-    RadioSet,
-    RadioButton
 )
 
 from datashuttle import DataShuttle
@@ -102,20 +101,29 @@ class ConfigsContent(Container):
 
         self.project = project
         self.connection_method = "ssh"
-        self.config_ssh_widgets = None # TODO: figure out best initialisation scheme
+        self.config_ssh_widgets = (
+            None  # TODO: figure out best initialisation scheme
+        )
 
     def compose(self):
         # Create the configs tab. If we are setting up a project
         # for the first time, Include widgets with information,
         # and for setting the project name.
-        ssh_radiobutton_bool = True if self.connection_method == "ssh" else False
+        ssh_radiobutton_bool = (
+            True if self.connection_method == "ssh" else False
+        )
         local_filesystem_radiobutton_bool = not ssh_radiobutton_bool
 
         self.config_ssh_widgets = [
             Label("Central Host ID"),
-            Input(placeholder="e.g. my_username", id="configs_central_host_id_input"),
+            Input(
+                placeholder="e.g. username", id="configs_central_host_id_input"
+            ),
             Label("Central Host Username"),
-            Input(placeholder="e.g. ssh.swc.ucl.ac.uk", id="configs_central_host_username_input")
+            Input(
+                placeholder="e.g. ssh.swc.ucl.ac.uk",
+                id="configs_central_host_username_input",
+            ),
         ]
 
         if ssh_radiobutton_bool:
@@ -126,46 +134,63 @@ class ConfigsContent(Container):
         config_screen_widgets = [
             Label("Local Path", id="newproject_locpath_label"),
             Input(
-                placeholder="e.g. C:/User/Documents",
+                placeholder=r"e.g. C:\path\to\my_projects\my_first_project",
                 id="newproject_locpath_input",
             ),
             Label("Central Path", id="newproject_centpath_label"),
             Input(
-                placeholder="e.g. X:/Some/Path", id="newproject_centpath_input"
+                placeholder="e.g. /central/live/username/my_projects/my_first_project",
+                id="newproject_centpath_input",
             ),
-            Label("Connection Method",
-                  id="newproject_connect_method_label"),
-            RadioSet(RadioButton("SSH", value=ssh_radiobutton_bool),
-                     RadioButton("Local Filesystem",
-                                 value=local_filesystem_radiobutton_bool),
-                     id="newproject_connect_method_radioset"
-                     ),
+            Label("Connection Method", id="newproject_connect_method_label"),
+            RadioSet(
+                RadioButton("SSH", value=ssh_radiobutton_bool),
+                RadioButton(
+                    "Local Filesystem", value=local_filesystem_radiobutton_bool
+                ),
+                id="newproject_connect_method_radioset",
+            ),
             *config_ssh_widgets_to_display,
             Container(
-                Checkbox("Overwrite Old Files", value=False,
-                         id="config_overwrite_files_checkbox"),
-                Checkbox("Verbose", value=False, id="config_verbosity_checkbox"),
-                Checkbox("Show Transfer Progress", value=False,
-                         id="config_transfer_progress_checkbox"),
-                id="config_transfer_options_container"
+                Checkbox(
+                    "Overwrite Old Files",
+                    value=False,
+                    id="config_overwrite_files_checkbox",
+                ),
+                Checkbox(
+                    "Verbose", value=False, id="config_verbosity_checkbox"
+                ),
+                Checkbox(
+                    "Show Transfer Progress",
+                    value=False,
+                    id="config_transfer_progress_checkbox",
+                ),
+                id="config_transfer_options_container",
             ),
-            Button("Configure Project", id="newproject_config_button")  # TODO: change this button depending on new project vs configure existing projects.
+            Button(
+                "Configure Project", id="newproject_config_button"
+            ),  # TODO: change this button depending on new project vs configure existing projects.
         ]
 
         init_only_config_screen_widgets = [
             Label("Configure New Project", id="newproject_banner_label"),
-            Label("Set your configurations for a new project. For more "
-                  "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
-                  "documentation. Once configs are set, you will "
-                  "be able\nto use the 'Create' and 'Transfer' tabs.",
-                  id="newproject_info_label"),
+            Label(
+                "Set your configurations for a new project. For more "
+                "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
+                "documentation. Once configs are set, you will "
+                "be able\nto use the 'Create' and 'Transfer' tabs.",
+                id="newproject_info_label",
+            ),
             Label("Project Name", id="newproject_name_label"),
-            Input(placeholder="e.g. MyProject123",
-                  id="newproject_name_input")
+            Input(
+                placeholder="e.g. my_first_project", id="newproject_name_input"
+            ),
         ]
 
         if not self.project:  # how to make this explicit
-            config_screen_widgets = init_only_config_screen_widgets + config_screen_widgets
+            config_screen_widgets = (
+                init_only_config_screen_widgets + config_screen_widgets
+            )
 
         yield Container(*config_screen_widgets, id="newproject_container")
 
@@ -175,7 +200,9 @@ class ConfigsContent(Container):
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         # TODO: think if this formatting is robust enough.
-        format_connection_method = str(event.pressed.label).lower().replace(" ", "_")
+        format_connection_method = (
+            str(event.pressed.label).lower().replace(" ", "_")
+        )
         self.connection_method = format_connection_method
         self.switch_ssh_widgets_display()
 
@@ -183,43 +210,58 @@ class ConfigsContent(Container):
         for widget in self.config_ssh_widgets:
             widget.display = True if self.connection_method == "ssh" else False
 
-    def on_button_pressed(self, event: Button.Pressed):
+    def on_button_pressed(
+        self, event: Button.Pressed
+    ):  # TODO: can this be different for each screen?
         """
         Enables the Make Folders button to read out current input values
         and use these to call project.make_folders().
         """
         if event.button.id == "newproject_config_button":
-
-            if self.init_project:
-                # TODO: own function
-                assert self.connection_method == "local_filesystem", "'ssh' connection method not implemented yet."
-
+            if not self.project:
                 try:
-                    project_name = self.query_one("#newproject_name_input").value
-                    from datashuttle import DataShuttle
+                    project_name = self.query_one(
+                        "#newproject_name_input"
+                    ).value
 
                     project = DataShuttle(project_name)
 
+                    # TODO: the problem with overwriting all is that if
+                    # someone has ssh configs set already, the appropriate
+                    # resolution is not clear. Maybe datashuttle should,
+                    # if the configs are not passed, set them to what
+                    # they were previously.
                     project.make_config_file(
-                        local_path=self.query_one("#newproject_locpath_input").value,
-                        central_path=self.query_one("#newproject_centpath_input").value,
+                        local_path=self.query_one(
+                            "#newproject_locpath_input"
+                        ).value,
+                        central_path=self.query_one(
+                            "#newproject_centpath_input"
+                        ).value,
                         connection_method=self.connection_method,
                     )
-                    self.mainwindow.show_modal_error_dialog("Project setup success")  # TODO: dont use error here.
+                    # TODO: dont use error here.
+                    self.mainwindow.show_modal_error_dialog(
+                        "Project setup success"
+                    )
                     self.project = project
-                    self.init_project = False
-                    for widget_id in ["#newproject_name_input",
-                                      "#newproject_name_label",
-                                      "#newproject_info_label"]:
+
+                    for widget_id in [
+                        "#newproject_name_input",
+                        "#newproject_name_label",
+                        "#newproject_info_label",
+                    ]:
                         widget = self.query(widget_id)
                         widget.remove()
                 except BaseException as e:
                     self.mainwindow.show_modal_error_dialog(str(e))
             else:
-                raise NotImplementedError("setting configs for existing project not implemented.")
+                raise NotImplementedError(
+                    "setting configs for existing project not implemented."
+                )
+
 
 class MakeNewProjectScreen(Screen):
-
     def __init__(self, project):
         super(MakeNewProjectScreen, self).__init__()
 
@@ -236,6 +278,7 @@ class MakeNewProjectScreen(Screen):
         if event.button.id == "main_menu_buttons":
             self.dismiss(False)
 
+
 class TabScreen(Screen):
     """
     Screen containing the Create and Transfer tabs. This is
@@ -247,7 +290,9 @@ class TabScreen(Screen):
 
     prev_click_time = 0.0
 
-    def __init__(self, mainwindow, project, init_project=False):  # TODO: avoid weird project duck-typing if possible
+    def __init__(
+        self, mainwindow, project, init_project=False
+    ):  # TODO: avoid weird project duck-typing if possible
         super(TabScreen, self).__init__()
         self.mainwindow = mainwindow
         self.project = project
@@ -255,7 +300,7 @@ class TabScreen(Screen):
         self.tab_content = None
 
         if self.init_project:
-            self.connection_method = "ssh" # TODO: default value
+            self.connection_method = "ssh"  # TODO: default value
         else:
             self.connection_method = project.cfg["connection_method"]
 
@@ -265,7 +310,9 @@ class TabScreen(Screen):
         """
         yield Header()
         yield Button("Main Menu", id="tabscreen_main_menu_button")
-        with TabbedContent(id="tabscreen_tabbed_content",  initial="tabscreen_create_tab") as self.tab_content:
+        with TabbedContent(
+            id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
+        ) as self.tab_content:
             # Create a content window with 'Create', 'Transfer' and 'Configs' tab
 
             with TabPane("Create", id="tabscreen_create_tab"):
