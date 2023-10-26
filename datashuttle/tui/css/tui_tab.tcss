@@ -78,3 +78,19 @@ DatatypeCheckboxes {
     grid_rows: 3;
     width: auto;
 }
+
+#newproject_connect_method_radioset {
+    layout: horizontal;
+    width: auto;
+    border: none;
+    background: transparent;
+}
+
+#newproject_connect_method_radioset:focus {
+    border: none;
+}
+
+
+#newproject_connect_method_radioset > RadioButton {
+    width: auto;
+}

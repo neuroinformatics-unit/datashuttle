@@ -17,6 +17,7 @@ from textual.widgets import (
     Static,
     TabbedContent,
     TabPane,
+    RadioSet
 )
 
 from datashuttle import DataShuttle
@@ -124,6 +125,8 @@ class TabScreen(Screen):
         yield Header()
         yield Button("Main Menu", id="tabscreen_main_menu_button")
         with TabbedContent(id="tabscreen_tabbed_content",  initial=initial) as self.tab_content:
+            # Create a content window with 'Create', 'Transfer' and 'Configs' tab
+
             with TabPane("Create", id="tabscreen_create_tab", disabled=disable_create_and_transfer):
                 yield DirectoryTree(
                     directory_tree_root,
@@ -140,10 +143,16 @@ class TabScreen(Screen):
                 yield Label("Datatype(s)", id="tabscreen_datatype_label")
                 yield DatatypeCheckboxes()
                 yield Button("Make Folders", id="tabscreen_make_folder_button")
+
             with TabPane("Transfer", id="tabscreen_transfer_tab", disabled=disable_create_and_transfer):
                 yield Label("Transfer; Seems to work!")
+
             with TabPane("Configs", id="tabscreen_configs_tab"):
-                widgets_to_include = [
+                # Create the configs tab. If we are setting up a project
+                # for the first time, Include widgets with information,
+                # and for setting the project name.
+
+                config_screen_widgets = [
                     Label("Local Path", id="newproject_locpath_label"),
                     Input(
                         placeholder="e.g. C:/User/Documents",
@@ -154,26 +163,27 @@ class TabScreen(Screen):
                         placeholder="e.g. X:/Some/Path", id="newproject_centpath_input"
                     ),
                     Label("Connection Method", id="newproject_connect_method_label"),
-                    Select(
-                        [("SSH", "ssh"), ("Local Filesystem", "local_filesystem")],
-                        prompt="Select connection method",
-                        id="newproject_connect_method_select",  # TODO: use radio button, set  default to self.conenction_method
+                    RadioSet("SSH", "Local Filesystem",
+                        id="newproject_connect_method_radioset"
                     ),
                     Button("Configure Project", id="newproject_config_button")
                 ]
 
+                init_only_config_screen_widgets = [
+                    Label("Set your configurations for a new project. For more "
+                          "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
+                          "documentation. Once configs are set, you will "
+                          "be able\nto use the 'Create' and 'Transfer' tabs.",
+                          id="newproject_info_label"),
+                    Label("Project Name", id="newproject_name_label"),
+                    Input(placeholder="e.g. MyProject123",
+                          id="newproject_name_input")
+                ]
+
                 if self.init_project:
-                    yield Container(Label("Set your configurations for a new project. For more "
-                                          "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
-                                          "documentation. Once configs are set, you will "
-                                          "be able\nto use the 'Create' and 'Transfer' tabs.",
-                                          id="newproject_info_label"),
-                              Label("Project Name", id="newproject_name_label"),
-                              Input(placeholder="e.g. MyProject123",
-                                          id="newproject_name_input"),
-                              *widgets_to_include, id = "newproject_container")
-                else:
-                    yield Container(*widgets_to_include, id = "newproject_container")
+                    config_screen_widgets = init_only_config_screen_widgets + config_screen_widgets
+
+                yield Container(*config_screen_widgets, id="newproject_container")
 
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
