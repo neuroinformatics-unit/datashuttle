@@ -117,7 +117,7 @@ class DatatypeCheckboxes(Static):
     def compose(self):
         for type in self.type_config:
             yield Checkbox(
-                type.title(), id=f"tabscreen_{type}_checkbox", value=1
+                type.title(), id=f"tabscreen_{type}_checkbox", value=True
             )
 
     def on_checkbox_changed(self):
