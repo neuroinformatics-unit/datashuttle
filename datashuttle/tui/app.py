@@ -1,7 +1,6 @@
 import copy
 from pathlib import Path
 from time import monotonic
-
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
@@ -29,19 +28,16 @@ from datashuttle.utils.folders import get_existing_project_paths_and_names
 
 
 class ModalTable(ModalScreen):
-    def __init__(self, dict_):
+    def __init__(self, dict_, message_before_dict=""):
         super(ModalTable, self).__init__()
 
         self.dict_ = dict_
+        self.message_before_dict = message_before_dict
 
     def compose(self):
         yield Container(
             Container(
-                Label(
-                    "The Configs for the project have been set to the "
-                    "following values:",
-                    id="config_table_label",
-                ),
+                Static(self.message_before_dict, id="show_dict_message_label"),
                 DataTable(id="modal_table", show_header=False),
                 id="show_dict_message_container",
             ),
@@ -50,8 +46,12 @@ class ModalTable(ModalScreen):
         )
 
     def on_mount(self):
-        # start with empty header
-        ROWS = [("", "")] + [(key, value) for key, value in self.dict_.items()]
+
+        # start with empty heaer
+        ROWS = [("", "")] + [
+            (key, value) for key, value in self.dict_.items()
+        ]
+
         table = self.query_one(DataTable)
         table.add_columns(*ROWS[0])
         for row in ROWS[1:]:
@@ -59,6 +59,8 @@ class ModalTable(ModalScreen):
             styled_row = [Text(str(cell), justify="left") for cell in row]
             table.add_row(*styled_row)
 
+    def on_button_pressed(self) -> None:
+        self.dismiss(None)  # TODOC: callback hack
 
 class ErrorScreen(ModalScreen):
     """
@@ -190,12 +192,14 @@ class ConfigsContent(Container):
                 ),
                 id="config_transfer_options_container",
             ),
-            Button("Configure Project", id="newproject_config_button"),
+            Button(
+                "Configure Project", id="newproject_config_button"
+            ),  # TODO: rename
         ]
 
         init_only_config_screen_widgets = [
-            Label("Configure New Project", id="newproject_banner_label"),
-            Label(
+            Label("Configure A New Project", id="newproject_banner_label"),
+            Static(
                 "Set your configurations for a new project. For more "
                 "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
                 "documentation. Once configs are set, you will "
@@ -247,43 +251,19 @@ class ConfigsContent(Container):
         """
         if event.button.id == "newproject_config_button":
             if not self.project:
-                try:
-                    project_name = self.query_one(
-                        "#newproject_name_input"
-                    ).value
-
-                    project = DataShuttle(project_name)
-
-                    project.make_config_file(
-                        local_path=self.query_one(
-                            "#newproject_local_path_input"
-                        ).value,
-                        central_path=self.query_one(
-                            "#newproject_central_path_input"
-                        ).value,
-                        connection_method=self.connection_method,
-                    )
-                    # TODO: dont use error here.
-                    self.mainwindow.show_modal_error_dialog(
-                        "Project setup success"
-                    )
-                    self.project = project
-
-                    for widget_id in [
-                        "#newproject_name_input",
-                        "#newproject_name_label",
-                        "#newproject_info_label",
-                    ]:
-                        widget = self.query(widget_id)
-                        widget.remove()
-                except BaseException as e:
-                    self.mainwindow.show_modal_error_dialog(str(e))
+                pass
             else:
                 cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
                 try:
                     self.project.make_config_file(**cfg_kwargs)
-                    self.display_project_configs()
+                    self.mainwindow.push_screen(
+                        ModalTable(
+                            self.get_textual_compatible_project_configs(),
+                            "The Configs for the project have been set to the "
+                            "following values:",
+                        )
+                    )
                 except BaseException as e:
                     self.mainwindow.show_modal_error_dialog(str(e))
 
@@ -293,11 +273,6 @@ class ConfigsContent(Container):
             cfg_to_load, "path_to_str"  # TODO: doc, this is in place
         )
         return cfg_to_load
-
-    def display_project_configs(self):
-        self.mainwindow.push_screen(
-            ModalTable(self.get_textual_compatible_project_configs())
-        )
 
     def fill_widgets_with_project_configs(self):
         # TODO: or could do during setup, but will get messy...
@@ -401,22 +376,51 @@ class ConfigsContent(Container):
 
 
 class MakeNewProjectScreen(Screen):
+    TITLE = "Make New Project"
+
     def __init__(self, mainwindow, project):
         super(MakeNewProjectScreen, self).__init__()
 
         self.mainwindow = mainwindow  # passing this around getting a bit silly
         self.project = project
+        self.configs_page = ConfigsContent(self.mainwindow, self.project)
 
     def compose(self):
         # TODO: decide whether setup-relevant configs only
         # should be sown here? almost, certainly.
-        yield Header(id="project_select_header")
+        yield Header()
         yield Button("Main Menu", id="main_menu_button")
-        yield ConfigsContent(self.mainwindow, self.project)
+        yield self.configs_page
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "main_menu_button":
             self.dismiss(False)
+
+        if event.button.id == "newproject_config_button":
+            #        try:
+            project_name = self.query_one("#newproject_name_input").value
+
+            project = DataShuttle(project_name)
+
+            cfg_kwargs = (
+                self.configs_page.get_datashuttle_inputs_from_widgets()
+            )
+
+            project.make_config_file(**cfg_kwargs)
+            self.configs_page.project = project  # TODO: this is weird
+
+            self.mainwindow.push_screen(
+                ModalTable(
+                    self.configs_page.get_textual_compatible_project_configs(),
+                    "Congratulations, you have set up DataShuttle with the below "
+                    "configs.\n\nNext, you will be taken to the project page where "
+                    "you can create and transfer your project folders.",
+                ),
+                lambda _: self.dismiss_page(project),
+            )
+
+    def dismiss_page(self, project):
+        self.dismiss(project)
 
 
 class TabScreen(Screen):
@@ -431,25 +435,19 @@ class TabScreen(Screen):
     prev_click_time = 0.0
 
     def __init__(
-        self, mainwindow, project, init_project=False
+        self, mainwindow, project
     ):  # TODO: avoid weird project duck-typing if possible
         super(TabScreen, self).__init__()
         self.mainwindow = mainwindow
         self.project = project
-        self.init_project = init_project
         self.tab_content = None
-
-        if self.init_project:
-            self.connection_method = "ssh"  # TODO: default value
-        else:
-            self.connection_method = project.cfg["connection_method"]
 
     def compose(self) -> ComposeResult:
         """
         Composes widgets to the TUI in the order specified.
         """
         yield Header()
-        yield Button("Main Menu", id="tabscreen_main_menu_button")
+        yield Button("Main Menu", id="main_menu_button")
         with TabbedContent(
             id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
         ) as self.tab_content:
@@ -523,7 +521,7 @@ class TabScreen(Screen):
             except BaseException as e:
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return
-        elif event.button.id == "tabscreen_main_menu_button":
+        elif event.button.id == "main_menu_button":
             self.dismiss()
 
 
@@ -597,11 +595,14 @@ class TuiApp(App):
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(ProjectSelector(self), self.load_project_page)
         elif event.button.id == "mainwindow_new_project_button":
-            self.push_screen(MakeNewProjectScreen(self, project=None))
+            self.push_screen(
+                MakeNewProjectScreen(self, project=None),
+                self.load_project_page,
+            )
 
-    def load_project_page(self, project, init_project=False):
+    def load_project_page(self, project):
         if project:
-            self.push_screen(TabScreen(self, project, init_project))
+            self.push_screen(TabScreen(self, project))
 
     def show_modal_error_dialog(self, message):
         # TODO: This `replace()` is super hacky. Will have to handle assert
