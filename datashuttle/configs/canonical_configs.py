@@ -162,6 +162,14 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
                 ConfigError,
             )
 
+    if not (config_dict["local_path"].parent.is_dir()):
+        utils.log_and_raise_error(
+            f"The local path {config_dict['local_path'].parent} that the project "
+            f"folder will reside in does not yet exist. Please ensure the  path shown "
+            f"in this message exists before continuing. Also make sure the "
+            f"`central_path`, is correct, as datashuttle cannot check it at this stage."
+        )
+
     # Check SSH settings
     if config_dict["connection_method"] == "ssh" and (
         not config_dict["central_host_id"]
