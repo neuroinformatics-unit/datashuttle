@@ -40,6 +40,7 @@ def setup_project_default_configs(
     default_configs = get_test_config_arguments_dict(
         tmp_path, project_name, set_as_defaults=True
     )
+    os.makedirs(default_configs["local_path"], exist_ok=True)
 
     project.make_config_file(**default_configs)
 
@@ -52,11 +53,15 @@ def setup_project_default_configs(
 
     warnings.filterwarnings("default")
 
-    project.update_config(
-        "local_path", project._datashuttle_path / "base_folder" / project_name
-    )
+    new_local_path = (
+        project._datashuttle_path / "base_folder" / project_name
+    )  # TODO: can delete this?
+    os.makedirs(new_local_path, exist_ok=True)
+
+    project.update_config("local_path", new_local_path)
 
     if local_path:
+        os.makedirs(local_path, exist_ok=True)
         project.update_config("local_path", local_path)
 
         delete_all_folders_in_local_path(project)
@@ -196,6 +201,7 @@ def get_test_config_arguments_dict(
         "central_path": f"{tmp_path}/a/re al/central_ local/folder/{project_name}",
         "connection_method": "local_filesystem",
     }
+    os.makedirs(dict_["local_path"], exist_ok=True)
 
     if required_arguments_only:
         return dict_
@@ -223,6 +229,7 @@ def get_test_config_arguments_dict(
                 "show_transfer_progress": True,
             }
         )
+        os.makedirs(dict_["local_path"], exist_ok=True)
 
     return dict_
 
@@ -504,14 +511,16 @@ def swap_local_and_central_paths(project, swap_last_folder_only=False):
     local_path = copy.deepcopy(project.cfg["local_path"])
     central_path = copy.deepcopy(project.cfg["central_path"])
 
+    new_local_path = local_path.parent / central_path.name
+    os.makedirs(new_local_path, exist_ok=True)
+
     if swap_last_folder_only:
-        project.update_config(
-            "local_path", local_path.parent / central_path.name
-        )
+        project.update_config("local_path", new_local_path)
         project.update_config(
             "central_path", central_path.parent / local_path.name
         )
     else:
+        os.makedirs(central_path, exist_ok=True)
         project.update_config("local_path", central_path)
         project.update_config("central_path", local_path)
 

@@ -239,6 +239,7 @@ class TestFileTransfer(BaseTest):
         sessions to upload. Check only the selected sessions were uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
+
         test_utils.make_and_check_local_project_folders(
             project, subs, sessions, "all"
         )
