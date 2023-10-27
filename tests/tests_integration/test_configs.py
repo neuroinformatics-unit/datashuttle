@@ -68,6 +68,8 @@ class TestConfigs(BaseTest):
             local_path = good_pattern
             central_path = bad_pattern
 
+        os.makedirs(local_path, exist_ok=True)
+
         with pytest.raises(ConfigError) as e:
             project.make_config_file(
                 local_path,
@@ -76,6 +78,22 @@ class TestConfigs(BaseTest):
             )
 
         assert "must contain the full folder path with no " in str(e.value)
+
+    def test_bad_local_path(self, no_cfg_project):
+        from pathlib import Path
+
+        non_existant_path = Path("/not/a/real/path/fsdf342sdfsd234")
+
+        with pytest.raises(BaseException) as e:
+            no_cfg_project.make_config_file(
+                f"{non_existant_path.as_posix()}/{no_cfg_project.project_name}",
+                no_cfg_project.project_name,
+                "local_filesystem",
+            )
+
+        assert f"The local path {non_existant_path} that the project" in str(
+            e.value
+        )
 
     def test_no_ssh_options_set_on_make_config_file(self, no_cfg_project):
         """
@@ -107,8 +125,11 @@ class TestConfigs(BaseTest):
         switching on ssh_to_central unless all options
         are set.
         """
+        local_path = tmp_path / "test_local_path" / no_cfg_project.project_name
+        os.makedirs(local_path, exist_ok=True)
+
         no_cfg_project.make_config_file(
-            tmp_path / "test_local_path" / no_cfg_project.project_name,
+            local_path,
             tmp_path / "test_central_path" / no_cfg_project.project_name,
             "local_filesystem",
         )
