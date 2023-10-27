@@ -165,6 +165,24 @@ class TestConfigs(BaseTest):
         os.makedirs(existant_path, exist_ok=True)
         return non_existant_path, existant_path
 
+
+    def test_bad_local_path(self, no_cfg_project):
+        from pathlib import Path
+
+        non_existant_path = Path("/not/a/real/path/fsdf342sdfsd234")
+
+        with pytest.raises(BaseException) as e:
+            no_cfg_project.make_config_file(
+                f"{non_existant_path.as_posix()}/{no_cfg_project.project_name}",
+                no_cfg_project.project_name,
+                "local_filesystem",
+            )
+
+        assert f"The local path {non_existant_path} that the project" in str(
+            e.value
+        )
+
+
     def test_no_ssh_options_set_on_make_config_file(self, no_cfg_project):
         """
         Check that program will assert if not all ssh options
