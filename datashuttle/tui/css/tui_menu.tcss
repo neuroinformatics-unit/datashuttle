@@ -71,13 +71,54 @@ ErrorScreen:light > #errorscreen_top_container {
     align: center middle;
  }
 
+/* Modal Table - TODO - horrible reuse!  ------------------------------------------------------ */
+
+ModalTable {
+    align: center middle;
+}
+
+#config_table_label {
+    align: center middle;
+    padding: 1 2 1 1;
+}
+#show_dict_top_container {
+    height: 18;
+    width: 125;
+    border: tall $panel-lighten-3;
+    background: $primary-background;
+    content-align: center middle;
+ }
+
+#show_dict_message_container {
+    align: center middle;
+    overflow: hidden auto;
+    margin: 0 1;
+}
+
+#show_dict_message_label {
+    text-align: center;
+}
+
+#show_dict_ok_button {
+    align: center bottom;
+    height: 3;
+}
+
+/* Light Mode Error Screen */
+
+show_dict:light > #show_dict_top_container {
+    border: thick rgb(209, 41, 25);
+    background: $boost;
+    align: center middle;
+ }
+
  /* New Project Screen ------------------------------------------------------ */
 
 #newproject_container {
     align: center top;
     content_align: center middle;
     width: 100%;
-    overflow: auto;
+    overflow: hidden auto;
 }
 #newproject_container > Label {
     margin: 2 0 1 0;

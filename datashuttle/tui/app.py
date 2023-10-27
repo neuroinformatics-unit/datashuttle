@@ -1,6 +1,8 @@
+import copy
 from pathlib import Path
 from time import monotonic
 
+from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.containers import Container
@@ -9,6 +11,7 @@ from textual.screen import ModalScreen, Screen
 from textual.widgets import (
     Button,
     Checkbox,
+    DataTable,
     DirectoryTree,
     Header,
     Input,
@@ -23,6 +26,38 @@ from textual.widgets import (
 from datashuttle import DataShuttle
 from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.utils.folders import get_existing_project_paths_and_names
+
+
+class ModalTable(ModalScreen):
+    def __init__(self, dict_):
+        super(ModalTable, self).__init__()
+
+        self.dict_ = dict_
+
+    def compose(self):
+        yield Container(
+            Container(
+                Label(
+                    "The Configs for the project have been set to the "
+                    "following values:",
+                    id="config_table_label",
+                ),
+                DataTable(id="modal_table", show_header=False),
+                id="show_dict_message_container",
+            ),
+            Container(Button("OK"), id="show_dict_ok_button"),
+            id="show_dict_top_container",
+        )
+
+    def on_mount(self):
+        # start with empty header
+        ROWS = [("", "")] + [(key, value) for key, value in self.dict_.items()]
+        table = self.query_one(DataTable)
+        table.add_columns(*ROWS[0])
+        for row in ROWS[1:]:
+            # Adding styled and justified `Text` objects instead of plain strings.
+            styled_row = [Text(str(cell), justify="left") for cell in row]
+            table.add_row(*styled_row)
 
 
 class ErrorScreen(ModalScreen):
@@ -96,22 +131,17 @@ class DatatypeCheckboxes(Static):
 
 
 class ConfigsContent(Container):
-    def __init__(self, project):
+    def __init__(self, mainwindow, project):
         super(ConfigsContent, self).__init__()
 
+        self.mainwindow = mainwindow
         self.project = project
-        self.connection_method = "ssh"
         self.config_ssh_widgets = []  # TODO: check this is okay
 
     def compose(self):
         # Create the configs tab. If we are setting up a project
         # for the first time, Include widgets with information,
         # and for setting the project name.
-        ssh_radiobutton_bool = (
-            True if self.connection_method == "ssh" else False
-        )
-        local_filesystem_radiobutton_bool = not ssh_radiobutton_bool
-
         self.config_ssh_widgets = [
             Label("Central Host ID"),
             Input(
@@ -125,21 +155,21 @@ class ConfigsContent(Container):
         ]
 
         config_screen_widgets = [
-            Label("Local Path", id="newproject_locpath_label"),
+            Label("Local Path", id="newproject_local_path_label"),
             Input(
                 placeholder=r"e.g. C:\path\to\my_projects\my_first_project",
-                id="newproject_locpath_input",
+                id="newproject_local_path_input",
             ),
-            Label("Central Path", id="newproject_centpath_label"),
+            Label("Central Path", id="newproject_central_path_label"),
             Input(
                 placeholder="e.g. /central/live/username/my_projects/my_first_project",
-                id="newproject_centpath_input",
+                id="newproject_central_path_input",
             ),
             Label("Connection Method", id="newproject_connect_method_label"),
             RadioSet(
-                RadioButton("SSH", value=ssh_radiobutton_bool),
+                RadioButton("SSH", id="ssh_radiobutton"),
                 RadioButton(
-                    "Local Filesystem", value=local_filesystem_radiobutton_bool
+                    "Local Filesystem", id="local_filesystem_radiobutton"
                 ),
                 id="newproject_connect_method_radioset",
             ),
@@ -179,6 +209,7 @@ class ConfigsContent(Container):
         ]
 
         if not self.project:  # TODO: how to make this explicit?
+            # TODO: this needs tests
             config_screen_widgets = (
                 init_only_config_screen_widgets + config_screen_widgets
             )
@@ -189,43 +220,23 @@ class ConfigsContent(Container):
         container = self.query_one("#config_transfer_options_container")
         container.border_title = "Transfer Options"
         if self.project:
-            self.auto_fill_widgets_from_project_configs()
-        self.switch_ssh_widgets_display()
-
-    def auto_fill_widgets_from_project_configs(self):
-        # TODO: or could do during setup, but will get messy...
-        # Little bit redundant, but whatever...?
-        input = self.query_one("#newproject_locpath_input")
-        input.value = "test setup"
-
-        input = self.query_one("#newproject_centpath_label")
-        input.value = "test setup"
-
-        input = self.query_one("#newproject_locpath_input")
-        input.value = "test setup"
-
-        # SSH
-
-        input = self.query_one("#newproject_locpath_input")
-        input.value = "test setup"
-
-        input = self.query_one("#newproject_locpath_input")
-        input.value = "test setup"
-
-        # Checkboxes
+            self.fill_widgets_with_project_configs()
+        else:
+            radiobutton = self.query_one("#local_filesystem_radiobutton")
+            radiobutton.value = True
+            self.switch_ssh_widgets_display(on=False)
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        # TODO: think if this formatting is robust enough.
-        # I think just if == "ssh" key == "ssh" else "local_filesystem".
-        format_connection_method = (
-            str(event.pressed.label).lower().replace(" ", "_")
-        )
-        self.connection_method = format_connection_method
-        self.switch_ssh_widgets_display()
+        """
+        TODO: this isn't very robust, these aliases should be
+        set centrally
+        """
+        on = True if str(event.pressed.label) == "SSH" else False
+        self.switch_ssh_widgets_display(on)
 
-    def switch_ssh_widgets_display(self):
+    def switch_ssh_widgets_display(self, on):
         for widget in self.config_ssh_widgets:
-            widget.display = True if self.connection_method == "ssh" else False
+            widget.display = on  # TODO: confusing
 
     def on_button_pressed(
         self, event: Button.Pressed
@@ -243,17 +254,12 @@ class ConfigsContent(Container):
 
                     project = DataShuttle(project_name)
 
-                    # TODO: the problem with overwriting all is that if
-                    # someone has ssh configs set already, the appropriate
-                    # resolution is not clear. Maybe datashuttle should,
-                    # if the configs are not passed, set them to what
-                    # they were previously.
                     project.make_config_file(
                         local_path=self.query_one(
-                            "#newproject_locpath_input"
+                            "#newproject_local_path_input"
                         ).value,
                         central_path=self.query_one(
-                            "#newproject_centpath_input"
+                            "#newproject_central_path_input"
                         ).value,
                         connection_method=self.connection_method,
                     )
@@ -273,15 +279,132 @@ class ConfigsContent(Container):
                 except BaseException as e:
                     self.mainwindow.show_modal_error_dialog(str(e))
             else:
-                raise NotImplementedError(
-                    "setting configs for existing project not implemented."
-                )
+                cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
+
+                try:
+                    self.project.make_config_file(**cfg_kwargs)
+                    self.display_project_configs()
+                except BaseException as e:
+                    self.mainwindow.show_modal_error_dialog(str(e))
+
+    def get_textual_compatible_project_configs(self):
+        cfg_to_load = copy.deepcopy(self.project.cfg)
+        self.project.cfg.convert_str_and_pathlib_paths(
+            cfg_to_load, "path_to_str"  # TODO: doc, this is in place
+        )
+        return cfg_to_load
+
+    def display_project_configs(self):
+        self.mainwindow.push_screen(
+            ModalTable(self.get_textual_compatible_project_configs())
+        )
+
+    def fill_widgets_with_project_configs(self):
+        # TODO: or could do during setup, but will get messy...
+        # Little bit redundant, but whatever...?
+        cfg_to_load = self.get_textual_compatible_project_configs()
+
+        # Local Path
+        input = self.query_one("#newproject_local_path_input")
+        input.value = cfg_to_load["local_path"]
+
+        # Central Path
+        input = self.query_one("#newproject_central_path_input")
+        input.value = cfg_to_load["central_path"]
+
+        # Connection Method
+        ssh_on = True if cfg_to_load["connection_method"] == "ssh" else False
+
+        radiobutton = self.query_one("#ssh_radiobutton")
+        radiobutton.value = ssh_on
+
+        radiobutton = self.query_one("#local_filesystem_radiobutton")
+        radiobutton.value = not ssh_on
+
+        self.switch_ssh_widgets_display(on=ssh_on)
+
+        # Central Host ID
+        input = self.query_one("#configs_central_host_id_input")
+        value = (
+            ""
+            if cfg_to_load["central_host_id"] is None
+            else cfg_to_load["central_host_id"]
+        )
+        input.value = value
+
+        # Central Host Username
+        input = self.query_one("#configs_central_host_username_input")
+        value = (
+            ""
+            if cfg_to_load["central_host_username"] is None
+            else cfg_to_load["central_host_username"]
+        )  # TODO: refactor, also what else can be there
+        input.value = value
+
+        # Overwrite Files Checkbox
+        checkbox = self.query_one("#config_overwrite_files_checkbox")
+        checkbox.value = self.project.cfg["overwrite_old_files"]
+
+        # Transfer Verbosity
+        checkbox = self.query_one("#config_verbosity_checkbox")
+        bool = (
+            True if self.project.cfg["transfer_verbosity"] == "v" else False
+        )  # TODO: on set
+        checkbox.value = bool
+
+        # Show Transfer Progress
+        checkbox = self.query_one("#config_transfer_progress_checkbox")
+        checkbox.value = self.project.cfg["show_transfer_progress"]
+
+    def get_datashuttle_inputs_from_widgets(self):
+        # Previously have configs held that are updated whenever
+        # the widget is changed. But, I think easier in this case just
+        # to read from final values.
+        cfg_kwargs = {}
+
+        cfg_kwargs["local_path"] = self.query_one(
+            "#newproject_local_path_input"
+        ).value
+
+        cfg_kwargs["central_path"] = self.query_one(
+            "#newproject_central_path_input"
+        ).value
+
+        cfg_kwargs["connection_method"] = (
+            "ssh"
+            if self.query_one("#ssh_radiobutton").value
+            else "local_filesystem"
+        )
+
+        cfg_kwargs["central_host_id"] = self.query_one(
+            "#configs_central_host_id_input"
+        ).value
+
+        cfg_kwargs["central_host_username"] = self.query_one(
+            "#configs_central_host_username_input"
+        ).value
+
+        cfg_kwargs["overwrite_old_files"] = self.query_one(
+            "#config_overwrite_files_checkbox"
+        ).value
+
+        verbosity_kwarg = (
+            "vv" if self.query_one("#config_verbosity_checkbox").value else "v"
+        )
+        cfg_kwargs["transfer_verbosity"] = verbosity_kwarg
+
+        cfg_kwargs["show_transfer_progress"] = self.query_one(
+            "#config_transfer_progress_checkbox"
+        ).value
+
+        return cfg_kwargs
 
 
 class MakeNewProjectScreen(Screen):
-    def __init__(self, project):
+    def __init__(self, mainwindow, project):
         super(MakeNewProjectScreen, self).__init__()
 
+        self.mainwindow = mainwindow  # passing this around getting a bit silly
         self.project = project
 
     def compose(self):
@@ -289,7 +412,7 @@ class MakeNewProjectScreen(Screen):
         # should be sown here? almost, certainly.
         yield Header(id="project_select_header")
         yield Button("Main Menu", id="main_menu_button")
-        yield ConfigsContent(self.project)
+        yield ConfigsContent(self.mainwindow, self.project)
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "main_menu_button":
@@ -353,10 +476,10 @@ class TabScreen(Screen):
                 yield Label("Transfer; Seems to work!")
 
             with TabPane("Configs", id="tabscreen_configs_tab"):
-                yield ConfigsContent(self.project)
+                yield ConfigsContent(self.mainwindow, self.project)
 
     def on_mount(self) -> None:
-        self.query_one("#newproject_connect_method_radioset").focus()
+        self.title = f"Project: {self.project.project_name}"
 
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
@@ -434,7 +557,7 @@ class ProjectSelector(Screen):
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return
             self.dismiss(project)
-        elif event.button.id == "main_menu_buttons":
+        elif event.button.id == "main_menu_button":
             self.dismiss(False)
 
 
@@ -474,7 +597,7 @@ class TuiApp(App):
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(ProjectSelector(self), self.load_project_page)
         elif event.button.id == "mainwindow_new_project_button":
-            self.push_screen(MakeNewProjectScreen(project=None))
+            self.push_screen(MakeNewProjectScreen(self, project=None))
 
     def load_project_page(self, project, init_project=False):
         if project:
