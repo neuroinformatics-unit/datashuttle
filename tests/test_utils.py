@@ -40,6 +40,7 @@ def setup_project_default_configs(
     default_configs = get_test_config_arguments_dict(
         tmp_path, project_name, set_as_defaults=True
     )
+
     make_project_paths(default_configs)
 
     project.make_config_file(**default_configs)
@@ -207,6 +208,7 @@ def get_test_config_arguments_dict(
         "central_path": f"{tmp_path}/a/re al/central_ local/folder/{project_name}",
         "connection_method": "local_filesystem",
     }
+
     make_project_paths(dict_)
 
     if required_arguments_only:
@@ -235,6 +237,7 @@ def get_test_config_arguments_dict(
                 "show_transfer_progress": True,
             }
         )
+
         make_project_paths(dict_)
 
     return dict_
@@ -529,6 +532,7 @@ def swap_local_and_central_paths(project, swap_last_folder_only=False):
         )
     else:
         os.makedirs(local_path, exist_ok=True)
+        os.makedirs(central_path, exist_ok=True)
         project.update_config("local_path", central_path)
         project.update_config("central_path", local_path)
 
