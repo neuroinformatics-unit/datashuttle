@@ -1,5 +1,5 @@
 
-/* Tab Content ------------------------------------------------------ */
+/* Tab Content ---------------------------------------------------------------------- */
 
 TabScreen {
     align: center middle;
@@ -9,7 +9,7 @@ TabScreen > TabbedContent {
     height: 100%
 }
 
-/* Directory Tree ------------------------------------------------------ */
+/* Directory Tree ------------------------------------------------------------------- */
 
 #tabscreen_directorytree {
     dock: left;
@@ -33,7 +33,7 @@ TabScreen > TabbedContent {
     background: $panel-lighten-2;
 }
 
-/* Input ------------------------------------------------------------------- */
+/* Input ---------------------------------------------------------------------------- */
 
 /* Unfortunately there is a bug with Input and hover, the response is very slow.
 and it also effects other widgets */
@@ -46,26 +46,29 @@ and it also effects other widgets */
     border: tall $panel-darken-3;
 }
 
-/* Labels ------------------------------------------------------------------- */
+/* Labels --------------------------------------------------------------------------- */
 
 #tabscreen_create_tab > #tabscreen_subject_label {
     padding: 1 0 1 1;
     text-style: bold;
 }
+
 #tabscreen_create_tab > #tabscreen_session_label {
     padding: 1 0 1 1;
     text-style: bold;
 }
+
 #tabscreen_create_tab > #tabscreen_datatype_label {
     padding: 1 0 0 1;
     text-style: bold;
 }
 
-/* Checkboxes ----------------------------------------------------------- */
+/* Checkboxes ----------------------------------------------------------------------- */
 
 DatatypeCheckboxes {
     padding: 0 0 1 0;
 }
+
 #tabscreen_create_tab > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
@@ -81,10 +84,6 @@ DatatypeCheckboxes {
     background: transparent;
 }
 
-
-RadioButton {
-    width: auto;
-}
 #configs_connect_method_radioset:focus {
     border: none;
 }

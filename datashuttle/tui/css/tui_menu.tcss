@@ -1,5 +1,5 @@
 
-/* Mainwindow ------------------------------------------------------ */
+/* Mainwindow ----------------------------------------------------------------------- */
 
 #mainwindow_contents_container {
     align: center top;
@@ -20,13 +20,14 @@
     margin: 2 0 2 0;
 }
 
-/* Project Select ------------------------------------------------------ */
+/* Project Select ------------------------------------------------------------------- */
 
 #project_select_top_container {
     align: center top;
     margin: 3 2 0 0;
     content-align: center middle;
 }
+
 #project_select_top_container > Button {
     width: 50%;
     align: center middle;
@@ -34,7 +35,7 @@
     margin: 0 0 1 0;
 }
 
-/* Error Screen ------------------------------------------------------ */
+/* Error Screen --------------------------------------------------------------------- */
 
 ErrorScreen {
     align: center middle;
@@ -71,7 +72,7 @@ ErrorScreen:light > #errorscreen_top_container {
     align: center middle;
  }
 
-/* Modal Table - TODO - horrible reuse!  ------------------------------------------------------ */
+/* ShowConfigsDialog  --- TODO: this is basically copy and paste from ErrorDialog :(  */
 
 ShowConfigsDialog {
     align: center middle;
@@ -116,7 +117,7 @@ show_dict:light > #display_configs_stop_container {
     align: center middle;
  }
 
- /* New Project Screen ------------------------------------------------------ */
+ /* Configs Content ----------------------------------------------------------------- */
 
 #configs_container {
     align: center top;
@@ -125,9 +126,11 @@ show_dict:light > #display_configs_stop_container {
     overflow: hidden auto;
     margin: 0 0 0 0;
 }
+
 #configs_container > Label {
     margin: 2 0 1 0;
 }
+
 #configs_banner_label {
     text-style: bold;
     content-align: center middle;
@@ -135,28 +138,33 @@ show_dict:light > #display_configs_stop_container {
     width: 60%;
     height: 5;
 }
+
 #configs_info_label {
     align: center middle;
     text-align: center;
     width: auto;
-    padding: 1 0 0 0; /* same problem as button */
+    padding: 1 0 0 0;
 }
+
 #configs_local_path_label {
     align: center middle;
     padding: 0 0 0 0;
 }
+
 #configs_container > Input {
     width: 60%;
     align-horizontal: center;
 }
+
 #configs_set_configs_button {
     content-align: center middle;
     align-horizontal: center;
-    margin: 2 0 2 0;  /* maybe this margin should not be so fixed, can't get it to align in the middle! */
+    margin: 2 0 2 0;
     padding: 0 4 0 4;
     width: 30%;
     color: $success;  /* unsure about this */
 }
+
 #configs_container > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
@@ -164,11 +172,16 @@ show_dict:light > #display_configs_stop_container {
     grid_rows: 4;
     width: auto;
 }
+
 #all_main_menu_buttons {
     dock: right;
     height: 3;
     layer: top;
 }
+
+/* This Horizontal wrapper containers are necessary to make the
+config label and button align center */
+
 #configs_container > Horizontal {
     width: 60%;
     height: auto;
