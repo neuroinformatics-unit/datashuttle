@@ -139,7 +139,7 @@ show_dict:light > #show_dict_top_container {
     align: center middle;
     text-align: center;
     width: auto;
-    padding: 1 0 0 25; /* same problem as button */
+    padding: 1 0 0 0; /* same problem as button */
 }
 #newproject_local_path_label {
     align: center middle;
@@ -152,7 +152,7 @@ show_dict:light > #show_dict_top_container {
 #newproject_config_button {
     content-align: center middle;
     align-horizontal: center;
-    margin: 2 0 2 25;  /* maybe this margin should not be so fixed, can't get it to align in the middle! */
+    margin: 2 0 2 0;  /* maybe this margin should not be so fixed, can't get it to align in the middle! */
     padding: 0 4 0 4;
     width: 30%;
     color: $success;  /* unsure about this */
@@ -168,4 +168,9 @@ show_dict:light > #show_dict_top_container {
     dock: right;
     height: 3;
     layer: top;
+}
+#newproject_container > Horizontal {
+    width: 60%;
+    height: auto;
+    align: center middle;
 }

@@ -1,10 +1,11 @@
 import copy
 from pathlib import Path
 from time import monotonic
+
 from rich.text import Text
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container
+from textual.containers import Container, Horizontal
 from textual.reactive import reactive
 from textual.screen import ModalScreen, Screen
 from textual.widgets import (
@@ -46,11 +47,8 @@ class ModalTable(ModalScreen):
         )
 
     def on_mount(self):
-
-        # start with empty heaer
-        ROWS = [("", "")] + [
-            (key, value) for key, value in self.dict_.items()
-        ]
+        # start with empty header
+        ROWS = [("", "")] + [(key, value) for key, value in self.dict_.items()]
 
         table = self.query_one(DataTable)
         table.add_columns(*ROWS[0])
@@ -61,6 +59,7 @@ class ModalTable(ModalScreen):
 
     def on_button_pressed(self) -> None:
         self.dismiss(None)  # TODOC: callback hack
+
 
 class ErrorScreen(ModalScreen):
     """
@@ -169,10 +168,10 @@ class ConfigsContent(Container):
             ),
             Label("Connection Method", id="newproject_connect_method_label"),
             RadioSet(
-                RadioButton("SSH", id="ssh_radiobutton"),
                 RadioButton(
                     "Local Filesystem", id="local_filesystem_radiobutton"
                 ),
+                RadioButton("SSH", id="ssh_radiobutton"),
                 id="newproject_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
@@ -192,19 +191,21 @@ class ConfigsContent(Container):
                 ),
                 id="config_transfer_options_container",
             ),
-            Button(
-                "Configure Project", id="newproject_config_button"
+            Horizontal(
+                Button("Configure Project", id="newproject_config_button")
             ),  # TODO: rename
         ]
 
         init_only_config_screen_widgets = [
             Label("Configure A New Project", id="newproject_banner_label"),
-            Static(
-                "Set your configurations for a new project. For more "
-                "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
-                "documentation. Once configs are set, you will "
-                "be able\nto use the 'Create' and 'Transfer' tabs.",
-                id="newproject_info_label",
+            Horizontal(
+                Static(
+                    "Set your configurations for a new project. For more "
+                    "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
+                    "documentation. Once configs are set, you will "
+                    "be able\nto use the 'Create' and 'Transfer' tabs.",
+                    id="newproject_info_label",
+                )
             ),
             Label("Project Name", id="newproject_name_label"),
             Input(
