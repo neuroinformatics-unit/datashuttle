@@ -73,7 +73,7 @@ ErrorScreen:light > #errorscreen_top_container {
 
 /* Modal Table - TODO - horrible reuse!  ------------------------------------------------------ */
 
-ModalTable {
+ShowConfigsDialog {
     align: center middle;
 }
 
