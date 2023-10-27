@@ -606,10 +606,7 @@ class TuiApp(App):
             self.push_screen(TabScreen(self, project))
 
     def show_modal_error_dialog(self, message):
-        # TODO: This `replace()` is super hacky. Will have to handle assert
-        # messages centrally , depending on whether piping to GUI
-        # or API / CLI.
-        self.push_screen(ErrorScreen(message.replace(". ", ".\n\n")))
+        self.push_screen(ErrorScreen(message))
 
 
 if __name__ == "__main__":
