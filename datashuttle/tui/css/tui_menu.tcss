@@ -81,7 +81,7 @@ ShowConfigsDialog {
     align: center middle;
     padding: 1 2 1 1;
 }
-#show_dict_top_container {
+#display_configs_stop_container {
     height: 20;
     width: 125;
     border: tall $panel-lighten-3;
@@ -90,27 +90,27 @@ ShowConfigsDialog {
     border: thick rgb(1, 138, 13);
 }
 
-#show_dict_message_container {
+#display_configs_message_container {
     align: center middle;
     overflow: hidden auto;
     margin: 0 1;
 }
 
-#show_dict_message_label {
+#display_configs_message_label {
     text-align: center;
     overflow: auto;
     text-align: center;
     padding: 1 0 2 0;
 }
 
-#show_dict_ok_button {
+#display_configs_ok_button {
     align: center bottom;
     height: 3;
 }
 
 /* Light Mode Error Screen */
 
-show_dict:light > #show_dict_top_container {
+show_dict:light > #display_configs_stop_container {
     border: thick rgb(209, 41, 25);
     background: $boost;
     align: center middle;
@@ -118,38 +118,38 @@ show_dict:light > #show_dict_top_container {
 
  /* New Project Screen ------------------------------------------------------ */
 
-#newproject_container {
+#configs_container {
     align: center top;
     content-align: center middle;
     width: 100%;
     overflow: hidden auto;
     margin: 0 0 0 0;
 }
-#newproject_container > Label {
+#configs_container > Label {
     margin: 2 0 1 0;
 }
-#newproject_banner_label {
+#configs_banner_label {
     text-style: bold;
     content-align: center middle;
     border: hkey $secondary-darken-1;
     width: 60%;
     height: 5;
 }
-#newproject_info_label {
+#configs_info_label {
     align: center middle;
     text-align: center;
     width: auto;
     padding: 1 0 0 0; /* same problem as button */
 }
-#newproject_local_path_label {
+#configs_local_path_label {
     align: center middle;
     padding: 0 0 0 0;
 }
-#newproject_container > Input {
+#configs_container > Input {
     width: 60%;
     align-horizontal: center;
 }
-#newproject_config_button {
+#configs_set_configs_button {
     content-align: center middle;
     align-horizontal: center;
     margin: 2 0 2 0;  /* maybe this margin should not be so fixed, can't get it to align in the middle! */
@@ -157,19 +157,19 @@ show_dict:light > #show_dict_top_container {
     width: 30%;
     color: $success;  /* unsure about this */
 }
-#newproject_container > DatatypeCheckboxes {
+#configs_container > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
     grid-columns: 20;
     grid_rows: 4;
     width: auto;
 }
-#main_menu_button {
+#all_main_menu_buttons {
     dock: right;
     height: 3;
     layer: top;
 }
-#newproject_container > Horizontal {
+#configs_container > Horizontal {
     width: 60%;
     height: auto;
     align: center middle;

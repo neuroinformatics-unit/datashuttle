@@ -74,7 +74,7 @@ DatatypeCheckboxes {
     width: auto;
 }
 
-#newproject_connect_method_radioset {
+#configs_connect_method_radioset {
     layout: horizontal;
     width: auto;
     border: none;
@@ -85,11 +85,11 @@ DatatypeCheckboxes {
 RadioButton {
     width: auto;
 }
-#newproject_connect_method_radioset:focus {
+#configs_connect_method_radioset:focus {
     border: none;
 }
 
-#config_transfer_options_container {
+#configs_transfer_options_container {
     margin: 2 0 0 0;
     padding: 1 1;
     border: solid $panel-lighten-1;

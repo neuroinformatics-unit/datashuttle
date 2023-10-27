@@ -52,12 +52,15 @@ class ShowConfigsDialog(ModalScreen):
     def compose(self):
         yield Container(
             Container(
-                Static(self.message_before_dict, id="show_dict_message_label"),
+                Static(
+                    self.message_before_dict,
+                    id="display_configs_message_label",
+                ),
                 DataTable(id="modal_table", show_header=False),
-                id="show_dict_message_container",
+                id="display_configs_message_container",
             ),
-            Container(Button("OK"), id="show_dict_ok_button"),
-            id="show_dict_top_container",
+            Container(Button("OK"), id="display_configs_ok_button"),
+            id="display_configs_stop_container",
         )
 
     def on_mount(self):
@@ -186,7 +189,7 @@ class ConfigsContent(Container):
     def compose(self):
         """
         `self.config_ssh_widgets` are SSH-setup related widgets
-        that are only required. This are displayed / hidden based on the
+        that are only required. These are displayed / hidden based on the
         `connection_method`
 
         `config_screen_widgets` are core config-related widgets that are
@@ -208,60 +211,61 @@ class ConfigsContent(Container):
         ]
 
         config_screen_widgets = [
-            Label("Local Path", id="newproject_local_path_label"),
+            Label("Local Path", id="configs_local_path_label"),
             Input(
                 placeholder=r"e.g. C:\path\to\my_projects\my_first_project",
-                id="newproject_local_path_input",
+                id="configs_local_path_input",
             ),
-            Label("Central Path", id="newproject_central_path_label"),
+            Label("Central Path", id="configs_central_path_label"),
             Input(
                 placeholder="e.g. /central/live/username/my_projects/my_first_project",
-                id="newproject_central_path_input",
+                id="configs_central_path_input",
             ),
-            Label("Connection Method", id="newproject_connect_method_label"),
+            Label("Connection Method", id="configs_connect_method_label"),
             RadioSet(
                 RadioButton(
-                    "Local Filesystem", id="local_filesystem_radiobutton"
+                    "Local Filesystem",
+                    id="configs_local_filesystem_radiobutton",
                 ),
                 RadioButton("SSH", id="ssh_radiobutton"),
-                id="newproject_connect_method_radioset",
+                id="configs_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
             Container(
                 Checkbox(
                     "Overwrite Old Files",
                     value=False,
-                    id="config_overwrite_files_checkbox",
+                    id="configs_overwrite_files_checkbox",
                 ),
                 Checkbox(
-                    "Verbose", value=False, id="config_verbosity_checkbox"
+                    "Verbose", value=False, id="configs_verbosity_checkbox"
                 ),
                 Checkbox(
                     "Show Transfer Progress",
                     value=False,
-                    id="config_transfer_progress_checkbox",
+                    id="configs_transfer_progress_checkbox",
                 ),
-                id="config_transfer_options_container",
+                id="configs_transfer_options_container",
             ),
             Horizontal(
-                Button("Configure Project", id="newproject_config_button")
+                Button("Configure Project", id="configs_set_configs_button")
             ),
         ]
 
         init_only_config_screen_widgets = [
-            Label("Configure A New Project", id="newproject_banner_label"),
+            Label("Configure A New Project", id="configs_banner_label"),
             Horizontal(
                 Static(
                     "Set your configurations for a new project. For more "
                     "details on each section,\nsee the Datashuttle "
                     "documentation. Once configs are set, you will "
                     "be able\nto use the 'Create' and 'Transfer' tabs.",
-                    id="newproject_info_label",
+                    id="configs_info_label",
                 )
             ),
-            Label("Project Name", id="newproject_name_label"),
+            Label("Project Name", id="configs_name_label"),
             Input(
-                placeholder="e.g. my_first_project", id="newproject_name_input"
+                placeholder="e.g. my_first_project", id="configs_name_input"
             ),
         ]
 
@@ -270,7 +274,7 @@ class ConfigsContent(Container):
                 init_only_config_screen_widgets + config_screen_widgets
             )
 
-        yield Container(*config_screen_widgets, id="newproject_container")
+        yield Container(*config_screen_widgets, id="configs_container")
 
     def on_mount(self):
         """
@@ -288,16 +292,18 @@ class ConfigsContent(Container):
         TODO: this duplicates how defaults are set between TUI and
         datashuttle API, which is not good. This should be centralised.
         """
-        container = self.query_one("#config_transfer_options_container")
+        container = self.query_one("#configs_transfer_options_container")
         container.border_title = "Transfer Options"
         if self.project:
             self.fill_widgets_with_project_configs()
         else:
-            radiobutton = self.query_one("#local_filesystem_radiobutton")
+            radiobutton = self.query_one(
+                "#configs_local_filesystem_radiobutton"
+            )
             radiobutton.value = True
             self.switch_ssh_widgets_display(display_bool=False)
 
-            checkbox = self.query_one("#config_overwrite_files_checkbox")
+            checkbox = self.query_one("#configs_overwrite_files_checkbox")
             checkbox.value = False
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
@@ -321,7 +327,7 @@ class ConfigsContent(Container):
         Enables the Make Folders button to read out current input values
         and use these to call project.make_folders().
         """
-        if event.button.id == "newproject_config_button":
+        if event.button.id == "configs_set_configs_button":
             if not self.project:
                 self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
             else:
@@ -347,7 +353,7 @@ class ConfigsContent(Container):
         will immediately call the parent's dismiss function with the
         newly instantiated project.
         """
-        project_name = self.query_one("#newproject_name_input").value
+        project_name = self.query_one("#configs_name_input").value
 
         try:
             project = DataShuttle(project_name)
@@ -408,11 +414,11 @@ class ConfigsContent(Container):
         cfg_to_load = get_textual_compatible_project_configs(self.project.cfg)
 
         # Local Path
-        input = self.query_one("#newproject_local_path_input")
+        input = self.query_one("#configs_local_path_input")
         input.value = cfg_to_load["local_path"]
 
         # Central Path
-        input = self.query_one("#newproject_central_path_input")
+        input = self.query_one("#configs_central_path_input")
         input.value = cfg_to_load["central_path"]
 
         # Connection Method
@@ -421,7 +427,7 @@ class ConfigsContent(Container):
         radiobutton = self.query_one("#ssh_radiobutton")
         radiobutton.value = ssh_on
 
-        radiobutton = self.query_one("#local_filesystem_radiobutton")
+        radiobutton = self.query_one("#configs_local_filesystem_radiobutton")
         radiobutton.value = not ssh_on
 
         self.switch_ssh_widgets_display(display_bool=ssh_on)
@@ -445,16 +451,16 @@ class ConfigsContent(Container):
         input.value = value
 
         # Overwrite Files Checkbox
-        checkbox = self.query_one("#config_overwrite_files_checkbox")
+        checkbox = self.query_one("#configs_overwrite_files_checkbox")
         checkbox.value = self.project.cfg["overwrite_old_files"]
 
         # Transfer Verbosity
-        checkbox = self.query_one("#config_verbosity_checkbox")
+        checkbox = self.query_one("#configs_verbosity_checkbox")
         bool = True if self.project.cfg["transfer_verbosity"] == "v" else False
         checkbox.value = bool
 
         # Show Transfer Progress
-        checkbox = self.query_one("#config_transfer_progress_checkbox")
+        checkbox = self.query_one("#configs_transfer_progress_checkbox")
         checkbox.value = self.project.cfg["show_transfer_progress"]
 
     def get_datashuttle_inputs_from_widgets(self):
@@ -467,11 +473,11 @@ class ConfigsContent(Container):
         cfg_kwargs = {}
 
         cfg_kwargs["local_path"] = self.query_one(
-            "#newproject_local_path_input"
+            "#configs_local_path_input"
         ).value
 
         cfg_kwargs["central_path"] = self.query_one(
-            "#newproject_central_path_input"
+            "#configs_central_path_input"
         ).value
 
         cfg_kwargs["connection_method"] = (
@@ -489,16 +495,18 @@ class ConfigsContent(Container):
         ).value
 
         cfg_kwargs["overwrite_old_files"] = self.query_one(
-            "#config_overwrite_files_checkbox"
+            "#configs_overwrite_files_checkbox"
         ).value
 
         verbosity_kwarg = (
-            "vv" if self.query_one("#config_verbosity_checkbox").value else "v"
+            "vv"
+            if self.query_one("#configs_verbosity_checkbox").value
+            else "v"
         )
         cfg_kwargs["transfer_verbosity"] = verbosity_kwarg
 
         cfg_kwargs["show_transfer_progress"] = self.query_one(
-            "#config_transfer_progress_checkbox"
+            "#configs_transfer_progress_checkbox"
         ).value
 
         return cfg_kwargs
@@ -534,11 +542,11 @@ class NewProjectScreen(Screen):
 
     def compose(self):
         yield Header()
-        yield Button("Main Menu", id="main_menu_button")
+        yield Button("Main Menu", id="all_main_menu_buttons")
         yield ConfigsContent(self, project=None)
 
     def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "main_menu_button":
+        if event.button.id == "all_main_menu_buttons":
             self.dismiss(None)
 
 
@@ -580,7 +588,7 @@ class TabScreen(Screen):
 
     def compose(self) -> ComposeResult:
         yield Header()
-        yield Button("Main Menu", id="main_menu_button")
+        yield Button("Main Menu", id="all_main_menu_buttons")
         with TabbedContent(
             id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
         ):
@@ -655,7 +663,7 @@ class TabScreen(Screen):
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return
 
-        elif event.button.id == "main_menu_button":
+        elif event.button.id == "all_main_menu_buttons":
             self.dismiss()
 
 
@@ -687,7 +695,7 @@ class ProjectSelector(Screen):
 
     def compose(self):
         yield Header(id="project_select_header")
-        yield Button("Main Menu", id="main_menu_button")
+        yield Button("Main Menu", id="all_main_menu_buttons")
         yield Container(
             *[Button(name, id=name) for name in self.project_names],
             id="project_select_top_container",
@@ -702,7 +710,7 @@ class ProjectSelector(Screen):
                 return
             self.dismiss(project)
 
-        elif event.button.id == "main_menu_button":
+        elif event.button.id == "all_main_menu_buttons":
             self.dismiss(False)
 
 
