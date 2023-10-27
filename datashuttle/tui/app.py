@@ -27,9 +27,21 @@ from datashuttle import DataShuttle
 from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.utils.folders import get_existing_project_paths_and_names
 
+# RENAME ALL WIDGETS
+# TCSS
+
 
 class ShowConfigsDialog(ModalScreen):
-    """ """
+    """
+    This window is used to display the existing configs. The message
+    above the displayed configs can be configured depending on
+    whether a new project was created or an existing project was updated.
+
+    This screen returns None, such that it is displayed until the
+    user presses OK via a callback function. See
+    `ConfigsContent.setup_configs_for_a_new_project_and_switch_to_tab_screen()`
+    for more information.
+    """
 
     def __init__(self, dict_, message_before_dict=""):
         super(ShowConfigsDialog, self).__init__()
@@ -50,7 +62,7 @@ class ShowConfigsDialog(ModalScreen):
 
     def on_mount(self):
         """
-        start with empty header
+        The first row is empty because the header is not displayed.
         """
         ROWS = [("", "")] + [(key, value) for key, value in self.dict_.items()]
 
@@ -62,14 +74,13 @@ class ShowConfigsDialog(ModalScreen):
             table.add_row(*styled_row)
 
     def on_button_pressed(self) -> None:
-        """ """
         self.dismiss(None)
 
 
 class ErrorScreen(ModalScreen):
     """
-    Screen that renders a modal dialog window (a pop up window that
-    means no other widgets can be changed until it is closed).
+    A screen for rendering error messages. The border of the
+    central widget is red. The screen does not return any value.
     """
 
     def __init__(self, message):
@@ -138,10 +149,13 @@ class DatatypeCheckboxes(Static):
 
 def get_textual_compatible_project_configs(project_cfg):
     """
+    This uses a datashuttle function to convert any pathlib to
+    strings. Textualize inputs cannot take Path type. This
+    conversion is in-place so configs must be copied.s
+
     TODO: should this function go in datashuttle? or some tui-logic
     module, probably the latter as does not make sense to mix
     tui-logic with core datashuttle logic.
-    This is in place.
     """
     cfg_to_load = copy.deepcopy(project_cfg)
     project_cfg.convert_str_and_pathlib_paths(cfg_to_load, "path_to_str")
@@ -149,7 +163,18 @@ def get_textual_compatible_project_configs(project_cfg):
 
 
 class ConfigsContent(Container):
-    """ """
+    """
+    This screen holds widgets and logic for setting datashuttle configs.
+    It is used in `NewProjectPage` to instantiate a new project and
+    initialise configs, or in `TabbedContent` to update an existing
+    project's configs.
+
+    If no project exists, additional widgets are shown to allow
+    entry of a project name for new project initialisation, and some
+    additional information. Widgets are filled with some sensible defaults.
+
+    Otherwise, widgets are filled with the existing projects configs.
+    """
 
     def __init__(self, parent_class, project):
         super(ConfigsContent, self).__init__()
@@ -160,9 +185,15 @@ class ConfigsContent(Container):
 
     def compose(self):
         """
-        Create the configs tab. If we are setting up a project
-        for the first time, Include widgets with information,
-        and for setting the project name.
+        `self.config_ssh_widgets` are SSH-setup related widgets
+        that are only required. This are displayed / hidden based on the
+        `connection_method`
+
+        `config_screen_widgets` are core config-related widgets that are
+        always displayed.
+
+        `init_only_config_screen_widgets` are only displayed if we
+        are instantiating a new project.
         """
         self.config_ssh_widgets = [
             Label("Central Host ID"),
@@ -214,7 +245,7 @@ class ConfigsContent(Container):
             ),
             Horizontal(
                 Button("Configure Project", id="newproject_config_button")
-            ),  # TODO: rename
+            ),
         ]
 
         init_only_config_screen_widgets = [
@@ -222,7 +253,7 @@ class ConfigsContent(Container):
             Horizontal(
                 Static(
                     "Set your configurations for a new project. For more "
-                    "details on each section,\nsee the Datashuttle "  # TODO: are links to websites possible?
+                    "details on each section,\nsee the Datashuttle "
                     "documentation. Once configs are set, you will "
                     "be able\nto use the 'Create' and 'Transfer' tabs.",
                     id="newproject_info_label",
@@ -242,6 +273,21 @@ class ConfigsContent(Container):
         yield Container(*config_screen_widgets, id="newproject_container")
 
     def on_mount(self):
+        """
+        When we have mounted the widgets, the following logic depends on whether
+        we are setting up a new project (`self.project is `None`) or have
+        an instantiated project.
+
+        If we have a project, then we want to fill
+        the widgets with the existing configs. Otherwise, we set to some
+        reasonable defaults, required to determine the display of SSH widgets.
+        "overwrite_files_checkbox" should be off by default anyway if
+        `value` is not set, but we set here anyway as it is critical
+        this is not on by default.
+
+        TODO: this duplicates how defaults are set between TUI and
+        datashuttle API, which is not good. This should be centralised.
+        """
         container = self.query_one("#config_transfer_options_container")
         container.border_title = "Transfer Options"
         if self.project:
@@ -251,15 +297,22 @@ class ConfigsContent(Container):
             radiobutton.value = True
             self.switch_ssh_widgets_display(display_bool=False)
 
+            checkbox = self.query_one("#config_overwrite_files_checkbox")
+            checkbox.value = False
+
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
-        TODO: this isn't very robust, these aliases should be
-        set centrally
+        Update the displayed SSH widgets when the `connection_method`
+        radiobuttons are changed.
         """
         display_bool = True if str(event.pressed.label) == "SSH" else False
         self.switch_ssh_widgets_display(display_bool)
 
     def switch_ssh_widgets_display(self, display_bool):
+        """
+        Show or hide SSH-related configs based on whether the current
+        `connection_method` widget is "ssh" or "local_filesystem".
+        """
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
 
@@ -275,7 +328,25 @@ class ConfigsContent(Container):
                 self.setup_configs_for_an_existing_project()
 
     def setup_configs_for_a_new_project_and_switch_to_tab_screen(self):
-        """ """
+        """
+        If a project does not exist, we are in NewProjectScreen.
+        We need to instantiate a new project based on the project name,
+        create configs based on the current widget settings, and display
+        any errors to the user, along with confirmation and the
+        currently set configs.
+
+        Once complete, we dismiss the parent screen (NewProjectScreen),
+        returning the new instantiated project. Due to the mainwindow
+        `push_screen` callback, this will open the TabbedContent window
+        with the new project.
+
+        Note that in order to wait at the ShowConfigsDialog screen
+        until the user presses 'OK', it is necessary to wait for a
+        callback function from this screen. We do not care about it's
+        output, so make the callback a lambda function that when called
+        will immediately call the parent's dismiss function with the
+        newly instantiated project.
+        """
         project_name = self.query_one("#newproject_name_input").value
 
         try:
@@ -292,16 +363,19 @@ class ConfigsContent(Container):
                     "configs.\n\nNext, you will be taken to the project page where "
                     "you can create and transfer your project folders.",
                 ),
-                lambda _: self.parent_class.dismiss_and_return_project(
-                    project
-                ),
+                lambda _: self.parent_class.dismiss(project),
             )
 
         except BaseException as e:
             self.parent_class.mainwindow.show_modal_error_dialog(str(e))
 
     def setup_configs_for_an_existing_project(self):
-        """ """
+        """
+        If the project already exists, we are on the TabbedContent
+        screen. We need to get the configs to set from the current
+        widget values and display the set values (or an error if
+        there was a problem during setup) to the user.
+        """
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
         try:
@@ -322,7 +396,15 @@ class ConfigsContent(Container):
             self.parent_class.mainwindow.show_modal_error_dialog(str(e))
 
     def fill_widgets_with_project_configs(self):
-        """ """
+        """
+        If a configured project already exists, we want to fill the
+        widgets with the current project configs. This in some instances
+        requires recasting to a new type of changing the value.
+
+        In the case of the `connection_method` widget, the associated
+        "ssh" widgets are hidden / displayed based on the current setting,
+        in `self.switch_ssh_widgets_display()`.
+        """
         cfg_to_load = get_textual_compatible_project_configs(self.project.cfg)
 
         # Local Path
@@ -376,7 +458,12 @@ class ConfigsContent(Container):
         checkbox.value = self.project.cfg["show_transfer_progress"]
 
     def get_datashuttle_inputs_from_widgets(self):
-        """ """
+        """
+        Get the configs to pass to `make_config_file()` from
+        the current TUI settings. In some instances this requires
+        changing the value form (e.g. from `bool` to `"-v"` in
+        'transer verbosity'.
+        """
         cfg_kwargs = {}
 
         cfg_kwargs["local_path"] = self.query_one(
@@ -418,7 +505,25 @@ class ConfigsContent(Container):
 
 
 class NewProjectScreen(Screen):
-    """ """
+    """
+    Screen for setting up a new datashuttle project, by
+    inputting the desired configs. This uses the
+    ConfigsConent window to display and set the configs.
+
+    If "Main Manu" button is pressed, the callback function
+    returns None, so the project screen is not switched to.
+
+    Otherwise, the logic for creating and validating the
+    project is in ConfigsContent. ConfigsContent calls
+    the dismiss method of this class to return
+    an initialised project to mainwindow.
+    See ConfigsContent.on_button_pressed() for more details
+
+    Parameters
+    ----------
+
+    mainwindow : TuiApp
+    """
 
     TITLE = "Make New Project"
 
@@ -426,19 +531,15 @@ class NewProjectScreen(Screen):
         super(NewProjectScreen, self).__init__()
 
         self.mainwindow = mainwindow
-        self.configs_page = ConfigsContent(self, project=None)
 
     def compose(self):
         yield Header()
         yield Button("Main Menu", id="main_menu_button")
-        yield self.configs_page
+        yield ConfigsContent(self, project=None)
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "main_menu_button":
-            self.dismiss(False)
-
-    def dismiss_and_return_project(self, project):
-        self.dismiss(project)
+            self.dismiss(None)
 
 
 class TabScreen(Screen):
@@ -446,6 +547,25 @@ class TabScreen(Screen):
     Screen containing the Create and Transfer tabs. This is
     the primary screen within which the user interacts with
     a pre-configured project.
+
+    The 'Create' tab is used to create new project folders,
+    interacting with Datashuttle's `make_folders()` method.
+
+    The 'Transfer' tab, XXX.
+
+    The 'Configs' tab displays the current project's configurations
+    and allows configs to be reset. This is an instantiation of the
+    ConfigsContent window, which is also shared by `Make New Project`.
+    See ConfigsContent for more information.
+
+    Parameters
+    ----------
+
+    mainwindow : TuiApp
+        The main application window used for coordinating screen display.
+
+    project : DataShuttle
+        An instantiated datashuttle project.
     """
 
     TITLE = "Manage Project"
@@ -459,15 +579,11 @@ class TabScreen(Screen):
         self.project = project
 
     def compose(self) -> ComposeResult:
-        """
-        Composes widgets to the TUI in the order specified.
-        """
         yield Header()
         yield Button("Main Menu", id="main_menu_button")
         with TabbedContent(
             id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
         ):
-            # Create a content window with 'Create', 'Transfer' and 'Configs' tab
             with TabPane("Create", id="tabscreen_create_tab"):
                 yield DirectoryTree(
                     self.project.cfg.data["local_path"],
@@ -494,6 +610,9 @@ class TabScreen(Screen):
     def on_mount(self) -> None:
         self.title = f"Project: {self.project.project_name}"
 
+    # TODO: the upcoming refactor will be super nice because the logic
+    # that handles button presses can be split across the relevant
+    # tab classes.
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
     ):
@@ -542,8 +661,20 @@ class TabScreen(Screen):
 
 class ProjectSelector(Screen):
     """
-    The DataShuttle TUI's project selection screen. Finds and displays
-    DataShuttle projects present on the local system.
+    The project selection screen. Finds and displays DataShuttle
+    projects present on the local system.
+
+    `self.dismiss()` returns an initialised project if initialisation
+    was successful. Otherwise, in case "Main Menu` button is pressed,
+    returns None to return without effect to the main menu.,
+
+    Parameters
+    ----------
+
+    mainwindow : TuiApp
+        The main TUI app, functions on which are used to coordinate
+        screen display.
+
     """
 
     TITLE = "Select Project"
@@ -570,6 +701,7 @@ class ProjectSelector(Screen):
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return
             self.dismiss(project)
+
         elif event.button.id == "main_menu_button":
             self.dismiss(False)
 
@@ -577,6 +709,10 @@ class ProjectSelector(Screen):
 class TuiApp(App):
     """
     The main app page for the DataShuttle TUI.
+
+    This class acts as a base class from which all windows
+    (select existing project, make new project, settings and
+    get help are raised).
 
     Running this application in a main block as below
     if __name__ == __main__:
@@ -607,7 +743,16 @@ class TuiApp(App):
         )
 
     def on_button_pressed(self, event: Button.Pressed):
-        """ """
+        """
+        When a button is pressed, a new screen is displayed with
+        `push_screen`. The second argument is a callback to
+        load the project page, with an initialised project
+        or `None` (in case no project was selected).
+
+        Error handling is at the level of the individual screens,
+        but presentation of the error dialog is handled in
+        `self.show_modal_error_dialog()`.
+        """
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(ProjectSelector(self), self.load_project_page)
 
