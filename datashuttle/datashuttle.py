@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import paramiko
 import yaml
@@ -260,7 +260,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def get_next_sub_number(self) -> Tuple[int, int]:
+    def get_next_sub_number(self) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
         to find the next subject number.
@@ -270,7 +270,7 @@ class DataShuttle:
         )
 
     @check_configs_set
-    def get_next_ses_number(self, sub: Optional[str]) -> Tuple[int, int]:
+    def get_next_ses_number(self, sub: Optional[str]) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
         to find the next session number.
@@ -895,11 +895,10 @@ class DataShuttle:
         behavioural machine and central machine, but not the
         electrophysiological machine.
         """
-        suggested_new_num, latest_existing_num = self.get_next_sub_number()
+        suggested_new_num = self.get_next_sub_number()
 
         utils.print_message_to_user(
             "Local and Central repository searched. "
-            f"The most recent subject number found is: {latest_existing_num}. "
             f"The suggested new subject number is: {suggested_new_num}"
         )
 
@@ -936,11 +935,10 @@ class DataShuttle:
 
         sub : the subject for which to suggest the next available session.
         """
-        latest_existing_num, suggested_new_num = self.get_next_ses_number(sub)
+        suggested_new_num = self.get_next_ses_number(sub)
 
         utils.print_message_to_user(
             f"Local and Central repository searched for sessions for {sub}. "
-            f"The most recent session number found is: {latest_existing_num}. "
             f"The suggested new session number is: {suggested_new_num}"
         )
 

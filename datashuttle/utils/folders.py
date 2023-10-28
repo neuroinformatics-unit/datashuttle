@@ -576,8 +576,11 @@ def get_local_and_central_sub_or_ses_names(
 
 
 def get_next_sub_or_ses_number(
-    cfg: Configs, sub: Optional[str], search_str: str
-) -> Tuple[int, int]:
+    cfg: Configs,
+    sub: Optional[str],
+    search_str: str,
+    return_with_prefix: bool = True,
+) -> str:
     """
     Suggest the next available subject or session number. This function will
     search the local repository, and the central repository, for all subject
@@ -586,7 +589,6 @@ def get_next_sub_or_ses_number(
     pair values, and return the maximum value + 1 as the new number.
     A warning will be shown if the existing sub / session numbers are not
     consecutive.
-
 
     Parameters
     ----------
@@ -601,7 +603,6 @@ def get_next_sub_or_ses_number(
     latest_existing_num : the latest sub / ses number that currently
                           exists in the project.
     """
-
     if sub:
         bids_key = "ses"
     else:
@@ -617,29 +618,44 @@ def get_next_sub_or_ses_number(
     all_folders = list(set(folder_names["local"] + folder_names["central"]))
 
     if len(all_folders) == 0:
-        utils.raise_error(
-            "No folders found. Cannot suggest the next number.",
-            NeuroBlueprintError,
+        latest_existing_num = 0
+        num_value_digits = 3  # TODO: this sets an important default!
+    else:
+        all_values_str = utils.get_values_from_bids_formatted_name(
+            all_folders,
+            bids_key,
+            return_as_int=False,
         )
 
-    all_value_nums = utils.get_values_from_bids_formatted_name(
-        all_folders,
-        bids_key,
-        return_as_int=True,
-        sort=True,
-    )
+        all_num_value_digits = [len(value) for value in all_values_str]
+        if not len(set(all_num_value_digits)) == 1:
+            # TODO: add as NeuroBLueprintError
+            raise Exception(
+                f"The number of value digits for the {bids_key} level are not consistent."
+                f"Cannot suggest a {bids_key} number."
+            )
+        num_value_digits = all_num_value_digits[0]
 
-    if not utils.integers_are_consecutive(all_value_nums):
-        warnings.warn(
-            f"A subject number has been skipped, "
-            f"currently used subject numbers are: {all_value_nums}",
+        all_value_nums = sorted(
+            [utils.sub_or_ses_value_to_int(value) for value in all_values_str]
         )
+
+        if not utils.integers_are_consecutive(all_value_nums):
+            warnings.warn(
+                f"A subject number has been skipped, "
+                f"currently used subject numbers are: {all_value_nums}"
+            )
+
+        latest_existing_num = max(all_value_nums)
 
     # calculate next sub number
-    latest_existing_num = max(all_value_nums)
     suggested_new_num = latest_existing_num + 1
+    format_suggested_new_num = str(suggested_new_num).zfill(num_value_digits)
 
-    return suggested_new_num, latest_existing_num
+    if return_with_prefix:
+        format_suggested_new_num = f"{bids_key}-{format_suggested_new_num}"
+
+    return format_suggested_new_num
 
 
 def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
