@@ -8,6 +8,7 @@ from . import canonical_configs
 from .config_class import Configs
 
 ConfigValueTypes = Union[Path, str, bool, None]
+from datashuttle.utils.custom_exceptions import ConfigError
 
 # -----------------------------------------------------------------------------
 # Load Supplied Config
@@ -56,7 +57,8 @@ def make_config_file_attempt_load(
             f"Config file failed to load. Check file "
             f"formatting at {config_path.as_posix()}. If "
             f"cannot load, re-initialise configs with "
-            f"make_config_file()"
+            f"make_config_file()",
+            ConfigError,
         )
 
     return new_cfg
@@ -149,7 +151,8 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
         if isinstance(value, str):
             if value not in ["True", "False", "true", "false"]:
                 utils.raise_error(
-                    f"Input value for '{key}' must be True or False"
+                    f"Input value for '{key}' must be True or False",
+                    ValueError,
                 )
 
             value = value in ["True", "true"]

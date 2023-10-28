@@ -4,9 +4,11 @@ import logging
 import re
 import traceback
 from pathlib import Path
-from typing import List, Literal, Union, overload
+from typing import Any, List, Literal, Union, overload
 
 from rich import print as rich_print
+
+from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # --------------------------------------------------------------------------------------
 # General Utils
@@ -31,14 +33,14 @@ def log_and_message(message: str, use_rich: bool = False) -> None:
     print_message_to_user(message, use_rich)
 
 
-def log_and_raise_error(message: str) -> None:
+def log_and_raise_error(message: str, exception: Any) -> None:
     """
     Log the message before raising the same message as an error.
     """
     logger = logging.getLogger("datashuttle")
     logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
     logger.error(message)
-    raise_error(message)
+    raise_error(message, exception)
 
 
 def print_message_to_user(message: Union[str, list], use_rich=False) -> None:
@@ -60,11 +62,11 @@ def get_user_input(message: str) -> str:
     return input_
 
 
-def raise_error(message: str) -> None:
+def raise_error(message: str, exception) -> None:
     """
     Temporary centralized way to raise and error
     """
-    raise BaseException(message)
+    raise exception(message)
 
 
 def get_path_after_base_folder(base_folder: Path, path_: Path) -> Path:
@@ -97,10 +99,12 @@ def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
     supplied config path is indeed .yaml.
     """
     if not path_to_config.exists():
-        log_and_raise_error(f"No file found at: {path_to_config}.")
+        log_and_raise_error(
+            f"No file found at: {path_to_config}.", FileNotFoundError
+        )
 
     if path_to_config.suffix not in [".yaml", ".yml"]:
-        log_and_raise_error("The config file must be a YAML file.")
+        log_and_raise_error("The config file must be a YAML file.", ValueError)
 
 
 # TODO: test this method
@@ -139,22 +143,26 @@ def get_values_from_bids_formatted_name(
     all_values = []
     for name in all_names:
         if key not in name:
-            raise_error(f"The key {key} is not found in {name}")
+            raise_error(f"The key {key} is not found in {name}", KeyError)
 
         value = get_value_from_key_regexp(name, key)
 
         if len(value) > 1:
             raise_error(
                 f"There is more than instance of {key} in {name}. "
-                f"BIDS names must contain only one instance of "
-                f"each key."
+                f"NeuroBlueprint names must contain only one instance of "
+                f"each key.",
+                NeuroBlueprintError,
             )
 
         if return_as_int:
             try:
                 value_to_append = int(value[0])
             except ValueError:
-                raise_error(f"Invalid character in subject number: {name}")
+                raise_error(
+                    f"Invalid character in subject number: {name}",
+                    NeuroBlueprintError,
+                )
         else:
             value_to_append = value[0]
 

@@ -15,11 +15,11 @@ from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
-
 from pathlib import Path
 from typing import Literal, Union, get_args, get_origin
 
-from datashuttle.utils import utils
+from datashuttle.utils import folders, utils
+from datashuttle.utils.custom_exceptions import ConfigError
 
 
 def get_canonical_config_dict() -> dict:
@@ -109,13 +109,15 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             utils.log_and_raise_error(
                 f"Loading Failed. The key '{key}' was not "
                 f"found in the config. "
-                f"Config file was not updated."
+                f"Config file was not updated.",
+                ConfigError,
             )
     for key in config_dict.keys():
         if key not in canonical_dict.keys():
             utils.log_and_raise_error(
                 f"The config contains an invalid key: {key}. "
-                f"Config file was not updated."
+                f"Config file was not updated.",
+                ConfigError,
             )
 
     check_config_types(config_dict)
@@ -123,12 +125,14 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
             f"New config keys are in the wrong order. The"
-            f" order should be: {canonical_dict.keys()}."
+            f" order should be: {canonical_dict.keys()}.",
+            ConfigError,
         )
 
     if config_dict["connection_method"] not in ["ssh", "local_filesystem"]:
         utils.log_and_raise_error(
-            "'connection method' must be 'ssh' or 'local_filesystem'."
+            "'connection method' must be 'ssh' or 'local_filesystem'.",
+            ConfigError,
         )
 
     for path_type in ["local_path", "central_path"]:
@@ -136,7 +140,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         if path_name[0] == "~":
             utils.log_and_raise_error(
                 f"{path_type} must contain the full folder path "
-                "with no ~ syntax."
+                "with no ~ syntax.",
+                ConfigError,
             )
 
         # pathlib strips "./" so not checked.
@@ -144,7 +149,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             if path_name.startswith(bad_start):
                 utils.log_and_raise_error(
                     f"{path_type} must contain the full folder path "
-                    "with no dot syntax."
+                    "with no dot syntax.",
+                    ConfigError,
                 )
 
         project_name = config_dict.project_name
@@ -152,7 +158,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             utils.log_and_raise_error(
                 f"The {path_type} does not end in the project name: {project_name}. \n"
                 f"The last folder in the passed {path_type} should be {project_name}.\n"
-                f"The passed path was {config_dict[path_type]}"
+                f"The passed path was {config_dict[path_type]}",
+                ConfigError,
             )
 
     # Check SSH settings
@@ -162,13 +169,15 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     ):
         utils.log_and_raise_error(
             "'central_host_id' and 'central_host_username' are "
-            "required if 'connection_method' is 'ssh'."
+            "required if 'connection_method' is 'ssh'.",
+            ConfigError,
         )
 
     # Transfer settings
     if config_dict["transfer_verbosity"] not in ["v", "vv"]:
         utils.log_and_raise_error(
-            "'transfer_verbosity' must be either 'v' or 'vv'. Config not updated."
+            "'transfer_verbosity' must be either 'v' or 'vv'. Config not updated.",
+            ConfigError,
         )
 
     # Initialise the local project folder
@@ -182,7 +191,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     except OSError:
         utils.log_and_raise_error(
             f"Could not make project folder at: {config_dict['local_path']}."
-            f" Config file not updated."
+            f" Config file not updated.",
+            RuntimeError,
         )
 
 
@@ -210,7 +220,8 @@ def check_config_types(config_dict: Configs) -> None:
         if get_origin(expected_type) is Literal:
             if config_dict[key] not in get_args(expected_type):
                 utils.log_and_raise_error(
-                    f"'{config_dict[key]}' not in {get_args(expected_type)}"
+                    f"'{config_dict[key]}' not in {get_args(expected_type)}",
+                    ConfigError,
                 )
 
         elif len(get_args(required_types[key])) == 0:
@@ -224,5 +235,6 @@ def check_config_types(config_dict: Configs) -> None:
             utils.log_and_raise_error(
                 f"The type of the value at '{key}' is incorrect, "
                 f"it must be {expected_type}. "
-                f"Config file was not updated."
+                f"Config file was not updated.",
+                ConfigError,
             )
