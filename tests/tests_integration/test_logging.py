@@ -324,9 +324,143 @@ class TestLogging:
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
 
-    # ----------------------------------------------------------------------------------------------------------
+        # ----------------------------------------------------------------------------------
+        # Test temporary logging path
+        # ----------------------------------------------------------------------------------
+
+    def test_temp_log_folder_moved_make_config_file(
+        self, clean_project_name, tmp_path
+    ):
+        """
+        Similar to `test_logs_new_supply_config()`, check that
+        logs are moved to the passed `local_path` when
+        `make_config_file()` is passed.
+        """
+        project = DataShuttle(clean_project_name)
+
+        configs = test_utils.get_test_config_arguments_dict(
+            tmp_path, clean_project_name
+        )
+        project.make_config_file(**configs)
+
+        # After a config file is made, check that the logs are found in
+        # the passed `local_path`.
+        local_path_search = (
+            project.cfg["local_path"] / ".datashuttle" / "logs" / "*.log"
+        ).as_posix()
+
+        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
+        project_path_logs = glob.glob(local_path_search)
+
+        assert len(tmp_path_logs) == 0
+        assert len(project_path_logs) == 1
+        assert "make-config-file" in project_path_logs[0]
+
+        # Make another local path, and re-call `make_config_file`, checking
+        # the logs of the action are found in the new local path.
+        new_local_path = (
+            tmp_path / "new_path_for_log_tests" / clean_project_name
+        ).as_posix()
+
+        os.makedirs(new_local_path, exist_ok=True)
+
+        configs["local_path"] = new_local_path
+
+        project.make_config_file(**configs)
+
+        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
+        project_path_logs = glob.glob(local_path_search)
+        new_local_path_logs = glob.glob(
+            f"{new_local_path}/.datashuttle/logs/*.log"
+        )
+
+        assert len(tmp_path_logs) == 0
+        assert len(project_path_logs) == 1
+        assert len(new_local_path_logs) == 1
+        assert all("make-config-file" in log for log in project_path_logs)
+
+    def test_logs_new_supply_config(self, clean_project_name, tmp_path):
+        """
+        Check that logs are stored in the correct place after
+        supply_config_file() is used. Under the hood, logs are
+        stored to a temporary folder then moved to the local_path
+        passed in the folder.
+        """
+        project = DataShuttle(clean_project_name)
+
+        new_configs_path, _ = test_utils.make_correct_supply_config_file(
+            project,
+            tmp_path,
+        )
+        project.supply_config_file(new_configs_path, warn=False)
+
+        # Check that the logs for the `supply_config_file` command
+        # are found in the `local_path` from the supplied config.
+        local_path_log_search = str(
+            project.cfg["local_path"] / ".datashuttle" / "logs" / "*.log"
+        )
+        local_path_logs = glob.glob(local_path_log_search)
+
+        assert len(local_path_logs) == 1
+        assert "supply-config-file" in local_path_logs[0]
+
+        # Next, supply a new config file with a different
+        # `local_path`, and check when this is passed logs
+        # are created in the new `local_path`.
+        new_local_path = (
+            tmp_path / "new_path_for_log_tests" / clean_project_name
+        ).as_posix()
+        os.makedirs(new_local_path, exist_ok=True)
+
+        new_configs_path, _ = test_utils.make_correct_supply_config_file(
+            project,
+            tmp_path,
+            update_configs={"key": "local_path", "value": new_local_path},
+        )
+        project.supply_config_file(new_configs_path, warn=False)
+
+        local_path_logs = glob.glob(local_path_log_search)
+        new_path_logs = glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
+
+        assert len(new_path_logs) == 1
+        assert len(local_path_logs) == 1
+        assert all("supply-config-file" in log for log in local_path_logs)
+
+    def test_clear_logging_path(self, clean_project_name, tmp_path):
+        """
+        The temporary logging path holds logs which are all
+        transferred to a new `local_path` when configs
+        are updated. This should only ever be the most
+        recent log action, and not others which may
+        have accumulated due to raised errors. Therefore
+        the `_temp_log_path` is cleared before logging
+        begins, this test checks the `_temp_log_path`
+        is cleared correctly.
+        """
+        project = DataShuttle(clean_project_name)
+
+        configs = test_utils.get_test_config_arguments_dict(
+            tmp_path, clean_project_name
+        )
+
+        configs["local_path"] = "~"
+
+        with pytest.raises(BaseException):
+            project.make_config_file(**configs)
+
+        # Because an error was raised, the log will stay in the
+        # temp log folder. We clear it and check it is deleted.
+        stored_logs = glob.glob((project._temp_log_path / "*.log").as_posix())
+        assert len(stored_logs) == 1
+
+        project._clear_temp_log_path()
+
+        stored_logs = glob.glob((project._temp_log_path / "*.log").as_posix())
+        assert len(stored_logs) == 0
+
+    # ----------------------------------------------------------------------------------
     # Check errors propagate
-    # ----------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     def test_logs_check_update_config_error(self, project):
         """"""
@@ -360,129 +494,3 @@ class TestLogging:
             "Cannot make folders. A sub already exists with the same sub id as sub-01. "
             "The existing folder is sub-001" in log
         )
-
-    @pytest.mark.skipif("not IS_WINDOWS")
-    def test_temp_log_folder_made_make_config_file(
-        self, clean_project_name, tmp_path
-    ):
-        """"""
-        project = DataShuttle(clean_project_name)
-
-        configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, clean_project_name
-        )
-        configs["local_path"] = BAD_WINDOWS_FILECHAR
-
-        with pytest.raises(ConfigError):
-            project.make_config_file(**configs)
-
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-
-        assert len(tmp_path_logs) == 1
-        assert "make-config-file" in tmp_path_logs[0]
-
-    def test_temp_log_folder_moved_make_config_file(
-        self, clean_project_name, tmp_path
-    ):
-        """
-        Check the logs are moved to the new logging path
-        after project init for the first time.
-        """
-        project = DataShuttle(clean_project_name)
-
-        configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, clean_project_name
-        )
-        project.make_config_file(**configs)
-
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        project_path_logs = glob.glob(str(project.cfg.logging_path / "*.log"))
-
-        assert len(tmp_path_logs) == 0
-        assert len(project_path_logs) == 1
-        assert "make-config-file" in project_path_logs[0]
-
-    @pytest.mark.skipif("not IS_WINDOWS")
-    @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
-    def test_temp_log_folder_made_update_config(
-        self, project, supply_or_update, tmp_path
-    ):
-        """"""
-        self.delete_log_files(project.cfg.logging_path)
-
-        # Try to set local_path to a folder that cannot be made.
-        # The existing local project exists, so put the log there
-        with pytest.raises(ConfigError):
-            self.run_supply_or_update_configs(
-                project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
-            )
-
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        orig_local_path_logs = glob.glob(
-            str(project.cfg.logging_path / "*.log")
-        )
-
-        assert len(tmp_path_logs) == 0
-        assert len(orig_local_path_logs) == 1
-        self.delete_log_files(project.cfg.logging_path)
-
-        # Now change the local_path to something that doesn't exist.
-        # Also, the new path cannot be made. In this case store the logs
-        # in the temp log file.
-        project.cfg["local_path"] = Path("folder_that_does_not_exist")
-
-        with pytest.raises(ConfigError):
-            self.run_supply_or_update_configs(
-                project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
-            )
-
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        orig_local_path_logs = glob.glob(
-            str(project.cfg.logging_path / "*.log")
-        )
-
-        assert len(tmp_path_logs) == 1
-        assert len(orig_local_path_logs) == 0
-
-    @pytest.mark.parametrize("supply_or_update", ["update", "supply"])
-    def test_temp_log_folder_moved(self, project, supply_or_update, tmp_path):
-        """
-        Now set the existing project path to one that does not
-        exist but the new one to a project that does - and check
-        logs are moved to new project.
-        """
-        project.cfg["local_path"] = (
-            Path("folder_that_does_not_exist") / project.project_name
-        )
-        new_log_path = (
-            project.cfg.logging_path / "new_logs" / project.project_name
-        )
-
-        self.run_supply_or_update_configs(
-            project,
-            supply_or_update,
-            new_local_path=new_log_path.as_posix(),
-            tmp_path=tmp_path,
-        )
-
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        new_path_logs = glob.glob(
-            str(new_log_path / ".datashuttle" / "logs" / "*.log")
-        )
-
-        assert len(tmp_path_logs) == 0
-        assert len(new_path_logs) == 1
-
-    def run_supply_or_update_configs(
-        self, project, supply_or_update, new_local_path, tmp_path
-    ):
-        """"""
-        if supply_or_update == "update":
-            project.update_config("local_path", new_local_path)
-        else:
-            new_configs_path, _ = test_utils.make_correct_supply_config_file(
-                project,
-                tmp_path,
-                update_configs={"key": "local_path", "value": new_local_path},
-            )
-            project.supply_config_file(new_configs_path, warn=False)
