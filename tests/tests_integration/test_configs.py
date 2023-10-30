@@ -69,6 +69,7 @@ class TestConfigs(BaseTest):
             central_path = bad_pattern
 
         os.makedirs(local_path, exist_ok=True)
+        os.makedirs(central_path, exist_ok=True)
 
         with pytest.raises(ConfigError) as e:
             project.make_config_file(
@@ -126,7 +127,12 @@ class TestConfigs(BaseTest):
         are set.
         """
         local_path = tmp_path / "test_local_path" / no_cfg_project.project_name
+        central_path = (
+            tmp_path / "test_central_path" / no_cfg_project.project_name
+        )
+
         os.makedirs(local_path, exist_ok=True)
+        os.makedirs(central_path, exist_ok=True)
 
         no_cfg_project.make_config_file(
             local_path,
