@@ -155,13 +155,9 @@ class TestLogging:
             in log
         )
 
-<<<<<<< HEAD
     def test_make_folders(self, project):
-        subs = ["sub-11", f"sub-002{tags('to')}004"]
-=======
-    def test_make_folders(self, setup_project):
         subs = ["sub-111", f"sub-002{tags('to')}004"]
->>>>>>> e368a22 (Fix tests.)
+
         ses = ["ses-123", "ses-101"]
 
         project.make_folders(subs, ses, datatype="all")
@@ -186,12 +182,7 @@ class TestLogging:
         assert "Made folder at path:" in log
 
         assert (
-            str(
-                Path("local")
-                / project.project_name
-                / "rawdata"
-                / "sub-111"
-            )
+            str(Path("local") / project.project_name / "rawdata" / "sub-111")
             in log
         )
         assert (
