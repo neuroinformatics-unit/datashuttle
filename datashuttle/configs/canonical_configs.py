@@ -239,6 +239,44 @@ def check_folder_above_project_name_exists(config_dict: Configs):
         )
 
 
+def check_folder_above_project_name_exists(config_dict: Configs):
+    """
+    Throw an error if the path above the project root does not exist.
+    This validation is necessary (rather than simply creating the passed folders)
+    is to ensure the `local_path` or `central_path` are not accidentally set to a wrong
+    location.
+
+    If the `connection_method` is "ssh" is it not possible to check the central
+    path at this stage.
+    """
+
+    def base_error_message(path_name):
+        return (
+            f"The {path_name}: {config_dict[path_name].parent} that the project folder "
+            f"will reside in does not yet exist. Please ensure the path shown in this "
+            f"message exists before continuing."
+        )
+
+    if not (config_dict["local_path"].parent.is_dir()):
+        if config_dict["connection_method"] == "ssh":
+            extra_warning = (
+                "Also make sure the central_path`, is correct, as datashuttle "
+                "cannot check it via SSH at this stage."
+            )
+        else:
+            extra_warning = ""
+
+        utils.log_and_raise_error(
+            f"{base_error_message('local_path')} {extra_warning}"
+        )
+
+    if (
+        config_dict["connection_method"] == "local_filesystem"
+        and not config_dict["central_path"].parent.is_dir()
+    ):
+        utils.log_and_raise_error(base_error_message("central_path"))
+
+
 def check_config_types(config_dict: Configs) -> None:
     """
     Check the type of passed configs matched canonical types.
