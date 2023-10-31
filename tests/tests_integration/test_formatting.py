@@ -128,12 +128,12 @@ class TestFormatting(BaseTest):
         self.check_inconsistent_sub_or_ses_value_length_warning(project, "sub")
 
         # Now, have conflicting subject names, but one in local and one in central
-        project.update_config(
-            "central_path",
-            project.cfg["local_path"].parent
-            / "central"
-            / project.project_name,
+        new_central_path = (
+            project.cfg["local_path"].parent / "central" / project.project_name
         )
+        os.makedirs(new_central_path, exist_ok=True)
+
+        project.update_config("central_path", new_central_path)
         os.makedirs(project.cfg["central_path"] / "rawdata" / bad_sub_name)
         shutil.rmtree(project.cfg["local_path"] / "rawdata" / bad_sub_name)
         self.check_inconsistent_sub_or_ses_value_length_warning(project, "sub")
@@ -179,12 +179,12 @@ class TestFormatting(BaseTest):
 
         # Now, have conflicting session names (in different subject directories)
         # where one subject directory is local and the other is central.
-        project.update_config(
-            "central_path",
-            project.cfg["local_path"].parent
-            / "central"
-            / project.project_name,
+        new_central_path = (
+            project.cfg["local_path"].parent / "central" / project.project_name
         )
+        os.makedirs(new_central_path, exist_ok=True)
+
+        project.update_config("central_path", new_central_path)
         os.makedirs(
             project.cfg["central_path"] / "rawdata" / "sub-001" / bad_ses_name
         )

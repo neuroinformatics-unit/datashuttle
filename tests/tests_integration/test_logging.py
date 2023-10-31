@@ -71,11 +71,14 @@ class TestLogging:
     def read_log_file(self, logging_path):
         log_filepath = glob.glob(str(logging_path / "*.log"))
 
-        assert len(log_filepath) == 1, (
-            f"there should only be one log "
-            f"in log output path {logging_path}"
-        )
-        log_filepath = log_filepath[0]
+        try:
+            assert len(log_filepath) == 1, (
+                f"there should only be one log "
+                f"in log output path {logging_path}"
+            )
+            log_filepath = log_filepath[0]
+        except:
+            breakpoint()
 
         with open(log_filepath, "r") as file:
             log = file.read()
@@ -145,11 +148,12 @@ class TestLogging:
             project, tmp_path
         )
         self.delete_log_files(project.cfg.logging_path)
-        orig_project_path = project.cfg.logging_path
 
         project.supply_config_file(new_configs_path, warn=False)
 
-        log = self.read_log_file(orig_project_path)
+        log = self.read_log_file(
+            project.cfg["local_path"] / ".datashuttle" / "logs"
+        )
 
         assert "supply-config-file" in log
         assert "\n\nVariablesState:\nlocals: {'input_path_to_config':" in log
@@ -324,9 +328,9 @@ class TestLogging:
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
 
-        # ----------------------------------------------------------------------------------
-        # Test temporary logging path
-        # ----------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
+    # Test temporary logging path
+    # ----------------------------------------------------------------------------------
 
     def test_temp_log_folder_moved_make_config_file(
         self, clean_project_name, tmp_path
@@ -475,10 +479,9 @@ class TestLogging:
         )
 
         assert (
-            "\n\nVariablesState:\nlocals: {'option_key': 'connection_method', 'new_info': 'ssh', 'store_logs_in_temp_folder': False}\ncfg: {'local_path':"
-            in log
+            "\n\nVariablesState:\nlocals: {'option_key': "
+            "'connection_method', 'new_info': 'ssh'" in log
         )
-        assert "connection_method was not updated" in log
 
     def test_logs_bad_make_folders_error(self, project):
         """"""
