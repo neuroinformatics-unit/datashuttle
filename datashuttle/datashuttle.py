@@ -950,7 +950,7 @@ class DataShuttle:
         """Placeholder"""
         utils.print_message_to_user("Validating project...")
 
-        self._warn_on_inconsistent_sub_or_ses_leading_zeros()
+        self._warn_on_inconsistent_sub_or_ses_value_lengths()
 
     @check_configs_set
     def show_next_ses_number(self, sub: Optional[str]) -> None:
@@ -1267,9 +1267,9 @@ class DataShuttle:
             settings = yaml.full_load(settings_file)
         return settings
 
-    def _warn_on_inconsistent_sub_or_ses_leading_zeros(self) -> None:
+    def _warn_on_inconsistent_sub_or_ses_value_lengths(self) -> None:
         """
         Wrapper function to allow isolated testing of functions that make up
         self.validate_project()
         """
-        formatting.warn_on_inconsistent_sub_or_ses_leading_zeros(self.cfg)
+        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)

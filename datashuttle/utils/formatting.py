@@ -1,6 +1,5 @@
 import datetime
 import re
-import statistics
 import warnings
 from itertools import compress
 from typing import Any, List, Literal, Tuple, Union
@@ -351,30 +350,30 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
 # --------------------------------------------------------------------------------------
 
 
-def warn_on_inconsistent_sub_or_ses_leading_zeros(
+def warn_on_inconsistent_sub_or_ses_value_lengths(
     cfg: Configs,
 ):
     """
-    Determine if there are inconsistent leading zeros across the
+    Determine if there are inconsistent value lengths across the
     project (i.e. this local machine and the central machine.
     For example, there are inconsistent leading zeros in the list
-    ["sub-001", "sub-02"], but not ["sub-001", "sub-002"].
+    ["sub-001", "sub-02"], but not ["sub-001", "sub-002"]).
 
-    If the number of leading zeros are not consistent (across local and remote
-    repositories), then throw a warning. It is allowed for subjects
+    If the number of sub or ses value lengths not consistent (across local
+    and remote repositories), then throw a warning. It is allowed for subjects
     and session folder names to have inconsistent leading zeros. But, within
-    subject or session names, the number of leading zeros must be consistent
+    subject or session names, the value lengths t be consistent
     across local and central projects.
     """
     try:
         (
             subs_are_inconsistent,
             ses_are_inconsistent,
-        ) = project_has_inconsistent_num_leading_zeros(cfg)
+        ) = project_has_inconsistent_sub_or_ses_value_lengths(cfg)
     except:
         warnings.warn(
             "Could not search local and remote repositories. "
-            "Leading zero consistency checks not performed."
+            "sub or ses key value length checks not performed."
         )
         return
 
@@ -382,26 +381,33 @@ def warn_on_inconsistent_sub_or_ses_leading_zeros(
         compress(["sub", "ses"], [subs_are_inconsistent, ses_are_inconsistent])
     )
 
-    for fail_name in failing_cases:
-        message = (
-            f"Inconsistent number of leading zeros for "
-            f"{fail_name} names in the project found. It is crucial "
-            f"these are made consistent as soon as possible to "
-            f"avoid unexpected behaviour of DataShuttle during "
-            f"data transfer."
+    if any(failing_cases):
+        for fail_name in failing_cases:
+            message = (
+                f"Inconsistent value lengths for "
+                f"the {fail_name} key in the project found. It is crucial "
+                f"these are made consistent as soon as possible to "
+                f"avoid unexpected behaviour of DataShuttle during "
+                f"data transfer."
+            )
+            warnings.warn(message)
+
+    else:
+        utils.print_message_to_user(
+            "No cases of inconsistent value lengths for subject or session"
+            "found across this local machine and the central machine."
         )
-        warnings.warn(message)
 
 
-def project_has_inconsistent_num_leading_zeros(
+def project_has_inconsistent_sub_or_ses_value_lengths(
     cfg: Configs,
 ) -> Tuple[bool, bool]:
     """
     Return bool indicating where the project (i.e. across
-    both `local` and `central`) has consistent leading
-    number of zeros for subjects and separately, sessions.
+    both `local` and `central`) has consistent value lengths
+    for sub and ses keys.
     It is not required that subjects and sessions have
-    an equivalent number of leading zeros (e.g.
+    an equivalent value length (e.g.
     `sub-001`, `ses-01` is okay. But `sub-001`, `sub-02` is not.
     """
     (
@@ -409,31 +415,21 @@ def project_has_inconsistent_num_leading_zeros(
         all_ses_foldernames,
     ) = folders.get_all_local_and_central_sub_and_ses_names(cfg)
 
-    subs_are_inconsistent = inconsistent_num_leading_zeros(
+    subs_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
         all_sub_foldernames, "sub"
     )
-    ses_are_inconsistent = inconsistent_num_leading_zeros(
+    ses_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
         all_ses_foldernames, "ses"
     )
     return subs_are_inconsistent, ses_are_inconsistent
 
 
-def inconsistent_num_leading_zeros(
+def inconsistent_sub_or_ses_value_lengths(
     all_names: List[str], sub_or_ses: Literal["sub", "ses"]
 ) -> bool:
     """
-    Given a list of BIDS-formatted subject or session names, determine if
-    there are inconsistent leading zeros within the list of names.
-
-    For example, there are inconsistent leading zeros in the list
-    ["sub-001", "sub-02"], but not ["sub-001", "sub-002"].
-
-    First, check that all numbers are the same length (e.g. `010` and `100`
-    is okay). If not, if a number is larger than the most common length
-    (e.g. `1000`), check it has no leading zeros (e.g. if sub names are
-    `001`, `010`, `100`, then `1000` is allowed by `0101` is not allowed).
-    If a value length is smaller than the most common length, it is invalid
-    (because it should be padded with zero).
+    Given a list of NeuroBlueprint-formatted subject or session names, determine if
+    there are inconsistent value lengths for the sub or ses key.
     """
     all_numbers = utils.get_values_from_bids_formatted_name(
         all_names,
@@ -441,23 +437,9 @@ def inconsistent_num_leading_zeros(
     )
 
     all_num_lens = [len(num) for num in all_numbers]
+
     if all_num_lens != [] and not identical_elements(all_num_lens):
-        most_common_len = statistics.mode(all_num_lens)
-
-        larger_than_most_common_with_leading_zeros = [
-            num
-            for num in all_numbers
-            if (len(num) > most_common_len and num_leading_zeros(num) != 0)
-        ]
-
-        less_than_most_common = [
-            num for num in all_numbers if len(num) < most_common_len
-        ]
-
-        if any(less_than_most_common) or any(
-            larger_than_most_common_with_leading_zeros
-        ):
-            return True
+        return True
 
     return False
 
