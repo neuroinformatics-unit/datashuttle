@@ -162,7 +162,7 @@ class TestFormatting(BaseTest):
         self, project, ses_name, bad_ses_name
     ):
         """
-        This function is exactly the same as `test_warn_on_inconsistent_leading_zeros_sub()`
+        This function is exactly the same as `test_warn_on_inconsistent_sub_value_lengths()`
         but operates at the session level. This is extreme code duplication, but
         factoring the main logic out got very messy and hard to follow.
         So, in this case code duplicate is the price to pay.
