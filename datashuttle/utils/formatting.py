@@ -346,7 +346,7 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
             )
 
 
-# Leading Zero Checks
+# Sub or ses value length checks
 # --------------------------------------------------------------------------------------
 
 
@@ -413,7 +413,7 @@ def project_has_inconsistent_sub_or_ses_value_lengths(
     (
         all_sub_foldernames,
         all_ses_foldernames,
-    ) = folders.get_all_local_and_central_sub_and_ses_names(cfg)
+    ) = folders.get_all_sub_and_ses_names(cfg)
 
     subs_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
         all_sub_foldernames, "sub"

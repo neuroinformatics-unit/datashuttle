@@ -376,13 +376,16 @@ def search_for_wildcards(
     return new_all_names
 
 
-def get_all_local_and_central_sub_and_ses_names(
+def get_all_sub_and_ses_names(
     cfg: Configs,
 ) -> Tuple[List[str], List[str]]:
     """
-    Get a list of every subject and session name in the project, both in the
+    Get a list of every subject and session name in the
     local and central project folders. Local and central names are combined
     into a single list, separately for subject and sessions.
+
+    Note this only finds local sub and ses names on this
+    machine. Other local machines are not searched.
     """
     (
         local_sub_foldernames,

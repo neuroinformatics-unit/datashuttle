@@ -947,10 +947,14 @@ class DataShuttle:
 
     @check_configs_set
     def validate_project(self):
-        """Placeholder"""
+        """
+        Perform validation on the project. Currently checks that
+        sub and ses values have the same length for all sub and
+        ses in the project.
+        """
         utils.print_message_to_user("Validating project...")
 
-        self._warn_on_inconsistent_sub_or_ses_value_lengths()
+        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
 
     @check_configs_set
     def show_next_ses_number(self, sub: Optional[str]) -> None:
@@ -1266,10 +1270,3 @@ class DataShuttle:
         with open(self._persistent_settings_path, "r") as settings_file:
             settings = yaml.full_load(settings_file)
         return settings
-
-    def _warn_on_inconsistent_sub_or_ses_value_lengths(self) -> None:
-        """
-        Wrapper function to allow isolated testing of functions that make up
-        self.validate_project()
-        """
-        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
