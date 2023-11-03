@@ -43,10 +43,10 @@ class ShowConfigsDialog(ModalScreen):
     for more information.
     """
 
-    def __init__(self, dict_, message_before_dict=""):
+    def __init__(self, project_configs_dict, message_before_dict=""):
         super(ShowConfigsDialog, self).__init__()
 
-        self.dict_ = dict_
+        self.project_configs_dict = project_configs_dict
         self.message_before_dict = message_before_dict
 
     def compose(self):
@@ -67,7 +67,9 @@ class ShowConfigsDialog(ModalScreen):
         """
         The first row is empty because the header is not displayed.
         """
-        ROWS = [("", "")] + [(key, value) for key, value in self.dict_.items()]
+        ROWS = [("", "")] + [
+            (key, value) for key, value in self.project_configs_dict.items()
+        ]
 
         table = self.query_one(DataTable)
         table.add_columns(*ROWS[0])
