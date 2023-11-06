@@ -362,7 +362,7 @@ def warn_on_inconsistent_sub_or_ses_value_lengths(
     If the number of sub or ses value lengths are not consistent (across local
     and remote repositories), then throw a warning. It is allowed for subjects
     and session folder names to have inconsistent leading zeros. But, within
-    subject or session names, the value lengths t be consistent
+    subject or session names, the value lengths must be consistent
     across local and central projects.
     """
     try:
