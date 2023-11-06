@@ -359,7 +359,7 @@ def warn_on_inconsistent_sub_or_ses_value_lengths(
     For example, there are inconsistent leading zeros in the list
     ["sub-001", "sub-02"], but not ["sub-001", "sub-002"]).
 
-    If the number of sub or ses value lengths not consistent (across local
+    If the number of sub or ses value lengths are not consistent (across local
     and remote repositories), then throw a warning. It is allowed for subjects
     and session folder names to have inconsistent leading zeros. But, within
     subject or session names, the value lengths t be consistent
