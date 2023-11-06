@@ -387,25 +387,25 @@ def get_all_sub_and_ses_names(
     Note this only finds local sub and ses names on this
     machine. Other local machines are not searched.
     """
-    (
-        local_sub_foldernames,
-        central_sub_foldernames,
-    ) = get_local_and_central_sub_or_ses_names(cfg, None, "sub-*")
+    sub_folder_names = get_local_and_central_sub_or_ses_names(
+        cfg, None, "sub-*"
+    )
 
-    all_sub_foldernames = local_sub_foldernames + central_sub_foldernames
+    all_sub_folder_names = (
+        sub_folder_names["local"] + sub_folder_names["central"]
+    )
 
-    all_ses_foldernames = []
-    for sub in all_sub_foldernames:
-        (
-            local_ses_foldernames,
-            central_ses_foldernames,
-        ) = get_local_and_central_sub_or_ses_names(cfg, sub, "ses-*")
-
-        all_ses_foldernames.extend(
-            local_ses_foldernames + central_ses_foldernames
+    all_ses_folder_names = []
+    for sub in all_sub_folder_names:
+        ses_folder_names = get_local_and_central_sub_or_ses_names(
+            cfg, sub, "ses-*"
         )
 
-    return {"sub": all_sub_foldernames, "ses": all_ses_foldernames}
+        all_ses_folder_names.extend(
+            ses_folder_names["local"] + ses_folder_names["central"]
+        )
+
+    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
 
 
 # Search Data Types
@@ -508,7 +508,7 @@ def search_filesystem_path_for_folders(
 
 def get_local_and_central_sub_or_ses_names(
     cfg: Configs, sub: Optional[str], search_str: str
-) -> Tuple[List[str], List[str]]:
+) -> Dict:
     """
     If sub is None, the top-level level folder will be searched (i.e. for subjects).
     The search string "sub-*" is suggested in this case. Otherwise, the subject,
@@ -538,7 +538,7 @@ def get_local_and_central_sub_or_ses_names(
         search_str=search_str,
         verbose=False,
     )
-    return local_foldernames, central_foldernames
+    return {"local": local_foldernames, "central": central_foldernames}
 
 
 def get_next_sub_or_ses_number(
@@ -573,17 +573,14 @@ def get_next_sub_or_ses_number(
     else:
         bids_key = "sub"
 
-    (
-        local_foldernames,
-        central_foldernames,
-    ) = get_local_and_central_sub_or_ses_names(
+    folder_names = get_local_and_central_sub_or_ses_names(
         cfg,
         sub,
         search_str,
     )
 
     # Convert subject values to a list of increasing-by-1 integers
-    all_folders = list(set(local_foldernames + central_foldernames))
+    all_folders = list(set(folder_names["local"] + folder_names["central"]))
 
     if len(all_folders) == 0:
         utils.raise_error("No folders found. Cannot suggest the next number.")
