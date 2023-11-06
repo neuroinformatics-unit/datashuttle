@@ -2,7 +2,7 @@ import datetime
 import re
 import warnings
 from itertools import compress
-from typing import Any, List, Literal, Tuple, Union
+from typing import Any, Dict, List, Literal, Union
 
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.configs.config_class import Configs
@@ -366,10 +366,9 @@ def warn_on_inconsistent_sub_or_ses_value_lengths(
     across local and central projects.
     """
     try:
-        (
-            subs_are_inconsistent,
-            ses_are_inconsistent,
-        ) = project_has_inconsistent_sub_or_ses_value_lengths(cfg)
+        is_inconsistent = project_has_inconsistent_sub_or_ses_value_lengths(
+            cfg
+        )
     except:
         warnings.warn(
             "Could not search local and remote repositories. "
@@ -378,7 +377,9 @@ def warn_on_inconsistent_sub_or_ses_value_lengths(
         return
 
     failing_cases = list(
-        compress(["sub", "ses"], [subs_are_inconsistent, ses_are_inconsistent])
+        compress(
+            ["sub", "ses"], [is_inconsistent["sub"], is_inconsistent["ses"]]
+        )
     )
 
     if any(failing_cases):
@@ -401,7 +402,7 @@ def warn_on_inconsistent_sub_or_ses_value_lengths(
 
 def project_has_inconsistent_sub_or_ses_value_lengths(
     cfg: Configs,
-) -> Tuple[bool, bool]:
+) -> Dict:
     """
     Return bool indicating where the project (i.e. across
     both `local` and `central`) has consistent value lengths
@@ -418,7 +419,7 @@ def project_has_inconsistent_sub_or_ses_value_lengths(
     ses_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
         folder_names["ses"], "ses"
     )
-    return subs_are_inconsistent, ses_are_inconsistent
+    return {"sub": subs_are_inconsistent, "ses": ses_are_inconsistent}
 
 
 def inconsistent_sub_or_ses_value_lengths(
