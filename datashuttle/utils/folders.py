@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
     from datashuttle import DataShuttle
@@ -378,7 +378,7 @@ def search_for_wildcards(
 
 def get_all_sub_and_ses_names(
     cfg: Configs,
-) -> Tuple[List[str], List[str]]:
+) -> Dict:
     """
     Get a list of every subject and session name in the
     local and central project folders. Local and central names are combined
@@ -405,7 +405,7 @@ def get_all_sub_and_ses_names(
             local_ses_foldernames + central_ses_foldernames
         )
 
-    return all_sub_foldernames, all_ses_foldernames
+    return {"sub": all_sub_foldernames, "ses": all_ses_foldernames}
 
 
 # Search Data Types

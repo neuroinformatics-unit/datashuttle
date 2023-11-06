@@ -410,16 +410,13 @@ def project_has_inconsistent_sub_or_ses_value_lengths(
     an equivalent value length (e.g.
     `sub-001`, `ses-01` is okay. But `sub-001`, `sub-02` is not.
     """
-    (
-        all_sub_foldernames,
-        all_ses_foldernames,
-    ) = folders.get_all_sub_and_ses_names(cfg)
+    folder_names = folders.get_all_sub_and_ses_names(cfg)
 
     subs_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
-        all_sub_foldernames, "sub"
+        folder_names["sub"], "sub"
     )
     ses_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
-        all_ses_foldernames, "ses"
+        folder_names["ses"], "ses"
     )
     return subs_are_inconsistent, ses_are_inconsistent
 
