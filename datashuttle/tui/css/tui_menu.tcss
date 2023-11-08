@@ -46,7 +46,6 @@ ErrorScreen {
     width: 65;
     border: thick rgb(140, 12, 0);
     background: $primary-background;
-    content-align: center middle;
  }
 
 #errorscreen_message_container {
@@ -57,6 +56,7 @@ ErrorScreen {
 
 #errorscreen_message_label {
     text-align: center;
+    padding: 0 2;
 }
 
 #errorscreen_ok_button {
@@ -72,22 +72,16 @@ ErrorScreen:light > #errorscreen_top_container {
     align: center middle;
  }
 
-/* ShowConfigsDialog  --- TODO: this is basically copy and paste from ErrorDialog :(  */
+/* ShowConfigsDialog --------------------------------------------------------------------- */
 
 ShowConfigsDialog {
     align: center middle;
 }
 
-#config_table_label {
-    align: center middle;
-    padding: 1 2 1 1;
-}
-#display_configs_stop_container {
+#display_configs_top_container {
     height: 20;
-    width: 125;
-    border: tall $panel-lighten-3;
+    width: 115;
     background: $primary-background;
-    content-align: center middle;
     border: thick rgb(1, 138, 13);
 }
 
@@ -99,8 +93,8 @@ ShowConfigsDialog {
 
 #display_configs_message_label {
     text-align: center;
+    width: auto;
     overflow: auto;
-    text-align: center;
     padding: 1 0 2 0;
 }
 
@@ -109,11 +103,15 @@ ShowConfigsDialog {
     height: 3;
 }
 
-/* Light Mode Error Screen */
+#modal_table {
+    width: auto;
+}
 
-show_dict:light > #display_configs_stop_container {
-    border: thick rgb(209, 41, 25);
-    background: $boost;
+/* Light Mode Config Dialog */
+
+ShowConfigsDialog:light > #display_configs_top_container {
+    border: thick rgb(1, 138, 13);
+    background: $background-darken-1;
     align: center middle;
  }
 
@@ -179,7 +177,7 @@ show_dict:light > #display_configs_stop_container {
     layer: top;
 }
 
-/* This Horizontal wrapper containers are necessary to make the
+/* This Horizontal wrapper container is necessary to make the
 config label and button align center */
 
 #configs_container > Horizontal {

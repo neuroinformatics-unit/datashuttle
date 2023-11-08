@@ -60,7 +60,7 @@ class ShowConfigsDialog(ModalScreen):
                 id="display_configs_message_container",
             ),
             Container(Button("OK"), id="display_configs_ok_button"),
-            id="display_configs_stop_container",
+            id="display_configs_top_container",
         )
 
     def on_mount(self):
@@ -367,9 +367,10 @@ class ConfigsContent(Container):
             self.parent_class.mainwindow.push_screen(
                 ShowConfigsDialog(
                     get_textual_compatible_project_configs(project.cfg),
-                    "Congratulations, you have set up DataShuttle with the below "
-                    "configs.\n\nNext, you will be taken to the project page where "
-                    "you can create and transfer your project folders.",
+                    "A DataShuttle project with the below "
+                    "configs has now been created.\n\n Click 'OK' to proceed to "
+                    "the project page, where you will \n be able to create and "
+                    "transfer project folders.",
                 ),
                 lambda _: self.parent_class.dismiss(project),
             )
@@ -396,8 +397,8 @@ class ConfigsContent(Container):
             self.parent_class.mainwindow.push_screen(
                 ShowConfigsDialog(
                     configs_to_show,
-                    "The Configs for the project have been set to the "
-                    "following values:",
+                    "The configs for this project have been successfully"
+                    " set to the following values:",
                 )
             )
         except BaseException as e:
