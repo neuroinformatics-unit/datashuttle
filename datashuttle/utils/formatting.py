@@ -1,11 +1,13 @@
 import datetime
 import re
-from typing import List, Literal, Union
+import warnings
+from itertools import compress
+from typing import Any, Dict, List, Literal, Union
 
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.configs.config_class import Configs
 
-from . import utils
+from . import folders, utils
 
 # --------------------------------------------------------------------------------------------------------------------
 # Format Sub / Ses Names
@@ -203,6 +205,9 @@ def make_list_of_zero_padded_names_across_range(
 
 def num_leading_zeros(string: str) -> int:
     """int() strips leading zeros"""
+    if string[:4] in ["sub-", "ses-"]:
+        string = string[4:]
+
     return len(string) - len(str(int(string)))
 
 
@@ -339,3 +344,103 @@ def check_dashes_and_underscore_alternate_correctly(all_names):
                 "Subject and session names must contain alternating dashes and "
                 "underscores (used for separating key-value pairs)."
             )
+
+
+# Sub or ses value length checks
+# --------------------------------------------------------------------------------------
+
+
+def warn_on_inconsistent_sub_or_ses_value_lengths(
+    cfg: Configs,
+):
+    """
+    Determine if there are inconsistent value lengths across the
+    project (i.e. this local machine and the central machine.
+    For example, there are inconsistent leading zeros in the list
+    ["sub-001", "sub-02"], but not ["sub-001", "sub-002"]).
+
+    If the number of sub or ses value lengths are not consistent (across local
+    and remote repositories), then throw a warning. It is allowed for subjects
+    and session folder names to have inconsistent leading zeros. But, within
+    subject or session names, the value lengths must be consistent
+    across local and central projects.
+    """
+    try:
+        is_inconsistent = project_has_inconsistent_sub_or_ses_value_lengths(
+            cfg
+        )
+    except:
+        warnings.warn(
+            "Could not search local and remote repositories. "
+            "sub or ses key value length checks not performed."
+        )
+        return
+
+    failing_cases = list(
+        compress(
+            ["sub", "ses"], [is_inconsistent["sub"], is_inconsistent["ses"]]
+        )
+    )
+
+    if any(failing_cases):
+        for fail_name in failing_cases:
+            message = (
+                f"Inconsistent value lengths for "
+                f"the {fail_name} key in the project found. It is crucial "
+                f"these are made consistent as soon as possible to "
+                f"avoid unexpected behaviour of DataShuttle during "
+                f"data transfer."
+            )
+            warnings.warn(message)
+
+    else:
+        utils.print_message_to_user(
+            "No cases of inconsistent value lengths for subject or session"
+            "found across this local machine and the central machine."
+        )
+
+
+def project_has_inconsistent_sub_or_ses_value_lengths(
+    cfg: Configs,
+) -> Dict:
+    """
+    Return bool indicating where the project (i.e. across
+    both `local` and `central`) has consistent value lengths
+    for sub and ses keys.
+    It is not required that subjects and sessions have
+    an equivalent value length (e.g.
+    `sub-001`, `ses-01` is okay. But `sub-001`, `sub-02` is not.
+    """
+    folder_names = folders.get_all_sub_and_ses_names(cfg)
+
+    subs_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
+        folder_names["sub"], "sub"
+    )
+    ses_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
+        folder_names["ses"], "ses"
+    )
+    return {"sub": subs_are_inconsistent, "ses": ses_are_inconsistent}
+
+
+def inconsistent_sub_or_ses_value_lengths(
+    all_names: List[str], sub_or_ses: Literal["sub", "ses"]
+) -> bool:
+    """
+    Given a list of NeuroBlueprint-formatted subject or session names, determine if
+    there are inconsistent value lengths for the sub or ses key.
+    """
+    all_numbers = utils.get_values_from_bids_formatted_name(
+        all_names,
+        sub_or_ses,
+    )
+
+    all_num_lens = [len(num) for num in all_numbers]
+
+    if all_num_lens != [] and not identical_elements(all_num_lens):
+        return True
+
+    return False
+
+
+def identical_elements(list_: List[Any]) -> bool:
+    return len(set(list_)) == 1

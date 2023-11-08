@@ -189,6 +189,16 @@ class TestUnit:
         id = utils.get_value_from_key_regexp(bids_name, "id")[0]
         assert id == "3asd@523"
 
+    def test_num_leading_zeros(self):
+        """
+        Check num_leading_zeros handles prefixed and non-prefixed
+        case from -1 to -(101x 0)1.
+        """
+        for i in range(101):
+            assert formatting.num_leading_zeros("1".zfill(i + 1)) == i
+            assert formatting.num_leading_zeros("sub-" + "1".zfill(i + 1)) == i
+            assert formatting.num_leading_zeros("ses-" + "1".zfill(i + 1)) == i
+
     # ----------------------------------------------------------------------
     # Utlis
     # ----------------------------------------------------------------------

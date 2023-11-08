@@ -363,6 +363,15 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
+# Validate Project  ----------------------------------------------------------
+
+
+def validate_project(*args: Any) -> None:
+    """"""
+    project = args[0]
+    project.validate_project()
+
+
 # Show Logging Path ----------------------------------------------------------
 
 
@@ -953,6 +962,17 @@ def construct_parser():
         type=str,
         help="Required: (str) sub to find latest session for.",
     )
+
+    # Validate Project
+    # -------------------------------------------------------------------------
+
+    validate_project_parser = subparsers.add_parser(
+        "validate-project",
+        aliases=["validate_project"],
+        description=process_docstring(DataShuttle.validate_project.__doc__),
+        help="",
+    )
+    validate_project_parser.set_defaults(func=validate_project)
 
     # Check Name Processing
     # -------------------------------------------------------------------------
