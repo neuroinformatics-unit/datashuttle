@@ -83,6 +83,7 @@ def connect_client(
     client: paramiko.SSHClient,
     cfg: Configs,
     password: Optional[str] = None,
+    message_on_sucessful_connection: bool = True,
 ) -> None:
     """
     Connect client to central server using paramiko.
@@ -101,9 +102,10 @@ def connect_client(
             else None,
             look_for_keys=True,
         )
-        utils.print_message_to_user(
-            f"Connection to { cfg['central_host_id']} made successfully."
-        )
+        if message_on_sucessful_connection:
+            utils.print_message_to_user(
+                f"Connection to { cfg['central_host_id']} made successfully."
+            )
 
     except Exception:
         utils.log_and_raise_error(
@@ -209,12 +211,15 @@ def search_ssh_central_for_folders(
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
-        connect_client(client, cfg)
+        connect_client(client, cfg, message_on_sucessful_connection=verbose)
 
         sftp = client.open_sftp()
 
         all_folder_names, all_filenames = get_list_of_folder_names_over_sftp(
-            sftp, search_path, search_prefix, verbose
+            sftp,
+            search_path,
+            search_prefix,
+            verbose,
         )
 
     return all_folder_names, all_filenames

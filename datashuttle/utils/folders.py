@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
     from datashuttle import DataShuttle
@@ -253,9 +253,8 @@ def search_sub_or_ses_level(
     str : glob-format search string to search at the
         folder level.
 
-    verbose : If `True`, when a search folder cannot be found, a message
-          will be printed with the missing path.
-          will be printed with the un-found path.
+    verbose : If `True`, if a search folder cannot be found, a message
+              will be printed with the un-found path.
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -377,7 +376,39 @@ def search_for_wildcards(
     return new_all_names
 
 
-# Search Datatypes
+def get_all_sub_and_ses_names(
+    cfg: Configs,
+) -> Dict:
+    """
+    Get a list of every subject and session name in the
+    local and central project folders. Local and central names are combined
+    into a single list, separately for subject and sessions.
+
+    Note this only finds local sub and ses names on this
+    machine. Other local machines are not searched.
+    """
+    sub_folder_names = get_local_and_central_sub_or_ses_names(
+        cfg, None, "sub-*"
+    )
+
+    all_sub_folder_names = (
+        sub_folder_names["local"] + sub_folder_names["central"]
+    )
+
+    all_ses_folder_names = []
+    for sub in all_sub_folder_names:
+        ses_folder_names = get_local_and_central_sub_or_ses_names(
+            cfg, sub, "ses-*"
+        )
+
+        all_ses_folder_names.extend(
+            ses_folder_names["local"] + ses_folder_names["central"]
+        )
+
+    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
+
+
+# Search Data Types
 # -----------------------------------------------------------------------------
 
 
@@ -435,7 +466,6 @@ def search_for_folders(  # TODO: change name
     search_prefix : file / folder name to search (e.g. "sub-*")
     verbose : If `True`, when a search folder cannot be found, a message
           will be printed with the missing path.
-              will be printed with the un-found path.
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
         all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
@@ -472,7 +502,43 @@ def search_filesystem_path_for_folders(
             all_folder_names.append(os.path.basename(file_or_folder))
         else:
             all_filenames.append(os.path.basename(file_or_folder))
+
     return all_folder_names, all_filenames
+
+
+def get_local_and_central_sub_or_ses_names(
+    cfg: Configs, sub: Optional[str], search_str: str
+) -> Dict:
+    """
+    If sub is None, the top-level level folder will be searched (i.e. for subjects).
+    The search string "sub-*" is suggested in this case. Otherwise, the subject,
+    level folder for the specified subject will be searched. The search_str
+    "ses-*" is suggested in this case.
+
+    Note `verbose` argument of `search_sub_or_ses_level()` is set to `False`,
+    as session folders for local subjects that are not yet on central
+    will be searched for on central, showing a confusing 'folder not found'
+    message.
+    """
+
+    # Search local and central for folders that begin with "sub-*"
+    local_foldernames, _ = search_sub_or_ses_level(
+        cfg,
+        cfg.get_base_folder("local"),
+        "local",
+        sub=sub,
+        search_str=search_str,
+        verbose=False,
+    )
+    central_foldernames, _ = search_sub_or_ses_level(
+        cfg,
+        cfg.get_base_folder("central"),
+        "central",
+        sub,
+        search_str=search_str,
+        verbose=False,
+    )
+    return {"local": local_foldernames, "central": central_foldernames}
 
 
 def get_next_sub_or_ses_number(
@@ -486,10 +552,8 @@ def get_next_sub_or_ses_number(
     pair values, and return the maximum value + 1 as the new number.
     A warning will be shown if the existing sub / session numbers are not
     consecutive.
-    If sub is None, the top-level level folder will be searched (i.e. for subjects).
-    The search string "sub-*" is suggested in this case. Otherwise, the subject,
-    level folder for the specified subject will be searched. The search_str
-    "ses-*" is suggested in this case.
+
+
     Parameters
     ----------
     cfg : datashuttle configs class
@@ -503,29 +567,20 @@ def get_next_sub_or_ses_number(
     latest_existing_num : the latest sub / ses number that currently
                           exists in the project.
     """
+
     if sub:
         bids_key = "ses"
     else:
         bids_key = "sub"
 
-    # Search local and central for folders that begin with "sub-*"
-    local_foldernames, _ = search_sub_or_ses_level(
+    folder_names = get_local_and_central_sub_or_ses_names(
         cfg,
-        cfg.get_base_folder("local"),
-        "local",
-        sub=sub,
-        search_str=search_str,
-    )
-    central_foldernames, _ = search_sub_or_ses_level(
-        cfg,
-        cfg.get_base_folder("central"),
-        "central",
         sub,
-        search_str=search_str,
+        search_str,
     )
 
     # Convert subject values to a list of increasing-by-1 integers
-    all_folders = list(set(local_foldernames + central_foldernames))
+    all_folders = list(set(folder_names["local"] + folder_names["central"]))
 
     if len(all_folders) == 0:
         utils.raise_error("No folders found. Cannot suggest the next number.")
