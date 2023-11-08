@@ -720,7 +720,7 @@ class TuiApp(App):
 
     This class acts as a base class from which all windows
     (select existing project, make new project, settings and
-    get help are raised).
+    get help) are raised.
 
     Running this application in a main block as below
     if __name__ == __main__:
