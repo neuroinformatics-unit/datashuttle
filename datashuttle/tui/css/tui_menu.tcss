@@ -171,10 +171,24 @@ ShowConfigsDialog:light > #display_configs_top_container {
     width: auto;
 }
 
-#all_main_menu_buttons {
-    dock: right;
-    height: 3;
-    layer: top;
+#configs_connect_method_radioset {
+    layout: horizontal;
+    width: auto;
+    border: none;
+    background: transparent;
+}
+
+#configs_connect_method_radioset:focus {
+    border: none;
+}
+
+#configs_transfer_options_container {
+    margin: 2 0 0 0;
+    padding: 1 1;
+    border: solid $panel-lighten-1;
+    border-title-color: $text;
+    width: 30%;
+    height: auto;
 }
 
 /* This Horizontal wrapper container is necessary to make the

@@ -156,7 +156,7 @@ def get_textual_compatible_project_configs(project_cfg):
     """
     This uses a datashuttle function to convert any pathlib to
     strings. Textualize inputs cannot take Path type. This
-    conversion is in-place so configs must be copied.s
+    conversion is in-place so configs must be copied.
 
     TODO: should this function go in datashuttle? or some tui-logic
     module, probably the latter as does not make sense to mix
@@ -191,7 +191,8 @@ class ConfigsContent(Container):
     def compose(self):
         """
         `self.config_ssh_widgets` are SSH-setup related widgets
-        that are only required. These are displayed / hidden based on the
+        that are only required when the user selects the SSH
+        connection method. These are displayed / hidden based on the
         `connection_method`
 
         `config_screen_widgets` are core config-related widgets that are
@@ -229,7 +230,7 @@ class ConfigsContent(Container):
                     "Local Filesystem",
                     id="configs_local_filesystem_radiobutton",
                 ),
-                RadioButton("SSH", id="ssh_radiobutton"),
+                RadioButton("SSH", id="configs_ssh_radiobutton"),
                 id="configs_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
@@ -427,7 +428,7 @@ class ConfigsContent(Container):
         # Connection Method
         ssh_on = True if cfg_to_load["connection_method"] == "ssh" else False
 
-        radiobutton = self.query_one("#ssh_radiobutton")
+        radiobutton = self.query_one("#configs_ssh_radiobutton")
         radiobutton.value = ssh_on
 
         radiobutton = self.query_one("#configs_local_filesystem_radiobutton")
@@ -471,7 +472,7 @@ class ConfigsContent(Container):
         Get the configs to pass to `make_config_file()` from
         the current TUI settings. In some instances this requires
         changing the value form (e.g. from `bool` to `"-v"` in
-        'transer verbosity'.
+        'transfer verbosity'.
         """
         cfg_kwargs = {}
 
@@ -485,7 +486,7 @@ class ConfigsContent(Container):
 
         cfg_kwargs["connection_method"] = (
             "ssh"
-            if self.query_one("#ssh_radiobutton").value
+            if self.query_one("#configs_ssh_radiobutton").value
             else "local_filesystem"
         )
 
@@ -559,8 +560,8 @@ class TabScreen(Screen):
     the primary screen within which the user interacts with
     a pre-configured project.
 
-    The 'Create' tab is used to create new project folders,
-    interacting with Datashuttle's `make_folders()` method.
+    The 'Create' tab interacts with Datashuttle's `make_folders()`
+    method to create new project folders.
 
     The 'Transfer' tab, XXX.
 
@@ -579,8 +580,6 @@ class TabScreen(Screen):
         An instantiated datashuttle project.
     """
 
-    TITLE = "Manage Project"
-
     prev_click_time = 0.0
 
     def __init__(self, mainwindow, project):
@@ -588,6 +587,7 @@ class TabScreen(Screen):
 
         self.mainwindow = mainwindow
         self.project = project
+        self.title = f"Project: {self.project.project_name}"
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -617,9 +617,6 @@ class TabScreen(Screen):
 
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield ConfigsContent(self, self.project)
-
-    def on_mount(self) -> None:
-        self.title = f"Project: {self.project.project_name}"
 
     # TODO: the upcoming refactor will be super nice because the logic
     # that handles button presses can be split across the relevant

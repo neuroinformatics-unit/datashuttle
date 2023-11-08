@@ -22,6 +22,14 @@ Button:light:hover {
     background: $panel-darken-3;
 }
 
+/* Main Menu Buttons --------------------------------------------------------------------- */
+
+#all_main_menu_buttons {
+    dock: right;
+    height: 3;
+    layer: top;
+}
+
 /* Header --------------------------------------------------------------------------- */
 
 Header {
