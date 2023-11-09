@@ -178,11 +178,11 @@ def check_no_duplicate_sub_ses_key_values(
 
     if new_ses_names is not None:
         for sub in new_sub_names:
-            for new_ses in new_ses_names:
-                existing_names = search_sub_or_ses_level(
-                    project.cfg, base_folder, "local", sub, search_str="*ses-*"
-                )[0]
+            existing_names = search_sub_or_ses_level(
+                project.cfg, base_folder, "local", sub, search_str="*ses-*"
+            )[0]
 
+            for new_ses in new_ses_names:
                 check_new_subject_does_not_duplicate_existing(
                     new_ses, existing_names, "ses"
                 )
