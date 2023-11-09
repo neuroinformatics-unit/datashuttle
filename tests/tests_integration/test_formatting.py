@@ -20,10 +20,7 @@ class TestFormatting(BaseTest):
         with pytest.raises(BaseException) as e:
             formatting.format_names(input, prefix)
 
-        assert (
-            "Ensure subject and session names are "
-            "a list of strings." == str(e.value)
-        )
+        assert f"Ensure {prefix} names are a list of strings." == str(e.value)
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_format_names_duplicate_ele(self, prefix):
@@ -37,8 +34,8 @@ class TestFormatting(BaseTest):
             )
 
         assert (
-            "Subject and session names must all be unique "
-            "(i.e. there are no duplicates in list input)." == str(e.value)
+            f"{prefix} names must all have unique integer "
+            f"ids after the {prefix} prefix." == str(e.value)
         )
 
     def test_format_names_prefix(self):
@@ -70,7 +67,7 @@ class TestFormatting(BaseTest):
 
     def test_warning_non_consecutive_numbers(self, project):
         project.make_folders(
-            ["sub-01", "sub-2", "sub-04"], ["ses-05", "ses-10"]
+            ["sub-01", "sub-02", "sub-04"], ["ses-05", "ses-10"]
         )
 
         with pytest.warns(UserWarning) as w:
@@ -81,7 +78,7 @@ class TestFormatting(BaseTest):
         )
 
         with pytest.warns(UserWarning) as w:
-            project.get_next_ses_number("sub-2")
+            project.get_next_ses_number("sub-02")
         assert (
             str(w[0].message)
             == "A subject number has been skipped, currently "

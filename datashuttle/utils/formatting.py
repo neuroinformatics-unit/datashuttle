@@ -6,7 +6,7 @@ import warnings
 from itertools import compress
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
-from datashuttle.configs.canonical_folders import get_keys_that_we_cant_format
+from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ def check_and_format_names(
     these keys as they intrinsically break the NeuroBlueprint rules.
     However, in practice this is not an issue because you won't make a
     folder with "@*@" in it anyway, this is strictly for searching
-    during upload / download. see canonical_folders.get_keys_that_we_cant_format()
+    during upload / download. see canonical_folders.canonical_reserved_keywords()
     for more information.
 
     Parameters
@@ -50,30 +50,33 @@ def check_and_format_names(
 
     names_to_check, reserved_keywords = [], []
     for name in names:
-        if name in get_keys_that_we_cant_format():
+        if name in canonical_reserved_keywords() or tags("*") in name:
             reserved_keywords.append(name)
         else:
             names_to_check.append(name)
 
     formatted_names = format_names(names_to_check, prefix)
 
-    validate_names(formatted_names)
+    validate_names(formatted_names, prefix)
 
     return formatted_names + reserved_keywords
 
 
-def validate_names(all_names):
+def validate_names(all_names, prefix):
     """
     Validate a list of subject or session names, ensuring
     they are formatted as per NeuroBlueprint.
+
+    We cannot validate names with "@*@" tags in.
     """
-    if len(all_names) != len(set(all_names)):
-        utils.log_and_raise_error(
-            "Subject and session names must all be unique (i.e. there are no"
-            " duplicates in list input)."
-        )
+    if len(all_names) == 0:
+        return
 
     check_dashes_and_underscore_alternate_correctly(all_names)
+
+    check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
+        all_names, prefix
+    )
 
 
 def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
@@ -97,11 +100,11 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
         [not isinstance(ele, str) for ele in names]
     ):
         utils.log_and_raise_error(
-            "Ensure subject and session names are a list of strings."
+            f"Ensure {prefix} names are a list of strings."
         )
 
     if any([" " in ele for ele in names]):
-        utils.log_and_raise_error("sub or ses names cannot include spaces.")
+        utils.log_and_raise_error(f"{prefix} names cannot include spaces.")
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
@@ -110,6 +113,45 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
     update_names_with_datetime(prefixed_names)
 
     return prefixed_names
+
+
+def check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
+    names: List[str], prefix: Literal["sub", "ses"]
+) -> None:
+    """
+    Check a list of subject or session names for duplicate
+    ids (e.g. not allowing ["sub-001", "sub-001_@DATE@"]) and that the
+    values lengths are consistent (e.g. not allowing
+    ["sub-001", "sub-02"]).
+    """
+    prefix_values = utils.get_values_from_bids_formatted_name(
+        names, prefix, return_as_int=False
+    )
+    value_len = [len(value) for value in prefix_values]
+
+    int_values = utils.get_values_from_bids_formatted_name(
+        names, prefix, return_as_int=True
+    )  # can't just convert to the above to int as need extra validation
+
+    if not all_identical(value_len):
+        utils.log_and_raise_error(
+            f"The length of the {prefix} values (e.g. '001') must be "
+            f"consistent across all {prefix} names."
+        )
+
+    if not all_unique(int_values):
+        utils.log_and_raise_error(
+            f"{prefix} names must all have unique integer ids"
+            f" after the {prefix} prefix."
+        )
+
+
+def all_unique(list_):
+    return len(list_) == len(set(list_))
+
+
+def all_identical(list_):
+    return len(set(list_)) == 1
 
 
 # Handle @TO@ flags  -------------------------------------------------------

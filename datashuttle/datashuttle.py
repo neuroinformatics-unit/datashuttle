@@ -220,6 +220,8 @@ class DataShuttle:
 
         if ses_names is not None:
             ses_names = formatting.check_and_format_names(ses_names, "ses")
+        else:
+            ses_names = []
 
         ds_logger.log_names(
             ["formatted_sub_names", "formatted_ses_names"],
@@ -231,18 +233,6 @@ class DataShuttle:
             base_folder=self.cfg.get_base_folder("local"),
             new_sub_names=sub_names,
             new_ses_names=ses_names,
-        )
-
-        if ses_names is None:
-            ses_names = []
-
-        # This will raise error if invalid and cannot convert sub
-        # or ses to `int`.
-        utils.get_values_from_bids_formatted_name(
-            sub_names, "sub", return_as_int=True
-        )
-        utils.get_values_from_bids_formatted_name(
-            ses_names, "ses", return_as_int=True
         )
 
         utils.log("\nMaking folders...")

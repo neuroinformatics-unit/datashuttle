@@ -523,7 +523,7 @@ def get_default_sub_sessions_to_test():
     Canonical subs / sessions for these tests
     """
     subs = ["sub-001", "sub-002", "sub-003"]
-    sessions = ["ses-001_23092022-13h50s", "ses-002", "ses-003"]
+    sessions = ["ses-001_datetime-20220516T135022", "ses-002", "ses-003"]
     return subs, sessions
 
 

@@ -83,12 +83,12 @@ def get_non_ses_names():
     ]
 
 
-def get_keys_that_we_cant_format():
+def canonical_reserved_keywords():
     """
     Key keyword arguments that are passed to `sub_names` or
     `ses_names` but that we
     """
-    return get_non_sub_names() + get_non_ses_names() + ["@*@"]
+    return get_non_sub_names() + get_non_ses_names()
 
 
 def get_top_level_folders():

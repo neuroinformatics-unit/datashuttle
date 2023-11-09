@@ -164,6 +164,9 @@ def check_no_duplicate_sub_ses_key_values(
     new_ses_names : list of session names that are being
      checked for duplicates
     """
+    if new_ses_names == []:
+        new_ses_names = None
+
     if new_ses_names is None:
         existing_sub_names = search_sub_or_ses_level(
             project.cfg, base_folder, "local", search_str="*sub-*"
