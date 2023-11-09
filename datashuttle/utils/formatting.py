@@ -6,7 +6,7 @@ import warnings
 from itertools import compress
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
-from datashuttle.configs.canonical_folders import get_keys_that_we_cant_format
+from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
 
 if TYPE_CHECKING:
@@ -34,7 +34,7 @@ def check_and_format_names(
     these keys as they intrinsically break the NeuroBlueprint rules.
     However, in practice this is not an issue because you won't make a
     folder with "@*@" in it anyway, this is strictly for searching
-    during upload / download. see canonical_folders.get_keys_that_we_cant_format()
+    during upload / download. see canonical_folders.canonical_reserved_keywords()
     for more information.
 
     Parameters
@@ -50,7 +50,7 @@ def check_and_format_names(
 
     names_to_check, reserved_keywords = [], []
     for name in names:
-        if name in get_keys_that_we_cant_format():
+        if name in canonical_reserved_keywords() or tags("*") in name:
             reserved_keywords.append(name)
         else:
             names_to_check.append(name)
@@ -69,12 +69,6 @@ def validate_names(all_names, prefix):
 
     We cannot validate names with "@*@" tags in.
     """
-    if len(all_names) != len(set(all_names)):
-        utils.log_and_raise_error(
-            "Subject and session names must all be unique (i.e. there are no"
-            " duplicates in list input)."
-        )
-
     if len(all_names) == 0:
         return
 
