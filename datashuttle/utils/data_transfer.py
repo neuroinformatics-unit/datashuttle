@@ -312,27 +312,27 @@ class TransferData:
         see transfer_sub_ses_data()
 
         """
-        sub_or_ses: Literal["sub", "ses"]
+        prefix: Literal["sub", "ses"]
         if sub is None:
-            sub_or_ses = "sub"
+            prefix = "sub"
         else:
-            sub_or_ses = "ses"
+            prefix = "ses"
 
-        if names_checked in [["all"], [f"all_{sub_or_ses}"]]:
+        if names_checked in [["all"], [f"all_{prefix}"]]:
             processed_names = folders.search_sub_or_ses_level(
                 self.cfg,
                 self.base_folder,
                 self.local_or_central,
                 sub,
-                search_str=f"{sub_or_ses}-*",
+                search_str=f"{prefix}-*",
             )[0]
 
             if names_checked == ["all"]:
-                processed_names += [f"all_non_{sub_or_ses}"]
+                processed_names += [f"all_non_{prefix}"]
 
         else:
             processed_names = formatting.check_and_format_names(
-                names_checked, sub_or_ses
+                names_checked, prefix
             )
             processed_names = folders.search_for_wildcards(
                 self.cfg,
@@ -343,7 +343,7 @@ class TransferData:
             )
 
         utils.log_and_message(
-            f"The {sub_or_ses} names to transfer are: {processed_names}"
+            f"The {prefix} names to transfer are: {processed_names}"
         )
 
         return processed_names

@@ -1,11 +1,16 @@
+from __future__ import annotations
+
 import datetime
 import re
 import warnings
 from itertools import compress
-from typing import Any, Dict, List, Literal, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
+from datashuttle.configs.canonical_folders import get_keys_that_we_cant_format
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.configs.config_class import Configs
+
+if TYPE_CHECKING:
+    from datashuttle.configs.config_class import Configs
 
 from . import folders, utils
 
@@ -13,17 +18,10 @@ from . import folders, utils
 # Format Sub / Ses Names
 # --------------------------------------------------------------------------------------------------------------------
 
-RESERVED_KEYWORDS = [
-    "all_sub",
-    "all_ses",
-    "all_non_sub",
-    "all_non_ses",
-]  # TODO: add to configs
-
 
 def check_and_format_names(
     names: Union[list, str],
-    sub_or_ses: Literal["sub", "ses"],
+    prefix: Literal["sub", "ses"],
 ) -> List[str]:
     """
     Format a list of subject or session names, e.g.
@@ -31,22 +29,54 @@ def check_and_format_names(
     for tags, that names do not include spaces and that
     there are not duplicates.
 
+    Note that as we might have canonical keys e.g. "all_sub"
+    or certain tags e.g. "@*@" we cannot perform validation on
+    these keys as they intrinsically break the NeuroBlueprint rules.
+    However, in practice this is not an issue because you won't make a
+    folder with "@*@" in it anyway, this is strictly for searching
+    during upload / download. see canonical_folders.get_keys_that_we_cant_format()
+    for more information.
+
     Parameters
     ----------
 
     names: str or list containing sub or ses names
                   (e.g. to make folders)
 
-    sub_or_ses: "sub" or "ses" - this defines the prefix checks.
+    prefix: "sub" or "ses" - this defines the prefix checks.
     """
-    formatted_names = format_names(names, sub_or_ses)
+    if isinstance(names, str):
+        names = [names]
 
-    return formatted_names
+    names_to_check, reserved_keywords = [], []
+    for name in names:
+        if name in get_keys_that_we_cant_format():
+            reserved_keywords.append(name)
+        else:
+            names_to_check.append(name)
+
+    formatted_names = format_names(names_to_check, prefix)
+
+    validate_names(formatted_names)
+
+    return formatted_names + reserved_keywords
 
 
-def format_names(
-    names: Union[List[str], str], prefix: Literal["sub", "ses"]
-) -> List[str]:
+def validate_names(all_names):
+    """
+    Validate a list of subject or session names, ensuring
+    they are formatted as per NeuroBlueprint.
+    """
+    if len(all_names) != len(set(all_names)):
+        utils.log_and_raise_error(
+            "Subject and session names must all be unique (i.e. there are no"
+            " duplicates in list input)."
+        )
+
+    check_dashes_and_underscore_alternate_correctly(all_names)
+
+
+def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
     """
     Check a single or list of input session or subject names.
 
@@ -61,30 +91,19 @@ def format_names(
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
-    assert prefix in ["sub", "ses"], "`sub_or_ses` must be 'sub' or 'ses'."
+    assert prefix in ["sub", "ses"], "`prefix` must be 'sub' or 'ses'."
 
-    if type(names) not in [str, list] or any(
+    if not isinstance(names, List) or any(
         [not isinstance(ele, str) for ele in names]
     ):
         utils.log_and_raise_error(
-            "Ensure subject and session names are list of strings, or string"
+            "Ensure subject and session names are a list of strings."
         )
-
-    if isinstance(names, str):
-        names = [names]
 
     if any([" " in ele for ele in names]):
         utils.log_and_raise_error("sub or ses names cannot include spaces.")
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
-
-    if len(prefixed_names) != len(set(prefixed_names)):
-        utils.log_and_raise_error(
-            "Subject and session names but all be unique (i.e. there are no"
-            " duplicates in list input)."
-        )
-
-    check_dashes_and_underscore_alternate_correctly(prefixed_names)
 
     prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
 
@@ -287,7 +306,7 @@ def ensure_prefixes_on_list_of_names(
 
     new_names = []
     for name in all_names:
-        if name[:n_chars] != prefix and name not in RESERVED_KEYWORDS:
+        if name[:n_chars] != prefix:
             new_names.append(prefix + name)
         else:
             new_names.append(name)
@@ -322,9 +341,6 @@ def check_datatype_is_valid(
 def check_dashes_and_underscore_alternate_correctly(all_names):
     """ """
     for name in all_names:
-        if name in RESERVED_KEYWORDS:
-            continue
-
         discrim = {"-": 1, "_": -1}
         dashes_underscores = [
             discrim[ele] for ele in name if ele in ["-", "_"]

@@ -7,7 +7,6 @@ if TYPE_CHECKING:
 
 from pathlib import Path
 
-from datashuttle.utils import folders
 from datashuttle.utils.folder_class import Folder
 
 
@@ -84,6 +83,14 @@ def get_non_ses_names():
     ]
 
 
+def get_keys_that_we_cant_format():
+    """
+    Key keyword arguments that are passed to `sub_names` or
+    `ses_names` but that we
+    """
+    return get_non_sub_names() + get_non_ses_names() + ["@*@"]
+
+
 def get_top_level_folders():
     return ["rawdata", "derivatives"]
 
@@ -109,7 +116,8 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     base_path = get_datashuttle_path() / project_name
     temp_logs_path = base_path / "temp_logs"
 
-    folders.make_folders(base_path)
-    folders.make_folders(temp_logs_path)
+    # TODO: cannot use folders.makefoldesr due to circular import
+    base_path.mkdir(parents=True, exist_ok=True)
+    temp_logs_path.mkdir(parents=True, exist_ok=True)
 
     return base_path, temp_logs_path
