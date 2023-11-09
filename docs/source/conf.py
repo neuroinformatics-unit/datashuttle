@@ -80,6 +80,12 @@ html_show_sourcelink = False
 #  "**": [],
 #}
 
+# Ignore links that do not work with github actions link checking
+# https://github.com/neuroinformatics-unit/actions/pull/24#issue-1978966182
+linkcheck_ignore  = [
+    "https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle"
+]
+
 autodoc_default_options = {
     'members': True,
     "member-order": "bysource",
@@ -144,11 +150,6 @@ html_theme_options = {
  #   "page_sidebar_items": [],
 }
 
-# Ignore links that do not work with github actions link checking
-# https://github.com/neuroinformatics-unit/actions/pull/24#issue-1978966182
-linkcheck_anchors_ignore_for_url = [
-    "https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle",
-]
 
 # Redirect the webpage to another URL
 # Sphinx will create the appropriate CNAME file in the build directory
