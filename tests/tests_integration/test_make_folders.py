@@ -80,10 +80,7 @@ class TestMakeFolders(BaseTest):
     def test_duplicate_sub_when_creating_session(self, project):
         """
         Check the unique case that a duplicate subject is
-        introduced when the session is made, because this
-        was not checked until the function
-        `check_new_subject_does_not_duplicate_existing()`
-        was introduced.
+        introduced when the session is made.
         """
         project.make_folders("sub-001")
 
