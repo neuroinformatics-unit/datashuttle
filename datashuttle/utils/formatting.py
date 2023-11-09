@@ -42,6 +42,13 @@ def check_and_format_names(
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
+    names_to_check, reserved_keywords = [], []
+    for name in names:
+        if name in RESERVED_KEYWORDS:
+            reserved_keywords.append(name)
+        else:
+            names_to_check.append(name)
+
     formatted_names = format_names(names, prefix)
 
     validate_names(formatted_names)
@@ -305,7 +312,7 @@ def ensure_prefixes_on_list_of_names(
 
     new_names = []
     for name in all_names:
-        if name[:n_chars] != prefix and name not in RESERVED_KEYWORDS:
+        if name[:n_chars] != prefix:
             new_names.append(prefix + name)
         else:
             new_names.append(name)
