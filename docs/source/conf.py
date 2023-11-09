@@ -82,8 +82,8 @@ html_show_sourcelink = False
 
 # Ignore links that do not work with github actions link checking
 # https://github.com/neuroinformatics-unit/actions/pull/24#issue-1978966182
-linkcheck_ignore  = [
-    "https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle"
+linkcheck_anchors_ignore_for_url = [
+    "https://neuroinformatics.zulipchat.com/"
 ]
 
 autodoc_default_options = {
