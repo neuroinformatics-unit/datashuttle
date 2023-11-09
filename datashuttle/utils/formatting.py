@@ -42,18 +42,19 @@ def check_and_format_names(
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
+    TO_FORMAT = RESERVED_KEYWORDS + "@*@"  # TODO: Move
     names_to_check, reserved_keywords = [], []
     for name in names:
-        if name in RESERVED_KEYWORDS:
+        if name in TO_FORMAT:
             reserved_keywords.append(name)
         else:
             names_to_check.append(name)
 
-    formatted_names = format_names(names, prefix)
+    formatted_names = format_names(names_to_check, prefix)
 
     validate_names(formatted_names)
 
-    return formatted_names
+    return formatted_names + reserved_keywords
 
 
 def validate_names(all_names):
