@@ -90,7 +90,6 @@ class TestFileTransfer:
     # Test File Transfer - All Options
     # -------------------------------------------------------------------------
 
-
     @pytest.mark.parametrize("sub_names", PARAM_SUBS)
     @pytest.mark.parametrize("ses_names", PARAM_SES)
     @pytest.mark.parametrize("datatype", PARAM_DATATYPE)
