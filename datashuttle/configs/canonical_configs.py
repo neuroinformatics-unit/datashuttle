@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 from pathlib import Path
 from typing import Literal, Union, get_args, get_origin
 
-from datashuttle.utils import folders, utils
+from datashuttle.utils import utils
 
 
 def get_canonical_config_dict() -> dict:
@@ -176,7 +176,9 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.print_message_to_user(
             f"Making project folder at: {config_dict['local_path']}"
         )
-        folders.make_folders(config_dict["local_path"])
+        # TODO: cannot use folders.makefoldesr due to circular import
+        config_dict["local_path"].mkdir(parents=True, exist_ok=True)
+
     except OSError:
         utils.log_and_raise_error(
             f"Could not make project folder at: {config_dict['local_path']}."

@@ -22,7 +22,7 @@ class TestFormatting(BaseTest):
 
         assert (
             "Ensure subject and session names are "
-            "list of strings, or string" == str(e.value)
+            "a list of strings." == str(e.value)
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
@@ -32,10 +32,12 @@ class TestFormatting(BaseTest):
         is passed to format_names().
         """
         with pytest.raises(BaseException) as e:
-            formatting.format_names(["1", "2", "3", "3", "4"], prefix)
+            formatting.check_and_format_names(
+                ["1", "2", "3", "3", "4"], prefix
+            )
 
         assert (
-            "Subject and session names but all be unique "
+            "Subject and session names must all be unique "
             "(i.e. there are no duplicates in list input)." == str(e.value)
         )
 
@@ -49,11 +51,11 @@ class TestFormatting(BaseTest):
         prefix = "sub"
 
         # check name is prefixed
-        formatted_names = formatting.format_names("1", prefix)
+        formatted_names = formatting.format_names(["1"], prefix)
         assert formatted_names[0] == "sub-1"
 
         # check existing prefix is not duplicated
-        formatted_names = formatting.format_names("sub-1", prefix)
+        formatted_names = formatting.format_names(["sub-1"], prefix)
         assert formatted_names[0] == "sub-1"
 
         # test mixed list of prefix and unprefixed are prefixed correctly.
