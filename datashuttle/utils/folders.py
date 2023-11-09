@@ -227,7 +227,8 @@ def check_new_subject_does_not_duplicate_existing(
     # it is a duplicate.
     if len(matched_existing_names) > 1:
         utils.log_and_raise_error(
-            f"Cannot make folders. Multiple {prefix} ids exists: {matched_existing_names}. This should"
+            f"Cannot make folders. Multiple {prefix} ids "
+            f"exist: {matched_existing_names}. This should"
             f"never happen. Check the {prefix} ids and ensure unique {prefix} "
             f"ids (e.g. sub-001) appear only once."
         )
@@ -235,7 +236,8 @@ def check_new_subject_does_not_duplicate_existing(
     if len(matched_existing_names) == 1:
         if new_name != matched_existing_names[0]:
             utils.log_and_raise_error(
-                f"Cannot make folders. A {prefix} already exists with the same {prefix} id as {new_name}. "
+                f"Cannot make folders. A {prefix} already exists "
+                f"with the same {prefix} id as {new_name}. "
                 f"The existing folder is {matched_existing_names[0]}."
             )
 
