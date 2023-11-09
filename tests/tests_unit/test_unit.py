@@ -212,8 +212,7 @@ class TestUnit:
 
         assert (
             str(e.value)
-            == f"The number of leading zeros within {prefix} names must "
-            f"be consistent across all {prefix} names."
+            == f"The length of the {prefix} values (e.g. '001') must be consistent across all {prefix} names."
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
