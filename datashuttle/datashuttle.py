@@ -1021,6 +1021,9 @@ class DataShuttle:
         if prefix not in ["sub", "ses"]:
             utils.log_and_raise_error("'prefix' must be 'sub' or 'ses'.")
 
+        if isinstance(names, str):
+            names = [names]
+
         formatted_names = formatting.format_names(names, prefix)
         utils.print_message_to_user(formatted_names)
 

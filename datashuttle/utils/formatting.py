@@ -6,10 +6,7 @@ import warnings
 from itertools import compress
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
-from datashuttle.configs.canonical_folders import (
-    get_non_ses_names,
-    get_non_sub_names,
-)
+from datashuttle.configs.canonical_folders import get_keys_that_we_cant_format
 from datashuttle.configs.canonical_tags import tags
 
 if TYPE_CHECKING:
@@ -20,8 +17,6 @@ from . import folders, utils
 # --------------------------------------------------------------------------------------------------------------------
 # Format Sub / Ses Names
 # --------------------------------------------------------------------------------------------------------------------
-
-RESERVED_KEYWORDS = get_non_sub_names() + get_non_ses_names()
 
 
 def check_and_format_names(
@@ -34,6 +29,14 @@ def check_and_format_names(
     for tags, that names do not include spaces and that
     there are not duplicates.
 
+    Note that as we might have canonical keys e.g. "all_sub"
+    or certain tags e.g. "@*@" we cannot perform validation on
+    these keys as they intrinsically break the NeuroBlueprint rules.
+    However, in practice this is not an issue because you won't make a
+    folder with "@*@" in it anyway, this is strictly for searching
+    during upload / download. see canonical_folders.get_keys_that_we_cant_format()
+    for more information.
+
     Parameters
     ----------
 
@@ -42,10 +45,12 @@ def check_and_format_names(
 
     prefix: "sub" or "ses" - this defines the prefix checks.
     """
-    TO_FORMAT = RESERVED_KEYWORDS + "@*@"  # TODO: Move
+    if isinstance(names, str):
+        names = [names]
+
     names_to_check, reserved_keywords = [], []
     for name in names:
-        if name in TO_FORMAT:
+        if name in get_keys_that_we_cant_format():
             reserved_keywords.append(name)
         else:
             names_to_check.append(name)
@@ -62,25 +67,16 @@ def validate_names(all_names):
     Validate a list of subject or session names, ensuring
     they are formatted as per NeuroBlueprint.
     """
-    names_to_check = [
-        name for name in all_names if name not in RESERVED_KEYWORDS
-    ]
-
-    # Note this check will fail on formatted @DATETIME@ tags because
-    # ["sub-001_@DATETIME@", "sub-001_@DATETIME@"] will be formatted
-    # slightly different. Remove this in
-    if len(names_to_check) != len(set(names_to_check)):
+    if len(all_names) != len(set(all_names)):
         utils.log_and_raise_error(
             "Subject and session names must all be unique (i.e. there are no"
             " duplicates in list input)."
         )
 
-    check_dashes_and_underscore_alternate_correctly(names_to_check)
+    check_dashes_and_underscore_alternate_correctly(all_names)
 
 
-def format_names(
-    names: Union[List[str], str], prefix: Literal["sub", "ses"]
-) -> List[str]:
+def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
     """
     Check a single or list of input session or subject names.
 
@@ -97,15 +93,12 @@ def format_names(
     """
     assert prefix in ["sub", "ses"], "`prefix` must be 'sub' or 'ses'."
 
-    if type(names) not in [str, list] or any(
+    if not isinstance(names, List) or any(
         [not isinstance(ele, str) for ele in names]
     ):
         utils.log_and_raise_error(
-            "Ensure subject and session names are list of strings, or string"
+            "Ensure subject and session names are a list of strings."
         )
-
-    if isinstance(names, str):
-        names = [names]
 
     if any([" " in ele for ele in names]):
         utils.log_and_raise_error("sub or ses names cannot include spaces.")
@@ -348,9 +341,6 @@ def check_datatype_is_valid(
 def check_dashes_and_underscore_alternate_correctly(all_names):
     """ """
     for name in all_names:
-        if name in RESERVED_KEYWORDS:
-            continue
-
         discrim = {"-": 1, "_": -1}
         dashes_underscores = [
             discrim[ele] for ele in name if ele in ["-", "_"]
