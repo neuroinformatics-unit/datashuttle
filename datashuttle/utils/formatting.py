@@ -120,7 +120,9 @@ def check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
 ) -> None:
     """
     Check a list of subject or session names for duplicate
-    ids (e.g. [sub-001_@DATE@
+    ids (e.g. not allowing ["sub-001", "sub-001_@DATE@"]) and that the
+    values lengths are consistent (e.g. not allowing
+    ["sub-001", "sub-02"]).
     """
     prefix_values = utils.get_values_from_bids_formatted_name(
         names, prefix, return_as_int=False
