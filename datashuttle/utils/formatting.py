@@ -75,14 +75,15 @@ def validate_names(all_names, prefix):
             " duplicates in list input)."
         )
 
-    if len(names_to_check) == 0:
+    if len(all_names) == 0:
         return
 
     check_dashes_and_underscore_alternate_correctly(all_names)
 
     check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
-        names_to_check, prefix
+        all_names, prefix
     )
+
 
 def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
     """

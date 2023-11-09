@@ -20,9 +20,7 @@ class TestFormatting(BaseTest):
         with pytest.raises(BaseException) as e:
             formatting.format_names(input, prefix)
 
-        assert f"Ensure {prefix} names are a list of strings." == str(
-            e.value
-        )
+        assert f"Ensure {prefix} names are a list of strings." == str(e.value)
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_format_names_duplicate_ele(self, prefix):
