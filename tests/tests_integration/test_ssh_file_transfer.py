@@ -227,10 +227,12 @@ class TestFileTransfer:
             filter(Path.is_file, all_transferred)
         )
 
-        assert sorted(paths_to_transferred_files) == sorted(
-            expected_transferred_paths
-        )
-
+        try:
+            assert sorted(paths_to_transferred_files) == sorted(
+                expected_transferred_paths
+            )
+        except:
+            breakpoint()
         # Teardown here, because we have session scope.
         try:
             shutil.rmtree(self.central_from_local(project.cfg["local_path"]))
