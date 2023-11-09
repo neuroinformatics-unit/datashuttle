@@ -189,7 +189,7 @@ def check_no_duplicate_sub_ses_key_values(
 
 
 def check_new_subject_does_not_duplicate_existing(
-    new_name: str, existing_names: List[str], sub_or_ses: Literal["sub", "ses"]
+    new_name: str, existing_names: List[str], prefix: Literal["sub", "ses"]
 ) -> None:
     """
     Check that a subject or session does not already exist
@@ -211,10 +211,10 @@ def check_new_subject_does_not_duplicate_existing(
     matched_existing_names = []
     for exist_name in existing_names:
         exist_name_id = utils.get_values_from_bids_formatted_name(
-            [exist_name], sub_or_ses, return_as_int=True
+            [exist_name], prefix, return_as_int=True
         )[0]
         new_name_id = utils.get_values_from_bids_formatted_name(
-            [new_name], sub_or_ses, return_as_int=True
+            [new_name], prefix, return_as_int=True
         )[0]
 
         if exist_name_id == new_name_id:
@@ -227,15 +227,15 @@ def check_new_subject_does_not_duplicate_existing(
     # it is a duplicate.
     if len(matched_existing_names) > 1:
         utils.log_and_raise_error(
-            f"Cannot make folders. Multiple {sub_or_ses} ids exists: {matched_existing_names}. This should"
-            f"never happen. Check the {sub_or_ses} ids and ensure unique {sub_or_ses} "
+            f"Cannot make folders. Multiple {prefix} ids exists: {matched_existing_names}. This should"
+            f"never happen. Check the {prefix} ids and ensure unique {prefix} "
             f"ids (e.g. sub-001) appear only once."
         )
 
     if len(matched_existing_names) == 1:
         if new_name != matched_existing_names[0]:
             utils.log_and_raise_error(
-                f"Cannot make folders. A {sub_or_ses} already exists with the same {sub_or_ses} id as {new_name}. "
+                f"Cannot make folders. A {prefix} already exists with the same {prefix} id as {new_name}. "
                 f"The existing folder is {matched_existing_names[0]}."
             )
 
