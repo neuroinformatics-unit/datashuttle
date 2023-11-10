@@ -655,7 +655,7 @@ def get_next_sub_or_ses_number(
 def get_max_sub_or_ses_num_and_value_length(
     all_folders: List[str],
     prefix: Literal["sub", "ses"],
-    default_num_value_digits: int,
+    default_num_value_digits: Optional[int] = None,
 ) -> Tuple[int, int]:
     """
     Given a list of BIDS-style folder names, find the maximum subject or
@@ -688,6 +688,10 @@ def get_max_sub_or_ses_num_and_value_length(
     """
     if len(all_folders) == 0:
         max_existing_num = 0
+        assert isinstance(
+            default_num_value_digits, int
+        ), "`default_num_value_digits` must be int`"
+
         num_value_digits = default_num_value_digits
     else:
         all_values_str = utils.get_values_from_bids_formatted_name(

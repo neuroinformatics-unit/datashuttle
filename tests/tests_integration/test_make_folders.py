@@ -447,13 +447,8 @@ class TestMakeFolders(BaseTest):
             e.value
         )
 
-    #    return_with_prefix: bool = True,
-    # default_num_value_digits: int = 3,
-
-    # @pytest.mark.parametrize("return_with_prefix", [True, False])
-    def test_get_next_ses_number(
-        self, project
-    ):  # TODO: return_with_prefix to mai nfunction
+    @pytest.mark.parametrize("return_with_prefix", [True, False])
+    def test_get_next_ses_number(self, project, return_with_prefix):
         """
         Almost identical to test_get_next_sub_number() but with calls
         for searching sessions. This could be combined with
@@ -465,7 +460,6 @@ class TestMakeFolders(BaseTest):
         TODO: note this is only tested by `local_filesystem`. I don't think
         it is required to be tested SSH but couldn't hurt, need to check.
         """
-        return_with_prefix = True
         sub = "sub-09"
 
         test_utils.make_local_folders_with_files_in(
@@ -473,10 +467,10 @@ class TestMakeFolders(BaseTest):
         )
 
         # Test the next sub and ses number are correct
-        new_num = project.get_next_sub_number()
+        new_num = project.get_next_sub_number(return_with_prefix)
         assert new_num == "sub-10" if return_with_prefix else "10"
 
-        new_num = project.get_next_ses_number(sub)
+        new_num = project.get_next_ses_number(sub, return_with_prefix)
         assert new_num == "ses-004" if return_with_prefix else "004"
 
         # Now upload the data, delete locally, and check the
@@ -485,17 +479,17 @@ class TestMakeFolders(BaseTest):
 
         shutil.rmtree(project.cfg["local_path"] / "rawdata")
 
-        new_num = project.get_next_sub_number()
+        new_num = project.get_next_sub_number(return_with_prefix)
         assert new_num == "sub-10" if return_with_prefix else "10"
 
-        new_num = project.get_next_ses_number(sub)
+        new_num = project.get_next_ses_number(sub, return_with_prefix)
         assert new_num == "ses-004" if return_with_prefix else "004"
 
         # Now make a couple more sessions locally, and check
         # the next session is updated accordingly.
         project.make_folders(sub, ["004", "005"])
 
-        new_num = project.get_next_ses_number(sub)
+        new_num = project.get_next_ses_number(sub, return_with_prefix)
         assert new_num == "ses-006" if return_with_prefix else "006"
 
     # ----------------------------------------------------------------------------------
