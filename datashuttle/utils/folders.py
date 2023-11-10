@@ -620,12 +620,12 @@ def get_next_sub_or_ses_number(
     -------
     suggested_new_num : the new suggested sub / ses.
     """
-    bids_key: Literal["sub", "ses"]
+    prefix: Literal["sub", "ses"]
 
     if sub:
-        bids_key = "ses"
+        prefix = "ses"
     else:
-        bids_key = "sub"
+        prefix = "sub"
 
     folder_names = get_local_and_central_sub_or_ses_names(
         cfg,
@@ -639,7 +639,7 @@ def get_next_sub_or_ses_number(
         max_existing_num,
         num_value_digits,
     ) = get_max_sub_or_ses_num_and_value_length(
-        all_folders, bids_key, default_num_value_digits
+        all_folders, prefix, default_num_value_digits
     )
 
     # calculate next sub number
@@ -647,21 +647,22 @@ def get_next_sub_or_ses_number(
     format_suggested_new_num = str(suggested_new_num).zfill(num_value_digits)
 
     if return_with_prefix:
-        format_suggested_new_num = f"{bids_key}-{format_suggested_new_num}"
+        format_suggested_new_num = f"{prefix}-{format_suggested_new_num}"
 
     return format_suggested_new_num
 
 
 def get_max_sub_or_ses_num_and_value_length(
     all_folders: List[str],
-    bids_key: Literal["sub", "ses"],
+    prefix: Literal["sub", "ses"],
     default_num_value_digits: int,
 ) -> Tuple[int, int]:
     """
     Given a list of BIDS-style folder names, find the maximum subject or
-    session value (sub or ses depending on `bids_key`). Also, find the
+    session value (sub or ses depending on `prefix`). Also, find the
     number of value digits across the project, so a new suggested number
-    can be formatted consistency.
+    can be formatted consistency. If the list is empty, set the value
+    to 0 and a default number of value digits.
 
     Parameters
     ----------
@@ -691,7 +692,7 @@ def get_max_sub_or_ses_num_and_value_length(
     else:
         all_values_str = utils.get_values_from_bids_formatted_name(
             all_folders,
-            bids_key,
+            prefix,
             return_as_int=False,
         )
 
@@ -700,10 +701,9 @@ def get_max_sub_or_ses_num_and_value_length(
         all_num_value_digits = [len(value) for value in all_values_str]
 
         if not len(set(all_num_value_digits)) == 1:
-            # TODO: raise NeuroBlueprintError after PR #247
-            raise Exception(
-                f"The number of value digits for the {bids_key} level are not "
-                f"consistent. Cannot suggest a {bids_key} number."
+            utils.raise_error(
+                f"The number of value digits for the {prefix} level are not "
+                f"consistent. Cannot suggest a {prefix} number."
             )
         num_value_digits = all_num_value_digits[0]
 
