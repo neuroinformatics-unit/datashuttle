@@ -387,7 +387,8 @@ class TestMakeFolders(BaseTest):
     # Test get next subject / session numbers
     # ----------------------------------------------------------------------------------
 
-    def test_get_next_sub_number(self, project):
+    @pytest.mark.parametrize("return_with_prefix", [True, False])
+    def test_get_next_sub_number(self, project, return_with_prefix):
         """
         Test that the next subject number is suggested correctly.
         This takes the union of subjects available in the local and
@@ -399,33 +400,23 @@ class TestMakeFolders(BaseTest):
             project, ["001", "002", "003"]
         )
 
-        new_num, old_num = project.get_next_sub_number()
+        new_num = project.get_next_sub_number(return_with_prefix)
 
-        assert new_num == 4
-        assert old_num == 3
+        assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Upload to central, now local and central folders match
         project.upload_all()
-        new_num, old_num = project.get_next_sub_number()
-        assert new_num == 4
-        assert old_num == 3
 
-        # Delete subject folders from local
-        folders_to_del = list(
-            (project.cfg["local_path"] / "rawdata").glob("sub-*")
-        )
-        for path_ in folders_to_del:
-            shutil.rmtree(path_)  # this doesn't work with map or listcomp
+        shutil.rmtree(project.cfg["local_path"] / "rawdata")
 
-        new_num, old_num = project.get_next_sub_number()
-        assert new_num == 4
-        assert old_num == 3
+        new_num = project.get_next_sub_number(return_with_prefix)
+        assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Add large-sub num folders to local and check all are detected.
         project.make_folders(["004", "005"])
-        new_num, old_num = project.get_next_sub_number()
-        assert new_num == 6
-        assert old_num == 5
+
+        new_num = project.get_next_sub_number(return_with_prefix)
+        assert new_num == "sub-006" if return_with_prefix else "006"
 
     def test_invalid_sub_and_ses_name(self, project):
         """
@@ -491,6 +482,26 @@ class TestMakeFolders(BaseTest):
 
         new_num = project.get_next_ses_number(sub, return_with_prefix)
         assert new_num == "ses-006" if return_with_prefix else "006"
+
+    def test_invalid_sub_and_ses_name(self, project):
+        """
+        This is a slightly weird case, the name is successfully
+        prefixed as 'sub-sub_100` but when the value if `sub-` is
+        extracted, it is also "sub" and so an error is raised.
+        """
+        with pytest.raises(BaseException) as e:
+            project.make_folders("sub_100")
+
+        assert "Invalid character in subject or session value: sub" in str(
+            e.value
+        )
+
+        with pytest.raises(BaseException) as e:
+            project.make_folders("sub-001", "ses_100")
+
+        assert "Invalid character in subject or session value: ses" in str(
+            e.value
+        )
 
     # ----------------------------------------------------------------------------------
     # Test Helpers
