@@ -1,6 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Literal
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+)
 
 if TYPE_CHECKING:
     from datashuttle import DataShuttle
@@ -10,7 +19,6 @@ import glob
 import os
 import warnings
 from pathlib import Path
-from typing import Any, List, Literal, Optional, Tuple, Union
 
 from ..configs import canonical_folders, canonical_tags
 from . import folders, formatting, ssh, utils
