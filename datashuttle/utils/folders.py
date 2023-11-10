@@ -12,10 +12,9 @@ import warnings
 from pathlib import Path
 from typing import Any, List, Literal, Optional, Tuple, Union
 
-from datashuttle.configs import canonical_folders, canonical_tags
-from datashuttle.utils.custom_exceptions import NeuroBlueprintError
-
+from ..configs import canonical_folders, canonical_tags
 from . import folders, formatting, ssh, utils
+from .custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
 # Make Folders
@@ -618,9 +617,9 @@ def get_next_sub_or_ses_number(
     all_folders = list(set(folder_names["local"] + folder_names["central"]))
 
     if len(all_folders) == 0:
-        # This will be removed in another PR.
         utils.raise_error(
-            "No folders found. Cannot suggest the next number.", BaseException
+            "No folders found. Cannot suggest the next number.",
+            NeuroBlueprintError,
         )
 
     all_value_nums = utils.get_values_from_bids_formatted_name(
@@ -633,7 +632,7 @@ def get_next_sub_or_ses_number(
     if not utils.integers_are_consecutive(all_value_nums):
         warnings.warn(
             f"A subject number has been skipped, "
-            f"currently used subject numbers are: {all_value_nums}"
+            f"currently used subject numbers are: {all_value_nums}",
         )
 
     # calculate next sub number
@@ -668,9 +667,8 @@ def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
                 f"There are two config files in project"
                 f"{folder_name} at path {datashuttle_path}. There "
                 f"should only ever be one config per project. ",
-                RuntimeError,
+                NeuroBlueprintError,
             )
-
         elif len(config_file) == 1:
             existing_project_paths.append(datashuttle_path / folder_name)
             existing_project_names.append(folder_name)

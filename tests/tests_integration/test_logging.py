@@ -10,6 +10,10 @@ import test_utils
 from datashuttle import DataShuttle
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import ds_logger
+from datashuttle.utils.custom_exceptions import (
+    ConfigError,
+    NeuroBlueprintError,
+)
 
 # a symbol that will create an error when trying to make a file with this name.
 # this is only tested in windows as nearly any char is allowed for macos and linux
@@ -326,7 +330,7 @@ class TestLogging:
 
     def test_logs_check_update_config_error(self, project):
         """"""
-        with pytest.raises(BaseException):
+        with pytest.raises(ConfigError):
             project.update_config("connection_method", "ssh")
 
         log = self.read_log_file(project.cfg.logging_path)
@@ -347,7 +351,7 @@ class TestLogging:
         project.make_folders("sub-001", datatype="all")
         self.delete_log_files(project.cfg.logging_path)
 
-        with pytest.raises(BaseException):
+        with pytest.raises(NeuroBlueprintError):
             project.make_folders("sub-01", datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
@@ -369,7 +373,7 @@ class TestLogging:
         )
         configs["local_path"] = BAD_WINDOWS_FILECHAR
 
-        with pytest.raises(BaseException):
+        with pytest.raises(ConfigError):
             project.make_config_file(**configs)
 
         tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
@@ -408,7 +412,7 @@ class TestLogging:
 
         # Try to set local_path to a folder that cannot be made.
         # The existing local project exists, so put the log there
-        with pytest.raises(BaseException):
+        with pytest.raises(ConfigError):
             self.run_supply_or_update_configs(
                 project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
             )
@@ -427,7 +431,7 @@ class TestLogging:
         # in the temp log file.
         project.cfg["local_path"] = Path("folder_that_does_not_exist")
 
-        with pytest.raises(BaseException):
+        with pytest.raises(ConfigError):
             self.run_supply_or_update_configs(
                 project, supply_or_update, BAD_WINDOWS_FILECHAR, tmp_path
             )

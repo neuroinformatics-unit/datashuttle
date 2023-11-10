@@ -4,6 +4,7 @@ import pytest
 
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import formatting, utils
+from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestUnit:
@@ -56,7 +57,7 @@ class TestUnit:
     )
     def test_spaces_in_format_names(self, prefix_and_names):
         prefix, names = prefix_and_names
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_and_format_names(names, prefix)
 
         assert str(e.value) == f"{prefix} names cannot include spaces."
@@ -114,7 +115,7 @@ class TestUnit:
     ):
         bad_input = bad_input.replace("prefix", prefix)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ValueError) as e:
             formatting.update_names_with_range_to_flag([bad_input], prefix)
 
         assert (
@@ -126,7 +127,7 @@ class TestUnit:
     def test_formatting_check_dashes_and_underscore_alternate_correctly(self):
         """"""
         all_names = ["sub_001_date-010101"]
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
@@ -142,7 +143,7 @@ class TestUnit:
         )
 
         all_names = ["sub-001-date_101010"]
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
@@ -150,14 +151,14 @@ class TestUnit:
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-suffix"]
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-task-check"]
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
@@ -207,12 +208,12 @@ class TestUnit:
         """
         names = [f"{prefix}-001", f"{prefix}-02", f"{prefix}-003"]
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_and_format_names(names, prefix)
 
         assert (
-            str(e.value)
-            == f"The length of the {prefix} values (e.g. '001') must be consistent across all {prefix} names."
+            str(e.value) == f"The length of the {prefix} values (e.g. '001') "
+            f"must be consistent across all {prefix} names."
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
@@ -223,7 +224,7 @@ class TestUnit:
         """
         names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-001_@DATE@"]
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_and_format_names(names, prefix)
 
         assert (
