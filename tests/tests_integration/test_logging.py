@@ -348,13 +348,13 @@ class TestLogging:
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(BaseException):
-            project.make_folders("sub-001", datatype="all")
+            project.make_folders("sub-01", datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
 
         assert (
-            "Cannot make folders. The key sub-1 (possibly with leading zeros) already exists in the project"
-            in log
+            "Cannot make folders. A sub already exists with the same sub id as sub-01. "
+            "The existing folder is sub-001" in log
         )
 
     @pytest.mark.skipif("not IS_WINDOWS")
