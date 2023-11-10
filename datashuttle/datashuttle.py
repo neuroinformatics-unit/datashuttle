@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import shutil
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
@@ -700,6 +701,14 @@ class DataShuttle:
             store_in_temp_folder=True,
         )
 
+        if self._config_path.is_file():
+            warnings.warn(
+                "A config file already exists. This function will completely"
+                "overwrite the existing config file, and any arguments not"
+                "passed to `make-config-file` will be set to the function defaults."
+                "Use `update-config-file` to selectively update settings."
+            )
+
         self.cfg = Configs(
             self.project_name,
             self._config_path,
@@ -730,45 +739,6 @@ class DataShuttle:
         )
         self._log_successful_config_change()
         self._move_logs_from_temp_folder()
-
-        ds_logger.close_log_filehandler()
-
-    @check_configs_set
-    def update_config(
-        self, option_key: str, new_info: Union[Path, str, bool, None]
-    ) -> None:
-        """
-        Update a single config entry. This will overwrite the existing
-        entry in the saved configs file and be used for all future
-        datashuttle sessions.
-
-        Parameters
-        ----------
-
-        option_key :
-            dictionary key of the option to change,
-            see make_config_file() for available keys.
-
-        new_info :
-            value to update the config too
-        """
-        if not self.cfg:
-            utils.log_and_raise_error(
-                "Must have a config loaded before updating configs.",
-                ConfigError,
-            )
-
-        self._start_log(
-            "update-config",
-            local_vars=locals(),
-        )
-
-        new_info = load_configs.handle_bool(option_key, new_info)
-
-        self.cfg.update_an_entry(option_key, new_info)
-        self._set_attributes_after_config_load()
-
-        self._log_successful_config_change()
 
         ds_logger.close_log_filehandler()
 
