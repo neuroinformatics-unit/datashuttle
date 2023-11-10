@@ -5,7 +5,7 @@ authors = [
     {name = "Adam Tyson", email = "code@adamltyson.com"},
     {name = "Niko Sirmpilatze", email = "niko.sirbiladze@gmail.com"},
 ]
-description = "Organise and transfer scientific projects in BIDS format"
+description = "DataShuttle automates the creation and management of standardised neuroscience project folders."
 readme = "README.md"
 requires-python = ">=3.8.0"
 dynamic = ["version"]
