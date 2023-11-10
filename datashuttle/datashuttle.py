@@ -260,23 +260,46 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def get_next_sub_number(self) -> str:
+    def get_next_sub_number(self, return_with_prefix: bool = True) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
         to find the next subject number.
+
+        Parameters
+        ----------
+
+        return_with_prefix : bool
+            If `True`, return with the "sub-" prefix.
         """
         return folders.get_next_sub_or_ses_number(
-            self.cfg, sub=None, search_str="sub-*"
+            self.cfg,
+            sub=None,
+            return_with_prefix=return_with_prefix,
+            search_str="sub-*",
         )
 
     @check_configs_set
-    def get_next_ses_number(self, sub: Optional[str]) -> str:
+    def get_next_ses_number(
+        self, sub: str, return_with_prefix: bool = True
+    ) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
         to find the next session number.
+
+        Parameters
+        ----------
+
+        sub: Optional[str]
+            Name of the subject to find the next session of.
+
+        return_with_prefix : bool
+            If `True`, return with the "ses-" prefix.
         """
         return folders.get_next_sub_or_ses_number(
-            self.cfg, sub=sub, search_str="ses-*"
+            self.cfg,
+            sub=sub,
+            return_with_prefix=return_with_prefix,
+            search_str="ses-*",
         )
 
     # -------------------------------------------------------------------------
@@ -903,17 +926,6 @@ class DataShuttle:
         )
 
     @check_configs_set
-    def validate_project(self):
-        """
-        Perform validation on the project. Currently checks that
-        sub and ses values have the same length for all sub and
-        ses in the project.
-        """
-        utils.print_message_to_user("Validating project...")
-
-        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
-
-    @check_configs_set
     def show_next_ses_number(self, sub: Optional[str]) -> None:
         """
         Show a suggested value for the next session number of a
@@ -952,6 +964,17 @@ class DataShuttle:
         utils.print_message_to_user(
             f"The existing project names are {project_names}."
         )
+
+    @check_configs_set
+    def validate_project(self):
+        """
+        Perform validation on the project. Currently checks that
+        sub and ses values have the same length for all sub and
+        ses in the project.
+        """
+        utils.print_message_to_user("Validating project...")
+
+        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
 
     @staticmethod
     def check_name_formatting(
