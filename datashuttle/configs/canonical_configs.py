@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 from pathlib import Path
 from typing import Literal, Union, get_args, get_origin
 
-from datashuttle.utils import folders, utils
+from datashuttle.utils import utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
 
