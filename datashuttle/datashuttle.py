@@ -742,6 +742,39 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
+    def update_config_file(self, **kwargs):
+        """ """
+        if not self.cfg:
+            utils.log_and_raise_error(
+                "Must have a config loaded before updating configs."
+            )
+
+        self._start_log(
+            "update-config-file",
+            local_vars=locals(),
+        )
+
+        #    # tests - pass bad options, especially paths
+        for option, value in kwargs.items():
+            if option in self.cfg.keys_str_on_file_but_path_in_class:
+                kwargs[option] = Path(value)
+
+        new_cfg = copy.deepcopy(self.cfg)
+        new_cfg.update(**kwargs)
+
+        check_change = new_cfg.safe_check_current_dict_is_valid()
+
+        if check_change["passed"]:
+            self.cfg = new_cfg
+            self._set_attributes_after_config_load()
+            self.cfg.dump_to_file()
+            self._log_successful_config_change(message=True)
+            ds_logger.close_log_filehandler()
+        else:
+            utils.log_and_raise_error(
+                f"{check_change['error']}\nConfigs were not updated."
+            )
+
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
     ) -> None:
