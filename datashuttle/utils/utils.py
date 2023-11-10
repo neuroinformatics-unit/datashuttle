@@ -64,7 +64,7 @@ def get_user_input(message: str) -> str:
 
 def raise_error(message: str, exception) -> None:
     """
-    Temporary centralized way to raise and error
+    Centralized way to raise an error
     """
     raise exception(message)
 
@@ -105,9 +105,6 @@ def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
 
     if path_to_config.suffix not in [".yaml", ".yml"]:
         log_and_raise_error("The config file must be a YAML file.", ValueError)
-
-
-# TODO: test this method
 
 
 @overload

@@ -3,12 +3,12 @@ from pathlib import Path
 from typing import Optional, Union, overload
 
 from datashuttle.utils import utils
+from datashuttle.utils.custom_exceptions import ConfigError
 
 from . import canonical_configs
 from .config_class import Configs
 
 ConfigValueTypes = Union[Path, str, bool, None]
-from datashuttle.utils.custom_exceptions import ConfigError
 
 # -----------------------------------------------------------------------------
 # Load Supplied Config
@@ -152,7 +152,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
             if value not in ["True", "False", "true", "false"]:
                 utils.raise_error(
                     f"Input value for '{key}' must be True or False",
-                    ValueError,
+                    ConfigError,
                 )
 
             value = value in ["True", "true"]

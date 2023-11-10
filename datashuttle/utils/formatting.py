@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
-
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 if TYPE_CHECKING:
@@ -106,7 +105,9 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
         )
 
     if any([" " in ele for ele in names]):
-        utils.log_and_raise_error(f"{prefix} names cannot include spaces.", NeuroBlueprintError)
+        utils.log_and_raise_error(
+            f"{prefix} names cannot include spaces.", NeuroBlueprintError
+        )
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
@@ -138,13 +139,15 @@ def check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
     if not all_identical(value_len):
         utils.log_and_raise_error(
             f"The length of the {prefix} values (e.g. '001') must be "
-            f"consistent across all {prefix} names."
+            f"consistent across all {prefix} names.",
+            NeuroBlueprintError,
         )
 
     if not all_unique(int_values):
         utils.log_and_raise_error(
             f"{prefix} names must all have unique integer ids"
-            f" after the {prefix} prefix."
+            f" after the {prefix} prefix.",
+            NeuroBlueprintError,
         )
 
 
