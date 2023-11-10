@@ -231,7 +231,76 @@ class TestUnit:
             f"integer ids after the {prefix} prefix."
         )
 
-    # ----------------------------------------------------------------------
+    @pytest.mark.parametrize("key", ["sub", "ses", "date", "id"])
+    @pytest.mark.parametrize("return_as_int", [True, False])
+    @pytest.mark.parametrize("sort", [True, False])
+    def test_get_values_from_bids_formatted_name(
+        self, key, return_as_int, sort
+    ):
+        """
+        Unit test the function `test_get_values_from_bids_formatted_name()`
+        which extracts values from BIDS-like names with a range of
+        possible inputs.
+        """
+        if return_as_int and key == "id":
+            return
+
+        all_names = [
+            "sub-01_ses-0101_date-123456_id-abcde",
+            "sub-02_ses-0999_date-234567_id-bcdef",
+            "sub-99_ses-1000_date-345678_id-cdefg",
+        ]
+
+        all_expected_values = {
+            "sub": ["01", "02", "99"],
+            "ses": ["0101", "0999", "1000"],
+            "date": ["123456", "234567", "345678"],
+            "id": ["abcde", "bcdef", "cdefg"],
+        }
+
+        values = utils.get_values_from_bids_formatted_name(
+            all_names, key, return_as_int, sort
+        )
+
+        expected_values = all_expected_values[key]
+
+        if return_as_int:
+            expected_values = [int(val) for val in expected_values]
+
+        if sort:
+            expected_values = sorted(expected_values)
+
+        assert values == expected_values
+
+    def test_get_values_from_bids_formatted_name_error(self):
+        """
+        Check errors that catch unpredictable behaviour
+        are displayed correctly.
+        """
+        with pytest.raises(BaseException) as e:
+            utils.get_values_from_bids_formatted_name(
+                ["sub-001_date-12345", "sub-001_date-12345_date-23456"], "date"
+            )
+
+        assert (
+            "There is more than instance of date in"
+            " sub-001_date-12345_date-23456" in str(e.value)
+        )
+
+        with pytest.raises(BaseException) as e:
+            utils.get_values_from_bids_formatted_name(
+                ["sub-a_date-12345", "sub-b_date-12345_date-23456"],
+                "sub",
+                return_as_int=True,
+            )
+        assert "Invalid character in sub number: sub-a_date-12345" == str(
+            e.value
+        )
+
+    # -------------------------------------------------------
+    #
+    #
+    # ---------------
     # Utlis
     # ----------------------------------------------------------------------
 

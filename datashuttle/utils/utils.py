@@ -134,7 +134,8 @@ def get_values_from_bids_formatted_name(
 ) -> Union[List[int], List[str]]:
     """
     Find the values associated with a key from a list of all
-    BIDS-formatted file / folder names.
+    BIDS-formatted file / folder names. This is typically used to
+    find sub / ses values.
     """
     all_values = []
     for name in all_names:
@@ -146,7 +147,7 @@ def get_values_from_bids_formatted_name(
         if len(value) > 1:
             raise_error(
                 f"There is more than instance of {key} in {name}. "
-                f"BIDS names must contain only one instance of "
+                f"NeuroBlueprint names must contain only one instance of "
                 f"each key."
             )
 
@@ -154,7 +155,7 @@ def get_values_from_bids_formatted_name(
             try:
                 value_to_append = int(value[0])
             except ValueError:
-                raise_error(f"Invalid character in subject number: {name}")
+                raise_error(f"Invalid character in {key} number: {name}")
         else:
             value_to_append = value[0]
 
