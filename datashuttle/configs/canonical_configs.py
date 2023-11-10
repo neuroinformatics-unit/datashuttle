@@ -22,6 +22,7 @@ from datashuttle.utils import utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
 
+# TODO: this can be merged with get_canonical_config_required_types()
 def get_canonical_config_dict() -> dict:
     """
     Canonical list of required keys
@@ -112,6 +113,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
                 f"Config file was not updated.",
                 ConfigError,
             )
+
     for key in config_dict.keys():
         if key not in canonical_dict.keys():
             utils.log_and_raise_error(

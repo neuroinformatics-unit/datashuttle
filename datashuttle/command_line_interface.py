@@ -1,11 +1,11 @@
 import argparse
 import warnings
-from typing import Any, Callable
+from typing import Any, Callable, Dict
 
 import simplejson
 
 from datashuttle import DataShuttle
-from datashuttle.configs import load_configs
+from datashuttle.configs import canonical_configs, load_configs
 from datashuttle.utils import utils
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
@@ -33,7 +33,7 @@ def run_command(
     interface works as a wrapper around datashuttle methods.
     On CLI call, a project with passed project_name is initialised.
     This is then passed to the CLI wrapper of the
-    particular function called (e.g. update_config) which calls this
+    particular function called (e.g. update_config_file) which calls this
     function with the appropriate methods and arguments to call
     datashuttle.
 
@@ -76,6 +76,11 @@ def make_kwargs(args: Any) -> dict:
     del kwargs["func"]
     del kwargs["project_name"]
     return kwargs
+
+
+def remove_nonetype_entries(dict_: Dict) -> Dict:
+    """ """
+    return {k: v for k, v in dict_.items() if v is not None}
 
 
 def help(help_type: str) -> str:
@@ -138,7 +143,7 @@ def make_config_file(project: DataShuttle, args: Any) -> None:
     string representation of bool and None into python datatypes.
     """
     kwargs = make_kwargs(args)
-    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    filtered_kwargs = remove_nonetype_entries(kwargs)
 
     filtered_kwargs = load_configs.handle_cli_or_supplied_config_bools(
         filtered_kwargs
@@ -156,19 +161,16 @@ def make_config_file(project: DataShuttle, args: Any) -> None:
 # -----------------------------------------------------------------------------
 
 
-def update_config(project: DataShuttle, args: Any) -> None:
+def update_config_file(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
-    option_key = kwargs["option_key"]
-    option_key = option_key.replace("-", "_")
-    new_info = kwargs["new_info"]
+    filtered_kwargs = remove_nonetype_entries(kwargs)
 
-    run_command(
-        project,
-        project.update_config,
-        option_key,
-        new_info,
+    filtered_kwargs = load_configs.handle_cli_or_supplied_config_bools(
+        filtered_kwargs
     )
+
+    run_command(project, project.update_config_file, **filtered_kwargs)
 
 
 # -----------------------------------------------------------------------------
@@ -530,28 +532,24 @@ def construct_parser():
         help=help("flag_default_false"),
     )
 
-    make_config_file_parser = subparsers.add_parser(
-        "update-config",
-        aliases=["update_config"],
-        description=f"{process_docstring(DataShuttle.update_config.__doc__)} "
-        f"\nThe option key should be in the form of config file keys"
-        f"(e.g. central_path, local_path)\n"
-        f"EXAMPLE: datashuttle test update_config central_path 'test_path'",
+    # Update Config File
+    # ----------------------------------------------------------------------------------
+
+    update_config_file_parser = subparsers.add_parser(
+        "update-config-file",
+        aliases=["update_config_file"],
+        description=f"{process_docstring(DataShuttle.update_config_file.__doc__)}",
         formatter_class=argparse.RawTextHelpFormatter,
         help="",
     )
-    make_config_file_parser.set_defaults(func=update_config)
+    update_config_file_parser.set_defaults(func=update_config_file)
 
-    make_config_file_parser.add_argument(
-        "option_key",
-        action="store",
-        help="(str) (see make_config_file --help)",
-    )
-    make_config_file_parser.add_argument(
-        "new_info",
-        action="store",
-        help="(str or bool) depending on option key",
-    )
+    config_options = canonical_configs.get_canonical_config_dict()
+
+    for option in config_options:
+        update_config_file_parser.add_argument(
+            f"--{option.replace('_', '-')}", f"--{option}", required=False
+        )
 
     # SSH connection to central server
     # ----------------------------------------------------------------------
