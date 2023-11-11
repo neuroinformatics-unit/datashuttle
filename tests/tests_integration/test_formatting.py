@@ -133,7 +133,7 @@ class TestFormatting(BaseTest):
         )
         os.makedirs(new_central_path, exist_ok=True)
 
-        project.update_config("central_path", new_central_path)
+        project.update_config_file(central_path=new_central_path)
         os.makedirs(project.cfg["central_path"] / "rawdata" / bad_sub_name)
         shutil.rmtree(project.cfg["local_path"] / "rawdata" / bad_sub_name)
         self.check_inconsistent_sub_or_ses_value_length_warning(project, "sub")
@@ -184,7 +184,7 @@ class TestFormatting(BaseTest):
         )
         os.makedirs(new_central_path, exist_ok=True)
 
-        project.update_config("central_path", new_central_path)
+        project.update_config_file(central_path=new_central_path)
         os.makedirs(
             project.cfg["central_path"] / "rawdata" / "sub-001" / bad_ses_name
         )
