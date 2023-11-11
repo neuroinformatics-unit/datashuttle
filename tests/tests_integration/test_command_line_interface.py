@@ -270,22 +270,15 @@ class TestCommandLineInterface(BaseTest):
         ]
         assert kwargs_["ses_names"] == ["5", "06", "007"]
 
-    # ----------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
     # Test CLI Functionality
-    # ----------------------------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_update_config(self, clean_project_name, sep, tmp_path):
+    def test_update_config_file(self, clean_project_name, sep, tmp_path):
         """
-        See test_update_config in test_configs.py.
-
-        There is not a _variables (above) test for update_config
-        because the arguments are converted to string
-        in the body of project.update_config(), so that logging
-        can capture everything. Thus, testing the variables
-        that are json.dumps() for the test environment are not
-        type-converted. As such, just test the whole
-        workflow here, with both separators.
+        Set up a project then up all configs with new configs
+        and check these are all loaded correctly.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
             tmp_path, clean_project_name, set_as_defaults=True
@@ -304,17 +297,18 @@ class TestCommandLineInterface(BaseTest):
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
+        argument_list = ""
         for key, value in not_set_configs.items():
             format_value = (
                 test_utils.add_quotes(value) if "path" in key else value
             )
+            argument_list += f"--{key} {format_value} "
 
-            test_utils.run_cli(
-                f" update{sep}config {key} {format_value}", clean_project_name
-            )
-            default_configs[key] = value
+        test_utils.run_cli(
+            f" update{sep}config{sep}file {argument_list}", clean_project_name
+        )
 
-            test_utils.check_config_file(config_path, default_configs)
+        test_utils.check_config_file(config_path, not_set_configs)
 
     def test_make_config_file_defaults(
         self,
