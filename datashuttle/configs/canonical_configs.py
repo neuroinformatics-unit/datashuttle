@@ -94,7 +94,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     Central function for performing checks on a
     DataShuttle Configs UserDict class. This should
     be run after any change to the configs (e.g.
-    make_config_file, update_config, supply_config_file).
+    make_config_file, update_config_file(), supply_config_file).
 
     This will raise assert if condition is not met.
 

@@ -572,7 +572,7 @@ class DataShuttle:
         """
         Setup a connection to the central server using SSH.
         Assumes the central_host_id and central_host_username
-        are set in configs (see make_config_file() and update_config())
+        are set in configs (see make_config_file() and update_config_file())
 
         First, the server key will be displayed, requiring
         verification of the server ID. This will store the
@@ -646,7 +646,7 @@ class DataShuttle:
         on the local machine. Use show_config_path() to
         get the full path to the saved config file.
 
-        Use update_config() to update a single config, and
+        Use update_config_file() to update a single config, and
         supply_config() to use an existing config file.
 
         Parameters
@@ -754,7 +754,6 @@ class DataShuttle:
             local_vars=locals(),
         )
 
-        #    # tests - pass bad options, especially paths
         for option, value in kwargs.items():
             if option in self.cfg.keys_str_on_file_but_path_in_class:
                 kwargs[option] = Path(value)
