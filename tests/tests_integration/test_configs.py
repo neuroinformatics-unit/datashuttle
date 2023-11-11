@@ -183,56 +183,6 @@ class TestConfigs(BaseTest):
             "required if 'connection_method' is 'ssh'."
         )
 
-    @pytest.mark.parametrize(
-        "argument_type",
-        ["none", "central_host_id", "central_host_username", "both"],
-    )
-    def test_no_ssh_options_set_update_config(
-        self, no_cfg_project, argument_type, tmp_path
-    ):
-        """
-        Check every config option missing does not allow
-        switching on ssh_to_central unless all options
-        are set.
-        """
-        local_path = tmp_path / "test_local_path" / no_cfg_project.project_name
-        central_path = (
-            tmp_path / "test_central_path" / no_cfg_project.project_name
-        )
-
-        os.makedirs(local_path, exist_ok=True)
-        os.makedirs(central_path, exist_ok=True)
-
-        no_cfg_project.make_config_file(
-            local_path,
-            tmp_path / "test_central_path" / no_cfg_project.project_name,
-            "local_filesystem",
-        )
-
-        if argument_type in ["central_host_id", "both"]:
-            no_cfg_project.update_config("central_host_id", "fake_id")
-
-        if argument_type in ["central_host_username", "both"]:
-            no_cfg_project.update_config(
-                "central_host_username", "fake_username"
-            )
-
-        if argument_type == "both":
-            no_cfg_project.update_config("connection_method", "ssh")
-            assert no_cfg_project.cfg["connection_method"] == "ssh"
-        else:
-            with pytest.raises(ConfigError) as e:
-                no_cfg_project.update_config("connection_method", "ssh")
-
-            assert (
-                str(e.value)
-                == "\n'central_host_id' and 'central_host_username' are required "
-                "if 'connection_method' is 'ssh'.\nconnection_method was not updated."
-            )
-            assert (
-                no_cfg_project.cfg["connection_method"] == "local_filesystem"
-            )
-
     # Test Make Configs API
     # -------------------------------------------------------------
 
@@ -284,31 +234,52 @@ class TestConfigs(BaseTest):
             no_cfg_project, changed_configs
         )
 
-    # Test Update Configs
+    # Test Update Config File
     # -------------------------------------------------------------
 
-    def test_update_config(self, no_cfg_project, tmp_path):
+    def test_update_config_file(self, no_cfg_project, tmp_path):
         """
-        Set the configs as default and then sequentially update
-        each entry with a different option. Check that
-        the option is updated at no_cfg_project.cfg and the yaml file.
+        Set the configs as default, and then update them to
+        new configs and check they are updated properly.
+
+        Then, update only a subset (back to the defaults) and
+        check only the subset is updated.
         """
         default_configs = test_utils.get_test_config_arguments_dict(
             tmp_path, no_cfg_project.project_name, set_as_defaults=True
         )
 
         no_cfg_project.make_config_file(**default_configs)
+        project = no_cfg_project
 
         not_set_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, no_cfg_project.project_name, set_as_defaults=False
+            tmp_path, project.project_name, set_as_defaults=False
         )
 
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
-        for key, value in not_set_configs.items():
-            no_cfg_project.update_config(key, value)
-            default_configs[key] = value
-            test_utils.check_configs(no_cfg_project, default_configs)
+        project.update_config_file(**not_set_configs)
+
+        test_utils.check_configs(project, not_set_configs)
+
+        # Now update only a subset and check only this subset is updated.
+        keys_to_not_update = [
+            "local_path",
+            "connection_method",
+            "central_host_id",
+            "central_host_username",
+            "transfer_verbosity",
+        ]
+
+        for key in keys_to_not_update:
+            default_configs.pop(key)
+
+        project.update_config_file(**default_configs)
+
+        for key in keys_to_not_update:
+            default_configs[key] = not_set_configs[key]
+
+        test_utils.check_configs(project, default_configs)
 
     # Test Supplied Configs
     # -------------------------------------------------------------
