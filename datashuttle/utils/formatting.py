@@ -56,7 +56,7 @@ def check_and_format_names(
 
     formatted_names = format_names(names_to_check, prefix)
 
-    validation.validate_names(formatted_names, prefix)
+    validation.validate_list_of_names(formatted_names, prefix)
 
     return formatted_names + reserved_keywords
 
@@ -85,10 +85,7 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
             f"Ensure {prefix} names are a list of strings.", TypeError
         )
 
-    if any([" " in ele for ele in names]):
-        utils.log_and_raise_error(
-            f"{prefix} names cannot include spaces.", NeuroBlueprintError
-        )
+    validation.check_list_of_names_for_spaces(names, prefix)
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
