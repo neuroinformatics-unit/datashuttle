@@ -129,12 +129,12 @@ class TestUnit:
         """"""
         all_names = ["sub_001_date-010101"]
 
-        with pytest.raises(NeuroBlueprintError) as e:
-            validation.dashes_and_underscore_alternate_incorrectly(all_names)
+        with pytest.raises(BaseException) as e:
+            validation.validate_list_of_names(all_names, "sub")
 
         assert (
             str(e.value)
-            == "The first delimiter of 'sub' or 'ses' must be dash not underscore e.g. sub-001."
+            == "Not all names in the list: ['sub_001_date-010101'] begin with the required prefix: sub"
         )
 
         alternate_error = (
@@ -145,27 +145,33 @@ class TestUnit:
         all_names = ["sub-001-date_101010"]
 
         with pytest.raises(BaseException) as e:
-            validation.dashes_and_underscore_alternate_incorrectly(all_names)
+            validation.validate_list_of_names(all_names, "sub")
+
+        assert str(e.value) == alternate_error
+
+        all_names = ["ses-001-date_101010"]
+        with pytest.raises(BaseException) as e:
+            validation.validate_list_of_names(all_names, "ses")
 
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-suffix"]
 
         with pytest.raises(NeuroBlueprintError) as e:
-            validation.dashes_and_underscore_alternate_incorrectly(all_names)
+            validation.validate_list_of_names(all_names, "sub")
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-task-check"]
         with pytest.raises(NeuroBlueprintError) as e:
-            validation.dashes_and_underscore_alternate_incorrectly(all_names)
+            validation.validate_list_of_names(all_names, "sub")
         assert str(e.value) == alternate_error
 
         # check these don't raise
         all_names = ["ses-001_hello-world_one-hundred"]
-        validation.dashes_and_underscore_alternate_incorrectly(all_names)
+        validation.validate_list_of_names(all_names, "ses")
 
         all_names = ["ses-001_hello-world_suffix"]
-        validation.dashes_and_underscore_alternate_incorrectly(all_names)
+        validation.validate_list_of_names(all_names, "ses")
 
     def test_get_value_from_bids_name_regexp(self):
         """

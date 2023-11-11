@@ -60,9 +60,11 @@ def make_folder_trees(
     datatype_passed = datatype not in [[""], ""]
 
     if datatype_passed:
-        validation.check_datatype_is_valid(
-            datatype, error_on_fail=True, allow_all=True
+        is_invalid, message = validation.datatypes_are_invalid(
+            datatype, allow_all=True
         )
+        if is_invalid:
+            utils.log_and_raise_error(message)
 
     for sub in sub_names:
         sub_path = cfg.make_path(
