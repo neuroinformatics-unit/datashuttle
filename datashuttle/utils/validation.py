@@ -80,11 +80,6 @@ def check_dashes_and_underscore_alternate_correctly(
                 "must be dash not underscore e.g. sub-001."
             )
 
-        # TODO: this handles the suffix case, but suffixes are not
-        # allowed at sub / ses level. Shall we allow them anyways?
-        if len(dashes_underscores) % 2 != 0:
-            dashes_underscores.pop(-1)
-
         if any([ele == 0 for ele in utils.diff(dashes_underscores)]):
             utils.log_and_raise_error(
                 "Subject and session names must contain alternating dashes "
