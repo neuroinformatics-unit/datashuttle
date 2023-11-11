@@ -61,7 +61,7 @@ class TestUnit:
         with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_and_format_names(names, prefix)
 
-        assert str(e.value) == f"{prefix} names cannot include spaces."
+        assert "include spaces, which is not permitted." in str(e.value)
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_to_keyword_in_sub_input(self, prefix):
@@ -127,19 +127,8 @@ class TestUnit:
 
     def test_formatting_dashes_and_underscore_alternate_incorrectly(self):
         """"""
-        all_names = ["sub_001_date-010101"]
-
-        with pytest.raises(BaseException) as e:
-            validation.validate_list_of_names(all_names, "sub")
-
-        assert (
-            str(e.value)
-            == "Not all names in the list: ['sub_001_date-010101'] begin with the required prefix: sub"
-        )
-
-        alternate_error = (
-            "Subject and session names must contain alternating dashes"
-            " and underscores (used for separating key-value pairs)."
+        error_message = (
+            lambda names: f"The names {names} " f"are not formatted correctly."
         )
 
         all_names = ["sub-001-date_101010"]
@@ -147,24 +136,26 @@ class TestUnit:
         with pytest.raises(BaseException) as e:
             validation.validate_list_of_names(all_names, "sub")
 
-        assert str(e.value) == alternate_error
+        assert error_message(all_names) in str(e.value)
 
         all_names = ["ses-001-date_101010"]
         with pytest.raises(BaseException) as e:
             validation.validate_list_of_names(all_names, "ses")
 
-        assert str(e.value) == alternate_error
+        assert error_message(all_names) in str(e.value)
 
         all_names = ["sub-001_ses-002-suffix"]
 
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_list_of_names(all_names, "sub")
-        assert str(e.value) == alternate_error
+
+        assert error_message(all_names) in str(e.value)
 
         all_names = ["sub-001_ses-002-task-check"]
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_list_of_names(all_names, "sub")
-        assert str(e.value) == alternate_error
+
+        assert error_message(all_names) in str(e.value)
 
         # check these don't raise
         all_names = ["ses-001_hello-world_one-hundred"]

@@ -14,9 +14,8 @@ from . import folders, utils
 # Checking a standalone list of names
 # -----------------------------------------------------------------------------
 
-# 2) update all tests to show exactly where error occurred
-# 3) Review what needs to be done
 # 4) add tests for everything, ensure everything is tested.
+# 3) Review what needs to be done
 # 5) In a new PR, add the project wrapper.
 
 
@@ -56,19 +55,19 @@ def name_beings_with_bad_key(
     names_list: List[str], prefix: Literal["sub", "ses"]
 ) -> Tuple[bool, str]:  # TODO: test
     """ """
-    begins_with_bad_key = not all(
-        [name[:4] == f"{prefix}-" for name in names_list]
-    )
+    bad_names = []
+    for name in names_list:
+        if name[:4] != f"{prefix}-":
+            bad_names.append(name)
 
-    if begins_with_bad_key:
+    if bad_names:
         message = (
-            f"Not all names in the list: {names_list} "
-            f"begin with the required prefix: {prefix}"
+            f"The names: {bad_names} "
+            f"do not begin with the required prefix: {prefix}"
         )
-    else:
-        message = ""
+        return True, message
 
-    return begins_with_bad_key, message
+    return False, ""
 
 
 # TODO: test
@@ -76,39 +75,45 @@ def names_include_spaces(
     names_list: List[str], prefix: Literal["sub", "ses"]
 ) -> Tuple[bool, str]:
     """ """
-    spaces_in_names = any([" " in ele for ele in names_list])
+    bad_names = []
+    for name in names_list:
+        if " " in name:
+            bad_names.append(name)
 
-    if spaces_in_names:
-        message = f"{prefix} names cannot include spaces."
-    else:
-        message = ""
-
-    return spaces_in_names, message
+    if bad_names:
+        return (
+            True,
+            f"The names {bad_names} include spaces, "
+            f"which is not permitted.",
+        )
+    return False, ""
 
 
 def dashes_and_underscore_alternate_incorrectly(
     names_list: List[str],
 ) -> Tuple[bool, str]:
     """ """
+    bad_names = []
     for name in names_list:
         discrim = {"-": 1, "_": -1}
+
         dashes_underscores = [
             discrim[ele] for ele in name if ele in ["-", "_"]
         ]
 
         if dashes_underscores[0] != 1:
-            message = (
-                "The first delimiter of 'sub' or 'ses' "
-                "must be dash not underscore e.g. sub-001."
-            )
-            return True, message
+            bad_names.append(name)
 
-        if any([ele == 0 for ele in utils.diff(dashes_underscores)]):
-            message = (
-                "Subject and session names must contain alternating "
-                "dashes and underscores (used for separating key-value pairs)."
-            )
-            return True, message
+        elif any([ele == 0 for ele in utils.diff(dashes_underscores)]):
+            bad_names.append(name)
+
+    if bad_names:
+        message = (
+            f"The names {bad_names} are not formatted correctly. Names"
+            f"must consist of key-value pairs separated by underscores."
+            f"e.g. 'sub-001_ses-01_date-20230516"
+        )
+        return True, message
 
     return False, ""
 
@@ -136,10 +141,9 @@ def value_lengths_are_inconsistent(
             f"found. Ensure the number of digits for the {prefix} value "
             f"are the same and prefixed with leading zeros if required."
         )
-    else:
-        message = ""
+        return True, message
 
-    return inconsistent_value_len, message
+    return False, ""
 
 
 def duplicated_prefix_values(
@@ -160,10 +164,9 @@ def duplicated_prefix_values(
             f"{prefix} names must all have unique integer ids"
             f" after the {prefix} prefix."
         )
-    else:
-        message = ""
+        return True, message
 
-    return has_duplicate_ids, message
+    return False, ""
 
 
 def raise_error_or_warn(
@@ -203,18 +206,21 @@ def datatypes_are_invalid(
     if allow_all:
         valid_keys += ["all"]
 
-    is_invalid = not all([dt in valid_keys for dt in datatype])
+    bad_datatypes = []
+    for dt in datatype:
+        if dt not in valid_keys:
+            bad_datatypes.append(dt)
 
-    if is_invalid:
+    if bad_datatypes:
+        or_all = " or 'all'" if allow_all else ""
         message = (
-            f"datatype: '{datatype}' is not valid. Must be one of"
-            f" {list(datatype_folders.keys())}. or 'all'. "
+            f"datatypes: '{bad_datatypes}' are not valid. Must be one of"
+            f" {list(datatype_folders.keys())}{or_all}. "
             f"No folders were made."
         )
-    else:
-        message = ""
+        return True, message
 
-    return is_invalid, message
+    return False, ""
 
 
 # -----------------------------------------------------------------------------
@@ -222,6 +228,7 @@ def datatypes_are_invalid(
 # -----------------------------------------------------------------------------
 
 
+# TODO: this is getting very messy
 def validate_project(
     cfg,
     local_only=False,
@@ -234,8 +241,19 @@ def validate_project(
     sub_names = folder_names["sub"]
 
     validate_list_of_names(
-        sub_names, prefix="sub", error_or_warn=error_or_warn, log=log
+        sub_names,
+        prefix="sub",
+        error_or_warn=error_or_warn,
+        log=log,
+        check_duplicates=False,
     )
+
+    for sub in sub_names:  # TODO: I think this includes many unnecessary loops
+        failed, message = new_name_duplicates_existing(  # TODO: rename
+            sub, sub_names, "sub"
+        )
+        if failed:
+            raise_error_or_warn(message, error_or_warn, log)
 
     all_ses_names = list(chain(*folder_names["ses"].values()))
 
@@ -246,11 +264,14 @@ def validate_project(
         error_or_warn=error_or_warn,
         log=log,
     )
-
+    # TODO: I think this includes many unnecessary loops
     for ses_names in folder_names["ses"].values():
-        failed, message = duplicated_prefix_values(ses_names, "ses")
-        if failed:
-            raise_error_or_warn(message, error_or_warn, log)
+        for ses in ses_names:
+            failed, message = new_name_duplicates_existing(  # TODO: rename
+                ses, ses_names, "ses"
+            )
+            if failed:
+                raise_error_or_warn(message, error_or_warn, log)
 
 
 def validate_names_against_project(
@@ -319,7 +340,6 @@ def new_name_duplicates_existing(
     a different subject.
     """
     # Make a list of matches between `new_name` and any in `existing_names`
-    matched_existing_names = []
     for exist_name in existing_names:
         exist_name_id = utils.get_values_from_bids_formatted_name(
             [exist_name], prefix, return_as_int=True
@@ -330,32 +350,15 @@ def new_name_duplicates_existing(
         )[0]
 
         if exist_name_id == new_name_id:
-            matched_existing_names.append(exist_name)
+            if new_name != exist_name:
+                message = (
+                    f"Cannot make folders. A {prefix} already exists with "
+                    f"the same {prefix} id as {new_name}. "
+                    f"The existing folder is {exist_name}."
+                )
+                return True, message
 
-    failed = False
-    message = ""
-
-    # If more than one match is found, there is definitely a duplicate
-    if len(matched_existing_names) > 1:
-        failed = True
-        message = (
-            f"Cannot make folders. Multiple {prefix} ids  exist: "
-            f"{matched_existing_names}. This should never happen. "
-            f"Check the {prefix} ids and ensure unique {prefix} ids "
-            f"(e.g. sub-001) appear only once."
-        )
-
-    # If exactly one match is found, it should match exactly.
-    if len(matched_existing_names) == 1:
-        if new_name != matched_existing_names[0]:
-            failed = True
-            message = (
-                f"Cannot make folders. A {prefix} already exists with "
-                f"the same {prefix} id as {new_name}. "
-                f"The existing folder is {matched_existing_names[0]}."
-            )
-
-    return failed, message
+    return False, ""
 
 
 # -----------------------------------------------------------------------------

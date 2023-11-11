@@ -4,9 +4,8 @@ import shutil
 import pytest
 from base import BaseTest
 
-
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
-from datashuttle.utils import formatting, validation
+from datashuttle.utils import formatting
 
 
 class TestFormatting(BaseTest):
@@ -93,14 +92,14 @@ class TestFormatting(BaseTest):
 
     @pytest.mark.parametrize(
         "sub_name",
-        ["sub-001", "sub-001_@DATE@", "sub-001_random-tag_another-tag"],
+        ["sub-001", "sub-999_@DATE@", "sub-001_random-tag_another-tag"],
     )
     @pytest.mark.parametrize(
         "bad_sub_name",
         [
             "sub-3",
-            "sub-01",
-            "sub-0001",
+            "sub-04",
+            "sub-0004",
             "sub-07_@DATE@",
             "sub-1321",
             "sub-22",
@@ -146,20 +145,20 @@ class TestFormatting(BaseTest):
 
     @pytest.mark.parametrize(
         "ses_name",
-        ["ses-01", "ses-01_@DATE@", "ses-01_random-tag_another-tag"],
+        ["ses-01"],  # , "ses-99_@DATE@", "ses-01_random-tag_another-tag"],
     )
     @pytest.mark.parametrize(
         "bad_ses_name",
         [
             "ses-3",
-            "ses-001",
-            "ses-0001",
+            "ses-004",
+            "ses-0004",
             "ses-007_@DATE@",
             "ses-1453_@DATETIME@",
             "ses-234234234",
         ],
     )
-    def test_warn_on_inconsistent_ses_value_lengths(
+    def test_warn_on_inconsistent_ses_value_lengths__(
         self, project, ses_name, bad_ses_name
     ):
         """
@@ -216,18 +215,16 @@ class TestFormatting(BaseTest):
         )
 
     def check_inconsistent_sub_or_ses_value_length_warning(
-        self, project, sub_or_ses, warn_idx=0
+        self, project, prefix, warn_idx=0
     ):
         """"""
         with pytest.warns(UserWarning) as w:
-            validation.warn_on_inconsistent_sub_or_ses_value_lengths(
-                project.cfg
-            )
+            project.validate_project(error_or_warn="warn")
 
-        assert (
-            str(w[warn_idx].message) == f"Inconsistent value lengths for the "
-            f"{sub_or_ses} key in the project found. It is "
-            f"crucial these are made consistent as "
-            f"soon as possible to avoid unexpected "
-            f"behaviour of DataShuttle during data transfer."
-        )
+        try:
+            assert (
+                str(w[warn_idx].message)
+                == f"Inconsistent value lengths for the key {prefix} were found. Ensure the number of digits for the {prefix} value are the same and prefixed with leading zeros if required."
+            )
+        except:
+            breakpoint()

@@ -972,7 +972,7 @@ class DataShuttle:
         )
 
     @check_configs_set
-    def validate_project(self):
+    def validate_project(self, error_or_warn):
         """
         Perform validation on the project. Currently checks that
         sub and ses values have the same length for all sub and
@@ -980,8 +980,9 @@ class DataShuttle:
         """
         utils.print_message_to_user("Validating project...")
 
-        # TODO!
-        raise NotImplementedError
+        validation.validate_project(
+            self.cfg, local_only=False, error_or_warn=error_or_warn, log=True
+        )
 
     @staticmethod
     def check_name_formatting(
