@@ -8,7 +8,7 @@ def setup_project_for_ssh(
     project, central_path, central_host_id, central_host_username
 ):
     """
-    Setup the project configs to use SSH connection
+    Set up the project configs to use SSH connection
     to central
     """
     project.update_config(
