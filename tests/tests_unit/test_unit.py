@@ -125,14 +125,12 @@ class TestUnit:
             f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)."
         )
 
-    def test_formatting_check_dashes_and_underscore_alternate_correctly(self):
+    def test_formatting_dashes_and_underscore_alternate_incorrectly(self):
         """"""
         all_names = ["sub_001_date-010101"]
 
         with pytest.raises(NeuroBlueprintError) as e:
-            validation.check_dashes_and_underscore_alternate_correctly(
-                all_names
-            )
+            validation.dashes_and_underscore_alternate_incorrectly(all_names)
 
         assert (
             str(e.value)
@@ -146,35 +144,28 @@ class TestUnit:
 
         all_names = ["sub-001-date_101010"]
 
-        with pytest.raises(NeuroBlueprintError) as e:
-            validation.check_dashes_and_underscore_alternate_correctly(
-                all_names
-            )
+        with pytest.raises(BaseException) as e:
+            validation.dashes_and_underscore_alternate_incorrectly(all_names)
 
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-suffix"]
 
         with pytest.raises(NeuroBlueprintError) as e:
-            validation.check_dashes_and_underscore_alternate_correctly(
-                all_names
-            )
+            validation.dashes_and_underscore_alternate_incorrectly(all_names)
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-task-check"]
-
         with pytest.raises(NeuroBlueprintError) as e:
-            validation.check_dashes_and_underscore_alternate_correctly(
-                all_names
-            )
+            validation.dashes_and_underscore_alternate_incorrectly(all_names)
         assert str(e.value) == alternate_error
 
         # check these don't raise
         all_names = ["ses-001_hello-world_one-hundred"]
-        validation.check_dashes_and_underscore_alternate_correctly(all_names)
+        validation.dashes_and_underscore_alternate_incorrectly(all_names)
 
         all_names = ["ses-001_hello-world_suffix"]
-        validation.check_dashes_and_underscore_alternate_correctly(all_names)
+        validation.dashes_and_underscore_alternate_incorrectly(all_names)
 
     def test_get_value_from_bids_name_regexp(self):
         """

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Literal, Optional, Union
+from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
@@ -14,9 +14,21 @@ from . import folders, utils
 # Checking a standalone list of names
 # -----------------------------------------------------------------------------
 
+# TODO: make sure everything is tested, if possible centralise in validation
+# check all individual validation functions
+# 1) make project-wide validation follow the same return conventions
+# 2) update all tests to show exactly where error occurred
+# 3) Review what needs to be done
+# 4) add tests
+# 5) In a new PR, add the project wrapper.
+
 
 def validate_list_of_names(
-    names_list: List[str], prefix: Literal["sub", "ses"], check_duplicates=True
+    names_list: List[str],
+    prefix: Literal["sub", "ses"],
+    error_or_warn: Literal["error", "warn"] = "error",
+    check_duplicates=True,
+    log=True,
 ) -> None:
     """
     Validate a list of subject or session names, ensuring
@@ -27,44 +39,59 @@ def validate_list_of_names(
     if len(names_list) == 0:
         return
 
-    check_all_names_begin_with_prefix(names_list, prefix)
+    tests_to_run = [
+        lambda: name_beings_with_bad_key(names_list, prefix),
+        lambda: names_include_spaces(names_list, prefix),
+        lambda: dashes_and_underscore_alternate_incorrectly(names_list),
+        lambda: value_lengths_are_inconsistent(names_list, prefix),
+    ]
+    if check_duplicates:
+        tests_to_run += [lambda: duplicated_prefix_values(names_list, prefix)]
 
-    check_list_of_names_for_spaces(names_list, prefix)
+    for test in tests_to_run:
+        failed, message = test()
+        if failed:
+            log_and_error_or_warn(message, error_or_warn, log)
 
-    check_dashes_and_underscore_alternate_correctly(names_list)
 
-    check_names_for_inconsistent_value_lengths(
-        names_list, prefix, raise_error=True
+# TODO: test
+def name_beings_with_bad_key(
+    names_list: List[str], prefix: Literal["sub", "ses"]
+) -> Tuple[bool, str]:  # TODO: test
+    """ """
+    begins_with_bad_key = not all(
+        [name[:4] == f"{prefix}-" for name in names_list]
     )
 
-    if check_duplicates:
-        quick_check_for_duplicate_ids(names_list, prefix)
-
-
-def check_all_names_begin_with_prefix(
-    names_list: List[str], prefix: Literal["sub", "ses"]
-) -> None:  # TODO: test
-    """ """
-    begin_with_prefix = all([name[:4] == f"{prefix}-" for name in names_list])
-
-    if not begin_with_prefix:
-        utils.log_and_raise_error(
+    if begins_with_bad_key:
+        message = (
             f"Not all names in the list: {names_list} "
             f"begin with the required prefix: {prefix}"
         )
+    else:
+        message = ""
+
+    return begins_with_bad_key, message
 
 
-def check_list_of_names_for_spaces(  # TODO: test
+# TODO: test
+def names_include_spaces(
     names_list: List[str], prefix: Literal["sub", "ses"]
-) -> None:
+) -> Tuple[bool, str]:
     """ """
-    if any([" " in ele for ele in names_list]):
-        utils.log_and_raise_error(f"{prefix} names cannot include spaces.")
+    spaces_in_names = any([" " in ele for ele in names_list])
+
+    if spaces_in_names:
+        message = f"{prefix} names cannot include spaces."
+    else:
+        message = ""
+
+    return spaces_in_names, message
 
 
-def check_dashes_and_underscore_alternate_correctly(
+def dashes_and_underscore_alternate_incorrectly(
     names_list: List[str],
-) -> None:
+) -> Tuple[bool, str]:
     """ """
     for name in names_list:
         discrim = {"-": 1, "_": -1}
@@ -73,23 +100,26 @@ def check_dashes_and_underscore_alternate_correctly(
         ]
 
         if dashes_underscores[0] != 1:
-            utils.log_and_raise_error(
+            message = (
                 "The first delimiter of 'sub' or 'ses' "
                 "must be dash not underscore e.g. sub-001."
             )
+            return True, message
 
         if any([ele == 0 for ele in utils.diff(dashes_underscores)]):
-            utils.log_and_raise_error(
-                "Subject and session names must contain alternating dashes "
-                "and underscores (used for separating key-value pairs)."
+            message = (
+                "Subject and session names must contain alternating "
+                "dashes and underscores (used for separating key-value pairs)."
             )
+            return True, message
+
+    return False, ""
 
 
-def check_names_for_inconsistent_value_lengths(
+def value_lengths_are_inconsistent(
     names_list: List[str],
     prefix: Literal["sub", "ses"],
-    raise_error=False,
-) -> bool:
+) -> Tuple[bool, str]:
     """
     Given a list of NeuroBlueprint-formatted subject or session
     names, determine if there are inconsistent value lengths for
@@ -101,24 +131,23 @@ def check_names_for_inconsistent_value_lengths(
 
     value_len = [len(value) for value in prefix_values]
 
-    if value_len != [] and not all_identical(value_len):
-        inconsistent_lengths = True
-    else:
-        inconsistent_lengths = False
+    inconsistent_value_len = value_len != [] and not all_identical(value_len)
 
-    if raise_error and inconsistent_lengths:
-        utils.log_and_raise_error(
-            f"Inconsistent value lengths for the key {prefix} were found. "
-            f"Ensure the number of digits for the {prefix} value are the same "
-            f"and prefixed with leading zeros if required."
+    if inconsistent_value_len:
+        message = (
+            f"Inconsistent value lengths for the key {prefix} were "
+            f"found. Ensure the number of digits for the {prefix} value "
+            f"are the same and prefixed with leading zeros if required."
         )
+    else:
+        message = ""
 
-    return inconsistent_lengths
+    return inconsistent_value_len, message
 
 
-def quick_check_for_duplicate_ids(
+def duplicated_prefix_values(
     names_list: List[str], prefix: Literal["sub", "ses"]
-) -> None:
+) -> Tuple[bool, str]:
     """
     Check a list of subject or session names for duplicate
     ids (e.g. not allowing ["sub-001", "sub-001_@DATE@"])
@@ -126,11 +155,34 @@ def quick_check_for_duplicate_ids(
     int_values = utils.get_values_from_bids_formatted_name(
         names_list, prefix, return_as_int=True
     )
-    if not all_unique(int_values):
-        utils.log_and_raise_error(
+
+    has_duplicate_ids = not all_unique(int_values)
+
+    if has_duplicate_ids:
+        message = (
             f"{prefix} names must all have unique integer ids"
             f" after the {prefix} prefix."
         )
+    else:
+        message = ""
+
+    return has_duplicate_ids, message
+
+
+def log_and_error_or_warn(
+    message: str, error_or_warn: Literal["error", "warn"], log: bool
+) -> None:
+    """ """
+    assert error_or_warn in ["error", "warn"], "Must be 'error' or 'warn'."
+
+    # TODO: combine `log_and_raise_error` and `raise_error`
+    if error_or_warn == "error":
+        if log:
+            utils.log_and_raise_error(message)
+        else:
+            utils.raise_error(message)
+    else:
+        utils.warn(message, log=log)
 
 
 # -----------------------------------------------------------------------------
@@ -172,7 +224,7 @@ def check_datatype_is_valid(
 # -----------------------------------------------------------------------------
 
 
-def validate_project(cfg, local_only=False):  # base_folder
+def validate_project(cfg, local_only=False):
     """"""
     folder_names = folders.get_all_sub_and_ses_names(cfg, local_only)
 
@@ -185,7 +237,7 @@ def validate_project(cfg, local_only=False):  # base_folder
     validate_list_of_names(all_ses_names, "ses", check_duplicates=False)
 
     for ses_names in folder_names["ses"].values():
-        quick_check_for_duplicate_ids(ses_names, "ses")
+        duplicated_prefix_values(ses_names, "ses")
 
 
 def validate_names_against_project(
@@ -195,9 +247,10 @@ def validate_names_against_project(
     local_only=False,
 ) -> None:
     """
-    This does not support subject-spceific checking, this needs to be handled a level up
-    i.e. pass 1 sub, and it's sessions. It is presumed the sessions
-    are for the subjects passed for the duplicate checks
+    This does not support subject-specific checking, this needs to
+    be handled a level up i.e. pass 1 sub, and it's sessions.
+    It is presumed the sessions are for the subjects
+    passed for the duplicate checks
     """
     folder_names = folders.get_all_sub_and_ses_names(cfg, local_only)
 

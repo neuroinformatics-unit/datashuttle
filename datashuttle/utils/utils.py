@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 import re
 import traceback
+import warnings
 from pathlib import Path
 from typing import Any, List, Literal, Union, overload
 
@@ -42,6 +43,14 @@ def log_and_raise_error(message: str, exception: Any) -> None:
     logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
     logger.error(message)
     raise_error(message, exception)
+
+
+def warn(message: str, log: bool) -> None:
+    """ """
+    if log:
+        logger = logging.getLogger("datashuttle")
+        logger.warning(message)
+    warnings.warn(message)
 
 
 def print_message_to_user(message: Union[str, list], use_rich=False) -> None:
