@@ -60,7 +60,7 @@ class TransferData:
         extra_filenames: List[str] = []
 
         for sub in processed_sub_names:
-            # subjects at top level folder ---------------------------------------
+            # subjects at top level folder ------------------------------------
 
             if sub == "all_non_sub":
                 self.update_list_with_non_sub_top_level_folders(
@@ -74,7 +74,7 @@ class TransferData:
                 sub,
             )
 
-            # sessions at sub level folder ---------------------------------------
+            # sessions at sub level folder ------------------------------------
 
             processed_ses_names = self.get_processed_names(self.ses_names, sub)
 
@@ -221,8 +221,8 @@ class TransferData:
             filter(lambda x: x != "all_ses_level_non_datatype", datatype)
         )
 
-        datatype_items = self.cfg.items_from_datatype_input(
-            self.local_or_central, datatype, sub, ses
+        datatype_items = folders.items_from_datatype_input(
+            self.cfg, self.local_or_central, datatype, sub, ses
         )
 
         level = "ses" if ses else "sub"
@@ -268,29 +268,29 @@ class TransferData:
             [name in ["all", "all_sub"] for name in self.sub_names]
         ):
             utils.log_and_raise_error(
-                "'sub_names' must only include 'all' or 'all_subs' if these options are used.",
-                ValueError,
+                "'sub_names' must only include 'all' "
+                "or 'all_subs' if these options are used.", ValueError
             )
 
         if len(self.ses_names) > 1 and any(
             [name in ["all", "all_ses"] for name in self.ses_names]
         ):
             utils.log_and_raise_error(
-                "'ses_names' must only include 'all' or 'all_ses' if these options are used.",
-                ValueError,
+                "'ses_names' must only include 'all' "
+                "or 'all_ses' if these options are used.", ValueError
             )
 
         if len(self.datatype) > 1 and any(
             [name in ["all", "all_datatype"] for name in self.datatype]
         ):
             utils.log_and_raise_error(
-                "'datatype' must only include 'all' or 'all_datatype' if these options are used.",
-                ValueError,
+                "'datatype' must only include 'all' "
+                "or 'all_datatype' if these options are used.", ValueError
             )
 
-    # -----------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Format Arguments
-    # -----------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def get_processed_names(
         self,

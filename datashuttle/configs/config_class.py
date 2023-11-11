@@ -120,9 +120,9 @@ class Configs(UserDict):
         except BaseException as e:
             return {"passed": False, "error": str(e)}
 
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utils
-    # --------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def convert_str_and_pathlib_paths(
         self, config_dict: Union["Configs", dict], direction: str
@@ -273,42 +273,3 @@ class Configs(UserDict):
             )
 
         return items
-
-    def items_from_datatype_input(
-        self,
-        local_or_central: str,
-        datatype: Union[list, str],
-        sub: str,
-        ses: Optional[str] = None,
-    ) -> Union[ItemsView, zip]:
-        """
-        Get the list of datatypes to transfer, either
-        directly from user input, or by searching
-        what is available if "all" is passed.
-
-        Parameters
-        ----------
-
-        see _transfer_datatype() for parameters.
-        """
-        base_folder = self.get_base_folder(local_or_central)
-
-        if datatype not in [
-            "all",
-            ["all"],
-            "all_datatype",
-            ["all_datatype"],
-        ]:
-            datatype_items = self.get_datatype_items(
-                datatype,
-            )
-        else:
-            datatype_items = folders.search_data_folders_sub_or_ses_level(
-                self,
-                base_folder,
-                local_or_central,
-                sub,
-                ses,
-            )
-
-        return datatype_items
