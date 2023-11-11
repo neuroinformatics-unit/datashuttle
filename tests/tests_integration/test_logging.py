@@ -486,11 +486,13 @@ class TestLogging:
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(NeuroBlueprintError):
-            project.make_folders("sub-01", datatype="all")
-
+            project.make_folders(
+                "sub-001_datetime-123213T123122", datatype="all"
+            )
         log = self.read_log_file(project.cfg.logging_path)
 
         assert (
-            "Cannot make folders. A sub already exists with the same sub id as sub-01. "
+            "Cannot make folders. A sub already exists with the same "
+            "sub id as sub-001_datetime-123213T123122. "
             "The existing folder is sub-001" in log
         )
