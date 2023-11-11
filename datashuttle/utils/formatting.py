@@ -2,22 +2,20 @@ from __future__ import annotations
 
 import datetime
 import re
-import warnings
-from itertools import compress
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Union
+from typing import TYPE_CHECKING, List, Literal, Union
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 if TYPE_CHECKING:
-    from datashuttle.configs.config_class import Configs
+    pass
 
-from . import folders, utils
+from . import utils, validation
 
-# --------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Format Sub / Ses Names
-# --------------------------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def check_and_format_names(
@@ -35,8 +33,8 @@ def check_and_format_names(
     these keys as they intrinsically break the NeuroBlueprint rules.
     However, in practice this is not an issue because you won't make a
     folder with "@*@" in it anyway, this is strictly for searching
-    during upload / download. see canonical_folders.canonical_reserved_keywords()
-    for more information.
+    during upload / download.
+    see canonical_folders.canonical_reserved_keywords() for more information.
 
     Parameters
     ----------
@@ -58,26 +56,9 @@ def check_and_format_names(
 
     formatted_names = format_names(names_to_check, prefix)
 
-    validate_names(formatted_names, prefix)
+    validation.validate_names(formatted_names, prefix)
 
     return formatted_names + reserved_keywords
-
-
-def validate_names(all_names, prefix):
-    """
-    Validate a list of subject or session names, ensuring
-    they are formatted as per NeuroBlueprint.
-
-    We cannot validate names with "@*@" tags in.
-    """
-    if len(all_names) == 0:
-        return
-
-    check_dashes_and_underscore_alternate_correctly(all_names)
-
-    check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
-        all_names, prefix
-    )
 
 
 def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
@@ -118,50 +99,6 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
     return prefixed_names
 
 
-def check_names_for_duplicate_ids_and_inconsistent_leading_zeros(
-    names: List[str], prefix: Literal["sub", "ses"]
-) -> None:
-    """
-    Check a list of subject or session names for duplicate
-    ids (e.g. not allowing ["sub-001", "sub-001_@DATE@"]) and that the
-    values lengths are consistent (e.g. not allowing
-    ["sub-001", "sub-02"]).
-    """
-    prefix_values = utils.get_values_from_bids_formatted_name(
-        names, prefix, return_as_int=False
-    )
-    value_len = [len(value) for value in prefix_values]
-
-    int_values = utils.get_values_from_bids_formatted_name(
-        names, prefix, return_as_int=True
-    )  # can't just convert to the above to int as need extra validation
-
-    if not all_identical(value_len):
-        utils.log_and_raise_error(
-            f"The length of the {prefix} values (e.g. '001') must be "
-            f"consistent across all {prefix} names.",
-            NeuroBlueprintError,
-        )
-
-    if not all_unique(int_values):
-        utils.log_and_raise_error(
-            f"{prefix} names must all have unique integer ids"
-            f" after the {prefix} prefix.",
-            NeuroBlueprintError,
-        )
-
-
-def all_unique(list_):
-    return len(list_) == len(set(list_))
-
-
-def all_identical(list_):
-    return len(set(list_)) == 1
-
-
-# Handle @TO@ flags  -------------------------------------------------------
-
-
 def update_names_with_range_to_flag(
     names: List[str], prefix: str
 ) -> List[str]:
@@ -190,17 +127,17 @@ def update_names_with_range_to_flag(
 
             if tags("to") not in tag_number:
                 utils.log_and_raise_error(
-                    f"{tags('to')} flag must be between two numbers in the {prefix} tag.",
-                    ValueError,
+                    f"{tags('to')} flag must be between two "
+                    f"numbers in the {prefix} tag.", ValueError
                 )
 
             left_number, right_number = tag_number.split(tags("to"))
 
             if int(left_number) >= int(right_number):
                 utils.log_and_raise_error(
-                    f"Number of the {prefix} to the  left of {tags('to')} flag "
-                    f"must be smaller than the number to the right.",
-                    ValueError,
+                    f"Number of the {prefix} to the  left of {tags('to')} "
+                    f"flag must be smaller than the number to the right.",
+                    ValueError
                 )
 
             names_with_new_number_inserted = (
@@ -226,9 +163,10 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
 
     if not re.fullmatch(expected_format, first_key_value_pair):
         utils.log_and_raise_error(
-            f"The name: {name} is not in required format for {tags('to')} keyword. "
+            f"The name: {name} is not in required format "
+            f"for {tags('to')} keyword. "
             f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>).",
-            ValueError,
+            ValueError
         )
 
 
@@ -280,7 +218,7 @@ def num_leading_zeros(string: str) -> int:
     return len(string) - len(str(int(string)))
 
 
-# Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------------------
+# Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------
 
 
 def update_names_with_datetime(names: List[str]) -> None:
@@ -362,154 +300,3 @@ def ensure_prefixes_on_list_of_names(
             new_names.append(name)
 
     return new_names
-
-
-def check_datatype_is_valid(
-    cfg: Configs, datatype: Union[List[str], str], error_on_fail: bool
-) -> bool:
-    """
-    Check the passed datatype is valid (must
-    be a key on self.ses_folders e.g. "behav", or "all")
-    """
-    if isinstance(datatype, list):
-        valid_keys = list(cfg.datatype_folders.keys()) + ["all"]
-        is_valid = all([type in valid_keys for type in datatype])
-    else:
-        is_valid = datatype in cfg.datatype_folders.keys() or datatype == "all"
-
-    if error_on_fail and not is_valid:
-        utils.log_and_raise_error(
-            f"datatype: '{datatype}' "
-            f"is not valid. Must be one of"
-            f" {list(cfg.datatype_folders.keys())}. or 'all'"
-            f" No folders were made.",
-            NeuroBlueprintError,
-        )
-
-    return is_valid
-
-
-def check_dashes_and_underscore_alternate_correctly(all_names):
-    """ """
-    for name in all_names:
-        discrim = {"-": 1, "_": -1}
-        dashes_underscores = [
-            discrim[ele] for ele in name if ele in ["-", "_"]
-        ]
-
-        if dashes_underscores[0] != 1:
-            utils.log_and_raise_error(
-                "The first delimiter of 'sub' or 'ses' "
-                "must be dash not underscore e.g. sub-001.",
-                NeuroBlueprintError,
-            )
-
-        if len(dashes_underscores) % 2 != 0:
-            dashes_underscores.pop(-1)
-
-        if any([ele == 0 for ele in utils.diff(dashes_underscores)]):
-            utils.log_and_raise_error(
-                "Subject and session names must contain alternating dashes and "
-                "underscores (used for separating key-value pairs).",
-                NeuroBlueprintError,
-            )
-
-
-# Sub or ses value length checks
-# --------------------------------------------------------------------------------------
-
-
-def warn_on_inconsistent_sub_or_ses_value_lengths(
-    cfg: Configs,
-):
-    """
-    Determine if there are inconsistent value lengths across the
-    project (i.e. this local machine and the central machine.
-    For example, there are inconsistent leading zeros in the list
-    ["sub-001", "sub-02"], but not ["sub-001", "sub-002"]).
-
-    If the number of sub or ses value lengths are not consistent (across local
-    and remote repositories), then throw a warning. It is allowed for subjects
-    and session folder names to have inconsistent leading zeros. But, within
-    subject or session names, the value lengths must be consistent
-    across local and central projects.
-    """
-    try:
-        is_inconsistent = project_has_inconsistent_sub_or_ses_value_lengths(
-            cfg
-        )
-    except:
-        warnings.warn(
-            "Could not search local and remote repositories. "
-            "sub or ses key value length checks not performed."
-        )
-        return
-
-    failing_cases = list(
-        compress(
-            ["sub", "ses"], [is_inconsistent["sub"], is_inconsistent["ses"]]
-        )
-    )
-
-    if any(failing_cases):
-        for fail_name in failing_cases:
-            message = (
-                f"Inconsistent value lengths for "
-                f"the {fail_name} key in the project found. It is crucial "
-                f"these are made consistent as soon as possible to "
-                f"avoid unexpected behaviour of DataShuttle during "
-                f"data transfer."
-            )
-            warnings.warn(message)
-
-    else:
-        utils.print_message_to_user(
-            "No cases of inconsistent value lengths for subject or session"
-            "found across this local machine and the central machine."
-        )
-
-
-def project_has_inconsistent_sub_or_ses_value_lengths(
-    cfg: Configs,
-) -> Dict:
-    """
-    Return bool indicating where the project (i.e. across
-    both `local` and `central`) has consistent value lengths
-    for sub and ses keys.
-    It is not required that subjects and sessions have
-    an equivalent value length (e.g.
-    `sub-001`, `ses-01` is okay. But `sub-001`, `sub-02` is not.
-    """
-    folder_names = folders.get_all_sub_and_ses_names(cfg)
-
-    subs_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
-        folder_names["sub"], "sub"
-    )
-    ses_are_inconsistent = inconsistent_sub_or_ses_value_lengths(
-        folder_names["ses"], "ses"
-    )
-    return {"sub": subs_are_inconsistent, "ses": ses_are_inconsistent}
-
-
-def inconsistent_sub_or_ses_value_lengths(
-    all_names: List[str], sub_or_ses: Literal["sub", "ses"]
-) -> bool:
-    """
-    Given a list of NeuroBlueprint-formatted subject or session names, determine if
-    there are inconsistent value lengths for the sub or ses key.
-    """
-    all_numbers = utils.get_values_from_bids_formatted_name(
-        all_names,
-        sub_or_ses,
-    )
-
-    all_num_lens = [len(num) for num in all_numbers]
-
-    if all_num_lens != [] and not identical_elements(all_num_lens):
-        return True
-
-    return False
-
-
-def identical_elements(list_: List[Any]) -> bool:
-    return len(set(list_)) == 1

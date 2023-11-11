@@ -4,8 +4,9 @@ import shutil
 import pytest
 from base import BaseTest
 
-from datashuttle.utils import formatting
+
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
+from datashuttle.utils import formatting, validation
 
 
 class TestFormatting(BaseTest):
@@ -219,7 +220,7 @@ class TestFormatting(BaseTest):
     ):
         """"""
         with pytest.warns(UserWarning) as w:
-            formatting.warn_on_inconsistent_sub_or_ses_value_lengths(
+            validation.warn_on_inconsistent_sub_or_ses_value_lengths(
                 project.cfg
             )
 
