@@ -3,8 +3,9 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils import folders, formatting, utils
+
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
+from datashuttle.utils import folders, formatting, utils, validation
 
 
 class TestUnit:
@@ -127,8 +128,9 @@ class TestUnit:
     def test_formatting_check_dashes_and_underscore_alternate_correctly(self):
         """"""
         all_names = ["sub_001_date-010101"]
+
         with pytest.raises(NeuroBlueprintError) as e:
-            formatting.check_dashes_and_underscore_alternate_correctly(
+            validation.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
 
@@ -143,33 +145,36 @@ class TestUnit:
         )
 
         all_names = ["sub-001-date_101010"]
+
         with pytest.raises(NeuroBlueprintError) as e:
-            formatting.check_dashes_and_underscore_alternate_correctly(
+            validation.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
 
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-suffix"]
+
         with pytest.raises(NeuroBlueprintError) as e:
-            formatting.check_dashes_and_underscore_alternate_correctly(
+            validation.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
         assert str(e.value) == alternate_error
 
         all_names = ["sub-001_ses-002-task-check"]
+
         with pytest.raises(NeuroBlueprintError) as e:
-            formatting.check_dashes_and_underscore_alternate_correctly(
+            validation.check_dashes_and_underscore_alternate_correctly(
                 all_names
             )
         assert str(e.value) == alternate_error
 
         # check these don't raise
         all_names = ["ses-001_hello-world_one-hundred"]
-        formatting.check_dashes_and_underscore_alternate_correctly(all_names)
+        validation.check_dashes_and_underscore_alternate_correctly(all_names)
 
         all_names = ["ses-001_hello-world_suffix"]
-        formatting.check_dashes_and_underscore_alternate_correctly(all_names)
+        validation.check_dashes_and_underscore_alternate_correctly(all_names)
 
     def test_get_value_from_bids_name_regexp(self):
         """
@@ -212,8 +217,8 @@ class TestUnit:
             formatting.check_and_format_names(names, prefix)
 
         assert (
-            str(e.value) == f"The length of the {prefix} values (e.g. '001') "
-            f"must be consistent across all {prefix} names."
+            f"Inconsistent value lengths for the key {prefix} were found."
+            in str(e.value)
         )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
