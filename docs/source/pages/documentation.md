@@ -159,7 +159,19 @@ To interact with Datashuttle, a cross-platform command line interface (CLI)
 and a Python API are available (see [API](API_Reference) and [CLI](CLI_Reference)
 for reference documentation).
 
-To setup, we can use the `make-config-file` command to tell Datashuttle our project details.
+To set up, we can use the `make-config-file` command to tell Datashuttle our project details.
+
+::: {dropdown} Updating an existing configuration file.
+:color: info
+:icon: info
+
+`make-config-file` should be used when first setting up a project's configs. To update
+an existing config file, use `update-config-file` with the arguments to be updated.
+
+Using `make-config-file` will completely overwrite any existing configurations, including
+setting any optional arguments that are not passed to factory default values.
+
+:::
 
 We need to tell Datashuttle:
 
@@ -243,8 +255,7 @@ The optional arguments **overwrite_old_files**, **transfer_verbosity** and
 **show_transfer_progress** determine how data transfer is performed
 (see the [Data Transfer](#data-transfer) section for details).
 
-Settings can be edited at any time with the `update-config` command.
-Alternatively, custom config files can be supplied using the `supply-config`
+Custom config files can be supplied using the `supply-config`
 command (this simplifies setting up projects across multiple *local* machines).
 
 
@@ -819,7 +830,7 @@ In this case, files in which the  timestamp of the target directory (e.g. *centr
 in our example) will be overwritten if their timestamp is
 older than the corresponding file in the source directory.
 
-The configuration can be changed with the `update-config` command.
+The configuration can be changed with the `update-config-file` command.
 
 ### Additional Transfer Configurations
 
