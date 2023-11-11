@@ -157,7 +157,7 @@ def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
 
 
 def get_all_sub_and_ses_names(
-    cfg: Configs,
+    cfg: Configs, local_only: bool  # TODO: doc new behaviour!
 ) -> Dict:
     """
     Get a list of every subject and session name in the
@@ -167,29 +167,35 @@ def get_all_sub_and_ses_names(
     Note this only finds local sub and ses names on this
     machine. Other local machines are not searched.
     """
-    sub_folder_names = get_local_and_central_sub_or_ses_names(
-        cfg, None, "sub-*"
+    sub_folder_names = search_project_for_sub_or_ses_names(
+        cfg, None, "sub-*", local_only
     )
 
-    all_sub_folder_names = (
-        sub_folder_names["local"] + sub_folder_names["central"]
-    )
+    if local_only:
+        all_sub_folder_names = sub_folder_names["local"]
+    else:
+        all_sub_folder_names = (
+            sub_folder_names["local"] + sub_folder_names["central"]
+        )
 
-    all_ses_folder_names = []
+    all_ses_folder_names = {}
     for sub in all_sub_folder_names:
-        ses_folder_names = get_local_and_central_sub_or_ses_names(
-            cfg, sub, "ses-*"
+        ses_folder_names = search_project_for_sub_or_ses_names(
+            cfg, sub, "ses-*", local_only
         )
 
-        all_ses_folder_names.extend(
-            ses_folder_names["local"] + ses_folder_names["central"]
-        )
+        if local_only:
+            all_ses_folder_names[sub] = ses_folder_names["local"]
+        else:
+            all_ses_folder_names[sub] = (
+                ses_folder_names["local"] + ses_folder_names["central"]
+            )
 
     return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
 
 
-def get_local_and_central_sub_or_ses_names(
-    cfg: Configs, sub: Optional[str], search_str: str
+def search_project_for_sub_or_ses_names(
+    cfg: Configs, sub: Optional[str], search_str: str, local_only
 ) -> Dict:
     """
     If sub is None, the top-level level folder will be
@@ -212,14 +218,17 @@ def get_local_and_central_sub_or_ses_names(
         search_str=search_str,
         verbose=False,
     )
-    central_foldernames, _ = search_sub_or_ses_level(
-        cfg,
-        cfg.get_base_folder("central"),
-        "central",
-        sub,
-        search_str=search_str,
-        verbose=False,
-    )
+    if local_only:
+        central_foldernames = None
+    else:
+        central_foldernames, _ = search_sub_or_ses_level(
+            cfg,
+            cfg.get_base_folder("central"),
+            "central",
+            sub,
+            search_str=search_str,
+            verbose=False,
+        )
     return {"local": local_foldernames, "central": central_foldernames}
 
 
@@ -528,6 +537,7 @@ def search_filesystem_path_for_folders(
 # -----------------------------------------------------------------------------
 
 
+# TODO: add local only argument!
 def get_next_sub_or_ses_number(
     cfg: Configs,
     sub: Optional[str],
@@ -580,10 +590,9 @@ def get_next_sub_or_ses_number(
     else:
         prefix = "sub"
 
-    folder_names = get_local_and_central_sub_or_ses_names(
-        cfg,
-        sub,
-        search_str,
+    # TODO: check if can use `get_all_sub_and_ses_names()`.
+    folder_names = search_project_for_sub_or_ses_names(
+        cfg, sub, search_str, local_only=False  # TODO: handle this option!
     )
 
     all_folders = list(set(folder_names["local"] + folder_names["central"]))

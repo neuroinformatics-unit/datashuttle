@@ -235,11 +235,8 @@ class DataShuttle:
             [sub_names, ses_names],
         )
 
-        validation.check_no_duplicate_sub_ses_key_values(
-            self,
-            base_folder=self.cfg.get_base_folder("local"),
-            new_sub_names=sub_names,
-            new_ses_names=ses_names,
+        validation.validate_names_against_project(
+            self.cfg, sub_names, ses_names, local_only=True
         )
 
         utils.log("\nMaking folders...")
@@ -983,7 +980,8 @@ class DataShuttle:
         """
         utils.print_message_to_user("Validating project...")
 
-        validation.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
+        # TODO!
+        raise NotImplementedError
 
     @staticmethod
     def check_name_formatting(
