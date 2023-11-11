@@ -60,7 +60,9 @@ def make_folder_trees(
     datatype_passed = datatype not in [[""], ""]
 
     if datatype_passed:
-        validation.check_datatype_is_valid(cfg, datatype, error_on_fail=True)
+        validation.check_datatype_is_valid(
+            datatype, error_on_fail=True, allow_all=True
+        )
 
     for sub in sub_names:
         sub_path = cfg.make_path(
@@ -292,7 +294,7 @@ def search_for_datatype_folders(
 
     data_folders = process_glob_to_find_datatype_folders(
         search_results,
-        cfg.datatype_folders,
+        canonical_folders.get_datatype_folders(),
     )
     return data_folders
 

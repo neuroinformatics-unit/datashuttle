@@ -223,16 +223,24 @@ class TestMakeFolders(BaseTest):
             },
         )
 
-    def test_custom_folder_names(self, project):
+    def test_custom_folder_names(self, project, monkeypatch):
         """
         Change folder names to custom (non-default) and
         ensure they are made correctly.
         """
-        # Change folder names to custom names
-        project.cfg.datatype_folders["ephys"].name = "change_ephys"
-        project.cfg.datatype_folders["behav"].name = "change_behav"
-        project.cfg.datatype_folders["anat"].name = "change_anat"
-        project.cfg.datatype_folders["funcimg"].name = "change_funcimg"
+        new_name_datafolders = canonical_folders.get_datatype_folders()
+        new_name_datafolders["ephys"].name = "change_ephys"
+        new_name_datafolders["behav"].name = "change_behav"
+        new_name_datafolders["anat"].name = "change_anat"
+        new_name_datafolders["funcimg"].name = "change_funcimg"
+
+        def new_name_func():
+            return new_name_datafolders
+
+        monkeypatch.setattr(
+            "datashuttle.configs.canonical_folders.get_datatype_folders",
+            new_name_func,
+        )
 
         # Make the folders
         sub = "sub-001"
@@ -240,8 +248,9 @@ class TestMakeFolders(BaseTest):
 
         project.make_folders(sub, ses, "all")
 
-        # Check the folders were not made / made.
+        # Check the correct folder names were made
         base_folder = test_utils.get_top_level_folder_path(project)
+
         test_utils.check_and_cd_folder(
             join(
                 base_folder,

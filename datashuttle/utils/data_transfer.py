@@ -1,8 +1,8 @@
 from pathlib import Path
 from typing import List, Literal, Optional, Union
 
-from datashuttle.configs.config_class import Configs
-
+from ..configs import canonical_folders
+from ..configs.config_class import Configs
 from . import folders, formatting, rclone, utils
 
 
@@ -161,7 +161,7 @@ class TransferData:
         )
         sub_level_dtype = [
             dtype.name
-            for dtype in self.cfg.datatype_folders.values()
+            for dtype in canonical_folders.get_datatype_folders().values()
             if dtype.level == "sub"
         ]
 
@@ -192,7 +192,7 @@ class TransferData:
 
         ses_level_dtype = [
             dtype.name
-            for dtype in self.cfg.datatype_folders.values()
+            for dtype in canonical_folders.get_datatype_folders().values()
             if dtype.level == "ses"
         ]
         filt_ses_level_folders = filter(
