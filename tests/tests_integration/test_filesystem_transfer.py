@@ -372,9 +372,11 @@ class TestFileTransfer(BaseTest):
             project, ["sub-001"], ["ses-002"], ["behav"]
         )
 
-        project.update_config("overwrite_old_files", overwrite_old_files)
-        project.update_config("transfer_verbosity", "vv")
-        project.update_config("show_transfer_progress", show_transfer_progress)
+        project.update_config_file(overwrite_old_files=overwrite_old_files)
+        project.update_config_file(transfer_verbosity="vv")
+        project.update_config_file(
+            show_transfer_progress=show_transfer_progress
+        )
 
         test_utils.clear_capsys(capsys)
         project.upload_all(dry_run=dry_run)
@@ -404,7 +406,7 @@ class TestFileTransfer(BaseTest):
         see test_rclone_options()
         """
         project.make_folders(["sub-001"], ["ses-002"], ["behav"])
-        project.update_config("transfer_verbosity", transfer_verbosity)
+        project.update_config_file(transfer_verbosity=transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
         project.upload_all()
@@ -446,7 +448,7 @@ class TestFileTransfer(BaseTest):
         time_written = os.path.getatime(local_test_file_path)
 
         if overwrite_old_files:
-            project.update_config("overwrite_old_files", True)
+            project.update_config_file(overwrite_old_files=True)
 
         project.upload_all()
 

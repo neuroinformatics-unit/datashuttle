@@ -59,18 +59,18 @@ def setup_project_default_configs(
     )  # TODO: can delete this?
     os.makedirs(new_local_path, exist_ok=True)
 
-    project.update_config("local_path", new_local_path)
+    project.update_config_file(local_path=new_local_path)
 
     if local_path:
         os.makedirs(local_path, exist_ok=True)
-        project.update_config("local_path", local_path)
+        project.update_config_file(local_path=local_path)
 
         delete_all_folders_in_local_path(project)
         project.cfg.make_and_get_logging_path()
 
     if central_path:
         os.makedirs(central_path, exist_ok=True)
-        project.update_config("central_path", central_path)
+        project.update_config_file(central_path=central_path)
         delete_all_folders_in_project_path(project, "central")
         project.cfg.make_and_get_logging_path()
 
@@ -524,16 +524,16 @@ def swap_local_and_central_paths(project, swap_last_folder_only=False):
         new_local_path = local_path.parent / central_path.name
         os.makedirs(new_local_path, exist_ok=True)
 
-        project.update_config("local_path", new_local_path)
-        project.update_config(
-            "central_path", central_path.parent / local_path.name
+        project.update_config_file(local_path=new_local_path)
+        project.update_config_file(
+            central_path=central_path.parent / local_path.name
         )
     else:
         os.makedirs(local_path, exist_ok=True)
         os.makedirs(central_path, exist_ok=True)
 
-        project.update_config("local_path", central_path)
-        project.update_config("central_path", local_path)
+        project.update_config_file(local_path=central_path)
+        project.update_config_file(central_path=local_path)
 
     return central_path
 

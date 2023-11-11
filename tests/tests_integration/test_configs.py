@@ -237,7 +237,7 @@ class TestConfigs(BaseTest):
     # Test Update Config File
     # -------------------------------------------------------------
 
-    def test_update_config_file(self, no_cfg_project, tmp_path):
+    def test_update_config_file__(self, no_cfg_project, tmp_path):
         """
         Set the configs as default, and then update them to
         new configs and check they are updated properly.
@@ -259,7 +259,7 @@ class TestConfigs(BaseTest):
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
         # ensure str is convert to Path
-        not_set_configs["local_path"] = str(not_set_configs)
+        not_set_configs["local_path"] = str(not_set_configs["local_path"])
 
         project.update_config_file(**not_set_configs)
 
