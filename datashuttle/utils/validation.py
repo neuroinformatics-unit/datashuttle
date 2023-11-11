@@ -10,6 +10,7 @@ import warnings
 from itertools import compress
 from pathlib import Path
 
+from ..configs import canonical_folders
 from . import folders, utils
 
 # -----------------------------------------------------------------------------
@@ -35,7 +36,9 @@ def validate_list_of_names(
 
     check_dashes_and_underscore_alternate_correctly(names_list)
 
-    check_names_for_inconsistent_value_lengths(names_list, prefix)
+    check_names_for_inconsistent_value_lengths(
+        names_list, prefix, raise_error=True
+    )
 
     check_names_for_duplicate_ids(names_list, prefix)
 
@@ -143,23 +146,28 @@ def check_names_for_duplicate_ids(
 
 
 def check_datatype_is_valid(
-    cfg: Configs, datatype: Union[List[str], str], error_on_fail: bool
+    datatype: Union[List[str], str], error_on_fail: bool, allow_all=False
 ) -> bool:
     """
     Check the passed datatype is valid (must
     be a key on self.ses_folders e.g. "behav", or "all")
     """
-    if isinstance(datatype, list):
-        valid_keys = list(cfg.datatype_folders.keys()) + ["all"]
-        is_valid = all([type in valid_keys for type in datatype])
-    else:
-        is_valid = datatype in cfg.datatype_folders.keys() or datatype == "all"
+    datatype_folders = canonical_folders.get_datatype_folders()
+
+    if isinstance(datatype, str):
+        datatype = [datatype]
+
+    valid_keys = list(datatype_folders.keys())
+    if allow_all:
+        valid_keys += ["all"]
+
+    is_valid = all([type in valid_keys for type in datatype])
 
     if error_on_fail and not is_valid:
         utils.log_and_raise_error(
             f"datatype: '{datatype}' "
             f"is not valid. Must be one of"
-            f" {list(cfg.datatype_folders.keys())}. or 'all'"
+            f" {list(datatype_folders.keys())}. or 'all'"
             f" No folders were made."
         )
 

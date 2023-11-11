@@ -49,7 +49,6 @@ class Configs(UserDict):
 
         self.top_level_folder: str
 
-        self.datatype_folders: dict
         self.logging_path: Path
         self.hostkeys_path: Path
         self.ssh_key_path: Path
@@ -248,28 +247,26 @@ class Configs(UserDict):
         folders.make_folders(logging_path)
         return logging_path
 
-    def init_datatype_folders(self):
-        """"""
-        self.datatype_folders = canonical_folders.get_datatype_folders(self)
-
     def get_datatype_items(
         self, datatype: Union[str, list]
     ) -> Union[ItemsView, zip]:
         """
         Get the .items() structure of the datatype, either all of
-        them (stored in self.datatype_folders) or as a single item.
+        the canonical datatypes or as a single item.
         """
         if isinstance(datatype, str):
             datatype = [datatype]
 
         items: Union[ItemsView, zip]
 
+        datatype_folders = canonical_folders.get_datatype_folders()
+
         if "all" in datatype:
-            items = self.datatype_folders.items()
+            items = datatype_folders.items()
         else:
             items = zip(
                 datatype,
-                [self.datatype_folders[key] for key in datatype],
+                [datatype_folders[key] for key in datatype],
             )
 
         return items
