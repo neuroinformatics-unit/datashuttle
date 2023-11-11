@@ -14,12 +14,9 @@ from . import folders, utils
 # Checking a standalone list of names
 # -----------------------------------------------------------------------------
 
-# TODO: make sure everything is tested, if possible centralise in validation
-# check all individual validation functions
-# 1) make project-wide validation follow the same return conventions
 # 2) update all tests to show exactly where error occurred
 # 3) Review what needs to be done
-# 4) add tests
+# 4) add tests for everything, ensure everything is tested.
 # 5) In a new PR, add the project wrapper.
 
 
@@ -51,7 +48,7 @@ def validate_list_of_names(
     for test in tests_to_run:
         failed, message = test()
         if failed:
-            log_and_error_or_warn(message, error_or_warn, log)
+            raise_error_or_warn(message, error_or_warn, log)
 
 
 # TODO: test
@@ -169,7 +166,7 @@ def duplicated_prefix_values(
     return has_duplicate_ids, message
 
 
-def log_and_error_or_warn(
+def raise_error_or_warn(
     message: str, error_or_warn: Literal["error", "warn"], log: bool
 ) -> None:
     """ """
@@ -190,9 +187,9 @@ def log_and_error_or_warn(
 # -----------------------------------------------------------------------------
 
 
-def check_datatype_is_valid(
-    datatype: Union[List[str], str], error_on_fail: bool, allow_all=False
-) -> bool:
+def datatypes_are_invalid(
+    datatype: Union[List[str], str], allow_all=False
+) -> Tuple[bool, str]:
     """
     Check the passed datatype is valid (must be a key on
     self.ses_folders e.g. "behav", or "all")
@@ -206,17 +203,18 @@ def check_datatype_is_valid(
     if allow_all:
         valid_keys += ["all"]
 
-    is_valid = all([dt in valid_keys for dt in datatype])
+    is_invalid = not all([dt in valid_keys for dt in datatype])
 
-    if error_on_fail and not is_valid:
-        utils.log_and_raise_error(
-            f"datatype: '{datatype}' "
-            f"is not valid. Must be one of"
-            f" {list(datatype_folders.keys())}. or 'all'"
-            f" No folders were made."
+    if is_invalid:
+        message = (
+            f"datatype: '{datatype}' is not valid. Must be one of"
+            f" {list(datatype_folders.keys())}. or 'all'. "
+            f"No folders were made."
         )
+    else:
+        message = ""
 
-    return is_valid
+    return is_invalid, message
 
 
 # -----------------------------------------------------------------------------
@@ -224,20 +222,35 @@ def check_datatype_is_valid(
 # -----------------------------------------------------------------------------
 
 
-def validate_project(cfg, local_only=False):
+def validate_project(
+    cfg,
+    local_only=False,
+    error_or_warn: Literal["error", "warn"] = "error",
+    log=True,
+):
     """"""
     folder_names = folders.get_all_sub_and_ses_names(cfg, local_only)
 
     sub_names = folder_names["sub"]
 
-    validate_list_of_names(sub_names, prefix="sub")
+    validate_list_of_names(
+        sub_names, prefix="sub", error_or_warn=error_or_warn, log=log
+    )
 
     all_ses_names = list(chain(*folder_names["ses"].values()))
 
-    validate_list_of_names(all_ses_names, "ses", check_duplicates=False)
+    validate_list_of_names(
+        all_ses_names,
+        "ses",
+        check_duplicates=False,
+        error_or_warn=error_or_warn,
+        log=log,
+    )
 
     for ses_names in folder_names["ses"].values():
-        duplicated_prefix_values(ses_names, "ses")
+        failed, message = duplicated_prefix_values(ses_names, "ses")
+        if failed:
+            raise_error_or_warn(message, error_or_warn, log)
 
 
 def validate_names_against_project(
@@ -245,6 +258,8 @@ def validate_names_against_project(
     sub_names: List[str],
     ses_names: Optional[List[str]] = None,
     local_only=False,
+    error_or_warn: Literal["error", "warn"] = "error",
+    log=True,
 ) -> None:
     """
     This does not support subject-specific checking, this needs to
@@ -262,9 +277,11 @@ def validate_names_against_project(
         )
 
         for new_sub in sub_names:
-            check_new_name_does_not_duplicate_existing(
+            failed, message = new_name_duplicates_existing(
                 new_sub, folder_names["sub"], "sub"
             )
+            if failed:
+                raise_error_or_warn(message, error_or_warn, log)
 
         if ses_names is not None:
             all_ses_names = list(set(chain(*folder_names["ses"].values())))
@@ -277,14 +294,16 @@ def validate_names_against_project(
             for new_sub in sub_names:
                 if new_sub in folder_names["ses"]:
                     for new_ses in ses_names:
-                        check_new_name_does_not_duplicate_existing(
+                        failed, message = new_name_duplicates_existing(
                             new_ses, folder_names["ses"][new_sub], "ses"
                         )
+                        if failed:
+                            raise_error_or_warn(message, error_or_warn, log)
 
 
-def check_new_name_does_not_duplicate_existing(
+def new_name_duplicates_existing(
     new_name: str, existing_names: List[str], prefix: Literal["sub", "ses"]
-) -> None:
+) -> Tuple[bool, str]:
     """
     Check that a subject or session does not already exist
     that shares a sub / ses id with the new_name.
@@ -313,23 +332,30 @@ def check_new_name_does_not_duplicate_existing(
         if exist_name_id == new_name_id:
             matched_existing_names.append(exist_name)
 
+    failed = False
+    message = ""
+
     # If more than one match is found, there is definitely a duplicate
     if len(matched_existing_names) > 1:
-        utils.log_and_raise_error(
-            f"Cannot make folders. Multiple {prefix} ids "
-            f"exist: {matched_existing_names}. This should"
-            f"never happen. Check the {prefix} ids and ensure unique {prefix} "
-            f"ids (e.g. sub-001) appear only once."
+        failed = True
+        message = (
+            f"Cannot make folders. Multiple {prefix} ids  exist: "
+            f"{matched_existing_names}. This should never happen. "
+            f"Check the {prefix} ids and ensure unique {prefix} ids "
+            f"(e.g. sub-001) appear only once."
         )
 
     # If exactly one match is found, it should match exactly.
     if len(matched_existing_names) == 1:
         if new_name != matched_existing_names[0]:
-            utils.log_and_raise_error(
-                f"Cannot make folders. A {prefix} already exists "
-                f"with the same {prefix} id as {new_name}. "
+            failed = True
+            message = (
+                f"Cannot make folders. A {prefix} already exists with "
+                f"the same {prefix} id as {new_name}. "
                 f"The existing folder is {matched_existing_names[0]}."
             )
+
+    return failed, message
 
 
 # -----------------------------------------------------------------------------
