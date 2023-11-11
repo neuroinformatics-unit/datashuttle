@@ -57,25 +57,24 @@ class TestMakeFolders(BaseTest):
         but explicitly check that error is raised if the same
         number is used with different number of leading zeros.
         """
-        project.make_folders("sub-001")
+        project.make_folders("sub-1")
 
         with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-1")
+            project.make_folders(
+                "sub-001"
+            )  # TODO: sub-1 will now catch leading zeros, which is fine.
 
-        assert (
-            str(e.value) == "Cannot make folders. "
-            "A sub already exists with the same sub id as sub-1. "
-            "The existing folder is sub-001."
+        assert "Inconsistent value lengths for the key sub were found" in str(
+            e.value
         )
 
-        project.make_folders("sub-001", "ses-3")
+        project.make_folders("sub-1", "ses-3")
 
         with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001", "ses-003")
+            project.make_folders("sub-1", "ses-003")
 
-        assert (
-            str(e.value) == "Cannot make folders. A ses already exists with "
-            "the same ses id as ses-003. The existing folder is ses-3."
+        assert "Inconsistent value lengths for the key ses were found" in str(
+            e.value
         )
 
     def test_duplicate_sub_when_creating_session(self, project):
@@ -85,7 +84,7 @@ class TestMakeFolders(BaseTest):
         """
         project.make_folders("sub-001")
 
-        for bad_sub_name in ["sub-1", "sub-1_@DATE", "sub-001_extra-key"]:
+        for bad_sub_name in ["sub-001_@DATE", "sub-001_extra-key"]:
             with pytest.raises(NeuroBlueprintError) as e:
                 project.make_folders(bad_sub_name, "ses-001")
             assert "Cannot make folders. A sub already exists" in str(e.value)
