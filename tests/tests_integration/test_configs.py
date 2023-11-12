@@ -10,8 +10,10 @@ from datashuttle.configs.canonical_configs import (
     get_canonical_config_dict,
     get_canonical_config_required_types,
 )
-from datashuttle.utils import folders
+
+from datashuttle.utils import folders, getters
 from datashuttle.utils.custom_exceptions import ConfigError
+
 
 
 class TestConfigs(BaseTest):
@@ -503,7 +505,7 @@ class TestConfigs(BaseTest):
         (
             project_names,
             project_paths,
-        ) = folders.get_existing_project_paths_and_names()
+        ) = getters.get_existing_project_paths_and_names()
 
         assert sorted(project_names) == ["project_1", "project_3"]
         assert sorted(project_paths) == [

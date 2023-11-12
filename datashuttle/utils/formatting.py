@@ -86,7 +86,7 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
 
     validation.names_include_spaces(names)
 
-    prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
+    prefixed_names = add_missing_prefixes_to_names(names, prefix)
 
     prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
 
@@ -114,7 +114,7 @@ def update_names_with_range_to_flag(
 
     for i, name in enumerate(names):
         if tags("to") in name:
-            check_name_is_formatted_correctly(name, prefix)
+            check_name_with_to_tag_is_formatted_correctly(name, prefix)
 
             prefix_tag = re.search(f"{prefix}-[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
             tag_number = prefix_tag.split(f"{prefix}-")[1]
@@ -150,7 +150,9 @@ def update_names_with_range_to_flag(
     return new_names
 
 
-def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
+def check_name_with_to_tag_is_formatted_correctly(
+    name: str, prefix: str
+) -> None:
     """
     Check the input string is formatted with the @TO@ key
     as expected.
@@ -277,7 +279,7 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     return string
 
 
-def ensure_prefixes_on_list_of_names(
+def add_missing_prefixes_to_names(
     all_names: Union[List[str], str], prefix: str
 ) -> List[str]:
     """
