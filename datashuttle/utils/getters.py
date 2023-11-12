@@ -10,10 +10,11 @@ from typing import (
 )
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from datashuttle.configs.config_class import Configs
 
 import warnings
-from pathlib import Path
 
 from datashuttle.configs import canonical_folders
 

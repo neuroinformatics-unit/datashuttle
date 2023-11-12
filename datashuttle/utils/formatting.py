@@ -2,13 +2,10 @@ from __future__ import annotations
 
 import datetime
 import re
-from typing import TYPE_CHECKING, List, Literal, Union
+from typing import List, Literal, Union
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
-
-if TYPE_CHECKING:
-    pass
 
 from . import utils, validation
 
