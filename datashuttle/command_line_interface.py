@@ -111,7 +111,7 @@ def help(help_type: str) -> str:
 # -----------------------------------------------------------------------------
 
 description = (
-    "----------------------------------------------------------------------\n"
+    "-----------------------------------------------------------------------\n"
     "DataShuttle command line interface. "
     "\n\n"
     "datashuttle [PROJECT NAME] [COMMAND] [OPTIONS]"
@@ -128,7 +128,7 @@ description = (
     "All command and argument names are matched to the API "
     "documentation. "
     "\n\n"
-    "----------------------------------------------------------------------"
+    "-------------------------------------------------------------------------"
 )
 
 # -----------------------------------------------------------------------------
@@ -317,8 +317,6 @@ def set_top_level_folder(project: DataShuttle, args: Any) -> None:
 # -----------------------------------------------------------------------------
 # Getters
 # -----------------------------------------------------------------------------
-# Almost worth creating a function factory for these, only thing that changes is
-# DataShuttle function. But code would be hard to understand and only 4 cases...
 
 # Get Local Path --------------------------------------------------------------
 
@@ -347,7 +345,7 @@ def show_config_path(*args: Any) -> None:
     project.show_config_path()
 
 
-# Get Central Path -------------------------------------------------------------
+# Get Central Path ------------------------------------------------------------
 
 
 def show_central_path(*args: Any) -> None:
@@ -365,7 +363,7 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-# Validate Project  ----------------------------------------------------------
+# Validate Project  -----------------------------------------------------------
 
 
 def validate_project(*args: Any) -> None:
@@ -374,7 +372,7 @@ def validate_project(*args: Any) -> None:
     project.validate_project()
 
 
-# Show Logging Path ----------------------------------------------------------
+# Show Logging Path -----------------------------------------------------------
 
 
 def show_logging_path(*args: Any) -> None:
@@ -407,7 +405,7 @@ def show_existing_projects(*args: Any) -> None:
     project.show_existing_projects()
 
 
-# Show Next Sub Number -------------------------------------------------------
+# Show Next Sub Number --------------------------------------------------------
 
 
 def show_next_sub_number(*args: Any) -> None:
@@ -416,7 +414,7 @@ def show_next_sub_number(*args: Any) -> None:
     project.show_next_sub_number()
 
 
-# Show Next Sub Number -------------------------------------------------------
+# Show Next Sub Number --------------------------------------------------------
 
 
 def show_next_ses_number(project: DataShuttle, args: Any) -> None:
@@ -533,7 +531,7 @@ def construct_parser():
     )
 
     # Update Config File
-    # ----------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     update_config_file_parser = subparsers.add_parser(
         "update-config-file",
@@ -568,7 +566,7 @@ def construct_parser():
     )
 
     # Make Sub Folder
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     make_folders_parser = subparsers.add_parser(
         "make-folders",
@@ -598,7 +596,8 @@ def construct_parser():
         nargs="+",
         type=str,
         required=False,
-        help="Optional: (str, single or multiple) (selection of datatypes, or 'all')",
+        help="Optional: (str, single or multiple) "
+        "(selection of datatypes, or 'all')",
     )
     make_folders_parser.add_argument(
         "--datatype",
@@ -606,12 +605,13 @@ def construct_parser():
         type=str,
         nargs="+",
         required=False,
-        default="",  # TODO: this is not nice, should read the default from API NOT duplicate in CLI
+        default="",  # TODO: this is not nice, should read the default
+        # from API NOT duplicate in CLI
         help=help("required_str_single_or_multiple_or_all"),
     )
 
     # Upload Data
-    # ----------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     upload_parser = subparsers.add_parser(
         "upload",
@@ -648,7 +648,8 @@ def construct_parser():
         type=str,
         nargs="+",
         required=False,
-        help="Optional: (str, single or multiple) (selection of datatypes, or 'all') (default 'all')",
+        help="Optional: (str, single or multiple) "
+        "(selection of datatypes, or 'all') (default 'all')",
     )
     upload_parser.add_argument(
         "--dry-run",
