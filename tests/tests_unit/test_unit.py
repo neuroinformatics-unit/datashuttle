@@ -133,9 +133,9 @@ class TestUnit:
         case from -1 to -(101x 0)1.
         """
         for i in range(101):
-            assert formatting.num_leading_zeros("1".zfill(i + 1)) == i
-            assert formatting.num_leading_zeros("sub-" + "1".zfill(i + 1)) == i
-            assert formatting.num_leading_zeros("ses-" + "1".zfill(i + 1)) == i
+            assert utils.num_leading_zeros("1".zfill(i + 1)) == i
+            assert utils.num_leading_zeros("sub-" + "1".zfill(i + 1)) == i
+            assert utils.num_leading_zeros("ses-" + "1".zfill(i + 1)) == i
 
     # Test getting max sub or ses num from list
     # -------------------------------------------------------------------------

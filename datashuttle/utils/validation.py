@@ -169,7 +169,9 @@ def value_lengths_are_inconsistent(
 
     value_len = [len(value) for value in prefix_values]
 
-    inconsistent_value_len = value_len != [] and not all_identical(value_len)
+    inconsistent_value_len = value_len != [] and not utils.all_identical(
+        value_len
+    )
 
     if inconsistent_value_len:
         message = (
@@ -202,7 +204,7 @@ def duplicated_prefix_values(
         names_list, prefix, return_as_int=True
     )
 
-    has_duplicate_ids = not all_unique(int_values)
+    has_duplicate_ids = not utils.all_unique(int_values)
 
     if has_duplicate_ids:
         message = (
@@ -479,22 +481,3 @@ def datatypes_are_invalid(
         return True, message
 
     return False, ""
-
-
-# -----------------------------------------------------------------------------
-# Utils
-# -----------------------------------------------------------------------------
-
-
-def all_unique(list_: List) -> bool:
-    """
-    Check that all values in a list are different.
-    """
-    return len(list_) == len(set(list_))
-
-
-def all_identical(list_: List) -> bool:
-    """
-    Check that all values in a list are identical.
-    """
-    return len(set(list_)) == 1

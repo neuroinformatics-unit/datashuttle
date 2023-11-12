@@ -221,3 +221,25 @@ def diff(x):
     adding numpy as a dependency.
     """
     return [x[i + 1] - x[i] for i in range(len(x) - 1)]
+
+
+def num_leading_zeros(string: str) -> int:
+    """int() strips leading zeros"""
+    if string[:4] in ["sub-", "ses-"]:
+        string = string[4:]
+
+    return len(string) - len(str(int(string)))
+
+
+def all_unique(list_: List) -> bool:
+    """
+    Check that all values in a list are different.
+    """
+    return len(list_) == len(set(list_))
+
+
+def all_identical(list_: List) -> bool:
+    """
+    Check that all values in a list are identical.
+    """
+    return len(set(list_)) == 1
