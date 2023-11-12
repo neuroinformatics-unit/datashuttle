@@ -85,7 +85,7 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
             f"Ensure {prefix} names are a list of strings.", TypeError
         )
 
-    validation.names_include_spaces(names, prefix)
+    validation.names_include_spaces(names)
 
     prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
 
