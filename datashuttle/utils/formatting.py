@@ -192,7 +192,8 @@ def make_list_of_zero_padded_names_across_range(
         key-value pairs.
     """
     max_leading_zeros = max(
-        num_leading_zeros(left_number), num_leading_zeros(right_number)
+        utils.num_leading_zeros(left_number),
+        utils.num_leading_zeros(right_number),
     )
 
     all_numbers = [*range(int(left_number), int(right_number) + 1)]
@@ -207,14 +208,6 @@ def make_list_of_zero_padded_names_across_range(
     ]
 
     return names_with_new_number_inserted
-
-
-def num_leading_zeros(string: str) -> int:
-    """int() strips leading zeros"""
-    if string[:4] in ["sub-", "ses-"]:
-        string = string[4:]
-
-    return len(string) - len(str(int(string)))
 
 
 # Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------
