@@ -14,10 +14,6 @@ from . import folders, utils
 # Checking a standalone list of names
 # -----------------------------------------------------------------------------
 
-# 4) add tests for everything, ensure everything is tested.
-# 3) Review what needs to be done
-# 5) In a new PR, add the project wrapper.
-
 
 def validate_list_of_names(
     names_list: List[str],
@@ -296,6 +292,7 @@ def validate_names_against_project(
             sub_names + folder_names["sub"],
             prefix="sub",
             check_duplicates=False,
+            error_or_warn=error_or_warn,
         )
 
         for new_sub in sub_names:
@@ -309,7 +306,10 @@ def validate_names_against_project(
             all_ses_names = list(set(chain(*folder_names["ses"].values())))
 
             validate_list_of_names(
-                all_ses_names + ses_names, "ses", check_duplicates=False
+                all_ses_names + ses_names,
+                "ses",
+                check_duplicates=False,
+                error_or_warn=error_or_warn,
             )
 
             # TODO: doc this, confusing.
