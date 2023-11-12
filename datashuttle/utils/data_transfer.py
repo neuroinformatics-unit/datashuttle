@@ -10,7 +10,7 @@ class TransferData:
     def __init__(
         self,
         cfg: Configs,
-        upload_or_download: str,
+        upload_or_download: Literal["upload", "download"],
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
