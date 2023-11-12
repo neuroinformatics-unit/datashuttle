@@ -84,9 +84,9 @@ def get_canonical_config_required_types() -> dict:
     return required_types
 
 
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Check Configs
-# -------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
@@ -158,10 +158,11 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         project_name = config_dict.project_name
         if config_dict[path_type].stem != project_name:
             utils.log_and_raise_error(
-                f"The {path_type} does not end in the project name: {project_name}. \n"
-                f"The last folder in the passed {path_type} should be {project_name}.\n"
-                f"The passed path was {config_dict[path_type]}",
-                ConfigError,
+                f"The {path_type} does not end in the "
+                f"project name: {project_name}. \n"
+                f"The last folder in the passed {path_type} "
+                f"should be {project_name}.\n"
+                f"The passed path was {config_dict[path_type]}", ConfigError
             )
 
     check_folder_above_project_name_exists(config_dict)
@@ -180,8 +181,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     # Transfer settings
     if config_dict["transfer_verbosity"] not in ["v", "vv"]:
         utils.log_and_raise_error(
-            "'transfer_verbosity' must be either 'v' or 'vv'. Config not updated.",
-            ConfigError,
+            "'transfer_verbosity' must be either "
+            "'v' or 'vv'. Config not updated.", ConfigError
         )
 
     # Initialise the local project folder
@@ -203,8 +204,9 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 def check_folder_above_project_name_exists(config_dict: Configs):
     """
     Throw an error if the path above the project root does not exist.
-    This validation is necessary (rather than simply creating the passed folders)
-    is to ensure the `local_path` or `central_path` are not accidentally set to a wrong
+    This validation is necessary (rather than simply
+    creating the passed folders) is to ensure the `local_path` or
+    `central_path` are not accidentally set to a wrong
     location.
 
     If the `connection_method` is "ssh" is it not possible to check the central
@@ -213,8 +215,9 @@ def check_folder_above_project_name_exists(config_dict: Configs):
 
     def base_error_message(path_name):
         return (
-            f"The {path_name}: {config_dict[path_name].parent} that the project folder "
-            f"will reside in does not yet exist. Please ensure the path shown in this "
+            f"The {path_name}: {config_dict[path_name].parent} "
+            f"that the project folder will reside in does not yet "
+            f"exist. Please ensure the path shown in this "
             f"message exists before continuing."
         )
 
