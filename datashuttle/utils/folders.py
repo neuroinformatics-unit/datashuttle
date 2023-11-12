@@ -155,44 +155,6 @@ def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
 # -----------------------------------------------------------------------------
 
 
-def get_all_sub_and_ses_names(
-    cfg: Configs, local_only: bool  # TODO: doc new behaviour!
-) -> Dict:
-    """
-    Get a list of every subject and session name in the
-    local and central project folders. Local and central names are combined
-    into a single list, separately for subject and sessions.
-
-    Note this only finds local sub and ses names on this
-    machine. Other local machines are not searched.
-    """
-    sub_folder_names = search_project_for_sub_or_ses_names(
-        cfg, None, "sub-*", local_only
-    )
-
-    if local_only:
-        all_sub_folder_names = sub_folder_names["local"]
-    else:
-        all_sub_folder_names = (
-            sub_folder_names["local"] + sub_folder_names["central"]
-        )
-
-    all_ses_folder_names = {}
-    for sub in all_sub_folder_names:
-        ses_folder_names = search_project_for_sub_or_ses_names(
-            cfg, sub, "ses-*", local_only
-        )
-
-        if local_only:
-            all_ses_folder_names[sub] = ses_folder_names["local"]
-        else:
-            all_ses_folder_names[sub] = (
-                ses_folder_names["local"] + ses_folder_names["central"]
-            )
-
-    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
-
-
 def search_project_for_sub_or_ses_names(
     cfg: Configs, sub: Optional[str], search_str: str, local_only
 ) -> Dict:
@@ -217,8 +179,11 @@ def search_project_for_sub_or_ses_names(
         search_str=search_str,
         verbose=False,
     )
+
+    central_foldernames: List
+
     if local_only:
-        central_foldernames = None
+        central_foldernames = []
     else:
         central_foldernames, _ = search_sub_or_ses_level(
             cfg,

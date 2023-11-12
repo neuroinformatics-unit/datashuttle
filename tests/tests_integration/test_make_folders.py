@@ -1,4 +1,5 @@
 import datetime
+import os
 import re
 import shutil
 from os.path import join
@@ -315,6 +316,18 @@ class TestMakeFolders(BaseTest):
         new_num = project.get_next_sub_number(return_with_prefix)
         assert new_num == "sub-006" if return_with_prefix else "006"
 
+        # check `local_path` option
+        os.makedirs(project.cfg["central_path"] / "rawdata" / "sub-006")
+        new_num = project.get_next_sub_number(
+            return_with_prefix, local_only=False
+        )
+        assert new_num == "sub-007" if return_with_prefix else "007"
+
+        new_num = project.get_next_sub_number(
+            return_with_prefix, local_only=True
+        )
+        assert new_num == "sub-006" if return_with_prefix else "006"
+
     @pytest.mark.parametrize("return_with_prefix", [True, False])
     def test_get_next_ses_number(self, project, return_with_prefix):
         """
@@ -358,6 +371,18 @@ class TestMakeFolders(BaseTest):
         project.make_folders(sub, ["004", "005"])
 
         new_num = project.get_next_ses_number(sub, return_with_prefix)
+        assert new_num == "ses-006" if return_with_prefix else "006"
+
+        # check `local_path` object
+        os.makedirs(project.cfg["central_path"] / "rawdata" / sub / "ses-006")
+        new_num = project.get_next_ses_number(
+            sub, return_with_prefix, local_only=False
+        )
+        assert new_num == "ses-007" if return_with_prefix else "007"
+
+        new_num = project.get_next_ses_number(
+            sub, return_with_prefix, local_only=True
+        )
         assert new_num == "ses-006" if return_with_prefix else "006"
 
     # ----------------------------------------------------------------------------------

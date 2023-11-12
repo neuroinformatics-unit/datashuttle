@@ -264,7 +264,9 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def get_next_sub_number(self, return_with_prefix: bool = True) -> str:
+    def get_next_sub_number(
+        self, return_with_prefix: bool = True, local_only: bool = False
+    ) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
         to find the next subject number.
@@ -274,17 +276,25 @@ class DataShuttle:
 
         return_with_prefix : bool
             If `True`, return with the "sub-" prefix.
+
+        local_only : bool
+            If `True, only get names from `local_path`, otherwise from
+            `local_path` and `central_path`.
         """
         return getters.get_next_sub_or_ses_number(
             self.cfg,
             sub=None,
+            local_only=local_only,
             return_with_prefix=return_with_prefix,
             search_str="sub-*",
         )
 
     @check_configs_set
     def get_next_ses_number(
-        self, sub: str, return_with_prefix: bool = True
+        self,
+        sub: str,
+        return_with_prefix: bool = True,
+        local_only: bool = False,
     ) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
@@ -298,10 +308,15 @@ class DataShuttle:
 
         return_with_prefix : bool
             If `True`, return with the "ses-" prefix.
+
+        local_only : bool
+            If `True, only get names from `local_path`, otherwise from
+            `local_path` and `central_path`.
         """
         return getters.get_next_sub_or_ses_number(
             self.cfg,
             sub=sub,
+            local_only=local_only,
             return_with_prefix=return_with_prefix,
             search_str="ses-*",
         )
