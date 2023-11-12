@@ -10,7 +10,7 @@ from itertools import chain
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 from ..configs import canonical_folders
-from . import folders, utils
+from . import getters, utils
 
 # -----------------------------------------------------------------------------
 # Checking a standalone list of names
@@ -271,7 +271,7 @@ def validate_project(
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
     """
-    folder_names = folders.get_all_sub_and_ses_names(cfg, local_only)
+    folder_names = getters.get_all_sub_and_ses_names(cfg, local_only)
 
     # Check subjects
     sub_names = folder_names["sub"]
@@ -360,7 +360,7 @@ def validate_names_against_project(
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
     """
-    folder_names = folders.get_all_sub_and_ses_names(cfg, local_only)
+    folder_names = getters.get_all_sub_and_ses_names(cfg, local_only)
 
     # Check subjects
     if folder_names["sub"]:

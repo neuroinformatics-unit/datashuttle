@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import (
     TYPE_CHECKING,
+    Dict,
     List,
     Literal,
     Optional,
@@ -19,11 +20,11 @@ from datashuttle.configs import canonical_folders
 from . import folders, utils
 
 
-# TODO: add local only argument!
 def get_next_sub_or_ses_number(
     cfg: Configs,
     sub: Optional[str],
     search_str: str,
+    local_only: bool = False,
     return_with_prefix: bool = True,
     default_num_value_digits: int = 3,
 ) -> str:
@@ -51,6 +52,10 @@ def get_next_sub_or_ses_number(
         the string to search for within the top-level or subject-level
         folder ("sub-*") or ("ses-*") are suggested, respectively.
 
+    local_only : bool
+        If `True, only get names from `local_path`, otherwise from
+        `local_path` and `central_path`.
+
     return_with_prefix : bool
         If `True`, the next sub or ses value will include the prefix
         e.g. "sub-001", otherwise the value alone will be returned (e.g. "001")
@@ -72,9 +77,8 @@ def get_next_sub_or_ses_number(
     else:
         prefix = "sub"
 
-    # TODO: check if can use `get_all_sub_and_ses_names()`.
     folder_names = folders.search_project_for_sub_or_ses_names(
-        cfg, sub, search_str, local_only=False  # TODO: handle this option!
+        cfg, sub, search_str, local_only=local_only
     )
 
     all_folders = list(set(folder_names["local"] + folder_names["central"]))
@@ -202,3 +206,49 @@ def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
             existing_project_names.append(folder_name)
 
     return existing_project_names, existing_project_paths
+
+
+def get_all_sub_and_ses_names(cfg: Configs, local_only: bool) -> Dict:
+    """
+    Get a list of every subject and session name in the
+    local and central project folders. Local and central names are combined
+    into a single list, separately for subject and sessions.
+
+    Note this only finds local sub and ses names on this
+    machine. Other local machines are not searched.
+
+    Parameters
+    ----------
+
+    cfg : Configs
+        datashuttle Configs
+
+    local_only : bool
+        If `True, only get names from `local_path`, otherwise from
+        `local_path` and `central_path`.
+    """
+    sub_folder_names = folders.search_project_for_sub_or_ses_names(
+        cfg, None, "sub-*", local_only
+    )
+
+    if local_only:
+        all_sub_folder_names = sub_folder_names["local"]
+    else:
+        all_sub_folder_names = (
+            sub_folder_names["local"] + sub_folder_names["central"]
+        )
+
+    all_ses_folder_names = {}
+    for sub in all_sub_folder_names:
+        ses_folder_names = folders.search_project_for_sub_or_ses_names(
+            cfg, sub, "ses-*", local_only
+        )
+
+        if local_only:
+            all_ses_folder_names[sub] = ses_folder_names["local"]
+        else:
+            all_ses_folder_names[sub] = (
+                ses_folder_names["local"] + ses_folder_names["central"]
+            )
+
+    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
