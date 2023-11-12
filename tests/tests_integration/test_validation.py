@@ -6,9 +6,9 @@ from base import BaseTest
 
 from datashuttle.utils import validation
 
-# ----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # Inconsistent sub or ses value lengths
-# ----------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 class TestValidation(BaseTest):
@@ -36,9 +36,10 @@ class TestValidation(BaseTest):
         detected across the project. This is performed with an assortment
         of possible filenames and leading zero conflicts.
 
-        These conflicts are detected across the project (i.e. if you have sub-03
-        in remote and sub-004 in local, a warning should be shown). Therefore
-        this function tests every combination of conflict across local and central).
+        These conflicts are detected across the project (i.e. if you have
+        sub-03 in remote and sub-004 in local, a warning should be shown).
+        Therefore this function tests every combination of conflict across
+        local and central).
 
         Note SSH version is not tested, but the core functionality detecting
         inconsistent leading zeros is agnostic to SSH, and SSH file searching
@@ -49,7 +50,8 @@ class TestValidation(BaseTest):
         os.makedirs(project.cfg["local_path"] / "rawdata" / bad_sub_name)
         self.check_inconsistent_sub_or_ses_value_length_warning(project, "sub")
 
-        # Now, have conflicting subject names, but one in local and one in central
+        # Now, have conflicting subject names,
+        # but one in local and one in central
         new_central_path = (
             project.cfg["local_path"].parent / "central" / project.project_name
         )
@@ -67,7 +69,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize(
         "ses_name",
-        ["ses-01"],  # , "ses-99_@DATE@", "ses-01_random-tag_another-tag"],
+        ["ses-01", "ses-99_@DATE@", "ses-01_random-tag_another-tag"],
     )
     @pytest.mark.parametrize(
         "bad_ses_name",
@@ -84,10 +86,11 @@ class TestValidation(BaseTest):
         self, project, ses_name, bad_ses_name
     ):
         """
-        This function is exactly the same as `test_warn_on_inconsistent_sub_value_lengths()`
-        but operates at the session level. This is extreme code duplication, but
+        This function is exactly the same as
+        `test_warn_on_inconsistent_sub_value_lengths()` but operates at the
+        session level. This is extreme code duplication, but
         factoring the main logic out got very messy and hard to follow.
-        So, in this case code duplicate is the price to pay.
+
         """
         # Have conflicting session names (in different subject directories)
         # on the local filesystem
@@ -99,8 +102,9 @@ class TestValidation(BaseTest):
         )
         self.check_inconsistent_sub_or_ses_value_length_warning(project, "ses")
 
-        # Now, have conflicting session names (in different subject directories)
-        # where one subject directory is local and the other is central.
+        # Now, have conflicting session names (in different subject
+        # directories) where one subject directory is local and the
+        # other is central.
         new_central_path = (
             project.cfg["local_path"].parent / "central" / project.project_name
         )
@@ -150,9 +154,9 @@ class TestValidation(BaseTest):
             f"same and prefixed with leading zeros if required."
         )
 
-    # -----------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Test duplicates when making folders
-    # -----------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def test_duplicate_ses_or_sub_key_value_pair(self, project):
         """
@@ -262,9 +266,9 @@ class TestValidation(BaseTest):
             e.value
         )
 
-    # -----------------------------------------------------------------------------
-    # Bad unscore order
-    # -----------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
+    # Bad underscore order
+    # -------------------------------------------------------------------------
 
     def test_invalid_sub_and_ses_name(self, project):
         """
@@ -286,26 +290,29 @@ class TestValidation(BaseTest):
             e.value
         )
 
-    # -----------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Test validation functions all
-    # -----------------------------------------------------------------------------
-    # these implicitly test `validate_list_of_names`.
+    # -------------------------------------------------------------------------
 
     def test_validate_project(self, project):
-        """ """
+        """
+        Test the `validate_project` function over all it's arguments.
+        Note not every validation case is tested exhaustively, these
+        are tested in `test_validation_unit.py` elsewhere here.
+        """
         for sub in ["sub-001", "sub-002"]:
             os.makedirs(
                 project.cfg["central_path"] / "rawdata" / sub, exist_ok=True
             )
 
-        project.make_folders(["sub-1"])
+        project.make_folders(["sub-002_@DATE@"])
 
+        # The bad sub name is not caught when testing locally only.
         project.validate_project(error_or_warn="error", local_only=True)
 
-        shutil.rmtree(project.cfg["local_path"] / "rawdata")
+        project.make_folders("sub-001")
 
-        project.make_folders(["sub-001", "sub-002_@DATE@"])
-
+        # Now the bad sub is caught as we check against central also.
         with pytest.raises(BaseException) as e:
             project.validate_project(error_or_warn="error", local_only=False)
 
@@ -314,6 +321,8 @@ class TestValidation(BaseTest):
             in str(e.value)
         )
 
+        # Now check warnings are shown when there are multiple validation
+        # issues across local and central.
         os.makedirs(
             project.cfg["central_path"] / "rawdata" / "sub-3", exist_ok=True
         )
@@ -327,6 +336,7 @@ class TestValidation(BaseTest):
         assert "the same sub id as sub-002_date-20231112." in str(w[1].message)
         assert "with the same sub id as sub-002" in str(w[2].message)
 
+        # Finally, check that some bad sessions (ses-01) are caught.
         project.make_folders("sub-001", ["ses-0001_@DATE@", "ses-0002"])
         os.makedirs(
             project.cfg["central_path"]
@@ -334,11 +344,14 @@ class TestValidation(BaseTest):
             / "sub-004"
             / "ses-01_@DATE@",
             exist_ok=True,
-        )  # TODO: fix path length
+        )
 
         with pytest.warns(UserWarning) as w:
             project.validate_project(error_or_warn="warn", local_only=False)
 
+        assert "Inconsistent value lengths for the key sub were found." in str(
+            w[0].message
+        )
         assert "Inconsistent value lengths for the key ses were found." in str(
             w[3].message
         )
@@ -377,12 +390,12 @@ class TestValidation(BaseTest):
             w[0].message
         )
         assert (
-            "A sub already exists with the same sub id as sub-002. The existing folder is sub-2_id-b."
-            in str(w[1].message)
+            "A sub already exists with the same sub id as sub-002. "
+            "The existing folder is sub-2_id-b." in str(w[1].message)
         )
         assert (
-            "A sub already exists with the same sub id as sub-1_date-20230516. The existing folder is sub-1_id-@."
-            in str(w[2].message)
+            "sub already exists with the same sub id as sub-1_date-20230516. "
+            "The existing folder is sub-1_id-@." in str(w[2].message)
         )
 
         # Now make some new paths on central. Pass a bad new subject name
@@ -455,9 +468,9 @@ class TestValidation(BaseTest):
             "The existing folder is ses-003." in str(w[1].message)
         )
 
-    # 2) document everything
     # 3) fix passing around 'verbose' argument.
     # 3) final refactor
+
     # 4) Make data transfer keywords more intuitive.
     # 5) release on conda?
     # 6) ping on 'allow rclone at any time of day'

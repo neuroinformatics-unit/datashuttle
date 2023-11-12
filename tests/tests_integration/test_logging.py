@@ -498,13 +498,18 @@ class TestLogging:
         )
 
     def test_validate_project_logging(self, project):
-        """ """
+        """
+        Test that `validate_project` logs errors
+        and warnings to file.
+        """
+        # Make conflicting subject folders
         project.make_folders(["sub-001", "sub-002"])
         for sub in ["sub-1", "sub-002_date-2023"]:
             os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
 
         self.delete_log_files(project.cfg.logging_path)
 
+        # Check a validation error is logged.
         with pytest.raises(BaseException) as e:
             project.validate_project(error_or_warn="error")
 
@@ -514,24 +519,22 @@ class TestLogging:
 
         self.delete_log_files(project.cfg.logging_path)
 
-        # Warning (not good) TODO doc. ##################################################
-
+        # Check that validation warnings are logged.
         with pytest.warns(UserWarning) as w:
             project.validate_project(error_or_warn="warn")
 
-        log_paths = glob.glob(str(project.cfg.logging_path / "*.log"))
+        log = self.read_log_file(project.cfg.logging_path)
 
-        for idx, log_filepath in enumerate(log_paths):
-            with open(log_filepath, "r") as file:
-                log = file.read()
+        assert "WARNING" in log
 
-            assert "WARNING" in log
+        for idx in range(len(w)):
             assert str(w[idx].message) in log
 
     def test_validate_names_against_project_logging(self, project):
         """
         Implicitly test `validate_names_against_project` called when
-        `make_project_folders` is called.
+        `make_project_folders` is called, that it logs errors
+        to file. Warnings are not tested.
         """
         project.make_folders("sub-001")
         self.delete_log_files(project.cfg.logging_path)  #

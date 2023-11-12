@@ -6,7 +6,10 @@ from datashuttle.utils import formatting, validation
 class TestValidationUnit:
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_more_than_one_instance(self, prefix):
-        """"""
+        """
+        Check that any duplicate sub or ses values are caught
+        in `validate_list_of_names()`.
+        """
         with pytest.raises(BaseException) as e:
             validation.validate_list_of_names(
                 [f"{prefix}-001", f"{prefix}-99_date-2023_{prefix}-98"], prefix
@@ -33,7 +36,10 @@ class TestValidationUnit:
         ],
     )
     def test_name_does_not_begin_with_prefix(self, prefix_and_names):
-        """"""
+        """
+        Check validation that names passed to `validate_list_of_names()` start
+        with the prefix prefix (sub or ses).
+        """
         prefix, names = prefix_and_names
         with pytest.raises(BaseException) as e:
             validation.validate_list_of_names(names, prefix)
@@ -51,7 +57,10 @@ class TestValidationUnit:
         ],
     )
     def test_spaces_in_format_names(self, prefix_and_names):
-        """"""
+        """
+        Check `validate_list_of_names()` catches
+        spaces in passed names.
+        """
         prefix, names = prefix_and_names
         with pytest.raises(BaseException) as e:
             validation.validate_list_of_names(names, prefix)
@@ -62,10 +71,15 @@ class TestValidationUnit:
     def test_formatting_dashes_and_underscore_alternate_incorrectly(
         self, prefix
     ):
-        """"""
+        """
+        Check `validate_list_of_names()` catches "-" and "_" that
+        are not in the correct order.
+        """
         error_message = (
             lambda names: f"The names {names} " f"are not formatted correctly."
         )
+        # Test a large range of bad names. Do not use
+        # parametrize so we can use f"{prefix}".
         for test_all_names_and_bad_names in [
             [
                 [f"{prefix}-001_ses-002-suffix"],
@@ -98,8 +112,10 @@ class TestValidationUnit:
             ],
         ]:
             all_names, bad_names = test_all_names_and_bad_names
+
             with pytest.raises(BaseException) as e:
                 validation.validate_list_of_names(all_names, f"{prefix}")
+
             assert error_message(bad_names) in str(
                 e.value
             ), f"failed: {all_names}"
@@ -115,8 +131,7 @@ class TestValidationUnit:
     def test_inconsistent_value_lengths_in_list_of_names(self, prefix):
         """
         Ensure a list of sub / ses names that contain inconsistent
-        leading zeros
-        (e.g. ["sub-001", "sub-02"]) leads to an error.
+        leading zeros (e.g. ["sub-001", "sub-02"]) leads to an error.
         """
         for names in [
             [f"{prefix}-001", f"{prefix}-02", f"{prefix}-003"],
@@ -149,7 +164,13 @@ class TestValidationUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_new_name_duplicates_existing(self, prefix):
-        """ """
+        """
+        Test the function `new_name_duplicates_existing()`
+        that will throw an error if a sub / ses name matches
+        an existing name (unless it matches exactly).
+        """
+
+        # Check an exactly matching case that should not raise and error
         new_name = f"{prefix}-002"
         existing_names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-003"]
         failed, message = validation.new_name_duplicates_existing(
@@ -159,6 +180,7 @@ class TestValidationUnit:
         assert not failed
         assert message == ""
 
+        # Check a completely different case that should not raise an error.
         new_name = f"{prefix}-99999"
         existing_names = [f"{prefix}-999"]
         failed, message = validation.new_name_duplicates_existing(
@@ -168,6 +190,7 @@ class TestValidationUnit:
         assert not failed
         assert message == ""
 
+        # Test a single non-exact matching case (002) that raises an error.
         new_name = f"{prefix}-002_date-12345"
         existing_names = [f"{prefix}-002_date-00000", f"{prefix}-003"]
         failed, message = validation.new_name_duplicates_existing(
@@ -180,6 +203,8 @@ class TestValidationUnit:
             f"The existing folder is {prefix}-002_date-00000." in message
         )
 
+        # Check that the exact-match case passes while the match
+        # case does not.
         new_name = f"{prefix}-3"
         existing_names = [f"{prefix}-3", f"{prefix}-3_s-a"]
         failed, message = validation.new_name_duplicates_existing(
