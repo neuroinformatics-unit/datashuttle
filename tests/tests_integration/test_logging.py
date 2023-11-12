@@ -496,3 +496,50 @@ class TestLogging:
             "sub id as sub-001_datetime-123213T123122. "
             "The existing folder is sub-001" in log
         )
+
+    def test_validate_project_logging(self, project):
+        """ """
+        project.make_folders(["sub-001", "sub-002"])
+        for sub in ["sub-1", "sub-002_date-2023"]:
+            os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
+
+        self.delete_log_files(project.cfg.logging_path)
+
+        with pytest.raises(BaseException) as e:
+            project.validate_project(error_or_warn="error")
+
+        log = self.read_log_file(project.cfg.logging_path)
+        assert "ERROR" in log
+        assert str(e.value) in log
+
+        self.delete_log_files(project.cfg.logging_path)
+
+        # Warning (not good) TODO doc. ##################################################
+
+        with pytest.warns(UserWarning) as w:
+            project.validate_project(error_or_warn="warn")
+
+        log_paths = glob.glob(str(project.cfg.logging_path / "*.log"))
+
+        for idx, log_filepath in enumerate(log_paths):
+            with open(log_filepath, "r") as file:
+                log = file.read()
+
+            assert "WARNING" in log
+            assert str(w[idx].message) in log
+
+    def test_validate_names_against_project_logging(self, project):
+        """
+        Implicitly test `validate_names_against_project` called when
+        `make_project_folders` is called.
+        """
+        project.make_folders("sub-001")
+        self.delete_log_files(project.cfg.logging_path)  #
+
+        with pytest.raises(BaseException) as e:
+            project.make_folders("sub-001_id-a")
+
+        log = self.read_log_file(project.cfg.logging_path)
+
+        assert "ERROR" in log
+        assert str(e.value) in log

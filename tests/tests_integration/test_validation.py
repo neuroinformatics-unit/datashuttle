@@ -4,6 +4,8 @@ import shutil
 import pytest
 from base import BaseTest
 
+from datashuttle.utils import validation
+
 # ----------------------------------------------------------------------------------
 # Inconsistent sub or ses value lengths
 # ----------------------------------------------------------------------------------
@@ -341,7 +343,118 @@ class TestValidation(BaseTest):
             w[3].message
         )
 
-    # 1) test_new_name_duplicates_existing
+    def test_validate_names_against_project(self, project):
+        """ """
+        project.make_folders(["sub-1_id-@", "sub-2_id-b", "sub-3_id-c"])
+
+        # Check an exact match passes
+        sub_names = ["sub-1_id-@"]
+        validation.validate_names_against_project(
+            project.cfg, sub_names, local_only=True, error_or_warn="error"
+        )
+
+        # Now check a clashing subject (sub-1) throws an error
+        sub_names = ["sub-2_id-b", "sub-1_date-20230516", "sub-3_id-c"]
+
+        with pytest.raises(BaseException) as e:
+            validation.validate_names_against_project(
+                project.cfg, sub_names, local_only=True, error_or_warn="error"
+            )
+        assert (
+            "same sub id as sub-1_date-20230516. "
+            "The existing folder is sub-1_id-@." in str(e.value)
+        )
+
+        # Now check multiple different types of error are warned about
+        sub_names = ["sub-002", "sub-1_date-20230516", "sub-3_id-c", "sub-4"]
+
+        with pytest.warns(UserWarning) as w:
+            validation.validate_names_against_project(
+                project.cfg, sub_names, local_only=True, error_or_warn="warn"
+            )
+
+        assert "Inconsistent value lengths for the key sub were found." in str(
+            w[0].message
+        )
+        assert (
+            "A sub already exists with the same sub id as sub-002. The existing folder is sub-2_id-b."
+            in str(w[1].message)
+        )
+        assert (
+            "A sub already exists with the same sub id as sub-1_date-20230516. The existing folder is sub-1_id-@."
+            in str(w[2].message)
+        )
+
+        # Now make some new paths on central. Pass a bad new subject name
+        # (sub-4) and check no error is raised when local_only is `True`
+        # but the error is discovered when `False`.
+        os.makedirs(
+            project.cfg["central_path"] / "rawdata" / "sub-4_date-2023"
+        )
+
+        sub_names = ["sub-4", "sub-5"]
+        validation.validate_names_against_project(
+            project.cfg,
+            sub_names,
+            local_only=True,
+            error_or_warn="error",
+        )
+
+        with pytest.raises(BaseException) as e:
+            validation.validate_names_against_project(
+                project.cfg, sub_names, local_only=False, error_or_warn="error"
+            )
+
+        assert (
+            "same sub id as sub-4. "
+            "The existing folder is sub-4_date-2023." in str(e.value)
+        )
+
+        # Now, make some sessions locally and on central. Check that
+        # the correct errors are warned when we check at the subject level.
+        # Now that session checks are performed per-subject.
+        os.makedirs(
+            project.cfg["central_path"]
+            / "rawdata"
+            / "sub-4_date-2023"
+            / "ses-003"
+        )
+        project.make_folders("sub-2_id-b", ["ses-001", "ses-002"])
+
+        # Check no error is raised for exact match.
+        sub_names = ["sub-1_id-@", "sub-2_id-b", "sub-4_date-2023"]
+        ses_names = ["ses-001", "ses-002"]
+
+        validation.validate_names_against_project(
+            project.cfg,
+            sub_names,
+            ses_names,
+            local_only=False,
+            error_or_warn="error",
+        )
+
+        # ses-002 is bad for sub-2, ses-003 is bad for sub-4
+        sub_names = ["sub-1_id-@", "sub-2_id-b", "sub-4_date-2023"]
+        ses_names = ["ses-002_@DATE@", "ses-003_id-random"]
+
+        with pytest.warns(UserWarning) as w:
+            validation.validate_names_against_project(
+                project.cfg,
+                sub_names,
+                ses_names,
+                local_only=False,
+                error_or_warn="warn",
+            )
+
+        assert (
+            "the same ses id as ses-002_@DATE@. "
+            "The existing folder is ses-002." in str(w[0].message)
+        )
+        assert (
+            "the same ses id as ses-003_id-random. "
+            "The existing folder is ses-003." in str(w[1].message)
+        )
+
     # 2) document everything
     # 3) fix passing around 'verbose' argument.
     # 3) final refactor

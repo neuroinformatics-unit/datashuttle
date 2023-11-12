@@ -980,11 +980,16 @@ class DataShuttle:
         sub and ses values have the same length for all sub and
         ses in the project.
         """
-        utils.print_message_to_user("Validating project...")
+        self._start_log(
+            "validate-project",
+            local_vars=locals(),
+        )
 
         validation.validate_project(
             self.cfg, local_only=local_only, error_or_warn=error_or_warn
         )
+
+        ds_logger.close_log_filehandler()
 
     @staticmethod
     def check_name_formatting(
