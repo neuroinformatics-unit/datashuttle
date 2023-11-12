@@ -1,11 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Tuple
-
-if TYPE_CHECKING:
-    pass
-
 from pathlib import Path
+from typing import Tuple
 
 from datashuttle.utils.folder_class import Folder
 

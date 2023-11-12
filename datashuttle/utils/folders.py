@@ -11,11 +11,12 @@ from typing import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import ItemsView
+
     from datashuttle.configs.config_class import Configs
 
 import glob
 import os
-from collections.abc import ItemsView
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
