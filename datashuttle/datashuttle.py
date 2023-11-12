@@ -18,6 +18,7 @@ from datashuttle.utils import (
     ds_logger,
     folders,
     formatting,
+    getters,
     rclone,
     ssh,
     utils,
@@ -236,7 +237,11 @@ class DataShuttle:
         )
 
         validation.validate_names_against_project(
-            self.cfg, sub_names, ses_names, local_only=True
+            self.cfg,
+            sub_names,
+            ses_names,
+            local_only=True,
+            error_or_warn="error",
         )
 
         utils.log("\nMaking folders...")
@@ -270,7 +275,7 @@ class DataShuttle:
         return_with_prefix : bool
             If `True`, return with the "sub-" prefix.
         """
-        return folders.get_next_sub_or_ses_number(
+        return getters.get_next_sub_or_ses_number(
             self.cfg,
             sub=None,
             return_with_prefix=return_with_prefix,
@@ -294,7 +299,7 @@ class DataShuttle:
         return_with_prefix : bool
             If `True`, return with the "ses-" prefix.
         """
-        return folders.get_next_sub_or_ses_number(
+        return getters.get_next_sub_or_ses_number(
             self.cfg,
             sub=sub,
             return_with_prefix=return_with_prefix,
@@ -441,7 +446,6 @@ class DataShuttle:
         self._start_log("download-all", local_vars=locals())
 
         self.download("all", "all", "all", dry_run=dry_run, init_log=False)
-        ds_logger.close_log_filehandler()
 
     @check_configs_set
     def upload_entire_project(self):
@@ -727,7 +731,7 @@ class DataShuttle:
             },
         )
 
-        self.cfg.setup_after_load()  # will raise if fails
+        self.cfg.setup_after_load()  # will raise error if fails
 
         if self.cfg:
             self.cfg.dump_to_file()
@@ -966,7 +970,7 @@ class DataShuttle:
         This is based on project folders in the "home / .datashuttle" folder
         that contain valid config.yaml files.
         """
-        project_names, _ = folders.get_existing_project_paths_and_names()
+        project_names, _ = getters.get_existing_project_paths_and_names()
         utils.print_message_to_user(
             f"The existing project names are {project_names}."
         )
