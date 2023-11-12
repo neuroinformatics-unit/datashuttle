@@ -109,7 +109,7 @@ def dashes_and_underscore_alternate_incorrectly(
 
     if bad_names:
         message = (
-            f"The names {bad_names} are not formatted correctly. Names"
+            f"The names {bad_names} are not formatted correctly. Names "
             f"must consist of key-value pairs separated by underscores."
             f"e.g. 'sub-001_ses-01_date-20230516"
         )
@@ -248,6 +248,7 @@ def validate_project(
         check_duplicates=False,
     )
 
+    # TODO: this also doubles up
     for sub in sub_names:  # TODO: I think this includes many unnecessary loops
         failed, message = new_name_duplicates_existing(  # TODO: rename
             sub, sub_names, "sub"
@@ -352,7 +353,7 @@ def new_name_duplicates_existing(
         if exist_name_id == new_name_id:
             if new_name != exist_name:
                 message = (
-                    f"Cannot make folders. A {prefix} already exists with "
+                    f"A {prefix} already exists with "
                     f"the same {prefix} id as {new_name}. "
                     f"The existing folder is {exist_name}."
                 )

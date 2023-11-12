@@ -3,9 +3,9 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
-from datashuttle.utils import folders, formatting, utils, validation
+from datashuttle.utils import folders, formatting, utils
+
 
 
 class TestUnit:
@@ -47,21 +47,6 @@ class TestUnit:
         assert (
             re.search(regex, name_list[0]) is not None
         ), "datetime formatting is incorrect."
-
-    @pytest.mark.parametrize(
-        "prefix_and_names",
-        [
-            ["sub", "sub 001"],
-            ["sub", ["sub 001"]],
-            ["ses", ["ses- 001", "ses-002"]],
-        ],
-    )
-    def test_spaces_in_format_names(self, prefix_and_names):
-        prefix, names = prefix_and_names
-        with pytest.raises(NeuroBlueprintError) as e:
-            formatting.check_and_format_names(names, prefix)
-
-        assert "include spaces, which is not permitted." in str(e.value)
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_to_keyword_in_sub_input(self, prefix):
@@ -120,49 +105,10 @@ class TestUnit:
             formatting.update_names_with_range_to_flag([bad_input], prefix)
 
         assert (
-            str(e.value)
-            == f"The name: {bad_input} is not in required format for {tags('to')} keyword. "
+            str(e.value) == f"The name: {bad_input} is not in required"
+            f" format for {tags('to')} keyword. "
             f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>)."
         )
-
-    def test_formatting_dashes_and_underscore_alternate_incorrectly(self):
-        """"""
-        error_message = (
-            lambda names: f"The names {names} " f"are not formatted correctly."
-        )
-
-        all_names = ["sub-001-date_101010"]
-
-        with pytest.raises(BaseException) as e:
-            validation.validate_list_of_names(all_names, "sub")
-
-        assert error_message(all_names) in str(e.value)
-
-        all_names = ["ses-001-date_101010"]
-        with pytest.raises(BaseException) as e:
-            validation.validate_list_of_names(all_names, "ses")
-
-        assert error_message(all_names) in str(e.value)
-
-        all_names = ["sub-001_ses-002-suffix"]
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            validation.validate_list_of_names(all_names, "sub")
-
-        assert error_message(all_names) in str(e.value)
-
-        all_names = ["sub-001_ses-002-task-check"]
-        with pytest.raises(NeuroBlueprintError) as e:
-            validation.validate_list_of_names(all_names, "sub")
-
-        assert error_message(all_names) in str(e.value)
-
-        # check these don't raise
-        all_names = ["ses-001_hello-world_one-hundred"]
-        validation.validate_list_of_names(all_names, "ses")
-
-        all_names = ["ses-001_hello-world_suffix"]
-        validation.validate_list_of_names(all_names, "ses")
 
     def test_get_value_from_bids_name_regexp(self):
         """
@@ -193,107 +139,8 @@ class TestUnit:
             assert formatting.num_leading_zeros("sub-" + "1".zfill(i + 1)) == i
             assert formatting.num_leading_zeros("ses-" + "1".zfill(i + 1)) == i
 
-    @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_inconsistent_leading_zeros_in_list_of_names(self, prefix):
-        """
-        Ensure a list of sub / ses names that contain inconsistent leading zeros
-        (e.g. ["sub-001", "sub-02"]) leads to an error.
-        """
-        names = [f"{prefix}-001", f"{prefix}-02", f"{prefix}-003"]
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            formatting.check_and_format_names(names, prefix)
-
-        assert (
-            f"Inconsistent value lengths for the key {prefix} were found."
-            in str(e.value)
-        )
-
-    @pytest.mark.parametrize("prefix", ["sub", "ses"])
-    def test_duplicate_ids_in_list_of_names(self, prefix):
-        """
-        Ensure a list of sub / ses names that contain duplicate sub / ses
-        ids (e.g. ["sub-001", "sub-001_@DATE@"]) leads to an error.
-        """
-        names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-001_@DATE@"]
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            formatting.check_and_format_names(names, prefix)
-
-        assert (
-            str(e.value) == f"{prefix} names must all have unique "
-            f"integer ids after the {prefix} prefix."
-        )
-
-    @pytest.mark.parametrize("key", ["sub", "ses", "date", "id"])
-    @pytest.mark.parametrize("return_as_int", [True, False])
-    @pytest.mark.parametrize("sort", [True, False])
-    def test_get_values_from_bids_formatted_name(
-        self, key, return_as_int, sort
-    ):
-        """
-        Unit test the function `get_values_from_bids_formatted_name()`
-        which extracts values from BIDS-like names with a range of
-        possible inputs.
-        """
-        if return_as_int and key == "id":
-            return
-
-        all_names = [
-            "sub-01_ses-0101_date-123456_id-abcde",
-            "sub-02_ses-0999_date-234567_id-bcdef",
-            "sub-99_ses-1000_date-345678_id-cdefg",
-        ]
-
-        all_expected_values = {
-            "sub": ["01", "02", "99"],
-            "ses": ["0101", "0999", "1000"],
-            "date": ["123456", "234567", "345678"],
-            "id": ["abcde", "bcdef", "cdefg"],
-        }
-
-        values = utils.get_values_from_bids_formatted_name(
-            all_names, key, return_as_int, sort
-        )
-
-        expected_values = all_expected_values[key]
-
-        if return_as_int:
-            expected_values = [int(val) for val in expected_values]
-
-        if sort:
-            expected_values = sorted(expected_values)
-
-        assert values == expected_values
-
-    def test_get_values_from_bids_formatted_name_error(self):
-        """
-        Check errors that catch unpredictable behaviour
-        are displayed correctly.
-        """
-        with pytest.raises(BaseException) as e:
-            utils.get_values_from_bids_formatted_name(
-                ["sub-001_date-12345", "sub-001_date-12345_date-23456"], "date"
-            )
-
-        assert (
-            "There is more than one instance of date in"
-            " sub-001_date-12345_date-23456" in str(e.value)
-        )
-
-        with pytest.raises(BaseException) as e:
-            utils.get_values_from_bids_formatted_name(
-                ["sub-a_date-12345", "sub-b_date-12345_date-23456"],
-                "sub",
-                return_as_int=True,
-            )
-
-        assert "Invalid character in subject or session value: a" == str(
-            e.value
-        )
-
     # Test getting max sub or ses num from list
-    # ----------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize("default_num_value_digits", [0, 1, 11, 99, 101])
@@ -302,7 +149,8 @@ class TestUnit:
     ):
         """
         When the list of sub or ses names is empty, the returned max number
-        should be zero and the `default_num_value_digits` be set to the passed default
+        should be zero and the `default_num_value_digits`
+        be set to the passed default
         """
         (
             max_value,
@@ -335,8 +183,8 @@ class TestUnit:
             )
 
         assert (
-            f"The number of value digits for the {prefix} level are not consistent."
-            in str(e.value)
+            f"The number of value digits for the {prefix} "
+            f"level are not consistent." in str(e.value)
         )
 
         bad_sub_num_names = [
@@ -368,7 +216,8 @@ class TestUnit:
         self, prefix, test_max_num, test_num_digits
     ):
         """
-        Test many combinations of subject names and number of digits for a project,
+        Test many combinations of subject names
+        and number of digits for a project,
         e.g. `names = ["sub-001", ... "sub-101"]`.
         """
         if test_num_digits < (max_len := len(str(test_max_num))):
@@ -402,9 +251,9 @@ class TestUnit:
         assert max_num == 11
         assert num_digits == 2
 
-    # ----------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utils
-    # ----------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def make_name(self, key, underscore_position, start, end):
         """

@@ -492,7 +492,7 @@ class TestLogging:
         log = self.read_log_file(project.cfg.logging_path)
 
         assert (
-            "Cannot make folders. A sub already exists with the same "
+            "A sub already exists with the same "
             "sub id as sub-001_datetime-123213T123122. "
             "The existing folder is sub-001" in log
         )
