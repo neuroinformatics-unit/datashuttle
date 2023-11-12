@@ -118,7 +118,6 @@ def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
         log_and_raise_error("The config file must be a YAML file.", ValueError)
 
 
-
 @overload
 def get_values_from_bids_formatted_name(
     all_names: List[str],
