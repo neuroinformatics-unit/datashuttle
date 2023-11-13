@@ -466,16 +466,12 @@ class TestMakeFolders(BaseTest):
         with pytest.raises(NeuroBlueprintError) as e:
             project.make_folders("sub_100")
 
-        assert "Invalid character in subject number: sub-sub_100" in str(
-            e.value
-        )
+        assert "Invalid character in sub number: sub-sub_100" in str(e.value)
 
         with pytest.raises(NeuroBlueprintError) as e:
             project.make_folders("sub-001", "ses_100")
 
-        assert "Invalid character in subject number: ses-ses_100" in str(
-            e.value
-        )
+        assert "Invalid character in ses number: ses-ses_100" in str(e.value)
 
     # ----------------------------------------------------------------------------------
     # Test Helpers
