@@ -172,8 +172,10 @@ def sub_or_ses_value_to_int(value: str) -> int:
     try:
         int_value = int(value)
     except ValueError:
-        raise_error(f"Invalid character in subject or session value: {value}",
-                    NeuroBlueprintError)
+        raise_error(
+            f"Invalid character in subject or session value: {value}",
+            NeuroBlueprintError,
+        )
     return int_value
 
 

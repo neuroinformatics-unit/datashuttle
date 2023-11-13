@@ -418,26 +418,6 @@ class TestMakeFolders(BaseTest):
         new_num = project.get_next_sub_number(return_with_prefix)
         assert new_num == "sub-006" if return_with_prefix else "006"
 
-    def test_invalid_sub_and_ses_name(self, project):
-        """
-        This is a slightly weird case, the name is successfully
-        prefixed as 'sub-sub_100` but when the value if `sub-` is
-        extracted, it is also "sub" and so an error is raised.
-        """
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub_100")
-
-        assert "Invalid character in subject or session value: sub" in str(
-            e.value
-        )
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001", "ses_100")
-
-        assert "Invalid character in subject or session value: ses" in str(
-            e.value
-        )
-
     @pytest.mark.parametrize("return_with_prefix", [True, False])
     def test_get_next_ses_number(self, project, return_with_prefix):
         """
@@ -489,14 +469,14 @@ class TestMakeFolders(BaseTest):
         prefixed as 'sub-sub_100` but when the value if `sub-` is
         extracted, it is also "sub" and so an error is raised.
         """
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.make_folders("sub_100")
 
         assert "Invalid character in subject or session value: sub" in str(
             e.value
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.make_folders("sub-001", "ses_100")
 
         assert "Invalid character in subject or session value: ses" in str(
