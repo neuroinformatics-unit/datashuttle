@@ -8,11 +8,12 @@ from textual.widgets import (
     Label,
 )
 
-from datashuttle.tui import (
-    project_config,
-    project_select,
+from datashuttle.tui.screens import (
+    configs,
+    modal_dialogs,
+    project_manager,
+    project_selector,
 )
-from datashuttle.tui.screens import modal_dialogs, project_manager
 
 # RENAME ALL WIDGETS
 # TCSS
@@ -67,12 +68,12 @@ class TuiApp(App):
         """
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(
-                project_select.ProjectSelector(self), self.load_project_page
+                project_selector.ProjectSelector(self), self.load_project_page
             )
 
         elif event.button.id == "mainwindow_new_project_button":
             self.push_screen(
-                project_config.NewProjectScreen(self),
+                configs.NewProjectScreen(self),
                 self.load_project_page,
             )
 
