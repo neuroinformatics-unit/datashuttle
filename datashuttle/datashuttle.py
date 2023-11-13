@@ -1033,19 +1033,6 @@ class DataShuttle:
 
         self.cfg.top_level_folder = tmp_current_top_level_folder
 
-    def _get_rclone_config_name(
-        self, connection_method: Optional[str] = None
-    ) -> str:
-        """
-        Convenience function to get the rclone config
-        name (these configs are created by datashuttle
-        but managed and stored by rclone).
-        """
-        if connection_method is None:
-            connection_method = self.cfg["connection_method"]
-
-        return f"central_{self.cfg.project_name}_{connection_method}"
-
     def _start_log(
         self,
         command_name: str,
