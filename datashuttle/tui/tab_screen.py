@@ -50,8 +50,8 @@ class TabScreen(Screen):
         with TabbedContent(
             id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
         ):
-            yield create_tab.CreateTab
-            yield transfer_tab.TransferTab
+            yield create_tab.CreateTab(self.project)
+            yield transfer_tab.TransferTab(self.project)
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield project_config.ConfigsContent(self, self.project)
 

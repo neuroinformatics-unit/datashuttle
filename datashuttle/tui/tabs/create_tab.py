@@ -17,8 +17,9 @@ class CreateTab(TabPane):
     formatted according to the NeuroBlueprint specification.
     """
 
-    def __init__(self):
+    def __init__(self, project):
         super(CreateTab, self).__init__("Create", id="tabscreen_create_tab")
+        self.project = project
         self.prev_click_time = 0.0
 
     def compose(self):
