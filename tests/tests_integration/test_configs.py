@@ -7,8 +7,7 @@ from base import BaseTest
 
 from datashuttle import DataShuttle
 from datashuttle.configs.canonical_configs import (
-    get_canonical_config_dict,
-    get_canonical_config_required_types,
+    get_canonical_configs,
 )
 
 from datashuttle.utils import folders, getters
@@ -375,7 +374,7 @@ class TestConfigs(BaseTest):
             with pytest.raises(ConfigError) as e:
                 project.supply_config_file(bad_configs_path, warn=False)
 
-            required_types = get_canonical_config_required_types()
+            required_types = get_canonical_configs()
 
             if key == "connection_method":
                 assert (
@@ -422,7 +421,7 @@ class TestConfigs(BaseTest):
 
         assert (
             str(e.value) == f"New config keys are in the wrong order. "
-            f"The order should be: {get_canonical_config_dict().keys()}."
+            f"The order should be: {get_canonical_configs().keys()}."
         )
 
     def test_supplied_config_file_updates(self, project, tmp_path):

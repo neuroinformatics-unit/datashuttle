@@ -145,7 +145,7 @@ def make_correct_supply_config_file(
         tmp_path, setup_project.project_name
     )
 
-    canonical_config_dict = canonical_configs.get_canonical_config_dict()
+    canonical_config_dict = canonical_configs.get_canonical_configs()
     new_configs = {key: new_configs[key] for key in canonical_config_dict}
 
     if update_configs:
