@@ -6,7 +6,7 @@ from datashuttle import DataShuttle
 from datashuttle.utils.folders import get_existing_project_paths_and_names
 
 
-class ProjectSelector(Screen):
+class ProjectSelectorScreen(Screen):
     """
     The project selection screen. Finds and displays DataShuttle
     projects present on the local system.
@@ -27,7 +27,7 @@ class ProjectSelector(Screen):
     TITLE = "Select Project"
 
     def __init__(self, mainwindow):
-        super(ProjectSelector, self).__init__()
+        super(ProjectSelectorScreen, self).__init__()
 
         self.project_names = get_existing_project_paths_and_names()[0]
         self.mainwindow = mainwindow
