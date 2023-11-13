@@ -146,7 +146,7 @@ def get_values_from_bids_formatted_name(
 
         if len(value) > 1:
             raise_error(
-                f"There is more than instance of {key} in {name}. "
+                f"There is more than one instance of {key} in {name}. "
                 f"NeuroBlueprint names must contain only one instance of "
                 f"each key."
             )
