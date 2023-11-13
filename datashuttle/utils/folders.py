@@ -113,7 +113,7 @@ def make_datatype_folders(
     log : whether to log on or not (if True, logging must
         already be initialised).
     """
-    datatype_items = cfg.get_datatype_items(datatype)
+    datatype_items = cfg.get_datatype_as_dict_items(datatype)
 
     for datatype_key, datatype_folder in datatype_items:  # type: ignore
         if datatype_folder.level == level:
@@ -226,7 +226,7 @@ def items_from_datatype_input(
         "all_datatype",
         ["all_datatype"],
     ]:
-        datatype_items = cfg.get_datatype_items(
+        datatype_items = cfg.get_datatype_as_dict_items(
             datatype,
         )
     else:
