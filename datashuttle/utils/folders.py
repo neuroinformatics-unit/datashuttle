@@ -715,7 +715,8 @@ def get_max_sub_or_ses_num_and_value_length(
         if not len(set(all_num_value_digits)) == 1:
             utils.raise_error(
                 f"The number of value digits for the {prefix} level are not "
-                f"consistent. Cannot suggest a {prefix} number."
+                f"consistent. Cannot suggest a {prefix} number.",
+                NeuroBlueprintError,
             )
         num_value_digits = all_num_value_digits[0]
 

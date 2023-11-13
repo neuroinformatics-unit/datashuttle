@@ -3,12 +3,8 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-<<<<<<< HEAD
-from datashuttle.utils import formatting, utils
-from datashuttle.utils.custom_exceptions import NeuroBlueprintError
-=======
 from datashuttle.utils import folders, formatting, utils
->>>>>>> 6c3768b (Add unit tests for `get_max_sub_or_ses_num_and_value_length()`.)
+from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestUnit:
@@ -298,7 +294,8 @@ class TestUnit:
                 "sub",
                 return_as_int=True,
             )
-        assert "Invalid character in sub number: sub-a_date-12345" == str(
+
+        assert "Invalid character in subject or session value: a" == str(
             e.value
         )
 
