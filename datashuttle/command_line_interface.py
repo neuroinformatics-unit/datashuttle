@@ -16,7 +16,7 @@ PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 # -----------------------------------------------------------------------------
 
 
-def process_docstring(message):
+def process_docstring(message: str) -> str:
     """
     Sphinx is quite specific about the docstrings allowed
     """

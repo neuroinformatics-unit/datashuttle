@@ -64,7 +64,9 @@ def warn(message: str, log: bool) -> None:
     warnings.warn(message)
 
 
-def print_message_to_user(message: Union[str, list], use_rich=False) -> None:
+def print_message_to_user(
+    message: Union[str, list], use_rich: bool = False
+) -> None:
     """
     Centralised way to send message.
     use_rich :  use rich's print() function.
@@ -181,7 +183,7 @@ def get_values_from_bids_formatted_name(
         if return_as_int:
             value_to_append = sub_or_ses_value_to_int(value[0])
         else:
-            value_to_append = value[0]
+            value_to_append = value[0]  # type: ignore
 
         all_values.append(value_to_append)
 
@@ -202,7 +204,7 @@ def sub_or_ses_value_to_int(value: str) -> int:
     return int_value
 
 
-def get_value_from_key_regexp(name, key):
+def get_value_from_key_regexp(name: str, key: str) -> List[str]:
     """
     Find the value related to the key in a
     BIDS-style key-value pair name.
@@ -222,7 +224,7 @@ def integers_are_consecutive(list_of_ints: List[int]) -> bool:
     return all([diff == 1 for diff in diff_between_ints])
 
 
-def diff(x):
+def diff(x: List) -> List:
     """
     slow, custom differentiator for small inputs, to avoid
     adding numpy as a dependency.
@@ -252,7 +254,7 @@ def all_identical(list_: List) -> bool:
     return len(set(list_)) == 1
 
 
-def unpack_nested_list(main_list):
+def unpack_nested_list(main_list: List) -> List:
     """"""
     new_list = []
     for value in main_list:

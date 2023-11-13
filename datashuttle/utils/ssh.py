@@ -233,7 +233,7 @@ def search_ssh_central_for_folders(
 
 
 def get_list_of_folder_names_over_sftp(
-    sftp,
+    sftp: paramiko.sftp_client.SFTPClient,
     search_path: Path,
     search_prefix: str,
     verbose: bool = True,
@@ -260,7 +260,9 @@ def get_list_of_folder_names_over_sftp(
     all_filenames = []
     try:
         for file_or_folder in sftp.listdir_attr(search_path.as_posix()):
-            if fnmatch.fnmatch(file_or_folder.filename, search_prefix):
+            if file_or_folder.st_mode is not None and fnmatch.fnmatch(
+                file_or_folder.filename, search_prefix
+            ):
                 if stat.S_ISDIR(file_or_folder.st_mode):
                     all_folder_names.append(file_or_folder.filename)
                 else:

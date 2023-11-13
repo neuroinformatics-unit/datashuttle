@@ -83,7 +83,7 @@ def log_tree(project_path: Path) -> None:
     )  # https://github.com/Textualize/rich/issues/2688
 
 
-def log_names(list_of_headers, list_of_names):
+def log_names(list_of_headers: List[Any], list_of_names: List[Any]) -> None:
     """
     Log a list of subject or session names.
 
@@ -99,7 +99,7 @@ def log_names(list_of_headers, list_of_names):
         utils.log(f"{header}: {names}")
 
 
-def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs):
+def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs) -> List:
     """
     Wrap the locals from the original function call to log
     and the datashuttle.cfg in a wrapper class with __dict__
@@ -185,7 +185,7 @@ def get_rich_project_path_tree(project_path: Path) -> Tree:
     return tree
 
 
-def close_log_filehandler():
+def close_log_filehandler() -> None:
     """
     Remove handlers from all loggers.
     """

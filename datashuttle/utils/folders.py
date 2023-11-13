@@ -157,7 +157,7 @@ def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
 
 
 def search_project_for_sub_or_ses_names(
-    cfg: Configs, sub: Optional[str], search_str: str, local_only
+    cfg: Configs, sub: Optional[str], search_str: str, local_only: bool
 ) -> Dict:
     """
     If sub is None, the top-level level folder will be

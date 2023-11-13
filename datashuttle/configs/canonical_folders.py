@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Tuple
+from typing import List, Tuple
 
 from datashuttle.utils.folder_class import Folder
 
@@ -53,7 +53,7 @@ def get_datatype_folders() -> dict:
     }
 
 
-def get_non_sub_names():
+def get_non_sub_names() -> List[str]:
     """
     Get all arguments that are not allowed at the
     subject level for data transfer, i.e. as sub_names
@@ -66,7 +66,7 @@ def get_non_sub_names():
     ]
 
 
-def get_non_ses_names():
+def get_non_ses_names() -> List[str]:
     """
     Get all arguments that are not allowed at the
     session level for data transfer, i.e. as ses_names
@@ -79,7 +79,7 @@ def get_non_ses_names():
     ]
 
 
-def canonical_reserved_keywords():
+def canonical_reserved_keywords() -> List[str]:
     """
     Key keyword arguments that are passed to `sub_names` or
     `ses_names` but that we
@@ -87,11 +87,11 @@ def canonical_reserved_keywords():
     return get_non_sub_names() + get_non_ses_names()
 
 
-def get_top_level_folders():
+def get_top_level_folders() -> List[str]:
     return ["rawdata", "derivatives"]
 
 
-def get_datashuttle_path():
+def get_datashuttle_path() -> Path:
     """
     Get the datashuttle path where all project
     configs are stored.
