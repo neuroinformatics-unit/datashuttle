@@ -16,56 +16,9 @@ from textual.widgets import (
 from datashuttle import DataShuttle
 from datashuttle.tui.utils import utils
 
-
-class ShowConfigsDialog(ModalScreen):
-    """
-    This window is used to display the existing configs. The message
-    above the displayed configs can be configured depending on
-    whether a new project was created or an existing project was updated.
-
-    This screen returns None, such that it is displayed until the
-    user presses OK via a callback function. See
-    `ConfigsContent.setup_configs_for_a_new_project_and_switch_to_tab_screen()`
-    for more information.
-    """
-
-    def __init__(self, project_configs_dict, message_before_dict=""):
-        super(ShowConfigsDialog, self).__init__()
-
-        self.project_configs_dict = project_configs_dict
-        self.message_before_dict = message_before_dict
-
-    def compose(self):
-        yield Container(
-            Container(
-                Static(
-                    self.message_before_dict,
-                    id="display_configs_message_label",
-                ),
-                DataTable(id="modal_table", show_header=False),
-                id="display_configs_message_container",
-            ),
-            Container(Button("OK"), id="display_configs_ok_button"),
-            id="display_configs_top_container",
-        )
-
-    def on_mount(self):
-        """
-        The first row is empty because the header is not displayed.
-        """
-        ROWS = [("", "")] + [
-            (key, value) for key, value in self.project_configs_dict.items()
-        ]
-
-        table = self.query_one(DataTable)
-        table.add_columns(*ROWS[0])
-
-        for row in ROWS[1:]:
-            styled_row = [Text(str(cell), justify="left") for cell in row]
-            table.add_row(*styled_row)
-
-    def on_button_pressed(self) -> None:
-        self.dismiss(None)
+# --------------------------------------------------------------------------------
+# Main Project Configuration Module (Both Initialization & Updating)
+# --------------------------------------------------------------------------------
 
 
 class ConfigsContent(Container):
@@ -417,6 +370,67 @@ class ConfigsContent(Container):
         ).value
 
         return cfg_kwargs
+
+
+# --------------------------------------------------------------------------------
+# Configs Confirmation Dialog
+# --------------------------------------------------------------------------------
+
+
+class ShowConfigsDialog(ModalScreen):
+    """
+    This window is used to display the existing configs. The message
+    above the displayed configs can be configured depending on
+    whether a new project was created or an existing project was updated.
+
+    This screen returns None, such that it is displayed until the
+    user presses OK via a callback function. See
+    `ConfigsContent.setup_configs_for_a_new_project_and_switch_to_tab_screen()`
+    for more information.
+    """
+
+    def __init__(self, project_configs_dict, message_before_dict=""):
+        super(ShowConfigsDialog, self).__init__()
+
+        self.project_configs_dict = project_configs_dict
+        self.message_before_dict = message_before_dict
+
+    def compose(self):
+        yield Container(
+            Container(
+                Static(
+                    self.message_before_dict,
+                    id="display_configs_message_label",
+                ),
+                DataTable(id="modal_table", show_header=False),
+                id="display_configs_message_container",
+            ),
+            Container(Button("OK"), id="display_configs_ok_button"),
+            id="display_configs_top_container",
+        )
+
+    def on_mount(self):
+        """
+        The first row is empty because the header is not displayed.
+        """
+        ROWS = [("", "")] + [
+            (key, value) for key, value in self.project_configs_dict.items()
+        ]
+
+        table = self.query_one(DataTable)
+        table.add_columns(*ROWS[0])
+
+        for row in ROWS[1:]:
+            styled_row = [Text(str(cell), justify="left") for cell in row]
+            table.add_row(*styled_row)
+
+    def on_button_pressed(self) -> None:
+        self.dismiss(None)
+
+
+# --------------------------------------------------------------------------------
+# New Project Configuration Screen
+# --------------------------------------------------------------------------------
 
 
 class NewProjectScreen(Screen):
