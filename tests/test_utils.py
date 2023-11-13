@@ -562,6 +562,10 @@ def clear_capsys(capsys):
 
 def write_file(path_, contents="", append=False):
     key = "a" if append else "w"
+
+    if not path_.parent.is_dir():
+        os.makedirs(path_.parent, exist_ok=True)
+
     with open(path_, key) as file:
         file.write(contents)
 

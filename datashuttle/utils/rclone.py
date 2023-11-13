@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
+from typing import Dict, List
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
@@ -137,6 +138,41 @@ def transfer_data(
         )
 
     return output
+
+
+# TODO:
+# 1) check all var names
+# 2) document
+# 3) This processing step will add a round of looping.
+def get_local_and_central_file_differences(cfg: Configs) -> Dict:
+    """ """
+    convert_symbols = {
+        "=": "same",
+        "*": "different",
+        "+": "local_only",
+        "-": "central_only",
+        "!": "error",
+    }
+
+    all_results: Dict[str, List]
+    all_results = {val: [] for val in convert_symbols.values()}
+
+    output = perform_rclone_check(cfg)
+    split_output = output.split("\n")
+
+    for result in split_output:
+        if result == "":
+            continue
+
+        symbol = result[0]
+
+        assert result[1] == " ", "format is unexpected."
+        assert symbol in convert_symbols.keys(), "error in check."
+        assert symbol != "!", "error somewhere - investigate"
+
+        all_results[convert_symbols[symbol]].append(result[2:])
+
+    return all_results
 
 
 def perform_rclone_check(cfg: Configs) -> str:
