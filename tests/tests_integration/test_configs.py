@@ -499,12 +499,8 @@ class TestConfigs(BaseTest):
             "local_filesystem",
         )
 
-        (
-            project_names,
-            project_paths,
-        ) = getters.get_existing_project_paths_and_names()
+        project_paths = getters.get_existing_project_paths()
 
-        assert sorted(project_names) == ["project_1", "project_3"]
         assert sorted(project_paths) == [
             (tmp_path / "projects" / "project_1"),
             (tmp_path / "projects" / "project_3"),
