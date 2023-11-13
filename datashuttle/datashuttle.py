@@ -21,6 +21,10 @@ from datashuttle.utils import (
     ssh,
     utils,
 )
+from datashuttle.utils.custom_exceptions import (
+    ConfigError,
+    NeuroBlueprintError,
+)
 from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
@@ -77,7 +81,7 @@ class DataShuttle:
     def __init__(self, project_name: str, print_startup_message: bool = True):
         if " " in project_name:
             utils.log_and_raise_error(
-                "'project_name' must not include spaces."
+                "'project_name' must not include spaces.", ValueError
             )
 
         self.project_name = project_name
@@ -145,7 +149,8 @@ class DataShuttle:
             utils.raise_error(
                 f"Folder name: {folder_name} "
                 f"is not in permitted top-level folder"
-                f" names: {canonical_top_level_folders}"
+                f" names: {canonical_top_level_folders}",
+                ValueError,
             )
 
         self.cfg.top_level_folder = folder_name
@@ -755,7 +760,8 @@ class DataShuttle:
 
         if not self.cfg:
             utils.log_and_raise_error(
-                "Must have a config loaded before updating configs."
+                "Must have a config loaded before updating configs.",
+                ConfigError,
             )
 
         new_info = load_configs.handle_bool(option_key, new_info)
@@ -1009,7 +1015,10 @@ class DataShuttle:
             e.g. "sub-" or "ses-"
         """
         if prefix not in ["sub", "ses"]:
-            utils.log_and_raise_error("'prefix' must be 'sub' or 'ses'.")
+            utils.log_and_raise_error(
+                "'prefix' must be 'sub' or 'ses'.",
+                NeuroBlueprintError,
+            )
 
         if isinstance(names, str):
             names = [names]
@@ -1142,7 +1151,8 @@ class DataShuttle:
         """
         if not self.cfg or not self.cfg["local_path"].is_dir():
             utils.log_and_raise_error(
-                "Project folder does not exist. Logs were not moved."
+                "Project folder does not exist. Logs were not moved.",
+                FileNotFoundError,
             )
 
         ds_logger.close_log_filehandler()
@@ -1230,7 +1240,8 @@ class DataShuttle:
         if setting_name not in settings:
             utils.raise_error(
                 f"Setting key {setting_name} not found in "
-                f"settings dictionary"
+                f"settings dictionary",
+                KeyError,
             )
 
         settings[setting_name] = setting_value
