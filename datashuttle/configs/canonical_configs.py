@@ -226,14 +226,17 @@ def check_folder_above_project_name_exists(config_dict: Configs):
             extra_warning = ""
 
         utils.log_and_raise_error(
-            f"{base_error_message('local_path')} {extra_warning}"
+            f"{base_error_message('local_path')} {extra_warning}",
+            FileNotFoundError,
         )
 
     if (
         config_dict["connection_method"] == "local_filesystem"
         and not config_dict["central_path"].parent.is_dir()
     ):
-        utils.log_and_raise_error(base_error_message("central_path"))
+        utils.log_and_raise_error(
+            base_error_message("central_path"), FileNotFoundError
+        )
 
 
 def check_config_types(config_dict: Configs) -> None:
