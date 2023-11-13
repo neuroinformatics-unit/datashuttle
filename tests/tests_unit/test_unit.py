@@ -238,7 +238,7 @@ class TestUnit:
         self, key, return_as_int, sort
     ):
         """
-        Unit test the function `test_get_values_from_bids_formatted_name()`
+        Unit test the function `get_values_from_bids_formatted_name()`
         which extracts values from BIDS-like names with a range of
         possible inputs.
         """
