@@ -18,6 +18,7 @@ import warnings
 
 from datashuttle.configs import canonical_folders
 from datashuttle.utils import folders, utils
+
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
     NeuroBlueprintError,

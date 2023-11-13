@@ -20,6 +20,7 @@ import os
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
+
 from datashuttle.utils import ssh, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
