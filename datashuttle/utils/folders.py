@@ -21,8 +21,9 @@ from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
 
-from . import ssh, utils, validation
+from datashuttle.utils import ssh, utils, validation
 from .custom_exceptions import NeuroBlueprintError
+
 
 # -----------------------------------------------------------------------------
 # Make Folders

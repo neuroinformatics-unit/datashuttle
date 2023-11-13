@@ -6,8 +6,7 @@ from typing import List, Literal, Union
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
-
-from . import utils, validation
+from datashuttle.utils import utils, validation
 
 # -----------------------------------------------------------------------------
 # Format Sub / Ses Names

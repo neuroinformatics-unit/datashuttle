@@ -17,12 +17,13 @@ if TYPE_CHECKING:
 import warnings
 
 from datashuttle.configs import canonical_folders
+<<<<<<< HEAD
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
     NeuroBlueprintError,
 )
 
-from . import folders, utils
+from datashuttle.utils import folders, utils
 
 
 def get_next_sub_or_ses_number(
