@@ -12,9 +12,9 @@ import warnings
 from pathlib import Path
 from typing import Any, List, Literal, Optional, Tuple, Union
 
-from datashuttle.configs import canonical_folders, canonical_tags
-
+from ..configs import canonical_folders, canonical_tags
 from . import folders, formatting, ssh, utils
+from .custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
 # Make Folders
@@ -230,7 +230,8 @@ def check_new_subject_does_not_duplicate_existing(
             f"Cannot make folders. Multiple {prefix} ids "
             f"exist: {matched_existing_names}. This should"
             f"never happen. Check the {prefix} ids and ensure unique {prefix} "
-            f"ids (e.g. sub-001) appear only once."
+            f"ids (e.g. sub-001) appear only once.",
+            NeuroBlueprintError,
         )
 
     if len(matched_existing_names) == 1:
@@ -238,7 +239,8 @@ def check_new_subject_does_not_duplicate_existing(
             utils.log_and_raise_error(
                 f"Cannot make folders. A {prefix} already exists "
                 f"with the same {prefix} id as {new_name}. "
-                f"The existing folder is {matched_existing_names[0]}."
+                f"The existing folder is {matched_existing_names[0]}.",
+                NeuroBlueprintError,
             )
 
 
@@ -290,7 +292,8 @@ def search_sub_or_ses_level(
     if ses and not sub:
         utils.log_and_raise_error(
             "cannot pass session to "
-            "search_sub_or_ses_level() without subject"
+            "search_sub_or_ses_level() without subject",
+            ValueError,
         )
 
     if sub:
@@ -614,7 +617,10 @@ def get_next_sub_or_ses_number(
     all_folders = list(set(folder_names["local"] + folder_names["central"]))
 
     if len(all_folders) == 0:
-        utils.raise_error("No folders found. Cannot suggest the next number.")
+        utils.raise_error(
+            "No folders found. Cannot suggest the next number.",
+            NeuroBlueprintError,
+        )
 
     all_value_nums = utils.get_values_from_bids_formatted_name(
         all_folders,
@@ -626,7 +632,7 @@ def get_next_sub_or_ses_number(
     if not utils.integers_are_consecutive(all_value_nums):
         warnings.warn(
             f"A subject number has been skipped, "
-            f"currently used subject numbers are: {all_value_nums}"
+            f"currently used subject numbers are: {all_value_nums}",
         )
 
     # calculate next sub number
@@ -660,7 +666,8 @@ def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
             utils.raise_error(
                 f"There are two config files in project"
                 f"{folder_name} at path {datashuttle_path}. There "
-                f"should only ever be one config per project. "
+                f"should only ever be one config per project. ",
+                NeuroBlueprintError,
             )
         elif len(config_file) == 1:
             existing_project_paths.append(datashuttle_path / folder_name)

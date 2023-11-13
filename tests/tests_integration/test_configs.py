@@ -10,6 +10,7 @@ from datashuttle.configs.canonical_configs import (
     get_canonical_config_required_types,
 )
 from datashuttle.utils import folders
+from datashuttle.utils.custom_exceptions import ConfigError
 
 
 class TestConfigs(BaseTest):
@@ -67,7 +68,7 @@ class TestConfigs(BaseTest):
             local_path = good_pattern
             central_path = bad_pattern
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ConfigError) as e:
             project.make_config_file(
                 local_path,
                 central_path,
@@ -81,7 +82,7 @@ class TestConfigs(BaseTest):
         Check that program will assert if not all ssh options
         are set on make_config_file
         """
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ConfigError) as e:
             no_cfg_project.make_config_file(
                 no_cfg_project.project_name,
                 no_cfg_project.project_name,
@@ -124,7 +125,7 @@ class TestConfigs(BaseTest):
             no_cfg_project.update_config("connection_method", "ssh")
             assert no_cfg_project.cfg["connection_method"] == "ssh"
         else:
-            with pytest.raises(BaseException) as e:
+            with pytest.raises(ConfigError) as e:
                 no_cfg_project.update_config("connection_method", "ssh")
 
             assert (
@@ -221,7 +222,7 @@ class TestConfigs(BaseTest):
 
         non_existant_path = project._datashuttle_path / "fake.file"
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(FileNotFoundError) as e:
             project.supply_config_file(non_existant_path, warn=False)
 
         assert str(e.value) == f"No file found at: {non_existant_path}."
@@ -232,7 +233,7 @@ class TestConfigs(BaseTest):
         with open(wrong_filetype_path, "w"):
             pass
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ValueError) as e:
             project.supply_config_file(wrong_filetype_path, warn=False)
 
         assert str(e.value) == "The config file must be a YAML file."
@@ -250,7 +251,7 @@ class TestConfigs(BaseTest):
 
         test_utils.dump_config(missing_key_configs, bad_configs_path)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ConfigError) as e:
             project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
@@ -271,7 +272,7 @@ class TestConfigs(BaseTest):
         wrong_key_configs["transfer_merbosity"] = "wrong"
         test_utils.dump_config(wrong_key_configs, bad_configs_path)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ConfigError) as e:
             project.supply_config_file(bad_configs_path, warn=False)
 
         assert (
@@ -299,7 +300,7 @@ class TestConfigs(BaseTest):
 
             test_utils.dump_config(bad_type_configs, bad_configs_path)
 
-            with pytest.raises(BaseException) as e:
+            with pytest.raises(ConfigError) as e:
                 project.supply_config_file(bad_configs_path, warn=False)
 
             required_types = get_canonical_config_required_types()
@@ -344,7 +345,7 @@ class TestConfigs(BaseTest):
 
         test_utils.dump_config(bad_order_configs, bad_order_configs_path)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ConfigError) as e:
             project.supply_config_file(bad_order_configs_path, warn=False)
 
         assert (
@@ -381,7 +382,7 @@ class TestConfigs(BaseTest):
             Path(bad_name_configs[path_type]) / bad_name
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(ConfigError) as e:
             no_cfg_project.make_config_file(**bad_name_configs)
 
         assert (

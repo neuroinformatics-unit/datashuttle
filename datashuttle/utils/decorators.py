@@ -1,5 +1,6 @@
 from functools import wraps
 
+from datashuttle.utils.custom_exceptions import ConfigError
 from datashuttle.utils.utils import log_and_raise_error
 
 
@@ -18,7 +19,8 @@ def requires_ssh_configs(func):
             log_and_raise_error(
                 "Cannot setup SSH connection, 'central_host_id' "
                 "or 'central_host_username' is not set in "
-                "the configuration file."
+                "the configuration file.",
+                ConfigError,
             )
         else:
             return func(*args, **kwargs)
@@ -38,7 +40,8 @@ def check_configs_set(func):
         if args[0].cfg is None:
             log_and_raise_error(
                 "Must set configs with make_config_file() "
-                "before using this function."
+                "before using this function.",
+                ConfigError,
             )
         else:
             return func(*args, **kwargs)

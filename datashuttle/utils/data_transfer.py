@@ -268,21 +268,24 @@ class TransferData:
             [name in ["all", "all_sub"] for name in self.sub_names]
         ):
             utils.log_and_raise_error(
-                "'sub_names' must only include 'all' or 'all_subs' if these options are used."
+                "'sub_names' must only include 'all' or 'all_subs' if these options are used.",
+                ValueError,
             )
 
         if len(self.ses_names) > 1 and any(
             [name in ["all", "all_ses"] for name in self.ses_names]
         ):
             utils.log_and_raise_error(
-                "'ses_names' must only include 'all' or 'all_ses' if these options are used."
+                "'ses_names' must only include 'all' or 'all_ses' if these options are used.",
+                ValueError,
             )
 
         if len(self.datatype) > 1 and any(
             [name in ["all", "all_datatype"] for name in self.datatype]
         ):
             utils.log_and_raise_error(
-                "'datatype' must only include 'all' or 'all_datatype' if these options are used."
+                "'datatype' must only include 'all' or 'all_datatype' if these options are used.",
+                ValueError,
             )
 
     # -----------------------------------------------------------------------------

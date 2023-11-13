@@ -8,6 +8,7 @@ import yaml
 
 from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.utils import folders, utils
+from datashuttle.utils.custom_exceptions import ConfigError
 
 
 class Configs(UserDict):
@@ -127,7 +128,9 @@ class Configs(UserDict):
         new_info : value to update the config too
         """
         if option_key not in self:
-            utils.log_and_raise_error(f"'{option_key}' is not a valid config.")
+            utils.log_and_raise_error(
+                f"'{option_key}' is not a valid config.", ConfigError
+            )
 
         original_value = copy.deepcopy(self[option_key])
 
@@ -157,7 +160,8 @@ class Configs(UserDict):
         else:
             self[option_key] = original_value
             utils.log_and_raise_error(
-                f"\n{check_change['error']}\n{option_key} was not updated."
+                f"\n{check_change['error']}\n{option_key} was not updated.",
+                ConfigError,
             )
 
     def safe_check_current_dict_is_valid(self) -> dict:
@@ -205,7 +209,8 @@ class Configs(UserDict):
 
                 else:
                     utils.log_and_raise_error(
-                        "Option must be 'path_to_str' or 'str_to_path'"
+                        "Option must be 'path_to_str' or 'str_to_path'",
+                        ValueError,
                     )
 
     def make_path(self, base: str, sub_folders: Union[str, list]) -> Path:

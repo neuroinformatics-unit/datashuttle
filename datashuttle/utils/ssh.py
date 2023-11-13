@@ -54,7 +54,8 @@ def setup_ssh_key(
             f"Try running using the command-line-interface with "
             f"'datashuttle {cfg.project_name} "
             f"setup-ssh-connection-to-central-server' "
-            f"or in a terminal rather than IDE console."
+            f"or in a terminal rather than IDE console.",
+            RuntimeError,
         )
 
     generate_and_write_ssh_key(cfg.ssh_key_path)
@@ -115,7 +116,8 @@ def connect_client(
             f"3) The central_host_id: {cfg['central_host_id']} is"
             f" correct.\n"
             f"4) The central username:"
-            f" {cfg['central_host_username']}, and password are correct."
+            f" {cfg['central_host_username']}, and password are correct.",
+            ConnectionError,
         )
 
 

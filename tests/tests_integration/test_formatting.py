@@ -5,6 +5,7 @@ import pytest
 from base import BaseTest
 
 from datashuttle.utils import formatting
+from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestFormatting(BaseTest):
@@ -17,7 +18,7 @@ class TestFormatting(BaseTest):
         Test that names passed in incorrect type
         (not str, list) raise appropriate error.
         """
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(TypeError) as e:
             formatting.format_names(input, prefix)
 
         assert f"Ensure {prefix} names are a list of strings." == str(e.value)
@@ -28,7 +29,7 @@ class TestFormatting(BaseTest):
         Test that appropriate error is raised when duplicate name
         is passed to format_names().
         """
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_and_format_names(
                 ["1", "2", "3", "3", "4"], prefix
             )
