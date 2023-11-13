@@ -250,14 +250,3 @@ def all_identical(list_: List) -> bool:
     Check that all values in a list are identical.
     """
     return len(set(list_)) == 1
-
-
-def unpack_nested_list(main_list: List) -> List:
-    """"""
-    new_list = []
-    for value in main_list:
-        if isinstance(value, list):
-            new_list += value
-        else:
-            new_list += [value]
-    return new_list

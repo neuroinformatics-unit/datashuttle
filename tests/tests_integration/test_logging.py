@@ -1,6 +1,5 @@
 import glob
 import os
-import platform
 import re
 from pathlib import Path
 
@@ -14,11 +13,6 @@ from datashuttle.utils.custom_exceptions import (
     ConfigError,
     NeuroBlueprintError,
 )
-
-# a symbol that will create an error when trying to make a file with this name.
-# this is only tested in windows as nearly any char is allowed for macos and linux
-BAD_WINDOWS_FILECHAR = "?"
-IS_WINDOWS = platform.system() == "Windows"
 
 
 class TestLogging:
