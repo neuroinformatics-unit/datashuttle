@@ -11,7 +11,7 @@ from datashuttle.tui import project_config
 from datashuttle.tui.tabs import create_tab, transfer_tab
 
 
-class TabScreen(Screen):
+class ProjectManagerScreen(Screen):
     """
     Screen containing the Create and Transfer tabs. This is
     the primary screen within which the user interacts with
@@ -38,7 +38,7 @@ class TabScreen(Screen):
     """
 
     def __init__(self, mainwindow, project):
-        super(TabScreen, self).__init__()
+        super(ProjectManagerScreen, self).__init__()
 
         self.mainwindow = mainwindow
         self.project = project

@@ -9,11 +9,10 @@ from textual.widgets import (
 )
 
 from datashuttle.tui import (
-    custom_widgets,
     project_config,
     project_select,
-    tab_screen,
 )
+from datashuttle.tui.screens import modal_dialogs, project_manager
 
 # RENAME ALL WIDGETS
 # TCSS
@@ -79,10 +78,12 @@ class TuiApp(App):
 
     def load_project_page(self, project):
         if project:
-            self.push_screen(tab_screen.TabScreen(self, project))
+            self.push_screen(
+                project_manager.ProjectManagerScreen(self, project)
+            )
 
     def show_modal_error_dialog(self, message):
-        self.push_screen(custom_widgets.ErrorScreen(message))
+        self.push_screen(modal_dialogs.ErrorScreen(message))
 
 
 if __name__ == "__main__":
