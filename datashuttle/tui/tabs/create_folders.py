@@ -11,14 +11,16 @@ from textual.widgets import (
 from datashuttle.tui import custom_widgets
 
 
-class CreateTab(TabPane):
+class CreateFoldersTab(TabPane):
     """
     From this tab, the user can easily create new project files
     formatted according to the NeuroBlueprint specification.
     """
 
     def __init__(self, mainwindow, project):
-        super(CreateTab, self).__init__("Create", id="tabscreen_create_tab")
+        super(CreateFoldersTab, self).__init__(
+            "Create", id="tabscreen_create_tab"
+        )
         self.mainwindow = mainwindow
         self.project = project
         self.prev_click_time = 0.0
