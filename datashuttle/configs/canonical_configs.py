@@ -5,8 +5,8 @@ as configs can be provided from file or input dynamically
 and so careful checks must be done.
 
 If adding a new config, first add the key to
-get_canonical_config_dict() and type to
-get_canonical_config_required_types()
+get_canonical_configs() and type to
+get_canonical_configs()
 """
 
 from __future__ import annotations
@@ -22,24 +22,23 @@ from datashuttle.utils import utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
 
-# TODO: this can be merged with get_canonical_config_required_types()
-def get_canonical_config_dict() -> dict:
+def get_canonical_configs() -> dict:
     """
-    Canonical list of required keys
-    in the datashuttle configs
+    The only permitted types for DataShuttle
+    config values.
     """
-    config_dict = {
-        "local_path": None,
-        "central_path": None,
-        "connection_method": None,
-        "central_host_id": None,
-        "central_host_username": None,
-        "overwrite_old_files": None,
-        "transfer_verbosity": None,
-        "show_transfer_progress": None,
+    canonical_configs = {
+        "local_path": Union[str, Path],
+        "central_path": Union[str, Path],
+        "connection_method": Literal["ssh", "local_filesystem"],
+        "central_host_id": Union[str, None],
+        "central_host_username": Union[str, None],
+        "overwrite_old_files": bool,
+        "transfer_verbosity": Literal["v", "vv"],
+        "show_transfer_progress": bool,
     }
 
-    return config_dict
+    return canonical_configs
 
 
 def get_datatypes() -> List[str]:
@@ -61,29 +60,6 @@ def get_flags() -> List[str]:
     ]
 
 
-def get_canonical_config_required_types() -> dict:
-    """
-    The only permitted types for DataShuttle
-    config values.
-    """
-    required_types = {
-        "local_path": Union[str, Path],
-        "central_path": Union[str, Path],
-        "connection_method": Literal["ssh", "local_filesystem"],
-        "central_host_id": Union[str, None],
-        "central_host_username": Union[str, None],
-        "overwrite_old_files": bool,
-        "transfer_verbosity": Literal["v", "vv"],
-        "show_transfer_progress": bool,
-    }
-
-    assert (
-        required_types.keys() == get_canonical_config_dict().keys()
-    ), "update get_canonical_config_required_types with required types."
-
-    return required_types
-
-
 # -----------------------------------------------------------------------------
 # Check Configs
 # -----------------------------------------------------------------------------
@@ -103,7 +79,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     config_dict : datashuttle config UserDict
     """
-    canonical_dict = get_canonical_config_dict()
+    canonical_dict = get_canonical_configs()
 
     for key in canonical_dict.keys():
         if key not in config_dict.keys():
@@ -259,7 +235,7 @@ def check_config_types(config_dict: Configs) -> None:
     one type in union. So we need to test the
     two cases explicitly.
     """
-    required_types = get_canonical_config_required_types()
+    required_types = get_canonical_configs()
     fail = False
 
     for key in config_dict.keys():

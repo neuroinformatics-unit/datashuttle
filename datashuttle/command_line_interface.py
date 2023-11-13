@@ -542,7 +542,7 @@ def construct_parser():
     )
     update_config_file_parser.set_defaults(func=update_config_file)
 
-    config_options = canonical_configs.get_canonical_config_dict()
+    config_options = canonical_configs.get_canonical_configs()
 
     for option in config_options:
         update_config_file_parser.add_argument(
