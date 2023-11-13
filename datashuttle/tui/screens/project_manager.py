@@ -8,7 +8,7 @@ from textual.widgets import (
 )
 
 from datashuttle.tui.screens import configs
-from datashuttle.tui.tabs import create_folders, transfer_tab
+from datashuttle.tui.tabs import create_folders, transfer
 
 
 class ProjectManagerScreen(Screen):
@@ -53,7 +53,7 @@ class ProjectManagerScreen(Screen):
             yield create_folders.CreateFoldersTab(
                 self.mainwindow, self.project
             )
-            yield transfer_tab.TransferTab(self.mainwindow, self.project)
+            yield transfer.TransferTab(self.mainwindow, self.project)
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield configs.ConfigsContent(self, self.project)
 
