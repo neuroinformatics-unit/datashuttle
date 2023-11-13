@@ -68,7 +68,8 @@ class TuiApp(App):
         """
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(
-                project_selector.ProjectSelector(self), self.load_project_page
+                project_selector.ProjectSelectorScreen(self),
+                self.load_project_page,
             )
 
         elif event.button.id == "mainwindow_new_project_button":
