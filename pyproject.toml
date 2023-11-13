@@ -90,7 +90,7 @@ line-length = 79
 [tool.ruff]
 line-length = 79
 exclude = ["__init__.py","build",".eggs"]
-select = ["I", "E", "F", "TCH"]
+select = ["I", "E", "F", "TCH", "TID252"]
 fix = true
 ignore = ["E203","E501","E731","C901","W291","W293","E402","E722"]
 
@@ -100,6 +100,8 @@ ignore = ["E203","E501","E731","C901","W291","W293","E402","E722"]
 [tool.ruff.mccabe]
 max-complexity = 18
 
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
 
 [tool.setuptools_scm]
 

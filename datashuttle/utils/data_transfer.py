@@ -1,9 +1,9 @@
 from pathlib import Path
 from typing import List, Literal, Optional, Union
 
-from ..configs import canonical_folders
-from ..configs.config_class import Configs
-from . import folders, formatting, rclone, utils
+from datashuttle.configs import canonical_folders
+from datashuttle.configs.config_class import Configs
+from datashuttle.utils import folders, formatting, rclone, utils
 
 
 class TransferData:

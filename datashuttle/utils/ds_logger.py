@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, List, Optional
 
 if TYPE_CHECKING:
-    from ..configs.configs import Configs
+    from datashuttle.configs.configs import Configs
 
 import copy
 import logging
@@ -19,8 +19,7 @@ from rich.text import Text
 from rich.tree import Tree
 
 import datashuttle as package_to_log
-
-from . import utils
+from datashuttle.utils import utils
 
 
 def start(
