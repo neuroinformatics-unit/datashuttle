@@ -201,7 +201,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
 
-def check_folder_above_project_name_exists(config_dict: Configs):
+def check_folder_above_project_name_exists(config_dict: Configs) -> None:
     """
     Throw an error if the path above the project root does not exist.
     This validation is necessary (rather than simply
@@ -213,7 +213,7 @@ def check_folder_above_project_name_exists(config_dict: Configs):
     path at this stage.
     """
 
-    def base_error_message(path_name):
+    def base_error_message(path_name: str) -> str:
         return (
             f"The {path_name}: {config_dict[path_name].parent} "
             f"that the project folder will reside in does not yet "

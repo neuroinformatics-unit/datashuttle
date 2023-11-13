@@ -244,7 +244,7 @@ def validate_project(
     local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
     log: bool = True,
-):
+) -> None:
     """
     Validate all subject and session folders within a project.
 
@@ -315,9 +315,9 @@ def validate_names_against_project(
     cfg: Configs,
     sub_names: List[str],
     ses_names: Optional[List[str]] = None,
-    local_only=False,
+    local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
-    log=True,
+    log: bool = True,
 ) -> None:
     """
     Given a list of subject and (optionally) session names,
@@ -448,7 +448,7 @@ def new_name_duplicates_existing(
 
 
 def datatypes_are_invalid(
-    datatype: Union[List[str], str], allow_all=False
+    datatype: Union[List[str], str], allow_all: bool = False
 ) -> Tuple[bool, str]:
     """
     Check a datatype of list of datatypes is a valid

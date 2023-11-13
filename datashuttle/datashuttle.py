@@ -131,7 +131,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def set_top_level_folder(self, folder_name):
+    def set_top_level_folder(self, folder_name: str) -> None:
         """
         Set the working top level folder (e.g. 'rawdata', 'derivatives').
 
@@ -163,8 +163,8 @@ class DataShuttle:
     @check_configs_set
     def make_folders(
         self,
-        sub_names: Union[str, list],
-        ses_names: Optional[Union[str, list]] = None,
+        sub_names: Union[str, List[str]],
+        ses_names: Optional[Union[str, List[str]]] = None,
         datatype: str = "",
     ) -> None:
         """
@@ -440,7 +440,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def upload_all(self, dry_run: bool = False):
+    def upload_all(self, dry_run: bool = False) -> None:
         """
         Convenience function to upload all data.
 
@@ -452,7 +452,7 @@ class DataShuttle:
         self.upload("all", "all", "all", dry_run=dry_run, init_log=False)
 
     @check_configs_set
-    def download_all(self, dry_run: bool = False):
+    def download_all(self, dry_run: bool = False) -> None:
         """
         Convenience function to download all data.
 
@@ -463,7 +463,7 @@ class DataShuttle:
         self.download("all", "all", "all", dry_run=dry_run, init_log=False)
 
     @check_configs_set
-    def upload_entire_project(self):
+    def upload_entire_project(self) -> None:
         """
         Upload the entire project (from 'local' to 'central'),
         i.e. including every top level folder (e.g. 'rawdata',
@@ -472,7 +472,7 @@ class DataShuttle:
         self._transfer_entire_project("upload")
 
     @check_configs_set
-    def download_entire_project(self):
+    def download_entire_project(self) -> None:
         """
         Download the entire project (from 'central' to 'local'),
         i.e. including every top level folder (e.g. 'rawdata',
@@ -764,7 +764,7 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
-    def update_config_file(self, **kwargs):
+    def update_config_file(self, **kwargs) -> None:
         """ """
         if not self.cfg:
             utils.log_and_raise_error(
@@ -898,7 +898,7 @@ class DataShuttle:
         utils.print_message_to_user(self.cfg.logging_path)
 
     @check_configs_set
-    def show_local_tree(self):
+    def show_local_tree(self) -> None:
         """
         Print a tree schematic of all files and folders
         in the local project.
@@ -906,7 +906,7 @@ class DataShuttle:
         ds_logger.print_tree(self.cfg["local_path"])
 
     @check_configs_set
-    def show_top_level_folder(self):
+    def show_top_level_folder(self) -> None:
         """
         Print the current working top level folder (e.g.
         'rawdata', 'derivatives')
@@ -979,7 +979,7 @@ class DataShuttle:
             f"The suggested new session number is: {suggested_new_num}"
         )
 
-    def show_existing_projects(self):
+    def show_existing_projects(self) -> None:
         """
         Print a list of existing project names found on the local machine.
         This is based on project folders in the "home / .datashuttle" folder
@@ -1146,7 +1146,7 @@ class DataShuttle:
 
         ds_logger.start(path_to_save, command_name, variables, verbose)
 
-    def _move_logs_from_temp_folder(self):
+    def _move_logs_from_temp_folder(self) -> None:
         """
         Logs are stored within the project folder. Although
         in some instances, when setting configs, we do not know what
@@ -1171,13 +1171,13 @@ class DataShuttle:
                 self.cfg.logging_path / file_name,
             )
 
-    def _clear_temp_log_path(self):
+    def _clear_temp_log_path(self) -> None:
         """"""
         log_files = glob.glob(str(self._temp_log_path / "*.log"))
         for file in log_files:
             os.remove(file)
 
-    def _log_successful_config_change(self, message=False):
+    def _log_successful_config_change(self, message: bool = False) -> None:
         """
         Log the entire config at the time of config change.
         If messaged, just message "update successful" rather than
@@ -1190,7 +1190,7 @@ class DataShuttle:
             f"\n {self._get_json_dumps_config()}"
         )
 
-    def _get_json_dumps_config(self):
+    def _get_json_dumps_config(self) -> str:
         """
         Get the config dictionary formatted as json.dumps()
         which allows well formatted printing.
@@ -1199,14 +1199,14 @@ class DataShuttle:
         self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         return json.dumps(copy_dict, indent=4)
 
-    def _make_project_metadata_if_does_not_exist(self):
+    def _make_project_metadata_if_does_not_exist(self) -> None:
         """
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
         folders.make_folders(self.cfg.project_metadata_path, log=False)
 
-    def _setup_rclone_central_ssh_config(self, log):
+    def _setup_rclone_central_ssh_config(self, log: bool) -> None:
         rclone.setup_central_as_rclone_target(
             "ssh",
             self.cfg,
@@ -1215,7 +1215,7 @@ class DataShuttle:
             log=log,
         )
 
-    def _setup_rclone_central_local_filesystem_config(self):
+    def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_central_as_rclone_target(
             "local_filesystem",
             self.cfg,

@@ -55,6 +55,8 @@ dev = [
     "types-appdirs",
     "types-paramiko",
     "types-simplejson",
+    "pandas-stubs",
+    "types-setuptools",
 ]
 
 [build-system]
@@ -64,6 +66,11 @@ requires = [
     "setuptools_scm[toml]>=6.2",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+exclude = [
+    "tests/"
+]
 
 [tool.setuptools]
 include-package-data = true

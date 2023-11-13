@@ -227,7 +227,7 @@ class Configs(UserDict):
             "dry_run": dry_run,
         }
 
-    def init_paths(self):
+    def init_paths(self) -> None:
         """"""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 

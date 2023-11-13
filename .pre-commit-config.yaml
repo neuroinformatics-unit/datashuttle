@@ -32,6 +32,7 @@ repos:
                 - types-appdirs
                 - types-paramiko
                 - types-simplejson
+                - pandas-stubs
     - repo: https://github.com/codespell-project/codespell
       rev: v2.2.6
       hooks:
