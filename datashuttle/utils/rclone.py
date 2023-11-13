@@ -139,6 +139,22 @@ def transfer_data(
     return output
 
 
+def perform_rclone_check(cfg: Configs) -> str:
+    """"""
+    local_filepath = cfg.get_base_folder("local").as_posix()
+    central_filepath = cfg.get_base_folder("central").as_posix()
+
+    output = call_rclone(
+        f'{rclone_args("check")} '
+        f'"{local_filepath}" '
+        f'"{cfg.get_rclone_config_name()}:{central_filepath}"'
+        f" --combined -",
+        pipe_std=True,
+    )
+
+    return output.stdout.decode("utf-8")
+
+
 def handle_rclone_arguments(rclone_options, include_list):
     """
     Construct the extra arguments to pass to RClone based on the
@@ -179,5 +195,8 @@ def rclone_args(name: str) -> str:
 
     if name == "progress":
         arg = "--progress"
+
+    if name == "check":
+        arg = "check"
 
     return arg
