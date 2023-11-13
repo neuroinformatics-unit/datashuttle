@@ -283,7 +283,7 @@ class TestUnit:
             )
 
         assert (
-            "There is more than instance of date in"
+            "There is more than one instance of date in"
             " sub-001_date-12345_date-23456" in str(e.value)
         )
 
