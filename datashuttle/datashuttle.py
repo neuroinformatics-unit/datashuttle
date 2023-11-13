@@ -614,7 +614,8 @@ class DataShuttle:
         )
 
         if verified:
-            self._setup_ssh_key_and_rclone_config(log=True)
+            ssh.setup_ssh_key(self.cfg, log=True)
+            self._setup_rclone_central_ssh_config(log=True)
 
         ds_logger.close_log_filehandler()
 
@@ -1078,19 +1079,6 @@ class DataShuttle:
         self.cfg.top_level_folder = tmp_current_top_level_folder
 
     # -------------------------------------------------------------------------
-    # SSH
-    # -------------------------------------------------------------------------
-
-    def _setup_ssh_key_and_rclone_config(self, log: bool = True) -> None:
-        """
-        Setup ssh connection, key pair (see ssh.setup_ssh_key)
-        for details. Also, setup rclone config for ssh connection.
-        """
-        ssh.setup_ssh_key(self.cfg, log=log)
-
-        self._setup_rclone_central_ssh_config(log)
-
-    # -------------------------------------------------------------------------
     # Utils
     # -------------------------------------------------------------------------
 
@@ -1225,7 +1213,7 @@ class DataShuttle:
         )
 
     # -------------------------------------------------------------------------
-    # Utils
+    # Persistent settings
     # -------------------------------------------------------------------------
 
     def _update_persistent_setting(

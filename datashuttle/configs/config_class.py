@@ -247,7 +247,7 @@ class Configs(UserDict):
         folders.make_folders(logging_path)
         return logging_path
 
-    def get_datatype_items(
+    def get_datatype_as_dict_items(
         self, datatype: Union[str, list]
     ) -> Union[ItemsView, zip]:
         """
