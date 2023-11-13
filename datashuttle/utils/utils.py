@@ -8,11 +8,8 @@ from typing import Any, List, Literal, Union, overload
 
 from rich import print as rich_print
 
-<<<<<<< HEAD
+from datashuttle.utils import ds_logger
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
-=======
-from . import ds_logger
->>>>>>> e6938d3 (Close logger before raising exception.)
 
 # --------------------------------------------------------------------------------------
 # General Utils
