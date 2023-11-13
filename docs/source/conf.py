@@ -136,7 +136,14 @@ html_theme_options = {
             "icon": "fa-brands fa-github",
             # The type of image to be used (see below for details)
             "type": "fontawesome",
-        }
+        },
+        {
+            "name": "Zulip (chat)",
+            "url": "https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle",
+            # required
+            "icon": "fa-solid fa-comments",
+            "type": "fontawesome",
+        },
     ],
     "logo": {
         "text": f"Datashuttle v{release}",
