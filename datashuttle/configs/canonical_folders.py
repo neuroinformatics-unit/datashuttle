@@ -112,8 +112,4 @@ def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
     base_path = get_datashuttle_path() / project_name
     temp_logs_path = base_path / "temp_logs"
 
-    # TODO: cannot use folders.makefoldesr due to circular import
-    base_path.mkdir(parents=True, exist_ok=True)
-    temp_logs_path.mkdir(parents=True, exist_ok=True)
-
     return base_path, temp_logs_path

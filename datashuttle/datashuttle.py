@@ -93,6 +93,8 @@ class DataShuttle:
             self._temp_log_path,
         ) = canonical_folders.get_project_datashuttle_path(self.project_name)
 
+        folders.make_folders([self._datashuttle_path, self._temp_log_path])
+
         self._config_path = self._datashuttle_path / "config.yaml"
 
         self._persistent_settings_path = (
