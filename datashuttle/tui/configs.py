@@ -1,11 +1,7 @@
-from rich.text import Text
 from textual.containers import Container, Horizontal
-from textual.screen import ModalScreen, Screen
 from textual.widgets import (
     Button,
     Checkbox,
-    DataTable,
-    Header,
     Input,
     Label,
     RadioButton,
@@ -14,11 +10,8 @@ from textual.widgets import (
 )
 
 from datashuttle import DataShuttle
+from datashuttle.tui.screens import modal_dialogs
 from datashuttle.tui.utils import utils
-
-# --------------------------------------------------------------------------------
-# Main Project Configuration Module (Both Initialization & Updating)
-# --------------------------------------------------------------------------------
 
 
 class ConfigsContent(Container):
@@ -220,7 +213,7 @@ class ConfigsContent(Container):
             project.make_config_file(**cfg_kwargs)
 
             self.parent_class.mainwindow.push_screen(
-                ShowConfigsDialog(
+                modal_dialogs.ShowConfigsDialog(
                     utils.get_textual_compatible_project_configs(project.cfg),
                     "A DataShuttle project with the below "
                     "configs has now been created.\n\n Click 'OK' to proceed to "
@@ -250,7 +243,7 @@ class ConfigsContent(Container):
             )
 
             self.parent_class.mainwindow.push_screen(
-                ShowConfigsDialog(
+                modal_dialogs.ShowConfigsDialog(
                     configs_to_show,
                     "The configs for this project have been successfully"
                     " set to the following values:",
@@ -370,102 +363,3 @@ class ConfigsContent(Container):
         ).value
 
         return cfg_kwargs
-
-
-# --------------------------------------------------------------------------------
-# Configs Confirmation Dialog
-# --------------------------------------------------------------------------------
-
-
-class ShowConfigsDialog(ModalScreen):
-    """
-    This window is used to display the existing configs. The message
-    above the displayed configs can be configured depending on
-    whether a new project was created or an existing project was updated.
-
-    This screen returns None, such that it is displayed until the
-    user presses OK via a callback function. See
-    `ConfigsContent.setup_configs_for_a_new_project_and_switch_to_tab_screen()`
-    for more information.
-    """
-
-    def __init__(self, project_configs_dict, message_before_dict=""):
-        super(ShowConfigsDialog, self).__init__()
-
-        self.project_configs_dict = project_configs_dict
-        self.message_before_dict = message_before_dict
-
-    def compose(self):
-        yield Container(
-            Container(
-                Static(
-                    self.message_before_dict,
-                    id="display_configs_message_label",
-                ),
-                DataTable(id="modal_table", show_header=False),
-                id="display_configs_message_container",
-            ),
-            Container(Button("OK"), id="display_configs_ok_button"),
-            id="display_configs_top_container",
-        )
-
-    def on_mount(self):
-        """
-        The first row is empty because the header is not displayed.
-        """
-        ROWS = [("", "")] + [
-            (key, value) for key, value in self.project_configs_dict.items()
-        ]
-
-        table = self.query_one(DataTable)
-        table.add_columns(*ROWS[0])
-
-        for row in ROWS[1:]:
-            styled_row = [Text(str(cell), justify="left") for cell in row]
-            table.add_row(*styled_row)
-
-    def on_button_pressed(self) -> None:
-        self.dismiss(None)
-
-
-# --------------------------------------------------------------------------------
-# New Project Configuration Screen
-# --------------------------------------------------------------------------------
-
-
-class NewProjectScreen(Screen):
-    """
-    Screen for setting up a new datashuttle project, by
-    inputting the desired configs. This uses the
-    ConfigsContent window to display and set the configs.
-
-    If "Main Manu" button is pressed, the callback function
-    returns None, so the project screen is not switched to.
-
-    Otherwise, the logic for creating and validating the
-    project is in ConfigsContent. ConfigsContent calls
-    the dismiss method of this class to return
-    an initialised project to mainwindow.
-    See ConfigsContent.on_button_pressed() for more details
-
-    Parameters
-    ----------
-
-    mainwindow : TuiApp
-    """
-
-    TITLE = "Make New Project"
-
-    def __init__(self, mainwindow):
-        super(NewProjectScreen, self).__init__()
-
-        self.mainwindow = mainwindow
-
-    def compose(self):
-        yield Header()
-        yield Button("Main Menu", id="all_main_menu_buttons")
-        yield ConfigsContent(self, project=None)
-
-    def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "all_main_menu_buttons":
-            self.dismiss(None)

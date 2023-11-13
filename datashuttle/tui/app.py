@@ -9,8 +9,8 @@ from textual.widgets import (
 )
 
 from datashuttle.tui.screens import (
-    configs,
     modal_dialogs,
+    new_project,
     project_manager,
     project_selector,
 )
@@ -74,7 +74,7 @@ class TuiApp(App):
 
         elif event.button.id == "mainwindow_new_project_button":
             self.push_screen(
-                configs.NewProjectScreen(self),
+                new_project.NewProjectScreen(self),
                 self.load_project_page,
             )
 

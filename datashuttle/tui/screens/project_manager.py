@@ -7,7 +7,7 @@ from textual.widgets import (
     TabPane,
 )
 
-from datashuttle.tui.screens import configs
+from datashuttle.tui import configs
 from datashuttle.tui.tabs import create_folders, transfer
 
 
