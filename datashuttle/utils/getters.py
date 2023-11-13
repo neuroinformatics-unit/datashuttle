@@ -181,7 +181,7 @@ def get_max_sub_or_ses_num_and_value_length(
     return max_existing_num, num_value_digits
 
 
-def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
+def get_existing_project_paths() -> List[Path]:
     """
     Return full path and names of datashuttle projects on
     this local machine. A project is determined by a project
@@ -195,7 +195,6 @@ def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
     )
 
     existing_project_paths = []
-    existing_project_names = []
     for folder_name in all_folders:
         config_file = list(
             (datashuttle_path / folder_name).glob("config.yaml")
@@ -210,9 +209,8 @@ def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
             )
         elif len(config_file) == 1:
             existing_project_paths.append(datashuttle_path / folder_name)
-            existing_project_names.append(folder_name)
 
-    return existing_project_names, existing_project_paths
+    return existing_project_paths
 
 
 def get_all_sub_and_ses_names(cfg: Configs, local_only: bool) -> Dict:

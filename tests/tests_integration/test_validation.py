@@ -448,7 +448,7 @@ class TestValidation(BaseTest):
 
         # ses-002 is bad for sub-2, ses-003 is bad for sub-4
         sub_names = ["sub-1_id-@", "sub-2_id-b", "sub-4_date-2023"]
-        ses_names = ["ses-002_@DATE@", "ses-003_id-random"]
+        ses_names = ["ses-002_id-11", "ses-003_id-random"]
 
         with pytest.warns(UserWarning) as w:
             validation.validate_names_against_project(
@@ -460,7 +460,7 @@ class TestValidation(BaseTest):
             )
 
         assert (
-            "the same ses id as ses-002_@DATE@. "
+            "the same ses id as ses-002_id-11. "
             "The existing folder is ses-002." in str(w[0].message)
         )
         assert (
