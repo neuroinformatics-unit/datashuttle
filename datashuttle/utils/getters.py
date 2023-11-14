@@ -17,13 +17,11 @@ if TYPE_CHECKING:
 import warnings
 
 from datashuttle.configs import canonical_folders
-<<<<<<< HEAD
+from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
     NeuroBlueprintError,
 )
-
-from datashuttle.utils import folders, utils
 
 
 def get_next_sub_or_ses_number(
@@ -174,7 +172,7 @@ def get_max_sub_or_ses_num_and_value_length(
         if not utils.integers_are_consecutive(all_value_nums):
             warnings.warn(
                 f"A subject number has been skipped, "
-                f"currently used subject numbers are: {all_value_nums}"
+                f"currently used subject numbers are: {all_value_nums}",
             )
 
         max_existing_num = max(all_value_nums)

@@ -14,7 +14,6 @@ from rich import print as rich_print
 from datashuttle.utils import ds_logger
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
-
 # -----------------------------------------------------------------------------
 # Centralised logging, errors, outputs, inputs
 # -----------------------------------------------------------------------------
