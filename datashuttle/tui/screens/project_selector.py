@@ -3,7 +3,7 @@ from textual.screen import Screen
 from textual.widgets import Button, Header
 
 from datashuttle import DataShuttle
-from datashuttle.utils.folders import get_existing_project_paths_and_names
+from datashuttle.utils.getters import get_existing_project_paths
 
 
 class ProjectSelectorScreen(Screen):
@@ -29,7 +29,7 @@ class ProjectSelectorScreen(Screen):
     def __init__(self, mainwindow):
         super(ProjectSelectorScreen, self).__init__()
 
-        self.project_names = get_existing_project_paths_and_names()[0]
+        self.project_names = get_existing_project_paths()
         self.mainwindow = mainwindow
 
     def compose(self):
