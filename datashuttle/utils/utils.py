@@ -4,8 +4,7 @@ import logging
 import re
 import traceback
 import warnings
-
-from typing import TYPE_CHECKING, List, Literal, Union, overload, Any, List, Literal, Union, overload
+from typing import TYPE_CHECKING, Any, List, Literal, Union, overload
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -126,7 +125,6 @@ def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
 
     if path_to_config.suffix not in [".yaml", ".yml"]:
         log_and_raise_error("The config file must be a YAML file.", ValueError)
-
 
 
 # -----------------------------------------------------------------------------

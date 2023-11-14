@@ -17,6 +17,10 @@ if TYPE_CHECKING:
 import warnings
 
 from datashuttle.configs import canonical_folders
+from datashuttle.utils.custom_exceptions import (
+    ConfigError,
+    NeuroBlueprintError,
+)
 
 from . import folders, utils
 
@@ -156,7 +160,8 @@ def get_max_sub_or_ses_num_and_value_length(
         if not len(set(all_num_value_digits)) == 1:
             utils.raise_error(
                 f"The number of value digits for the {prefix} level are not "
-                f"consistent. Cannot suggest a {prefix} number."
+                f"consistent. Cannot suggest a {prefix} number.",
+                NeuroBlueprintError,
             )
         num_value_digits = all_num_value_digits[0]
 
@@ -200,7 +205,8 @@ def get_existing_project_paths_and_names() -> Tuple[List[str], List[Path]]:
             utils.raise_error(
                 f"There are two config files in project"
                 f"{folder_name} at path {datashuttle_path}. There "
-                f"should only ever be one config per project. "
+                f"should only ever be one config per project. ",
+                ConfigError,
             )
         elif len(config_file) == 1:
             existing_project_paths.append(datashuttle_path / folder_name)

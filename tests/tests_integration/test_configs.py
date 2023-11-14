@@ -9,10 +9,8 @@ from datashuttle import DataShuttle
 from datashuttle.configs.canonical_configs import (
     get_canonical_configs,
 )
-
-from datashuttle.utils import folders, getters
+from datashuttle.utils import getters
 from datashuttle.utils.custom_exceptions import ConfigError
-
 
 
 class TestConfigs(BaseTest):
