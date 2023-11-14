@@ -547,6 +547,10 @@ class TestCommandLineInterface(BaseTest):
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_get_paths(self, project, sep):
+        """
+        Check that all CLI commands to return a path
+        show the correct path
+        """
         stdout, _ = test_utils.run_cli(
             f"get{sep}local{sep}path", project.project_name
         )
@@ -574,6 +578,10 @@ class TestCommandLineInterface(BaseTest):
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_get_top_level_folder(self, project, sep):
+        """
+        Check the CLI command to get the top-level-folder
+        shows the correct name.
+        """
         project.set_top_level_folder("derivatives")
 
         stdout, stderr = test_utils.run_cli(
@@ -583,6 +591,10 @@ class TestCommandLineInterface(BaseTest):
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_existing_projects(self, project, sep):
+        """
+        Check that the CLI argument to get existing projects
+        works and returns existing projects (1 is tested).
+        """
         stdout, stderr = test_utils.run_cli(
             f"get{sep}existing{sep}projects", project.project_name
         )
@@ -590,6 +602,10 @@ class TestCommandLineInterface(BaseTest):
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_get_cli_get_next_ses_sub_number(self, project, sep):
+        """
+        Check the CLI arguments to get the next subject
+        or session number, shows the correct sub / ses number.
+        """
         project.make_folders("sub-001", "ses-001")
 
         stdout, _ = test_utils.run_cli(
@@ -604,6 +620,10 @@ class TestCommandLineInterface(BaseTest):
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_show_functions(self, sep, project):
+        """
+        Check that the CLI arguments testing the
+        shower-functions return something sensible.
+        """
         stdout, _ = test_utils.run_cli(
             f"show{sep}configs", project.project_name
         )
@@ -615,13 +635,13 @@ class TestCommandLineInterface(BaseTest):
         )
         assert "sub-001_hello-world" in stdout
 
-        stdout, _ = test_utils.run_cli(
-            f"get{sep}top{sep}level{sep}folder", project.project_name
-        )
-        assert str(project.get_top_level_folder()) in stdout
-
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_validate_project(self, project, sep):
+        """
+        Check the at CLI command to validate project returns
+        some validation, indicating the underlying function
+        is called correctly.
+        """
         project.make_folders("sub-001")
         os.makedirs(project.cfg["central_path"] / "rawdata" / "sub-1")
 
@@ -633,11 +653,21 @@ class TestCommandLineInterface(BaseTest):
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_supply_config_file(self, sep):
+        """
+        Here we use the test environment just to check that the
+        CLI argument to supply a config file is passing
+        the correct argument to the datahuttle API.
+        """
         stdout, _ = test_utils.run_cli(f"supply{sep}config{sep}file some/path")
         assert "some/path" in stdout
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_clitest(self, project, sep):
+    def test_cli_setup_ssh_connection(self, project, sep):
+        """
+        Test the CLI argument to set up an ssh connection runs,
+        does not check functionality just that it is calling the
+        underlying API properly.
+        """
         _, stderr = test_utils.run_cli(
             f"setup{sep}ssh{sep}connection{sep}to{sep}central{sep}server",
             project.project_name,
