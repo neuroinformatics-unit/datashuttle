@@ -4,8 +4,7 @@ import logging
 import re
 import traceback
 import warnings
-
-from typing import TYPE_CHECKING, List, Literal, Union, overload, Any, List, Literal, Union, overload
+from typing import TYPE_CHECKING, Any, List, Literal, Union, overload
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -131,6 +130,7 @@ def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
 # -----------------------------------------------------------------------------
 # BIDS names
 # -----------------------------------------------------------------------------
+
 
 @overload
 def get_values_from_bids_formatted_name(

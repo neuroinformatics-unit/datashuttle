@@ -771,7 +771,8 @@ class DataShuttle:
         """ """
         if not self.cfg:
             utils.log_and_raise_error(
-                "Must have a config loaded before updating configs."
+                "Must have a config loaded before updating configs.",
+                ConfigError,
             )
 
         self._start_log(

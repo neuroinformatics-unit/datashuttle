@@ -132,8 +132,7 @@ def delete_project_if_it_exists(project_name):
 
     if config_path.is_dir():
         ds_logger.close_log_filehandler()
-
-    shutil.rmtree(config_path)
+        shutil.rmtree(config_path)
 
 
 def make_correct_supply_config_file(
