@@ -15,7 +15,7 @@ class TestPersistentSettings(BaseTest):
         """
         settings = project._load_persistent_settings()
 
-        assert len(settings) == 1
+        assert len(settings) == 2
         assert settings["top_level_folder"] == "rawdata"
 
         # Update they persistent setting and check this is reflected

@@ -12,7 +12,11 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import paramiko
 import yaml
 
-from datashuttle.configs import canonical_folders, load_configs
+from datashuttle.configs import (
+    canonical_configs,
+    canonical_folders,
+    load_configs,
+)
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     ds_logger,
@@ -1183,7 +1187,7 @@ class DataShuttle:
         Initialise the default persistent settings
         and save to file.
         """
-        settings = {"top_level_folder": "rawdata"}
+        settings = canonical_configs.get_persistent_settings_defaults()
         self._save_persistent_settings(settings)
 
     def _save_persistent_settings(self, settings: Dict) -> None:
@@ -1203,7 +1207,17 @@ class DataShuttle:
 
         with open(self._persistent_settings_path, "r") as settings_file:
             settings = yaml.full_load(settings_file)
+
+        self._update_settings_with_new_canonical_keys(settings)
+
         return settings
+
+    def _update_settings_with_new_canonical_keys(
+        self, settings: Dict
+    ):  # TODO: unit test!
+        """"""
+        if "tui" not in settings:
+            settings.update(canonical_configs.get_tui_config_defaults())
 
     @check_configs_set
     def _display_top_level_folder(self) -> None:
