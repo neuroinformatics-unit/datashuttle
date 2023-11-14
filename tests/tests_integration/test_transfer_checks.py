@@ -9,9 +9,23 @@ from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
 class TestTransferChecks(BaseTest):
-    """ """
-
     def test_rclone_check(self, project):
+        """
+        Test rclone.get_local_and_central_file_differences(). This function
+        returns a dictionary where values are list of paths and keys
+        separate based on differences between local and central projects.
+
+        A file is either in local only, in central only, found in
+        both and the same or found in both and different. RClone does
+        not currently return why the different files are different, just
+        that they are different (see question):
+        https://forum.rclone.org/t/rclone-check-find-which-file-is-newer-if-there-is-a-difference/42853
+
+        This test first builds a project in which files are found in
+        all of the above cases. It then runs
+        `get_local_and_central_file_differences()` and checks the output is
+        as expected.
+        """
         (local := project.cfg["local_path"] / "rawdata").mkdir(parents=True)
         (central := project.cfg["central_path"] / "rawdata").mkdir(
             parents=True
@@ -34,6 +48,7 @@ class TestTransferChecks(BaseTest):
         ]
         # fmt: on
 
+        # Build the project according to the above spec
         for folder_info in folder_structure:
             path_, type_ = folder_info
 
@@ -67,6 +82,7 @@ class TestTransferChecks(BaseTest):
 
         results = get_local_and_central_file_differences(project.cfg)
 
+        # Check the results are sorted into cases correctly.
         for folder_info in folder_structure:
             path_, type_ = folder_info
 
