@@ -771,7 +771,8 @@ class DataShuttle:
             ds_logger.close_log_filehandler()
         else:
             utils.log_and_raise_error(
-                f"{check_change['error']}\nConfigs were not updated."
+                f"{check_change['error']}\nConfigs were not updated.",
+                ConfigError,
             )
 
     def supply_config_file(
