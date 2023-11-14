@@ -3,9 +3,7 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 from datashuttle.utils import folders, formatting, utils
-
 
 
 class TestUnit:

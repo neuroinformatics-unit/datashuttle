@@ -269,7 +269,8 @@ class TransferData:
         ):
             utils.log_and_raise_error(
                 "'sub_names' must only include 'all' "
-                "or 'all_subs' if these options are used.", ValueError
+                "or 'all_subs' if these options are used.",
+                ValueError,
             )
 
         if len(self.ses_names) > 1 and any(
@@ -277,7 +278,8 @@ class TransferData:
         ):
             utils.log_and_raise_error(
                 "'ses_names' must only include 'all' "
-                "or 'all_ses' if these options are used.", ValueError
+                "or 'all_ses' if these options are used.",
+                ValueError,
             )
 
         if len(self.datatype) > 1 and any(
@@ -285,7 +287,8 @@ class TransferData:
         ):
             utils.log_and_raise_error(
                 "'datatype' must only include 'all' "
-                "or 'all_datatype' if these options are used.", ValueError
+                "or 'all_datatype' if these options are used.",
+                ValueError,
             )
 
     # -------------------------------------------------------------------------

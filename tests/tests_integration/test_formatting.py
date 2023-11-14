@@ -1,8 +1,8 @@
 import pytest
 from base import BaseTest
 
-from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 from datashuttle.utils import formatting
+from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestFormatting(BaseTest):
