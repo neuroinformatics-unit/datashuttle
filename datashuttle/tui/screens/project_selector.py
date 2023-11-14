@@ -29,7 +29,9 @@ class ProjectSelectorScreen(Screen):
     def __init__(self, mainwindow):
         super(ProjectSelectorScreen, self).__init__()
 
-        self.project_names = get_existing_project_paths()
+        self.project_names = [
+            path_.stem for path_ in get_existing_project_paths()
+        ]
         self.mainwindow = mainwindow
 
     def compose(self):
