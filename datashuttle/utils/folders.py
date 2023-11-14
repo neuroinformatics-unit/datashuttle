@@ -20,12 +20,10 @@ import warnings
 from collections.abc import ItemsView
 from pathlib import Path
 
-
-
-from .custom_exceptions import NeuroBlueprintError
 from datashuttle.configs import canonical_folders, canonical_tags
-from . import folders, ssh, utils, validation
 
+from . import folders, ssh, utils, validation
+from .custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
 # Make Folders
@@ -64,7 +62,7 @@ def make_folder_trees(
             datatype, allow_all=True
         )
         if is_invalid:
-            utils.log_and_raise_error(message)
+            utils.log_and_raise_error(message, NeuroBlueprintError)
 
     for sub in sub_names:
         sub_path = cfg.make_path(
@@ -149,6 +147,7 @@ def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
             path_.mkdir(parents=True)
             if log:
                 utils.log(f"Made folder at path: {path_}")
+
 
 # -----------------------------------------------------------------------------
 # Search Existing Folders
@@ -455,7 +454,8 @@ def search_sub_or_ses_level(
     if ses and not sub:
         utils.log_and_raise_error(
             "cannot pass session to "
-            "search_sub_or_ses_level() without subject"
+            "search_sub_or_ses_level() without subject",
+            ValueError,
         )
 
     if sub:

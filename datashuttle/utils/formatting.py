@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, List, Literal, Union
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 if TYPE_CHECKING:
     pass
@@ -125,7 +124,8 @@ def update_names_with_range_to_flag(
             if tags("to") not in tag_number:
                 utils.log_and_raise_error(
                     f"{tags('to')} flag must be between two "
-                    f"numbers in the {prefix} tag.", ValueError
+                    f"numbers in the {prefix} tag.",
+                    ValueError,
                 )
 
             left_number, right_number = tag_number.split(tags("to"))
@@ -134,7 +134,7 @@ def update_names_with_range_to_flag(
                 utils.log_and_raise_error(
                     f"Number of the {prefix} to the  left of {tags('to')} "
                     f"flag must be smaller than the number to the right.",
-                    ValueError
+                    ValueError,
                 )
 
             names_with_new_number_inserted = (
@@ -163,7 +163,7 @@ def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
             f"The name: {name} is not in required format "
             f"for {tags('to')} keyword. "
             f"The start must be  be {prefix}-<NUMBER>{tags('to')}<NUMBER>).",
-            ValueError
+            ValueError,
         )
 
 

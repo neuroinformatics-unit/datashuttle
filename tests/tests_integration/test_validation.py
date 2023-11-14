@@ -305,7 +305,7 @@ class TestValidation(BaseTest):
                 project.cfg["central_path"] / "rawdata" / sub, exist_ok=True
             )
 
-        project.make_folders(["sub-002_@DATE@"])
+        project.make_folders(["sub-002_id-11"])
 
         # The bad sub name is not caught when testing locally only.
         project.validate_project(error_or_warn="error", local_only=True)
@@ -317,7 +317,7 @@ class TestValidation(BaseTest):
             project.validate_project(error_or_warn="error", local_only=False)
 
         assert (
-            "A sub already exists with the same sub id as sub-002_date-20231112"
+            "A sub already exists with the same sub id as sub-002_id-11"
             in str(e.value)
         )
 
@@ -333,16 +333,16 @@ class TestValidation(BaseTest):
         assert "Inconsistent value lengths for the key sub" in str(
             w[0].message
         )
-        assert "the same sub id as sub-002_date-20231112." in str(w[1].message)
+        assert "the same sub id as sub-002_id-11." in str(w[1].message)
         assert "with the same sub id as sub-002" in str(w[2].message)
 
         # Finally, check that some bad sessions (ses-01) are caught.
-        project.make_folders("sub-001", ["ses-0001_@DATE@", "ses-0002"])
+        project.make_folders("sub-001", ["ses-0001_id-11", "ses-0002"])
         os.makedirs(
             project.cfg["central_path"]
             / "rawdata"
             / "sub-004"
-            / "ses-01_@DATE@",
+            / "ses-01_id-11",
             exist_ok=True,
         )
 
@@ -367,19 +367,19 @@ class TestValidation(BaseTest):
         )
 
         # Now check a clashing subject (sub-1) throws an error
-        sub_names = ["sub-2_id-b", "sub-1_date-20230516", "sub-3_id-c"]
+        sub_names = ["sub-2_id-b", "sub-1_id-11", "sub-3_id-c"]
 
         with pytest.raises(BaseException) as e:
             validation.validate_names_against_project(
                 project.cfg, sub_names, local_only=True, error_or_warn="error"
             )
         assert (
-            "same sub id as sub-1_date-20230516. "
+            "same sub id as sub-1_id-11. "
             "The existing folder is sub-1_id-@." in str(e.value)
         )
 
         # Now check multiple different types of error are warned about
-        sub_names = ["sub-002", "sub-1_date-20230516", "sub-3_id-c", "sub-4"]
+        sub_names = ["sub-002", "sub-1_id-11", "sub-3_id-c", "sub-4"]
 
         with pytest.warns(UserWarning) as w:
             validation.validate_names_against_project(
@@ -394,7 +394,7 @@ class TestValidation(BaseTest):
             "The existing folder is sub-2_id-b." in str(w[1].message)
         )
         assert (
-            "sub already exists with the same sub id as sub-1_date-20230516. "
+            "sub already exists with the same sub id as sub-1_id-11. "
             "The existing folder is sub-1_id-@." in str(w[2].message)
         )
 

@@ -9,11 +9,9 @@ from base import BaseTest
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestMakeFolders(BaseTest):
-
     def test_generate_folders_default_ses(self, project):
         """
         Make a subject folders with full tree. Don't specify

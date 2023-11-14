@@ -16,7 +16,7 @@ class TestValidationUnit:
             )
 
         assert (
-            f"There is more than instance of {prefix} in "
+            f"There is more than one instance of {prefix} in "
             f"{prefix}-99_date-2023_{prefix}-98." in str(e.value)
         )
 
