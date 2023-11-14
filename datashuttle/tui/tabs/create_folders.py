@@ -53,7 +53,7 @@ class CreateFoldersTab(TabPane):
             validators=[QuickNeuroBlueprintValidator("ses", self)],
         )
         yield Label("Datatype(s)", id="tabscreen_datatype_label")
-        yield custom_widgets.DatatypeCheckboxes()
+        yield custom_widgets.DatatypeCheckboxes(self.project)
         yield Horizontal(
             Button("Make Folders", id="tabscreen_make_folder_button"),
             Button("Create Options", id="tabscreen_create_options_button"),
