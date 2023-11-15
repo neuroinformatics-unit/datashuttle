@@ -295,7 +295,7 @@ def rclone_args(name: str) -> str:
     """
     Central function to hold rclone commands
     """
-    valid_names = ["dry_run", "copy", "ignore_existing", "progress"]
+    valid_names = ["dry_run", "copy", "ignore_existing", "progress", "check"]
     assert name in valid_names, f"`name` must be in: {valid_names}"
 
     if name == "dry_run":
