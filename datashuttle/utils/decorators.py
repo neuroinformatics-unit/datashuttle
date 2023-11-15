@@ -1,7 +1,7 @@
 from functools import wraps
 
+from datashuttle.utils import rclone, utils
 from datashuttle.utils.custom_exceptions import ConfigError
-from datashuttle.utils.utils import log_and_raise_error
 
 
 def requires_ssh_configs(func):
@@ -16,7 +16,7 @@ def requires_ssh_configs(func):
             not args[0].cfg["central_host_id"]
             or not args[0].cfg["central_host_username"]
         ):
-            log_and_raise_error(
+            utils.log_and_raise_error(
                 "Cannot setup SSH connection, 'central_host_id' "
                 "or 'central_host_username' is not set in "
                 "the configuration file.",
@@ -26,6 +26,13 @@ def requires_ssh_configs(func):
             return func(*args, **kwargs)
 
     return wrapper
+
+
+def check_configs_set_for_transfer(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        rclone.prompt_rclone_download_if_does_not_exist()
+        return func(*args, **kwargs)
 
 
 def check_configs_set(func):
@@ -38,7 +45,7 @@ def check_configs_set(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         if args[0].cfg is None:
-            log_and_raise_error(
+            utils.log_and_raise_error(
                 "Must set configs with make_config_file() "
                 "before using this function.",
                 ConfigError,

@@ -28,6 +28,7 @@ from datashuttle.utils.custom_exceptions import (
 from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
+    check_configs_set_for_transfer,
     requires_ssh_configs,
 )
 
@@ -107,8 +108,6 @@ class DataShuttle:
         if print_startup_message:
             if self.cfg:
                 self.show_top_level_folder()
-
-        rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
         """
@@ -284,6 +283,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def upload(
         self,
         sub_names: Union[str, list],
@@ -358,6 +358,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def download(
         self,
         sub_names: Union[str, list],
@@ -394,6 +395,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def upload_all(self, dry_run: bool = False):
         """
         Convenience function to upload all data.
@@ -406,6 +408,7 @@ class DataShuttle:
         self.upload("all", "all", "all", dry_run=dry_run, init_log=False)
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def download_all(self, dry_run: bool = False):
         """
         Convenience function to download all data.
@@ -418,6 +421,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def upload_entire_project(self):
         """
         Upload the entire project (from 'local' to 'central'),
@@ -427,6 +431,7 @@ class DataShuttle:
         self._transfer_entire_project("upload")
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def download_entire_project(self):
         """
         Download the entire project (from 'central' to 'local'),
@@ -436,6 +441,7 @@ class DataShuttle:
         self._transfer_entire_project("download")
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def upload_specific_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
@@ -487,6 +493,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_configs_set_for_transfer
     def download_specific_folder_or_file(
         self, filepath: str, dry_run: bool = False
     ) -> None:
