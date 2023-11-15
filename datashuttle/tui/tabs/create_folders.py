@@ -1,7 +1,16 @@
-from time import monotonic
-from typing import List, Optional
+from __future__ import annotations
 
+from dataclasses import dataclass
+from functools import wraps
+from time import monotonic
+from typing import TYPE_CHECKING, List, Optional
+
+if TYPE_CHECKING:
+    from textual.events import Click
+
+from textual import on
 from textual.containers import Horizontal
+from textual.message import Message
 from textual.validation import ValidationResult, Validator
 from textual.widgets import (
     Button,
@@ -16,6 +25,31 @@ from datashuttle.tui.screens.create_folders_settings import (
     TemplateSettingsScreen,
 )
 from datashuttle.utils import formatting, validation
+
+
+class ClickableInput(Input):
+    @dataclass
+    class Clicked(Message):
+        input: ClickableInput
+        button: int
+
+    def _on_click(self, click: Click) -> None:
+        self.post_message(self.Clicked(self, click.button))
+
+
+def require_double_click(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        create_folders_tab_class = args[0]
+
+        click_time = monotonic()
+
+        if click_time - create_folders_tab_class.prev_click_time < 0.5:
+            create_folders_tab_class.prev_click_time = click_time
+            return func(*args, **kwargs)
+        create_folders_tab_class.prev_click_time = click_time
+
+    return wrapper
 
 
 class CreateFoldersTab(TabPane):
@@ -41,14 +75,14 @@ class CreateFoldersTab(TabPane):
             id="tabscreen_directorytree",
         )
         yield Label("Subject(s)", id="tabscreen_subject_label")
-        yield Input(
+        yield ClickableInput(
             id="tabscreen_subject_input",
             placeholder="e.g. sub-001",
             validate_on=["changed", "submitted"],
             validators=[QuickNeuroBlueprintValidator("sub", self)],
         )
         yield Label("Session(s)", id="tabscreen_session_label")
-        yield Input(
+        yield ClickableInput(
             id="tabscreen_session_input",
             placeholder="e.g. ses-001",
             validate_on=["changed", "submitted"],
@@ -64,6 +98,56 @@ class CreateFoldersTab(TabPane):
             ),
         )
 
+    @on(ClickableInput.Clicked)
+    @require_double_click
+    def log_click(self, event: ClickableInput.Clicked) -> None:
+        input_id = event.input.id
+        assert input_id in [
+            "tabscreen_session_input",
+            "tabscreen_subject_input",
+        ], "unknown input name"
+
+        prefix = "sub" if "subject" in input_id else "ses"
+
+        # TODO: it is highly unliekly these idx are robust
+        # across machines
+        if event.button == 1:
+            self.fill_input_with_template(prefix, input_id)
+        elif event.button == 3:
+            self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
+
+    def fill_input_with_template(self, prefix, input_id):
+        """"""
+        if self.templates["on"]:
+            fill_value = self.templates[prefix]
+        else:
+            fill_value = f"{prefix}-"
+
+        input = self.query_one(f"#{input_id}")
+        input.value = fill_value
+
+    def fill_input_with_next_sub_or_ses_template(self, prefix, input_id):
+        # may be a more robust way...
+        if prefix == "sub":
+            next_val = self.project.get_next_sub_number(
+                return_with_prefix=True, local_only=True
+            )
+        else:
+            # TODO: this will crash sometimes...
+            sub = self.query_one("#tabscreen_subject_input").value
+            next_val = self.project.get_next_ses_number(
+                sub, return_with_prefix=True, local_only=True
+            )
+        if self.templates["on"]:
+            split_name = self.templates[prefix].split("_")
+            fill_value = "_".join([next_val, *split_name[1:]])
+        else:
+            fill_value = next_val
+
+        input = self.query_one(f"#{input_id}")
+        input.value = fill_value
+
+    @require_double_click
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
     ):
@@ -73,17 +157,18 @@ class CreateFoldersTab(TabPane):
         input widgets, depending on the prefix of the directory selected.
         Double-click time is set to the Windows default duration (500 ms).
         """
-        click_time = monotonic()
-        if click_time - self.prev_click_time < 0.5:
-            if event.path.stem.startswith("sub-"):
-                self.query_one("#tabscreen_subject_input").value = str(
-                    event.path.stem
-                )
-            if event.path.stem.startswith("ses-"):
-                self.query_one("#tabscreen_session_input").value = str(
-                    event.path.stem
-                )
-        self.prev_click_time = click_time
+        #   click_time = monotonic()
+        #  if click_time - self.prev_click_time < 0.5:
+        if event.path.stem.startswith("sub-"):
+            self.query_one("#tabscreen_subject_input").value = str(
+                event.path.stem
+            )
+        if event.path.stem.startswith("ses-"):
+            self.query_one("#tabscreen_session_input").value = str(
+                event.path.stem
+            )
+
+    # self.prev_click_time = click_time
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -102,7 +187,7 @@ class CreateFoldersTab(TabPane):
                 self.project.make_folders(
                     sub_names=sub_dir,
                     ses_names=ses_dir,
-                    datatype=self.query_one("DatatypeCheckboxes").type_out,
+                    datatype=self.query_one("DatatypeCheckboxes").datatype_out,
                 )
                 self.query_one("#tabscreen_directorytree").reload()
             except BaseException as e:
@@ -151,7 +236,9 @@ class CreateFoldersTab(TabPane):
         except Exception as e:
             return False, str(e)
 
-        return True, "No issues detected"
+        names = format_sub if prefix == "sub" else format_ses
+
+        return True, f"Formatted names: {names}"
 
     def update_input_tooltip(self, message: Optional[str], prefix):
         """ """

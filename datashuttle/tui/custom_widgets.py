@@ -12,7 +12,7 @@ class DatatypeCheckboxes(Static):
     Attributes
     ----------
 
-    type_out:
+    datatype_out:
         List of datatypes selected by the user to be passed to `make_folders`
         (e.g. "behav" that will be passed to `make-folders`.)
 

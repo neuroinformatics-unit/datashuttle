@@ -208,14 +208,34 @@ TemplateSettingsScreen {
 }
 
 #template_top_container {
-    height: 85%;
-    width: 90%;
+    height: 25;
+    width: 80;
     background: $primary-background;
     border: tall $panel-lighten-3;
     align: center middle;
     content-align: center middle;
  }
+ #template_inner_container {
+    height: 100%;
+    width: 100%;
+    background: $primary-background;
+    align: center middle;
+    content-align: center middle;
+    height: auto;
+    overflow: auto hidden;
+ }
+#template_inner_horizontal_container{
+    height: 3;
+    padding: 0 0 0 0;
+    margin: 0 0 0 0;
+}
 
+#template_message_label {
+    align: center middle;
+    width: auto;
+    height: auto;
+    overflow: auto auto;
+}
 #template_settings_radioset {
     layout: horizontal;
     border: none;
@@ -223,18 +243,6 @@ TemplateSettingsScreen {
     align: center middle;
     width: 50%;
 }
-
-#template_message_label {
-    align: center middle;
-    width: auto;
-}
-
-#test_container {
-    align: center middle;
-    width: 50%;
-    height: auto;
-}
-
 #template_settings_input {
     align: center middle;
     width: 50%;
@@ -245,6 +253,23 @@ TemplateSettingsScreen {
     height: 3;
     layer: top;
 }
-tabscreen_template_settings_button{
-    align: right middle;
+#tabscreen_template_settings_button{
+    align: right top;
+}
+#test3{
+    align: center top;
+    content-align: center top;
+}
+#test4{
+    align: center top;
+    content-align: center top;
+}
+#template_message_label:disabled {
+    color: $panel-lighten-3;
+}
+#template_settings_radioset:disabled {
+    color: $panel-lighten-3;
+}
+#template_settings_input:disabled {
+    color: $panel-lighten-3;
 }
