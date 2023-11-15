@@ -1,6 +1,7 @@
 import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
+from typing import Dict, List
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
@@ -139,6 +140,92 @@ def transfer_data(
     return output
 
 
+def get_local_and_central_file_differences(cfg: Configs) -> Dict:
+    """
+    Convert the output of rclone's check (with `--combine`) flag
+    to a dictionary separating each case.
+
+    Rclone output comes as a list of files, separated by newlines,
+    with symbols indicating whether the file paths are same across
+    local and central, different, or found in local / central only.
+
+    Returns
+    -------
+
+    parsed_output : Dict[str, List]
+        A dictionary where the keys are the cases (e.g. "same" across
+        local and central) and the values are lists of paths that
+        fall into these cases. Note the paths are relative to the "rawdata"
+        folder.
+    """
+    convert_symbols = {
+        "=": "same",
+        "*": "different",
+        "+": "local_only",
+        "-": "central_only",
+        "!": "error",
+    }
+
+    parsed_output: Dict[str, List]
+    parsed_output = {val: [] for val in convert_symbols.values()}
+
+    rclone_output = perform_rclone_check(cfg)
+    split_rclone_output = rclone_output.split("\n")
+
+    for result in split_rclone_output:
+        if result == "":
+            continue
+
+        symbol = result[0]
+
+        assert_rclone_check_output_is_as_expected(
+            result, symbol, convert_symbols
+        )
+
+        key = convert_symbols[symbol]
+        parsed_output[key].append(result[2:])
+
+    return parsed_output
+
+
+def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
+    """
+    Ensure the output of Rclone check is as expected. Currently the "error"
+    case is untested and a test case is required. Once the test case is
+    obtained this should most likely be moved to tests.
+    """
+    assert result[1] == " ", (
+        "`rclone check` output does not contain a "
+        "space as the second character`."
+    )
+    assert symbol in convert_symbols.keys(), "rclone check symbol is unknown."
+    assert symbol != "!", (
+        "Could not complete rlcone check. "
+        "This is unexpected. Please contact DataShuttle "
+        "devs at our GitHub page."
+    )
+
+
+def perform_rclone_check(cfg: Configs) -> str:
+    """
+    Use Rclone's `check` command to build a list of files that
+    are the same ("="), different ("*"), found in local only ("+")
+    or central only ("-"). The output is formatted as "<symbol> <path>\n".
+    """
+    local_filepath = cfg.get_base_folder("local").as_posix()
+    central_filepath = cfg.get_base_folder("central").as_posix()
+
+    output = call_rclone(
+        f'{rclone_args("check")} '
+        f'"{local_filepath}" '
+        f'"{cfg.get_rclone_config_name()}:{central_filepath}"'
+        f" --combined -",
+        pipe_std=True,
+    )
+
+    return output.stdout.decode("utf-8")
+
+
 def handle_rclone_arguments(rclone_options, include_list):
     """
     Construct the extra arguments to pass to RClone based on the
@@ -179,5 +266,8 @@ def rclone_args(name: str) -> str:
 
     if name == "progress":
         arg = "--progress"
+
+    if name == "check":
+        arg = "check"
 
     return arg
