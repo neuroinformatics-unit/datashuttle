@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 import re
-from typing import List, Literal, Union
+from typing import Dict, List, Literal, Optional, Union
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
@@ -16,6 +16,7 @@ from datashuttle.utils import utils, validation
 def check_and_format_names(
     names: Union[list, str],
     prefix: Literal["sub", "ses"],
+    name_templates: Optional[Dict] = None,  # TODO: DOC!
 ) -> List[str]:
     """
     Format a list of subject or session names, e.g.
@@ -51,7 +52,14 @@ def check_and_format_names(
 
     formatted_names = format_names(names_to_check, prefix)
 
-    validation.validate_list_of_names(formatted_names, prefix)
+    validation.validate_list_of_names(
+        formatted_names,
+        prefix,
+        "error",
+        check_duplicates=True,
+        name_templates=name_templates,
+        log=True,
+    )
 
     return formatted_names + reserved_keywords
 

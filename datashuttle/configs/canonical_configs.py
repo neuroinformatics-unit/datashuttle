@@ -11,7 +11,7 @@ get_canonical_configs()
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
@@ -264,12 +264,13 @@ def check_config_types(config_dict: Configs) -> None:
                 ConfigError,
             )
 
+
 # -----------------------------------------------------------------------------
 # Persistent settings
 # -----------------------------------------------------------------------------
 
 
-def get_tui_config_defaults():  # TODO: doc!
+def get_tui_config_defaults() -> Dict:  # TODO: doc!
     settings = {
         "tui": {
             "checkboxes_on": {
@@ -277,17 +278,20 @@ def get_tui_config_defaults():  # TODO: doc!
                 "ephys": True,
                 "funcimg": True,
                 "anat": True,
-            },
-            "templates": {"on": False, "sub": None, "ses": None},
+            }
         }
     }
     return settings
+
+
+def get_name_templates_defaults() -> Dict:
+    return {"name_templates": {"on": False, "sub": None, "ses": None}}
 
 
 def get_persistent_settings_defaults():  # TODO: doc!
     settings = {"top_level_folder": "rawdata"}
 
     settings.update(get_tui_config_defaults())
+    settings.update(get_name_templates_defaults())
 
     return settings
-

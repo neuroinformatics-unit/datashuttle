@@ -467,10 +467,3 @@ class TestValidation(BaseTest):
             "the same ses id as ses-003_id-random. "
             "The existing folder is ses-003." in str(w[1].message)
         )
-
-    # 3) fix passing around 'verbose' argument.
-    # 3) final refactor
-
-    # 4) Make data transfer keywords more intuitive.
-    # 5) release on conda?
-    # 6) ping on 'allow rclone at any time of day'

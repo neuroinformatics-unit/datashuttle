@@ -175,7 +175,11 @@ class DataShuttle:
     ) -> None:
         """
         Create a subject / session folder tree in the project
-        folder.
+        folder. The passed subject / session names are
+        formatted and validated. If this succeeds, fully
+        validation against all subject / session folders in
+        the local project is performed before making the
+        folders.
 
         Parameters
         ----------
@@ -230,10 +234,16 @@ class DataShuttle:
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
-        sub_names = formatting.check_and_format_names(sub_names, "sub")
+        name_templates = self.get_name_templates()
+
+        sub_names = formatting.check_and_format_names(
+            sub_names, "sub", name_templates
+        )
 
         if ses_names is not None:
-            ses_names = formatting.check_and_format_names(ses_names, "ses")
+            ses_names = formatting.check_and_format_names(
+                ses_names, "ses", name_templates
+            )  # not sure about passing this around so much
         else:
             ses_names = []
 
@@ -248,6 +258,7 @@ class DataShuttle:
             ses_names,
             local_only=True,
             error_or_warn="error",
+            name_templates=name_templates,
         )
 
         utils.log("\nMaking folders...")
@@ -927,6 +938,16 @@ class DataShuttle:
             search_str="ses-*",
         )
 
+    # Name Templates
+    # -------------------------------------------------------------------------
+
+    def get_name_templates(self) -> Dict:
+        settings = self._load_persistent_settings()
+        return settings["name_templates"]
+
+    def set_name_templates(self, new_name_templates: Dict) -> None:
+        self._update_persistent_setting("name_templates", new_name_templates)
+
     # -------------------------------------------------------------------------
     # Showers
     # -------------------------------------------------------------------------
@@ -964,8 +985,13 @@ class DataShuttle:
             local_vars=locals(),
         )
 
+        name_templates = self.get_name_templates()
+
         validation.validate_project(
-            self.cfg, local_only=local_only, error_or_warn=error_or_warn
+            self.cfg,
+            local_only=local_only,
+            error_or_warn=error_or_warn,
+            name_templates=name_templates,
         )
 
         ds_logger.close_log_filehandler()
@@ -1216,6 +1242,9 @@ class DataShuttle:
         self, settings: Dict
     ):  # TODO: unit test!
         """"""
+        if "name_templates" not in settings:
+            settings.update(canonical_configs.get_name_templates_defaults())
+
         if "tui" not in settings:
             settings.update(canonical_configs.get_tui_config_defaults())
 
