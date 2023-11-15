@@ -1,6 +1,6 @@
 from functools import wraps
 
-from datashuttle.utils import rclone, utils
+from datashuttle.utils import utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
 
@@ -26,13 +26,6 @@ def requires_ssh_configs(func):
             return func(*args, **kwargs)
 
     return wrapper
-
-
-def check_configs_set_for_transfer(func):
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        rclone.prompt_rclone_download_if_does_not_exist()
-        return func(*args, **kwargs)
 
 
 def check_configs_set(func):

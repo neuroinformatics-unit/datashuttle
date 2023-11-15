@@ -6,7 +6,7 @@ from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
 
 
-def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
+def call_rclone(command: str) -> CompletedProcess:
     """
     Call rclone with the specified command. Current mode is double-verbose.
     Return the completed process from subprocess.
@@ -18,12 +18,19 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     pipe_std: if True, do not output anything to stdout.
     """
     command = "rclone " + command
-    if pipe_std:
-        output = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+
+    output = subprocess.run(
+        command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+    )
+
+    if output.returncode == 1:
+        utils.log_and_raise_error(
+            f"full error log: {output.stderr.decode('utf-8')}\n\n"
+            f"RClone installation may not be found. Install by entering "
+            f"the following into your terminal:\n"
+            f" conda install -c conda-forge rclone\n",
+            RuntimeError,
         )
-    else:
-        output = subprocess.run(command, shell=True)
 
     return output
 
@@ -61,7 +68,7 @@ def setup_central_as_rclone_target(
      log : whether to log, if True logger must already be initialised.
     """
     if connection_method == "local_filesystem":
-        call_rclone(f"config create {rclone_config_name} local", pipe_std=True)
+        call_rclone(f"config create {rclone_config_name} local")
 
     elif connection_method == "ssh":
         call_rclone(
@@ -72,11 +79,10 @@ def setup_central_as_rclone_target(
             f"user {cfg['central_host_username']} "
             f"port 22 "
             f"key_file {ssh_key_path.as_posix()}",
-            pipe_std=True,
         )
 
     if log:
-        output = call_rclone("config file", pipe_std=True)
+        output = call_rclone("config file")
         utils.log(
             f"Successfully created rclone config. "
             f"{output.stdout.decode('utf-8')}"
@@ -88,13 +94,13 @@ def check_rclone_with_default_call() -> bool:
     Check to see whether rclone is installed.
     """
     try:
-        output = call_rclone("-h", pipe_std=True)
+        output = call_rclone("-h")
     except FileNotFoundError:
         return False
     return True if output.returncode == 0 else False
 
 
-def prompt_rclone_download_if_does_not_exist() -> None:
+def raise_if_rclone_download_if_does_not_exist() -> None:
     """
     Check that rclone is installed. If it does not
     (e.g. first time using datashuttle) then download.
@@ -125,14 +131,12 @@ def transfer_data(
         output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:{central_filepath}" {extra_arguments}',
-            pipe_std=True,
         )
 
     elif upload_or_download == "download":
         output = call_rclone(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:{central_filepath}" "{local_filepath}"  {extra_arguments}',
-            pipe_std=True,
         )
 
     return output
