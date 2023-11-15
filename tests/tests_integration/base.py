@@ -25,7 +25,7 @@ class BaseTest:
         yield no_cfg_project
 
     @pytest.fixture(scope="function")
-    def project(self, tmp_path):
+    def project(self, tmp_path, monkeypatch):
         """
         Setup a project with default configs to use
         for testing.
@@ -34,6 +34,14 @@ class BaseTest:
         in test_filesystem_transfer.py fixture
         """
         tmp_path = tmp_path / "test with space"
+
+        def return_nothing(*args, **kwargs):
+            return
+
+        monkeypatch.setattr(
+            "datashuttle.utils.rclone.setup_central_as_rclone_target",
+            return_nothing,
+        )
 
         project = test_utils.setup_project_default_configs(
             TEST_PROJECT_NAME,
