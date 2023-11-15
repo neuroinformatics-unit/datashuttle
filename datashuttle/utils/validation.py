@@ -419,13 +419,13 @@ def new_name_duplicates_existing(
     a different subject.
     """
     # Make a list of matches between `new_name` and any in `existing_names`
+    new_name_id = utils.get_values_from_bids_formatted_name(
+        [new_name], prefix, return_as_int=True
+    )[0]
+
     for exist_name in existing_names:
         exist_name_id = utils.get_values_from_bids_formatted_name(
             [exist_name], prefix, return_as_int=True
-        )[0]
-
-        new_name_id = utils.get_values_from_bids_formatted_name(
-            [new_name], prefix, return_as_int=True
         )[0]
 
         if exist_name_id == new_name_id:
