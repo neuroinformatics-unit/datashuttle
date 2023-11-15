@@ -75,9 +75,8 @@ def setup_central_as_rclone_target(
             pipe_std=True,
         )
 
-    output = call_rclone("config file", pipe_std=True)
-
     if log:
+        output = call_rclone("config file", pipe_std=True)
         utils.log(
             f"Successfully created rclone config. "
             f"{output.stdout.decode('utf-8')}"
