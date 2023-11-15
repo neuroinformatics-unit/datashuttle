@@ -1,5 +1,5 @@
 from time import monotonic
-from typing import Optional
+from typing import List, Optional
 
 from textual.containers import Horizontal
 from textual.validation import ValidationResult, Validator
@@ -12,6 +12,9 @@ from textual.widgets import (
 )
 
 from datashuttle.tui import custom_widgets
+from datashuttle.tui.screens.create_folders_settings import (
+    TemplateSettingsScreen,
+)
 from datashuttle.utils import formatting, validation
 
 
@@ -30,8 +33,7 @@ class CreateFoldersTab(TabPane):
 
         self.prev_click_time = 0.0
 
-        # TODO: move
-        self.default_input_tooltip = ""
+        self.templates = project.get_name_templates()
 
     def compose(self):
         yield DirectoryTree(
@@ -44,7 +46,7 @@ class CreateFoldersTab(TabPane):
             placeholder="e.g. sub-001",
             validate_on=["changed", "submitted"],
             validators=[QuickNeuroBlueprintValidator("sub", self)],
-        )  # TODO: what is validate_on["blur"]?
+        )
         yield Label("Session(s)", id="tabscreen_session_label")
         yield Input(
             id="tabscreen_session_input",
@@ -54,9 +56,12 @@ class CreateFoldersTab(TabPane):
         )
         yield Label("Datatype(s)", id="tabscreen_datatype_label")
         yield custom_widgets.DatatypeCheckboxes(self.project)
+        yield Button("Make Folders", id="tabscreen_make_folder_button")
         yield Horizontal(
-            Button("Make Folders", id="tabscreen_make_folder_button"),
-            Button("Create Options", id="tabscreen_create_options_button"),
+            Horizontal(),
+            Button(
+                "Template Settings", id="tabscreen_template_settings_button"
+            ),
         )
 
     def on_directory_tree_directory_selected(
@@ -104,12 +109,25 @@ class CreateFoldersTab(TabPane):
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return
 
+        elif event.button.id == "tabscreen_template_settings_button":
+            self.mainwindow.push_screen(
+                TemplateSettingsScreen(self.mainwindow, self.project),
+                self.update_templates,
+            )
+
+    def update_templates(self, templates):
+        self.project.set_name_templates(templates)
+        self.templates = templates
+        self.revalidate_inputs(["sub", "ses"])
+
     def run_local_validation(self, prefix):
         """ """
         try:
             sub_dir = self.query_one("#tabscreen_subject_input").value
 
-            format_sub = formatting.check_and_format_names([sub_dir], "sub")
+            format_sub = formatting.check_and_format_names(
+                sub_dir, "sub", name_templates=self.templates
+            )
 
             if prefix == "sub":
                 format_ses = None
@@ -117,7 +135,7 @@ class CreateFoldersTab(TabPane):
                 ses_dir = self.query_one("#tabscreen_session_input").value
 
                 format_ses = formatting.check_and_format_names(
-                    [ses_dir], "ses"
+                    ses_dir, "ses", name_templates=self.templates
                 )
 
             validation.validate_names_against_project(
@@ -127,6 +145,7 @@ class CreateFoldersTab(TabPane):
                 local_only=True,
                 error_or_warn="error",
                 log=False,
+                name_templates=self.templates,
             )
 
         except Exception as e:
@@ -143,6 +162,18 @@ class CreateFoldersTab(TabPane):
         )
         input = self.query_one(id)
         input.tooltip = message
+
+    def revalidate_inputs(self, all_prefixes: List[str]):
+        """"""
+        input_names = {
+            "sub": "#tabscreen_subject_input",
+            "ses": "#tabscreen_session_input",
+        }
+        for prefix in all_prefixes:
+            key = input_names[prefix]
+
+            value = self.query_one(key).value
+            self.query_one(key).validate(value=value)
 
 
 class QuickNeuroBlueprintValidator(Validator):
@@ -161,10 +192,7 @@ class QuickNeuroBlueprintValidator(Validator):
         if valid:
             if self.prefix == "sub":
                 # re-validate the ses in case the new sub has made it ok.
-                value = self.parent.query_one("#tabscreen_session_input").value
-                self.parent.query_one("#tabscreen_session_input").validate(
-                    value=value
-                )
+                self.parent.revalidate_inputs(["ses"])
 
             return self.success()
         else:

@@ -199,3 +199,52 @@ config label and button align center */
     height: auto;
     align: center middle;
 }
+
+
+/* CreateFoldersSettingsScreen --------------------------------------------------------------- */
+
+TemplateSettingsScreen {
+    align: center middle;
+}
+
+#template_top_container {
+    height: 85%;
+    width: 90%;
+    background: $primary-background;
+    border: tall $panel-lighten-3;
+    align: center middle;
+    content-align: center middle;
+ }
+
+#template_settings_radioset {
+    layout: horizontal;
+    border: none;
+    background: transparent;
+    align: center middle;
+    width: 50%;
+}
+
+#template_message_label {
+    align: center middle;
+    width: auto;
+}
+
+#test_container {
+    align: center middle;
+    width: 50%;
+    height: auto;
+}
+
+#template_settings_input {
+    align: center middle;
+    width: 50%;
+}
+
+#template_sessions_close_button{
+    dock: right;
+    height: 3;
+    layer: top;
+}
+tabscreen_template_settings_button{
+    align: right middle;
+}

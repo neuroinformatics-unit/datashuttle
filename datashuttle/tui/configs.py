@@ -161,7 +161,9 @@ class ConfigsContent(Container):
         Update the displayed SSH widgets when the `connection_method`
         radiobuttons are changed.
         """
-        display_bool = True if str(event.pressed.label) == "SSH" else False
+        label = str(event.pressed.label)
+        assert label in ["SSH", "Local Filesystem"], "Unexpected label."
+        display_bool = True if label == "SSH" else False
         self.switch_ssh_widgets_display(display_bool)
 
     def switch_ssh_widgets_display(self, display_bool):
