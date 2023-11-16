@@ -13,11 +13,24 @@ from textual.widgets import (
 )
 
 
-class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
+class TemplateSettingsScreen(ModalScreen):
+    """
+    This screen handles setting datashuttle's `name_template`'s.
+    These are regexp templates that can be validated against
+    during folder creation / project validation.
+
+    An input is provided to input a `name_template`` for validation. When
+    the window is closed, the `name_templates` is stored in datashuttle's
+    persistent settings.
+
+    The Create tab validation on Inputs is immediately updated on closing
+    of this screen.
+    """
+
     TITLE = "Template Settings"
 
     def __init__(self, mainwindow, project):
-        super(TemplateSettingsScreen, self).__init__()  # TODO: think on naming
+        super(TemplateSettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
         self.input_mode: Literal["sub", "ses"] = "sub"
@@ -25,7 +38,6 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
 
         self.templates = self.project.get_name_templates()
 
-    # assert False, f"{self.templates}"
     def action_link_docs(self) -> None:
         webbrowser.open("https://datashuttle.neuroinformatics.dev/")
 
@@ -81,8 +93,6 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
             id="template_top_container",
         )
 
-    # TODO: tooltip on input widget.
-
     def on_mount(self):
         container = self.query_one("#template_top_container")
         container.border_title = "Template Settings"
@@ -98,7 +108,10 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
         self.set_disabled_mode_widgets()
 
     def set_disabled_mode_widgets(self):
-        """"""
+        """
+        When `self.templates["on"]` is `False`, all
+        template widgets are disabled.
+        """
         cont = self.query_one("#template_inner_container")
         cont.disabled = not self.templates["on"]
 
@@ -107,6 +120,9 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
             self.dismiss(self.templates)
 
     def on_checkbox_changed(self, message):
+        """
+        Turn `name_templates` on or off and update the TUI accordingly.
+        """
         is_on = message.value
 
         self.templates["on"] = is_on
@@ -116,7 +132,7 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
         Update the displayed SSH widgets when the `connection_method`
-        radiobuttons are changed.
+        radiobutton's are changed.
         """
         label = str(event.pressed.label)
         assert label in ["Subject", "Session"], "Unexpected label."

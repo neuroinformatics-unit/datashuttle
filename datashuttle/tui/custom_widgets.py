@@ -1,5 +1,15 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from textual import events
+
+from dataclasses import dataclass
+
+from textual.message import Message
 from textual.reactive import reactive
-from textual.widgets import Checkbox, Static
+from textual.widgets import Checkbox, Input, Static
 
 from datashuttle.configs.canonical_configs import get_datatypes
 
@@ -68,3 +78,19 @@ class DatatypeCheckboxes(Static):
             )
             if is_on
         ]
+
+
+class ClickableInput(Input):
+    """
+    An input widget which emits a `ClickableInput.Clicked`
+    signal when clicked, containing the input name
+    `input` and mouse button index `button`.
+    """
+
+    @dataclass
+    class Clicked(Message):
+        input: ClickableInput
+        button: int
+
+    def _on_click(self, click: events.Click) -> None:
+        self.post_message(self.Clicked(self, click.button))

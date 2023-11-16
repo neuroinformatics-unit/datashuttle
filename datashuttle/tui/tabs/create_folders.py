@@ -1,43 +1,45 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
 from functools import wraps
 from time import monotonic
-from typing import TYPE_CHECKING, List, Optional
-
-if TYPE_CHECKING:
-    from textual.events import Click
+from typing import List, Optional
 
 from textual import on
 from textual.containers import Horizontal
-from textual.message import Message
 from textual.validation import ValidationResult, Validator
 from textual.widgets import (
     Button,
     DirectoryTree,
-    Input,
     Label,
     TabPane,
 )
 
-from datashuttle.tui import custom_widgets
+from datashuttle.tui.custom_widgets import ClickableInput, DatatypeCheckboxes
 from datashuttle.tui.screens.template_settings import (
     TemplateSettingsScreen,
 )
 from datashuttle.utils import formatting, validation
 
+# TODO: BUG - if template on but template is empty!
+# TODO: make more general and move to custom widgets.py
+# TODO: centralize func
+# TODO: figure out modal_dialogs.py (TemplateScreen shouldn't go there)
+# Template Settings own function
 
-class ClickableInput(Input):
-    @dataclass
-    class Clicked(Message):
-        input: ClickableInput
-        button: int
-
-    def _on_click(self, click: Click) -> None:
-        self.post_message(self.Clicked(self, click.button))
+# -----------------------------------------------------------------------------
+# Double-click decorator
+# -----------------------------------------------------------------------------
 
 
 def require_double_click(func):
+    """
+    A decorator that calls the decorated function
+    on a double click, otherwise will not do anything.
+
+    Requires the first argument (`self` on the class) to
+    have the attribute `prev_click_time`).
+    """
+
     @wraps(func)
     def wrapper(*args, **kwargs):
         create_folders_tab_class = args[0]
@@ -47,6 +49,7 @@ def require_double_click(func):
         if click_time - create_folders_tab_class.prev_click_time < 0.5:
             create_folders_tab_class.prev_click_time = click_time
             return func(*args, **kwargs)
+
         create_folders_tab_class.prev_click_time = click_time
 
     return wrapper
@@ -79,17 +82,17 @@ class CreateFoldersTab(TabPane):
             id="tabscreen_subject_input",
             placeholder="e.g. sub-001",
             validate_on=["changed", "submitted"],
-            validators=[QuickNeuroBlueprintValidator("sub", self)],
+            validators=[NeuroBlueprintValidator("sub", self)],
         )
         yield Label("Session(s)", id="tabscreen_session_label")
         yield ClickableInput(
             id="tabscreen_session_input",
             placeholder="e.g. ses-001",
             validate_on=["changed", "submitted"],
-            validators=[QuickNeuroBlueprintValidator("ses", self)],
+            validators=[NeuroBlueprintValidator("ses", self)],
         )
         yield Label("Datatype(s)", id="tabscreen_datatype_label")
-        yield custom_widgets.DatatypeCheckboxes(self.project)
+        yield DatatypeCheckboxes(self.project)
         yield Button("Make Folders", id="tabscreen_make_folder_button")
         yield Horizontal(
             Horizontal(),
@@ -100,8 +103,15 @@ class CreateFoldersTab(TabPane):
 
     @on(ClickableInput.Clicked)
     @require_double_click
-    def log_click(self, event: ClickableInput.Clicked) -> None:
+    def handle_input_click(self, event: ClickableInput.Clicked) -> None:
+        """
+        Handled a double-click on the custom ClickableInput widget.
+        Determine if we have the subject or session input, and
+        if it was a left or right click. Then, fill with a either
+        a generic suggestion or suggestion based on next sub / ses number.
+        """
         input_id = event.input.id
+
         assert input_id in [
             "tabscreen_session_input",
             "tabscreen_subject_input",
@@ -109,15 +119,19 @@ class CreateFoldersTab(TabPane):
 
         prefix = "sub" if "subject" in input_id else "ses"
 
-        # TODO: it is highly unliekly these idx are robust
-        # across machines
+        # TODO: it is highly unliekly these idx are
+        #  robust across machines. Need to test.
         if event.button == 1:
             self.fill_input_with_template(prefix, input_id)
         elif event.button == 3:
             self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
 
     def fill_input_with_template(self, prefix, input_id):
-        """"""
+        """
+        Given the `name_template` stored in `self.templates`,
+        fill the sub or ses Input with the template (based on `prefix`).
+        If self.templates is off, then just suggest "sub-" or "ses-".
+        """
         if self.templates["on"]:
             fill_value = self.templates[prefix]
         else:
@@ -127,13 +141,28 @@ class CreateFoldersTab(TabPane):
         input.value = fill_value
 
     def fill_input_with_next_sub_or_ses_template(self, prefix, input_id):
-        # may be a more robust way...
+        """
+        This fills a sub / ses Input with a suggested name based on the
+        next subject / session in the project (local).
+
+        If `name_templates` are set, then the sub- or ses- first key
+        of the template name will be replaced with the suggested
+        sub or ses key-value. Otherwise, the sub/ses key-value pair only
+        will be suggested.
+
+        Parameters
+
+        prefix : Literal["sub", "ses"]
+            Whether to fill the subject or session Input
+
+        input_id : str
+            The textual input name to update.
+        """
         if prefix == "sub":
             next_val = self.project.get_next_sub_number(
                 return_with_prefix=True, local_only=True
             )
         else:
-            # TODO: this will crash sometimes...
             sub = self.query_one("#tabscreen_subject_input").value
             next_val = self.project.get_next_ses_number(
                 sub, return_with_prefix=True, local_only=True
@@ -157,8 +186,6 @@ class CreateFoldersTab(TabPane):
         input widgets, depending on the prefix of the directory selected.
         Double-click time is set to the Windows default duration (500 ms).
         """
-        #   click_time = monotonic()
-        #  if click_time - self.prev_click_time < 0.5:
         if event.path.stem.startswith("sub-"):
             self.query_one("#tabscreen_subject_input").value = str(
                 event.path.stem
@@ -168,14 +195,11 @@ class CreateFoldersTab(TabPane):
                 event.path.stem
             )
 
-    # self.prev_click_time = click_time
-
     def on_button_pressed(self, event: Button.Pressed):
         """
         Enables the Make Folders button to read out current input values
         and use these to call project.make_folders().
         """
-
         if event.button.id == "tabscreen_make_folder_button":
             sub_dir = self.query_one("#tabscreen_subject_input").value
             ses_dir = self.query_one("#tabscreen_session_input").value
@@ -206,7 +230,18 @@ class CreateFoldersTab(TabPane):
         self.revalidate_inputs(["sub", "ses"])
 
     def run_local_validation(self, prefix):
-        """ """
+        """
+        Run validation of the values stored in the
+        sub / ses Input according to the passed prefix
+        using core datashuttle functions.
+
+        First, format the subject name (and session if required)
+        which also performs quick name format validations. Then,
+        compare the names against all current project sub / names (local)
+        and check it is valid. If invalid, the functions will error
+        and the error is caught and message returned. Otherwise,
+        the formatted name is returned.
+        """
         try:
             sub_dir = self.query_one("#tabscreen_subject_input").value
 
@@ -241,7 +276,7 @@ class CreateFoldersTab(TabPane):
         return True, f"Formatted names: {names}"
 
     def update_input_tooltip(self, message: Optional[str], prefix):
-        """ """
+        """"""
         id = (
             "#tabscreen_subject_input"
             if prefix == "sub"
@@ -263,15 +298,23 @@ class CreateFoldersTab(TabPane):
             self.query_one(key).validate(value=value)
 
 
-class QuickNeuroBlueprintValidator(Validator):
-    """"""
-
+class NeuroBlueprintValidator(Validator):
     def __init__(self, prefix, parent):
+        """
+        Custom Validator() class that takes
+        sub / ses prefix as input. Runs validation of
+        the name against the project and propagates
+        any error message through the Input tooltip.
+        """
+        super(NeuroBlueprintValidator).__init__()
         self.parent = parent
         self.prefix = prefix
 
     def validate(self, name: str) -> ValidationResult:
-        """"""
+        """
+        Run validation and update the tooltip with the error,
+        if no error then the formatted sub / ses name is displayed.
+        """
         valid, message = self.parent.run_local_validation(self.prefix)
 
         self.parent.update_input_tooltip(message, self.prefix)

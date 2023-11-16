@@ -273,6 +273,13 @@ TemplateSettingsScreen {
 }
 
 #template_message_label:disabled {
+    align: center middle;
+    width: auto;
+    height: auto;
+    overflow: auto auto;
+}
+
+#template_message_label:disabled {
     color: $panel-lighten-3;
     link-color: $panel-lighten-3;
 }
@@ -285,7 +292,7 @@ TemplateSettingsScreen {
     color: $panel-lighten-3;
 }
 
-/* TemplateSettingsScreen List Mode */
+/* TemplateSettingsScreen Light Mode */
 
 #template_top_container:light {
     border: tall $panel-darken-3;
@@ -302,7 +309,11 @@ TemplateSettingsScreen {
     color: $panel-darken-2;
 }
 
-#template_message_label:disabled {
+#template_message_label:light:disabled {
     color: $panel-darken-2;
     link-color: $panel-darken-2;
+}
+
+#template_settings_input:light:disabled {
+    color: $panel-darken-2;
 }
