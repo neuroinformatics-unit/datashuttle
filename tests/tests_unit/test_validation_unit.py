@@ -65,7 +65,7 @@ class TestValidationUnit:
         with pytest.raises(BaseException) as e:
             validation.validate_list_of_names(names, prefix)
 
-        assert "include spaces, which is not permitted." in str(e.value)
+        assert "Spaces are in the name:" in str(e.value)
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_formatting_dashes_and_underscore_alternate_incorrectly(
@@ -75,9 +75,13 @@ class TestValidationUnit:
         Check `validate_list_of_names()` catches "-" and "_" that
         are not in the correct order.
         """
-        error_message = (
-            lambda names: f"The names {names} " f"are not formatted correctly."
-        )
+        # def error_message(names):
+
+        def error_message(names):
+            name_format = "name" if len(names) == 1 else "names"
+            list_format = names[0] if len(names) == 1 else names
+            return f"Problem with {name_format}: {list_format}."
+
         # Test a large range of bad names. Do not use
         # parametrize so we can use f"{prefix}".
         for test_all_names_and_bad_names in [
