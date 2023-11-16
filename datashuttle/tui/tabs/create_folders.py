@@ -132,7 +132,7 @@ class CreateFoldersTab(TabPane):
         fill the sub or ses Input with the template (based on `prefix`).
         If self.templates is off, then just suggest "sub-" or "ses-".
         """
-        if self.templates["on"]:
+        if self.templates["on"] and self.templates[prefix] is not None:
             fill_value = self.templates[prefix]
         else:
             fill_value = f"{prefix}-"
@@ -167,7 +167,7 @@ class CreateFoldersTab(TabPane):
             next_val = self.project.get_next_ses_number(
                 sub, return_with_prefix=True, local_only=True
             )
-        if self.templates["on"]:
+        if self.templates["on"] and self.templates[prefix] is not None:
             split_name = self.templates[prefix].split("_")
             fill_value = "_".join([next_val, *split_name[1:]])
         else:
