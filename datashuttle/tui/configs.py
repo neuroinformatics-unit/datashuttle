@@ -11,7 +11,7 @@ from textual.widgets import (
 
 from datashuttle import DataShuttle
 from datashuttle.tui.screens import modal_dialogs
-from datashuttle.tui.utils import utils
+from datashuttle.tui.utils import tui_utils
 
 
 class ConfigsContent(Container):
@@ -216,7 +216,9 @@ class ConfigsContent(Container):
 
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.ShowConfigsDialog(
-                    utils.get_textual_compatible_project_configs(project.cfg),
+                    tui_utils.get_textual_compatible_project_configs(
+                        project.cfg
+                    ),
                     "A DataShuttle project with the below "
                     "configs has now been created.\n\n Click 'OK' to proceed to "
                     "the project page, where you will \n be able to create and "
@@ -240,7 +242,7 @@ class ConfigsContent(Container):
         try:
             self.project.make_config_file(**cfg_kwargs)
 
-            configs_to_show = utils.get_textual_compatible_project_configs(
+            configs_to_show = tui_utils.get_textual_compatible_project_configs(
                 self.project.cfg
             )
 
@@ -264,7 +266,7 @@ class ConfigsContent(Container):
         "ssh" widgets are hidden / displayed based on the current setting,
         in `self.switch_ssh_widgets_display()`.
         """
-        cfg_to_load = utils.get_textual_compatible_project_configs(
+        cfg_to_load = tui_utils.get_textual_compatible_project_configs(
             self.project.cfg
         )
 

@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from functools import wraps
-from time import monotonic
 from typing import List, Optional
 
 from textual import on
@@ -18,41 +16,8 @@ from datashuttle.tui.custom_widgets import ClickableInput, DatatypeCheckboxes
 from datashuttle.tui.screens.template_settings import (
     TemplateSettingsScreen,
 )
+from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.utils import formatting, validation
-
-# TODO: BUG - if template on but template is empty!
-# TODO: make more general and move to custom widgets.py
-# TODO: centralize func
-# TODO: figure out modal_dialogs.py (TemplateScreen shouldn't go there)
-# Template Settings own function
-
-# -----------------------------------------------------------------------------
-# Double-click decorator
-# -----------------------------------------------------------------------------
-
-
-def require_double_click(func):
-    """
-    A decorator that calls the decorated function
-    on a double click, otherwise will not do anything.
-
-    Requires the first argument (`self` on the class) to
-    have the attribute `prev_click_time`).
-    """
-
-    @wraps(func)
-    def wrapper(*args, **kwargs):
-        create_folders_tab_class = args[0]
-
-        click_time = monotonic()
-
-        if click_time - create_folders_tab_class.prev_click_time < 0.5:
-            create_folders_tab_class.prev_click_time = click_time
-            return func(*args, **kwargs)
-
-        create_folders_tab_class.prev_click_time = click_time
-
-    return wrapper
 
 
 class CreateFoldersTab(TabPane):
@@ -119,8 +84,6 @@ class CreateFoldersTab(TabPane):
 
         prefix = "sub" if "subject" in input_id else "ses"
 
-        # TODO: it is highly unliekly these idx are
-        #  robust across machines. Need to test.
         if event.button == 1:
             self.fill_input_with_template(prefix, input_id)
         elif event.button == 3:
@@ -130,7 +93,7 @@ class CreateFoldersTab(TabPane):
         """
         Given the `name_template` stored in `self.templates`,
         fill the sub or ses Input with the template (based on `prefix`).
-        If self.templates is off, then just suggest "sub-" or "ses-".
+        If `self.templates` is off, then just suggest "sub-" or "ses-".
         """
         if self.templates["on"] and self.templates[prefix] is not None:
             fill_value = self.templates[prefix]
@@ -204,7 +167,7 @@ class CreateFoldersTab(TabPane):
             sub_dir = self.query_one("#tabscreen_subject_input").value
             ses_dir = self.query_one("#tabscreen_session_input").value
 
-            if ses_dir == "":  # TODO: centralise this to func
+            if ses_dir == "":
                 ses_dir = None
 
             try:
@@ -296,6 +259,11 @@ class CreateFoldersTab(TabPane):
 
             value = self.query_one(key).value
             self.query_one(key).validate(value=value)
+
+
+# -----------------------------------------------------------------------------
+# Validators
+# -----------------------------------------------------------------------------
 
 
 class NeuroBlueprintValidator(Validator):

@@ -67,9 +67,7 @@ class DatatypeCheckboxes(Static):
         # of changed entry, but is negligible.
         self.persistent_settings["tui"]["checkboxes_on"] = datatype_dict
 
-        self.project._save_persistent_settings(
-            self.persistent_settings
-        )  # TODO: accessing private...
+        self.project._save_persistent_settings(self.persistent_settings)
 
         self.datatype_out = [
             datatype

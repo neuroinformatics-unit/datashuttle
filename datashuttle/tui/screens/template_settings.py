@@ -97,14 +97,7 @@ class TemplateSettingsScreen(ModalScreen):
         container = self.query_one("#template_top_container")
         container.border_title = "Template Settings"
 
-        # TODO: own function
-        input = self.query_one("#template_settings_input")
-        value = self.templates[self.input_mode]
-        if value is None:
-            input.placeholder = f"{self.input_mode}-"
-        else:
-            input.value = value
-
+        self.fill_input_from_template()
         self.set_disabled_mode_widgets()
 
     def set_disabled_mode_widgets(self):
@@ -138,16 +131,17 @@ class TemplateSettingsScreen(ModalScreen):
         assert label in ["Subject", "Session"], "Unexpected label."
         self.input_mode = "sub" if label == "Subject" else "ses"
 
-        # TODO own function
-        input = self.query_one("#template_settings_input")
-        value = self.templates[self.input_mode]
-
-        if value:
-            input.value = value
-        else:
-            input.value = ""
-            input.placeholder = f"{self.input_mode}-"
+        self.fill_input_from_template()
 
     def on_input_changed(self, message: Input.Changed) -> None:
         if message.input.id == "template_settings_input":
             self.templates[self.input_mode] = message.value
+
+    def fill_input_from_template(self):
+        input = self.query_one("#template_settings_input")
+        value = self.templates[self.input_mode]
+
+        if value is None:
+            input.placeholder = f"{self.input_mode}-"
+        else:
+            input.value = value
