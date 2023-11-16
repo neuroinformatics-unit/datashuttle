@@ -21,7 +21,7 @@ from textual.widgets import (
 )
 
 from datashuttle.tui import custom_widgets
-from datashuttle.tui.screens.create_folders_settings import (
+from datashuttle.tui.screens.template_settings import (
     TemplateSettingsScreen,
 )
 from datashuttle.utils import formatting, validation

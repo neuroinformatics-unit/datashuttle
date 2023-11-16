@@ -59,9 +59,11 @@ TabScreen > TabbedContent {
 #tabscreen_create_tab > Input.-invalid {
     border: tall $error 60%;
 }
+
 #tabscreen_create_tab > Input.-invalid:focus {
     border: tall $error
 }
+
 #tabscreen_make_folder_button{
     width: 40;
     padding: 0 0 0 0;
@@ -75,6 +77,7 @@ TabScreen > TabbedContent {
 #template_settings_validation_on_checkbox.-on > .toggle--label{
     color: $success;
 }
+
 #template_settings_validation_on_checkbox > .toggle--button{
     color: $error;
 }

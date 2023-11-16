@@ -201,7 +201,7 @@ config label and button align center */
 }
 
 
-/* CreateFoldersSettingsScreen --------------------------------------------------------------- */
+/* TemplateSettingsScreen --------------------------------------------------------------- */
 
 TemplateSettingsScreen {
     align: center middle;
@@ -215,6 +215,7 @@ TemplateSettingsScreen {
     align: center middle;
     content-align: center middle;
  }
+
  #template_inner_container {
     height: 100%;
     width: 100%;
@@ -224,6 +225,7 @@ TemplateSettingsScreen {
     height: auto;
     overflow: auto hidden;
  }
+
 #template_inner_horizontal_container{
     height: 3;
     padding: 0 0 0 0;
@@ -236,6 +238,7 @@ TemplateSettingsScreen {
     height: auto;
     overflow: auto auto;
 }
+
 #template_settings_radioset {
     layout: horizontal;
     border: none;
@@ -243,6 +246,7 @@ TemplateSettingsScreen {
     align: center middle;
     width: 50%;
 }
+
 #template_settings_input {
     align: center middle;
     width: 50%;
@@ -253,24 +257,52 @@ TemplateSettingsScreen {
     height: 3;
     layer: top;
 }
+
 #tabscreen_template_settings_button{
     align: right top;
 }
+
 #template_message_label_container{
     align: center top;
     content-align: center top;
 }
+
 #template_other_widgets_container{
     align: center top;
     content-align: center top;
 }
+
 #template_message_label:disabled {
     color: $panel-lighten-3;
     link-color: $panel-lighten-3;
 }
+
 #template_settings_radioset:disabled {
     color: $panel-lighten-3;
 }
+
 #template_settings_input:disabled {
     color: $panel-lighten-3;
+}
+
+/* TemplateSettingsScreen List Mode */
+
+#template_top_container:light {
+    border: tall $panel-darken-3;
+    background: $boost;
+    align: center middle;
+ }
+
+#template_inner_container:light {
+    background: transparent;
+    align: center middle;
+ }
+
+ #template_settings_radioset:light:disabled {
+    color: $panel-darken-2;
+}
+
+#template_message_label:disabled {
+    color: $panel-darken-2;
+    link-color: $panel-darken-2;
 }
