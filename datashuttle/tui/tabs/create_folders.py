@@ -284,8 +284,3 @@ class QuickNeuroBlueprintValidator(Validator):
             return self.success()
         else:
             return self.failure("")
-
-
-# it is allowing double keys, if not prefix
-# ses-a etc is not checked for sub name...
-# weird focus on

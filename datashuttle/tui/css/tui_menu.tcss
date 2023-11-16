@@ -256,16 +256,17 @@ TemplateSettingsScreen {
 #tabscreen_template_settings_button{
     align: right top;
 }
-#test3{
+#template_message_label_container{
     align: center top;
     content-align: center top;
 }
-#test4{
+#template_other_widgets_container{
     align: center top;
     content-align: center top;
 }
 #template_message_label:disabled {
     color: $panel-lighten-3;
+    link-color: $panel-lighten-3;
 }
 #template_settings_radioset:disabled {
     color: $panel-lighten-3;

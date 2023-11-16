@@ -1,3 +1,4 @@
+import webbrowser
 from typing import Literal
 
 from textual.containers import Container, Horizontal
@@ -25,6 +26,8 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
         self.templates = self.project.get_name_templates()
 
     # assert False, f"{self.templates}"
+    def action_link_docs(self) -> None:
+        webbrowser.open("https://datashuttle.neuroinformatics.dev/")
 
     def compose(self):
         sub_on = True if self.input_mode == "sub" else False
@@ -37,8 +40,9 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
         For example:
             sub-\d\d_id-.?.?.?_.*
 
-        Visit my [link=https://www.willmcgugan.com]blog[/link]! for more information.
+        Visit the [@click=screen.link_docs()]Documentation[/] for more information.
         """
+
         yield Container(
             Horizontal(
                 Checkbox(
@@ -52,7 +56,8 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
             ),
             Container(
                 Container(
-                    Label(explanation, id="template_message_label"), id="test3"
+                    Label(explanation, id="template_message_label"),
+                    id="template_message_label_container",
                 ),
                 Container(
                     RadioSet(
@@ -69,7 +74,7 @@ class TemplateSettingsScreen(ModalScreen):  # TODO: figure out modal_dialogs.py
                         id="template_settings_radioset",
                     ),
                     Input(id="template_settings_input"),
-                    id="test4",
+                    id="template_other_widgets_container",
                 ),
                 id="template_inner_container",
             ),
