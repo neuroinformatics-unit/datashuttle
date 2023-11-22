@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
     from textual import events
@@ -53,15 +53,20 @@ class DatatypeCheckboxes(Static):
                 value=checkboxes_on[datatype],
             )
 
+    def on_mount(self):
+        """
+        Update datatype out based on the current checkbox
+        ticks which are determined during `compose().`
+        """
+        datatype_dict = self.get_datatype_dict()
+        self.set_datatype_out(datatype_dict)
+
     def on_checkbox_changed(self):
         """
         When a checkbox is clicked, update the `datatype_out` attribute
         with the datatypes to pass to `make_folders` datatype argument.
         """
-        datatype_dict = {
-            datatype: self.query_one(f"#tabscreen_{datatype}_checkbox").value
-            for datatype in self.datatype_config
-        }
+        datatype_dict = self.get_datatype_dict()
 
         # This is slightly wasteful as update entire dict instead
         # of changed entry, but is negligible.
@@ -69,6 +74,19 @@ class DatatypeCheckboxes(Static):
 
         self.project._save_persistent_settings(self.persistent_settings)
 
+        self.set_datatype_out(datatype_dict)
+
+    def get_datatype_dict(self) -> Dict:
+        """"""
+        datatype_dict = {
+            datatype: self.query_one(f"#tabscreen_{datatype}_checkbox").value
+            for datatype in self.datatype_config
+        }
+
+        return datatype_dict
+
+    def set_datatype_out(self, datatype_dict: dict) -> None:
+        """"""
         self.datatype_out = [
             datatype
             for datatype, is_on in zip(
