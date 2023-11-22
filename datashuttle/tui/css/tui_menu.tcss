@@ -212,13 +212,9 @@ TemplateSettingsScreen {
     width: 80;
     background: $primary-background;
     border: tall $panel-lighten-3;
-    align: center middle;
-    content-align: center middle;
  }
 
  #template_inner_container {
-    height: 100%;
-    width: 100%;
     background: $primary-background;
     align: center middle;
     content-align: center middle;
@@ -228,15 +224,6 @@ TemplateSettingsScreen {
 
 #template_inner_horizontal_container{
     height: 3;
-    padding: 0 0 0 0;
-    margin: 0 0 0 0;
-}
-
-#template_message_label {
-    align: center middle;
-    width: auto;
-    height: auto;
-    overflow: auto auto;
 }
 
 #template_settings_radioset {
