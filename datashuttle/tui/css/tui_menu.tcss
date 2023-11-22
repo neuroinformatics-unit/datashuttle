@@ -26,6 +26,7 @@
     align: center top;
     margin: 3 2 0 0;
     content-align: center middle;
+    height: auto;
 }
 
 #project_select_top_container > Button {
