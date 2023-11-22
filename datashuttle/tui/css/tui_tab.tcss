@@ -64,10 +64,12 @@ TabScreen > TabbedContent {
     border: tall $error
 }
 
-#tabscreen_make_folder_button{
-    width: 40;
-    padding: 0 0 0 0;
-    margin: 0 0 0 0;
+CreateFoldersTab > Horizontal > Button{
+    width: 30%;
+}
+
+CreateFoldersTab > Horizontal{
+    align-horizontal: left;
 }
 
 #template_settings_validation_on_checkbox.-on > .toggle--button{

@@ -58,9 +58,8 @@ class CreateFoldersTab(TabPane):
         )
         yield Label("Datatype(s)", id="tabscreen_datatype_label")
         yield DatatypeCheckboxes(self.project)
-        yield Button("Make Folders", id="tabscreen_make_folder_button")
         yield Horizontal(
-            Horizontal(),
+            Button("Make Folders", id="tabscreen_make_folder_button"),
             Button(
                 "Template Settings", id="tabscreen_template_settings_button"
             ),
