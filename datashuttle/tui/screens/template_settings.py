@@ -19,8 +19,8 @@ class TemplateSettingsScreen(ModalScreen):
     These are regexp templates that can be validated against
     during folder creation / project validation.
 
-    An input is provided to input a `name_template`` for validation. When
-    the window is closed, the `name_templates` is stored in datashuttle's
+    An input is provided to input a `name_template` for validation. When
+    the window is closed, the `name_template` is stored in datashuttle's
     persistent settings.
 
     The Create tab validation on Inputs is immediately updated on closing
@@ -46,8 +46,8 @@ class TemplateSettingsScreen(ModalScreen):
         ses_on = not sub_on
 
         explanation = """
-        A 'Template' can be set check subject or
-        session names are formatted in a specific way.
+        A 'Template' can be set check subject or session names are
+        formatted in a specific way.
 
         For example:
             sub-\d\d_id-.?.?.?_.*
@@ -67,10 +67,7 @@ class TemplateSettingsScreen(ModalScreen):
                 id="template_inner_horizontal_container",
             ),
             Container(
-                Container(
-                    Label(explanation, id="template_message_label"),
-                    id="template_message_label_container",
-                ),
+                Label(explanation, id="template_message_label"),
                 Container(
                     RadioSet(
                         RadioButton(

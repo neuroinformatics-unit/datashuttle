@@ -147,7 +147,6 @@ ShowConfigsDialog:light > #display_configs_top_container {
 
 #configs_local_path_label {
     align: center middle;
-    padding: 0 0 0 0;
 }
 
 #configs_container > Input {
@@ -215,16 +214,18 @@ TemplateSettingsScreen {
     border: tall $panel-lighten-3;
  }
 
+ #template_inner_horizontal_container{
+    height: 3;
+}
+
  #template_inner_container {
-    background: $primary-background;
-    align: center middle;
-    content-align: center middle;
     height: auto;
     overflow: auto hidden;
  }
 
-#template_inner_horizontal_container{
-    height: 3;
+#template_message_label {
+    width: auto;
+    margin: 1 0 0 2;
 }
 
 #template_settings_radioset {
@@ -233,6 +234,7 @@ TemplateSettingsScreen {
     background: transparent;
     align: center middle;
     width: 50%;
+    margin: 1 0 0 0;
 }
 
 #template_settings_input {
@@ -242,29 +244,12 @@ TemplateSettingsScreen {
 
 #template_sessions_close_button{
     dock: right;
-    height: 3;
     layer: top;
-}
-
-#tabscreen_template_settings_button{
-    align: right top;
-}
-
-#template_message_label_container{
-    align: center top;
-    content-align: center top;
 }
 
 #template_other_widgets_container{
     align: center top;
     content-align: center top;
-}
-
-#template_message_label:disabled {
-    align: center middle;
-    width: auto;
-    height: auto;
-    overflow: auto auto;
 }
 
 #template_message_label:disabled {
@@ -285,12 +270,6 @@ TemplateSettingsScreen {
 #template_top_container:light {
     border: tall $panel-darken-3;
     background: $boost;
-    align: center middle;
- }
-
-#template_inner_container:light {
-    background: transparent;
-    align: center middle;
  }
 
  #template_settings_radioset:light:disabled {
