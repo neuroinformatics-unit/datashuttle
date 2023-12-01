@@ -80,3 +80,14 @@ Input:light {
 RadioButton {
     width: auto;
 }
+
+/* DatatypeCheckboxes --------------------------------------------------------------------- */
+
+DatatypeCheckboxes {
+    layout: grid;
+    grid-size: 2 2;
+    grid-columns: 15;
+    grid_rows: 3;
+    width: auto;
+    padding: 0 0 1 0;
+}

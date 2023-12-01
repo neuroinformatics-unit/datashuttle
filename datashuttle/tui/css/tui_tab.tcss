@@ -40,15 +40,6 @@ TabScreen > TabbedContent {
     text-style: bold;
 }
 
-#tabscreen_create_tab > DatatypeCheckboxes {
-    layout: grid;
-    grid-size: 2 2;
-    grid-columns: 15;
-    grid_rows: 3;
-    width: auto;
-    padding: 0 0 1 0;
-}
-
 CreateFoldersTab > Horizontal > Button{
     width: 30%;
 }
@@ -82,4 +73,39 @@ CreateFoldersTab > Horizontal{
 
 #template_settings_validation_on_checkbox > .toggle--button{
     color: $error;
+}
+
+/* Transfer Tab --------------------------------------------------------------------------- */
+
+#transfer_radioset {
+    layout: horizontal;
+    background: transparent;
+}
+
+#transfer_radioset:focus {
+    border: transparent;
+}
+
+#transfer_radioset > RadioButton {
+    margin: 0 3 0 0;
+}
+
+#transfer_params_container {
+    border: solid $panel-lighten-1;
+    margin: 0 1 2 1;
+    padding: 0 0 0 2;
+    height: 60%;
+    overflow: hidden auto;
+    align: left top;
+}
+
+#transfer_params_container > Label {
+    padding: 1 0 1 1;
+    text-style: bold;
+    width: auto;
+    height: auto;
+}
+
+#transfer_params_container > Input {
+    width: 97%;
 }
