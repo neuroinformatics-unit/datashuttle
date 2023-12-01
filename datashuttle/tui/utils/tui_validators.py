@@ -1,0 +1,36 @@
+"""
+Tools for live validation of user inputs in the DataShuttle TUI.
+"""
+
+from textual.validation import ValidationResult, Validator
+
+
+class NeuroBlueprintValidator(Validator):
+    def __init__(self, prefix, parent):
+        """
+        Custom Validator() class that takes
+        sub / ses prefix as input. Runs validation of
+        the name against the project and propagates
+        any error message through the Input tooltip.
+        """
+        super(NeuroBlueprintValidator).__init__()
+        self.parent = parent
+        self.prefix = prefix
+
+    def validate(self, name: str) -> ValidationResult:
+        """
+        Run validation and update the tooltip with the error,
+        if no error then the formatted sub / ses name is displayed.
+        """
+        valid, message = self.parent.run_local_validation(self.prefix)
+
+        self.parent.update_input_tooltip(message, self.prefix)
+
+        if valid:
+            if self.prefix == "sub":
+                # re-validate the ses in case the new sub has made it ok.
+                self.parent.revalidate_inputs(["ses"])
+
+            return self.success()
+        else:
+            return self.failure("")

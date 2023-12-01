@@ -4,7 +4,6 @@ from typing import List, Optional
 
 from textual import on
 from textual.containers import Horizontal
-from textual.validation import ValidationResult, Validator
 from textual.widgets import (
     Button,
     DirectoryTree,
@@ -17,6 +16,7 @@ from datashuttle.tui.screens.template_settings import (
     TemplateSettingsScreen,
 )
 from datashuttle.tui.utils.tui_decorators import require_double_click
+from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 from datashuttle.utils import formatting, validation
 
 
@@ -258,39 +258,3 @@ class CreateFoldersTab(TabPane):
 
             value = self.query_one(key).value
             self.query_one(key).validate(value=value)
-
-
-# -----------------------------------------------------------------------------
-# Validators
-# -----------------------------------------------------------------------------
-
-
-class NeuroBlueprintValidator(Validator):
-    def __init__(self, prefix, parent):
-        """
-        Custom Validator() class that takes
-        sub / ses prefix as input. Runs validation of
-        the name against the project and propagates
-        any error message through the Input tooltip.
-        """
-        super(NeuroBlueprintValidator).__init__()
-        self.parent = parent
-        self.prefix = prefix
-
-    def validate(self, name: str) -> ValidationResult:
-        """
-        Run validation and update the tooltip with the error,
-        if no error then the formatted sub / ses name is displayed.
-        """
-        valid, message = self.parent.run_local_validation(self.prefix)
-
-        self.parent.update_input_tooltip(message, self.prefix)
-
-        if valid:
-            if self.prefix == "sub":
-                # re-validate the ses in case the new sub has made it ok.
-                self.parent.revalidate_inputs(["ses"])
-
-            return self.success()
-        else:
-            return self.failure("")
