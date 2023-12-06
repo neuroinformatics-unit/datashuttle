@@ -16,7 +16,7 @@ from textual.widgets import (
 from textual.widgets._directory_tree import DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
-from datashuttle.tui.custom_widgets import DatatypeCheckboxes
+from datashuttle.tui.custom_widgets import DatatypeCheckboxes, FilteredTree
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 from datashuttle.utils.rclone import get_local_and_central_file_differences
@@ -183,7 +183,7 @@ class TransferTab(TabPane):
             self.query_one("#transfer_directorytree").reload()
 
 
-class TransferStatusTree(DirectoryTree):
+class TransferStatusTree(FilteredTree):
     def __init__(self, parent_tab, project, id=None):
         super(TransferStatusTree, self).__init__(
             project.cfg.data["local_path"], id=id
@@ -241,6 +241,7 @@ class TransferStatusTree(DirectoryTree):
         ):
             node_label.stylize_before(
                 self.get_component_rich_style("directory-tree--hidden")
+                # "grey58"
             )
 
         text = Text.assemble(prefix, node_label)
