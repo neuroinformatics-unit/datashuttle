@@ -38,7 +38,6 @@ DirectoryTree:light:focus .tree--cursor {
 
 #tabscreen_create_tab > Label {
     padding: 1 0 1 1;
-    text-style: bold;
 }
 
 CreateFoldersTab > Horizontal > Button{
@@ -111,7 +110,28 @@ CreateFoldersTab > Horizontal{
     width: 97%;
 }
 
-TreeNode .selected {
-    color: red;
-    background: green;
+#transfer_switch > .switch--slider {
+    color: $success;
+}
+
+#transfer_switch_container {
+    width: auto;
+    height: auto;
+    align-vertical: middle;
+    margin: 0 0 0 2;
+}
+
+#transfer_switch_container > Label{
+    margin: 1 0 0 0;
+}
+
+#transfer_button_container {
+    align-horizontal: right;
+    height: auto;
+}
+
+/* Light mode */
+
+#transfer_params_container:light {
+    border: solid black;
 }

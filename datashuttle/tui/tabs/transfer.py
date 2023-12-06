@@ -6,18 +6,19 @@ from rich.text import Text
 from textual.containers import Container, Horizontal
 from textual.widgets import (
     Button,
-    DirectoryTree,
     Input,
     Label,
     RadioButton,
     RadioSet,
+    Select,
+    Switch,
     TabPane,
 )
 from textual.widgets._directory_tree import DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
+from datashuttle.configs import canonical_folders
 from datashuttle.tui.custom_widgets import DatatypeCheckboxes, FilteredTree
-from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 from datashuttle.utils.rclone import get_local_and_central_file_differences
 
@@ -29,7 +30,6 @@ class TransferTab(TabPane):
         )
         self.mainwindow = mainwindow
         self.project = project
-        self.toplevel = self.project.cfg.get_base_folder("local")
 
         self.prev_click_time = 0.0
 
@@ -44,13 +44,18 @@ class TransferTab(TabPane):
 
         self.transfer_toplevel_widgets = [
             Label(
-                "Double-click file tree to choose top-level \nfolder to transfer",
+                "Select top-level folder to transfer.",
                 id="transfer_toplevel_label_top",
             ),
-            Input(
-                value=self.toplevel.stem,
-                disabled=True,
-                id="transfer_toplevel_input",
+            Select(
+                [
+                    (folder, folder)
+                    for folder in canonical_folders.get_top_level_folders()
+                    if (self.project.get_local_path() / folder).exists()
+                ],
+                value=canonical_folders.get_top_level_folders()[0],
+                id="transfer_toplevel_select",
+                allow_blank=False,
             ),
             Label(
                 "Existing data with the same file details on \ncentral will not be overwritten by default."
@@ -58,34 +63,34 @@ class TransferTab(TabPane):
         ]
 
         self.transfer_custom_widgets = [
-            Label("Subject(s)", id="tabscreen_subject_label"),
+            Label("Subject(s)"),
             Input(
-                id="tabscreen_subject_input",
+                id="transfer_subject_input",
                 placeholder="e.g. sub-001",
                 validate_on=["changed", "submitted"],
                 validators=[NeuroBlueprintValidator("sub", self)],
             ),
-            Label("Session(s)", id="tabscreen_session_label"),
+            Label("Session(s)"),
             Input(
-                id="tabscreen_session_input",
+                id="transfer_session_input",
                 placeholder="e.g. ses-001",
                 validate_on=["changed", "submitted"],
                 validators=[NeuroBlueprintValidator("ses", self)],
             ),
-            Label("Datatype(s)", id="tabscreen_datatype_label"),
+            Label("Datatype(s)"),
             DatatypeCheckboxes(self.project),
         ]
 
-        yield TransferStatusTree(
-            self,
-            self.project,
-            id="transfer_directorytree",
-        )
         yield RadioSet(
             RadioButton("All", id="transfer_all_radiobutton", value=True),
             RadioButton("Top Level", id="transfer_toplevel_radiobutton"),
             RadioButton("Custom", id="transfer_custom_radiobutton"),
             id="transfer_radioset",
+        )
+        yield TransferStatusTree(
+            self,
+            self.project,
+            id="transfer_directorytree",
         )
         yield Container(
             *self.transfer_all_widgets,
@@ -94,8 +99,17 @@ class TransferTab(TabPane):
             id="transfer_params_container",
         )
         yield Horizontal(
-            Button("Transfer"),
-            Button("Options"),
+            Horizontal(
+                Label("Upload"),
+                Switch(id="transfer_switch"),
+                Label("Download"),
+                id="transfer_switch_container",
+            ),
+            Horizontal(
+                Button("Transfer", id="transfer_transfer_button"),
+                Button("Options", id="transfer_options_button"),
+                id="transfer_button_container",
+            ),
         )
 
     def on_mount(self):
@@ -118,7 +132,7 @@ class TransferTab(TabPane):
 
     def get_transfer_paths(self):
         all_paths = []
-        walk_paths = walk(self.project.cfg.get_base_folder("local").as_posix())
+        walk_paths = walk(self.project.get_local_path().as_posix())
         # TODO: os.walk appends different file seps than those used by the datashuttle fxn.
         #  Still works, somehow, but ugly.
         for path in walk_paths:
@@ -130,8 +144,10 @@ class TransferTab(TabPane):
             paths_out = [Path(path) for path in all_paths]
 
         elif self.query_one("#transfer_toplevel_radiobutton").value:
-            # toplevel_dir = self.query_one("#transfer_toplevel_input").value
-            toplevel_dir = self.toplevel
+            toplevel_dir = (
+                self.project.get_local_path()
+                / self.project.cfg.top_level_folder
+            )
             paths_out = [
                 Path(path)
                 for path in all_paths
@@ -164,29 +180,80 @@ class TransferTab(TabPane):
                 "#transfer_custom_radiobutton"
             ).value
 
-    @require_double_click
-    def on_directory_tree_directory_selected(
-        self, event: DirectoryTree.DirectorySelected
-    ):
+    def on_select_changed(self, event: Select.Changed) -> None:
         """
-        If "Top Level" transfer mode has been selected, replaces
-        contents of the "Top Level" input widget and updates
+        If "Top Level" transfer mode has been selected, updates
         DirectoryTree styling.
-
-        Double-click time is set to the Windows default duration (500 ms).
         """
         if self.query_one("#transfer_toplevel_radiobutton").value:
-            self.toplevel = event.path
-            self.query_one("#transfer_toplevel_input").value = event.path.stem
+            self.project.set_top_level_folder(event.value)
 
             self.transfer_paths = self.get_transfer_paths()
             self.query_one("#transfer_directorytree").reload()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "transfer_transfer_button":
+            upload_selected = not self.query_one("#transfer_switch").value
+
+            if self.query_one("#transfer_all_radiobutton").value:
+                if upload_selected:
+                    self.project.upload_entire_project()
+                else:
+                    self.project.download_entire_project()
+
+            elif self.query_one("#transfer_toplevel_radiobutton").value:
+                if upload_selected:
+                    self.project.upload_all()
+                else:
+                    self.project.download_all()
+
+            elif self.query_one("#transfer_custom_radiobutton").value:
+                if upload_selected:
+                    self.project.upload(
+                        sub_names=self.query_one("#transfer_subject_input")
+                        .replace(" ", "")
+                        .split(","),
+                        ses_names=self.query_one("#transfer_session_input")
+                        .replace(" ", "")
+                        .split(","),
+                        datatype=self.query_one(
+                            "DatatypeCheckboxes"
+                        ).datatype_out,
+                    )
+                else:
+                    self.project.download(
+                        sub_names=self.query_one("#transfer_subject_input")
+                        .replace(" ", "")
+                        .split(","),
+                        ses_names=self.query_one("#transfer_session_input")
+                        .replace(" ", "")
+                        .split(","),
+                        datatype=self.query_one(
+                            "DatatypeCheckboxes"
+                        ).datatype_out,
+                    )
+
+        self.update_transfer_tree()
+
+    def update_transfer_tree(self):
+        self.transfer_paths = self.get_transfer_paths()
+
+        transfer_tree = self.query_one("#transfer_directorytree")
+        transfer_tree.transfer_diffs = get_local_and_central_file_differences(
+            self.project.cfg
+        )
+        transfer_tree.all_diffs = [
+            path
+            for category in transfer_tree.transfer_diffs.values()
+            for path in category
+        ]
+        transfer_tree.reload()
 
 
 class TransferStatusTree(FilteredTree):
     def __init__(self, parent_tab, project, id=None):
         super(TransferStatusTree, self).__init__(
-            project.cfg.data["local_path"], id=id
+            project.get_local_path(), id=id
         )
 
         self.tab = parent_tab
@@ -194,6 +261,11 @@ class TransferStatusTree(FilteredTree):
         self.transfer_diffs = get_local_and_central_file_differences(
             project.cfg
         )
+        self.all_diffs = [
+            path
+            for category in self.transfer_diffs.values()
+            for path in category
+        ]
 
     def on_mount(self):
         self.tab.transfer_paths = self.tab.get_transfer_paths()
@@ -254,13 +326,10 @@ class TransferStatusTree(FilteredTree):
 
         if node_relative_path in self.transfer_diffs["same"]:
             pass
-
         elif node_relative_path in self.transfer_diffs["different"]:
             node_label.stylize_before("gold3")
-
         elif node_relative_path in self.transfer_diffs["local_only"]:
             node_label.stylize_before("green3")
-
         elif node_relative_path in self.transfer_diffs["central_only"]:
             node_label.stylize_before("dodger_blue3")
             # TODO: -> Won't be able to handle this at first.
