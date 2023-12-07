@@ -18,7 +18,10 @@ from textual.widgets._directory_tree import DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
+from datashuttle.configs.canonical_configs import get_datatypes
+from datashuttle.configs.canonical_folders import get_top_level_folders
 from datashuttle.tui.custom_widgets import DatatypeCheckboxes, FilteredTree
+from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 from datashuttle.utils.rclone import get_local_and_central_file_differences
 
@@ -34,10 +37,11 @@ class TransferTab(TabPane):
         self.prev_click_time = 0.0
 
     def compose(self):
-        self.transfer_all_widgets = [  # TODO: Check if rawdata and derivatives can have different names?
+        self.transfer_all_widgets = [
             Label(
                 "All data from: \n\n - Rawdata \n - Derivatives \n\nWill be transferred."
-                " Existing data with \nthe same file details on central will not be \noverwritten.",
+                " Existing data with \nthe same file details on central will not be \noverwritten."
+                "by default",
                 id="transfer_all_label",
             )
         ]
@@ -111,12 +115,22 @@ class TransferTab(TabPane):
                 id="transfer_button_container",
             ),
         )
+        yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self):
         self.query_one(
             "#transfer_params_container"
         ).border_title = "Parameters"
         self.switch_transfer_widgets_display()
+
+        self.query_one("#transfer_legend").tooltip = Text.assemble(
+            "Unchanged\n",
+            ("Changed\n", "gold3"),
+            ("Local Only\n", "green3"),
+            ("Central Only\n", "dodger_blue3"),
+            ("Error\n", "bright_red"),
+            ("Not staged for transfer", "grey58"),
+        )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
@@ -193,6 +207,26 @@ class TransferTab(TabPane):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "transfer_transfer_button":
+            if not self.query_one("#transfer_switch").value:
+                direction = "upload"
+                preposition = "to"
+            else:
+                direction = "download"
+                preposition = "from"
+
+            message = Text.assemble(
+                "You are about to ",
+                (f"{direction}", "chartreuse3 underline"),
+                f" the selected data {preposition} \nthis project's configured",
+                " central filesystem.\n\nAre you sure you wish to proceed?\n",
+            )
+
+            self.mainwindow.push_screen(
+                ConfirmScreen(message), self.transfer_data
+            )
+
+    def transfer_data(self, transfer_bool: bool) -> None:
+        if transfer_bool:
             upload_selected = not self.query_one("#transfer_switch").value
 
             if self.query_one("#transfer_all_radiobutton").value:
@@ -233,7 +267,7 @@ class TransferTab(TabPane):
                         ).datatype_out,
                     )
 
-        self.update_transfer_tree()
+            self.update_transfer_tree()
 
     def update_transfer_tree(self):
         self.transfer_paths = self.get_transfer_paths()
@@ -305,7 +339,7 @@ class TransferStatusTree(FilteredTree):
                 ),
             )
 
-        self.format_transfer_label(node_label, node_path)
+        self.format_transfer_label(node, node_label, node_path)
 
         if (
             node_label.plain.startswith(".")
@@ -319,21 +353,37 @@ class TransferStatusTree(FilteredTree):
         text = Text.assemble(prefix, node_label)
         return text
 
-    def format_transfer_label(self, node_label, node_path):
+    def format_transfer_label(self, node, node_label, node_path):
         node_relative_path = node_path.as_posix().replace(
             self.project.cfg.get_base_folder("local").as_posix() + "/", ""
         )
 
-        if node_relative_path in self.transfer_diffs["same"]:
-            pass
-        elif node_relative_path in self.transfer_diffs["different"]:
+        if (
+            node_path.stem.startswith("sub-")
+            or node_path.stem.startswith("ses-")
+            or node_path.stem in get_datatypes()
+        ) and not node.is_expanded:
+            if any(node_relative_path in file for file in self.all_diffs):
+                node_label.stylize_before("gold3")
+
+        elif (
+            node_path.stem in get_top_level_folders()
+            and not node.is_expanded
+            and self.all_diffs
+        ):
             node_label.stylize_before("gold3")
-        elif node_relative_path in self.transfer_diffs["local_only"]:
-            node_label.stylize_before("green3")
-        elif node_relative_path in self.transfer_diffs["central_only"]:
-            node_label.stylize_before("dodger_blue3")
-            # TODO: -> Won't be able to handle this at first.
-            #  Make new function to add relevant nodes and style
-            #  them.
-        elif node_label.plain in self.transfer_diffs["error"]:  #
-            node_label.stylize_before("bright_red")
+
+        else:
+            if node_relative_path in self.transfer_diffs["same"]:
+                pass
+            elif node_relative_path in self.transfer_diffs["different"]:
+                node_label.stylize_before("gold3")
+            elif node_relative_path in self.transfer_diffs["local_only"]:
+                node_label.stylize_before("green3")
+            elif node_relative_path in self.transfer_diffs["central_only"]:
+                node_label.stylize_before("dodger_blue3")
+                # TODO: -> These nodes need to be added manually.
+                #  Make new function to add relevant nodes and style
+                #  them.
+            elif node_label.plain in self.transfer_diffs["error"]:  #
+                node_label.stylize_before("bright_red")

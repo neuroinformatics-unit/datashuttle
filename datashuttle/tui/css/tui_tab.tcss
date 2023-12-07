@@ -109,6 +109,19 @@ CreateFoldersTab > Horizontal{
     height: auto;
 }
 
+TransferStatusTree {
+    padding: 1 2 3 2;
+}
+
+#transfer_legend {
+    layer: top;
+    dock: left;
+    align-vertical: bottom;
+    background: $primary-background-darken-1;
+    width: auto;
+    margin: 2 2;
+}
+
 /* Light mode */
 
 #transfer_params_container:light {

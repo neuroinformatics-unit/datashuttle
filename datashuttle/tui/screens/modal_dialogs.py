@@ -1,8 +1,8 @@
 from rich.text import Text
 from textual.app import ComposeResult
-from textual.containers import Container
+from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, DataTable, Static
+from textual.widgets import Button, DataTable, Label, Static
 
 
 class ErrorScreen(ModalScreen):
@@ -80,3 +80,31 @@ class ShowConfigsDialog(ModalScreen):
 
     def on_button_pressed(self) -> None:
         self.dismiss(None)
+
+
+class ConfirmScreen(ModalScreen):
+    """
+    A screen for rendering confirmation messages.
+    """
+
+    def __init__(self, message):
+        super().__init__()
+
+        self.message = message
+
+    def compose(self) -> ComposeResult:
+        yield Container(
+            Label(self.message, id="confirm_message_label"),
+            Horizontal(
+                Button("Yes", id="confirm_ok_button"),
+                Button("No", id="confirm_cancel_button"),
+                id="confirm_button_container",
+            ),
+            id="confirm_top_container",
+        )
+
+    def on_button_pressed(self, event) -> None:
+        if event.button.id == "confirm_ok_button":
+            self.dismiss(True)
+        else:
+            self.dismiss(False)
