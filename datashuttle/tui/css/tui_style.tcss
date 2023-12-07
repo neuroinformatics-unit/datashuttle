@@ -36,6 +36,30 @@ Header {
     margin: 0 0 1 0;
 }
 
+/* Directory Tree ------------------------------------------------------------------- */
+
+DirectoryTree {
+    dock: left;
+    width: 45%;
+    padding: 1 2;
+    margin: 0 4 0 0;
+    border: tall wide $panel-lighten-1;
+}
+DirectoryTree:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+
+/* Light mode Directory Tree */
+
+DirectoryTree:light {
+    border: tall wide $panel-darken-3;
+    background: $boost;
+}
+
+DirectoryTree:light:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+
 /* Checkboxes ----------------------------------------------------------------------- */
 
 ToggleButton {

@@ -9,31 +9,6 @@ TabScreen > TabbedContent {
     height: 100%
 }
 
-/* Directory Tree ------------------------------------------------------------------- */
-/* TODO: Probably best to move this to tui_style ! */
-
-DirectoryTree {
-    dock: left;
-    width: 45%;
-    padding: 1 2;
-    margin: 0 4 0 0;
-    border: tall wide $panel-lighten-1;
-}
-DirectoryTree:focus .tree--cursor {
-    background: $panel-lighten-2;
-}
-
-/* Light mode Directory Tree */
-
-DirectoryTree:light {
-    border: tall wide $panel-darken-3;
-    background: $boost;
-}
-
-DirectoryTree:light:focus .tree--cursor {
-    background: $panel-lighten-2;
-}
-
 /* Create Tab --------------------------------------------------------------------------- */
 
 #tabscreen_create_tab > Label {
@@ -107,7 +82,11 @@ CreateFoldersTab > Horizontal{
 }
 
 #transfer_params_container > Input {
-    width: 97%;
+    width: 96%;
+}
+
+#transfer_params_container > Select {
+    width: 96%;
 }
 
 #transfer_switch > .switch--slider {

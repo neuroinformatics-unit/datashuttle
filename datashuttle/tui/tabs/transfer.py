@@ -335,6 +335,5 @@ class TransferStatusTree(FilteredTree):
             # TODO: -> Won't be able to handle this at first.
             #  Make new function to add relevant nodes and style
             #  them.
-
         elif node_label.plain in self.transfer_diffs["error"]:  #
             node_label.stylize_before("bright_red")
