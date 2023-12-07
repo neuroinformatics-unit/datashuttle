@@ -15,10 +15,6 @@ TabScreen > TabbedContent {
     padding: 1 0 1 1;
 }
 
-CreateFoldersTab > Horizontal > Button{
-    width: 30%;
-}
-
 CreateFoldersTab > Horizontal{
     align-horizontal: left;
 }
