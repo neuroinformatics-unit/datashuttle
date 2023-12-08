@@ -118,6 +118,10 @@ TransferStatusTree {
     margin: 2 2;
 }
 
+Tooltip {
+    outline: solid $panel-lighten-1;
+}
+
 /* Light mode */
 
 #transfer_params_container:light {

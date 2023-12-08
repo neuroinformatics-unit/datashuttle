@@ -124,7 +124,7 @@ class TransferTab(TabPane):
             "Unchanged\n",
             ("Changed\n", "gold3"),
             ("Local Only\n", "green3"),
-            ("Central Only\n", "dodger_blue3"),
+            # ("Central Only\n", "italic dodger_blue3"),
             ("Error\n", "bright_red"),
             ("Not staged for transfer", "grey58"),
         )
@@ -166,7 +166,7 @@ class TransferTab(TabPane):
             ]
 
         elif self.query_one("#transfer_custom_radiobutton").value:
-            paths_out = []  # TODO: Come back to this...
+            paths_out = [Path(path) for path in all_paths]
 
         else:
             paths_out = []
@@ -273,10 +273,12 @@ class TransferTab(TabPane):
         transfer_tree.transfer_diffs = get_local_and_central_file_differences(
             self.project.cfg
         )
-        transfer_tree.all_diffs = [
-            path
-            for category in transfer_tree.transfer_diffs.values()
-            for path in category
+        filtered_diffs = {
+            key: self.transfer_diffs[key]
+            for key in ["different", "local_only", "error"]
+        }
+        transfer_tree.diff_paths = [
+            path for category in filtered_diffs.values() for path in category
         ]
         transfer_tree.reload()
 
@@ -292,10 +294,12 @@ class TransferStatusTree(FilteredTree):
         self.transfer_diffs = get_local_and_central_file_differences(
             project.cfg
         )
-        self.all_diffs = [
-            path
-            for category in self.transfer_diffs.values()
-            for path in category
+        filtered_diffs = {
+            key: self.transfer_diffs[key]
+            for key in ["different", "local_only", "error"]
+        }
+        self.diff_paths = [
+            path for category in filtered_diffs.values() for path in category
         ]
 
     def on_mount(self):
@@ -359,14 +363,15 @@ class TransferStatusTree(FilteredTree):
             node_path.stem.startswith("sub-")
             or node_path.stem.startswith("ses-")
             or node_path.stem in get_datatypes()
-        ) and not node.is_expanded:
-            if any(node_relative_path in file for file in self.all_diffs):
+            # ) and not node.is_expanded:
+        ):
+            if any(node_relative_path in file for file in self.diff_paths):
                 node_label.stylize_before("gold3")
 
         elif (
             node_path.stem in get_top_level_folders()
-            and not node.is_expanded
-            and self.all_diffs
+            # and not node.is_expanded
+            and self.diff_paths
         ):
             node_label.stylize_before("gold3")
 
@@ -377,10 +382,5 @@ class TransferStatusTree(FilteredTree):
                 node_label.stylize_before("gold3")
             elif node_relative_path in self.transfer_diffs["local_only"]:
                 node_label.stylize_before("green3")
-            elif node_relative_path in self.transfer_diffs["central_only"]:
-                node_label.stylize_before("dodger_blue3")
-                # TODO: -> These nodes need to be added manually.
-                #  Make new function to add relevant nodes and style
-                #  them.
-            elif node_label.plain in self.transfer_diffs["error"]:  #
+            elif node_label.plain in self.transfer_diffs["error"]:
                 node_label.stylize_before("bright_red")
