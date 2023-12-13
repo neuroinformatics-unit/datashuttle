@@ -70,13 +70,11 @@ class TransferTab(TabPane):
             Input(
                 id="transfer_subject_input",
                 placeholder="e.g. sub-001",
-                validate_on=["changed", "submitted"],
             ),
             Label("Session(s)"),
             Input(
                 id="transfer_session_input",
                 placeholder="e.g. ses-001",
-                validate_on=["changed", "submitted"],
             ),
             Label("Datatype(s)"),
             DatatypeCheckboxes(self.project),
