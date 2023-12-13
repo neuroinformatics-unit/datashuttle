@@ -10,6 +10,7 @@ from os.path import join
 from pathlib import Path
 
 import yaml
+from file_conflicts_pathtable import get_pathtable
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, canonical_folders
@@ -179,6 +180,19 @@ def make_test_path(base_path, local_or_central, test_project_name):
 
 def get_protected_test_folder():
     return "ds_protected_test_name"
+
+
+def create_all_pathtable_files(pathtable):
+    """ """
+    for i in range(pathtable.shape[0]):
+        filepath = pathtable["base_folder"][i] / pathtable["path"][i]
+        filepath.parents[0].mkdir(parents=True, exist_ok=True)
+        write_file(filepath, contents="test_entry")
+
+
+def quick_create_project(base_path):
+    pathtable = get_pathtable(base_path)
+    create_all_pathtable_files(pathtable)
 
 
 # -----------------------------------------------------------------------------
