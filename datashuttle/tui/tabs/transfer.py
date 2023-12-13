@@ -22,7 +22,6 @@ from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.configs.canonical_folders import get_top_level_folders
 from datashuttle.tui.custom_widgets import DatatypeCheckboxes, FilteredTree
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
-from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
@@ -72,14 +71,12 @@ class TransferTab(TabPane):
                 id="transfer_subject_input",
                 placeholder="e.g. sub-001",
                 validate_on=["changed", "submitted"],
-                validators=[NeuroBlueprintValidator("sub", self)],
             ),
             Label("Session(s)"),
             Input(
                 id="transfer_session_input",
                 placeholder="e.g. ses-001",
                 validate_on=["changed", "submitted"],
-                validators=[NeuroBlueprintValidator("ses", self)],
             ),
             Label("Datatype(s)"),
             DatatypeCheckboxes(self.project),
