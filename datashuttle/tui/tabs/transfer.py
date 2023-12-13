@@ -242,10 +242,10 @@ class TransferTab(TabPane):
                 if upload_selected:
                     self.project.upload(
                         sub_names=self.query_one("#transfer_subject_input")
-                        .replace(" ", "")
+                        .value.replace(" ", "")
                         .split(","),
                         ses_names=self.query_one("#transfer_session_input")
-                        .replace(" ", "")
+                        .value.replace(" ", "")
                         .split(","),
                         datatype=self.query_one(
                             "DatatypeCheckboxes"
@@ -254,10 +254,10 @@ class TransferTab(TabPane):
                 else:
                     self.project.download(
                         sub_names=self.query_one("#transfer_subject_input")
-                        .replace(" ", "")
+                        .value.replace(" ", "")
                         .split(","),
                         ses_names=self.query_one("#transfer_session_input")
-                        .replace(" ", "")
+                        .value.replace(" ", "")
                         .split(","),
                         datatype=self.query_one(
                             "DatatypeCheckboxes"
