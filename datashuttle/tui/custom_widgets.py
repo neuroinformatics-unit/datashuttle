@@ -9,7 +9,7 @@ from dataclasses import dataclass
 
 from textual.message import Message
 from textual.reactive import reactive
-from textual.widgets import Checkbox, DirectoryTree, Input, Static
+from textual.widgets import Checkbox, Input, Static
 
 from datashuttle.configs.canonical_configs import get_datatypes
 
@@ -110,22 +110,3 @@ class ClickableInput(Input):
 
     def _on_click(self, click: events.Click) -> None:
         self.post_message(self.Clicked(self, click.button))
-
-
-class FilteredTree(DirectoryTree):
-    def filter_paths(self, paths):
-        """
-        Extends the `DirectoryTree.filter_paths()` method.
-        Omits hidden files (whose path name starts with ".")
-        from the `TransferStatusTree` widget.
-
-        Parameters
-        ----------
-        paths: Iterable of python `Path` objects.
-
-        Returns
-        -------
-        Filtered set of paths
-
-        """
-        return [path for path in paths if not path.stem.startswith(".")]

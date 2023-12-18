@@ -19,8 +19,7 @@ from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_configs import get_datatypes
-from datashuttle.configs.canonical_folders import get_top_level_folders
-from datashuttle.tui.custom_widgets import DatatypeCheckboxes, FilteredTree
+from datashuttle.tui.custom_widgets import DatatypeCheckboxes
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.utils.rclone import get_local_and_central_file_differences
@@ -302,7 +301,7 @@ class TransferTab(TabPane):
                 )
 
 
-class TransferStatusTree(FilteredTree):
+class TransferStatusTree(DirectoryTree):
     def __init__(self, parent_tab, project, id=None):
         super(TransferStatusTree, self).__init__(
             project.get_local_path(), id=id
@@ -361,15 +360,6 @@ class TransferStatusTree(FilteredTree):
 
         self.format_transfer_label(node, node_label, node_path)
 
-        if (
-            node_label.plain.startswith(".")
-            or node_path not in self.tab.transfer_paths
-        ):
-            node_label.stylize_before(
-                self.get_component_rich_style("directory-tree--hidden")
-                # "grey58"
-            )
-
         text = Text.assemble(prefix, node_label)
         return text
 
@@ -378,28 +368,33 @@ class TransferStatusTree(FilteredTree):
             self.project.cfg.get_base_folder("local").as_posix() + "/", ""
         )
 
-        if (
-            node_path.stem.startswith("sub-")
-            or node_path.stem.startswith("ses-")
-            or node_path.stem in get_datatypes()
-            # ) and not node.is_expanded:
-        ):
-            if any(node_relative_path in file for file in self.diff_paths):
+        if node_path in self.tab.transfer_paths:
+            if (
+                node_path.stem.startswith("sub-")
+                or node_path.stem.startswith("ses-")
+                or node_path.stem in get_datatypes()
+                # ) and not node.is_expanded:
+            ):
+                if any(node_relative_path in file for file in self.diff_paths):
+                    node_label.stylize_before("gold3")
+
+            elif (
+                node_path.stem
+                == "rawdata"  # TODO: get_local_and_central_file_differences currently only checks for diffs in rawdata
+                # and not node.is_expanded
+                and self.diff_paths
+            ):
                 node_label.stylize_before("gold3")
 
-        elif (
-            node_path.stem in get_top_level_folders()
-            # and not node.is_expanded
-            and self.diff_paths
-        ):
-            node_label.stylize_before("gold3")
+            else:
+                if node_relative_path in self.transfer_diffs["same"]:
+                    pass
+                elif node_relative_path in self.transfer_diffs["different"]:
+                    node_label.stylize_before("gold3")
+                elif node_relative_path in self.transfer_diffs["local_only"]:
+                    node_label.stylize_before("green3")
+                elif node_label.plain in self.transfer_diffs["error"]:
+                    node_label.stylize_before("bright_red")
 
         else:
-            if node_relative_path in self.transfer_diffs["same"]:
-                pass
-            elif node_relative_path in self.transfer_diffs["different"]:
-                node_label.stylize_before("gold3")
-            elif node_relative_path in self.transfer_diffs["local_only"]:
-                node_label.stylize_before("green3")
-            elif node_label.plain in self.transfer_diffs["error"]:
-                node_label.stylize_before("bright_red")
+            node_label.stylize_before("grey58")
