@@ -140,6 +140,11 @@ class TransferTab(TabPane):
         self.query_one("#transfer_directorytree").reload()
 
     def get_transfer_paths(self):
+        """
+        Compiles a list of all project files and paths staged for transfer
+        using the parameters currently selected by the user.
+        """
+
         all_paths = []
         walk_paths = walk(self.project.get_local_path().as_posix())
         # TODO: os.walk appends different file seps than those used by the datashuttle fxn.
@@ -201,6 +206,13 @@ class TransferTab(TabPane):
             self.query_one("#transfer_directorytree").reload()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """
+        If the Transfer button is clicked, opens a modal dialog
+        to confirm that the user wishes to transfer their data
+        (in the direction selected). If "Yes" is selected,
+        `self.transfer_data` (see below) is run.
+        """
+
         if event.button.id == "transfer_transfer_button":
             if not self.query_one("#transfer_switch").value:
                 direction = "upload"
@@ -221,6 +233,20 @@ class TransferTab(TabPane):
             )
 
     def transfer_data(self, transfer_bool: bool) -> None:
+        """
+        Executes data transfer using the parameters provided
+        by the user.
+
+        Parameters
+        ----------
+        transfer_bool: Passed by `ConfirmScreen`. True if user confirmed
+            transfer by clicking "Yes".
+
+        Returns
+        -------
+        None
+        """
+
         if transfer_bool:
             upload_selected = not self.query_one("#transfer_switch").value
 
@@ -265,6 +291,11 @@ class TransferTab(TabPane):
             self.update_transfer_tree()
 
     def update_transfer_tree(self):
+        """
+        Updates the `TransferStatusTree` styling to reflect new transfer
+        statuses after transfer.
+        """
+
         self.transfer_paths = self.get_transfer_paths()
 
         transfer_tree = self.query_one("#transfer_directorytree")
@@ -272,7 +303,7 @@ class TransferTab(TabPane):
             self.project.cfg
         )
         filtered_diffs = {
-            key: self.transfer_diffs[key]
+            key: transfer_tree.transfer_diffs[key]
             for key in ["different", "local_only", "error"]
         }
         transfer_tree.diff_paths = [
@@ -307,7 +338,7 @@ class TransferStatusTree(DirectoryTree):
             project.get_local_path(), id=id
         )
 
-        self.tab = parent_tab
+        self.parent_tab = parent_tab
         self.project = project
         self.transfer_diffs = get_local_and_central_file_differences(
             project.cfg
@@ -321,11 +352,16 @@ class TransferStatusTree(DirectoryTree):
         ]
 
     def on_mount(self):
-        self.tab.transfer_paths = self.tab.get_transfer_paths()
+        self.parent_tab.transfer_paths = self.parent_tab.get_transfer_paths()
 
     def render_label(
         self, node: TreeNode[DirEntry], base_style: Style, style: Style
     ) -> Text:
+        """
+        Extends the `DirectoryTree.render_label()` method to allow
+        custom styling of file nodes according to their transfer status.
+        """
+
         node_label = node._label.copy()
         node_label.stylize(style)
 
@@ -358,17 +394,17 @@ class TransferStatusTree(DirectoryTree):
                 ),
             )
 
-        self.format_transfer_label(node, node_label, node_path)
+        self.format_transfer_label(node_label, node_path)
 
         text = Text.assemble(prefix, node_label)
         return text
 
-    def format_transfer_label(self, node, node_label, node_path):
+    def format_transfer_label(self, node_label, node_path):
         node_relative_path = node_path.as_posix().replace(
             self.project.cfg.get_base_folder("local").as_posix() + "/", ""
         )
 
-        if node_path in self.tab.transfer_paths:
+        if node_path in self.parent_tab.transfer_paths:
             if (
                 node_path.stem.startswith("sub-")
                 or node_path.stem.startswith("ses-")
