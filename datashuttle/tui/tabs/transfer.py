@@ -14,7 +14,7 @@ from textual.widgets import (
     Switch,
     TabPane,
 )
-from textual.widgets._directory_tree import DirEntry
+from textual.widgets._directory_tree import DirectoryTree, DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
@@ -22,6 +22,7 @@ from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.configs.canonical_folders import get_top_level_folders
 from datashuttle.tui.custom_widgets import DatatypeCheckboxes, FilteredTree
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
+from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
@@ -279,6 +280,26 @@ class TransferTab(TabPane):
             path for category in filtered_diffs.values() for path in category
         ]
         transfer_tree.reload()
+
+    @require_double_click
+    def on_directory_tree_directory_selected(
+        self, event: DirectoryTree.DirectorySelected
+    ):
+        """
+        Upon double-clicking a directory within the directory-tree
+        widget, replace contents of the \'Subject\' and/or \'Session\'
+        input widgets, depending on the prefix of the directory selected.
+        Double-click time is set to the Windows default duration (500 ms).
+        """
+        if self.query_one("#transfer_custom_radiobutton").value:
+            if event.path.stem.startswith("sub-"):
+                self.query_one("#transfer_subject_input").value = str(
+                    event.path.stem
+                )
+            if event.path.stem.startswith("ses-"):
+                self.query_one("#transfer_session_input").value = str(
+                    event.path.stem
+                )
 
 
 class TransferStatusTree(FilteredTree):

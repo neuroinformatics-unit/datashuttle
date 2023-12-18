@@ -15,10 +15,6 @@ TabScreen > TabbedContent {
     padding: 1 0 1 1;
 }
 
-CreateFoldersTab > Horizontal{
-    align-horizontal: left;
-}
-
 #tabscreen_create_tab > Input.-valid {
     border: tall $success 60%;
 }
@@ -31,7 +27,11 @@ CreateFoldersTab > Horizontal{
 }
 
 #tabscreen_create_tab > Input.-invalid:focus {
-    border: tall $error
+    border: tall $error;
+}
+
+#tabscreen_template_settings_button {
+    dock: right;
 }
 
 #template_settings_validation_on_checkbox.-on > .toggle--button{
