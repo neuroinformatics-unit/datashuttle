@@ -39,7 +39,7 @@ class TransferTab(TabPane):
         self.transfer_all_widgets = [
             Label(
                 "All data from: \n\n - Rawdata \n - Derivatives \n\nWill be transferred."
-                " Existing data with \nthe same file details on central will not be \noverwritten."
+                " Existing data with \nthe same file details on central will not be \noverwritten "
                 "by default",
                 id="transfer_all_label",
             )
