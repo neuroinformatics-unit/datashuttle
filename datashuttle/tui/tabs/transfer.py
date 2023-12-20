@@ -407,19 +407,25 @@ class TransferStatusTree(DirectoryTree):
 
     def format_transfer_label(self, node_label, node_path):
         node_relative_path = node_path.as_posix().replace(
-            self.project.cfg.get_base_folder("local").as_posix() + "/", ""
+            f"{self.project.cfg.get_base_folder('local').as_posix()}/", ""
         )
 
+        # Checks whether the current node's file path is staged for transfer
         if node_path in self.parent_tab.transfer_paths:
+            # Sets sub- and ses-level folders to orange if files within have changed
             if (
                 node_path.stem.startswith("sub-")
                 or node_path.stem.startswith("ses-")
                 or node_path.stem in get_datatypes()
                 # ) and not node.is_expanded:
             ):
-                if any(node_relative_path in file for file in self.diff_paths):
+                files_have_changed = any(
+                    node_relative_path in file for file in self.diff_paths
+                )
+                if files_have_changed:
                     node_label.stylize_before("gold3")
 
+            # Sets the top_level folder to orange if files within have changes
             elif (
                 node_path.stem
                 == "rawdata"  # TODO: get_local_and_central_file_differences currently only checks for diffs in rawdata
@@ -428,6 +434,7 @@ class TransferStatusTree(DirectoryTree):
             ):
                 node_label.stylize_before("gold3")
 
+            # Assigns a color to project files according to transfer status
             else:
                 if node_relative_path in self.transfer_diffs["same"]:
                     pass
@@ -438,5 +445,6 @@ class TransferStatusTree(DirectoryTree):
                 elif node_label.plain in self.transfer_diffs["error"]:
                     node_label.stylize_before("bright_red")
 
+        # Sets files that are not staged for transfer to grey
         else:
             node_label.stylize_before("grey58")
