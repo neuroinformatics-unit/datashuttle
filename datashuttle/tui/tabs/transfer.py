@@ -127,19 +127,7 @@ class TransferTab(TabPane):
             ("Not staged for transfer", "grey58"),
         )
 
-    def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        """
-        Update the displayed transfer parameter widgets when the
-        `transfer_radioset` radiobuttons are changed.
-        """
-        label = str(event.pressed.label)
-        assert label in ["All", "Top Level", "Custom"], "Unexpected label."
-        self.switch_transfer_widgets_display()
-
-        self.transfer_paths = self.get_transfer_paths()
-        self.query_one("#transfer_directorytree").reload()
-
-    def get_transfer_paths(self):
+    def get_local_transfer_paths(self):
         """
         Compiles a list of all project files and paths staged for transfer
         using the parameters currently selected by the user.
@@ -194,6 +182,26 @@ class TransferTab(TabPane):
                 "#transfer_custom_radiobutton"
             ).value
 
+    def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
+        """
+        Update the displayed transfer parameter widgets when the
+        `transfer_radioset` radiobuttons are changed.
+        """
+        label = str(event.pressed.label)
+        assert label in ["All", "Top Level", "Custom"], "Unexpected label."
+        self.switch_transfer_widgets_display()
+
+        self.update_transfer_tree()
+
+    def update_transfer_tree(self):
+        """
+        Updates the `TransferStatusTree` styling to reflect new transfer
+        statuses after transfer.
+        """
+
+        self.transfer_paths = self.get_local_transfer_paths()
+        self.query_one("#transfer_directorytree").reload()
+
     def on_select_changed(self, event: Select.Changed) -> None:
         """
         If "Top Level" transfer mode has been selected, updates
@@ -202,8 +210,7 @@ class TransferTab(TabPane):
         if self.query_one("#transfer_toplevel_radiobutton").value:
             self.project.set_top_level_folder(event.value)
 
-            self.transfer_paths = self.get_transfer_paths()
-            self.query_one("#transfer_directorytree").reload()
+            self.update_transfer_tree()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -288,15 +295,13 @@ class TransferTab(TabPane):
                         ).datatype_out,
                     )
 
+            self.update_transfer_diffs()
             self.update_transfer_tree()
 
-    def update_transfer_tree(self):
+    def update_transfer_diffs(self):
         """
-        Updates the `TransferStatusTree` styling to reflect new transfer
-        statuses after transfer.
+        Updates the transfer diffs for `TransferStatusTree`.
         """
-
-        self.transfer_paths = self.get_transfer_paths()
 
         transfer_tree = self.query_one("#transfer_directorytree")
         transfer_tree.transfer_diffs = get_local_and_central_file_differences(
@@ -309,7 +314,6 @@ class TransferTab(TabPane):
         transfer_tree.diff_paths = [
             path for category in filtered_diffs.values() for path in category
         ]
-        transfer_tree.reload()
 
     @require_double_click
     def on_directory_tree_directory_selected(
@@ -352,7 +356,9 @@ class TransferStatusTree(DirectoryTree):
         ]
 
     def on_mount(self):
-        self.parent_tab.transfer_paths = self.parent_tab.get_transfer_paths()
+        self.parent_tab.transfer_paths = (
+            self.parent_tab.get_local_transfer_paths()
+        )
 
     def render_label(
         self, node: TreeNode[DirEntry], base_style: Style, style: Style
