@@ -406,6 +406,11 @@ class TransferStatusTree(DirectoryTree):
         return text
 
     def format_transfer_label(self, node_label, node_path):
+        """
+        Takes nodes being formatted using `render_label` and applies custom
+        formatting according to the node's transfer status.
+        """
+
         node_relative_path = node_path.as_posix().replace(
             f"{self.project.cfg.get_base_folder('local').as_posix()}/", ""
         )
