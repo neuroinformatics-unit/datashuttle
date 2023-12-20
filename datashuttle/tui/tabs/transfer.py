@@ -127,43 +127,6 @@ class TransferTab(TabPane):
             ("Not staged for transfer", "grey58"),
         )
 
-    def get_local_transfer_paths(self):
-        """
-        Compiles a list of all project files and paths staged for transfer
-        using the parameters currently selected by the user.
-        """
-
-        all_paths = []
-        walk_paths = walk(self.project.get_local_path().as_posix())
-        # TODO: os.walk appends different file seps than those used by the datashuttle fxn.
-        #  Still works, somehow, but ugly.
-        for path in walk_paths:
-            all_paths.append(path[0])
-            if path[2]:
-                all_paths.extend([f"{path[0]}/{file}" for file in path[2]])
-
-        if self.query_one("#transfer_all_radiobutton").value:
-            paths_out = [Path(path) for path in all_paths]
-
-        elif self.query_one("#transfer_toplevel_radiobutton").value:
-            toplevel_dir = (
-                self.project.get_local_path()
-                / self.project.cfg.top_level_folder
-            )
-            paths_out = [
-                Path(path)
-                for path in all_paths
-                if all(part in Path(path).parts for part in toplevel_dir.parts)
-            ]
-
-        elif self.query_one("#transfer_custom_radiobutton").value:
-            paths_out = [Path(path) for path in all_paths]
-
-        else:
-            paths_out = []
-
-        return paths_out
-
     def switch_transfer_widgets_display(self):
         """
         Show or hide transfer parameters based on whether the transfer mode
@@ -191,16 +154,7 @@ class TransferTab(TabPane):
         assert label in ["All", "Top Level", "Custom"], "Unexpected label."
         self.switch_transfer_widgets_display()
 
-        self.update_transfer_tree()
-
-    def update_transfer_tree(self):
-        """
-        Updates the `TransferStatusTree` styling to reflect new transfer
-        statuses after transfer.
-        """
-
-        self.transfer_paths = self.get_local_transfer_paths()
-        self.query_one("#transfer_directorytree").reload()
+        self.query_one("#transfer_directorytree").update_transfer_tree()
 
     def on_select_changed(self, event: Select.Changed) -> None:
         """
@@ -210,7 +164,7 @@ class TransferTab(TabPane):
         if self.query_one("#transfer_toplevel_radiobutton").value:
             self.project.set_top_level_folder(event.value)
 
-            self.update_transfer_tree()
+            self.query_one("#transfer_directorytree").update_transfer_tree()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -231,7 +185,7 @@ class TransferTab(TabPane):
             message = Text.assemble(
                 "You are about to ",
                 (f"{direction}", "chartreuse3 underline"),
-                f" the selected data {preposition} \nthis project's configured",
+                f" the selected project data {preposition} \nthe project's configured",
                 " central filesystem.\n\nAre you sure you wish to proceed?\n",
             )
 
@@ -295,25 +249,9 @@ class TransferTab(TabPane):
                         ).datatype_out,
                     )
 
-            self.update_transfer_diffs()
-            self.update_transfer_tree()
-
-    def update_transfer_diffs(self):
-        """
-        Updates the transfer diffs for `TransferStatusTree`.
-        """
-
-        transfer_tree = self.query_one("#transfer_directorytree")
-        transfer_tree.transfer_diffs = get_local_and_central_file_differences(
-            self.project.cfg
-        )
-        filtered_diffs = {
-            key: transfer_tree.transfer_diffs[key]
-            for key in ["different", "local_only", "error"]
-        }
-        transfer_tree.diff_paths = [
-            path for category in filtered_diffs.values() for path in category
-        ]
+            transfer_tree = self.query_one("#transfer_directorytree")
+            transfer_tree.get_transfer_diffs()
+            transfer_tree.update_transfer_tree()
 
     @require_double_click
     def on_directory_tree_directory_selected(
@@ -344,8 +282,55 @@ class TransferStatusTree(DirectoryTree):
 
         self.parent_tab = parent_tab
         self.project = project
+        self.get_transfer_diffs()
+
+    def on_mount(self):
+        self.transfer_paths = self.get_local_transfer_paths()
+
+    def get_local_transfer_paths(self):
+        """
+        Compiles a list of all project files and paths staged for transfer
+        using the parameters currently selected by the user.
+        """
+
+        all_paths = []
+        walk_paths = walk(self.project.get_local_path().as_posix())
+        # TODO: os.walk appends different file seps than those used by the datashuttle fxn.
+        #  Still works, somehow, but ugly.
+        for path in walk_paths:
+            all_paths.append(path[0])
+            if path[2]:
+                all_paths.extend([f"{path[0]}/{file}" for file in path[2]])
+
+        if self.parent_tab.query_one("#transfer_all_radiobutton").value:
+            paths_out = [Path(path) for path in all_paths]
+
+        elif self.parent_tab.query_one("#transfer_toplevel_radiobutton").value:
+            toplevel_dir = (
+                self.project.get_local_path()
+                / self.project.cfg.top_level_folder
+            )
+            paths_out = [
+                Path(path)
+                for path in all_paths
+                if all(part in Path(path).parts for part in toplevel_dir.parts)
+            ]
+
+        elif self.parent_tab.query_one("#transfer_custom_radiobutton").value:
+            paths_out = [Path(path) for path in all_paths]
+
+        else:
+            paths_out = []
+
+        return paths_out
+
+    def get_transfer_diffs(self):
+        """
+        Updates the transfer diffs used to style the DirectoryTree.
+        """
+
         self.transfer_diffs = get_local_and_central_file_differences(
-            project.cfg
+            self.project.cfg
         )
         filtered_diffs = {
             key: self.transfer_diffs[key]
@@ -355,10 +340,14 @@ class TransferStatusTree(DirectoryTree):
             path for category in filtered_diffs.values() for path in category
         ]
 
-    def on_mount(self):
-        self.parent_tab.transfer_paths = (
-            self.parent_tab.get_local_transfer_paths()
-        )
+    def update_transfer_tree(self):
+        """
+        Updates tree styling to reflect the current TUI state
+        and project transfer status.
+        """
+
+        self.transfer_paths = self.get_local_transfer_paths()
+        self.reload()
 
     def render_label(
         self, node: TreeNode[DirEntry], base_style: Style, style: Style
@@ -416,7 +405,7 @@ class TransferStatusTree(DirectoryTree):
         )
 
         # Checks whether the current node's file path is staged for transfer
-        if node_path in self.parent_tab.transfer_paths:
+        if node_path in self.transfer_paths:
             # Sets sub- and ses-level folders to orange if files within have changed
             if (
                 node_path.stem.startswith("sub-")
