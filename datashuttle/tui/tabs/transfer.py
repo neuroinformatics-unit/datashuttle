@@ -259,19 +259,29 @@ class TransferTab(TabPane):
     ):
         """
         Upon double-clicking a directory within the directory-tree
-        widget, replace contents of the \'Subject\' and/or \'Session\'
-        input widgets, depending on the prefix of the directory selected.
-        Double-click time is set to the Windows default duration (500 ms).
+        widget, append the file selected to the current contents of
+        the \'Subject\' and/or \'Session\' input widgets, depending
+        on the prefix of the directory selected.
         """
         if self.query_one("#transfer_custom_radiobutton").value:
             if event.path.stem.startswith("sub-"):
-                self.query_one("#transfer_subject_input").value = str(
-                    event.path.stem
-                )
+                if not self.query_one("#transfer_subject_input").value:
+                    self.query_one(
+                        "#transfer_subject_input"
+                    ).value = f"{str(event.path.stem)}"
+                else:
+                    self.query_one(
+                        "#transfer_subject_input"
+                    ).value += f", {str(event.path.stem)}"
             if event.path.stem.startswith("ses-"):
-                self.query_one("#transfer_session_input").value = str(
-                    event.path.stem
-                )
+                if not self.query_one("#transfer_session_input").value:
+                    self.query_one(
+                        "#transfer_session_input"
+                    ).value = f"{str(event.path.stem)}"
+                else:
+                    self.query_one(
+                        "#transfer_session_input"
+                    ).value += f", {str(event.path.stem)}"
 
 
 class TransferStatusTree(DirectoryTree):
