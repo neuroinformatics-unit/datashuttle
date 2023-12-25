@@ -56,7 +56,7 @@ class TransferTab(TabPane):
                     for folder in canonical_folders.get_top_level_folders()
                     if (self.project.get_local_path() / folder).exists()
                 ],
-                value=canonical_folders.get_top_level_folders()[0],
+                value=self.project.get_top_level_folder(),
                 id="transfer_toplevel_select",
                 allow_blank=False,
             ),
@@ -164,7 +164,9 @@ class TransferTab(TabPane):
         if self.query_one("#transfer_toplevel_radiobutton").value:
             self.project.set_top_level_folder(event.value)
 
-            self.query_one("#transfer_directorytree").update_transfer_tree()
+            transfer_tree = self.query_one("#transfer_directorytree")
+            transfer_tree.get_transfer_diffs()
+            transfer_tree.update_transfer_tree()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -421,7 +423,6 @@ class TransferStatusTree(DirectoryTree):
                 node_path.stem.startswith("sub-")
                 or node_path.stem.startswith("ses-")
                 or node_path.stem in get_datatypes()
-                # ) and not node.is_expanded:
             ):
                 files_have_changed = any(
                     node_relative_path in file for file in self.diff_paths
@@ -432,8 +433,7 @@ class TransferStatusTree(DirectoryTree):
             # Sets the top_level folder to orange if files within have changes
             elif (
                 node_path.stem
-                == "rawdata"  # TODO: get_local_and_central_file_differences currently only checks for diffs in rawdata
-                # and not node.is_expanded
+                == self.project.get_top_level_folder()  # TODO: get_local_and_central_file_differences currently only checks for diffs in the current top-level folder
                 and self.diff_paths
             ):
                 node_label.stylize_before("gold3")
