@@ -8,6 +8,7 @@ from typing import Any, List, Literal, Union, overload
 
 from rich import print as rich_print
 
+from datashuttle.utils import ds_logger
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # --------------------------------------------------------------------------------------
@@ -66,6 +67,7 @@ def raise_error(message: str, exception) -> None:
     """
     Centralized way to raise an error
     """
+    ds_logger.close_log_filehandler()
     raise exception(message)
 
 
