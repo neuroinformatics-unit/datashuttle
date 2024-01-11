@@ -10,7 +10,7 @@ from itertools import chain
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 from ..configs import canonical_folders
-from . import folders, utils
+from . import getters, utils
 
 # -----------------------------------------------------------------------------
 # Checking a standalone list of names
@@ -169,7 +169,9 @@ def value_lengths_are_inconsistent(
 
     value_len = [len(value) for value in prefix_values]
 
-    inconsistent_value_len = value_len != [] and not all_identical(value_len)
+    inconsistent_value_len = value_len != [] and not utils.all_identical(
+        value_len
+    )
 
     if inconsistent_value_len:
         message = (
@@ -202,7 +204,7 @@ def duplicated_prefix_values(
         names_list, prefix, return_as_int=True
     )
 
-    has_duplicate_ids = not all_unique(int_values)
+    has_duplicate_ids = not utils.all_unique(int_values)
 
     if has_duplicate_ids:
         message = (
@@ -242,7 +244,7 @@ def validate_project(
     local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
     log: bool = True,
-):
+) -> None:
     """
     Validate all subject and session folders within a project.
 
@@ -271,7 +273,7 @@ def validate_project(
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
     """
-    folder_names = folders.get_all_sub_and_ses_names(cfg, local_only)
+    folder_names = getters.get_all_sub_and_ses_names(cfg, local_only)
 
     # Check subjects
     sub_names = folder_names["sub"]
@@ -313,9 +315,9 @@ def validate_names_against_project(
     cfg: Configs,
     sub_names: List[str],
     ses_names: Optional[List[str]] = None,
-    local_only=False,
+    local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
-    log=True,
+    log: bool = True,
 ) -> None:
     """
     Given a list of subject and (optionally) session names,
@@ -360,7 +362,7 @@ def validate_names_against_project(
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
     """
-    folder_names = folders.get_all_sub_and_ses_names(cfg, local_only)
+    folder_names = getters.get_all_sub_and_ses_names(cfg, local_only)
 
     # Check subjects
     if folder_names["sub"]:
@@ -446,7 +448,7 @@ def new_name_duplicates_existing(
 
 
 def datatypes_are_invalid(
-    datatype: Union[List[str], str], allow_all=False
+    datatype: Union[List[str], str], allow_all: bool = False
 ) -> Tuple[bool, str]:
     """
     Check a datatype of list of datatypes is a valid
@@ -479,22 +481,3 @@ def datatypes_are_invalid(
         return True, message
 
     return False, ""
-
-
-# -----------------------------------------------------------------------------
-# Utils
-# -----------------------------------------------------------------------------
-
-
-def all_unique(list_: List) -> bool:
-    """
-    Check that all values in a list are different.
-    """
-    return len(list_) == len(set(list_))
-
-
-def all_identical(list_: List) -> bool:
-    """
-    Check that all values in a list are identical.
-    """
-    return len(set(list_)) == 1

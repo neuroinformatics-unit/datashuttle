@@ -2,13 +2,10 @@ from __future__ import annotations
 
 import datetime
 import re
-from typing import TYPE_CHECKING, List, Literal, Union
+from typing import List, Literal, Union
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
-
-if TYPE_CHECKING:
-    pass
 
 from . import utils, validation
 
@@ -86,7 +83,7 @@ def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
 
     validation.names_include_spaces(names)
 
-    prefixed_names = ensure_prefixes_on_list_of_names(names, prefix)
+    prefixed_names = add_missing_prefixes_to_names(names, prefix)
 
     prefixed_names = update_names_with_range_to_flag(prefixed_names, prefix)
 
@@ -114,7 +111,7 @@ def update_names_with_range_to_flag(
 
     for i, name in enumerate(names):
         if tags("to") in name:
-            check_name_is_formatted_correctly(name, prefix)
+            check_name_with_to_tag_is_formatted_correctly(name, prefix)
 
             prefix_tag = re.search(f"{prefix}-[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
             tag_number = prefix_tag.split(f"{prefix}-")[1]
@@ -150,7 +147,9 @@ def update_names_with_range_to_flag(
     return new_names
 
 
-def check_name_is_formatted_correctly(name: str, prefix: str) -> None:
+def check_name_with_to_tag_is_formatted_correctly(
+    name: str, prefix: str
+) -> None:
     """
     Check the input string is formatted with the @TO@ key
     as expected.
@@ -190,7 +189,8 @@ def make_list_of_zero_padded_names_across_range(
         key-value pairs.
     """
     max_leading_zeros = max(
-        num_leading_zeros(left_number), num_leading_zeros(right_number)
+        utils.num_leading_zeros(left_number),
+        utils.num_leading_zeros(right_number),
     )
 
     all_numbers = [*range(int(left_number), int(right_number) + 1)]
@@ -205,14 +205,6 @@ def make_list_of_zero_padded_names_across_range(
     ]
 
     return names_with_new_number_inserted
-
-
-def num_leading_zeros(string: str) -> int:
-    """int() strips leading zeros"""
-    if string[:4] in ["sub-", "ses-"]:
-        string = string[4:]
-
-    return len(string) - len(str(int(string)))
 
 
 # Handle @DATE@, @DATETIME@, @TIME@ flags -------------------------------------
@@ -277,7 +269,7 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     return string
 
 
-def ensure_prefixes_on_list_of_names(
+def add_missing_prefixes_to_names(
     all_names: Union[List[str], str], prefix: str
 ) -> List[str]:
     """

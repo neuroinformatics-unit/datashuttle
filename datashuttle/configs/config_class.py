@@ -2,7 +2,7 @@ import copy
 from collections import UserDict
 from collections.abc import ItemsView, KeysView, ValuesView
 from pathlib import Path
-from typing import Optional, Union, cast
+from typing import Dict, Optional, Union, cast
 
 import yaml
 
@@ -219,7 +219,7 @@ class Configs(UserDict):
 
         return f"central_{self.project_name}_{connection_method}"
 
-    def make_rclone_transfer_options(self, dry_run: bool):
+    def make_rclone_transfer_options(self, dry_run: bool) -> Dict:
         return {
             "overwrite_old_files": self["overwrite_old_files"],
             "transfer_verbosity": self["transfer_verbosity"],
@@ -227,7 +227,7 @@ class Configs(UserDict):
             "dry_run": dry_run,
         }
 
-    def init_paths(self):
+    def init_paths(self) -> None:
         """"""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
@@ -247,7 +247,7 @@ class Configs(UserDict):
         folders.make_folders(logging_path)
         return logging_path
 
-    def get_datatype_items(
+    def get_datatype_as_dict_items(
         self, datatype: Union[str, list]
     ) -> Union[ItemsView, zip]:
         """

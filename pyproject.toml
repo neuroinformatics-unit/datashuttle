@@ -55,6 +55,8 @@ dev = [
     "types-appdirs",
     "types-paramiko",
     "types-simplejson",
+    "pandas-stubs",
+    "types-setuptools",
 ]
 
 [build-system]
@@ -64,6 +66,11 @@ requires = [
     "setuptools_scm[toml]>=6.2",
 ]
 build-backend = "setuptools.build_meta"
+
+[tool.mypy]
+exclude = [
+    "tests/"
+]
 
 [tool.setuptools]
 include-package-data = true
@@ -83,7 +90,7 @@ line-length = 79
 [tool.ruff]
 line-length = 79
 exclude = ["__init__.py","build",".eggs"]
-select = ["I", "E", "F"]
+select = ["I", "E", "F", "TCH"]
 fix = true
 ignore = ["E203","E501","E731","C901","W291","W293","E402","E722"]
 

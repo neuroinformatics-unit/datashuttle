@@ -3,7 +3,7 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils import folders, formatting, utils
+from datashuttle.utils import formatting, getters, utils
 
 
 class TestUnit:
@@ -133,9 +133,9 @@ class TestUnit:
         case from -1 to -(101x 0)1.
         """
         for i in range(101):
-            assert formatting.num_leading_zeros("1".zfill(i + 1)) == i
-            assert formatting.num_leading_zeros("sub-" + "1".zfill(i + 1)) == i
-            assert formatting.num_leading_zeros("ses-" + "1".zfill(i + 1)) == i
+            assert utils.num_leading_zeros("1".zfill(i + 1)) == i
+            assert utils.num_leading_zeros("sub-" + "1".zfill(i + 1)) == i
+            assert utils.num_leading_zeros("ses-" + "1".zfill(i + 1)) == i
 
     # Test getting max sub or ses num from list
     # -------------------------------------------------------------------------
@@ -153,7 +153,7 @@ class TestUnit:
         (
             max_value,
             num_digits,
-        ) = folders.get_max_sub_or_ses_num_and_value_length(
+        ) = getters.get_max_sub_or_ses_num_and_value_length(
             [], prefix, default_num_value_digits
         )
 
@@ -176,7 +176,7 @@ class TestUnit:
         ]
 
         with pytest.raises(BaseException) as e:
-            folders.get_max_sub_or_ses_num_and_value_length(
+            getters.get_max_sub_or_ses_num_and_value_length(
                 bad_num_values_names, prefix
             )
 
@@ -196,7 +196,7 @@ class TestUnit:
             (
                 max_num,
                 num_digits,
-            ) = folders.get_max_sub_or_ses_num_and_value_length(
+            ) = getters.get_max_sub_or_ses_num_and_value_length(
                 bad_sub_num_names, prefix
             )
 
@@ -226,7 +226,7 @@ class TestUnit:
             format_name = f"{prefix}-{str(value).zfill(test_num_digits)}"
             names.append(format_name)
 
-        max_num, num_digits = folders.get_max_sub_or_ses_num_and_value_length(
+        max_num, num_digits = getters.get_max_sub_or_ses_num_and_value_length(
             names, prefix
         )
 
@@ -242,7 +242,7 @@ class TestUnit:
         """
         names = [f"{prefix}-09", f"{prefix}-10", f"{prefix}-11"]
 
-        max_num, num_digits = folders.get_max_sub_or_ses_num_and_value_length(
+        max_num, num_digits = getters.get_max_sub_or_ses_num_and_value_length(
             names, prefix
         )
 

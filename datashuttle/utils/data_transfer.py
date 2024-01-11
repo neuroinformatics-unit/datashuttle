@@ -10,7 +10,7 @@ class TransferData:
     def __init__(
         self,
         cfg: Configs,
-        upload_or_download: str,
+        upload_or_download: Literal["upload", "download"],
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
@@ -117,12 +117,12 @@ class TransferData:
 
         if recursive:
 
-            def include_arg(ele):
+            def include_arg(ele: str) -> str:
                 return f' --include "{ele}/**" '
 
         else:
 
-            def include_arg(ele):
+            def include_arg(ele: str) -> str:
                 return f' --include "{ele}" '
 
         return ["".join([include_arg(ele) for ele in list_of_paths])]
@@ -132,8 +132,8 @@ class TransferData:
     # -------------------------------------------------------------------------
 
     def update_list_with_non_sub_top_level_folders(
-        self, extra_folder_names, extra_filenames
-    ):
+        self, extra_folder_names: List[str], extra_filenames: List[str]
+    ) -> None:
         top_level_folders, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_folder(self.local_or_central),
@@ -149,8 +149,11 @@ class TransferData:
         extra_filenames += top_level_files
 
     def update_list_with_non_ses_sub_level_folders(
-        self, extra_folder_names, extra_filenames, sub
-    ):
+        self,
+        extra_folder_names: List[str],
+        extra_filenames: List[str],
+        sub: str,
+    ) -> None:
         """ """
         sub_level_folders, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
@@ -176,8 +179,12 @@ class TransferData:
         extra_filenames += ["/".join([sub, file]) for file in sub_level_files]
 
     def update_list_with_non_dtype_ses_level_folders(
-        self, extra_folder_names, extra_filenames, sub, ses
-    ):
+        self,
+        extra_folder_names: List[str],
+        extra_filenames: List[str],
+        sub: str,
+        ses: str,
+    ) -> None:
         (
             ses_level_folders,
             ses_level_filenames,
@@ -211,7 +218,7 @@ class TransferData:
 
     def update_list_with_dtype_paths(
         self,
-        sub_ses_dtype_include,
+        sub_ses_dtype_include: List[str],
         datatype: List[str],
         sub: str,
         ses: Optional[str] = None,
@@ -247,7 +254,7 @@ class TransferData:
 
     def check_input_arguments(
         self,
-    ):
+    ) -> None:
         """
         Check the sub / session names passed. The checking here
         is stricter than for make_folders / formatting.check_and_format_names
@@ -299,7 +306,7 @@ class TransferData:
         self,
         names_checked: List[str],
         sub: Optional[str] = None,
-    ):
+    ) -> List[str]:
         """
         Process the list of subject session names.
         If they are pre-defined (e.g. ["sub-001", "sub-002"])
