@@ -8,16 +8,15 @@ def setup_project_for_ssh(
     project, central_path, central_host_id, central_host_username
 ):
     """
-    Setup the project configs to use SSH connection
+    Set up the project configs to use SSH connection
     to central
     """
-    project.update_config(
-        "central_path",
-        central_path,
+    project.update_config_file(
+        central_path=central_path,
     )
-    project.update_config("central_host_id", central_host_id)
-    project.update_config("central_host_username", central_host_username)
-    project.update_config("connection_method", "ssh")
+    project.update_config_file(central_host_id=central_host_id)
+    project.update_config_file(central_host_username=central_host_username)
+    project.update_config_file(connection_method="ssh")
 
     rclone.setup_central_as_rclone_target(
         "ssh",

@@ -2,13 +2,12 @@ import copy
 from collections import UserDict
 from collections.abc import ItemsView, KeysView, ValuesView
 from pathlib import Path
-from typing import Any, Optional, Union, cast
+from typing import Optional, Union, cast
 
 import yaml
 
 from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.utils import folders, utils
-from datashuttle.utils.custom_exceptions import ConfigError
 
 
 class Configs(UserDict):
@@ -105,64 +104,6 @@ class Configs(UserDict):
         self.convert_str_and_pathlib_paths(config_dict, "str_to_path")
 
         self.data = config_dict
-
-    # -------------------------------------------------------------------------
-    # Update Configs
-    # -------------------------------------------------------------------------
-
-    def update_an_entry(self, option_key: str, new_info: Any) -> None:
-        """
-        Convenience function to update individual entry of configuration
-        file. The config file, and currently loaded self.cfg will be
-        updated.
-
-        In case an update is breaking, set to new value,
-        test validity and revert if breaking change.
-
-        Parameters
-        ----------
-
-        option_key : dictionary key of the option to change,
-            see make_config_file()
-
-        new_info : value to update the config too
-        """
-        if option_key not in self:
-            utils.log_and_raise_error(
-                f"'{option_key}' is not a valid config.", ConfigError
-            )
-
-        original_value = copy.deepcopy(self[option_key])
-
-        if option_key in self.keys_str_on_file_but_path_in_class:
-            new_info = Path(new_info)
-
-        self[option_key] = new_info
-
-        check_change = self.safe_check_current_dict_is_valid()
-
-        if check_change["passed"]:
-            self.dump_to_file()
-            utils.log_and_message(
-                f"{option_key} has been updated to {new_info}"
-            )
-
-            if option_key in ["connection_method", "central_path"]:
-                if self["connection_method"] == "ssh":
-                    utils.log_and_message(
-                        f"SSH will be used to connect to project folder at: {self['central_path']}"
-                    )
-                elif self["connection_method"] == "local_filesystem":
-                    utils.log_and_message(
-                        f"Local filesystem will be used to connect to project "
-                        f"folder at: {self['central_path'].as_posix()}"
-                    )
-        else:
-            self[option_key] = original_value
-            utils.log_and_raise_error(
-                f"\n{check_change['error']}\n{option_key} was not updated.",
-                ConfigError,
-            )
 
     def safe_check_current_dict_is_valid(self) -> dict:
         """

@@ -71,14 +71,11 @@ class TestLogging:
     def read_log_file(self, logging_path):
         log_filepath = glob.glob(str(logging_path / "*.log"))
 
-        try:
-            assert len(log_filepath) == 1, (
-                f"there should only be one log "
-                f"in log output path {logging_path}"
-            )
-            log_filepath = log_filepath[0]
-        except:
-            breakpoint()
+        assert len(log_filepath) == 1, (
+            f"there should only be one log "
+            f"in log output path {logging_path}"
+        )
+        log_filepath = log_filepath[0]
 
         with open(log_filepath, "r") as file:
             log = file.read()
@@ -94,9 +91,9 @@ class TestLogging:
     def test_log_filename(self, project):
         """
         Check the log filename is formatted correctly, for
-        `update_config`, an arbitrary command
+        `update_config_file`, an arbitrary command
         """
-        project.update_config("central_host_id", "test_id")
+        project.update_config_file(central_host_id="test_id")
 
         log_search = list(project.cfg.logging_path.glob("*.log"))
         assert (
@@ -104,7 +101,7 @@ class TestLogging:
         ), "should only be 1 log in this test environment."
         log_filename = log_search[0].name
 
-        regex = re.compile(r"\d{8}T\d{6}_update-config.log")
+        regex = re.compile(r"\d{8}T\d{6}_update-config-file.log")
         assert re.search(regex, log_filename) is not None
 
     def test_logs_make_config_file(self, clean_project_name, tmp_path):
@@ -128,17 +125,16 @@ class TestLogging:
         )
         assert "Update successful. New config file:" in log
 
-    def test_logs_update_config(self, project):
-        project.update_config("central_host_id", "test_id")
+    def test_logs_update_config_file(self, project):
+        project.update_config_file(central_host_id="test_id")
 
         log = self.read_log_file(project.cfg.logging_path)
 
-        assert "Starting logging for command update-config" in log
+        assert "Starting logging for command update-config-file" in log
         assert (
-            "\n\nVariablesState:\nlocals: {'option_key': 'central_host_id'"
+            "\n\nVariablesState:\nlocals: {'kwargs': {'central_host_id':"
             in log
         )
-        assert "central_host_id has been updated to test_id" in log
         assert "Update successful. New config file:" in log
         assert """ "central_host_id": "test_id",\n """ in log
 
@@ -239,8 +235,8 @@ class TestLogging:
             "all",
         )
 
-        project.update_config("show_transfer_progress", False)
-        project.update_config("transfer_verbosity", "vv")
+        project.update_config_file(show_transfer_progress=False)
+        project.update_config_file(transfer_verbosity="vv")
 
         (
             transfer_function,
@@ -300,8 +296,8 @@ class TestLogging:
             datatype="all",
         )
 
-        project.update_config("show_transfer_progress", False)
-        project.update_config("transfer_verbosity", "vv")
+        project.update_config_file(show_transfer_progress=False)
+        project.update_config_file(transfer_verbosity="vv")
 
         test_utils.handle_upload_or_download(
             project,
@@ -469,18 +465,19 @@ class TestLogging:
     def test_logs_check_update_config_error(self, project):
         """"""
         with pytest.raises(ConfigError):
-            project.update_config("connection_method", "ssh")
+            project.update_config_file(
+                connection_method="ssh", central_host_username=None
+            )
 
         log = self.read_log_file(project.cfg.logging_path)
 
         assert (
-            "'central_host_id' and 'central_host_username' are "
-            "required if 'connection_method' is 'ssh'." in log
+            "'central_host_username' are required if 'connection_method' is 'ssh'"
+            in log
         )
-
         assert (
-            "\n\nVariablesState:\nlocals: {'option_key': "
-            "'connection_method', 'new_info': 'ssh'" in log
+            "VariablesState:\nlocals: {'kwargs': {'connection_method': 'ssh'"
+            in log
         )
 
     def test_logs_bad_make_folders_error(self, project):

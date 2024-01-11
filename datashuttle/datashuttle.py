@@ -5,6 +5,7 @@ import glob
 import json
 import os
 import shutil
+import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
 
@@ -571,7 +572,7 @@ class DataShuttle:
         """
         Setup a connection to the central server using SSH.
         Assumes the central_host_id and central_host_username
-        are set in configs (see make_config_file() and update_config())
+        are set in configs (see make_config_file() and update_config_file())
 
         First, the server key will be displayed, requiring
         verification of the server ID. This will store the
@@ -645,7 +646,7 @@ class DataShuttle:
         on the local machine. Use show_config_path() to
         get the full path to the saved config file.
 
-        Use update_config() to update a single config, and
+        Use update_config_file() to update a single config, and
         supply_config() to use an existing config file.
 
         Parameters
@@ -700,6 +701,14 @@ class DataShuttle:
             store_in_temp_folder=True,
         )
 
+        if self._config_path.is_file():
+            warnings.warn(
+                "A config file already exists. This function will completely"
+                "overwrite the existing config file, and any arguments not"
+                "passed to `make-config-file` will be set to the function defaults."
+                "Use `update-config-file` to selectively update settings."
+            )
+
         self.cfg = Configs(
             self.project_name,
             self._config_path,
@@ -733,44 +742,38 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
-    @check_configs_set
-    def update_config(
-        self, option_key: str, new_info: Union[Path, str, bool, None]
-    ) -> None:
-        """
-        Update a single config entry. This will overwrite the existing
-        entry in the saved configs file and be used for all future
-        datashuttle sessions.
-
-        Parameters
-        ----------
-
-        option_key :
-            dictionary key of the option to change,
-            see make_config_file() for available keys.
-
-        new_info :
-            value to update the config too
-        """
+    def update_config_file(self, **kwargs):
+        """ """
         if not self.cfg:
             utils.log_and_raise_error(
-                "Must have a config loaded before updating configs.",
-                ConfigError,
+                "Must have a config loaded before updating configs."
             )
 
         self._start_log(
-            "update-config",
+            "update-config-file",
             local_vars=locals(),
         )
 
-        new_info = load_configs.handle_bool(option_key, new_info)
+        for option, value in kwargs.items():
+            if option in self.cfg.keys_str_on_file_but_path_in_class:
+                kwargs[option] = Path(value)
 
-        self.cfg.update_an_entry(option_key, new_info)
-        self._set_attributes_after_config_load()
+        new_cfg = copy.deepcopy(self.cfg)
+        new_cfg.update(**kwargs)
 
-        self._log_successful_config_change()
+        check_change = new_cfg.safe_check_current_dict_is_valid()
 
-        ds_logger.close_log_filehandler()
+        if check_change["passed"]:
+            self.cfg = new_cfg
+            self._set_attributes_after_config_load()
+            self.cfg.dump_to_file()
+            self._log_successful_config_change(message=True)
+            ds_logger.close_log_filehandler()
+        else:
+            utils.log_and_raise_error(
+                f"{check_change['error']}\nConfigs were not updated.",
+                ConfigError,
+            )
 
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
