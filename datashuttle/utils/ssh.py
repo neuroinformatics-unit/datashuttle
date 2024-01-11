@@ -14,7 +14,7 @@ from typing import Any, List, Optional, Tuple
 
 import paramiko
 
-from . import utils
+from datashuttle.utils import utils
 
 # -----------------------------------------------------------------------------
 # SSH Setup

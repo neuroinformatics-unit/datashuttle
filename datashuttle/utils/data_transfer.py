@@ -1,12 +1,46 @@
 from pathlib import Path
 from typing import List, Literal, Optional, Union
 
-from ..configs import canonical_folders
-from ..configs.config_class import Configs
-from . import folders, formatting, rclone, utils
+from datashuttle.configs import canonical_folders
+from datashuttle.configs.config_class import Configs
+from datashuttle.utils import folders, formatting, rclone, utils
 
 
 class TransferData:
+    """
+    Class to perform data transfers. This works by first building
+    a large list of all files to transfer. Then, rclone is called
+    once with this list to perform the transfer.
+
+    Parameters
+    ----------
+
+    cfg : Configs,
+        datashuttle configs UserDict.
+
+    upload_or_download : Literal["upload", "download"]
+        Direction to perform the transfer.
+
+    sub_names : Union[str, List[str]]
+        List of subject names or single subject to transfer. This
+        can include transfer keywords (e.g. "all_non_sub").
+
+    ses_names : Union[str, List[str]]
+        List of sessions or single session to transfer, for each
+        subject. May include session-level transfer keywords.
+
+    datatype : Union[str, List[str]]
+        List of datatypes to transfer, for the sessions / subjects
+        specified. Can include datatype-level tranfser keywords.
+
+    dry_run : bool,
+        If `True`, transfer will not actually occur but will be logged
+        as if it did (to see what would happen for a transfer).
+
+    log : bool,
+        if `True`, log and print the transfer output.
+    """
+
     def __init__(
         self,
         cfg: Configs,
@@ -51,7 +85,21 @@ class TransferData:
     # -------------------------------------------------------------------------
 
     def build_a_list_of_all_files_and_folders_to_transfer(self) -> List[str]:
-        """ """
+        """
+        Build a list of every file to transfer based on the user-passed
+        arguments. This cycles through every subject, session and datatype
+        and adds the outputs to three lists:
+
+        `sub_ses_dtype_include` - files within datatype folders
+        `extra_folder_names` - folders that do not fall within datatype folders
+        `extra_file_names` - files that do not fall within datatype folders
+
+        Returns
+        -------
+
+        include_list : List[str]
+            A list of paths to pass to rclone's `--include` flag.
+        """
         # Find sub names to transfer
         processed_sub_names = self.get_processed_names(self.sub_names)
 
@@ -111,7 +159,10 @@ class TransferData:
     def make_include_arg(
         self, list_of_paths: List[str], recursive: bool = True
     ) -> List[str]:
-        """ """
+        """
+        Format the list of paths to rclone's required
+        `--include` flag format.
+        """
         if not any(list_of_paths):
             return []
 
@@ -134,6 +185,11 @@ class TransferData:
     def update_list_with_non_sub_top_level_folders(
         self, extra_folder_names: List[str], extra_filenames: List[str]
     ) -> None:
+        """
+        Search the subject level for all files and folders in the
+        top-level-folder. Split the output based onto files / folders
+        within "sub-" prefixed folders or not.
+        """
         top_level_folders, top_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_folder(self.local_or_central),
@@ -154,7 +210,10 @@ class TransferData:
         extra_filenames: List[str],
         sub: str,
     ) -> None:
-        """ """
+        """
+        For the subject, get a list of files / folders that are
+        not within "ses-" prefixed folders.
+        """
         sub_level_folders, sub_level_files = folders.search_sub_or_ses_level(
             self.cfg,
             self.cfg.get_base_folder(self.local_or_central),
@@ -185,6 +244,10 @@ class TransferData:
         sub: str,
         ses: str,
     ) -> None:
+        """
+        For a specific subject and session, get a list of files / folders
+        that are not in canonical datashuttle datatype folders.
+        """
         (
             ses_level_folders,
             ses_level_filenames,
@@ -223,7 +286,10 @@ class TransferData:
         sub: str,
         ses: Optional[str] = None,
     ) -> None:
-        """ """
+        """
+        Given a particular subject and session, get a list of all
+        canonical datatype folders.
+        """
         datatype = list(
             filter(lambda x: x != "all_ses_level_non_datatype", datatype)
         )

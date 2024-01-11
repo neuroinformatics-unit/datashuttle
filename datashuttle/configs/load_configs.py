@@ -2,11 +2,10 @@ import warnings
 from pathlib import Path
 from typing import Optional, Union, overload
 
+from datashuttle.configs import canonical_configs
+from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
 from datashuttle.utils.custom_exceptions import ConfigError
-
-from . import canonical_configs
-from .config_class import Configs
 
 ConfigValueTypes = Union[Path, str, bool, None]
 

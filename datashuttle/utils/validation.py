@@ -7,10 +7,9 @@ if TYPE_CHECKING:
 
 from itertools import chain
 
+from datashuttle.configs import canonical_folders
+from datashuttle.utils import getters, utils
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
-
-from ..configs import canonical_folders
-from . import getters, utils
 
 # -----------------------------------------------------------------------------
 # Checking a standalone list of names
