@@ -42,6 +42,8 @@ def setup_project_default_configs(
     )
     make_project_paths(default_configs)
 
+    make_project_paths(default_configs)
+
     project.make_config_file(**default_configs)
 
     rclone.setup_central_as_rclone_target(
@@ -529,6 +531,8 @@ def swap_local_and_central_paths(project, swap_last_folder_only=False):
         )
     else:
         os.makedirs(local_path, exist_ok=True)
+        os.makedirs(central_path, exist_ok=True)
+
         project.update_config("local_path", central_path)
         project.update_config("central_path", local_path)
 
