@@ -830,7 +830,7 @@ class DataShuttle:
     def get_datashuttle_path(self) -> Path:
         """
         Get the path to the local datashuttle
-        folder where configs another other
+        folder where configs and other
         datashuttle files are stored.
         """
         return self._datashuttle_path
