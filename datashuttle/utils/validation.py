@@ -61,7 +61,7 @@ def validate_list_of_names(
         return
 
     tests_to_run = [
-        lambda: name_beings_with_bad_key(names_list, prefix),
+        lambda: name_begins_with_bad_key(names_list, prefix),
         lambda: names_include_spaces(names_list),
         lambda: dashes_and_underscore_alternate_incorrectly(names_list),
         lambda: value_lengths_are_inconsistent(names_list, prefix),
@@ -129,7 +129,7 @@ def get_names_format(bad_names):
     return f"{name_str_format}: {bad_names_format}"
 
 
-def name_beings_with_bad_key(
+def name_begins_with_bad_key(
     names_list: List[str], prefix: Literal["sub", "ses"]
 ) -> Tuple[bool, str]:
     """
@@ -196,10 +196,15 @@ def dashes_and_underscore_alternate_incorrectly(
             discrim[ele] for ele in name if ele in ["-", "_"]
         ]
 
-        if dashes_underscores[0] != 1 or name[-1] in discrim.keys():
-            bad_names.append(name)
+        underscore_dash_not_interleaved = any(
+            [ele == 0 for ele in utils.diff(dashes_underscores)]
+        )
 
-        elif any([ele == 0 for ele in utils.diff(dashes_underscores)]):
+        if (
+            (dashes_underscores[0] != 1)
+            or underscore_dash_not_interleaved
+            or (name[-1] in discrim.keys())
+        ):
             bad_names.append(name)
 
     if bad_names:

@@ -1000,9 +1000,24 @@ class DataShuttle:
         self, error_or_warn: Literal["error", "warn"], local_only: bool = False
     ) -> None:
         """
-        Perform validation on the project. Currently checks that
-        sub and ses values have the same length for all sub and
-        ses in the project.
+        Perform validation on the project. This checks that the subject
+        and session level folders to ensure that:
+            - the digit lengths are consistent (e.g. sub-001 and sub-02 is not allowed)
+            - 'sub-' or 'ses-' is the first key of the name
+            - names do not include spaces
+            - check against name templates (if set)
+            - check for duplicate names across the project.
+
+        Parameters
+        ----------
+
+        error_or_warn : Literal["error", "warn"]
+            if "error", an exception is raised if validation fails. Otherwise,
+            warnings are shown.
+
+        local_only : bool
+            if `True`, only the local project is validated. Otherwise, both
+            local and central projects are validated.
         """
         self._start_log(
             "validate-project",
