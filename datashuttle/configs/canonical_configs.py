@@ -182,11 +182,11 @@ def check_folder_above_project_name_exists(config_dict: Configs) -> None:
     """
     Throw an error if the path above the project root does not exist.
     This validation is necessary (rather than simply
-    creating the passed folders) is to ensure the `local_path` or
+    creating the passed folders) to ensure the `local_path` or
     `central_path` are not accidentally set to a wrong
     location.
 
-    If the `connection_method` is "ssh" is it not possible to check the central
+    If the `connection_method` is "ssh" it is not possible to check the central
     path at this stage.
     """
 
@@ -201,7 +201,7 @@ def check_folder_above_project_name_exists(config_dict: Configs) -> None:
     if not (config_dict["local_path"].parent.is_dir()):
         if config_dict["connection_method"] == "ssh":
             extra_warning = (
-                "Also make sure the central_path`, is correct, as datashuttle "
+                "Also make sure the central_path` is correct, as datashuttle "
                 "cannot check it via SSH at this stage."
             )
         else:
