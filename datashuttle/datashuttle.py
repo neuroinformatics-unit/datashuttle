@@ -6,7 +6,7 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 import paramiko
 import yaml
@@ -260,23 +260,46 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def get_next_sub_number(self) -> Tuple[int, int]:
+    def get_next_sub_number(self, return_with_prefix: bool = True) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
         to find the next subject number.
+
+        Parameters
+        ----------
+
+        return_with_prefix : bool
+            If `True`, return with the "sub-" prefix.
         """
         return folders.get_next_sub_or_ses_number(
-            self.cfg, sub=None, search_str="sub-*"
+            self.cfg,
+            sub=None,
+            return_with_prefix=return_with_prefix,
+            search_str="sub-*",
         )
 
     @check_configs_set
-    def get_next_ses_number(self, sub: Optional[str]) -> Tuple[int, int]:
+    def get_next_ses_number(
+        self, sub: str, return_with_prefix: bool = True
+    ) -> str:
         """
         Convenience function for get_next_sub_or_ses_number
         to find the next session number.
+
+        Parameters
+        ----------
+
+        sub: Optional[str]
+            Name of the subject to find the next session of.
+
+        return_with_prefix : bool
+            If `True`, return with the "ses-" prefix.
         """
         return folders.get_next_sub_or_ses_number(
-            self.cfg, sub=sub, search_str="ses-*"
+            self.cfg,
+            sub=sub,
+            return_with_prefix=return_with_prefix,
+            search_str="ses-*",
         )
 
     # -------------------------------------------------------------------------
@@ -895,24 +918,12 @@ class DataShuttle:
         behavioural machine and central machine, but not the
         electrophysiological machine.
         """
-        suggested_new_num, latest_existing_num = self.get_next_sub_number()
+        suggested_new_num = self.get_next_sub_number()
 
         utils.print_message_to_user(
             "Local and Central repository searched. "
-            f"The most recent subject number found is: {latest_existing_num}. "
             f"The suggested new subject number is: {suggested_new_num}"
         )
-
-    @check_configs_set
-    def validate_project(self):
-        """
-        Perform validation on the project. Currently checks that
-        sub and ses values have the same length for all sub and
-        ses in the project.
-        """
-        utils.print_message_to_user("Validating project...")
-
-        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
 
     @check_configs_set
     def show_next_ses_number(self, sub: Optional[str]) -> None:
@@ -936,11 +947,10 @@ class DataShuttle:
 
         sub : the subject for which to suggest the next available session.
         """
-        latest_existing_num, suggested_new_num = self.get_next_ses_number(sub)
+        suggested_new_num = self.get_next_ses_number(sub)
 
         utils.print_message_to_user(
             f"Local and Central repository searched for sessions for {sub}. "
-            f"The most recent session number found is: {latest_existing_num}. "
             f"The suggested new session number is: {suggested_new_num}"
         )
 
@@ -954,6 +964,17 @@ class DataShuttle:
         utils.print_message_to_user(
             f"The existing project names are {project_names}."
         )
+
+    @check_configs_set
+    def validate_project(self):
+        """
+        Perform validation on the project. Currently checks that
+        sub and ses values have the same length for all sub and
+        ses in the project.
+        """
+        utils.print_message_to_user("Validating project...")
+
+        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
 
     @staticmethod
     def check_name_formatting(

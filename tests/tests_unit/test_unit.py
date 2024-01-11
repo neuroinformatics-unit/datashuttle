@@ -3,7 +3,7 @@ import re
 import pytest
 
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils import formatting, utils
+from datashuttle.utils import folders, formatting, utils
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
@@ -294,16 +294,124 @@ class TestUnit:
                 "sub",
                 return_as_int=True,
             )
-        assert "Invalid character in sub number: sub-a_date-12345" == str(
+
+        assert "Invalid character in subject or session value: a" == str(
             e.value
         )
 
-    # -------------------------------------------------------
-    #
-    #
-    # ---------------
-    # Utlis
-    # ----------------------------------------------------------------------
+    # Test getting max sub or ses num from list
+    # ----------------------------------------------------------------------------------
+
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    @pytest.mark.parametrize("default_num_value_digits", [0, 1, 11, 99, 101])
+    def test_get_max_sub_or_ses_num_and_value_length_empty(
+        self, prefix, default_num_value_digits
+    ):
+        """
+        When the list of sub or ses names is empty, the returned max number
+        should be zero and the `default_num_value_digits` be set to the passed default
+        """
+        (
+            max_value,
+            num_digits,
+        ) = folders.get_max_sub_or_ses_num_and_value_length(
+            [], prefix, default_num_value_digits
+        )
+
+        assert max_value == 0
+        assert num_digits == default_num_value_digits
+
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    def test_get_max_sub_or_ses_num_and_value_length_error(self, prefix):
+        """
+        An error will be shown if the sub or ses value digits are inconsistent,
+        because it is not possible to return the number of values required.
+
+        A warning should be shown in that the number of value digits are
+        inconsistent, as the user may be confused as to the real max.
+        """
+        bad_num_values_names = [
+            f"{prefix}-001",
+            f"{prefix}-02",
+            f"{prefix}-003",
+        ]
+
+        with pytest.raises(BaseException) as e:
+            folders.get_max_sub_or_ses_num_and_value_length(
+                bad_num_values_names, prefix
+            )
+
+        assert (
+            f"The number of value digits for the {prefix} level are not consistent."
+            in str(e.value)
+        )
+
+        bad_sub_num_names = [
+            f"{prefix}-0001",
+            f"{prefix}-0002",
+            f"{prefix}-0004",
+            f"{prefix}-0005",
+        ]
+
+        with pytest.warns(UserWarning) as w:
+            (
+                max_num,
+                num_digits,
+            ) = folders.get_max_sub_or_ses_num_and_value_length(
+                bad_sub_num_names, prefix
+            )
+
+        assert (
+            "A subject number has been skipped, currently used subject "
+            "numbers are: [1, 2, 4, 5]" in str(w[0].message)
+        )
+        assert max_num == 5
+        assert num_digits == 4
+
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    @pytest.mark.parametrize("test_num_digits", [1, 4, 11])
+    @pytest.mark.parametrize("test_max_num", [1, 9, 99, 101])
+    def test_get_max_sub_or_ses_num_and_value_length(
+        self, prefix, test_max_num, test_num_digits
+    ):
+        """
+        Test many combinations of subject names and number of digits for a project,
+        e.g. `names = ["sub-001", ... "sub-101"]`.
+        """
+        if test_num_digits < (max_len := len(str(test_max_num))):
+            test_num_digits = max_len
+
+        names = []
+        for value in range(test_max_num + 1):
+            format_name = f"{prefix}-{str(value).zfill(test_num_digits)}"
+            names.append(format_name)
+
+        max_num, num_digits = folders.get_max_sub_or_ses_num_and_value_length(
+            names, prefix
+        )
+
+        assert max_num == test_max_num
+        assert num_digits == test_num_digits
+
+    @pytest.mark.parametrize("prefix", ["sub", "ses"])
+    def test_get_max_sub_or_ses_num_and_value_length_edge_case(self, prefix):
+        """
+        Test the edge case where the subject does not start at zero,
+        though in practice this should not happen.
+        TODO: this is not explicitly validated in the project.
+        """
+        names = [f"{prefix}-09", f"{prefix}-10", f"{prefix}-11"]
+
+        max_num, num_digits = folders.get_max_sub_or_ses_num_and_value_length(
+            names, prefix
+        )
+
+        assert max_num == 11
+        assert num_digits == 2
+
+    # ----------------------------------------------------------------------------------
+    # Utils
+    # ----------------------------------------------------------------------------------
 
     def make_name(self, key, underscore_position, start, end):
         """

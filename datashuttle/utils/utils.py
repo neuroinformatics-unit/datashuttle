@@ -156,13 +156,7 @@ def get_values_from_bids_formatted_name(
             )
 
         if return_as_int:
-            try:
-                value_to_append = int(value[0])
-            except ValueError:
-                raise_error(
-                    f"Invalid character in {key} number: {name}",
-                    NeuroBlueprintError,
-                )
+            value_to_append = sub_or_ses_value_to_int(value[0])
         else:
             value_to_append = value[0]
 
@@ -172,6 +166,17 @@ def get_values_from_bids_formatted_name(
         all_values = sorted(all_values)
 
     return all_values
+
+
+def sub_or_ses_value_to_int(value: str) -> int:
+    try:
+        int_value = int(value)
+    except ValueError:
+        raise_error(
+            f"Invalid character in subject or session value: {value}",
+            NeuroBlueprintError,
+        )
+    return int_value
 
 
 def get_value_from_key_regexp(name, key):
