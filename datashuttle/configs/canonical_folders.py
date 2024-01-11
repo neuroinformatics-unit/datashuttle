@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Tuple
 
 if TYPE_CHECKING:
-    from .config_class import Configs
+    pass
 
 from pathlib import Path
 
 from datashuttle.utils.folder_class import Folder
 
 
-def get_datatype_folders(cfg: Configs) -> dict:
+def get_datatype_folders() -> dict:
     """
     This function holds the canonical folders
     managed by datashuttle.

@@ -269,14 +269,9 @@ def check_folder_tree_is_correct(
     on the structure specified on project itself.
 
     Cycle through all datatypes (defined in
-    project.cfg.datatype_folders()), sub, sessions and check that
+    canonical_folders.get_datatype_folders(), sub, sessions and check that
     the expected file exists. For  subfolders, recursively
     check all exist.
-
-    Folders in which folder_used[key] (where key
-    is the canonical dict key in project.cfg.datatype_folders())
-    is not used are expected  not to be made, and this
-     is checked.
 
     The folder_used variable must be passed so we don't
     rely on project settings itself,
@@ -290,7 +285,10 @@ def check_folder_tree_is_correct(
             path_to_ses_folder = join(base_folder, sub, ses)
             check_and_cd_folder(path_to_ses_folder)
 
-            for key, folder in project.cfg.datatype_folders.items():
+            for (
+                key,
+                folder,
+            ) in canonical_folders.get_datatype_folders().items():
                 assert key in folder_used.keys(), (
                     "Key not found in folder_used. "
                     "Update folder used and hard-coded tests: "

@@ -9,121 +9,9 @@ from base import BaseTest
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestMakeFolders(BaseTest):
-    def test_duplicate_ses_or_sub_key_value_pair(self, project):
-        """
-        Test the check that if a duplicate key is attempt to be made
-        when making a folder e.g. sub-001 exists, then make sub-001_id-123.
-        After this check, make a folder that can be made (e.g. sub-003)
-        just to make sure it does not raise error.
-
-        Then, within an already made subject, try and make a session
-        with a ses that already exists and check.
-        """
-        # Check trying to make sub only
-        subs = ["sub-001_id-123", "sub-002_id-124"]
-        project.make_folders(subs)
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001_id-125")
-
-        assert (
-            "Cannot make folders. A sub already "
-            "exists with the same sub id as sub-001_id-125" in str(e.value)
-        )
-
-        project.make_folders("sub-003")
-
-        # check try and make ses within a sub
-        sessions = ["ses-001_date-1605", "ses-002_date-1606"]
-        project.make_folders(subs, sessions)
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001_id-123", "ses-002_date-1607")
-
-        assert (
-            "Cannot make folders. A ses already exists with the same "
-            "ses id as ses-002_date-1607" in str(e.value)
-        )
-
-        project.make_folders("sub-001_id-123", "ses-003")
-
-    def test_duplicate_sub_and_ses_num_leading_zeros(self, project):
-        """
-        Very similar to test_duplicate_ses_or_sub_key_value_pair(),
-        but explicitly check that error is raised if the same
-        number is used with different number of leading zeros.
-        """
-        project.make_folders("sub-001")
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-1")
-
-        assert (
-            str(e.value) == "Cannot make folders. "
-            "A sub already exists with the same sub id as sub-1. "
-            "The existing folder is sub-001."
-        )
-
-        project.make_folders("sub-001", "ses-3")
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001", "ses-003")
-
-        assert (
-            str(e.value) == "Cannot make folders. A ses already exists with "
-            "the same ses id as ses-003. The existing folder is ses-3."
-        )
-
-    def test_duplicate_sub_when_creating_session(self, project):
-        """
-        Check the unique case that a duplicate subject is
-        introduced when the session is made.
-        """
-        project.make_folders("sub-001")
-
-        for bad_sub_name in ["sub-1", "sub-1_@DATE", "sub-001_extra-key"]:
-            with pytest.raises(NeuroBlueprintError) as e:
-                project.make_folders(bad_sub_name, "ses-001")
-            assert "Cannot make folders. A sub already exists" in str(e.value)
-
-        project.make_folders("sub-001", "ses-001")
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001", "ses-001_extra-key", "behav")
-        assert (
-            "Cannot make folders. A ses already exists with the same ses id as ses-001"
-            in str(e.value)
-        )
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001_extra-key", "ses-001", "behav")
-        assert "Cannot make folders. A sub already exists " in str(e.value)
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders(
-                "sub-001_extra-key", "ses-001_@DATE@", "behav"
-            )
-        assert "Cannot make folders. A sub already exists " in str(e.value)
-
-        project.make_folders("sub-001", "ses-001", "behav")
-
-        project.make_folders("sub-001", ["ses-001", "ses-002"])
-
-        # Finally check that in a list of subjects, only the correct subject
-        # with duplicate session is caught.
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders(
-                ["sub-001", "sub-002"], "ses-002_@DATE@", "ephys"
-            )
-        assert (
-            "Cannot make folders. A ses already exists with the same ses id as ses-002"
-            in str(e.value)
-        )
-
     def test_generate_folders_default_ses(self, project):
         """
         Make a subject folders with full tree. Don't specify
@@ -223,16 +111,24 @@ class TestMakeFolders(BaseTest):
             },
         )
 
-    def test_custom_folder_names(self, project):
+    def test_custom_folder_names(self, project, monkeypatch):
         """
         Change folder names to custom (non-default) and
         ensure they are made correctly.
         """
-        # Change folder names to custom names
-        project.cfg.datatype_folders["ephys"].name = "change_ephys"
-        project.cfg.datatype_folders["behav"].name = "change_behav"
-        project.cfg.datatype_folders["anat"].name = "change_anat"
-        project.cfg.datatype_folders["funcimg"].name = "change_funcimg"
+        new_name_datafolders = canonical_folders.get_datatype_folders()
+        new_name_datafolders["ephys"].name = "change_ephys"
+        new_name_datafolders["behav"].name = "change_behav"
+        new_name_datafolders["anat"].name = "change_anat"
+        new_name_datafolders["funcimg"].name = "change_funcimg"
+
+        def new_name_func():
+            return new_name_datafolders
+
+        monkeypatch.setattr(
+            "datashuttle.configs.canonical_folders.get_datatype_folders",
+            new_name_func,
+        )
 
         # Make the folders
         sub = "sub-001"
@@ -240,8 +136,9 @@ class TestMakeFolders(BaseTest):
 
         project.make_folders(sub, ses, "all")
 
-        # Check the folders were not made / made.
+        # Check the correct folder names were made
         base_folder = test_utils.get_top_level_folder_path(project)
+
         test_utils.check_and_cd_folder(
             join(
                 base_folder,
@@ -462,26 +359,6 @@ class TestMakeFolders(BaseTest):
 
         new_num = project.get_next_ses_number(sub, return_with_prefix)
         assert new_num == "ses-006" if return_with_prefix else "006"
-
-    def test_invalid_sub_and_ses_name(self, project):
-        """
-        This is a slightly weird case, the name is successfully
-        prefixed as 'sub-sub_100` but when the value if `sub-` is
-        extracted, it is also "sub" and so an error is raised.
-        """
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub_100")
-
-        assert "Invalid character in subject or session value: sub" in str(
-            e.value
-        )
-
-        with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders("sub-001", "ses_100")
-
-        assert "Invalid character in subject or session value: ses" in str(
-            e.value
-        )
 
     # ----------------------------------------------------------------------------------
     # Test Helpers

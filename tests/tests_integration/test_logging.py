@@ -486,11 +486,63 @@ class TestLogging:
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(NeuroBlueprintError):
-            project.make_folders("sub-01", datatype="all")
-
+            project.make_folders(
+                "sub-001_datetime-123213T123122", datatype="all"
+            )
         log = self.read_log_file(project.cfg.logging_path)
 
         assert (
-            "Cannot make folders. A sub already exists with the same sub id as sub-01. "
+            "A sub already exists with the same "
+            "sub id as sub-001_datetime-123213T123122. "
             "The existing folder is sub-001" in log
         )
+
+    def test_validate_project_logging(self, project):
+        """
+        Test that `validate_project` logs errors
+        and warnings to file.
+        """
+        # Make conflicting subject folders
+        project.make_folders(["sub-001", "sub-002"])
+        for sub in ["sub-1", "sub-002_date-2023"]:
+            os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
+
+        self.delete_log_files(project.cfg.logging_path)
+
+        # Check a validation error is logged.
+        with pytest.raises(BaseException) as e:
+            project.validate_project(error_or_warn="error")
+
+        log = self.read_log_file(project.cfg.logging_path)
+        assert "ERROR" in log
+        assert str(e.value) in log
+
+        self.delete_log_files(project.cfg.logging_path)
+
+        # Check that validation warnings are logged.
+        with pytest.warns(UserWarning) as w:
+            project.validate_project(error_or_warn="warn")
+
+        log = self.read_log_file(project.cfg.logging_path)
+
+        assert "WARNING" in log
+
+        for idx in range(len(w)):
+            assert str(w[idx].message) in log
+
+    def test_validate_names_against_project_logging(self, project):
+        """
+        Implicitly test `validate_names_against_project` called when
+        `make_project_folders` is called, that it logs errors
+        to file. Warnings are not tested.
+        """
+        project.make_folders("sub-001")
+        self.delete_log_files(project.cfg.logging_path)  #
+
+        with pytest.raises(BaseException) as e:
+            project.make_folders("sub-001_id-a")
+
+        log = self.read_log_file(project.cfg.logging_path)
+
+        assert "ERROR" in log
+        assert str(e.value) in log

@@ -21,6 +21,7 @@ from datashuttle.utils import (
     rclone,
     ssh,
     utils,
+    validation,
 )
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
@@ -124,8 +125,6 @@ class DataShuttle:
 
         self._make_project_metadata_if_does_not_exist()
 
-        self.cfg.init_datatype_folders()
-
     # -------------------------------------------------------------------------
     # Public Folder Makers
     # -------------------------------------------------------------------------
@@ -199,12 +198,14 @@ class DataShuttle:
             @TO@ :
                 used to make a range of subjects / sessions.
                 Boundaries of the range must be either side of the tag
-                e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
+                e.g. sub-001@TO@003 will generate
+                 ["sub-001", "sub-002", "sub-003"]
 
             @DATE@, @TIME@ @DATETIME@ :
                 will add date-<value>, time-<value> or
                 date-<value>_time-<value> keys respectively. Only one per-name
-                is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
+                is permitted.
+                e.g. sub-001_@DATE@ will generate sub-001_date-20220101
                 (on the 1st january, 2022).
 
         Examples
@@ -234,11 +235,8 @@ class DataShuttle:
             [sub_names, ses_names],
         )
 
-        folders.check_no_duplicate_sub_ses_key_values(
-            self,
-            base_folder=self.cfg.get_base_folder("local"),
-            new_sub_names=sub_names,
-            new_ses_names=ses_names,
+        validation.validate_names_against_project(
+            self.cfg, sub_names, ses_names, local_only=True
         )
 
         utils.log("\nMaking folders...")
@@ -358,11 +356,14 @@ class DataShuttle:
 
         @*@: wildcard search for subject names. e.g. ses-001_date-@*@
              will transfer all session 001 collected on all dates.
-        @TO@: used to transfer a range of sub/ses. Number must be either side of the tag
-              e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
+        @TO@: used to transfer a range of sub/ses.
+              Number must be either side of the tag
+              e.g. sub-001@TO@003 will generate
+              ["sub-001", "sub-002", "sub-003"]
         @DATE@, @TIME@ @DATETIME@: will add date-<value>, time-<value> or
               date-<value>_time-<value> keys respectively. Only one per-name
-              is permitted. e.g. sub-001_@DATE@ will generate sub-001_date-20220101
+              is permitted.
+              e.g. sub-001_@DATE@ will generate sub-001_date-20220101
               (on the 1st january, 2022).
         """
         if init_log:
@@ -399,7 +400,8 @@ class DataShuttle:
 
         This function is identical to upload() but with the direction
         of data transfer reversed. Please see upload() for arguments.
-        "all" arguments will search the central project for sub / ses to download.
+        "all" arguments will search the central
+        project for sub / ses to download.
         """
         if init_log:
             self._start_log("download", local_vars=locals())
@@ -705,7 +707,8 @@ class DataShuttle:
             warnings.warn(
                 "A config file already exists. This function will completely"
                 "overwrite the existing config file, and any arguments not"
-                "passed to `make-config-file` will be set to the function defaults."
+                "passed to `make-config-file` will be set to the function "
+                "defaults. "
                 "Use `update-config-file` to selectively update settings."
             )
 
@@ -969,15 +972,24 @@ class DataShuttle:
         )
 
     @check_configs_set
-    def validate_project(self):
+    def validate_project(
+        self, error_or_warn: Literal["error", "warn"], local_only: bool = False
+    ) -> None:
         """
         Perform validation on the project. Currently checks that
         sub and ses values have the same length for all sub and
         ses in the project.
         """
-        utils.print_message_to_user("Validating project...")
+        self._start_log(
+            "validate-project",
+            local_vars=locals(),
+        )
 
-        formatting.warn_on_inconsistent_sub_or_ses_value_lengths(self.cfg)
+        validation.validate_project(
+            self.cfg, local_only=local_only, error_or_warn=error_or_warn
+        )
+
+        ds_logger.close_log_filehandler()
 
     @staticmethod
     def check_name_formatting(
@@ -1012,9 +1024,9 @@ class DataShuttle:
         formatted_names = formatting.format_names(names, prefix)
         utils.print_message_to_user(formatted_names)
 
-    # =========================================================================
+    # -------------------------------------------------------------------------
     # Private Functions
-    # =========================================================================
+    # -------------------------------------------------------------------------
 
     def _transfer_entire_project(
         self, direction: Literal["upload", "download"]

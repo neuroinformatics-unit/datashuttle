@@ -12,16 +12,17 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from datashuttle import DataShuttle
     from datashuttle.configs.config_class import Configs
 
 import glob
 import os
 import warnings
+from collections.abc import ItemsView
 from pathlib import Path
 
-from ..configs import canonical_folders, canonical_tags
-from . import folders, formatting, ssh, utils
+from datashuttle.configs import canonical_folders, canonical_tags
+
+from . import folders, ssh, utils, validation
 from .custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -57,7 +58,11 @@ def make_folder_trees(
     datatype_passed = datatype not in [[""], ""]
 
     if datatype_passed:
-        formatting.check_datatype_is_valid(cfg, datatype, error_on_fail=True)
+        is_invalid, message = validation.datatypes_are_invalid(
+            datatype, allow_all=True
+        )
+        if is_invalid:
+            utils.log_and_raise_error(message, NeuroBlueprintError)
 
     for sub in sub_names:
         sub_path = cfg.make_path(
@@ -144,114 +149,6 @@ def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
                 utils.log(f"Made folder at path: {path_}")
 
 
-def check_no_duplicate_sub_ses_key_values(
-    project: DataShuttle,
-    base_folder: Path,
-    new_sub_names: List[str],
-    new_ses_names: Optional[List[str]] = None,
-) -> None:
-    """
-    Given a list of subject and optional session names,
-    check whether these already exist in the local project
-    folder.
-
-    This uses search_sub_or_ses_level() to search the local
-    folder and then checks for the putative new subject
-    or session names to determine any matches.
-
-    Parameters
-    ----------
-
-    project : initialised datashuttle project
-
-    base_folder : local_path to search
-
-    new_sub_names : list of subject names that are being
-     checked for duplicates
-
-    new_ses_names : list of session names that are being
-     checked for duplicates
-    """
-    if new_ses_names == []:
-        new_ses_names = None
-
-    for new_sub in new_sub_names:
-        existing_names = search_sub_or_ses_level(
-            project.cfg, base_folder, "local", search_str="*sub-*"
-        )[0]
-
-        check_new_subject_does_not_duplicate_existing(
-            new_sub, existing_names, "sub"
-        )
-
-    if new_ses_names is not None:
-        for sub in new_sub_names:
-            existing_names = search_sub_or_ses_level(
-                project.cfg, base_folder, "local", sub, search_str="*ses-*"
-            )[0]
-
-            for new_ses in new_ses_names:
-                check_new_subject_does_not_duplicate_existing(
-                    new_ses, existing_names, "ses"
-                )
-
-
-def check_new_subject_does_not_duplicate_existing(
-    new_name: str, existing_names: List[str], prefix: Literal["sub", "ses"]
-) -> None:
-    """
-    Check that a subject or session does not already exist
-    that shares a sub / ses id with the new_name.
-
-    When creating new subject or session files, if the
-    sub or ses id already exists, the full subject or session
-    name should match exactly.
-
-    For example, if "sub-001" exists, we can pass
-    "sub-001" as a valid subject name (for example, when making sessions).
-    However, if "sub-001_another-tag" exists, we should throw an
-    error, because this shares the same subject id but refers to
-    a different subject.
-    """
-    # For every existing subject / session name,
-    # check whether the id matches the new name. If it
-    # does, add the full name to `matched_existing_names`.
-    matched_existing_names = []
-    for exist_name in existing_names:
-        exist_name_id = utils.get_values_from_bids_formatted_name(
-            [exist_name], prefix, return_as_int=True
-        )[0]
-        new_name_id = utils.get_values_from_bids_formatted_name(
-            [new_name], prefix, return_as_int=True
-        )[0]
-
-        if exist_name_id == new_name_id:
-            matched_existing_names.append(exist_name)
-
-    # We expect either zero matches (subject or session with matching id
-    # does not exist. We can pass this case, as file will be made).
-    # If more than 1 duplicates already exist, raise.
-    # If exactly one exists, check it matches the new name exactly. Otherwise,
-    # it is a duplicate.
-    if len(matched_existing_names) > 1:
-        utils.log_and_raise_error(
-            f"Cannot make folders. Multiple {prefix} ids "
-            f"exist: {matched_existing_names}. This should"
-            f"never happen. Check the {prefix} ids and ensure unique {prefix} "
-            f"ids (e.g. sub-001) appear only once.",
-            NeuroBlueprintError,
-        )
-
-    if len(matched_existing_names) == 1:
-        if new_name != matched_existing_names[0]:
-            utils.log_and_raise_error(
-                f"Cannot make folders. A {prefix} already exists "
-                f"with the same {prefix} id as {new_name}. "
-                f"The existing folder is {matched_existing_names[0]}.",
-                NeuroBlueprintError,
-            )
-
-
 # -----------------------------------------------------------------------------
 # Search Existing Folders
 # -----------------------------------------------------------------------------
@@ -260,68 +157,127 @@ def check_new_subject_does_not_duplicate_existing(
 # -----------------------------------------------------------------------------
 
 
-def search_sub_or_ses_level(
-    cfg: Configs,
-    base_folder: Path,
-    local_or_central: str,
-    sub: Optional[str] = None,
-    ses: Optional[str] = None,
-    search_str: str = "*",
-    verbose: bool = True,
-) -> Tuple[List[str], List[str]]:
+def get_all_sub_and_ses_names(
+    cfg: Configs, local_only: bool  # TODO: doc new behaviour!
+) -> Dict:
     """
-    Search project folder at the subject or session level.
-    Only returns folders
+    Get a list of every subject and session name in the
+    local and central project folders. Local and central names are combined
+    into a single list, separately for subject and sessions.
+
+    Note this only finds local sub and ses names on this
+    machine. Other local machines are not searched.
+    """
+    sub_folder_names = search_project_for_sub_or_ses_names(
+        cfg, None, "sub-*", local_only
+    )
+
+    if local_only:
+        all_sub_folder_names = sub_folder_names["local"]
+    else:
+        all_sub_folder_names = (
+            sub_folder_names["local"] + sub_folder_names["central"]
+        )
+
+    all_ses_folder_names = {}
+    for sub in all_sub_folder_names:
+        ses_folder_names = search_project_for_sub_or_ses_names(
+            cfg, sub, "ses-*", local_only
+        )
+
+        if local_only:
+            all_ses_folder_names[sub] = ses_folder_names["local"]
+        else:
+            all_ses_folder_names[sub] = (
+                ses_folder_names["local"] + ses_folder_names["central"]
+            )
+
+    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
+
+
+def search_project_for_sub_or_ses_names(
+    cfg: Configs, sub: Optional[str], search_str: str, local_only
+) -> Dict:
+    """
+    If sub is None, the top-level level folder will be
+    searched (i.e. for subjects). The search string "sub-*" is suggested
+    in this case. Otherwise, the subject, level folder for the specified
+    subject will be searched. The search_str "ses-*" is suggested in this case.
+
+    Note `verbose` argument of `search_sub_or_ses_level()` is set to `False`,
+    as session folders for local subjects that are not yet on central
+    will be searched for on central, showing a confusing 'folder not found'
+    message.
+    """
+
+    # Search local and central for folders that begin with "sub-*"
+    local_foldernames, _ = search_sub_or_ses_level(
+        cfg,
+        cfg.get_base_folder("local"),
+        "local",
+        sub=sub,
+        search_str=search_str,
+        verbose=False,
+    )
+    if local_only:
+        central_foldernames = None
+    else:
+        central_foldernames, _ = search_sub_or_ses_level(
+            cfg,
+            cfg.get_base_folder("central"),
+            "central",
+            sub,
+            search_str=search_str,
+            verbose=False,
+        )
+    return {"local": local_foldernames, "central": central_foldernames}
+
+
+# Search Data Types
+# -----------------------------------------------------------------------------
+
+
+def items_from_datatype_input(
+    cfg: Configs,
+    local_or_central: str,
+    datatype: Union[list, str],
+    sub: str,
+    ses: Optional[str] = None,
+) -> Union[ItemsView, zip]:
+    """
+    Get the list of datatypes to transfer, either
+    directly from user input, or by searching
+    what is available if "all" is passed.
 
     Parameters
     ----------
 
-    cfg : datashuttle project cfg. Currently, this is used
-        as a holder for  ssh configs to avoid too many
-        arguments, but this is not nice and breaks the
-        general rule that these functions should operate
-        project-agnostic.
-
-    local_or_central : search in local or central project
-
-    sub : either a subject name (string) or None. If None, the search
-        is performed at the top_level_folder level
-
-    ses : either a session name (string) or None, This must not
-        be a session name if sub is None. If provided (with sub)
-        then the session folder is searched
-
-    str : glob-format search string to search at the
-        folder level.
-
-    verbose : If `True`, if a search folder cannot be found, a message
-              will be printed with the un-found path.
+    see _transfer_datatype() for parameters.
     """
-    if ses and not sub:
-        utils.log_and_raise_error(
-            "cannot pass session to "
-            "search_sub_or_ses_level() without subject",
-            ValueError,
+    base_folder = cfg.get_base_folder(local_or_central)
+
+    if datatype not in [
+        "all",
+        ["all"],
+        "all_datatype",
+        ["all_datatype"],
+    ]:
+        datatype_items = cfg.get_datatype_items(
+            datatype,
+        )
+    else:
+        datatype_items = search_for_datatype_folders(
+            cfg,
+            base_folder,
+            local_or_central,
+            sub,
+            ses,
         )
 
-    if sub:
-        base_folder = base_folder / sub
-
-    if ses:
-        base_folder = base_folder / ses
-
-    all_folder_names, all_filenames = search_for_folders(
-        cfg,
-        base_folder,
-        local_or_central,
-        search_str,
-        verbose,
-    )
-
-    return all_folder_names, all_filenames
+    return datatype_items
 
 
-def search_data_folders_sub_or_ses_level(
+def search_for_datatype_folders(
     cfg: Configs,
     base_folder: Path,
     local_or_central: str,
@@ -329,7 +285,7 @@ def search_data_folders_sub_or_ses_level(
     ses: Optional[str] = None,
 ) -> zip:
     """
-    Search  a subject or session folder specifically
+    Search a subject or session folder specifically
     for datatypes. First searches for all folders / files
     in the folder, and then returns any folders that
     match datatype name.
@@ -348,9 +304,44 @@ def search_data_folders_sub_or_ses_level(
 
     data_folders = process_glob_to_find_datatype_folders(
         search_results,
-        cfg.datatype_folders,
+        canonical_folders.get_datatype_folders(),
     )
     return data_folders
+
+
+def process_glob_to_find_datatype_folders(
+    folder_names: list,
+    datatype_folders: dict,
+) -> zip:
+    """
+    Process the results of glob on a sub or session level,
+    which could contain any kind of folder / file.
+
+    see project.search_sub_or_ses_level() for inputs.
+
+    Returns
+    -------
+    Find the datatype files and return in
+    a format that mirrors dict.items()
+    """
+    ses_folder_keys = []
+    ses_folder_values = []
+    for name in folder_names:
+        datatype_key = [
+            key
+            for key, value in datatype_folders.items()
+            if value.name == name
+        ]
+
+        if datatype_key:
+            ses_folder_keys.append(datatype_key[0])
+            ses_folder_values.append(datatype_folders[datatype_key[0]])
+
+    return zip(ses_folder_keys, ses_folder_values)
+
+
+# Wildcards
+# -----------------------------------------------------------------------------
 
 
 def search_for_wildcards(
@@ -418,78 +409,73 @@ def search_for_wildcards(
     return new_all_names
 
 
-def get_all_sub_and_ses_names(
-    cfg: Configs,
-) -> Dict:
-    """
-    Get a list of every subject and session name in the
-    local and central project folders. Local and central names are combined
-    into a single list, separately for subject and sessions.
-
-    Note this only finds local sub and ses names on this
-    machine. Other local machines are not searched.
-    """
-    sub_folder_names = get_local_and_central_sub_or_ses_names(
-        cfg, None, "sub-*"
-    )
-
-    all_sub_folder_names = (
-        sub_folder_names["local"] + sub_folder_names["central"]
-    )
-
-    all_ses_folder_names = []
-    for sub in all_sub_folder_names:
-        ses_folder_names = get_local_and_central_sub_or_ses_names(
-            cfg, sub, "ses-*"
-        )
-
-        all_ses_folder_names.extend(
-            ses_folder_names["local"] + ses_folder_names["central"]
-        )
-
-    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
-
-
-# Search Data Types
 # -----------------------------------------------------------------------------
-
-
-def process_glob_to_find_datatype_folders(
-    folder_names: list,
-    datatype_folders: dict,
-) -> zip:
-    """
-    Process the results of glob on a sub or session level,
-    which could contain any kind of folder / file.
-
-    see project.search_sub_or_ses_level() for inputs.
-
-    Returns
-    -------
-    Find the datatype files and return in
-    a format that mirrors dict.items()
-    """
-    ses_folder_keys = []
-    ses_folder_values = []
-    for name in folder_names:
-        datatype_key = [
-            key
-            for key, value in datatype_folders.items()
-            if value.name == name
-        ]
-
-        if datatype_key:
-            ses_folder_keys.append(datatype_key[0])
-            ses_folder_values.append(datatype_folders[datatype_key[0]])
-
-    return zip(ses_folder_keys, ses_folder_values)
-
-
 # Low level search functions
 # -----------------------------------------------------------------------------
 
 
-def search_for_folders(  # TODO: change name
+def search_sub_or_ses_level(
+    cfg: Configs,
+    base_folder: Path,
+    local_or_central: str,
+    sub: Optional[str] = None,
+    ses: Optional[str] = None,
+    search_str: str = "*",
+    verbose: bool = True,
+) -> Tuple[List[str], List[str]]:
+    """
+    Search project folder at the subject or session level.
+    Only returns folders
+
+    Parameters
+    ----------
+
+    cfg : datashuttle project cfg. Currently, this is used
+        as a holder for  ssh configs to avoid too many
+        arguments, but this is not nice and breaks the
+        general rule that these functions should operate
+        project-agnostic.
+
+    local_or_central : search in local or central project
+
+    sub : either a subject name (string) or None. If None, the search
+        is performed at the top_level_folder level
+
+    ses : either a session name (string) or None, This must not
+        be a session name if sub is None. If provided (with sub)
+        then the session folder is searched
+
+    str : glob-format search string to search at the
+        folder level.
+
+    verbose : If `True`, if a search folder cannot be found, a message
+              will be printed with the un-found path.
+    """
+    if ses and not sub:
+        utils.log_and_raise_error(
+            "cannot pass session to "
+            "search_sub_or_ses_level() without subject",
+            ValueError,
+        )
+
+    if sub:
+        base_folder = base_folder / sub
+
+    if ses:
+        base_folder = base_folder / ses
+
+    all_folder_names, all_filenames = search_for_folders(
+        cfg,
+        base_folder,
+        local_or_central,
+        search_str,
+        verbose,
+    )
+
+    return all_folder_names, all_filenames
+
+
+def search_for_folders(
     cfg: Configs,
     search_path: Path,
     local_or_central: str,
@@ -548,41 +534,12 @@ def search_filesystem_path_for_folders(
     return all_folder_names, all_filenames
 
 
-def get_local_and_central_sub_or_ses_names(
-    cfg: Configs, sub: Optional[str], search_str: str
-) -> Dict:
-    """
-    If sub is None, the top-level level folder will be searched (i.e. for subjects).
-    The search string "sub-*" is suggested in this case. Otherwise, the subject,
-    level folder for the specified subject will be searched. The search_str
-    "ses-*" is suggested in this case.
-
-    Note `verbose` argument of `search_sub_or_ses_level()` is set to `False`,
-    as session folders for local subjects that are not yet on central
-    will be searched for on central, showing a confusing 'folder not found'
-    message.
-    """
-
-    # Search local and central for folders that begin with "sub-*"
-    local_foldernames, _ = search_sub_or_ses_level(
-        cfg,
-        cfg.get_base_folder("local"),
-        "local",
-        sub=sub,
-        search_str=search_str,
-        verbose=False,
-    )
-    central_foldernames, _ = search_sub_or_ses_level(
-        cfg,
-        cfg.get_base_folder("central"),
-        "central",
-        sub,
-        search_str=search_str,
-        verbose=False,
-    )
-    return {"local": local_foldernames, "central": central_foldernames}
+# -----------------------------------------------------------------------------
+# Project Getters (TODO: own module)
+# -----------------------------------------------------------------------------
 
 
+# TODO: add local only argument!
 def get_next_sub_or_ses_number(
     cfg: Configs,
     sub: Optional[str],
@@ -616,7 +573,7 @@ def get_next_sub_or_ses_number(
 
     return_with_prefix : bool
         If `True`, the next sub or ses value will include the prefix
-        e.g. "sub-001", otherwise the value alone will be returned (e.g. "001").
+        e.g. "sub-001", otherwise the value alone will be returned (e.g. "001")
 
     default_num_value_digits : int
         If no sub or ses exist in the project, the starting number is 1.
@@ -635,10 +592,9 @@ def get_next_sub_or_ses_number(
     else:
         prefix = "sub"
 
-    folder_names = get_local_and_central_sub_or_ses_names(
-        cfg,
-        sub,
-        search_str,
+    # TODO: check if can use `get_all_sub_and_ses_names()`.
+    folder_names = search_project_for_sub_or_ses_names(
+        cfg, sub, search_str, local_only=False  # TODO: handle this option!
     )
 
     all_folders = list(set(folder_names["local"] + folder_names["central"]))
