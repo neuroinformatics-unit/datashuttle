@@ -515,7 +515,7 @@ datashuttle my_first_project set-top-level-folder derivatives
 
 The *top-level-folder* setting will remain across Datashuttle sessions.
 
-To see the current *top-level-folder*, the command `show-top-level-folder` can be used.
+To see the current *top-level-folder*, the command `get-top-level-folder` can be used.
 
 :::
 

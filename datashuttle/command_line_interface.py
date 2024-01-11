@@ -193,7 +193,7 @@ def make_folders(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
-    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    filtered_kwargs = remove_nonetype_entries(kwargs)
 
     run_command(project, project.make_folders, **filtered_kwargs)
 
@@ -209,7 +209,7 @@ def upload(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
-    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    filtered_kwargs = remove_nonetype_entries(kwargs)
 
     run_command(
         project,
@@ -243,7 +243,7 @@ def download(project: DataShuttle, args: Any) -> None:
     """"""
     kwargs = make_kwargs(args)
 
-    filtered_kwargs = {k: v for k, v in kwargs.items() if v is not None}
+    filtered_kwargs = remove_nonetype_entries(kwargs)
 
     run_command(
         project,
@@ -321,37 +321,73 @@ def set_top_level_folder(project: DataShuttle, args: Any) -> None:
 # Get Local Path --------------------------------------------------------------
 
 
-def show_local_path(*args: Any) -> None:
+def get_local_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.show_local_path()
-
-
-# Get Appdir Path -------------------------------------------------------------
-
-
-def show_datashuttle_path(*args: Any) -> None:
-    """"""
-    project = args[0]
-    project.show_datashuttle_path()
-
-
-# Get Config Path -------------------------------------------------------------
-
-
-def show_config_path(*args: Any) -> None:
-    """"""
-    project = args[0]
-    project.show_config_path()
+    print(project.get_local_path())
 
 
 # Get Central Path ------------------------------------------------------------
 
 
-def show_central_path(*args: Any) -> None:
+def get_central_path(*args: Any) -> None:
     """"""
     project = args[0]
-    project.show_central_path()
+    print(project.get_central_path())
+
+
+# Get DataShuttle Path --------------------------------------------------------
+
+
+def get_datashuttle_path(*args: Any) -> None:
+    """"""
+    project = args[0]
+    print(project.get_datashuttle_path())
+
+
+# Get Config Path -------------------------------------------------------------
+
+
+def get_config_path(*args: Any) -> None:
+    """"""
+    project = args[0]
+    print(project.get_config_path())
+
+
+# Get Config Path -------------------------------------------------------------
+
+
+def get_logging_path(*args: Any) -> None:
+    """"""
+    project = args[0]
+    print(project.get_logging_path())
+
+
+# Get Existing Projects -------------------------------------------------------
+
+
+def get_existing_projects(*args: Any) -> None:
+    """"""
+    project = args[0]
+    print(project.get_existing_projects())
+
+
+# Get Next Sub Number --------------------------------------------------------
+
+
+def get_next_sub_number(*args: Any) -> None:
+    """"""
+    project = args[0]
+    print(project.get_next_sub_number())
+
+
+# Get Next Sub Number --------------------------------------------------------
+
+
+def get_next_ses_number(project: DataShuttle, args: Any) -> None:
+    """"""
+    kwargs = make_kwargs(args)
+    print(project.get_next_ses_number(kwargs["sub"]))
 
 
 # Show Configs ----------------------------------------------------------------
@@ -361,24 +397,6 @@ def show_configs(*args: Any) -> None:
     """"""
     project = args[0]
     project.show_configs()
-
-
-# Validate Project  -----------------------------------------------------------
-
-
-def validate_project(*args: Any) -> None:
-    """"""
-    project = args[0]
-    project.validate_project()
-
-
-# Show Logging Path -----------------------------------------------------------
-
-
-def show_logging_path(*args: Any) -> None:
-    """"""
-    project = args[0]
-    project.show_logging_path()
 
 
 # Show Local Tree -------------------------------------------------------------
@@ -393,34 +411,19 @@ def show_local_tree(*args: Any) -> None:
 # Show Top Level Folder -------------------------------------------------------
 
 
-def show_top_level_folder(*args: Any) -> None:
+def get_top_level_folder(*args: Any) -> None:
     """"""
     project = args[0]
-    project.show_top_level_folder()
+    print(project.get_top_level_folder())
 
 
-def show_existing_projects(*args: Any) -> None:
+# Validate Project  -----------------------------------------------------------
+
+
+def validate_project(*args: Any) -> None:
     """"""
     project = args[0]
-    project.show_existing_projects()
-
-
-# Show Next Sub Number --------------------------------------------------------
-
-
-def show_next_sub_number(*args: Any) -> None:
-    """"""
-    project = args[0]
-    project.show_next_sub_number()
-
-
-# Show Next Sub Number --------------------------------------------------------
-
-
-def show_next_ses_number(project: DataShuttle, args: Any) -> None:
-    """"""
-    kwargs = make_kwargs(args)
-    project.show_next_ses_number(kwargs["sub"])
+    project.validate_project(error_or_warn="warn", local_only=False)
 
 
 # Check Name Processing -------------------------------------------------------
@@ -828,48 +831,105 @@ def construct_parser():
         help=help("required_str"),
     )
 
-    # Show Local Path
+    # Get Local Path
     # -------------------------------------------------------------------------
 
-    show_local_path_parser = subparsers.add_parser(
-        "show-local-path",
-        aliases=["show_local_path"],
-        description=process_docstring(DataShuttle.show_local_path.__doc__),
+    get_local_path_parser = subparsers.add_parser(
+        "get-local-path",
+        aliases=["get_local_path"],
+        description=process_docstring(DataShuttle.get_local_path.__doc__),
         help="",
     )
-    show_local_path_parser.set_defaults(func=show_local_path)
-
-    show_datashuttle_path_parser = subparsers.add_parser(
-        "show-datashuttle-path",
-        aliases=["show_datashuttle_path"],
-        description=process_docstring(
-            DataShuttle.show_datashuttle_path.__doc__
-        ),
-        help="",
-    )
-    show_datashuttle_path_parser.set_defaults(func=show_datashuttle_path)
-
-    # Get Config Path
-    # -------------------------------------------------------------------------
-
-    show_config_path_parser = subparsers.add_parser(
-        "show-config-path",
-        aliases=["show_config_path"],
-        description=process_docstring(DataShuttle.show_config_path.__doc__),
-        help="",
-    )
-    show_config_path_parser.set_defaults(func=show_config_path)
+    get_local_path_parser.set_defaults(func=get_local_path)
 
     # Get Central Path
     # -------------------------------------------------------------------------
 
-    show_central_path_parser = subparsers.add_parser(
-        "show-central-path",
-        aliases=["show_central_path"],
-        description=process_docstring(DataShuttle.show_central_path.__doc__),
+    get_central_path_parser = subparsers.add_parser(
+        "get-central-path",
+        aliases=["get_central_path"],
+        description=process_docstring(DataShuttle.get_central_path.__doc__),
         help="",
     )
-    show_central_path_parser.set_defaults(func=show_central_path)
+    get_central_path_parser.set_defaults(func=get_central_path)
+
+    # Get DataShuttle Path
+    # -------------------------------------------------------------------------
+
+    get_datashuttle_path_parser = subparsers.add_parser(
+        "get-datashuttle-path",
+        aliases=["get_datashuttle_path"],
+        description=process_docstring(
+            DataShuttle.get_datashuttle_path.__doc__
+        ),
+        help="",
+    )
+    get_datashuttle_path_parser.set_defaults(func=get_datashuttle_path)
+
+    # Get Config Path
+    # -------------------------------------------------------------------------
+
+    get_config_path_parser = subparsers.add_parser(
+        "get-config-path",
+        aliases=["get_config_path"],
+        description=process_docstring(DataShuttle.get_config_path.__doc__),
+        help="",
+    )
+    get_config_path_parser.set_defaults(func=get_config_path)
+
+    # Get Logging Path
+    # -------------------------------------------------------------------------
+
+    get_logging_path_parser = subparsers.add_parser(
+        "get-logging-path",
+        aliases=["get_logging_path"],
+        description=process_docstring(DataShuttle.get_logging_path.__doc__),
+        help="",
+    )
+    get_logging_path_parser.set_defaults(func=get_logging_path)
+
+    # Get Existing Projects
+    # -------------------------------------------------------------------------
+
+    get_existing_projects_parser = subparsers.add_parser(
+        "get-existing-projects",
+        aliases=["get_existing_projects"],
+        description=process_docstring(
+            DataShuttle.get_existing_projects.__doc__
+        ),
+        help="",
+    )
+    get_existing_projects_parser.set_defaults(func=get_existing_projects)
+
+    # Get Next Sub Number
+    # -------------------------------------------------------------------------
+
+    get_next_sub_number_parser = subparsers.add_parser(
+        "get-next-sub-number",
+        aliases=["get_next_sub_number"],
+        description="Get the next subject number across "
+        "local and central machines.",
+        help="",
+    )
+    get_next_sub_number_parser.set_defaults(func=get_next_sub_number)
+
+    # Get Next Ses Number
+    # -------------------------------------------------------------------------
+
+    get_next_ses_number_parser = subparsers.add_parser(
+        "get-next-ses-number",
+        aliases=["get_next_ses_number"],
+        description="Get the next session number across "
+        "local and central machines.",
+        help="",
+    )
+    get_next_ses_number_parser.set_defaults(func=get_next_ses_number)
+
+    get_next_ses_number_parser.add_argument(
+        "sub",
+        type=str,
+        help="Required: (str) sub to find latest session for.",
+    )
 
     # Show Configs
     # -------------------------------------------------------------------------
@@ -881,17 +941,6 @@ def construct_parser():
         help="",
     )
     show_configs_parser.set_defaults(func=show_configs)
-
-    # Show Logging Path
-    # -------------------------------------------------------------------------
-
-    show_logging_path_parser = subparsers.add_parser(
-        "show-logging-path",
-        aliases=["show_logging_path"],
-        description=process_docstring(DataShuttle.show_logging_path.__doc__),
-        help="",
-    )
-    show_logging_path_parser.set_defaults(func=show_logging_path)
 
     # Show Local tree
     # -------------------------------------------------------------------------
@@ -907,60 +956,15 @@ def construct_parser():
     # Show Top Level Folder
     # -------------------------------------------------------------------------
 
-    show_top_level_folder_parser = subparsers.add_parser(
-        "show-top-level-folder",
-        aliases=["show_top_level_folder"],
+    get_top_level_folder_parser = subparsers.add_parser(
+        "get-top-level-folder",
+        aliases=["get_top_level_folder"],
         description=process_docstring(
-            DataShuttle.show_top_level_folder.__doc__
+            DataShuttle.get_top_level_folder.__doc__
         ),
         help="",
     )
-    show_top_level_folder_parser.set_defaults(func=show_top_level_folder)
-
-    # Show Existing Projects
-    # -------------------------------------------------------------------------
-
-    show_existing_projects_parser = subparsers.add_parser(
-        "show-existing-projects",
-        aliases=["show_existing_projects"],
-        description=process_docstring(
-            DataShuttle.show_existing_projects.__doc__
-        ),
-        help="",
-    )
-    show_existing_projects_parser.set_defaults(func=show_existing_projects)
-
-    # Show Next Sub Number
-    # -------------------------------------------------------------------------
-
-    show_next_sub_number_parser = subparsers.add_parser(
-        "show-next-sub-number",
-        aliases=["show_next_sub_number"],
-        description=process_docstring(
-            DataShuttle.show_next_sub_number.__doc__
-        ),
-        help="",
-    )
-    show_next_sub_number_parser.set_defaults(func=show_next_sub_number)
-
-    # Show Next Ses Number
-    # -------------------------------------------------------------------------
-
-    show_next_ses_number_parser = subparsers.add_parser(
-        "show-next-ses-number",
-        aliases=["show_next_ses_number"],
-        description=process_docstring(
-            DataShuttle.show_next_ses_number.__doc__
-        ),
-        help="",
-    )
-    show_next_ses_number_parser.set_defaults(func=show_next_ses_number)
-
-    show_next_ses_number_parser.add_argument(
-        "sub",
-        type=str,
-        help="Required: (str) sub to find latest session for.",
-    )
+    get_top_level_folder_parser.set_defaults(func=get_top_level_folder)
 
     # Validate Project
     # -------------------------------------------------------------------------

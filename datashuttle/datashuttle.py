@@ -73,7 +73,7 @@ class DataShuttle:
                    and folders are specified in make_config_file().
                    Datashuttle-related files are stored in
                    a .datashuttle folder in the user home
-                   folder. Use show_datashuttle_path() to
+                   folder. Use get_datashuttle_path() to
                    see the path to this folder.
 
     print_startup_message : If `True`, a start-up message displaying the
@@ -111,7 +111,7 @@ class DataShuttle:
 
         if print_startup_message:
             if self.cfg:
-                self.show_top_level_folder()
+                self._display_top_level_folder()
 
         rclone.prompt_rclone_download_if_does_not_exist()
 
@@ -160,7 +160,7 @@ class DataShuttle:
 
         self._update_persistent_setting("top_level_folder", folder_name)
 
-        self.show_top_level_folder()
+        self._display_top_level_folder()
 
     @check_configs_set
     def make_folders(
@@ -221,7 +221,7 @@ class DataShuttle:
         """
         self._start_log("make-folders", local_vars=locals())
 
-        self.show_top_level_folder()
+        self._display_top_level_folder()
 
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
@@ -264,64 +264,6 @@ class DataShuttle:
         )
 
         ds_logger.close_log_filehandler()
-
-    @check_configs_set
-    def get_next_sub_number(
-        self, return_with_prefix: bool = True, local_only: bool = False
-    ) -> str:
-        """
-        Convenience function for get_next_sub_or_ses_number
-        to find the next subject number.
-
-        Parameters
-        ----------
-
-        return_with_prefix : bool
-            If `True`, return with the "sub-" prefix.
-
-        local_only : bool
-            If `True, only get names from `local_path`, otherwise from
-            `local_path` and `central_path`.
-        """
-        return getters.get_next_sub_or_ses_number(
-            self.cfg,
-            sub=None,
-            local_only=local_only,
-            return_with_prefix=return_with_prefix,
-            search_str="sub-*",
-        )
-
-    @check_configs_set
-    def get_next_ses_number(
-        self,
-        sub: str,
-        return_with_prefix: bool = True,
-        local_only: bool = False,
-    ) -> str:
-        """
-        Convenience function for get_next_sub_or_ses_number
-        to find the next session number.
-
-        Parameters
-        ----------
-
-        sub: Optional[str]
-            Name of the subject to find the next session of.
-
-        return_with_prefix : bool
-            If `True`, return with the "ses-" prefix.
-
-        local_only : bool
-            If `True, only get names from `local_path`, otherwise from
-            `local_path` and `central_path`.
-        """
-        return getters.get_next_sub_or_ses_number(
-            self.cfg,
-            sub=sub,
-            local_only=local_only,
-            return_with_prefix=return_with_prefix,
-            search_str="ses-*",
-        )
 
     # -------------------------------------------------------------------------
     # Public File Transfer
@@ -391,7 +333,7 @@ class DataShuttle:
         if init_log:
             self._start_log("upload", local_vars=locals())
 
-        self.show_top_level_folder()
+        self._display_top_level_folder()
 
         TransferData(
             self.cfg,
@@ -428,7 +370,7 @@ class DataShuttle:
         if init_log:
             self._start_log("download", local_vars=locals())
 
-        self.show_top_level_folder()
+        self._display_top_level_folder()
 
         TransferData(
             self.cfg,
@@ -514,7 +456,7 @@ class DataShuttle:
         """
         self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
-        self.show_top_level_folder()
+        self._display_top_level_folder()
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("local"),
@@ -567,7 +509,7 @@ class DataShuttle:
             "download-specific-folder-or-file", local_vars=locals()
         )
 
-        self.show_top_level_folder()
+        self._display_top_level_folder()
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("central"),
@@ -667,7 +609,7 @@ class DataShuttle:
 
         These settings are stored in a config file on the
         datashuttle path (not in the project folder)
-        on the local machine. Use show_config_path() to
+        on the local machine. Use get_config_path() to
         get the full path to the saved config file.
 
         Use update_config_file() to update a single config, and
@@ -853,66 +795,53 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
-    # Public Getters
+    # Getters
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def show_local_path(self) -> None:
+    def get_local_path(self) -> Path:
         """
-        Print the projects local path.
+        Get the projects local path.
         """
-        utils.print_message_to_user(self.cfg["local_path"].as_posix())
+        return self.cfg["local_path"]
 
-    def show_datashuttle_path(self) -> None:
+    @check_configs_set
+    def get_central_path(self) -> Path:
         """
-        Print the path to the local datashuttle
+        Get the project central path.
+        """
+        return self.cfg["central_path"]
+
+    def get_datashuttle_path(self) -> Path:
+        """
+        Get the path to the local datashuttle
         folder where configs another other
         datashuttle files are stored.
         """
-        utils.print_message_to_user(self._datashuttle_path.as_posix())
+        return self._datashuttle_path
 
     @check_configs_set
-    def show_config_path(self) -> None:
+    def get_config_path(self) -> Path:
         """
-        Print the full path to the DataShuttle config file.
-        This is always formatted to UNIX style.
+        Get the full path to the DataShuttle config file.
         """
-        utils.print_message_to_user(self._config_path.as_posix())
+        return self._config_path
 
     @check_configs_set
-    def show_central_path(self) -> None:
-        """
-        Print the project central path.
-        This is always formatted to UNIX style.
-        """
-        utils.print_message_to_user(self.cfg["central_path"].as_posix())
+    def get_configs(self) -> Configs:
+        return self.cfg
 
     @check_configs_set
-    def show_configs(self) -> None:
+    def get_logging_path(self) -> Path:
         """
-        Print the current configs to the terminal.
+        Get the path where datashuttle logs are written.
         """
-        utils.print_message_to_user(self._get_json_dumps_config())
+        return self.cfg.logging_path
 
     @check_configs_set
-    def show_logging_path(self) -> None:
+    def get_top_level_folder(self) -> Path:
         """
-        Print the path where datashuttle logs are written.
-        """
-        utils.print_message_to_user(self.cfg.logging_path)
-
-    @check_configs_set
-    def show_local_tree(self) -> None:
-        """
-        Print a tree schematic of all files and folders
-        in the local project.
-        """
-        ds_logger.print_tree(self.cfg["local_path"])
-
-    @check_configs_set
-    def show_top_level_folder(self) -> None:
-        """
-        Print the current working top level folder (e.g.
+        Get the current working top level folder (e.g.
         'rawdata', 'derivatives')
 
         The top_level_folder defines in which top level folder new
@@ -925,74 +854,97 @@ class DataShuttle:
         folder), use the 'command upload_entire_project' or
         'download_entire_project'.
         """
-        utils.print_message_to_user(
-            f"\nThe working top level folder is: "
-            f"{self.cfg.top_level_folder}\n"
-        )
+        return self.cfg.top_level_folder
+
+    @staticmethod
+    def get_existing_projects() -> List[Path]:
+        """
+        Get a list of existing project names found on the local machine.
+        This is based on project folders in the "home / .datashuttle" folder
+        that contain valid config.yaml files.
+        """
+        return getters.get_existing_project_paths()
 
     @check_configs_set
-    def show_next_sub_number(self) -> None:
+    def get_next_sub_number(
+        self, return_with_prefix: bool = True, local_only: bool = False
+    ) -> str:
         """
-        Show a suggested value for the next available subject number.
-        The local and central repository will be searched, and the
-        maximum existing subject number + 1 will be suggested.
-
-        In the case where there are multiple 'local' machines interacting
-        with a central central repository, this function will not detect
-        subject numbers of other 'local' machines. For example, if there
-        is one machine for behavioural and another for electrophysiological
-        data collection, connected to a central server that is 'central'.
-        If run on the behavioural data collection machine, this function
-        will suggest the next number based on the subjects found on the
-        behavioural machine and central machine, but not the
-        electrophysiological machine.
-        """
-        suggested_new_num = self.get_next_sub_number()
-
-        utils.print_message_to_user(
-            "Local and Central repository searched. "
-            f"The suggested new subject number is: {suggested_new_num}"
-        )
-
-    @check_configs_set
-    def show_next_ses_number(self, sub: Optional[str]) -> None:
-        """
-        Show a suggested value for the next session number of a
-        given subject. The local and central repository will be
-        searched, and the maximum session number + 1 will be suggested.
-
-        In the case where there are multiple 'local' machines interacting
-        with a central repository, this function will not detect
-        session numbers of other 'local' machines. For example, if there
-        is one machine for behavioural and another for electrophysiological
-        data collection, connected to a central server that is 'central'.
-        If run on the behavioural data collection machine, this function
-        will suggest the next number based on the sessions found on the
-        behavioural machine and central machine, but not the
-        electrophysiological machine.
+        Convenience function for get_next_sub_or_ses_number
+        to find the next subject number.
 
         Parameters
         ----------
 
-        sub : the subject for which to suggest the next available session.
-        """
-        suggested_new_num = self.get_next_ses_number(sub)
+        return_with_prefix : bool
+            If `True`, return with the "sub-" prefix.
 
-        utils.print_message_to_user(
-            f"Local and Central repository searched for sessions for {sub}. "
-            f"The suggested new session number is: {suggested_new_num}"
+        local_only : bool
+            If `True, only get names from `local_path`, otherwise from
+            `local_path` and `central_path`.
+        """
+        return getters.get_next_sub_or_ses_number(
+            self.cfg,
+            sub=None,
+            local_only=local_only,
+            return_with_prefix=return_with_prefix,
+            search_str="sub-*",
         )
 
-    def show_existing_projects(self) -> None:
+    @check_configs_set
+    def get_next_ses_number(
+        self,
+        sub: str,
+        return_with_prefix: bool = True,
+        local_only: bool = False,
+    ) -> str:
         """
-        Print a list of existing project names found on the local machine.
-        This is based on project folders in the "home / .datashuttle" folder
-        that contain valid config.yaml files.
+        Convenience function for get_next_sub_or_ses_number
+        to find the next session number.
+
+        Parameters
+        ----------
+
+        sub: Optional[str]
+            Name of the subject to find the next session of.
+
+        return_with_prefix : bool
+            If `True`, return with the "ses-" prefix.
+
+        local_only : bool
+            If `True, only get names from `local_path`, otherwise from
+            `local_path` and `central_path`.
         """
-        project_names, _ = getters.get_existing_project_paths_and_names()
-        utils.print_message_to_user(
-            f"The existing project names are {project_names}."
+        return getters.get_next_sub_or_ses_number(
+            self.cfg,
+            sub=sub,
+            local_only=local_only,
+            return_with_prefix=return_with_prefix,
+            search_str="ses-*",
         )
+
+    # -------------------------------------------------------------------------
+    # Showers
+    # -------------------------------------------------------------------------
+
+    @check_configs_set
+    def show_configs(self) -> None:
+        """
+        Print the current configs to the terminal.
+        """
+        utils.print_message_to_user(self._get_json_dumps_config())
+
+    @check_configs_set
+    def show_local_tree(self) -> None:
+        """
+        Print a tree schematic of all files and folders
+        in the local project.
+        """
+        ds_logger.print_tree(self.cfg["local_path"])
+
+    # -------------------------------------------------------------------------
+    # Validators
+    # -------------------------------------------------------------------------
 
     @check_configs_set
     def validate_project(
@@ -1044,7 +996,7 @@ class DataShuttle:
         if isinstance(names, str):
             names = [names]
 
-        formatted_names = formatting.format_names(names, prefix)
+        formatted_names = formatting.check_and_format_names(names, prefix)
         utils.print_message_to_user(formatted_names)
 
     # -------------------------------------------------------------------------
@@ -1080,10 +1032,6 @@ class DataShuttle:
             transfer_all_func()
 
         self.cfg.top_level_folder = tmp_current_top_level_folder
-
-    # -------------------------------------------------------------------------
-    # Utils
-    # -------------------------------------------------------------------------
 
     def _get_rclone_config_name(
         self, connection_method: Optional[str] = None
@@ -1215,7 +1163,6 @@ class DataShuttle:
             log=True,
         )
 
-    # -------------------------------------------------------------------------
     # Persistent settings
     # -------------------------------------------------------------------------
 
@@ -1270,3 +1217,14 @@ class DataShuttle:
         with open(self._persistent_settings_path, "r") as settings_file:
             settings = yaml.full_load(settings_file)
         return settings
+
+    @check_configs_set
+    def _display_top_level_folder(self) -> None:
+        """
+        Print the current working top level folder (e.g.
+        'rawdata', 'derivatives')
+        """
+        utils.print_message_to_user(
+            f"\nThe working top level folder is: "
+            f"{self.cfg.top_level_folder}\n"
+        )

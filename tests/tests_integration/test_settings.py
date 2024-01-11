@@ -57,7 +57,7 @@ class TestPersistentSettings(BaseTest):
         assert project_reload.cfg.top_level_folder == "derivatives"
 
         stdout = test_utils.run_cli(
-            " show-top-level-folder", project.project_name
+            " get-top-level-folder", project.project_name
         )
 
-        assert "The working top level folder is: derivatives" in stdout[0]
+        assert "derivatives" in stdout[0]
