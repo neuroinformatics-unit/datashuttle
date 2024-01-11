@@ -11,12 +11,20 @@ get_canonical_configs()
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, List
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    get_args,
+    get_origin,
+)
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
 from pathlib import Path
-from typing import Literal, Union, get_args, get_origin
 
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
@@ -31,8 +39,8 @@ def get_canonical_configs() -> dict:
         "local_path": Union[str, Path],
         "central_path": Union[str, Path],
         "connection_method": Literal["ssh", "local_filesystem"],
-        "central_host_id": Union[str, None],
-        "central_host_username": Union[str, None],
+        "central_host_id": Optional[str],
+        "central_host_username": Optional[str],
         "overwrite_old_files": bool,
         "transfer_verbosity": Literal["v", "vv"],
         "show_transfer_progress": bool,
