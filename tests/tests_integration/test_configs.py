@@ -255,7 +255,7 @@ class TestConfigs(BaseTest):
 
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
-        # ensure str is convert to Path
+        # ensure Path is converted to str
         not_set_configs["local_path"] = str(not_set_configs["local_path"])
 
         project.update_config_file(**not_set_configs)

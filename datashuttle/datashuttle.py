@@ -627,8 +627,8 @@ class DataShuttle:
         on the local machine. Use get_config_path() to
         get the full path to the saved config file.
 
-        Use update_config_file() to update a single config, and
-        supply_config() to use an existing config file.
+        Use update_config_file() to selectively update settings, and
+        supply_config_file() to use an existing config file.
 
         Parameters
         ----------
