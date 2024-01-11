@@ -49,7 +49,9 @@ def log_and_raise_error(message: str, exception: Any) -> None:
 
 def raise_error(message: str, exception) -> None:
     """
-    Centralized way to raise an error
+    Centralized way to raise an error. The logger is closed
+    to ensure it is not still running if a function call
+    raises an exception in a python environment.
     """
     ds_logger.close_log_filehandler()
     raise exception(message)
