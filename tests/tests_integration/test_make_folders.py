@@ -387,8 +387,7 @@ class TestMakeFolders(BaseTest):
     # Test get next subject / session numbers
     # ----------------------------------------------------------------------------------
 
-    @pytest.mark.parametrize("return_with_prefix", [True, False])
-    def test_get_next_sub_number(self, project, return_with_prefix):
+    def test_get_next_sub_number(self, project):
         """
         Test that the next subject number is suggested correctly.
         This takes the union of subjects available in the local and
@@ -400,88 +399,79 @@ class TestMakeFolders(BaseTest):
             project, ["001", "002", "003"]
         )
 
-        new_num = project.get_next_sub_number(return_with_prefix)
+        new_num, old_num = project.get_next_sub_number()
 
-        assert new_num == "sub-004" if return_with_prefix else "004"
+        assert new_num == 4
+        assert old_num == 3
 
         # Upload to central, now local and central folders match
         project.upload_all()
+        new_num, old_num = project.get_next_sub_number()
+        assert new_num == 4
+        assert old_num == 3
 
-        shutil.rmtree(project.cfg["local_path"] / "rawdata")
+        # Delete subject folders from local
+        folders_to_del = list(
+            (project.cfg["local_path"] / "rawdata").glob("sub-*")
+        )
+        for path_ in folders_to_del:
+            shutil.rmtree(path_)  # this doesn't work with map or listcomp
 
-        new_num = project.get_next_sub_number(return_with_prefix)
-        assert new_num == "sub-004" if return_with_prefix else "004"
+        new_num, old_num = project.get_next_sub_number()
+        assert new_num == 4
+        assert old_num == 3
 
         # Add large-sub num folders to local and check all are detected.
         project.make_folders(["004", "005"])
+        new_num, old_num = project.get_next_sub_number()
+        assert new_num == 6
+        assert old_num == 5
 
-        new_num = project.get_next_sub_number(return_with_prefix)
-        assert new_num == "sub-006" if return_with_prefix else "006"
-
-    @pytest.mark.parametrize("return_with_prefix", [True, False])
-    def test_get_next_ses_number(self, project, return_with_prefix):
+    def test_get_next_ses_number(self, project):
         """
         Almost identical to test_get_next_sub_number() but with calls
         for searching sessions. This could be combined with
         above but reduces readability, so leave with some duplication.
-
-        Note the main underlying function is tested in
-        `test_get_max_sub_or_ses_num_and_value_length()`.
-
-        TODO: note this is only tested by `local_filesystem`. I don't think
-        it is required to be tested SSH but couldn't hurt, need to check.
         """
-        sub = "sub-09"
-
+        sub = "sub-3"
         test_utils.make_local_folders_with_files_in(
             project, sub, ["001", "002", "003"]
         )
+        new_num, old_num = project.get_next_sub_number()
 
-        # Test the next sub and ses number are correct
-        new_num = project.get_next_sub_number(return_with_prefix)
-        assert new_num == "sub-10" if return_with_prefix else "10"
+        assert new_num == 4
+        assert old_num == 3
 
-        new_num = project.get_next_ses_number(sub, return_with_prefix)
-        assert new_num == "ses-004" if return_with_prefix else "004"
-
-        # Now upload the data, delete locally, and check the
-        # suggested values are correct based on the `central` path.
         project.upload_all()
+        new_num, old_num = project.get_next_ses_number(sub)
+        assert new_num == 4
+        assert old_num == 3
 
-        shutil.rmtree(project.cfg["local_path"] / "rawdata")
+        folders_to_del = list(
+            (project.cfg["local_path"] / "rawdata" / sub).glob("ses-*")
+        )
+        for path_ in folders_to_del:
+            shutil.rmtree(path_)  # this doesn't work with map or listcomp
 
-        new_num = project.get_next_sub_number(return_with_prefix)
-        assert new_num == "sub-10" if return_with_prefix else "10"
+        new_num, old_num = project.get_next_ses_number(sub)
+        assert new_num == 4
+        assert old_num == 3
 
-        new_num = project.get_next_ses_number(sub, return_with_prefix)
-        assert new_num == "ses-004" if return_with_prefix else "004"
-
-        # Now make a couple more sessions locally, and check
-        # the next session is updated accordingly.
         project.make_folders(sub, ["004", "005"])
-
-        new_num = project.get_next_ses_number(sub, return_with_prefix)
-        assert new_num == "ses-006" if return_with_prefix else "006"
+        new_num, old_num = project.get_next_ses_number(sub)
+        assert new_num == 6
+        assert old_num == 5
 
     def test_invalid_sub_and_ses_name(self, project):
-        """
-        This is a slightly weird case, the name is successfully
-        prefixed as 'sub-sub_100` but when the value if `sub-` is
-        extracted, it is also "sub" and so an error is raised.
-        """
         with pytest.raises(NeuroBlueprintError) as e:
             project.make_folders("sub_100")
 
-        assert "Invalid character in subject or session value: sub" in str(
-            e.value
-        )
+        assert "Invalid character in sub number: sub-sub_100" in str(e.value)
 
         with pytest.raises(NeuroBlueprintError) as e:
             project.make_folders("sub-001", "ses_100")
 
-        assert "Invalid character in subject or session value: ses" in str(
-            e.value
-        )
+        assert "Invalid character in ses number: ses-ses_100" in str(e.value)
 
     # ----------------------------------------------------------------------------------
     # Test Helpers
