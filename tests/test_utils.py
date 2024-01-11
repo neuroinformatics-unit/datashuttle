@@ -40,6 +40,7 @@ def setup_project_default_configs(
     default_configs = get_test_config_arguments_dict(
         tmp_path, project_name, set_as_defaults=True
     )
+    make_project_paths(default_configs)
 
     make_project_paths(default_configs)
 
