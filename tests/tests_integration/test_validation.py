@@ -82,7 +82,7 @@ class TestValidation(BaseTest):
             "ses-234234234",
         ],
     )
-    def test_warn_on_inconsistent_ses_value_lengths__(
+    def test_warn_on_inconsistent_ses_value_lengths(
         self, project, ses_name, bad_ses_name
     ):
         """
