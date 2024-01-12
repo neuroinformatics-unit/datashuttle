@@ -243,7 +243,7 @@ class DataShuttle:
         if ses_names is not None:
             ses_names = formatting.check_and_format_names(
                 ses_names, "ses", name_templates
-            )  # not sure about passing this around so much
+            )
         else:
             ses_names = []
 
@@ -942,10 +942,34 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     def get_name_templates(self) -> Dict:
+        """
+        Get the regexp templates used for validation. If
+        the "on" key is set to `False`, template validation is not performed.
+
+        Returns
+        -------
+
+        name_templates : Dict
+            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+        """
         settings = self._load_persistent_settings()
         return settings["name_templates"]
 
     def set_name_templates(self, new_name_templates: Dict) -> None:
+        """
+        Update the persistent settings with new name templates.
+
+        Name templates are regexp for that, when name_templates["on"] is
+        set to `True`, "sub" and "ses" names are validated against
+        the regexp contained in the dict.
+
+        Parameters
+        ----------
+        new_name_templates : Dict
+            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+            where "sub" or "ses" can be a regexp that subject and session
+            names respectively are validated against.
+        """
         self._update_persistent_setting("name_templates", new_name_templates)
 
     # -------------------------------------------------------------------------
@@ -1238,9 +1262,7 @@ class DataShuttle:
 
         return settings
 
-    def _update_settings_with_new_canonical_keys(
-        self, settings: Dict
-    ):  # TODO: unit test!
+    def _update_settings_with_new_canonical_keys(self, settings: Dict):
         """"""
         if "name_templates" not in settings:
             settings.update(canonical_configs.get_name_templates_defaults())

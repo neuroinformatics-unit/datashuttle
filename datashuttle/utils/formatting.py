@@ -16,7 +16,7 @@ from datashuttle.utils import utils, validation
 def check_and_format_names(
     names: Union[list, str],
     prefix: Literal["sub", "ses"],
-    name_templates: Optional[Dict] = None,  # TODO: DOC!
+    name_templates: Optional[Dict] = None,
 ) -> List[str]:
     """
     Format a list of subject or session names, e.g.
@@ -35,10 +35,16 @@ def check_and_format_names(
     Parameters
     ----------
 
-    names: str or list containing sub or ses names
-                  (e.g. to make folders)
+    names : Union[list, str]
+        str or list containing sub or ses names (e.g. to make folders)
 
-    prefix: "sub" or "ses" - this defines the prefix checks.
+    prefix : Literal["sub", "ses"]
+        "sub" or "ses" - this defines the prefix checks.
+
+    name_templates : Dict
+        A dictionary of templates to validate subject and session name against.
+        e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+        where the "sub" and "ses" may contain a regexp to validate against.
     """
     if isinstance(names, str):
         names = [names]

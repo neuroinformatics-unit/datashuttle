@@ -50,6 +50,9 @@ def validate_list_of_names(
     log: bool
         If `True`, output will also be logged to "datashuttle" logger.
 
+    name_templates : Dict
+        e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+
     TODO: this is potentially slow because each function loops over
     the whole list. I'd imagine it would be faster to loop once
     over and pass each name to the sub-function individually.
@@ -78,7 +81,13 @@ def names_dont_match_templates(
     prefix: Literal["sub", "ses"],
     name_templates: Optional[Dict] = None,
 ) -> Tuple[bool, str]:
-    """"""
+    """
+    Test a list of subject or session names against the respective `name_templates`,
+    a regexp template.
+
+    If checking `name_templates` is on, an invalid result will be given if the
+    name does not re.fullmatch the regexp.
+    """
     if name_templates is None:
         return False, "No `names_template` dictionary passed."
 
@@ -105,6 +114,10 @@ def names_dont_match_templates(
 
 
 def get_names_format(bad_names):
+    """
+    A convenience function to properly format error messages
+    depending on whether there is just 1, or multiple bad names.
+    """
     assert len(bad_names) != 0, "`bad_names` should not be empty."
     if len(bad_names) == 1:
         name_str_format = "name"
