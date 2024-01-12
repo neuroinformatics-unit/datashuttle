@@ -340,7 +340,6 @@ class TransferStatusTree(DirectoryTree):
         """
         Updates the transfer diffs used to style the DirectoryTree.
         """
-
         self.transfer_diffs = get_local_and_central_file_differences(
             self.project.cfg
         )

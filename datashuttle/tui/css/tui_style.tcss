@@ -48,7 +48,18 @@ DirectoryTree {
 DirectoryTree:focus .tree--cursor {
     background: $panel-lighten-2;
 }
-
+DirectoryTree .tree--guides {
+    color: #949494;
+    text-style: none;
+}
+DirectoryTree .tree--guides-selected {
+    color: #949494;
+    text-style: none;
+}
+DirectoryTree:focus .tree--guides-hover {
+    color: #949494;
+    text-style: none;
+}
 /* Light mode Directory Tree */
 
 DirectoryTree:light {
