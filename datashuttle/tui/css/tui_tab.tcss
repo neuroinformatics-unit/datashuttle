@@ -48,3 +48,38 @@ TabScreen > TabbedContent {
     width: auto;
     padding: 0 0 1 0;
 }
+
+CreateFoldersTab > Horizontal > Button{
+    width: 30%;
+}
+
+CreateFoldersTab > Horizontal{
+    align-horizontal: left;
+}
+
+#tabscreen_create_tab > Input.-valid {
+    border: tall $success 60%;
+}
+#tabscreen_create_tab > Input.-valid:focus {
+        border: tall $success;
+}
+
+#tabscreen_create_tab > Input.-invalid {
+    border: tall $error 60%;
+}
+
+#tabscreen_create_tab > Input.-invalid:focus {
+    border: tall $error
+}
+
+#template_settings_validation_on_checkbox.-on > .toggle--button{
+    color: $success;
+}
+
+#template_settings_validation_on_checkbox.-on > .toggle--label{
+    color: $success;
+}
+
+#template_settings_validation_on_checkbox > .toggle--button{
+    color: $error;
+}

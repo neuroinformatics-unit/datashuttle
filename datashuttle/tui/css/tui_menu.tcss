@@ -26,6 +26,7 @@
     align: center top;
     margin: 3 2 0 0;
     content-align: center middle;
+    height: auto;
 }
 
 #project_select_top_container > Button {
@@ -146,7 +147,6 @@ ShowConfigsDialog:light > #display_configs_top_container {
 
 #configs_local_path_label {
     align: center middle;
-    padding: 0 0 0 0;
 }
 
 #configs_container > Input {
@@ -198,4 +198,89 @@ config label and button align center */
     width: 60%;
     height: auto;
     align: center middle;
+}
+
+
+/* TemplateSettingsScreen --------------------------------------------------------------- */
+
+TemplateSettingsScreen {
+    align: center middle;
+}
+
+#template_top_container {
+    height: 25;
+    width: 80;
+    background: $primary-background;
+    border: tall $panel-lighten-3;
+ }
+
+ #template_inner_horizontal_container{
+    height: 3;
+}
+
+ #template_inner_container {
+    height: auto;
+    overflow: auto hidden;
+ }
+
+#template_message_label {
+    width: auto;
+    margin: 1 0 0 2;
+}
+
+#template_settings_radioset {
+    layout: horizontal;
+    border: none;
+    background: transparent;
+    align: center middle;
+    width: 50%;
+    margin: 1 0 0 0;
+}
+
+#template_settings_input {
+    align: center middle;
+    width: 50%;
+}
+
+#template_sessions_close_button{
+    dock: right;
+    layer: top;
+}
+
+#template_other_widgets_container{
+    align: center top;
+    content-align: center top;
+}
+
+#template_message_label:disabled {
+    color: $panel-lighten-3;
+    link-color: $panel-lighten-3;
+}
+
+#template_settings_radioset:disabled {
+    color: $panel-lighten-3;
+}
+
+#template_settings_input:disabled {
+    color: $panel-lighten-3;
+}
+
+/* TemplateSettingsScreen Light Mode */
+
+#template_top_container:light {
+    border: tall $panel-darken-3;
+    background: $boost;
+ }
+
+ #template_settings_radioset:light:disabled {
+    color: $panel-darken-2;
+}
+
+#template_message_label:light:disabled {
+    color: $panel-darken-2;
+    link-color: $panel-darken-2;
+}
+
+#template_settings_input:light:disabled {
+    color: $panel-darken-2;
 }
