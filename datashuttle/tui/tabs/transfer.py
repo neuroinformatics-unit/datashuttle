@@ -18,7 +18,6 @@ from textual.widgets._directory_tree import DirectoryTree, DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
-from datashuttle.configs.canonical_configs import get_datatypes
 from datashuttle.tui.custom_widgets import DatatypeCheckboxes
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -306,7 +305,7 @@ class TransferStatusTree(DirectoryTree):
 
         self.parent_tab = parent_tab
         self.project = project
-        self.get_transfer_diffs()
+        self.get_transfer_diffs(init=True)
 
     def on_mount(self):
         self.transfer_paths = self.get_local_transfer_paths()
@@ -318,7 +317,9 @@ class TransferStatusTree(DirectoryTree):
         """
 
         all_paths = []
-        walk_paths = walk(self.project.get_local_path().as_posix())
+        walk_paths = walk(
+            self.project.get_local_path().as_posix()
+        )  # TODO: only search canonical top level folders (e.g. ignore logs, I think)
         # TODO: os.walk appends different file seps than those used by the datashuttle fxn.
         #  Still works, somehow, but ugly.
         for path in walk_paths:
@@ -329,7 +330,15 @@ class TransferStatusTree(DirectoryTree):
         if self.parent_tab.query_one("#transfer_all_radiobutton").value:
             paths_out = [Path(path) for path in all_paths]
 
-        elif self.parent_tab.query_one("#transfer_toplevel_radiobutton").value:
+        else:  # both top-level folder and custom transfer relative to the top level folder
+            assert (
+                self.parent_tab.query_one(
+                    "#transfer_toplevel_radiobutton"
+                ).value
+                or self.parent_tab.query_one(
+                    "#transfer_custom_radiobutton"
+                ).value
+            ), "temporary confidence check to remove"
             toplevel_dir = (
                 self.project.get_local_path()
                 / self.project.cfg.top_level_folder
@@ -340,28 +349,24 @@ class TransferStatusTree(DirectoryTree):
                 if all(part in Path(path).parts for part in toplevel_dir.parts)
             ]
 
-        elif self.parent_tab.query_one("#transfer_custom_radiobutton").value:
-            paths_out = [Path(path) for path in all_paths]
-
-        else:
-            paths_out = []
-
         return paths_out
 
-    def get_transfer_diffs(self):
+    def get_transfer_diffs(self, init: bool = False):
         """
         Updates the transfer diffs used to style the DirectoryTree.
+
+        Use `init` when the widget is initialised, because
+        #transfer_toplevel_radiobutton is not yet available and
+        by default we set to 'all'.
         """
-        self.transfer_diffs = get_local_and_central_file_differences(
-            self.project.cfg
+        # TODO: will need to se
+        all_top_level_folder = (
+            init
+            or self.parent_tab.query_one("#transfer_all_radiobutton").value
         )
-        filtered_diffs = {
-            key: self.transfer_diffs[key]
-            for key in ["different", "local_only", "error"]
-        }
-        self.diff_paths = [
-            path for category in filtered_diffs.values() for path in category
-        ]
+        self.transfer_diffs = get_local_and_central_file_differences(
+            self.project.cfg, all_top_level_folder
+        )
 
     def update_transfer_tree(self):
         """
@@ -424,42 +429,23 @@ class TransferStatusTree(DirectoryTree):
         """
 
         node_relative_path = node_path.as_posix().replace(
-            f"{self.project.cfg.get_base_folder('local').as_posix()}/", ""
+            f"{self.project.cfg['local_path'] .as_posix()}/", ""
         )
 
         # Checks whether the current node's file path is staged for transfer
+
         if node_path in self.transfer_paths:
             # Sets sub- and ses-level folders to orange if files within have changed
-            if (
-                node_path.stem.startswith("sub-")
-                or node_path.stem.startswith("ses-")
-                or node_path.stem in get_datatypes()
-            ):
-                files_have_changed = any(
-                    node_relative_path in file for file in self.diff_paths
-                )
-                if files_have_changed:
-                    node_label.stylize_before("gold3")
-
-            # Sets the top_level folder to orange if files within have changes
-            elif (
-                node_path.stem
-                == self.project.get_top_level_folder()  # TODO: get_local_and_central_file_differences currently only checks for diffs in the current top-level folder
-                and self.diff_paths
-            ):
+            # fmt: off
+            if node_relative_path in self.transfer_diffs["same"]:
+                pass
+            elif node_relative_path in self.transfer_diffs["different"] or any([node_relative_path in file for file in self.transfer_diffs["different"]]):
                 node_label.stylize_before("gold3")
-
-            # Assigns a color to project files according to transfer status
-            else:
-                if node_relative_path in self.transfer_diffs["same"]:
-                    pass
-                elif node_relative_path in self.transfer_diffs["different"]:
-                    node_label.stylize_before("gold3")
-                elif node_relative_path in self.transfer_diffs["local_only"]:
-                    node_label.stylize_before("green3")
-                elif node_label.plain in self.transfer_diffs["error"]:
-                    node_label.stylize_before("bright_red")
-
+            elif node_relative_path in self.transfer_diffs["local_only"] or any([node_relative_path in file for file in self.transfer_diffs["local_only"]]):
+                node_label.stylize_before("green3")
+            elif node_label.plain in self.transfer_diffs["error"] or any([node_relative_path in file for file in self.transfer_diffs["error"]]):
+                node_label.stylize_before("bright_red")
+        # fmt: on
         # Sets files that are not staged for transfer to grey
         else:
             node_label.stylize_before("grey58")
