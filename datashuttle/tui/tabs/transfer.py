@@ -454,8 +454,7 @@ class TransferStatusTree(DirectoryTree):
                 if node_relative_path in self.transfer_diffs["same"]:
                     pass
                 elif node_relative_path in self.transfer_diffs["different"]:
-                    #         node_label.stylize_before("gold3")
-                    node_label.styles.color = "gold3"
+                    node_label.stylize_before("gold3")
                 elif node_relative_path in self.transfer_diffs["local_only"]:
                     node_label.stylize_before("green3")
                 elif node_label.plain in self.transfer_diffs["error"]:
