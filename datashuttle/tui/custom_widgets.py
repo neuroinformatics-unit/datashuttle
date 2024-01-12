@@ -32,20 +32,36 @@ class DatatypeCheckboxes(Static):
 
     datatype_out = reactive("all")
 
-    def __init__(self, project):
+    def __init__(self, project, transfer_checkboxes=False):
         super(DatatypeCheckboxes, self).__init__()
 
         self.project = project
         self.datatype_config = get_datatypes()
+        self.transfer_checkboxes = transfer_checkboxes
+        if transfer_checkboxes:
+            self.datatype_config.extend(
+                ["all", "all_datatype", "all_ses_level_non_datatype"]
+            )
         self.persistent_settings = self.project._load_persistent_settings()
 
     def compose(self):
         checkboxes_on = self.persistent_settings["tui"]["checkboxes_on"]
 
+        if self.transfer_checkboxes:
+            checkboxes_on.update(
+                {
+                    "all": True,
+                    "all_datatype": True,
+                    "all_ses_level_non_datatype": True,
+                }
+            )  # TODO: handle!
+
         for datatype in self.datatype_config:
-            assert datatype in checkboxes_on.keys(), (
-                "Need to update tui" "persistent settings."
-            )
+            #      assert False, f"{self.transfer_checkboxes}-{self.datatype_config}"
+
+            assert (
+                datatype in checkboxes_on.keys()
+            ), "Need to update tui persistent settings."
 
             yield Checkbox(
                 datatype.title(),

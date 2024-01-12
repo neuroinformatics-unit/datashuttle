@@ -77,7 +77,7 @@ class TransferTab(TabPane):
                 placeholder="e.g. ses-001",
             ),
             Label("Datatype(s)"),
-            DatatypeCheckboxes(self.project),
+            DatatypeCheckboxes(self.project, transfer_checkboxes=True),
         ]
 
         yield RadioSet(
@@ -214,42 +214,54 @@ class TransferTab(TabPane):
             upload_selected = not self.query_one("#transfer_switch").value
 
             if self.query_one("#transfer_all_radiobutton").value:
-                if upload_selected:
-                    self.project.upload_entire_project()
-                else:
-                    self.project.download_entire_project()
+                try:
+                    if upload_selected:
+                        self.project.upload_entire_project()
+                    else:
+                        self.project.download_entire_project()
+                except BaseException as e:
+                    self.mainwindow.show_modal_error_dialog(str(e))
+                    return
 
             elif self.query_one("#transfer_toplevel_radiobutton").value:
-                if upload_selected:
-                    self.project.upload_all()
-                else:
-                    self.project.download_all()
+                try:
+                    if upload_selected:
+                        self.project.upload_all()
+                    else:
+                        self.project.download_all()
+                except BaseException as e:
+                    self.mainwindow.show_modal_error_dialog(str(e))
+                    return
 
             elif self.query_one("#transfer_custom_radiobutton").value:
-                if upload_selected:
-                    self.project.upload(
-                        sub_names=self.query_one("#transfer_subject_input")
-                        .value.replace(" ", "")
-                        .split(","),
-                        ses_names=self.query_one("#transfer_session_input")
-                        .value.replace(" ", "")
-                        .split(","),
-                        datatype=self.query_one(
-                            "DatatypeCheckboxes"
-                        ).datatype_out,
-                    )
-                else:
-                    self.project.download(
-                        sub_names=self.query_one("#transfer_subject_input")
-                        .value.replace(" ", "")
-                        .split(","),
-                        ses_names=self.query_one("#transfer_session_input")
-                        .value.replace(" ", "")
-                        .split(","),
-                        datatype=self.query_one(
-                            "DatatypeCheckboxes"
-                        ).datatype_out,
-                    )
+                try:
+                    if upload_selected:
+                        self.project.upload(
+                            sub_names=self.query_one("#transfer_subject_input")
+                            .value.replace(" ", "")
+                            .split(","),
+                            ses_names=self.query_one("#transfer_session_input")
+                            .value.replace(" ", "")
+                            .split(","),
+                            datatype=self.query_one(
+                                "DatatypeCheckboxes"
+                            ).datatype_out,
+                        )
+                    else:
+                        self.project.download(
+                            sub_names=self.query_one("#transfer_subject_input")
+                            .value.replace(" ", "")
+                            .split(","),
+                            ses_names=self.query_one("#transfer_session_input")
+                            .value.replace(" ", "")
+                            .split(","),
+                            datatype=self.query_one(
+                                "DatatypeCheckboxes"
+                            ).datatype_out,
+                        )
+                except BaseException as e:
+                    self.mainwindow.show_modal_error_dialog(str(e))
+                    return
 
             transfer_tree = self.query_one("#transfer_directorytree")
             transfer_tree.get_transfer_diffs()
@@ -442,7 +454,8 @@ class TransferStatusTree(DirectoryTree):
                 if node_relative_path in self.transfer_diffs["same"]:
                     pass
                 elif node_relative_path in self.transfer_diffs["different"]:
-                    node_label.stylize_before("gold3")
+                    #         node_label.stylize_before("gold3")
+                    node_label.styles.color = "gold3"
                 elif node_relative_path in self.transfer_diffs["local_only"]:
                     node_label.stylize_before("green3")
                 elif node_label.plain in self.transfer_diffs["error"]:
