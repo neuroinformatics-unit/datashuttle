@@ -285,12 +285,21 @@ def get_tui_config_defaults() -> Dict:
     """
     settings = {
         "tui": {
-            "checkboxes_on": {
+            "create_checkboxes_on": {
                 "behav": True,
                 "ephys": True,
                 "funcimg": True,
                 "anat": True,
-            }
+            },
+            "transfer_checkboxes_on": {
+                "behav": False,
+                "ephys": False,
+                "funcimg": False,
+                "anat": False,
+                "all": True,
+                "all_datatype": False,
+                "all_ses_level_non_datatype": False,
+            },
         }
     }
     return settings

@@ -176,7 +176,9 @@ class CreateFoldersTab(TabPane):
                 self.project.make_folders(
                     sub_names=sub_dir,
                     ses_names=ses_dir,
-                    datatype=self.query_one("DatatypeCheckboxes").datatype_out,
+                    datatype=self.query_one(
+                        "DatatypeCheckboxes"
+                    ).get_selected_datatypes(),
                 )
                 self.query_one("#tabscreen_directorytree").reload()
             except BaseException as e:

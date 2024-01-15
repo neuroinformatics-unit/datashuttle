@@ -37,9 +37,9 @@ class TransferTab(TabPane):
     def compose(self):
         self.transfer_all_widgets = [
             Label(
-                "All data from: \n\n - Rawdata \n - Derivatives \n\nWill be transferred."
+                "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred."
                 " Existing data with \nthe same file details on central will not be \noverwritten "
-                "by default",
+                "by default.",
                 id="transfer_all_label",
             )
         ]
@@ -76,7 +76,7 @@ class TransferTab(TabPane):
                 placeholder="e.g. ses-001",
             ),
             Label("Datatype(s)"),
-            DatatypeCheckboxes(self.project, transfer_checkboxes=True),
+            DatatypeCheckboxes(self.project, create_or_transfer="transfer"),
         ]
 
         yield RadioSet(
@@ -244,7 +244,7 @@ class TransferTab(TabPane):
                             .split(","),
                             datatype=self.query_one(
                                 "DatatypeCheckboxes"
-                            ).datatype_out,
+                            ).get_selected_datatypes(),
                         )
                     else:
                         self.project.download(
@@ -256,7 +256,7 @@ class TransferTab(TabPane):
                             .split(","),
                             datatype=self.query_one(
                                 "DatatypeCheckboxes"
-                            ).datatype_out,
+                            ).get_selected_datatypes(),
                         )
                 except BaseException as e:
                     self.mainwindow.show_modal_error_dialog(str(e))
