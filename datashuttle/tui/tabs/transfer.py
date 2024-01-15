@@ -6,7 +6,6 @@ from rich.text import Text
 from textual.containers import Container, Horizontal
 from textual.widgets import (
     Button,
-    Input,
     Label,
     RadioButton,
     RadioSet,
@@ -18,7 +17,7 @@ from textual.widgets._directory_tree import DirectoryTree, DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
-from datashuttle.tui.custom_widgets import DatatypeCheckboxes
+from datashuttle.tui.custom_widgets import ClickableInput, DatatypeCheckboxes
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.utils.rclone import get_local_and_central_file_differences
@@ -66,12 +65,12 @@ class TransferTab(TabPane):
 
         self.transfer_custom_widgets = [
             Label("Subject(s)"),
-            Input(
+            ClickableInput(
                 id="transfer_subject_input",
                 placeholder="e.g. sub-001",
             ),
             Label("Session(s)"),
-            Input(
+            ClickableInput(
                 id="transfer_session_input",
                 placeholder="e.g. ses-001",
             ),
@@ -233,30 +232,28 @@ class TransferTab(TabPane):
                     return
 
             elif self.query_one("#transfer_custom_radiobutton").value:
+                sub_names = self.query_one(
+                    "#transfer_subject_input"
+                ).as_names_list()
+                ses_names = self.query_one(
+                    "#transfer_session_input"
+                ).as_names_list()
+                datatypes = self.query_one(
+                    "DatatypeCheckboxes"
+                ).get_selected_datatypes()
+
                 try:
                     if upload_selected:
                         self.project.upload(
-                            sub_names=self.query_one("#transfer_subject_input")
-                            .value.replace(" ", "")
-                            .split(","),
-                            ses_names=self.query_one("#transfer_session_input")
-                            .value.replace(" ", "")
-                            .split(","),
-                            datatype=self.query_one(
-                                "DatatypeCheckboxes"
-                            ).get_selected_datatypes(),
+                            sub_names=sub_names,
+                            ses_names=ses_names,
+                            datatype=datatypes,
                         )
                     else:
                         self.project.download(
-                            sub_names=self.query_one("#transfer_subject_input")
-                            .value.replace(" ", "")
-                            .split(","),
-                            ses_names=self.query_one("#transfer_session_input")
-                            .value.replace(" ", "")
-                            .split(","),
-                            datatype=self.query_one(
-                                "DatatypeCheckboxes"
-                            ).get_selected_datatypes(),
+                            sub_names=sub_names,
+                            ses_names=ses_names,
+                            datatype=datatypes,
                         )
                 except BaseException as e:
                     self.mainwindow.show_modal_error_dialog(str(e))

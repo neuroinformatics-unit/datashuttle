@@ -128,7 +128,19 @@ class CreateFoldersTab(TabPane):
                 return_with_prefix=True, local_only=True
             )
         else:
-            sub = self.query_one("#tabscreen_subject_input").value
+            sub_names = self.query_one(
+                "#tabscreen_subject_input"
+            ).as_names_list()
+
+            if len(sub_names) > 1:
+                self.mainwindow.show_modal_error_dialog(
+                    "Can only suggest next session number when a "
+                    "single subject is provided."
+                )
+                return
+            else:
+                sub = sub_names[0]
+
             next_val = self.project.get_next_ses_number(
                 sub, return_with_prefix=True, local_only=True
             )
@@ -166,19 +178,22 @@ class CreateFoldersTab(TabPane):
         and use these to call project.make_folders().
         """
         if event.button.id == "tabscreen_make_folder_button":
-            sub_dir = self.query_one("#tabscreen_subject_input").value
-            ses_dir = self.query_one("#tabscreen_session_input").value
+            sub_names = self.query_one(
+                "#tabscreen_subject_input"
+            ).as_names_list()
+            ses_names = self.query_one(
+                "#tabscreen_session_input"
+            ).as_names_list()
+            datatype = self.query_one(
+                "DatatypeCheckboxes"
+            ).get_selected_datatypes()
 
-            if ses_dir == "":
-                ses_dir = None
+            if ses_names == [""]:
+                ses_names = None
 
             try:
                 self.project.make_folders(
-                    sub_names=sub_dir,
-                    ses_names=ses_dir,
-                    datatype=self.query_one(
-                        "DatatypeCheckboxes"
-                    ).get_selected_datatypes(),
+                    sub_names=sub_names, ses_names=ses_names, datatype=datatype
                 )
                 self.query_one("#tabscreen_directorytree").reload()
             except BaseException as e:
@@ -208,21 +223,33 @@ class CreateFoldersTab(TabPane):
         and check it is valid. If invalid, the functions will error
         and the error is caught and message returned. Otherwise,
         the formatted name is returned.
+
+        TODO
+        ----
+        This basically mirrors the validation done in `make_folders()`.
+        There is scope for divergence in the logic of these two pathways.
+        This can be resolved by carefully testing their outputs or
+        ensuring the same code is used underlying both. It is close
+        because both call `check_and_format_names` but could be tighter.
         """
         try:
-            sub_dir = self.query_one("#tabscreen_subject_input").value
+            sub_names = self.query_one(
+                "#tabscreen_subject_input"
+            ).as_names_list()
 
             format_sub = formatting.check_and_format_names(
-                sub_dir, "sub", name_templates=self.templates
+                sub_names, "sub", name_templates=self.templates
             )
 
             if prefix == "sub":
                 format_ses = None
             else:
-                ses_dir = self.query_one("#tabscreen_session_input").value
+                ses_names = self.query_one(
+                    "#tabscreen_session_input"
+                ).as_names_list()
 
                 format_ses = formatting.check_and_format_names(
-                    ses_dir, "ses", name_templates=self.templates
+                    ses_names, "ses", name_templates=self.templates
                 )
 
             validation.validate_names_against_project(

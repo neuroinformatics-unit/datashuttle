@@ -99,3 +99,6 @@ class ClickableInput(Input):
 
     def _on_click(self, click: events.Click) -> None:
         self.post_message(self.Clicked(self, click.button))
+
+    def as_names_list(self):
+        return self.value.replace(" ", "").split(",")
