@@ -3,7 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, cast
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from textual import events
+
 from dataclasses import dataclass
 
 from rich.style import Style
@@ -118,6 +121,16 @@ class CustomDirectoryTree(DirectoryTree):
     This is really a temporary solution and should be handled better,
     see textual issue #4028
     """
+
+    def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
+        """
+        `paths` below are only the folders within the root folder. So this will
+        filter out .datashutle only at the root and not all instances of
+        .datashuttle lower down which I suppose we may want visible.
+        """
+        return [
+            path for path in paths if not path.name.startswith(".datashuttle")
+        ]
 
     def _render_line(
         self, y: int, x1: int, x2: int, base_style: Style
