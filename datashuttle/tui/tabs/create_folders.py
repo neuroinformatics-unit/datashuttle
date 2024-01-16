@@ -187,7 +187,7 @@ class CreateFoldersTab(TabPane):
             ).as_names_list()
             datatype = self.query_one(
                 "DatatypeCheckboxes"
-            ).get_selected_datatypes()
+            ).selected_datatypes()
 
             if ses_names == [""]:
                 ses_names = None
