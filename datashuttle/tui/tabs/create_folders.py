@@ -8,13 +8,13 @@ from textual.widgets import (
     Button,
     DirectoryTree,
     Label,
-    TabPane,
 )
 
 from datashuttle.tui.custom_widgets import (
     ClickableInput,
     CustomDirectoryTree,
     DatatypeCheckboxes,
+    TreeAndInputTab,
 )
 from datashuttle.tui.screens.template_settings import (
     TemplateSettingsScreen,
@@ -24,7 +24,7 @@ from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 from datashuttle.utils import formatting, validation
 
 
-class CreateFoldersTab(TabPane):
+class CreateFoldersTab(TreeAndInputTab):
     """
     From this tab, the user can easily create new project files
     formatted according to the NeuroBlueprint specification.
@@ -164,14 +164,15 @@ class CreateFoldersTab(TabPane):
         input widgets, depending on the prefix of the directory selected.
         Double-click time is set to the Windows default duration (500 ms).
         """
-        if event.path.stem.startswith("sub-"):
-            self.query_one("#tabscreen_subject_input").value = str(
-                event.path.stem
-            )
-        if event.path.stem.startswith("ses-"):
-            self.query_one("#tabscreen_session_input").value = str(
-                event.path.stem
-            )
+        self.insert_sub_or_ses_name_to_input(
+            "#tabscreen_subject_input", "#tabscreen_session_input", event
+        )
+
+    @on(CustomDirectoryTree.CtrlAPress)
+    def ctrl_a_pressed(self, event):
+        self.append_sub_or_ses_name_to_input(
+            "#tabscreen_subject_input", "#tabscreen_session_input", event
+        )
 
     def on_button_pressed(self, event: Button.Pressed):
         """

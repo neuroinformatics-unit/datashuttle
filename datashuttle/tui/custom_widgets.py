@@ -15,7 +15,7 @@ from rich.text import Text
 from textual._segment_tools import line_pad
 from textual.message import Message
 from textual.strip import Strip
-from textual.widgets import Checkbox, DirectoryTree, Input, Static
+from textual.widgets import Checkbox, DirectoryTree, Input, Static, TabPane
 
 
 class DatatypeCheckboxes(Static):
@@ -104,8 +104,8 @@ class ClickableInput(Input):
         input: ClickableInput
         button: int
 
-    def _on_click(self, click: events.Click) -> None:
-        self.post_message(self.Clicked(self, click.button))
+    def _on_click(self, event: events.Click) -> None:
+        self.post_message(self.Clicked(self, event.button))
 
     def as_names_list(self):
         return self.value.replace(" ", "").split(",")
@@ -122,6 +122,10 @@ class CustomDirectoryTree(DirectoryTree):
     This is really a temporary solution and should be handled better,
     see textual issue #4028
     """
+
+    @dataclass
+    class CtrlAPress(Message):
+        path_: Path
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """
@@ -272,3 +276,33 @@ class CustomDirectoryTree(DirectoryTree):
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
             pyperclip.copy(path_.as_posix())
+
+        elif event.key == "ctrl+a":
+            path_ = self.get_node_at_line(self.hover_line).data.path
+            self.post_message(self.CtrlAPress(path_))
+
+
+class TreeAndInputTab(TabPane):
+    def insert_sub_or_ses_name_to_input(
+        self, sub_input_key, ses_input_key, event
+    ):
+        if event.path.stem.startswith("sub-"):
+            self.query_one(sub_input_key).value = str(event.path.stem)
+        elif event.path.stem.startswith("ses-"):
+            self.query_one(ses_input_key).value = str(event.path.stem)
+
+    def append_sub_or_ses_name_to_input(
+        self, sub_input_key, ses_input_key, event
+    ):
+        path_ = event.path_
+
+        if path_.stem.startswith("sub-"):
+            if not self.query_one(sub_input_key).value:
+                self.query_one(sub_input_key).value = f"{str(path_.stem)}"
+            else:
+                self.query_one(sub_input_key).value += f", {str(path_.stem)}"
+        if path_.stem.startswith("ses-"):
+            if not self.query_one(ses_input_key).value:
+                self.query_one(ses_input_key).value = f"{str(path_.stem)}"
+            else:
+                self.query_one(ses_input_key).value += f", {str(path_.stem)}"
