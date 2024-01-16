@@ -24,7 +24,6 @@ from datashuttle.tui.custom_widgets import (
 )
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
 from datashuttle.tui.utils.tui_decorators import require_double_click
-from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
@@ -198,10 +197,6 @@ class TransferTab(TabPane):
                 ConfirmScreen(message), self.transfer_data
             )
 
-    def on_input_submitted(self):
-        if self.query_one("#transfer_custom_radiobutton").value:
-            self.query_one("#transfer_directorytree").update_transfer_tree()
-
     def transfer_data(self, transfer_bool: bool) -> None:
         """
         Executes data transfer using the parameters provided
@@ -249,7 +244,7 @@ class TransferTab(TabPane):
                 ).as_names_list()
                 datatypes = self.query_one(
                     "DatatypeCheckboxes"
-                ).selected_datatypes()
+                ).get_selected_datatypes()
 
                 try:
                     if upload_selected:
@@ -336,8 +331,15 @@ class TransferStatusTree(CustomDirectoryTree):
         if self.parent_tab.query_one("#transfer_all_radiobutton").value:
             paths_out = [Path(path) for path in all_paths]
 
-        # both top-level folder and custom transfer relative to the top level folder
-        elif self.parent_tab.query_one("#transfer_toplevel_radiobutton").value:
+        else:  # both top-level folder and custom transfer relative to the top level folder
+            assert (
+                self.parent_tab.query_one(
+                    "#transfer_toplevel_radiobutton"
+                ).value
+                or self.parent_tab.query_one(
+                    "#transfer_custom_radiobutton"
+                ).value
+            ), "temporary confidence check to remove"
             toplevel_dir = (
                 self.project.get_local_path()
                 / self.project.cfg.top_level_folder
@@ -347,92 +349,6 @@ class TransferStatusTree(CustomDirectoryTree):
                 for path in all_paths
                 if all(part in Path(path).parts for part in toplevel_dir.parts)
             ]
-        elif self.parent_tab.query_one("#transfer_custom_radiobutton").value:
-            # Search for all the files that will be transferred
-            sub_names = self.parent_tab.query_one(
-                "#transfer_subject_input"
-            ).as_names_list()
-            ses_names = self.parent_tab.query_one(
-                "#transfer_session_input"
-            ).as_names_list()
-            datatype = self.parent_tab.query_one(
-                "DatatypeCheckboxes"
-            ).selected_datatypes()
-
-            if not (any(sub_names) and any(ses_names)):
-                paths_out = [Path(path) for path in all_paths]
-                return paths_out
-
-            transfer_class = TransferData(
-                self.project.cfg,
-                "upload",  # TODO: this cannot currently be rendered for download!
-                sub_names,
-                ses_names,
-                datatype,
-            )
-            includes_out = (
-                transfer_class.build_a_list_of_all_files_and_folders_to_transfer()
-            )  # TODO: this is a problem, because will be very slow for SSH...
-
-            # This is output in the format for rlcone, it is a list of paths with wildcard for
-            # datatype folders e.g. /sub-001/ses-001/behav/** or single files in non-datatype folders.
-            # We need to turn this into a list of paths not only to the file but also
-            # all parent folders up to the top level folder
-
-            includes_out = "".join(
-                includes_out
-            )  # TODO: why is this not a single string!?
-            includes = (
-                includes_out.replace(" ", "")
-                .replace('"', "")
-                .split("--include")
-            )
-
-            # For everything in the input list, either append the files
-            # or search the datatype foldesr for all files and append these
-            all_file_paths = []
-            for dir in includes:
-                if dir == "":  # TODO: find out where this is coming from
-                    continue
-
-                dir_ = (
-                    self.project.cfg["local_path"]
-                    / self.project.cfg.top_level_folder
-                    / dir
-                )  # TODO: hacky!
-
-                if "**" in dir_.as_posix():
-                    walk_paths = walk(
-                        dir_.parent.as_posix()
-                    )  # TODO: use pathlib, use Path.glob(*)
-
-                    for path in walk_paths:
-                        all_file_paths.append(Path(path[0]))
-                        if path[2]:
-                            all_file_paths.extend(
-                                [Path(f"{path[0]}/{file}") for file in path[2]]
-                            )
-                else:
-                    all_file_paths.append(dir_)
-
-            # For each file, find all parents folders up to the top level folder.
-
-            from copy import deepcopy
-
-            paths_out = deepcopy(all_file_paths)
-            for filepath in all_file_paths:
-                while True:
-                    if (
-                        filepath.parent not in paths_out
-                    ):  # this will become very slow.
-                        paths_out.append(filepath.parent)
-                    if filepath.stem == self.project.cfg.top_level_folder:
-                        break
-                    filepath = filepath.parent
-        else:
-            raise RuntimeError(
-                "At least one transfer radiobutton must be selected."
-            )
 
         return paths_out
 

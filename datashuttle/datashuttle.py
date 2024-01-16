@@ -350,15 +350,15 @@ class DataShuttle:
 
         self._display_top_level_folder()
 
-        transfer_class = TransferData(
+        TransferData(
             self.cfg,
             "upload",
             sub_names,
             ses_names,
             datatype,
+            dry_run,
+            log=True,
         )
-        transfer_class.transfer(dry_run, log=True)
-
         ds_logger.close_log_filehandler()
 
     @check_configs_set
@@ -387,15 +387,15 @@ class DataShuttle:
 
         self._display_top_level_folder()
 
-        transfer_class = TransferData(
+        TransferData(
             self.cfg,
             "download",
             sub_names,
             ses_names,
             datatype,
+            dry_run,
+            log=True,
         )
-        transfer_class.transfer(dry_run, log=True)
-
         ds_logger.close_log_filehandler()
 
     @check_configs_set
