@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
 from dataclasses import dataclass
 
+import pyperclip
 from rich.style import Style
 from rich.text import Text
 from textual._segment_tools import line_pad
@@ -262,3 +263,12 @@ class CustomDirectoryTree(DirectoryTree):
 
         strip = strip.crop(x1, x2)
         return strip
+
+    def on_key(self, event: events.Key):
+        """
+        If CTRL+Q is pressed, copy the line that is currently hovered on.
+        Cannot use CTRL+C as that quits the app.
+        """
+        if event.key == "ctrl+q":
+            path_ = self.get_node_at_line(self.hover_line).data.path
+            pyperclip.copy(path_.as_posix())
