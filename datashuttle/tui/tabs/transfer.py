@@ -17,7 +17,11 @@ from textual.widgets._directory_tree import DirectoryTree, DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
-from datashuttle.tui.custom_widgets import ClickableInput, DatatypeCheckboxes
+from datashuttle.tui.custom_widgets import (
+    ClickableInput,
+    CustomDirectoryTree,
+    DatatypeCheckboxes,
+)
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.utils.rclone import get_local_and_central_file_differences
@@ -294,7 +298,7 @@ class TransferTab(TabPane):
                     ).value += f", {str(event.path.stem)}"
 
 
-class TransferStatusTree(DirectoryTree):
+class TransferStatusTree(CustomDirectoryTree):
     def __init__(self, parent_tab, project, id=None):
         super(TransferStatusTree, self).__init__(
             project.get_local_path(), id=id

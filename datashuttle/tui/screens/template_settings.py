@@ -1,5 +1,4 @@
 import webbrowser
-from typing import Literal
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
@@ -33,7 +32,7 @@ class TemplateSettingsScreen(ModalScreen):
         super(TemplateSettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
-        self.input_mode: Literal["sub", "ses"] = "sub"
+        self.input_mode = "sub"
         self.project = project
 
         self.templates = self.project.get_name_templates()

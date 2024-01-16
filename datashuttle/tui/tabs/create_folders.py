@@ -13,6 +13,7 @@ from textual.widgets import (
 
 from datashuttle.tui.custom_widgets import (
     ClickableInput,
+    CustomDirectoryTree,
     DatatypeCheckboxes,
 )
 from datashuttle.tui.screens.template_settings import (
@@ -41,7 +42,7 @@ class CreateFoldersTab(TabPane):
         self.templates = project.get_name_templates()
 
     def compose(self):
-        yield DirectoryTree(
+        yield CustomDirectoryTree(
             self.project.cfg.data["local_path"],
             id="tabscreen_directorytree",
         )
