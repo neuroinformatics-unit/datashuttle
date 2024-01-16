@@ -1,4 +1,4 @@
-from os import walk
+import os
 from pathlib import Path
 
 from rich.style import Style
@@ -34,7 +34,6 @@ class TransferTab(TabPane):
         )
         self.mainwindow = mainwindow
         self.project = project
-
         self.prev_click_time = 0.0
 
     def compose(self):
@@ -126,7 +125,6 @@ class TransferTab(TabPane):
             ("Local Only\n", "green3"),
             # ("Central Only\n", "italic dodger_blue3"),
             ("Error\n", "bright_red"),
-            ("Not staged for transfer", "grey58"),
         )
 
     def switch_transfer_widgets_display(self):
@@ -157,18 +155,6 @@ class TransferTab(TabPane):
         self.switch_transfer_widgets_display()
 
         self.query_one("#transfer_directorytree").update_transfer_tree()
-
-    def on_select_changed(self, event: Select.Changed) -> None:
-        """
-        If "Top Level" transfer mode has been selected, updates
-        DirectoryTree styling.
-        """
-        if self.query_one("#transfer_toplevel_radiobutton").value:
-            self.project.set_top_level_folder(event.value)
-
-            transfer_tree = self.query_one("#transfer_directorytree")
-            transfer_tree.get_transfer_diffs()
-            transfer_tree.update_transfer_tree()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -211,7 +197,6 @@ class TransferTab(TabPane):
         -------
         None
         """
-
         if transfer_bool:
             upload_selected = not self.query_one("#transfer_switch").value
 
@@ -226,14 +211,25 @@ class TransferTab(TabPane):
                     return
 
             elif self.query_one("#transfer_toplevel_radiobutton").value:
+                assert (
+                    select_val := self.query_one(
+                        "#transfer_toplevel_select"
+                    ).value
+                ) in canonical_folders.get_top_level_folders()
+
+                # TODO: this is very hacky.
+                temp_top_level_folder = self.project.get_top_level_folder()
+                self.project.set_top_level_folder(select_val)
                 try:
                     if upload_selected:
                         self.project.upload_all()
                     else:
                         self.project.download_all()
                 except BaseException as e:
+                    self.project.set_top_level_folder(temp_top_level_folder)
                     self.mainwindow.show_modal_error_dialog(str(e))
                     return
+                self.project.set_top_level_folder(temp_top_level_folder)
 
             elif self.query_one("#transfer_custom_radiobutton").value:
                 sub_names = self.query_one(
@@ -313,44 +309,22 @@ class TransferStatusTree(CustomDirectoryTree):
 
     def get_local_transfer_paths(self):
         """
-        Compiles a list of all project files and paths staged for transfer
-        using the parameters currently selected by the user.
+        Compiles a list of all project files and paths.
         """
+        paths_list = []
 
-        all_paths = []
-        walk_paths = walk(
-            self.project.get_local_path().as_posix()
-        )  # TODO: only search canonical top level folders (e.g. ignore logs, I think)
-        # TODO: os.walk appends different file seps than those used by the datashuttle fxn.
-        #  Still works, somehow, but ugly.
-        for path in walk_paths:
-            all_paths.append(path[0])
-            if path[2]:
-                all_paths.extend([f"{path[0]}/{file}" for file in path[2]])
-
-        if self.parent_tab.query_one("#transfer_all_radiobutton").value:
-            paths_out = [Path(path) for path in all_paths]
-
-        else:  # both top-level folder and custom transfer relative to the top level folder
-            assert (
-                self.parent_tab.query_one(
-                    "#transfer_toplevel_radiobutton"
-                ).value
-                or self.parent_tab.query_one(
-                    "#transfer_custom_radiobutton"
-                ).value
-            ), "temporary confidence check to remove"
-            toplevel_dir = (
-                self.project.get_local_path()
-                / self.project.cfg.top_level_folder
+        for top_level_folder in canonical_folders.get_top_level_folders():
+            walk_paths = os.walk(
+                (self.project.get_local_path() / top_level_folder).as_posix()
             )
-            paths_out = [
-                Path(path)
-                for path in all_paths
-                if all(part in Path(path).parts for part in toplevel_dir.parts)
-            ]
+            for path in walk_paths:
+                paths_list.append(Path(path[0]))
+                if path[2]:
+                    paths_list.extend(
+                        [Path(f"{path[0]}/{file}") for file in path[2]]
+                    )
 
-        return paths_out
+        return paths_list
 
     def get_transfer_diffs(self, init: bool = False):
         """
@@ -374,7 +348,6 @@ class TransferStatusTree(CustomDirectoryTree):
         Updates tree styling to reflect the current TUI state
         and project transfer status.
         """
-
         self.transfer_paths = self.get_local_transfer_paths()
         self.reload()
 
@@ -434,7 +407,6 @@ class TransferStatusTree(CustomDirectoryTree):
         )
 
         # Checks whether the current node's file path is staged for transfer
-
         if node_path in self.transfer_paths:
             # Sets sub- and ses-level folders to orange if files within have changed
             # fmt: off
@@ -446,7 +418,4 @@ class TransferStatusTree(CustomDirectoryTree):
                 node_label.stylize_before("green3")
             elif node_label.plain in self.transfer_diffs["error"] or any([node_relative_path in file for file in self.transfer_diffs["error"]]):
                 node_label.stylize_before("bright_red")
-        # fmt: on
-        # Sets files that are not staged for transfer to grey
-        else:
-            node_label.stylize_before("grey58")
+            # fmt: on
