@@ -75,7 +75,7 @@ class DatatypeCheckboxes(Static):
         persistent_settings["tui"][self.settings_key] = self.datatype_config
         self.project._save_persistent_settings(persistent_settings)
 
-    def get_selected_datatypes(self) -> List[str]:
+    def selected_datatypes(self) -> List[str]:
         """
         Get the names of the datatype options for which the
         checkboxes are switched on.

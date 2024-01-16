@@ -48,8 +48,6 @@ class TransferData:
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
-        dry_run: bool,
-        log: bool,
     ):
         self.cfg = cfg
         self.upload_or_download = upload_or_download
@@ -64,14 +62,19 @@ class TransferData:
 
         self.check_input_arguments()
 
+    def transfer(
+        self,
+        dry_run: bool,
+        log: bool,
+    ):
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
         if any(include_list):
             output = rclone.transfer_data(
-                cfg,
-                upload_or_download,
+                self.cfg,
+                self.upload_or_download,
                 include_list,
-                cfg.make_rclone_transfer_options(dry_run),
+                self.cfg.make_rclone_transfer_options(dry_run),
             )
 
             if log:
