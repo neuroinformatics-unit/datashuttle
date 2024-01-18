@@ -35,7 +35,7 @@ class TransferStatusTree(CustomDirectoryTree):
 
         self.parent_tab = parent_tab
         self.project = project
-        self.get_transfer_diffs(init=True)
+        self.update_transfer_diffs()
 
     def on_mount(self):
         self.transfer_paths = self.get_local_transfer_paths()
@@ -59,7 +59,7 @@ class TransferStatusTree(CustomDirectoryTree):
 
         return paths_list
 
-    def get_transfer_diffs(self, init: bool = False):
+    def update_transfer_diffs(self):
         """
         Updates the transfer diffs used to style the DirectoryTree.
 
@@ -67,13 +67,8 @@ class TransferStatusTree(CustomDirectoryTree):
         #transfer_toplevel_radiobutton is not yet available and
         by default we set to 'all'.
         """
-        # TODO: will need to se
-        all_top_level_folder = (
-            init
-            or self.parent_tab.query_one("#transfer_all_radiobutton").value
-        )
         self.transfer_diffs = get_local_and_central_file_differences(
-            self.project.cfg, all_top_level_folder
+            self.project.cfg, all_top_level_folder=True
         )
 
     def update_transfer_tree(self):
@@ -82,6 +77,7 @@ class TransferStatusTree(CustomDirectoryTree):
         and project transfer status.
         """
         self.transfer_paths = self.get_local_transfer_paths()
+        self.update_transfer_diffs()  # TODO: can unify either this and above both getters or updaters
         self.reload()
 
     def render_label(
@@ -188,12 +184,21 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_toplevel_select",
                 allow_blank=True,
             ),
-            Label(
-                "Existing data with the same file details on \ncentral will not be overwritten by default."
-            ),
         ]
 
         self.transfer_custom_widgets = [
+            Label(
+                "Select top-level folder to transfer.",
+                id="transfer_custom_label_top",
+            ),
+            Select(
+                existing_top_level_folders,
+                value=self.project.get_top_level_folder()
+                if any(existing_top_level_folders)
+                else Select.BLANK,
+                id="transfer_custom_select",  # TODO: RENAME
+                allow_blank=True,
+            ),
             Label("Subject(s)"),
             ClickableInput(
                 id="transfer_subject_input",
@@ -356,6 +361,15 @@ class TransferTab(TreeAndInputTab):
                 self.project.set_top_level_folder(temp_top_level_folder)
 
             elif self.query_one("#transfer_custom_radiobutton").value:
+                # DIRECT COPY FROM ABOVE
+                assert (
+                    select_val := self.query_one(
+                        "#transfer_custom_select"
+                    ).value
+                ) in canonical_folders.get_top_level_folders()
+                temp_top_level_folder = self.project.get_top_level_folder()
+                self.project.set_top_level_folder(select_val)
+
                 sub_names = self.query_one(
                     "#transfer_subject_input"
                 ).as_names_list()
@@ -380,11 +394,13 @@ class TransferTab(TreeAndInputTab):
                             datatype=datatypes,
                         )
                 except BaseException as e:
+                    self.project.set_top_level_folder(temp_top_level_folder)
                     self.mainwindow.show_modal_error_dialog(str(e))
                     return
+                self.project.set_top_level_folder(temp_top_level_folder)
 
             transfer_tree = self.query_one("#transfer_directorytree")
-            transfer_tree.get_transfer_diffs()
+            transfer_tree.update_transfer_diffs()
             transfer_tree.update_transfer_tree()
 
     #    @require_double_click
