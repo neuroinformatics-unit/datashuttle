@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Iterable, List, cast
+from typing import TYPE_CHECKING, Iterable, List, Optional, cast
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -125,8 +125,8 @@ class CustomDirectoryTree(DirectoryTree):
 
     @dataclass
     class DirectoryTreeKeyPress(Message):
-        key: Path
-        data: Any
+        key: str
+        node_path: Optional[Path]
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """
@@ -278,35 +278,37 @@ class CustomDirectoryTree(DirectoryTree):
             path_ = self.get_node_at_line(self.hover_line).data.path
             pyperclip.copy(path_.as_posix())
 
-        elif event.key == "ctrl+a":
+        elif event.key in ["ctrl+a", "ctrl+f"]:
             path_ = self.get_node_at_line(self.hover_line).data.path
             self.post_message(
-                self.DirectoryTreeKeyPress(event.key, data=path_)
+                self.DirectoryTreeKeyPress(event.key, node_path=path_)
             )
 
         elif event.key == "ctrl+r":
-            self.post_message(self.DirectoryTreeKeyPress(event.key, data=None))
+            self.post_message(
+                self.DirectoryTreeKeyPress(event.key, node_path=None)
+            )
 
 
 class TreeAndInputTab(TabPane):
     def insert_sub_or_ses_name_to_input(
-        self, sub_input_key, ses_input_key, event
+        self, sub_input_key, ses_input_key, name
     ):
-        if event.path.stem.startswith("sub-"):
-            self.query_one(sub_input_key).value = str(event.path.stem)
-        elif event.path.stem.startswith("ses-"):
-            self.query_one(ses_input_key).value = str(event.path.stem)
+        if name.startswith("sub-"):
+            self.query_one(sub_input_key).value = name
+        elif name.startswith("ses-"):
+            self.query_one(ses_input_key).value = name
 
     def append_sub_or_ses_name_to_input(
-        self, sub_input_key, ses_input_key, path_
+        self, sub_input_key, ses_input_key, name
     ):
-        if path_.stem.startswith("sub-"):
+        if name.startswith("sub-"):
             if not self.query_one(sub_input_key).value:
-                self.query_one(sub_input_key).value = f"{str(path_.stem)}"
+                self.query_one(sub_input_key).value = name
             else:
-                self.query_one(sub_input_key).value += f", {str(path_.stem)}"
-        if path_.stem.startswith("ses-"):
+                self.query_one(sub_input_key).value += f", {name}"
+        if name.startswith("ses-"):
             if not self.query_one(ses_input_key).value:
-                self.query_one(ses_input_key).value = f"{str(path_.stem)}"
+                self.query_one(ses_input_key).value = name
             else:
-                self.query_one(ses_input_key).value += f", {str(path_.stem)}"
+                self.query_one(ses_input_key).value += f", {name}"

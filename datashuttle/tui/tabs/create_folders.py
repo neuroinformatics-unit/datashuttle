@@ -6,7 +6,6 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import (
     Button,
-    DirectoryTree,
     Label,
 )
 
@@ -154,27 +153,36 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    @require_double_click
-    def on_directory_tree_directory_selected(
-        self, event: DirectoryTree.DirectorySelected
-    ):
-        """
-        Upon double-clicking a directory within the directory-tree
-        widget, replace contents of the \'Subject\' and/or \'Session\'
-        input widgets, depending on the prefix of the directory selected.
-        Double-click time is set to the Windows default duration (500 ms).
-        """
-        self.insert_sub_or_ses_name_to_input(
-            "#tabscreen_subject_input", "#tabscreen_session_input", event
-        )
+    #    @require_double_click
+    #    def on_directory_tree_directory_selected(
+    #        self, event: DirectoryTree.DirectorySelected
+    #    ):
+    #        """
+    #        Upon double-clicking a directory within the directory-tree
+    #        widget, replace contents of the \'Subject\' and/or \'Session\'
+    #        input widgets, depending on the prefix of the directory selected.
+    #        Double-click time is set to the Windows default duration (500 ms).
+    #        """
+    #        self.insert_sub_or_ses_name_to_input(
+    #            "#tabscreen_subject_input", "#tabscreen_session_input", event
+    #        )
 
+    # TODO: this is very duplicate across create and transfer, and also confusing
+    # because the copy event is handled at the level of the directory tree but
+    # all other events are handled at this level.
     @on(CustomDirectoryTree.DirectoryTreeKeyPress)
     def directorytree_key_pressed(self, event):
         if event.key == "ctrl+a":
             self.append_sub_or_ses_name_to_input(
                 "#tabscreen_subject_input",
                 "#tabscreen_session_input",
-                path_=event.data,
+                name=event.node_path.stem,
+            )
+        elif event.key == "ctrl+f":
+            self.insert_sub_or_ses_name_to_input(
+                "#tabscreen_subject_input",
+                "#tabscreen_session_input",
+                event.node_path.stem,
             )
         elif event.key == "ctrl+r":
             self.reload_directorytree()

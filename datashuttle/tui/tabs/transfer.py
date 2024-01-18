@@ -13,7 +13,7 @@ from textual.widgets import (
     Select,
     Switch,
 )
-from textual.widgets._directory_tree import DirectoryTree, DirEntry
+from textual.widgets._directory_tree import DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
@@ -24,7 +24,6 @@ from datashuttle.tui.custom_widgets import (
     TreeAndInputTab,
 )
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
-from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
@@ -391,20 +390,20 @@ class TransferTab(TreeAndInputTab):
             transfer_tree.get_transfer_diffs()
             transfer_tree.update_transfer_tree()
 
-    @require_double_click
-    def on_directory_tree_directory_selected(
-        self, event: DirectoryTree.DirectorySelected
-    ):
-        """
-        Upon double-clicking a directory within the directory-tree
-        widget, append the file selected to the current contents of
-        the \'Subject\' and/or \'Session\' input widgets, depending
-        on the prefix of the directory selected.
-        """
-        if self.query_one("#transfer_custom_radiobutton").value:
-            self.insert_sub_or_ses_name_to_input(
-                "#transfer_subject_input", "#transfer_session_input", event
-            )
+    #    @require_double_click
+    #    def on_directory_tree_directory_selected(
+    #        self, event: DirectoryTree.DirectorySelected
+    #    ):
+    #        """
+    #        Upon double-clicking a directory within the directory-tree
+    #        widget, append the file selected to the current contents of
+    #        the \'Subject\' and/or \'Session\' input widgets, depending
+    #        on the prefix of the directory selected.
+    #        """
+    #        if self.query_one("#transfer_custom_radiobutton").value:
+    #            self.insert_sub_or_ses_name_to_input(
+    #                "#transfer_subject_input", "#transfer_session_input", event
+    #            )
 
     @on(TransferStatusTree.DirectoryTreeKeyPress)
     def directorytree_key_pressed(self, event):  # TODO: type
@@ -413,10 +412,21 @@ class TransferTab(TreeAndInputTab):
                 self.append_sub_or_ses_name_to_input(
                     "#transfer_subject_input",
                     "#transfer_session_input",
-                    path_=event.data,
+                    name=event.node_path.stem,
+                )
+
+        elif event.key == "ctrl+f":
+            if self.query_one("#transfer_custom_radiobutton").value:
+                self.insert_sub_or_ses_name_to_input(
+                    "#transfer_subject_input",
+                    "#transfer_session_input",
+                    event.node_path.stem,
                 )
         elif event.key == "ctrl+r":
             self.reload_directorytree()  # TODO: could handle one level down atthe CustomTree level? with fixed refresh...
+
+        elif event.key == "ctrl+f":
+            assert False, dir(event)
 
     def reload_directorytree(self):  # TODO:  too much indirection
         self.query_one("#transfer_directorytree").update_transfer_tree()
