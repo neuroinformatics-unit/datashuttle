@@ -171,21 +171,23 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_all_label",
             )
         ]
-
+        existing_top_level_folders = [
+            (folder, folder)
+            for folder in canonical_folders.get_top_level_folders()
+            if (self.project.get_local_path() / folder).exists()
+        ]
         self.transfer_toplevel_widgets = [
             Label(
                 "Select top-level folder to transfer.",
                 id="transfer_toplevel_label_top",
             ),
             Select(
-                [
-                    (folder, folder)
-                    for folder in canonical_folders.get_top_level_folders()
-                    if (self.project.get_local_path() / folder).exists()
-                ],
-                value=self.project.get_top_level_folder(),
+                existing_top_level_folders,
+                value=self.project.get_top_level_folder()
+                if any(existing_top_level_folders)
+                else Select.BLANK,
                 id="transfer_toplevel_select",
-                allow_blank=False,
+                allow_blank=True,
             ),
             Label(
                 "Existing data with the same file details on \ncentral will not be overwritten by default."
@@ -366,7 +368,7 @@ class TransferTab(TreeAndInputTab):
                 ).as_names_list()
                 datatypes = self.query_one(
                     "DatatypeCheckboxes"
-                ).get_selected_datatypes()
+                ).selected_datatypes()
 
                 try:
                     if upload_selected:
@@ -414,7 +416,7 @@ class TransferTab(TreeAndInputTab):
                     path_=event.data,
                 )
         elif event.key == "ctrl+r":
-            self.reload_directorytree()  # TODO: could handle one levle down atthe CustomTree level? with fixed refresh...
+            self.reload_directorytree()  # TODO: could handle one level down atthe CustomTree level? with fixed refresh...
 
     def reload_directorytree(self):  # TODO:  too much indirection
         self.query_one("#transfer_directorytree").update_transfer_tree()

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, List, cast
+from typing import TYPE_CHECKING, Any, Iterable, List, cast
 
 if TYPE_CHECKING:
     from pathlib import Path
