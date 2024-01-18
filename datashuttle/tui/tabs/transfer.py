@@ -3,7 +3,6 @@ from pathlib import Path
 
 from rich.style import Style
 from rich.text import Text
-from textual import on
 from textual.containers import Container, Horizontal
 from textual.widgets import (
     Button,
@@ -80,6 +79,33 @@ class TransferStatusTree(CustomDirectoryTree):
         self.update_transfer_diffs()  # TODO: can unify either this and above both getters or updaters
         self.reload()
 
+    def format_transfer_label(self, node_label, node_path):
+        """
+        Takes nodes being formatted using `render_label` and applies custom
+        formatting according to the node's transfer status.
+        """
+
+        node_relative_path = node_path.as_posix().replace(
+            f"{self.project.cfg['local_path'] .as_posix()}/", ""
+        )
+
+        # Checks whether the current node's file path is staged for transfer
+        if node_path in self.transfer_paths:
+            # Sets sub- and ses-level folders to orange if files within have changed
+            # fmt: off
+            if node_relative_path in self.transfer_diffs["same"]:
+                pass
+            elif node_relative_path in self.transfer_diffs["different"] or any([node_relative_path in file for file in self.transfer_diffs["different"]]):
+                node_label.stylize_before("gold3")
+            elif node_relative_path in self.transfer_diffs["local_only"] or any([node_relative_path in file for file in self.transfer_diffs["local_only"]]):
+                node_label.stylize_before("green3")
+            elif node_label.plain in self.transfer_diffs["error"] or any([node_relative_path in file for file in self.transfer_diffs["error"]]):
+                node_label.stylize_before("bright_red")
+            # fmt: on
+
+    # Overridden Methods
+    # ----------------------------------------------------------------------------------
+
     def render_label(
         self, node: TreeNode[DirEntry], base_style: Style, style: Style
     ) -> Text:
@@ -125,32 +151,10 @@ class TransferStatusTree(CustomDirectoryTree):
         text = Text.assemble(prefix, node_label)
         return text
 
-    def format_transfer_label(self, node_label, node_path):
-        """
-        Takes nodes being formatted using `render_label` and applies custom
-        formatting according to the node's transfer status.
-        """
-
-        node_relative_path = node_path.as_posix().replace(
-            f"{self.project.cfg['local_path'] .as_posix()}/", ""
-        )
-
-        # Checks whether the current node's file path is staged for transfer
-        if node_path in self.transfer_paths:
-            # Sets sub- and ses-level folders to orange if files within have changed
-            # fmt: off
-            if node_relative_path in self.transfer_diffs["same"]:
-                pass
-            elif node_relative_path in self.transfer_diffs["different"] or any([node_relative_path in file for file in self.transfer_diffs["different"]]):
-                node_label.stylize_before("gold3")
-            elif node_relative_path in self.transfer_diffs["local_only"] or any([node_relative_path in file for file in self.transfer_diffs["local_only"]]):
-                node_label.stylize_before("green3")
-            elif node_label.plain in self.transfer_diffs["error"] or any([node_relative_path in file for file in self.transfer_diffs["error"]]):
-                node_label.stylize_before("bright_red")
-            # fmt: on
-
 
 class TransferTab(TreeAndInputTab):
+    """ """
+
     def __init__(self, title, mainwindow, project, id=None):
         super(TransferTab, self).__init__(title, id=id)
         self.mainwindow = mainwindow
@@ -283,8 +287,6 @@ class TransferTab(TreeAndInputTab):
         assert label in ["All", "Top Level", "Custom"], "Unexpected label."
         self.switch_transfer_widgets_display()
 
-        self.query_one("#transfer_directorytree").update_transfer_tree()
-
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
         If the Transfer button is clicked, opens a modal dialog
@@ -312,6 +314,27 @@ class TransferTab(TreeAndInputTab):
                 ConfirmScreen(message), self.transfer_data
             )
 
+    def on_custom_directory_tree_directory_tree_key_press(self, event):
+        """ """
+        self.handle_directorytree_key_pressed(
+            "#transfer_subject_input", "#transfer_session_input", event
+        )
+
+    def reload_directorytree(self):
+        self.query_one("#transfer_directorytree").update_transfer_tree()
+
+    def get_top_level_folder_select(self, key):
+        assert (
+            selected_val := self.query_one(
+                key,
+            ).value
+        ) in canonical_folders.get_top_level_folders()
+        return selected_val
+
+    # Transfer data method
+    # ----------------------------------------------------------------------------------
+    # TODO: everything non-GUI related should be factored to separate module
+
     def transfer_data(self, transfer_bool: bool) -> None:
         """
         Executes data transfer using the parameters provided
@@ -330,116 +353,75 @@ class TransferTab(TreeAndInputTab):
             upload_selected = not self.query_one("#transfer_switch").value
 
             if self.query_one("#transfer_all_radiobutton").value:
-                try:
-                    if upload_selected:
-                        self.project.upload_entire_project()
-                    else:
-                        self.project.download_entire_project()
-                except BaseException as e:
-                    self.mainwindow.show_modal_error_dialog(str(e))
-                    return
+                self.upload_entire_project(upload_selected)
 
             elif self.query_one("#transfer_toplevel_radiobutton").value:
-                assert (
-                    select_val := self.query_one(
-                        "#transfer_toplevel_select"
-                    ).value
-                ) in canonical_folders.get_top_level_folders()
-
-                # TODO: this is very hacky.
-                temp_top_level_folder = self.project.get_top_level_folder()
-                self.project.set_top_level_folder(select_val)
-                try:
-                    if upload_selected:
-                        self.project.upload_all()
-                    else:
-                        self.project.download_all()
-                except BaseException as e:
-                    self.project.set_top_level_folder(temp_top_level_folder)
-                    self.mainwindow.show_modal_error_dialog(str(e))
-                    return
-                self.project.set_top_level_folder(temp_top_level_folder)
+                self.upload_top_level_only(upload_selected)
 
             elif self.query_one("#transfer_custom_radiobutton").value:
-                # DIRECT COPY FROM ABOVE
-                assert (
-                    select_val := self.query_one(
-                        "#transfer_custom_select"
-                    ).value
-                ) in canonical_folders.get_top_level_folders()
-                temp_top_level_folder = self.project.get_top_level_folder()
-                self.project.set_top_level_folder(select_val)
+                self.transfer_custom_selection(upload_selected)
 
-                sub_names = self.query_one(
-                    "#transfer_subject_input"
-                ).as_names_list()
-                ses_names = self.query_one(
-                    "#transfer_session_input"
-                ).as_names_list()
-                datatypes = self.query_one(
-                    "DatatypeCheckboxes"
-                ).selected_datatypes()
+            self.reload_directorytree()
 
-                try:
-                    if upload_selected:
-                        self.project.upload(
-                            sub_names=sub_names,
-                            ses_names=ses_names,
-                            datatype=datatypes,
-                        )
-                    else:
-                        self.project.download(
-                            sub_names=sub_names,
-                            ses_names=ses_names,
-                            datatype=datatypes,
-                        )
-                except BaseException as e:
-                    self.project.set_top_level_folder(temp_top_level_folder)
-                    self.mainwindow.show_modal_error_dialog(str(e))
-                    return
-                self.project.set_top_level_folder(temp_top_level_folder)
+    def transfer_entire_project(self, upload):
+        try:
+            if upload:
+                self.project.upload_entire_project()
+            else:
+                self.project.download_entire_project()
+        except BaseException as e:
+            self.mainwindow.show_modal_error_dialog(str(e))
+            return
 
-            transfer_tree = self.query_one("#transfer_directorytree")
-            transfer_tree.update_transfer_diffs()
-            transfer_tree.update_transfer_tree()
+    def upload_top_level_only(self, upload):
+        """
+        TODO: this is very hacky
+        """
+        selected_top_level_folder = self.get_top_level_folder_select(
+            "#transfer_toplevel_select"
+        )
 
-    #    @require_double_click
-    #    def on_directory_tree_directory_selected(
-    #        self, event: DirectoryTree.DirectorySelected
-    #    ):
-    #        """
-    #        Upon double-clicking a directory within the directory-tree
-    #        widget, append the file selected to the current contents of
-    #        the \'Subject\' and/or \'Session\' input widgets, depending
-    #        on the prefix of the directory selected.
-    #        """
-    #        if self.query_one("#transfer_custom_radiobutton").value:
-    #            self.insert_sub_or_ses_name_to_input(
-    #                "#transfer_subject_input", "#transfer_session_input", event
-    #            )
+        temp_top_level_folder = self.project.get_top_level_folder()
+        self.project.set_top_level_folder(selected_top_level_folder)
+        try:
+            if upload:
+                self.project.upload_all()
+            else:
+                self.project.download_all()
+        except BaseException as e:
+            self.project.set_top_level_folder(temp_top_level_folder)
+            self.mainwindow.show_modal_error_dialog(str(e))
+            return
+        self.project.set_top_level_folder(temp_top_level_folder)
 
-    @on(TransferStatusTree.DirectoryTreeKeyPress)
-    def directorytree_key_pressed(self, event):  # TODO: type
-        if event.key == "ctrl+a":
-            if self.query_one("#transfer_custom_radiobutton").value:
-                self.append_sub_or_ses_name_to_input(
-                    "#transfer_subject_input",
-                    "#transfer_session_input",
-                    name=event.node_path.stem,
+    def transfer_custom_selection(self, upload):
+        selected_top_level_folder = self.get_top_level_folder_select(
+            "#transfer_custom_select"
+        )
+
+        temp_top_level_folder = self.project.get_top_level_folder()
+        self.project.set_top_level_folder(selected_top_level_folder)
+
+        sub_names, ses_names, datatype = self.get_sub_ses_names_and_datatype(
+            "#transfer_subject_input", "#transfer_session_input"
+        )
+
+        try:
+            if upload:
+                self.project.upload(
+                    sub_names=sub_names,
+                    ses_names=ses_names,
+                    datatype=datatype,
                 )
-
-        elif event.key == "ctrl+f":
-            if self.query_one("#transfer_custom_radiobutton").value:
-                self.insert_sub_or_ses_name_to_input(
-                    "#transfer_subject_input",
-                    "#transfer_session_input",
-                    event.node_path.stem,
+            else:
+                self.project.download(
+                    sub_names=sub_names,
+                    ses_names=ses_names,
+                    datatype=datatype,
                 )
-        elif event.key == "ctrl+r":
-            self.reload_directorytree()  # TODO: could handle one level down atthe CustomTree level? with fixed refresh...
+        except BaseException as e:
+            self.project.set_top_level_folder(temp_top_level_folder)
+            self.mainwindow.show_modal_error_dialog(str(e))
+            return
 
-        elif event.key == "ctrl+f":
-            assert False, dir(event)
-
-    def reload_directorytree(self):  # TODO:  too much indirection
-        self.query_one("#transfer_directorytree").update_transfer_tree()
+        self.project.set_top_level_folder(temp_top_level_folder)

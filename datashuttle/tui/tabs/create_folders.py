@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from textual import on
 from textual.containers import Horizontal
 from textual.widgets import (
     Button,
@@ -68,9 +67,10 @@ class CreateFoldersTab(TreeAndInputTab):
             ),
         )
 
-    @on(ClickableInput.Clicked)
     @require_double_click
-    def handle_input_click(self, event: ClickableInput.Clicked) -> None:
+    def on_clickable_input_clicked(
+        self, event: ClickableInput.Clicked
+    ) -> None:
         """
         Handled a double-click on the custom ClickableInput widget.
         Determine if we have the subject or session input, and
@@ -79,17 +79,59 @@ class CreateFoldersTab(TreeAndInputTab):
         """
         input_id = event.input.id
 
-        assert input_id in [
-            "tabscreen_session_input",
-            "tabscreen_subject_input",
-        ], "unknown input name"
-
         prefix = "sub" if "subject" in input_id else "ses"
 
         if event.button == 1:
             self.fill_input_with_template(prefix, input_id)
         elif event.button == 3:
             self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
+
+    # @on(CustomDirectoryTree.DirectoryTreeKeyPress)
+    def on_custom_directory_tree_directory_tree_key_press(self, event):
+        self.handle_directorytree_key_pressed(
+            "#tabscreen_subject_input", "#tabscreen_session_input", event
+        )
+
+    def on_button_pressed(self, event: Button.Pressed):
+        """
+        Enables the Make Folders button to read out current input values
+        and use these to call project.make_folders().
+        """
+        if event.button.id == "tabscreen_make_folder_button":
+            self.create_folders()
+
+        elif event.button.id == "tabscreen_template_settings_button":
+            self.mainwindow.push_screen(
+                TemplateSettingsScreen(self.mainwindow, self.project),
+                self.update_templates,
+            )
+
+    def update_templates(self, templates):
+        self.project.set_name_templates(templates)
+        self.templates = templates
+        self.revalidate_inputs(["sub", "ses"])
+
+    def update_input_tooltip(self, message: Optional[str], prefix):
+        """"""
+        id = (
+            "#tabscreen_subject_input"
+            if prefix == "sub"
+            else "#tabscreen_session_input"
+        )
+        input = self.query_one(id)
+        input.tooltip = message
+
+    def revalidate_inputs(self, all_prefixes: List[str]):
+        """"""
+        input_names = {
+            "sub": "#tabscreen_subject_input",
+            "ses": "#tabscreen_session_input",
+        }
+        for prefix in all_prefixes:
+            key = input_names[prefix]
+
+            value = self.query_one(key).value
+            self.query_one(key).validate(value=value)
 
     def fill_input_with_template(self, prefix, input_id):
         """
@@ -104,6 +146,37 @@ class CreateFoldersTab(TreeAndInputTab):
 
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
+
+    def reload_directorytree(self):
+        self.query_one("#tabscreen_directorytree").reload()
+
+    # ----------------------------------------------------------------------------------
+    # Datashuttle Callers
+    # ----------------------------------------------------------------------------------
+    # TODO: these should be split as much as possible between widget and datashuttle
+
+    # Create Folders
+    # ----------------------------------------------------------------------------------
+
+    def create_folders(self):
+        sub_names, ses_names, datatype = self.get_sub_ses_names_and_datatype(
+            "#tabscreen_subject_input", "#tabscreen_session_input"
+        )
+
+        if ses_names == [""]:
+            ses_names = None
+
+        try:
+            self.project.make_folders(
+                sub_names=sub_names, ses_names=ses_names, datatype=datatype
+            )
+            self.reload_directorytree()
+        except BaseException as e:
+            self.mainwindow.show_modal_error_dialog(str(e))
+            return
+
+    # Filling Inputs
+    # ----------------------------------------------------------------------------------
 
     def fill_input_with_next_sub_or_ses_template(self, prefix, input_id):
         """
@@ -152,82 +225,6 @@ class CreateFoldersTab(TreeAndInputTab):
 
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
-
-    #    @require_double_click
-    #    def on_directory_tree_directory_selected(
-    #        self, event: DirectoryTree.DirectorySelected
-    #    ):
-    #        """
-    #        Upon double-clicking a directory within the directory-tree
-    #        widget, replace contents of the \'Subject\' and/or \'Session\'
-    #        input widgets, depending on the prefix of the directory selected.
-    #        Double-click time is set to the Windows default duration (500 ms).
-    #        """
-    #        self.insert_sub_or_ses_name_to_input(
-    #            "#tabscreen_subject_input", "#tabscreen_session_input", event
-    #        )
-
-    # TODO: this is very duplicate across create and transfer, and also confusing
-    # because the copy event is handled at the level of the directory tree but
-    # all other events are handled at this level.
-    @on(CustomDirectoryTree.DirectoryTreeKeyPress)
-    def directorytree_key_pressed(self, event):
-        if event.key == "ctrl+a":
-            self.append_sub_or_ses_name_to_input(
-                "#tabscreen_subject_input",
-                "#tabscreen_session_input",
-                name=event.node_path.stem,
-            )
-        elif event.key == "ctrl+f":
-            self.insert_sub_or_ses_name_to_input(
-                "#tabscreen_subject_input",
-                "#tabscreen_session_input",
-                event.node_path.stem,
-            )
-        elif event.key == "ctrl+r":
-            self.reload_directorytree()
-
-    def reload_directorytree(self):
-        self.query_one("#tabscreen_directorytree").reload()
-
-    def on_button_pressed(self, event: Button.Pressed):
-        """
-        Enables the Make Folders button to read out current input values
-        and use these to call project.make_folders().
-        """
-        if event.button.id == "tabscreen_make_folder_button":
-            sub_names = self.query_one(
-                "#tabscreen_subject_input"
-            ).as_names_list()
-            ses_names = self.query_one(
-                "#tabscreen_session_input"
-            ).as_names_list()
-            datatype = self.query_one(
-                "DatatypeCheckboxes"
-            ).selected_datatypes()
-
-            if ses_names == [""]:
-                ses_names = None
-
-            try:
-                self.project.make_folders(
-                    sub_names=sub_names, ses_names=ses_names, datatype=datatype
-                )
-                self.reload_directorytree()
-            except BaseException as e:
-                self.mainwindow.show_modal_error_dialog(str(e))
-                return
-
-        elif event.button.id == "tabscreen_template_settings_button":
-            self.mainwindow.push_screen(
-                TemplateSettingsScreen(self.mainwindow, self.project),
-                self.update_templates,
-            )
-
-    def update_templates(self, templates):
-        self.project.set_name_templates(templates)
-        self.templates = templates
-        self.revalidate_inputs(["sub", "ses"])
 
     def run_local_validation(self, prefix):
         """
@@ -286,25 +283,3 @@ class CreateFoldersTab(TreeAndInputTab):
         names = format_sub if prefix == "sub" else format_ses
 
         return True, f"Formatted names: {names}"
-
-    def update_input_tooltip(self, message: Optional[str], prefix):
-        """"""
-        id = (
-            "#tabscreen_subject_input"
-            if prefix == "sub"
-            else "#tabscreen_session_input"
-        )
-        input = self.query_one(id)
-        input.tooltip = message
-
-    def revalidate_inputs(self, all_prefixes: List[str]):
-        """"""
-        input_names = {
-            "sub": "#tabscreen_subject_input",
-            "ses": "#tabscreen_session_input",
-        }
-        for prefix in all_prefixes:
-            key = input_names[prefix]
-
-            value = self.query_one(key).value
-            self.query_one(key).validate(value=value)

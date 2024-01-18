@@ -17,6 +17,10 @@ from textual.message import Message
 from textual.strip import Strip
 from textual.widgets import Checkbox, DirectoryTree, Input, Static, TabPane
 
+# --------------------------------------------------------------------------------------
+# DatatypeCheckboxes
+# --------------------------------------------------------------------------------------
+
 
 class DatatypeCheckboxes(Static):
     """
@@ -92,6 +96,11 @@ class DatatypeCheckboxes(Static):
         return selected_datatypes
 
 
+# --------------------------------------------------------------------------------------
+# ClickableInput
+# --------------------------------------------------------------------------------------
+
+
 class ClickableInput(Input):
     """
     An input widget which emits a `ClickableInput.Clicked`
@@ -109,6 +118,11 @@ class ClickableInput(Input):
 
     def as_names_list(self):
         return self.value.replace(" ", "").split(",")
+
+
+# --------------------------------------------------------------------------------------
+# CustomDirectoryTree
+# --------------------------------------------------------------------------------------
 
 
 class CustomDirectoryTree(DirectoryTree):
@@ -137,6 +151,26 @@ class CustomDirectoryTree(DirectoryTree):
         return [
             path for path in paths if not path.name.startswith(".datashuttle")
         ]
+
+    def on_key(self, event: events.Key):
+        """ """
+        if event.key == "ctrl+q":
+            path_ = self.get_node_at_line(self.hover_line).data.path
+            pyperclip.copy(path_.as_posix())
+
+        elif event.key in ["ctrl+a", "ctrl+f"]:
+            path_ = self.get_node_at_line(self.hover_line).data.path
+            self.post_message(
+                self.DirectoryTreeKeyPress(event.key, node_path=path_)
+            )
+
+        elif event.key == "ctrl+r":
+            self.post_message(
+                self.DirectoryTreeKeyPress(event.key, node_path=None)
+            )
+
+    # Overridden Methods
+    # ----------------------------------------------------------------------------------
 
     def _render_line(
         self, y: int, x1: int, x2: int, base_style: Style
@@ -269,28 +303,38 @@ class CustomDirectoryTree(DirectoryTree):
         strip = strip.crop(x1, x2)
         return strip
 
-    def on_key(self, event: events.Key):
-        """
-        If CTRL+Q is pressed, copy the line that is currently hovered on.
-        Cannot use CTRL+C as that quits the app.
-        """
-        if event.key == "ctrl+q":
-            path_ = self.get_node_at_line(self.hover_line).data.path
-            pyperclip.copy(path_.as_posix())
 
-        elif event.key in ["ctrl+a", "ctrl+f"]:
-            path_ = self.get_node_at_line(self.hover_line).data.path
-            self.post_message(
-                self.DirectoryTreeKeyPress(event.key, node_path=path_)
-            )
-
-        elif event.key == "ctrl+r":
-            self.post_message(
-                self.DirectoryTreeKeyPress(event.key, node_path=None)
-            )
+# --------------------------------------------------------------------------------------
+# TreeAndInputTab
+# --------------------------------------------------------------------------------------
 
 
 class TreeAndInputTab(TabPane):
+    """ """
+
+    def handle_directorytree_key_pressed(
+        self, sub_input_key, ses_input_key, event
+    ):
+        """
+        also confusing
+        # because the copy event is handled at the level of the directory tree but
+        # all other events are handled at this level.
+        """
+        if event.key == "ctrl+a":
+            self.append_sub_or_ses_name_to_input(
+                sub_input_key,
+                ses_input_key,
+                name=event.node_path.stem,
+            )
+        elif event.key == "ctrl+f":
+            self.insert_sub_or_ses_name_to_input(
+                sub_input_key,
+                ses_input_key,
+                name=event.node_path.stem,
+            )
+        elif event.key == "ctrl+r":
+            self.reload_directorytree()
+
     def insert_sub_or_ses_name_to_input(
         self, sub_input_key, ses_input_key, name
     ):
@@ -312,3 +356,11 @@ class TreeAndInputTab(TabPane):
                 self.query_one(ses_input_key).value = name
             else:
                 self.query_one(ses_input_key).value += f", {name}"
+
+    def get_sub_ses_names_and_datatype(self, sub_input_key, ses_input_key):
+        """ """
+        sub_names = self.query_one(sub_input_key).as_names_list()
+        ses_names = self.query_one(ses_input_key).as_names_list()
+        datatype = self.query_one("DatatypeCheckboxes").selected_datatypes()
+
+        return sub_names, ses_names, datatype
