@@ -124,8 +124,9 @@ class CustomDirectoryTree(DirectoryTree):
     """
 
     @dataclass
-    class CtrlAPress(Message):
-        path_: Path
+    class DirectoryTreeKeyPress(Message):
+        key: Path
+        data: Any
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """
@@ -279,7 +280,12 @@ class CustomDirectoryTree(DirectoryTree):
 
         elif event.key == "ctrl+a":
             path_ = self.get_node_at_line(self.hover_line).data.path
-            self.post_message(self.CtrlAPress(path_))
+            self.post_message(
+                self.DirectoryTreeKeyPress(event.key, data=path_)
+            )
+
+        elif event.key == "ctrl+r":
+            self.post_message(self.DirectoryTreeKeyPress(event.key, data=None))
 
 
 class TreeAndInputTab(TabPane):
@@ -292,10 +298,8 @@ class TreeAndInputTab(TabPane):
             self.query_one(ses_input_key).value = str(event.path.stem)
 
     def append_sub_or_ses_name_to_input(
-        self, sub_input_key, ses_input_key, event
+        self, sub_input_key, ses_input_key, path_
     ):
-        path_ = event.path_
-
         if path_.stem.startswith("sub-"):
             if not self.query_one(sub_input_key).value:
                 self.query_one(sub_input_key).value = f"{str(path_.stem)}"

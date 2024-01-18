@@ -156,10 +156,8 @@ class TransferStatusTree(CustomDirectoryTree):
 
 
 class TransferTab(TreeAndInputTab):
-    def __init__(self, mainwindow, project):
-        super(TransferTab, self).__init__(
-            "Transfer", id="tabscreen_transfer_tab"
-        )
+    def __init__(self, title, mainwindow, project, id=None):
+        super(TransferTab, self).__init__(title, id=id)
         self.mainwindow = mainwindow
         self.project = project
         self.prev_click_time = 0.0
@@ -406,9 +404,17 @@ class TransferTab(TreeAndInputTab):
                 "#transfer_subject_input", "#transfer_session_input", event
             )
 
-    @on(TransferStatusTree.CtrlAPress)
-    def ctrl_a_pressed(self, event):
-        if self.query_one("#transfer_custom_radiobutton").value:
-            self.append_sub_or_ses_name_to_input(
-                "#transfer_subject_input", "#transfer_session_input", event
-            )
+    @on(TransferStatusTree.DirectoryTreeKeyPress)
+    def directorytree_key_pressed(self, event):  # TODO: type
+        if event.key == "ctrl+a":
+            if self.query_one("#transfer_custom_radiobutton").value:
+                self.append_sub_or_ses_name_to_input(
+                    "#transfer_subject_input",
+                    "#transfer_session_input",
+                    path_=event.data,
+                )
+        elif event.key == "ctrl+r":
+            self.reload_directorytree()  # TODO: could handle one levle down atthe CustomTree level? with fixed refresh...
+
+    def reload_directorytree(self):  # TODO:  too much indirection
+        self.query_one("#transfer_directorytree").update_transfer_tree()

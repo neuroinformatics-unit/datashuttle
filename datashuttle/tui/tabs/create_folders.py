@@ -168,11 +168,19 @@ class CreateFoldersTab(TreeAndInputTab):
             "#tabscreen_subject_input", "#tabscreen_session_input", event
         )
 
-    @on(CustomDirectoryTree.CtrlAPress)
-    def ctrl_a_pressed(self, event):
-        self.append_sub_or_ses_name_to_input(
-            "#tabscreen_subject_input", "#tabscreen_session_input", event
-        )
+    @on(CustomDirectoryTree.DirectoryTreeKeyPress)
+    def directorytree_key_pressed(self, event):
+        if event.key == "ctrl+a":
+            self.append_sub_or_ses_name_to_input(
+                "#tabscreen_subject_input",
+                "#tabscreen_session_input",
+                path_=event.data,
+            )
+        elif event.key == "ctrl+r":
+            self.reload_directorytree()
+
+    def reload_directorytree(self):
+        self.query_one("#tabscreen_directorytree").reload()
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -197,7 +205,7 @@ class CreateFoldersTab(TreeAndInputTab):
                 self.project.make_folders(
                     sub_names=sub_names, ses_names=ses_names, datatype=datatype
                 )
-                self.query_one("#tabscreen_directorytree").reload()
+                self.reload_directorytree()
             except BaseException as e:
                 self.mainwindow.show_modal_error_dialog(str(e))
                 return

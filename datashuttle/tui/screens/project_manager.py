@@ -53,7 +53,7 @@ class ProjectManagerScreen(Screen):
             yield create_folders.CreateFoldersTab(
                 self.mainwindow, self.project
             )
-            yield transfer.TransferTab(self.mainwindow, self.project)
+            yield transfer.TransferTab("Transfer", self.mainwindow, self.project, id="tabscreen_transfer_tab")
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield configs.ConfigsContent(self, self.project)
 
@@ -65,3 +65,8 @@ class ProjectManagerScreen(Screen):
 
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()
+
+    def on_tabbed_content_tab_activated(self, event):
+        if event.pane.id == "tabscreen_create_tab":
+            pass
+        elif event.pane.id== "tabscreen_transfer_tab":
