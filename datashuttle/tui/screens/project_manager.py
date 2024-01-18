@@ -20,7 +20,8 @@ class ProjectManagerScreen(Screen):
     The 'Create' tab interacts with Datashuttle's `make_folders()`
     method to create new project folders.
 
-    The 'Transfer' tab, XXX.
+    The 'Transfer' tab, which handles data upload and download between
+    local / central.
 
     The 'Configs' tab displays the current project's configurations
     and allows configs to be reset. This is an instantiation of the
@@ -67,11 +68,14 @@ class ProjectManagerScreen(Screen):
         Dismisses the TabScreen (and returns to the main menu) once
         the 'Main Menu' button is pressed.
         """
-
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()
 
     def on_tabbed_content_tab_activated(self, event):
+        """
+        Refresh the directorytree for create or transfer tabs whenever
+        the tabbedcontent is switched to one of these tabs.
+        """
         if event.pane.id == "tabscreen_create_tab":
             self.query_one("#tabscreen_create_tab").reload_directorytree()
         elif event.pane.id == "tabscreen_transfer_tab":

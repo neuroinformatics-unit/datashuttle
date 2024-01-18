@@ -126,17 +126,6 @@ class ClickableInput(Input):
 
 
 class CustomDirectoryTree(DirectoryTree):
-    """
-    Add a custom Directory tree that overrides `_render_line` to stop hover CSS
-    applied to guide (as it was distracting) and cursor CSS added on file / folder
-    click (as it removed existing style that indicates the transfer status).
-
-    TODO
-    ----
-    This is really a temporary solution and should be handled better,
-    see textual issue #4028
-    """
-
     @dataclass
     class DirectoryTreeKeyPress(Message):
         key: str
@@ -144,8 +133,11 @@ class CustomDirectoryTree(DirectoryTree):
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """
+        Filter out the top level .datashuttle folder than contains logs from
+        the directorytree display.
+
         `paths` below are only the folders within the root folder. So this will
-        filter out .datashutle only at the root and not all instances of
+        filter out .datashuttle only at the root and not all instances of
         .datashuttle lower down which I suppose we may want visible.
         """
         return [
@@ -153,10 +145,17 @@ class CustomDirectoryTree(DirectoryTree):
         ]
 
     def on_key(self, event: events.Key):
-        """ """
+        """
+        Handle key presses on the CustomDirectoryTree. Depending on the keys pressed,
+        copy the path under the cursor, refresh the directorytree or
+        emit a DirectoryTreeKeyPress event.
+        """
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
             pyperclip.copy(path_.as_posix())
+
+        elif event.key == "ctrl+r":
+            self.reload_directorytree()
 
         elif event.key in ["ctrl+a", "ctrl+f"]:
             path_ = self.get_node_at_line(self.hover_line).data.path
@@ -164,10 +163,14 @@ class CustomDirectoryTree(DirectoryTree):
                 self.DirectoryTreeKeyPress(event.key, node_path=path_)
             )
 
-        elif event.key == "ctrl+r":
-            self.post_message(
-                self.DirectoryTreeKeyPress(event.key, node_path=None)
-            )
+    def reload_directorytree(self):
+        """
+        A function to reload the DirectoryTree, typically called at the tab-level.
+        This can optionally perform some logic before calling `self.reload()`.
+        """
+        raise NotImplementedError(
+            "Must implement this method in child classes."
+        )
 
     # Overridden Methods
     # ----------------------------------------------------------------------------------
@@ -175,6 +178,13 @@ class CustomDirectoryTree(DirectoryTree):
     def _render_line(
         self, y: int, x1: int, x2: int, base_style: Style
     ) -> Strip:
+        """
+        This function is overridden from textual's `Tree` class to stop
+        CSS styling on hovering and clicking which was distracting /
+        changed the default color used for transfer status, respectively.
+
+        Note better approaches should be possible, see textual issue #4028.
+        """
         tree_lines = self._tree_lines
         width = self.size.width
 
@@ -310,15 +320,44 @@ class CustomDirectoryTree(DirectoryTree):
 
 
 class TreeAndInputTab(TabPane):
-    """ """
+    """
+    A parent class that defined common methods for screens with
+    a directory tree and sub / session inputs, .e. the Create tab
+    and the Transfer tab.
+    """
 
     def handle_directorytree_key_pressed(
         self, sub_input_key, ses_input_key, event
     ):
         """
-        also confusing
-        # because the copy event is handled at the level of the directory tree but
-        # all other events are handled at this level.
+        When a CustomDirectoryTree key is pressed, we typically
+        want to perform an action that involves an Input. These are
+        coordinated here. Note that the 'copy' and 'refresh'
+        features of the tree is handled at the level of the
+        CustomDirectoryTree.
+
+        Event Keys
+        ----------
+
+        "ctrl+a" : When CTRL and A are held at the same time, the sub / ses
+                   node under the mouse is appended to the relevant Input
+
+        "ctrl+f" : When CTRL and F are held at the same time, the sub / ses node
+                  under the mouse is filled into the relevant Input (i.e. previous
+                  value deleted).
+
+        Parameters
+        ----------
+
+        sub_input_key : str
+            The textual widget id for the subject input (prefixed with #)
+
+        ses_input_key : str
+            The textual widget id for the session input (prefixed with #)
+
+        event : DirectoryTreeKeyPress
+            A DirectoryTreeKeyPress event triggered from the
+            CustomDirectoryTree.
         """
         if event.key == "ctrl+a":
             self.append_sub_or_ses_name_to_input(
@@ -332,12 +371,17 @@ class TreeAndInputTab(TabPane):
                 ses_input_key,
                 name=event.node_path.stem,
             )
-        elif event.key == "ctrl+r":
-            self.reload_directorytree()
 
     def insert_sub_or_ses_name_to_input(
         self, sub_input_key, ses_input_key, name
     ):
+        """
+        see `handle_directorytree_keQy_pressed` for `sub_input_key` and
+        `ses_input_key`.
+
+        name : str
+            The sub or ses name to append to the input.
+        """
         if name.startswith("sub-"):
             self.query_one(sub_input_key).value = name
         elif name.startswith("ses-"):
@@ -346,11 +390,15 @@ class TreeAndInputTab(TabPane):
     def append_sub_or_ses_name_to_input(
         self, sub_input_key, ses_input_key, name
     ):
+        """
+        see `insert_sub_or_ses_name_to_input`.
+        """
         if name.startswith("sub-"):
             if not self.query_one(sub_input_key).value:
                 self.query_one(sub_input_key).value = name
             else:
                 self.query_one(sub_input_key).value += f", {name}"
+
         if name.startswith("ses-"):
             if not self.query_one(ses_input_key).value:
                 self.query_one(ses_input_key).value = name
@@ -358,7 +406,9 @@ class TreeAndInputTab(TabPane):
                 self.query_one(ses_input_key).value += f", {name}"
 
     def get_sub_ses_names_and_datatype(self, sub_input_key, ses_input_key):
-        """ """
+        """
+        see `handle_directorytree_key_pressed` for parameters.
+        """
         sub_names = self.query_one(sub_input_key).as_names_list()
         ses_names = self.query_one(ses_input_key).as_names_list()
         datatype = self.query_one("DatatypeCheckboxes").selected_datatypes()

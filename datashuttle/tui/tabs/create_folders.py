@@ -24,8 +24,7 @@ from datashuttle.utils import formatting, validation
 
 class CreateFoldersTab(TreeAndInputTab):
     """
-    From this tab, the user can easily create new project files
-    formatted according to the NeuroBlueprint specification.
+    Create new project files formatted according to the NeuroBlueprint specification.
     """
 
     def __init__(self, mainwindow, project):
@@ -67,26 +66,6 @@ class CreateFoldersTab(TreeAndInputTab):
             ),
         )
 
-    @require_double_click
-    def on_clickable_input_clicked(
-        self, event: ClickableInput.Clicked
-    ) -> None:
-        """
-        Handled a double-click on the custom ClickableInput widget.
-        Determine if we have the subject or session input, and
-        if it was a left or right click. Then, fill with a either
-        a generic suggestion or suggestion based on next sub / ses number.
-        """
-        input_id = event.input.id
-
-        prefix = "sub" if "subject" in input_id else "ses"
-
-        if event.button == 1:
-            self.fill_input_with_template(prefix, input_id)
-        elif event.button == 3:
-            self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
-
-    # @on(CustomDirectoryTree.DirectoryTreeKeyPress)
     def on_custom_directory_tree_directory_tree_key_press(self, event):
         self.handle_directorytree_key_pressed(
             "#tabscreen_subject_input", "#tabscreen_session_input", event
@@ -106,13 +85,41 @@ class CreateFoldersTab(TreeAndInputTab):
                 self.update_templates,
             )
 
+    @require_double_click
+    def on_clickable_input_clicked(
+        self, event: ClickableInput.Clicked
+    ) -> None:
+        """
+        Handled a double click on the custom ClickableInput widget,
+        which indicates the input should be filled with a suggested value.
+
+        Determine if we have the subject or session input, and
+        if it was a left or right click. Then, fill with a either
+        a generic suggestion or suggestion based on next sub / ses number.
+        """
+        input_id = event.input.id
+
+        prefix = "sub" if "subject" in input_id else "ses"
+
+        if event.button == 1:
+            self.fill_input_with_template(prefix, input_id)
+        elif event.button == 3:
+            self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
+
     def update_templates(self, templates):
+        """
+        Update the datashuttle name templates. This is a callback
+        function which is called within the Template Settings screen.
+        """
         self.project.set_name_templates(templates)
         self.templates = templates
         self.revalidate_inputs(["sub", "ses"])
 
     def update_input_tooltip(self, message: Optional[str], prefix):
-        """"""
+        """
+        Update the value of a subject or session tooltip, which
+        indicates the validation status of the input value.
+        """
         id = (
             "#tabscreen_subject_input"
             if prefix == "sub"
@@ -122,7 +129,10 @@ class CreateFoldersTab(TreeAndInputTab):
         input.tooltip = message
 
     def revalidate_inputs(self, all_prefixes: List[str]):
-        """"""
+        """
+        Revalidate and style both subject and session
+        inputs based on their value.
+        """
         input_names = {
             "sub": "#tabscreen_subject_input",
             "ses": "#tabscreen_session_input",
@@ -246,6 +256,11 @@ class CreateFoldersTab(TreeAndInputTab):
         This can be resolved by carefully testing their outputs or
         ensuring the same code is used underlying both. It is close
         because both call `check_and_format_names` but could be tighter.
+
+        Parameters
+        ----------
+
+        prefix : Literal["sub", "ses"]
         """
         try:
             sub_names = self.query_one(
