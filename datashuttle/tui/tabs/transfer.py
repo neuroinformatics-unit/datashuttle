@@ -232,11 +232,8 @@ class TransferTab(TreeAndInputTab):
                 Label("Download"),
                 id="transfer_switch_container",
             ),
-            Horizontal(
-                Button("Transfer", id="transfer_transfer_button"),
-                Button("Options", id="transfer_options_button"),
-                id="transfer_button_container",
-            ),
+            Button("Transfer", id="transfer_transfer_button"),
+            Horizontal(),  # push button to left
         )
         yield Label("⭕ Legend", id="transfer_legend")
 

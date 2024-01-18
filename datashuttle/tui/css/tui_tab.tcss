@@ -127,3 +127,7 @@ Tooltip {
 #transfer_params_container:light {
     border: solid black;
 }
+
+#transfer_transfer_button {
+    margin: 0 0 0 4;
+}
