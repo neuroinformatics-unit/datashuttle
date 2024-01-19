@@ -30,7 +30,7 @@ class TransferStatusTree(CustomDirectoryTree):
         self.update_transfer_diffs()
 
     def on_mount(self):
-        self.transfer_paths = self.update_local_transfer_paths()
+        self.update_local_transfer_paths()
 
     def update_local_transfer_paths(self):
         """
@@ -68,7 +68,7 @@ class TransferStatusTree(CustomDirectoryTree):
         Updates tree styling to reflect the current TUI state
         and project transfer status.
         """
-        self.transfer_paths = self.update_local_transfer_paths()
+        self.update_local_transfer_paths()
         self.update_transfer_diffs()
         self.reload()
 

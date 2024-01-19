@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from showinfm import show_in_file_manager
 from textual.app import App
 from textual.binding import Binding
 from textual.containers import Container
@@ -14,9 +15,6 @@ from datashuttle.tui.screens import (
     project_manager,
     project_selector,
 )
-
-# RENAME ALL WIDGETS
-# TCSS
 
 
 class TuiApp(App):
@@ -86,6 +84,25 @@ class TuiApp(App):
 
     def show_modal_error_dialog(self, message):
         self.push_screen(modal_dialogs.ErrorScreen(message))
+
+    def handle_open_filesystem_browser(self, path_):
+        try:
+            show_in_file_manager(path_.as_posix())
+        except BaseException:
+            if path_.is_file():
+                # I don't see why this is not working as according to docs it
+                # should open the containing folder and select.
+                message = (
+                    "Could not open file. Only folders can be "
+                    "opened in the filesystem browser."
+                )
+            else:
+                message = (
+                    "Unexpected error occurred. Please contact the DataShuttle"
+                    "development team."
+                )
+
+            self.show_modal_error_dialog(message)
 
 
 if __name__ == "__main__":

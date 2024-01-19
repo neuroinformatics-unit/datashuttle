@@ -8,7 +8,6 @@ from textual.widgets import (
     Select,
     Switch,
 )
-from transfer_status_tree import TransferStatusTree
 
 from datashuttle.configs import canonical_folders
 from datashuttle.tui.custom_widgets import (
@@ -17,6 +16,7 @@ from datashuttle.tui.custom_widgets import (
     TreeAndInputTab,
 )
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
+from datashuttle.tui.tabs.transfer_status_tree import TransferStatusTree
 
 
 class TransferTab(TreeAndInputTab):
@@ -201,9 +201,16 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_custom_directory_tree_directory_tree_key_press(self, event):
-        self.handle_directorytree_key_pressed(
-            "#transfer_subject_input", "#transfer_session_input", event
-        )
+        if event.key == "ctrl+r":
+            self.reload_directorytree()
+
+        elif event.key == "ctrl+o":
+            self.mainwindow.handle_open_filesystem_browser(event.node_path)
+
+        elif event.key in ["ctrl+a", "ctrl+f"]:
+            self.handle_fill_input_from_directorytree(
+                "#transfer_subject_input", "#transfer_session_input", event
+            )
 
     def reload_directorytree(self):
         self.query_one("#transfer_directorytree").update_transfer_tree()

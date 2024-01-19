@@ -155,22 +155,15 @@ class CustomDirectoryTree(DirectoryTree):
             pyperclip.copy(path_.as_posix())
 
         elif event.key == "ctrl+r":
-            self.reload_directorytree()
+            self.post_message(
+                self.DirectoryTreeKeyPress(event.key, node_path=None)
+            )
 
-        elif event.key in ["ctrl+a", "ctrl+f"]:
+        elif event.key in ["ctrl+a", "ctrl+f", "ctrl+o"]:
             path_ = self.get_node_at_line(self.hover_line).data.path
             self.post_message(
                 self.DirectoryTreeKeyPress(event.key, node_path=path_)
             )
-
-    def reload_directorytree(self):
-        """
-        A function to reload the DirectoryTree, typically called at the tab-level.
-        This can optionally perform some logic before calling `self.reload()`.
-        """
-        raise NotImplementedError(
-            "Must implement this method in child classes."
-        )
 
     # Overridden Methods
     # ----------------------------------------------------------------------------------
@@ -326,7 +319,7 @@ class TreeAndInputTab(TabPane):
     and the Transfer tab.
     """
 
-    def handle_directorytree_key_pressed(
+    def handle_fill_input_from_directorytree(
         self, sub_input_key, ses_input_key, event
     ):
         """
@@ -407,7 +400,7 @@ class TreeAndInputTab(TabPane):
 
     def get_sub_ses_names_and_datatype(self, sub_input_key, ses_input_key):
         """
-        see `handle_directorytree_key_pressed` for parameters.
+        see `handle_fill_input_from_directorytree` for parameters.
         """
         sub_names = self.query_one(sub_input_key).as_names_list()
         ses_names = self.query_one(ses_input_key).as_names_list()

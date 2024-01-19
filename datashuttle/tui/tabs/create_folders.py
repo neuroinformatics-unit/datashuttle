@@ -67,9 +67,16 @@ class CreateFoldersTab(TreeAndInputTab):
         )
 
     def on_custom_directory_tree_directory_tree_key_press(self, event):
-        self.handle_directorytree_key_pressed(
-            "#tabscreen_subject_input", "#tabscreen_session_input", event
-        )
+        if event.key == "ctrl+r":
+            self.reload_directorytree()
+
+        elif event.key == "ctrl+o":
+            self.mainwindow.handle_open_filesystem_browser(event.node_path)
+
+        elif event.key in ["ctrl+a", "ctrl+f"]:
+            self.handle_fill_input_from_directorytree(
+                "#tabscreen_subject_input", "#tabscreen_session_input", event
+            )
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -157,9 +164,6 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    def reload_directorytree(self):
-        self.query_one("#tabscreen_directorytree").reload()
-
     # ----------------------------------------------------------------------------------
     # Datashuttle Callers
     # ----------------------------------------------------------------------------------
@@ -184,6 +188,9 @@ class CreateFoldersTab(TreeAndInputTab):
         except BaseException as e:
             self.mainwindow.show_modal_error_dialog(str(e))
             return
+
+    def reload_directorytree(self):
+        self.query_one("#tabscreen_directorytree").reload()
 
     # Filling Inputs
     # ----------------------------------------------------------------------------------
