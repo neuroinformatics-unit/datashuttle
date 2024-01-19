@@ -11,7 +11,7 @@ get_canonical_configs()
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
@@ -263,3 +263,48 @@ def check_config_types(config_dict: Configs) -> None:
                 f"Config file was not updated.",
                 ConfigError,
             )
+
+
+# -----------------------------------------------------------------------------
+# Persistent settings
+# -----------------------------------------------------------------------------
+
+
+def get_tui_config_defaults() -> Dict:
+    """
+    Get the default settings for the datatype checkboxes
+    in the TUI. By default, they are all checked.
+    """
+    settings = {
+        "tui": {
+            "checkboxes_on": {
+                "behav": True,
+                "ephys": True,
+                "funcimg": True,
+                "anat": True,
+            }
+        }
+    }
+    return settings
+
+
+def get_name_templates_defaults() -> Dict:
+    return {"name_templates": {"on": False, "sub": None, "ses": None}}
+
+
+def get_persistent_settings_defaults() -> Dict:
+    """
+    Persistent settings are settings that are maintained
+    across sessions. Currently, persistent settings for
+    both the API and TUI are stored in the same place.
+
+    Currently, settings for the working top level folder,
+    TUI checkboxes and name templates (i.e. regexp
+    validation for sub and ses names) are stored.
+    """
+    settings = {"top_level_folder": "rawdata"}
+
+    settings.update(get_tui_config_defaults())
+    settings.update(get_name_templates_defaults())
+
+    return settings

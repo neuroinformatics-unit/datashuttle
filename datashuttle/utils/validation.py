@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Literal, Optional, Tuple, Union
+import re
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
@@ -21,6 +22,7 @@ def validate_list_of_names(
     prefix: Literal["sub", "ses"],
     error_or_warn: Literal["error", "warn"] = "error",
     check_duplicates: bool = True,
+    name_templates: Optional[Dict] = None,
     log: bool = True,
 ) -> None:
     """
@@ -47,6 +49,13 @@ def validate_list_of_names(
 
     log: bool
         If `True`, output will also be logged to "datashuttle" logger.
+
+    name_templates : Dict
+        e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+
+    TODO: this is potentially slow because each function loops over
+    the whole list. I'd imagine it would be faster to loop once
+    over and pass each name to the sub-function individually.
     """
     if len(names_list) == 0:
         return
@@ -56,6 +65,7 @@ def validate_list_of_names(
         lambda: names_include_spaces(names_list),
         lambda: dashes_and_underscore_alternate_incorrectly(names_list),
         lambda: value_lengths_are_inconsistent(names_list, prefix),
+        lambda: names_dont_match_templates(names_list, prefix, name_templates),
     ]
     if check_duplicates:
         tests_to_run += [lambda: duplicated_prefix_values(names_list, prefix)]
@@ -64,6 +74,59 @@ def validate_list_of_names(
         failed, message = test()
         if failed:
             raise_error_or_warn(message, error_or_warn, log)
+
+
+def names_dont_match_templates(
+    names_list: List[str],
+    prefix: Literal["sub", "ses"],
+    name_templates: Optional[Dict] = None,
+) -> Tuple[bool, str]:
+    """
+    Test a list of subject or session names against the respective `name_templates`,
+    a regexp template.
+
+    If checking `name_templates` is on, an invalid result will be given if the
+    name does not re.fullmatch the regexp.
+    """
+    if name_templates is None:
+        return False, "No `names_template` dictionary passed."
+
+    if name_templates["on"] is False:
+        return False, "Names templates is set to off and will not be checked."
+
+    regexp = name_templates[prefix]
+
+    bad_names = []
+    for name in names_list:
+        if not re.fullmatch(regexp, name):
+            bad_names.append(name)
+
+    if bad_names:
+        do_or_does = "does" if len(bad_names) == 1 else "do"
+
+        return (
+            True,
+            f"The {get_names_format(bad_names)} "
+            f"{do_or_does} not match the template: {regexp}",
+        )
+
+    return False, ""
+
+
+def get_names_format(bad_names):
+    """
+    A convenience function to properly format error messages
+    depending on whether there is just 1, or multiple bad names.
+    """
+    assert len(bad_names) != 0, "`bad_names` should not be empty."
+    if len(bad_names) == 1:
+        name_str_format = "name"
+        bad_names_format = bad_names[0]
+    else:
+        name_str_format = "names"
+        bad_names_format = bad_names
+
+    return f"{name_str_format}: {bad_names_format}"
 
 
 def name_beings_with_bad_key(
@@ -83,7 +146,7 @@ def name_beings_with_bad_key(
 
     if bad_names:
         message = (
-            f"The names: {bad_names} "
+            f"The {get_names_format(bad_names)} "
             f"do not begin with the required prefix: {prefix}"
         )
         return True, message
@@ -107,7 +170,7 @@ def names_include_spaces(names_list: List[str]) -> Tuple[bool, str]:
     if bad_names:
         return (
             True,
-            f"The names {bad_names} include spaces, "
+            f"Spaces are in the {get_names_format(bad_names)}, "
             f"which is not permitted.",
         )
     return False, ""
@@ -133,7 +196,7 @@ def dashes_and_underscore_alternate_incorrectly(
             discrim[ele] for ele in name if ele in ["-", "_"]
         ]
 
-        if dashes_underscores[0] != 1:
+        if dashes_underscores[0] != 1 or name[-1] in discrim.keys():
             bad_names.append(name)
 
         elif any([ele == 0 for ele in utils.diff(dashes_underscores)]):
@@ -141,7 +204,7 @@ def dashes_and_underscore_alternate_incorrectly(
 
     if bad_names:
         message = (
-            f"The names {bad_names} are not formatted correctly. Names "
+            f"Problem with {get_names_format(bad_names)}. Names "
             f"must consist of key-value pairs separated by underscores."
             f"e.g. 'sub-001_ses-01_date-20230516"
         )
@@ -243,6 +306,7 @@ def validate_project(
     local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
     log: bool = True,
+    name_templates: Optional[Dict] = None,
 ) -> None:
     """
     Validate all subject and session folders within a project.
@@ -283,6 +347,7 @@ def validate_project(
         error_or_warn=error_or_warn,
         log=log,
         check_duplicates=False,
+        name_templates=name_templates,
     )
 
     for sub in sub_names:
@@ -317,6 +382,7 @@ def validate_names_against_project(
     local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
     log: bool = True,
+    name_templates: Optional[Dict] = None,
 ) -> None:
     """
     Given a list of subject and (optionally) session names,
@@ -370,6 +436,7 @@ def validate_names_against_project(
             prefix="sub",
             check_duplicates=False,
             error_or_warn=error_or_warn,
+            name_templates=name_templates,
         )
 
         for new_sub in sub_names:

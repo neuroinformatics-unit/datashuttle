@@ -12,7 +12,11 @@ from typing import Any, Dict, List, Literal, Optional, Union
 import paramiko
 import yaml
 
-from datashuttle.configs import canonical_folders, load_configs
+from datashuttle.configs import (
+    canonical_configs,
+    canonical_folders,
+    load_configs,
+)
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import (
     ds_logger,
@@ -171,7 +175,11 @@ class DataShuttle:
     ) -> None:
         """
         Create a subject / session folder tree in the project
-        folder.
+        folder. The passed subject / session names are
+        formatted and validated. If this succeeds, fully
+        validation against all subject / session folders in
+        the local project is performed before making the
+        folders.
 
         Parameters
         ----------
@@ -226,10 +234,16 @@ class DataShuttle:
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
-        sub_names = formatting.check_and_format_names(sub_names, "sub")
+        name_templates = self.get_name_templates()
+
+        sub_names = formatting.check_and_format_names(
+            sub_names, "sub", name_templates
+        )
 
         if ses_names is not None:
-            ses_names = formatting.check_and_format_names(ses_names, "ses")
+            ses_names = formatting.check_and_format_names(
+                ses_names, "ses", name_templates
+            )
         else:
             ses_names = []
 
@@ -244,6 +258,7 @@ class DataShuttle:
             ses_names,
             local_only=True,
             error_or_warn="error",
+            name_templates=name_templates,
         )
 
         utils.log("\nMaking folders...")
@@ -923,6 +938,40 @@ class DataShuttle:
             search_str="ses-*",
         )
 
+    # Name Templates
+    # -------------------------------------------------------------------------
+
+    def get_name_templates(self) -> Dict:
+        """
+        Get the regexp templates used for validation. If
+        the "on" key is set to `False`, template validation is not performed.
+
+        Returns
+        -------
+
+        name_templates : Dict
+            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+        """
+        settings = self._load_persistent_settings()
+        return settings["name_templates"]
+
+    def set_name_templates(self, new_name_templates: Dict) -> None:
+        """
+        Update the persistent settings with new name templates.
+
+        Name templates are regexp for that, when name_templates["on"] is
+        set to `True`, "sub" and "ses" names are validated against
+        the regexp contained in the dict.
+
+        Parameters
+        ----------
+        new_name_templates : Dict
+            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+            where "sub" or "ses" can be a regexp that subject and session
+            names respectively are validated against.
+        """
+        self._update_persistent_setting("name_templates", new_name_templates)
+
     # -------------------------------------------------------------------------
     # Showers
     # -------------------------------------------------------------------------
@@ -960,8 +1009,13 @@ class DataShuttle:
             local_vars=locals(),
         )
 
+        name_templates = self.get_name_templates()
+
         validation.validate_project(
-            self.cfg, local_only=local_only, error_or_warn=error_or_warn
+            self.cfg,
+            local_only=local_only,
+            error_or_warn=error_or_warn,
+            name_templates=name_templates,
         )
 
         ds_logger.close_log_filehandler()
@@ -1183,7 +1237,7 @@ class DataShuttle:
         Initialise the default persistent settings
         and save to file.
         """
-        settings = {"top_level_folder": "rawdata"}
+        settings = canonical_configs.get_persistent_settings_defaults()
         self._save_persistent_settings(settings)
 
     def _save_persistent_settings(self, settings: Dict) -> None:
@@ -1203,7 +1257,18 @@ class DataShuttle:
 
         with open(self._persistent_settings_path, "r") as settings_file:
             settings = yaml.full_load(settings_file)
+
+        self._update_settings_with_new_canonical_keys(settings)
+
         return settings
+
+    def _update_settings_with_new_canonical_keys(self, settings: Dict):
+        """"""
+        if "name_templates" not in settings:
+            settings.update(canonical_configs.get_name_templates_defaults())
+
+        if "tui" not in settings:
+            settings.update(canonical_configs.get_tui_config_defaults())
 
     @check_configs_set
     def _display_top_level_folder(self) -> None:
