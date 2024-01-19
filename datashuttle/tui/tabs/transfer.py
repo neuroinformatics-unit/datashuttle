@@ -20,7 +20,26 @@ from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
 
 
 class TransferTab(TreeAndInputTab):
-    """ """
+    """
+    This tb handles the upload / download of files between the local
+    and central folders. It contains a TransferDirectoryTree that
+    displays the transfer status of the files in the local folder,
+    provides functionality to call underlying datashuttle transfer
+    functions, and standard TreeAndInputTab and TransferDirectoryTree features.
+
+    Parameters
+    ----------
+
+    title : str
+
+    mainwindow : App
+
+    project : DataShuttle
+        The initialised datashuttle project to transfer.
+
+    id : str
+        The textual widget id.
+    """
 
     def __init__(self, title, mainwindow, project, id=None):
         super(TransferTab, self).__init__(title, id=id)
@@ -31,12 +50,13 @@ class TransferTab(TreeAndInputTab):
     def compose(self):
         self.transfer_all_widgets = [
             Label(
-                "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred."
-                " Existing data with \nthe same file details on central will not be \noverwritten "
-                "by default.",
+                "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred.",
                 id="transfer_all_label",
             )
         ]
+
+        # Fill the select for top-level folder changing, if no top-level
+        # folders are found in the project then it will be blank.
         existing_top_level_folders = [
             (folder, folder)
             for folder in canonical_folders.get_top_level_folders()
@@ -56,7 +76,6 @@ class TransferTab(TreeAndInputTab):
                 allow_blank=True,
             ),
         ]
-
         self.transfer_custom_widgets = [
             Label(
                 "Select top-level folder to transfer.",
@@ -67,7 +86,7 @@ class TransferTab(TreeAndInputTab):
                 value=self.project.get_top_level_folder()
                 if any(existing_top_level_folders)
                 else Select.BLANK,
-                id="transfer_custom_select",  # TODO: RENAME
+                id="transfer_custom_select",
                 allow_blank=True,
             ),
             Label("Subject(s)"),
@@ -182,7 +201,6 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_custom_directory_tree_directory_tree_key_press(self, event):
-        """ """
         self.handle_directorytree_key_pressed(
             "#transfer_subject_input", "#transfer_session_input", event
         )
@@ -212,9 +230,6 @@ class TransferTab(TreeAndInputTab):
         transfer_bool: Passed by `ConfirmScreen`. True if user confirmed
             transfer by clicking "Yes".
 
-        Returns
-        -------
-        None
         """
         if transfer_bool:
             upload_selected = not self.query_one("#transfer_switch").value
@@ -242,7 +257,16 @@ class TransferTab(TreeAndInputTab):
 
     def upload_top_level_only(self, upload):
         """
-        TODO: this is very hacky
+        Transfer all files in specified top-level-folder only.
+
+        TODO
+        ----
+        Currently this implements a  hacky solution to change the project
+        top-level folder, do the transfer then change it back.
+
+        It would be better for the transfer function to take top_level_folder
+        as an argument that can override the project settings. However, from
+        an API level this might be confusing so have changed it yet.
         """
         selected_top_level_folder = self.get_top_level_folder_select(
             "#transfer_toplevel_select"
@@ -262,6 +286,19 @@ class TransferTab(TreeAndInputTab):
         self.project.set_top_level_folder(temp_top_level_folder)
 
     def transfer_custom_selection(self, upload):
+        """
+        Tranfser the user-selected subset of the project. Collect the
+        sub names, session names and datatypes to transfer, then transfer.
+
+        TODO
+        ----
+        Currently this implements a  hacky solution to change the project
+        top-level folder, do the transfer then change it back.
+
+        It would be better for the transfer function to take top_level_folder
+        as an argument that can override the project settings. However, from
+        an API level this might be confusing so have changed it yet.
+        """
         selected_top_level_folder = self.get_top_level_folder_select(
             "#transfer_custom_select"
         )
