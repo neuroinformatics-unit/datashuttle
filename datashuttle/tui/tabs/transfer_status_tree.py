@@ -20,12 +20,11 @@ class TransferStatusTree(CustomDirectoryTree):
     local or central, or appear in local only.
     """
 
-    def __init__(self, parent_tab, project, id=None):
+    def __init__(self, mainwindow, project, id=None):
         super(TransferStatusTree, self).__init__(
-            project.get_local_path(), id=id
+            path=project.get_local_path(), mainwindow=mainwindow, id=id
         )
 
-        self.parent_tab = parent_tab
         self.project = project
         self.update_transfer_diffs()
 

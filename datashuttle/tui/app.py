@@ -86,6 +86,13 @@ class TuiApp(App):
         self.push_screen(modal_dialogs.ErrorScreen(message))
 
     def handle_open_filesystem_browser(self, path_):
+        if not path_.exists():
+            self.show_modal_error_dialog(
+                f"{path_.as_posix()} cannto be opened as it "
+                f"does not exist on the filesystem."
+            )
+            return
+
         try:
             show_in_file_manager(path_.as_posix())
         except BaseException:

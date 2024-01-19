@@ -91,11 +91,13 @@ class TransferTab(TreeAndInputTab):
             ),
             Label("Subject(s)"),
             ClickableInput(
+                self.mainwindow,
                 id="transfer_subject_input",
                 placeholder="e.g. sub-001",
             ),
             Label("Session(s)"),
             ClickableInput(
+                self.mainwindow,
                 id="transfer_session_input",
                 placeholder="e.g. ses-001",
             ),
@@ -110,7 +112,7 @@ class TransferTab(TreeAndInputTab):
             id="transfer_radioset",
         )
         yield TransferStatusTree(
-            self,
+            self.mainwindow,
             self.project,
             id="transfer_directorytree",
         )
@@ -200,12 +202,9 @@ class TransferTab(TreeAndInputTab):
                 ConfirmScreen(message), self.transfer_data
             )
 
-    def on_custom_directory_tree_directory_tree_key_press(self, event):
+    def on_custom_directory_tree_directory_tree_special_key_press(self, event):
         if event.key == "ctrl+r":
             self.reload_directorytree()
-
-        elif event.key == "ctrl+o":
-            self.mainwindow.handle_open_filesystem_browser(event.node_path)
 
         elif event.key in ["ctrl+a", "ctrl+f"]:
             self.handle_fill_input_from_directorytree(
@@ -336,3 +335,7 @@ class TransferTab(TreeAndInputTab):
             return
 
         self.project.set_top_level_folder(temp_top_level_folder)
+
+    def update_directorytree_root(self, new_root_path):
+        """Will automatically refresh the tree"""
+        self.query_one("#transfer_directorytree").path = new_root_path

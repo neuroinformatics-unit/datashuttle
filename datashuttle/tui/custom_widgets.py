@@ -3,11 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable, List, Optional, cast
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from textual import events
 
 from dataclasses import dataclass
+from pathlib import Path
 
 import pyperclip
 from rich.style import Style
@@ -113,11 +112,35 @@ class ClickableInput(Input):
         input: ClickableInput
         button: int
 
+    def __init__(
+        self,
+        mainwindow,
+        placeholder,
+        id=None,
+        validate_on=None,
+        validators=None,
+    ):
+        super(ClickableInput, self).__init__(
+            placeholder=placeholder,
+            id=id,
+            validate_on=validate_on,
+            validators=validators,
+        )
+
+        self.mainwindow = mainwindow
+
     def _on_click(self, event: events.Click) -> None:
         self.post_message(self.Clicked(self, event.button))
 
     def as_names_list(self):
         return self.value.replace(" ", "").split(",")
+
+    def on_key(self, event):
+        if event.key == "ctrl+q":
+            pyperclip.copy(self.value)
+
+        elif event.key == "ctrl+o":
+            self.mainwindow.handle_open_filesystem_browser(Path(self.value))
 
 
 # --------------------------------------------------------------------------------------
@@ -127,9 +150,14 @@ class ClickableInput(Input):
 
 class CustomDirectoryTree(DirectoryTree):
     @dataclass
-    class DirectoryTreeKeyPress(Message):
+    class DirectoryTreeSpecialKeyPress(Message):
         key: str
         node_path: Optional[Path]
+
+    def __init__(self, mainwindow, path, id=None):
+        super(CustomDirectoryTree, self).__init__(path=path, id=id)
+
+        self.mainwindow = mainwindow
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """
@@ -148,21 +176,25 @@ class CustomDirectoryTree(DirectoryTree):
         """
         Handle key presses on the CustomDirectoryTree. Depending on the keys pressed,
         copy the path under the cursor, refresh the directorytree or
-        emit a DirectoryTreeKeyPress event.
+        emit a DirectoryTreeSpecialKeyPress event.
         """
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
             pyperclip.copy(path_.as_posix())
 
+        elif event.key == "ctrl+o":
+            path_ = self.get_node_at_line(self.hover_line).data.path
+            self.mainwindow.handle_open_filesystem_browser(path_)
+
         elif event.key == "ctrl+r":
             self.post_message(
-                self.DirectoryTreeKeyPress(event.key, node_path=None)
+                self.DirectoryTreeSpecialKeyPress(event.key, node_path=None)
             )
 
-        elif event.key in ["ctrl+a", "ctrl+f", "ctrl+o"]:
+        elif event.key in ["ctrl+a", "ctrl+f"]:
             path_ = self.get_node_at_line(self.hover_line).data.path
             self.post_message(
-                self.DirectoryTreeKeyPress(event.key, node_path=path_)
+                self.DirectoryTreeSpecialKeyPress(event.key, node_path=path_)
             )
 
     # Overridden Methods
@@ -348,8 +380,8 @@ class TreeAndInputTab(TabPane):
         ses_input_key : str
             The textual widget id for the session input (prefixed with #)
 
-        event : DirectoryTreeKeyPress
-            A DirectoryTreeKeyPress event triggered from the
+        event : DirectoryTreeSpecialKeyPress
+            A DirectoryTreeSpecialKeyPress event triggered from the
             CustomDirectoryTree.
         """
         if event.key == "ctrl+a":
@@ -369,7 +401,7 @@ class TreeAndInputTab(TabPane):
         self, sub_input_key, ses_input_key, name
     ):
         """
-        see `handle_directorytree_keQy_pressed` for `sub_input_key` and
+        see `handle_directorytree_key_pressed` for `sub_input_key` and
         `ses_input_key`.
 
         name : str

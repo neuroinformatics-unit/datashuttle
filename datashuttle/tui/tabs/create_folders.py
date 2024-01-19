@@ -40,11 +40,13 @@ class CreateFoldersTab(TreeAndInputTab):
 
     def compose(self):
         yield CustomDirectoryTree(
+            self.mainwindow,
             self.project.cfg.data["local_path"],
             id="tabscreen_directorytree",
         )
         yield Label("Subject(s)", id="tabscreen_subject_label")
         yield ClickableInput(
+            self.mainwindow,
             id="tabscreen_subject_input",
             placeholder="e.g. sub-001",
             validate_on=["changed", "submitted"],
@@ -52,6 +54,7 @@ class CreateFoldersTab(TreeAndInputTab):
         )
         yield Label("Session(s)", id="tabscreen_session_label")
         yield ClickableInput(
+            self.mainwindow,
             id="tabscreen_session_input",
             placeholder="e.g. ses-001",
             validate_on=["changed", "submitted"],
@@ -66,12 +69,9 @@ class CreateFoldersTab(TreeAndInputTab):
             ),
         )
 
-    def on_custom_directory_tree_directory_tree_key_press(self, event):
+    def on_custom_directory_tree_directory_tree_special_key_press(self, event):
         if event.key == "ctrl+r":
             self.reload_directorytree()
-
-        elif event.key == "ctrl+o":
-            self.mainwindow.handle_open_filesystem_browser(event.node_path)
 
         elif event.key in ["ctrl+a", "ctrl+f"]:
             self.handle_fill_input_from_directorytree(
@@ -305,3 +305,7 @@ class CreateFoldersTab(TreeAndInputTab):
         names = format_sub if prefix == "sub" else format_ses
 
         return True, f"Formatted names: {names}"
+
+    def update_directorytree_root(self, new_root_path):
+        """Will automatically refresh the tree"""
+        self.query_one("#tabscreen_directorytree").path = new_root_path

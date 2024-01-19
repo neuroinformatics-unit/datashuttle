@@ -1,8 +1,10 @@
+from dataclasses import dataclass
+
 from textual.containers import Container, Horizontal
+from textual.message import Message
 from textual.widgets import (
     Button,
     Checkbox,
-    Input,
     Label,
     RadioButton,
     RadioSet,
@@ -10,6 +12,7 @@ from textual.widgets import (
 )
 
 from datashuttle import DataShuttle
+from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.screens import modal_dialogs
 from datashuttle.tui.utils import tui_utils
 
@@ -27,6 +30,10 @@ class ConfigsContent(Container):
 
     Otherwise, widgets are filled with the existing projects configs.
     """
+
+    @dataclass
+    class ConfigsSaved(Message):
+        pass
 
     def __init__(self, parent_class, project):
         super(ConfigsContent, self).__init__()
@@ -50,11 +57,14 @@ class ConfigsContent(Container):
         """
         self.config_ssh_widgets = [
             Label("Central Host ID"),
-            Input(
-                placeholder="e.g. username", id="configs_central_host_id_input"
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="e.g. username",
+                id="configs_central_host_id_input",
             ),
             Label("Central Host Username"),
-            Input(
+            ClickableInput(
+                self.parent_class.mainwindow,
                 placeholder="e.g. ssh.swc.ucl.ac.uk",
                 id="configs_central_host_username_input",
             ),
@@ -62,12 +72,14 @@ class ConfigsContent(Container):
 
         config_screen_widgets = [
             Label("Local Path", id="configs_local_path_label"),
-            Input(
+            ClickableInput(
+                self.parent_class.mainwindow,
                 placeholder=r"e.g. C:\path\to\my_projects\my_first_project",
                 id="configs_local_path_input",
             ),
             Label("Central Path", id="configs_central_path_label"),
-            Input(
+            ClickableInput(
+                self.parent_class.mainwindow,
                 placeholder="e.g. /central/live/username/my_projects/my_first_project",
                 id="configs_central_path_input",
             ),
@@ -114,8 +126,10 @@ class ConfigsContent(Container):
                 )
             ),
             Label("Project Name", id="configs_name_label"),
-            Input(
-                placeholder="e.g. my_first_project", id="configs_name_input"
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="e.g. my_first_project",
+                id="configs_name_input",
             ),
         ]
 
@@ -255,6 +269,8 @@ class ConfigsContent(Container):
             )
         except BaseException as e:
             self.parent_class.mainwindow.show_modal_error_dialog(str(e))
+
+        self.post_message(self.ConfigsSaved())
 
     def fill_widgets_with_project_configs(self):
         """

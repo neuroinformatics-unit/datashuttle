@@ -7,7 +7,7 @@ from textual.widgets import (
     TabPane,
 )
 
-from datashuttle.tui import configs
+from datashuttle.tui.configs import ConfigsContent
 from datashuttle.tui.tabs import create_folders, transfer
 
 
@@ -61,7 +61,7 @@ class ProjectManagerScreen(Screen):
                 id="tabscreen_transfer_tab",
             )
             with TabPane("Configs", id="tabscreen_configs_tab"):
-                yield configs.ConfigsContent(self, self.project)
+                yield ConfigsContent(self, self.project)
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -80,3 +80,22 @@ class ProjectManagerScreen(Screen):
             self.query_one("#tabscreen_create_tab").reload_directorytree()
         elif event.pane.id == "tabscreen_transfer_tab":
             self.query_one("#tabscreen_transfer_tab").reload_directorytree()
+
+    def on_configs_content_configs_saved(self):
+        """
+        When the config file are refreshed, the local path may have changed.
+        In this case the directorytree will be displaying the wrong root,
+        so update it here.
+
+        TODO
+        ----
+
+        Currently this defaults to the local path always but in future when it
+        shows the central path it will have to be updated.
+        """
+        self.query_one("#tabscreen_create_tab").update_directorytree_root(
+            self.project.cfg["local_path"]
+        )
+        self.query_one("#tabscreen_transfer_tab").update_directorytree_root(
+            self.project.cfg["local_path"]
+        )
