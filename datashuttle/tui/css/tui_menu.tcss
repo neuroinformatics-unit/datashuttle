@@ -154,12 +154,15 @@ ShowConfigsDialog:light > #display_configs_top_container {
 }
 
 #configs_set_configs_button {
-    content-align: center middle;
-    align-horizontal: center;
-    margin: 2 0 2 0;
+    align-horizontal: left;
+    margin: 2 5 0 0;
     padding: 0 4 0 4;
     width: 30%;
     color: $success;  /* unsure about this */
+}
+
+#configs_setup_ssh_connection_button {
+    margin: 2 0 0 0;
 }
 
 #configs_container > DatatypeCheckboxes {
@@ -190,13 +193,26 @@ ShowConfigsDialog:light > #display_configs_top_container {
     height: auto;
 }
 
+#configs_local_path_input {
+    width: 70%;
+}
+#configs_central_path_input {
+    width: 70%;
+}
+#configs_local_path_select_button{
+    width: auto;
+}
+#configs_central_path_select_button {
+    width: auto;
+}
+
+
 /* This Horizontal wrapper container is necessary to make the
 config label and button align center */
 
 #configs_container > Horizontal {
     width: 60%;
     height: auto;
-    align: center middle;
 }
 
 

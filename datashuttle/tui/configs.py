@@ -72,16 +72,14 @@ class ConfigsContent(Container):
 
         config_screen_widgets = [
             Label("Local Path", id="configs_local_path_label"),
-            ClickableInput(
-                self.parent_class.mainwindow,
-                placeholder=r"e.g. C:\path\to\my_projects\my_first_project",
-                id="configs_local_path_input",
-            ),
-            Label("Central Path", id="configs_central_path_label"),
-            ClickableInput(
-                self.parent_class.mainwindow,
-                placeholder="e.g. /central/live/username/my_projects/my_first_project",
-                id="configs_central_path_input",
+            Horizontal(
+                Button("Select", id="configs_local_path_select_button"),
+                ClickableInput(
+                    self.parent_class.mainwindow,
+                    placeholder=r"e.g. C:\path\to\my_projects\my_first_project",
+                    id="configs_local_path_input",
+                ),
+                id="configs_local_path_button_input_container",
             ),
             Label("Connection Method", id="configs_connect_method_label"),
             RadioSet(
@@ -93,6 +91,16 @@ class ConfigsContent(Container):
                 id="configs_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
+            Label("Central Path", id="configs_central_path_label"),
+            Horizontal(
+                Button("Select", id="configs_central_path_select_button"),
+                ClickableInput(
+                    self.parent_class.mainwindow,
+                    placeholder="e.g. /central/live/username/my_projects/my_first_project",
+                    id="configs_central_path_input",
+                ),
+                id="configs_central_path_button_input_container",
+            ),
             Container(
                 Checkbox(
                     "Overwrite Old Files",
@@ -110,7 +118,11 @@ class ConfigsContent(Container):
                 id="configs_transfer_options_container",
             ),
             Horizontal(
-                Button("Configure Project", id="configs_set_configs_button")
+                Button("Save", id="configs_set_configs_button"),
+                Button(
+                    "Setup SSH Connection",
+                    id="configs_setup_ssh_connection_button",
+                ),
             ),
         ]
 
@@ -198,6 +210,29 @@ class ConfigsContent(Container):
                 self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
             else:
                 self.setup_configs_for_an_existing_project()
+
+        elif event.button.id == "configs_setup_ssh_connection_button":
+            self.setup_ssh_connection()
+
+    def setup_ssh_connection(self):
+        cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
+
+        if cfg_kwargs["connection_method"] != "ssh":
+            self.parent_class.mainwindow.show_modal_error_dialog(
+                "Configs must be set to SSH to setup an SSH connection."
+            )
+            return
+
+        if (
+            self.project.cfg["connection_method"] != "ssh"
+            or self.project.cfg["connection_method"]
+            != cfg_kwargs["connection_method"]
+        ):
+            self.parent_class.mainwindow.show_modal_error_dialog(
+                "The values set above must equal the datashuttle settings. "
+                "Either press 'Save' or reload this page."
+            )
+            # or self.project.cfg[""]
 
     def setup_configs_for_a_new_project_and_switch_to_tab_screen(self):
         """
