@@ -241,7 +241,7 @@ class TransferTab(TreeAndInputTab):
             upload_selected = not self.query_one("#transfer_switch").value
 
             if self.query_one("#transfer_all_radiobutton").value:
-                self.upload_entire_project(upload_selected)
+                self.transfer_entire_project(upload_selected)
 
             elif self.query_one("#transfer_toplevel_radiobutton").value:
                 self.upload_top_level_only(upload_selected)
