@@ -45,6 +45,9 @@ class ProjectManagerScreen(Screen):
         self.project = project
         self.title = f"Project: {self.project.project_name}"
 
+        # see `on_tabbed_content_tab_activated()`
+        self.tabbed_content_mount_signal = True
+
     def compose(self) -> ComposeResult:
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
@@ -75,7 +78,16 @@ class ProjectManagerScreen(Screen):
         """
         Refresh the directorytree for create or transfer tabs whenever
         the tabbedcontent is switched to one of these tabs.
+
+        This is also triggered on mount, leading to it being reloaded
+        twice, leading to a strange flicker. Ideally no trigger
+        would be sent on mount. Therefore the ugly `tabbed_content_mount_signal`
+        variable is introduced to track this.
         """
+        if self.tabbed_content_mount_signal:
+            self.tabbed_content_mount_signal = False
+            return
+
         if event.pane.id == "tabscreen_create_tab":
             self.query_one("#tabscreen_create_tab").reload_directorytree()
         elif event.pane.id == "tabscreen_transfer_tab":
@@ -89,7 +101,6 @@ class ProjectManagerScreen(Screen):
 
         TODO
         ----
-
         Currently this defaults to the local path always but in future when it
         shows the central path it will have to be updated.
         """
