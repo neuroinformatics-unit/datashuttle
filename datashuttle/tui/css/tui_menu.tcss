@@ -38,80 +38,36 @@
 
 /* Error Screen --------------------------------------------------------------------- */
 
-ErrorScreen {
+MessageBox {
     align: center middle;
 }
 
-#errorscreen_top_container {
+#messagebox_top_container {
     height: 15;
     width: 65;
-    border: thick rgb(140, 12, 0);
-    background: $primary-background;
  }
 
-#errorscreen_message_container {
+#messagebox_message_container {
     align: center middle;
     overflow: hidden auto;
     margin: 0 1;
 }
 
-#errorscreen_message_label {
+#messagebox_message_label {
     text-align: center;
     padding: 0 2;
 }
 
-#errorscreen_ok_button {
+#messagebox_ok_button {
     align: center bottom;
     height: 3;
 }
 
 /* Light Mode Error Screen */
 
-ErrorScreen:light > #errorscreen_top_container {
+MessageBox:light > #messagebox_top_container {
     border: thick rgb(209, 41, 25);
     background: $boost;
-    align: center middle;
- }
-
-/* ShowConfigsDialog --------------------------------------------------------------------- */
-
-ShowConfigsDialog {
-    align: center middle;
-}
-
-#display_configs_top_container {
-    height: 20;
-    width: 115;
-    background: $primary-background;
-    border: thick rgb(1, 138, 13);
-}
-
-#display_configs_message_container {
-    align: center middle;
-    overflow: hidden auto;
-    margin: 0 1;
-}
-
-#display_configs_message_label {
-    text-align: center;
-    width: auto;
-    overflow: auto;
-    padding: 1 0 2 0;
-}
-
-#display_configs_ok_button {
-    align: center bottom;
-    height: 3;
-}
-
-#modal_table {
-    width: auto;
-}
-
-/* Light Mode Config Dialog */
-
-ShowConfigsDialog:light > #display_configs_top_container {
-    background: $background-darken-1;
     align: center middle;
  }
 
@@ -133,7 +89,7 @@ ShowConfigsDialog:light > #display_configs_top_container {
     text-style: bold;
     content-align: center middle;
     border: hkey $secondary-darken-1;
-    width: 60%;
+    width: 85%;
     height: 5;
 }
 
@@ -149,7 +105,7 @@ ShowConfigsDialog:light > #display_configs_top_container {
 }
 
 #configs_container > Input {
-    width: 60%;
+    width: 85%;
     align-horizontal: center;
 }
 
@@ -157,7 +113,7 @@ ShowConfigsDialog:light > #display_configs_top_container {
     align-horizontal: left;
     margin: 2 5 0 0;
     padding: 0 4 0 4;
-    width: 30%;
+    width: 20%;
     color: $success;  /* unsure about this */
 }
 
@@ -211,7 +167,7 @@ ShowConfigsDialog:light > #display_configs_top_container {
 config label and button align center */
 
 #configs_container > Horizontal {
-    width: 60%;
+    width: 85%;
     height: auto;
 }
 
@@ -335,7 +291,7 @@ ConfirmScreen {
 
 /* Light Mode Error Screen */
 
-ErrorScreen:light > #confirm_top_container {
+MessageBox:light > #confirm_top_container {
     border: tall $accent;
     background: $boost;
  }

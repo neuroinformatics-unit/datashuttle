@@ -83,7 +83,7 @@ class TuiApp(App):
             )
 
     def show_modal_error_dialog(self, message):
-        self.push_screen(modal_dialogs.ErrorScreen(message))
+        self.push_screen(modal_dialogs.MessageBox(message, border_color="red"))
 
     def handle_open_filesystem_browser(self, path_):
         if not path_.exists():

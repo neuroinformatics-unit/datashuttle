@@ -42,6 +42,11 @@ class ConfigsContent(Container):
         self.project = project
         self.config_ssh_widgets = []
 
+        self.central_input_placeholder_paths = {
+            "filesystem": r"C:\path\to\central\my_projects\my_first_project",
+            "ssh": r"/nfs/path_on_server/myprojects/central",
+        }
+
     def compose(self):
         """
         `self.config_ssh_widgets` are SSH-setup related widgets
@@ -73,12 +78,12 @@ class ConfigsContent(Container):
         config_screen_widgets = [
             Label("Local Path", id="configs_local_path_label"),
             Horizontal(
-                Button("Select", id="configs_local_path_select_button"),
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=r"e.g. C:\path\to\my_projects\my_first_project",
+                    placeholder=r"e.g. C:\path\to\local\my_projects\my_first_project",
                     id="configs_local_path_input",
                 ),
+                Button("Select", id="configs_local_path_select_button"),
                 id="configs_local_path_button_input_container",
             ),
             Label("Connection Method", id="configs_connect_method_label"),
@@ -93,12 +98,12 @@ class ConfigsContent(Container):
             *self.config_ssh_widgets,
             Label("Central Path", id="configs_central_path_label"),
             Horizontal(
-                Button("Select", id="configs_central_path_select_button"),
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder="e.g. /central/live/username/my_projects/my_first_project",
+                    placeholder=f"e.g. {self.central_input_placeholder_paths['filesystem']}",
                     id="configs_central_path_input",
                 ),
+                Button("Select", id="configs_central_path_select_button"),
                 id="configs_central_path_button_input_container",
             ),
             Container(
@@ -199,6 +204,23 @@ class ConfigsContent(Container):
         """
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
+        self.query_one(
+            "#configs_central_path_select_button"
+        ).disabled = display_bool
+        self.query_one(
+            "#configs_setup_ssh_connection_button"
+        ).disabled = not display_bool
+
+        if not self.query_one("#configs_central_path_input").value:
+            if display_bool:
+                placeholder = (
+                    f"e.g. {self.central_input_placeholder_paths['ssh']}"
+                )
+            else:
+                placeholder = f"e.g. {self.central_input_placeholder_paths['filesystem']}"
+            self.query_one(
+                "#configs_central_path_input"
+            ).placeholder = placeholder
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -213,6 +235,35 @@ class ConfigsContent(Container):
 
         elif event.button.id == "configs_setup_ssh_connection_button":
             self.setup_ssh_connection()
+
+        elif (
+            event.button.id == "configs_local_path_select_button"
+        ):  # TODO: duplication
+            self.parent_class.mainwindow.push_screen(
+                modal_dialogs.SelectDirectoryTreeScreen(
+                    self.parent_class.mainwindow
+                ),
+                lambda path_: self.handle_input_fill(path_, "local"),
+            )
+        elif event.button.id == "configs_central_path_select_button":
+            self.parent_class.mainwindow.push_screen(
+                modal_dialogs.SelectDirectoryTreeScreen(
+                    self.parent_class.mainwindow
+                )
+            )
+
+    def handle_input_fill(self, path_, local_or_central):
+        if path_ is False:
+            return
+
+        if local_or_central == "local":
+            self.query_one(
+                "#configs_local_path_input"
+            ).value = path_.as_posix()
+        elif local_or_central == "local":
+            self.query_one(
+                "#configs_central_path_input"
+            ).value = path_.as_posix()
 
     def setup_ssh_connection(self):
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
@@ -232,7 +283,6 @@ class ConfigsContent(Container):
                 "The values set above must equal the datashuttle settings. "
                 "Either press 'Save' or reload this page."
             )
-            # or self.project.cfg[""]
 
     def setup_configs_for_a_new_project_and_switch_to_tab_screen(self):
         """
@@ -246,13 +296,6 @@ class ConfigsContent(Container):
         returning the new instantiated project. Due to the mainwindow
         `push_screen` callback, this will open the TabbedContent window
         with the new project.
-
-        Note that in order to wait at the ShowConfigsDialog screen
-        until the user presses 'OK', it is necessary to wait for a
-        callback function from this screen. We do not care about it's
-        output, so make the callback a lambda function that when called
-        will immediately call the parent's dismiss function with the
-        newly instantiated project.
         """
         project_name = self.query_one("#configs_name_input").value
 
@@ -264,14 +307,12 @@ class ConfigsContent(Container):
             project.make_config_file(**cfg_kwargs)
 
             self.parent_class.mainwindow.push_screen(
-                modal_dialogs.ShowConfigsDialog(
-                    tui_utils.get_textual_compatible_project_configs(
-                        project.cfg
-                    ),
+                modal_dialogs.MessageBox(
                     "A DataShuttle project with the below "
                     "configs has now been created.\n\n Click 'OK' to proceed to "
-                    "the project page, where you will \n be able to create and "
+                    "the project page, where you will be able to create and "
                     "transfer project folders.",
+                    border_color="green",
                 ),
                 lambda _: self.parent_class.dismiss(project),
             )
@@ -291,15 +332,9 @@ class ConfigsContent(Container):
         try:
             self.project.make_config_file(**cfg_kwargs)
 
-            configs_to_show = tui_utils.get_textual_compatible_project_configs(
-                self.project.cfg
-            )
-
             self.parent_class.mainwindow.push_screen(
-                modal_dialogs.ShowConfigsDialog(
-                    configs_to_show,
-                    "The configs for this project have been successfully"
-                    " set to the following values:",
+                modal_dialogs.MessageBox(
+                    "Configs saved.", border_color="green"
                 )
             )
         except BaseException as e:
