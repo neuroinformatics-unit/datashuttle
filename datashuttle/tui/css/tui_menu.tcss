@@ -38,6 +38,26 @@
 
 /* Error Screen --------------------------------------------------------------------- */
 
+SetupSshScreen {
+    align: center middle;
+}
+
+#setup_ssh_screen_top_container {
+    height: 75%;
+    width: auto;
+    align: center middle;
+    border: solid $panel-lighten-1;
+}
+#setup_ssh_screen_label {
+    align: center middle;
+}
+#horizontal_XXX {
+    align: center middle;
+}
+#setup_ssh_screen_label_container {
+    align: center middle;
+}
+
 MessageBox {
     align: center middle;
 }

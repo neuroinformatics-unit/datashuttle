@@ -92,17 +92,7 @@ def connect_client(
     Paramiko does not support pathlib.
     """
     try:
-        client.get_host_keys().load(cfg.hostkeys_path.as_posix())
-        client.set_missing_host_key_policy(paramiko.RejectPolicy())
-        client.connect(
-            cfg["central_host_id"],
-            username=cfg["central_host_username"],
-            password=password,
-            key_filename=cfg.ssh_key_path.as_posix()
-            if isinstance(cfg.ssh_key_path, Path)
-            else None,
-            look_for_keys=True,
-        )
+        connect_client_REAL(client, cfg, password)
         if message_on_sucessful_connection:
             utils.print_message_to_user(
                 f"Connection to { cfg['central_host_id']} made successfully."
@@ -129,7 +119,9 @@ def add_public_key_to_central_authorized_keys(
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
-        connect_client(client, cfg, password=password)
+        connect_client_REAL(
+            client, cfg, password=password
+        )  # TODO: need to change back to connect_client for proper logging.
 
         client.exec_command("mkdir -p ~/.ssh/")
         client.exec_command(
@@ -149,10 +141,7 @@ def verify_ssh_central_host(
     get the server key and present when connecting
     for manual validation.
     """
-    transport: paramiko.Transport
-    with paramiko.Transport(central_host_id) as transport:
-        transport.connect()
-        key = transport.get_remote_server_key()
+    key = get_remote_server_key(central_host_id)
 
     message = (
         f"The host key is not cached for this server: "
@@ -165,9 +154,7 @@ def verify_ssh_central_host(
     input_ = utils.get_user_input(message)
 
     if input_ == "y":
-        client = paramiko.SSHClient()
-        client.get_host_keys().add(central_host_id, key.get_name(), key)
-        client.get_host_keys().save(hostkeys_path.as_posix())
+        save_hostkey_locally(key, central_host_id, hostkeys_path)
         success = True
         utils.print_message_to_user("Host accepted.")
     else:
@@ -182,6 +169,41 @@ def verify_ssh_central_host(
             utils.log("Host not accepted. No connection made.")
 
     return success
+
+
+def connect_client_REAL(
+    client, cfg, password
+):  # ODO: sort naming and organisation
+    client.get_host_keys().load(cfg.hostkeys_path.as_posix())
+    client.set_missing_host_key_policy(paramiko.RejectPolicy())
+
+    client.connect(
+        cfg["central_host_id"],
+        username=cfg["central_host_username"],
+        password=password,
+        key_filename=cfg.ssh_key_path.as_posix()
+        if isinstance(cfg.ssh_key_path, Path)
+        else None,
+        look_for_keys=True,
+    )
+
+
+def get_remote_server_key(central_host_id: str):
+    """
+    Get the remove server host key for validation before
+    connection.
+    """
+    transport: paramiko.Transport
+    with paramiko.Transport(central_host_id) as transport:
+        transport.connect()
+        key = transport.get_remote_server_key()
+    return key
+
+
+def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
+    client = paramiko.SSHClient()
+    client.get_host_keys().add(central_host_id, key.get_name(), key)
+    client.get_host_keys().save(hostkeys_path.as_posix())
 
 
 def generate_and_write_ssh_key(ssh_key_path: Path) -> None:

@@ -26,7 +26,8 @@ class TransferStatusTree(CustomDirectoryTree):
         )
 
         self.project = project
-        self.update_transfer_diffs()
+
+    #        self.update_transfer_diffs()
 
     def on_mount(self):
         self.update_local_transfer_paths()
@@ -68,7 +69,7 @@ class TransferStatusTree(CustomDirectoryTree):
         and project transfer status.
         """
         self.update_local_transfer_paths()
-        self.update_transfer_diffs()
+        #   self.update_transfer_diffs()
         self.reload()
 
     def format_transfer_label(self, node_label, node_path):
@@ -138,7 +139,7 @@ class TransferStatusTree(CustomDirectoryTree):
                 ),
             )
 
-        self.format_transfer_label(node_label, node_path)
+        #     self.format_transfer_label(node_label, node_path)
 
         text = Text.assemble(prefix, node_label)
         return text

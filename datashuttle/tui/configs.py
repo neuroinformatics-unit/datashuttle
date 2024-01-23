@@ -13,7 +13,7 @@ from textual.widgets import (
 
 from datashuttle import DataShuttle
 from datashuttle.tui.custom_widgets import ClickableInput
-from datashuttle.tui.screens import modal_dialogs
+from datashuttle.tui.screens import modal_dialogs, setup_ssh
 from datashuttle.tui.utils import tui_utils
 
 
@@ -268,12 +268,6 @@ class ConfigsContent(Container):
     def setup_ssh_connection(self):
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
-        if cfg_kwargs["connection_method"] != "ssh":
-            self.parent_class.mainwindow.show_modal_error_dialog(
-                "Configs must be set to SSH to setup an SSH connection."
-            )
-            return
-
         if (
             self.project.cfg["connection_method"] != "ssh"
             or self.project.cfg["connection_method"]
@@ -283,6 +277,10 @@ class ConfigsContent(Container):
                 "The values set above must equal the datashuttle settings. "
                 "Either press 'Save' or reload this page."
             )
+
+        self.parent_class.mainwindow.push_screen(
+            setup_ssh.SetupSshScreen(self.project)
+        )
 
     def setup_configs_for_a_new_project_and_switch_to_tab_screen(self):
         """
