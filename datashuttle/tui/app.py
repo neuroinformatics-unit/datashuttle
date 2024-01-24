@@ -124,26 +124,41 @@ class TuiApp(App):
 
             self.show_modal_error_dialog(message)
 
-    def get_global_settings_path(self):
-        path_ = canonical_folders.get_datashuttle_path()
-        return path_ / "global_tui_settings.yaml"
+    # Global Settings ---------------------------------------------------------
+    # TODO: there is now a lot of code that does this kind of thing
+    # here, persistent settings, configs. See if it can be centralised
 
     def load_global_settings(self):
-        # TODO: there is now a lot of code that does this kind of thing
-        # here, persistent settings, configs. See if it can be centralised
+        """
+        Load the 'global settings' for the TUI that determine
+        project-independent settings that are persistent across
+        sessions. These are stored in the canonical
+        .datashuttle folder (see `get_global_settings_path`).
+        """
         settings_path = self.get_global_settings_path()
 
         if not settings_path.is_file():
-            global_settings = {
-                "dark_mode": True,
-                "show_transfer_tree_status": False,
-            }
+            global_settings = self.get_default_global_settings()
             self.save_global_settings(global_settings)
         else:
             with open(settings_path, "r") as file:
                 global_settings = yaml.full_load(file)
 
         return global_settings
+
+    def get_global_settings_path(self):
+        """
+        The cannoincal path for the TUI's global settings.
+
+        """
+        path_ = canonical_folders.get_datashuttle_path()
+        return path_ / "global_tui_settings.yaml"
+
+    def get_default_global_settings(self):
+        return {
+            "dark_mode": True,
+            "show_transfer_tree_status": False,
+        }
 
     def save_global_settings(self, global_settings):
         settings_path = self.get_global_settings_path()

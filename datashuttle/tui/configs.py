@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from pathlib import Path
 
 from textual.containers import Container, Horizontal
 from textual.message import Message
@@ -268,10 +269,8 @@ class ConfigsContent(Container):
     def setup_ssh_connection(self):
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
-        if (
-            self.project.cfg["connection_method"] != "ssh"
-            or self.project.cfg["connection_method"]
-            != cfg_kwargs["connection_method"]
+        if any(
+            cfg_kwargs[key] != value for key, value in self.project.cfg.items()
         ):
             self.parent_class.mainwindow.show_modal_error_dialog(
                 "The values set above must equal the datashuttle settings. "
@@ -397,7 +396,9 @@ class ConfigsContent(Container):
 
         # Transfer Verbosity
         checkbox = self.query_one("#configs_verbosity_checkbox")
-        bool = True if self.project.cfg["transfer_verbosity"] == "v" else False
+        bool = (
+            True if self.project.cfg["transfer_verbosity"] == "vv" else False
+        )
         checkbox.value = bool
 
         # Show Transfer Progress
@@ -413,13 +414,13 @@ class ConfigsContent(Container):
         """
         cfg_kwargs = {}
 
-        cfg_kwargs["local_path"] = self.query_one(
-            "#configs_local_path_input"
-        ).value
+        cfg_kwargs["local_path"] = Path(
+            self.query_one("#configs_local_path_input").value
+        )
 
-        cfg_kwargs["central_path"] = self.query_one(
-            "#configs_central_path_input"
-        ).value
+        cfg_kwargs["central_path"] = Path(
+            self.query_one("#configs_central_path_input").value
+        )
 
         cfg_kwargs["connection_method"] = (
             "ssh"
