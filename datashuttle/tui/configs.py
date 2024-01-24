@@ -113,14 +113,6 @@ class ConfigsContent(Container):
                     value=False,
                     id="configs_overwrite_files_checkbox",
                 ),
-                Checkbox(
-                    "Verbose", value=False, id="configs_verbosity_checkbox"
-                ),
-                Checkbox(
-                    "Show Transfer Progress",
-                    value=False,
-                    id="configs_transfer_progress_checkbox",
-                ),
                 id="configs_transfer_options_container",
             ),
             Horizontal(
@@ -271,7 +263,7 @@ class ConfigsContent(Container):
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
         if any(
-            cfg_kwargs[key] != value for key, value in self.project.cfg.items()
+            self.project.cfg[key] != value for key, value in cfg_kwargs.items()
         ):
             self.parent_class.mainwindow.show_modal_error_dialog(
                 "The values set above must equal the datashuttle settings. "
@@ -395,17 +387,6 @@ class ConfigsContent(Container):
         checkbox = self.query_one("#configs_overwrite_files_checkbox")
         checkbox.value = self.project.cfg["overwrite_old_files"]
 
-        # Transfer Verbosity
-        checkbox = self.query_one("#configs_verbosity_checkbox")
-        bool = (
-            True if self.project.cfg["transfer_verbosity"] == "vv" else False
-        )
-        checkbox.value = bool
-
-        # Show Transfer Progress
-        checkbox = self.query_one("#configs_transfer_progress_checkbox")
-        checkbox.value = self.project.cfg["show_transfer_progress"]
-
     def get_datashuttle_inputs_from_widgets(self):
         """
         Get the configs to pass to `make_config_file()` from
@@ -439,17 +420,6 @@ class ConfigsContent(Container):
 
         cfg_kwargs["overwrite_old_files"] = self.query_one(
             "#configs_overwrite_files_checkbox"
-        ).value
-
-        verbosity_kwarg = (
-            "vv"
-            if self.query_one("#configs_verbosity_checkbox").value
-            else "v"
-        )
-        cfg_kwargs["transfer_verbosity"] = verbosity_kwarg
-
-        cfg_kwargs["show_transfer_progress"] = self.query_one(
-            "#configs_transfer_progress_checkbox"
         ).value
 
         return cfg_kwargs
