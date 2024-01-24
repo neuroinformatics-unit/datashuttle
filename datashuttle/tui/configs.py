@@ -237,20 +237,21 @@ class ConfigsContent(Container):
         elif event.button.id == "configs_setup_ssh_connection_button":
             self.setup_ssh_connection()
 
-        elif (
-            event.button.id == "configs_local_path_select_button"
-        ):  # TODO: duplication
+        elif event.button.id in [
+            "configs_local_path_select_button",
+            "configs_central_path_select_button",
+        ]:
+            input_to_fill = (
+                "local"
+                if event.button.id == "configs_local_path_select_button"
+                else "central"
+            )
+
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.SelectDirectoryTreeScreen(
                     self.parent_class.mainwindow
                 ),
-                lambda path_: self.handle_input_fill(path_, "local"),
-            )
-        elif event.button.id == "configs_central_path_select_button":
-            self.parent_class.mainwindow.push_screen(
-                modal_dialogs.SelectDirectoryTreeScreen(
-                    self.parent_class.mainwindow
-                )
+                lambda path_: self.handle_input_fill(path_, input_to_fill),
             )
 
     def handle_input_fill(self, path_, local_or_central):
@@ -261,7 +262,7 @@ class ConfigsContent(Container):
             self.query_one(
                 "#configs_local_path_input"
             ).value = path_.as_posix()
-        elif local_or_central == "local":
+        elif local_or_central == "central":
             self.query_one(
                 "#configs_central_path_input"
             ).value = path_.as_posix()
