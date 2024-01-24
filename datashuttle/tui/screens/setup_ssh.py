@@ -31,7 +31,7 @@ class SetupSshScreen(ModalScreen):
                 Button("Cancel", id="setup_ssh_cancel_button"),
                 id="horizontal_XXX",
             ),
-            id="setup_ssh_screen_top_container",
+            id="setup_ssh_screen_container",
         )
 
     def on_mount(self):
@@ -114,6 +114,7 @@ class SetupSshScreen(ModalScreen):
                     )
                     self.query_one("#setup_ssh_ok_button").label = "Finish"
                     self.query_one("#setup_ssh_cancel_button").disabled = True
+                    self.stage += 1
                 except BaseException as e:
                     message = (
                         f"Password setup failed. Check password is correct and try again."
@@ -123,3 +124,6 @@ class SetupSshScreen(ModalScreen):
                     self.failed_password_attempts += 1
 
                 self.query_one("#messagebox_message_label").update(message)
+
+            elif self.stage == 3:
+                self.dismiss()

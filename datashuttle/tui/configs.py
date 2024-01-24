@@ -277,7 +277,7 @@ class ConfigsContent(Container):
                 "The values set above must equal the datashuttle settings. "
                 "Either press 'Save' or reload this page."
             )
-
+            return
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.project)
         )
