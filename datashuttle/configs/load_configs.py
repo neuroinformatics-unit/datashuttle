@@ -114,13 +114,11 @@ def supplied_configs_confirm_overwrite(
 
 
 @overload
-def handle_cli_or_supplied_config_bools(dict_: Configs) -> Configs:
-    ...
+def handle_cli_or_supplied_config_bools(dict_: Configs) -> Configs: ...
 
 
 @overload
-def handle_cli_or_supplied_config_bools(dict_: dict) -> dict:
-    ...
+def handle_cli_or_supplied_config_bools(dict_: dict) -> dict: ...
 
 
 def handle_cli_or_supplied_config_bools(

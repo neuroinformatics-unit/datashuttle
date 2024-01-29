@@ -242,8 +242,10 @@ class TestLogging:
         )
         self.delete_log_files(project.cfg.logging_path)
 
-        transfer_function() if use_all_alias else transfer_function(
-            "all", "all", "all"
+        (
+            transfer_function()
+            if use_all_alias
+            else transfer_function("all", "all", "all")
         )
 
         log = self.read_log_file(project.cfg.logging_path)

@@ -98,9 +98,11 @@ def connect_client(
             cfg["central_host_id"],
             username=cfg["central_host_username"],
             password=password,
-            key_filename=cfg.ssh_key_path.as_posix()
-            if isinstance(cfg.ssh_key_path, Path)
-            else None,
+            key_filename=(
+                cfg.ssh_key_path.as_posix()
+                if isinstance(cfg.ssh_key_path, Path)
+                else None
+            ),
             look_for_keys=True,
         )
         if message_on_sucessful_connection:
