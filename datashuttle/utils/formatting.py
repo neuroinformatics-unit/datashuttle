@@ -17,7 +17,7 @@ def check_and_format_names(
     names: Union[list, str],
     prefix: Literal["sub", "ses"],
     name_templates: Optional[Dict] = None,
-    bypass_validation: bool = True,
+    bypass_validation: bool = False,
 ) -> List[str]:
     """
     Format a list of subject or session names, e.g.

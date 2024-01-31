@@ -15,12 +15,12 @@ class TestPersistentSettings(BaseTest):
     def test_persistent_settings(self, project, unused_repeat):
         """
         Test persistent settings functions by editing the
-        persistent settings, checking they are changed and
-        the program settings are changed accordingly.
+        persistent settings top-level-folder entry, checking they are
+        changed and the program settings are changed accordingly.
         """
         settings = project._load_persistent_settings()
 
-        assert len(settings) == 3
+        assert len(settings) == 4
         assert settings["top_level_folder"] == "rawdata"
 
         # Update they persistent setting and check this is reflected
