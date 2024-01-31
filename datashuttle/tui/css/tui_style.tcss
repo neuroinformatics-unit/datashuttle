@@ -36,6 +36,41 @@ Header {
     margin: 0 0 1 0;
 }
 
+/* Directory Tree ------------------------------------------------------------------- */
+
+DirectoryTree {
+    dock: left;
+    width: 45%;
+    padding: 1 2;
+    margin: 0 4 0 0;
+    border: tall wide $panel-lighten-1;
+}
+DirectoryTree:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+DirectoryTree .tree--guides {
+    color: #949494;
+    text-style: none;
+}
+DirectoryTree .tree--guides-selected {
+    color: #949494;
+    text-style: none;
+}
+DirectoryTree:focus .tree--guides-hover {
+    color: #949494;
+    text-style: none;
+}
+/* Light mode Directory Tree */
+
+DirectoryTree:light {
+    border: tall wide $panel-darken-3;
+    background: $boost;
+}
+
+DirectoryTree:light:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+
 /* Checkboxes ----------------------------------------------------------------------- */
 
 ToggleButton {
@@ -79,4 +114,15 @@ Input:light {
 
 RadioButton {
     width: auto;
+}
+
+/* DatatypeCheckboxes --------------------------------------------------------------------- */
+
+DatatypeCheckboxes {
+    layout: grid;
+    grid-size: 2 4;
+    grid-columns: 30;
+    grid_rows: 3;
+    width: auto;
+    padding: 0 0 1 0;
 }

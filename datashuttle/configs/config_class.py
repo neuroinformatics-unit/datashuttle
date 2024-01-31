@@ -186,7 +186,9 @@ class Configs(UserDict):
 
         return joined_path
 
-    def get_base_folder(self, base: str) -> Path:
+    def get_base_folder(
+        self, base: str, force_top_level_folder: Optional[str] = None
+    ) -> Path:
         """
         Convenience function to return the full base path.
 
@@ -196,10 +198,15 @@ class Configs(UserDict):
         base : base path, "local", "central" or "datashuttle"
 
         """
+        if force_top_level_folder:
+            top_level_folder = force_top_level_folder
+        else:
+            top_level_folder = self.top_level_folder
+
         if base == "local":
-            base_folder = self["local_path"] / self.top_level_folder
+            base_folder = self["local_path"] / top_level_folder
         elif base == "central":
-            base_folder = self["central_path"] / self.top_level_folder
+            base_folder = self["central_path"] / top_level_folder
         elif base == "datashuttle":
             base_folder, _ = canonical_folders.get_project_datashuttle_path(
                 self.project_name

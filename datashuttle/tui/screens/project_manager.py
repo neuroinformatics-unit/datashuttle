@@ -7,7 +7,7 @@ from textual.widgets import (
     TabPane,
 )
 
-from datashuttle.tui import configs
+from datashuttle.tui.configs import ConfigsContent
 from datashuttle.tui.tabs import create_folders, transfer
 
 
@@ -20,7 +20,8 @@ class ProjectManagerScreen(Screen):
     The 'Create' tab interacts with Datashuttle's `make_folders()`
     method to create new project folders.
 
-    The 'Transfer' tab, XXX.
+    The 'Transfer' tab, which handles data upload and download between
+    local / central.
 
     The 'Configs' tab displays the current project's configurations
     and allows configs to be reset. This is an instantiation of the
@@ -53,15 +54,48 @@ class ProjectManagerScreen(Screen):
             yield create_folders.CreateFoldersTab(
                 self.mainwindow, self.project
             )
-            yield transfer.TransferTab(self.mainwindow, self.project)
+            yield transfer.TransferTab(
+                "Transfer",
+                self.mainwindow,
+                self.project,
+                id="tabscreen_transfer_tab",
+            )
             with TabPane("Configs", id="tabscreen_configs_tab"):
-                yield configs.ConfigsContent(self, self.project)
+                yield ConfigsContent(self, self.project)
 
     def on_button_pressed(self, event: Button.Pressed):
         """
         Dismisses the TabScreen (and returns to the main menu) once
         the 'Main Menu' button is pressed.
         """
-
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()
+
+    def on_tabbed_content_tab_activated(self, event):
+        """
+        Refresh the directorytree for create or transfer tabs whenever
+        the tabbedcontent is switched to one of these tabs.
+        """
+        if event.pane.id == "tabscreen_create_tab":
+            self.query_one("#tabscreen_create_tab").reload_directorytree()
+        elif event.pane.id == "tabscreen_transfer_tab":
+            self.query_one("#tabscreen_transfer_tab").reload_directorytree()
+
+    def on_configs_content_configs_saved(self):
+        """
+        When the config file are refreshed, the local path may have changed.
+        In this case the directorytree will be displaying the wrong root,
+        so update it here.
+
+        TODO
+        ----
+
+        Currently this defaults to the local path always but in future when it
+        shows the central path it will have to be updated.
+        """
+        self.query_one("#tabscreen_create_tab").update_directorytree_root(
+            self.project.cfg["local_path"]
+        )
+        self.query_one("#tabscreen_transfer_tab").update_directorytree_root(
+            self.project.cfg["local_path"]
+        )

@@ -364,6 +364,16 @@ class TransferData:
                 ValueError,
             )
 
+        for name, list_ in zip(
+            ["sub_names", "ses_names", "datatype"],
+            [self.sub_names, self.ses_names, self.datatype],
+        ):
+            if len(list_) == 0:
+                utils.log_and_raise_error(
+                    f"`{name}` input cannot be empty.",
+                    ValueError,
+                )
+
     # -------------------------------------------------------------------------
     # Format Arguments
     # -------------------------------------------------------------------------

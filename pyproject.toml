@@ -18,6 +18,7 @@ dependencies = [
     "rich",
     "fancylog[git]",
     "simplejson",
+    "pyperclip",
 ]
 
 classifiers = [

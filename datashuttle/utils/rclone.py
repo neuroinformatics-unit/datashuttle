@@ -3,6 +3,7 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from typing import Dict, List, Literal
 
+from datashuttle.configs import canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
 
@@ -178,7 +179,9 @@ def transfer_data(
     return output
 
 
-def get_local_and_central_file_differences(cfg: Configs) -> Dict:
+def get_local_and_central_file_differences(
+    cfg: Configs, all_top_level_folder: bool = False
+) -> Dict:  # TODO: top level folder behaviour not tested.
     """
     Convert the output of rclone's check (with `--combine`) flag
     to a dictionary separating each case.
@@ -207,21 +210,33 @@ def get_local_and_central_file_differences(cfg: Configs) -> Dict:
     parsed_output: Dict[str, List]
     parsed_output = {val: [] for val in convert_symbols.values()}
 
+    # TODO: this is kind of wasteful as check all folders and then filter.
+    # Would be more efficient (but messier) to only check top level folder
+    # required or loop over specified top level folders.
     rclone_output = perform_rclone_check(cfg)
     split_rclone_output = rclone_output.split("\n")
+
+    if all_top_level_folder:
+        permitted_top_level_folders = canonical_folders.get_top_level_folders()
+    else:
+        permitted_top_level_folders = [cfg.top_level_folder]
 
     for result in split_rclone_output:
         if result == "":
             continue
 
         symbol = result[0]
+        filepath = Path(result[2:])
+
+        if filepath.parts[0] not in permitted_top_level_folders:
+            continue
 
         assert_rclone_check_output_is_as_expected(
             result, symbol, convert_symbols
         )
 
         key = convert_symbols[symbol]
-        parsed_output[key].append(result[2:])
+        parsed_output[key].append(result[2:])  # TODO: use path
 
     return parsed_output
 
@@ -250,8 +265,8 @@ def perform_rclone_check(cfg: Configs) -> str:
     are the same ("="), different ("*"), found in local only ("+")
     or central only ("-"). The output is formatted as "<symbol> <path>\n".
     """
-    local_filepath = cfg.get_base_folder("local").as_posix()
-    central_filepath = cfg.get_base_folder("central").as_posix()
+    local_filepath = cfg.get_base_folder("local").parent.as_posix()
+    central_filepath = cfg.get_base_folder("central").parent.as_posix()
 
     output = call_rclone(
         f'{rclone_args("check")} '
