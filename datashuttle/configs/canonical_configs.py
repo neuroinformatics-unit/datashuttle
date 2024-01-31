@@ -298,7 +298,7 @@ def get_tui_config_defaults() -> Dict:
                 "anat": False,
                 "all": True,
                 "all_datatype": False,
-                "all_ses_level_non_datatype": False,
+                "all_non_datatype": False,
             },
             "top_level_folder_select": {
                 "create_tab": "rawdata",

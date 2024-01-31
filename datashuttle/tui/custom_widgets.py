@@ -69,7 +69,7 @@ class DatatypeCheckboxes(Static):
     def compose(self):
         for datatype in self.datatype_config.keys():
             yield Checkbox(
-                datatype.title(),
+                datatype.title().replace("_", " "),
                 id=f"tabscreen_{datatype}_checkbox",
                 value=self.datatype_config[datatype],
             )
