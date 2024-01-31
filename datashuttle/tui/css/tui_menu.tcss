@@ -223,25 +223,36 @@ TemplateSettingsScreen {
     align: center middle;
 }
 
-#template_top_container {
-    height: 25;
-    width: 80;
+#labelTESTEST {
+    padding: 1 0 1 2;
+}
+#tabscreen_toplevel_select {
+    padding: 0 0 0 1;
+}
+#template_top_container2 {
+    height: 80%;
+    width: 80%;
     background: $primary-background;
     border: tall $panel-lighten-3;
  }
-
- #template_inner_horizontal_container{
+#template_top_container {
+    height: 50%;
+    background: $primary-background;
+    border: tall $panel-lighten-3;
+    overflow: hidden auto;
+ }
+#template_inner_horizontal_container{
     height: 3;
 }
 
  #template_inner_container {
-    height: auto;
-    overflow: auto hidden;
+    height: 15;
+    overflow: auto;
  }
 
 #template_message_label {
     width: auto;
-    margin: 1 0 0 2;
+    margin: 0 0 0 2;
 }
 
 #template_settings_radioset {
@@ -250,17 +261,12 @@ TemplateSettingsScreen {
     background: transparent;
     align: center middle;
     width: 50%;
-    margin: 1 0 0 0;
+    margin: 0 0 0 0;
 }
 
 #template_settings_input {
     align: center middle;
     width: 50%;
-}
-
-#template_sessions_close_button{
-    dock: right;
-    layer: top;
 }
 
 #template_other_widgets_container{

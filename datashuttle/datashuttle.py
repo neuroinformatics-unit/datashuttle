@@ -1293,7 +1293,11 @@ class DataShuttle:
         return settings
 
     def _update_settings_with_new_canonical_keys(self, settings: Dict):
-        """"""
+        """
+
+        TODO: this is not really sufficient, e.g. a new field in tui
+        will not be discoverd.
+        """
         if "name_templates" not in settings:
             settings.update(canonical_configs.get_name_templates_defaults())
 

@@ -181,12 +181,25 @@ class CreateFoldersTab(TreeAndInputTab):
         if ses_names == [""]:
             ses_names = None
 
+        # This can't use the top level folder argument on the select
+        # because it is on another screen, which is not good...
+        # In general this handling of top level folder is not ideal...
+        tmp_top_level_folder = self.project.get_top_level_folder()
+        persistent_settings = self.project._load_persistent_settings()
+        top_level_folder = persistent_settings["tui"][
+            "top_level_folder_select"
+        ]["create_tab"]
+
         try:
+            self.project.set_top_level_folder(top_level_folder)
             self.project.make_folders(
                 sub_names=sub_names, ses_names=ses_names, datatype=datatype
             )
             self.reload_directorytree()
+
+            self.project.set_top_level_folder(tmp_top_level_folder)
         except BaseException as e:
+            self.project.set_top_level_folder(tmp_top_level_folder)
             self.mainwindow.show_modal_error_dialog(str(e))
             return
 

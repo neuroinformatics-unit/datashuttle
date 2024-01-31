@@ -300,6 +300,11 @@ def get_tui_config_defaults() -> Dict:
                 "all_datatype": False,
                 "all_ses_level_non_datatype": False,
             },
+            "top_level_folder_select": {
+                "create_tab": "rawdata",
+                "toplevel_transfer": "rawdata",
+                "custom_transfer": "rawdata",
+            },
         }
     }
     return settings

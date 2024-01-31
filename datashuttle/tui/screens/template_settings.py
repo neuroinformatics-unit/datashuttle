@@ -11,6 +11,8 @@ from textual.widgets import (
     RadioSet,
 )
 
+from datashuttle.tui.custom_widgets import TopLevelFolderSelect
+
 
 # TODO: need to do some renaming to distinguish template settings vs. general create settings
 class TemplateSettingsScreen(ModalScreen):
@@ -58,49 +60,57 @@ class TemplateSettingsScreen(ModalScreen):
         bypass_validation = self.project.get_bypass_validation()
 
         yield Container(
+            Horizontal(
+                Label("Top level folder:", id="labelTESTEST"),
+                TopLevelFolderSelect(
+                    self.project,
+                    existing_only=True,
+                    id="tabscreen_toplevel_select",
+                ),
+            ),
             Checkbox(
                 "Bypass validation",
                 value=bypass_validation,
                 id="create_settings_bypass_validation_checkbox",
             ),
-            Horizontal(
-                Checkbox(
-                    "Template Validation",
-                    id="template_settings_validation_on_checkbox",
-                    value=self.templates["on"],
-                ),
-                Horizontal(),
-                Button("Close", id="template_sessions_close_button"),
-                id="template_inner_horizontal_container",
-            ),
             Container(
-                Label(explanation, id="template_message_label"),
-                Container(
-                    RadioSet(
-                        RadioButton(
-                            "Subject",
-                            id="template_settings_subject_radiobutton",
-                            value=sub_on,
-                        ),
-                        RadioButton(
-                            "Session",
-                            id="template_settings_session_radiobutton",
-                            value=ses_on,
-                        ),
-                        id="template_settings_radioset",
+                Horizontal(
+                    Checkbox(
+                        "Template Validation",
+                        id="template_settings_validation_on_checkbox",
+                        value=self.templates["on"],
                     ),
-                    Input(id="template_settings_input"),
-                    id="template_other_widgets_container",
+                    id="template_inner_horizontal_container",
                 ),
-                id="template_inner_container",
+                Container(
+                    Label(explanation, id="template_message_label"),
+                    Container(
+                        RadioSet(
+                            RadioButton(
+                                "Subject",
+                                id="template_settings_subject_radiobutton",
+                                value=sub_on,
+                            ),
+                            RadioButton(
+                                "Session",
+                                id="template_settings_session_radiobutton",
+                                value=ses_on,
+                            ),
+                            id="template_settings_radioset",
+                        ),
+                        Input(id="template_settings_input"),
+                        id="template_other_widgets_container",
+                    ),
+                    id="template_inner_container",
+                ),
+                id="template_top_container",
             ),
-            id="template_top_container",
+            Container(),
+            Button("Close", id="template_sessions_close_button"),
+            id="template_top_container2",
         )
 
     def on_mount(self):
-        container = self.query_one("#template_top_container")
-        container.border_title = "Template Settings"
-
         self.fill_input_from_template()
         self.set_disabled_mode_widgets()
 
