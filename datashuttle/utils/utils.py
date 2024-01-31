@@ -140,8 +140,7 @@ def get_values_from_bids_formatted_name(
     key: str,
     return_as_int: Literal[True],
     sort: bool = False,
-) -> List[int]:
-    ...
+) -> List[int]: ...
 
 
 @overload
@@ -150,8 +149,7 @@ def get_values_from_bids_formatted_name(
     key: str,
     return_as_int: Literal[False] = False,
     sort: bool = False,
-) -> List[str]:
-    ...
+) -> List[str]: ...
 
 
 def get_values_from_bids_formatted_name(
