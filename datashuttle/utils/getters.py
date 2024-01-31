@@ -156,7 +156,7 @@ def get_max_sub_or_ses_num_and_value_length(
         # (e.g. sub-003 has three values).
         all_num_value_digits = [len(value) for value in all_values_str]
 
-        if not len(set(all_num_value_digits)) == 1:
+        if len(set(all_num_value_digits)) != 1:
             utils.raise_error(
                 f"The number of value digits for the {prefix} level are not "
                 f"consistent. Cannot suggest a {prefix} number.",

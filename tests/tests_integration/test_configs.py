@@ -17,6 +17,24 @@ class TestConfigs(BaseTest):
     # Test Errors
     # -------------------------------------------------------------
 
+    @pytest.fixture(scope="function")
+    def non_existent_path(self, tmp_path):
+        """
+        Return a path that does not exist.
+        """
+        non_existent_path = tmp_path / "does_not_exist"
+        assert not non_existent_path.is_dir()
+        return non_existent_path
+
+    @pytest.fixture(scope="function")
+    def existent_path(self, tmp_path):
+        """
+        Return a path that exists.
+        """
+        existent_path = tmp_path / "exists"
+        os.makedirs(existent_path, exist_ok=True)
+        return existent_path
+
     def test_warning_on_startup(self, no_cfg_project):
         """
         When no configs have been set, a warning should be shown that
@@ -82,7 +100,7 @@ class TestConfigs(BaseTest):
 
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
     def test_non_existant_local_path(
-        self, no_cfg_project, tmp_path, path_type
+        self, no_cfg_project, path_type, non_existent_path, existent_path
     ):
         """
         Check that if the `local_path` and `central_path` that holds the
@@ -91,17 +109,12 @@ class TestConfigs(BaseTest):
         if `connection_method` is `"local_filesystem"`.
         See `test_additional_error_text_when_ssh_used()` for when ssh is used.
         """
-        (
-            non_existant_path,
-            existant_path,
-        ) = self.get_exists_and_does_not_exist_path(tmp_path)
-
         if path_type == "local_path":
-            local_path = non_existant_path
-            central_path = existant_path
+            local_path = non_existent_path
+            central_path = existent_path
         else:
-            local_path = existant_path
-            central_path = non_existant_path
+            local_path = existent_path
+            central_path = non_existent_path
 
         with pytest.raises(BaseException) as e:
             no_cfg_project.make_config_file(
@@ -110,12 +123,12 @@ class TestConfigs(BaseTest):
                 "local_filesystem",
             )
 
-        assert f"The {path_type}: {non_existant_path} that the project" in str(
+        assert f"The {path_type}: {non_existent_path} that the project" in str(
             e.value
         )
 
     def test_additional_error_text_when_ssh_used(
-        self, no_cfg_project, tmp_path
+        self, no_cfg_project, non_existent_path, existent_path
     ):
         """
         If SSH is used as `connection_method`, if `local_path` does not exist
@@ -125,44 +138,29 @@ class TestConfigs(BaseTest):
         Currently if SSH is used and the central path does not exist,
         no error is raised because it is not possible to check.
         """
-        (
-            non_existant_path,
-            existant_path,
-        ) = self.get_exists_and_does_not_exist_path(tmp_path)
-
         with pytest.raises(BaseException) as e:
             no_cfg_project.make_config_file(
-                non_existant_path / no_cfg_project.project_name,
-                existant_path / no_cfg_project.project_name,
+                non_existent_path / no_cfg_project.project_name,
+                existent_path / no_cfg_project.project_name,
                 "ssh",
                 central_host_id="fake_id",
                 central_host_username="fake_username",
             )
 
         assert (
-            "Also make sure the central_path`, is correct, as datashuttle "
+            "Also make sure the central_path` is correct, as datashuttle "
             "cannot check it via SSH at this stage." in str(e.value)
         )
 
         # This should not raise an error, even though the path does not
         # exist, because it is not possible to check over SSH.
         no_cfg_project.make_config_file(
-            existant_path / no_cfg_project.project_name,
-            non_existant_path / no_cfg_project.project_name,
+            existent_path / no_cfg_project.project_name,
+            non_existent_path / no_cfg_project.project_name,
             "ssh",
             central_host_id="fake_id",
             central_host_username="fake_username",
         )
-
-    def get_exists_and_does_not_exist_path(self, tmp_path):
-        """
-        Return two paths, one that exists (i.e.the folder
-        has been made) and another that does not.
-        """
-        non_existant_path = tmp_path / "does_not_exist"
-        existant_path = tmp_path / "exists"
-        os.makedirs(existant_path, exist_ok=True)
-        return non_existant_path, existant_path
 
     def test_no_ssh_options_set_on_make_config_file(self, no_cfg_project):
         """
@@ -257,7 +255,7 @@ class TestConfigs(BaseTest):
 
         test_utils.move_some_keys_to_end_of_dict(not_set_configs)
 
-        # ensure str is convert to Path
+        # ensure Path is converted to str
         not_set_configs["local_path"] = str(not_set_configs["local_path"])
 
         project.update_config_file(**not_set_configs)
@@ -289,12 +287,12 @@ class TestConfigs(BaseTest):
     def test_supplied_config_file_bad_path(self, project):
         # Test path supplied that doesn't exist
 
-        non_existant_path = project._datashuttle_path / "fake.file"
+        non_existent_path = project._datashuttle_path / "fake.file"
 
         with pytest.raises(FileNotFoundError) as e:
-            project.supply_config_file(non_existant_path, warn=False)
+            project.supply_config_file(non_existent_path, warn=False)
 
-        assert str(e.value) == f"No file found at: {non_existant_path}."
+        assert str(e.value) == f"No file found at: {non_existent_path}."
 
         # Test non-yaml file supplied
         wrong_filetype_path = project._datashuttle_path / "file.yuml"

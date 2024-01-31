@@ -50,9 +50,6 @@ def validate_list_of_names(
     log: bool
         If `True`, output will also be logged to "datashuttle" logger.
 
-    name_templates : Dict
-        e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
-
     TODO: this is potentially slow because each function loops over
     the whole list. I'd imagine it would be faster to loop once
     over and pass each name to the sub-function individually.
@@ -61,7 +58,7 @@ def validate_list_of_names(
         return
 
     tests_to_run = [
-        lambda: name_beings_with_bad_key(names_list, prefix),
+        lambda: name_begins_with_bad_key(names_list, prefix),
         lambda: names_include_spaces(names_list),
         lambda: dashes_and_underscore_alternate_incorrectly(names_list),
         lambda: value_lengths_are_inconsistent(names_list, prefix),
@@ -82,8 +79,8 @@ def names_dont_match_templates(
     name_templates: Optional[Dict] = None,
 ) -> Tuple[bool, str]:
     """
-    Test a list of subject or session names against the respective `name_templates`,
-    a regexp template.
+    Test a list of subject or session names against
+    the respective `name_templates`, a regexp template.
 
     If checking `name_templates` is on, an invalid result will be given if the
     name does not re.fullmatch the regexp.
@@ -92,7 +89,10 @@ def names_dont_match_templates(
         return False, "No `names_template` dictionary passed."
 
     if name_templates["on"] is False:
-        return False, "Names templates is set to off and will not be checked."
+        return (
+            False,
+            "Names templates is set to off and " "will not be checked.",
+        )
 
     regexp = name_templates[prefix]
 
@@ -129,7 +129,7 @@ def get_names_format(bad_names):
     return f"{name_str_format}: {bad_names_format}"
 
 
-def name_beings_with_bad_key(
+def name_begins_with_bad_key(
     names_list: List[str], prefix: Literal["sub", "ses"]
 ) -> Tuple[bool, str]:
     """
@@ -196,10 +196,15 @@ def dashes_and_underscore_alternate_incorrectly(
             discrim[ele] for ele in name if ele in ["-", "_"]
         ]
 
-        if dashes_underscores[0] != 1 or name[-1] in discrim.keys():
-            bad_names.append(name)
+        underscore_dash_not_interleaved = any(
+            [ele == 0 for ele in utils.diff(dashes_underscores)]
+        )
 
-        elif any([ele == 0 for ele in utils.diff(dashes_underscores)]):
+        if (
+            (dashes_underscores[0] != 1)
+            or underscore_dash_not_interleaved
+            or (name[-1] in discrim.keys())
+        ):
             bad_names.append(name)
 
     if bad_names:

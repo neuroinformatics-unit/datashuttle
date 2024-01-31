@@ -11,12 +11,20 @@ get_canonical_configs()
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, List
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+    get_args,
+    get_origin,
+)
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
 from pathlib import Path
-from typing import Literal, Union, get_args, get_origin
 
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
@@ -31,8 +39,8 @@ def get_canonical_configs() -> dict:
         "local_path": Union[str, Path],
         "central_path": Union[str, Path],
         "connection_method": Literal["ssh", "local_filesystem"],
-        "central_host_id": Union[str, None],
-        "central_host_username": Union[str, None],
+        "central_host_id": Optional[str],
+        "central_host_username": Optional[str],
         "overwrite_old_files": bool,
         "transfer_verbosity": Literal["v", "vv"],
         "show_transfer_progress": bool,
@@ -70,7 +78,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     Central function for performing checks on a
     DataShuttle Configs UserDict class. This should
     be run after any change to the configs (e.g.
-    make_config_file, update_config_file(), supply_config_file).
+    make_config_file, update_config_file, supply_config_file).
 
     This will raise assert if condition is not met.
 
@@ -182,11 +190,11 @@ def check_folder_above_project_name_exists(config_dict: Configs) -> None:
     """
     Throw an error if the path above the project root does not exist.
     This validation is necessary (rather than simply
-    creating the passed folders) is to ensure the `local_path` or
+    creating the passed folders) to ensure the `local_path` or
     `central_path` are not accidentally set to a wrong
     location.
 
-    If the `connection_method` is "ssh" is it not possible to check the central
+    If the `connection_method` is "ssh" it is not possible to check the central
     path at this stage.
     """
 
@@ -201,7 +209,7 @@ def check_folder_above_project_name_exists(config_dict: Configs) -> None:
     if not (config_dict["local_path"].parent.is_dir()):
         if config_dict["connection_method"] == "ssh":
             extra_warning = (
-                "Also make sure the central_path`, is correct, as datashuttle "
+                "Also make sure the central_path` is correct, as datashuttle "
                 "cannot check it via SSH at this stage."
             )
         else:

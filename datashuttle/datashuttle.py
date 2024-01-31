@@ -627,8 +627,8 @@ class DataShuttle:
         on the local machine. Use get_config_path() to
         get the full path to the saved config file.
 
-        Use update_config_file() to update a single config, and
-        supply_config() to use an existing config file.
+        Use update_config_file() to selectively update settings, and
+        supply_config_file() to use an existing config file.
 
         Parameters
         ----------
@@ -830,7 +830,7 @@ class DataShuttle:
     def get_datashuttle_path(self) -> Path:
         """
         Get the path to the local datashuttle
-        folder where configs another other
+        folder where configs and other
         datashuttle files are stored.
         """
         return self._datashuttle_path
@@ -1000,9 +1000,26 @@ class DataShuttle:
         self, error_or_warn: Literal["error", "warn"], local_only: bool = False
     ) -> None:
         """
-        Perform validation on the project. Currently checks that
-        sub and ses values have the same length for all sub and
-        ses in the project.
+        Perform validation on the project. This checks the subject
+        and session level folders to ensure that:
+            - the digit lengths are consistent (e.g. 'sub-001'
+              with 'sub-02' is not allowed)
+            - 'sub-' or 'ses-' is the first key of the sub / ses names
+            - names do not include spaces
+            - names are checked against name templates (if set)
+            - no duplicate names exist across the project
+              (e.g. 'sub-001' and 'sub-001_date-1010120').
+
+        Parameters
+        ----------
+
+        error_or_warn : Literal["error", "warn"]
+            If "error", an exception is raised if validation fails. Otherwise,
+            warnings are shown.
+
+        local_only : bool
+            If `True`, only the local project is validated. Otherwise, both
+            local and central projects are validated.
         """
         self._start_log(
             "validate-project",
