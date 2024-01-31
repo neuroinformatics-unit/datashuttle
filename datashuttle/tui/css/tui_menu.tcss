@@ -111,7 +111,6 @@ ShowConfigsDialog {
 /* Light Mode Config Dialog */
 
 ShowConfigsDialog:light > #display_configs_top_container {
-    border: thick rgb(1, 138, 13);
     background: $background-darken-1;
     align: center middle;
  }
@@ -284,3 +283,43 @@ TemplateSettingsScreen {
 #template_settings_input:light:disabled {
     color: $panel-darken-2;
 }
+
+/* Confirmation Screen --------------------------------------------------------------------- */
+
+ConfirmScreen {
+    align: center middle;
+}
+
+#confirm_top_container {
+    align: center middle;
+    height: 15;
+    width: 65;
+    border: tall $accent;
+    background: $primary-background;
+ }
+
+#confirm_message_label {
+    align: center middle;
+    text-align: center;
+    overflow: hidden auto;
+    width: 65;
+    margin: 1 0 0 0;
+}
+
+#confirm_button_container {
+    align: center bottom;
+    height: 4;
+    margin: 0 0 0 0;
+}
+
+#confirm_button_container > Button {
+    height: 3;
+    content-align: center middle;
+}
+
+/* Light Mode Error Screen */
+
+ErrorScreen:light > #confirm_top_container {
+    border: tall $accent;
+    background: $boost;
+ }

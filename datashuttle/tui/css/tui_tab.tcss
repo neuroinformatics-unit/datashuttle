@@ -9,52 +9,10 @@ TabScreen > TabbedContent {
     height: 100%
 }
 
-/* Directory Tree ------------------------------------------------------------------- */
-
-#tabscreen_directorytree {
-    dock: left;
-    width: 45%;
-    padding: 1 2;
-    margin: 0 4 0 0;
-    border: tall wide $panel-lighten-1;
-}
-#tabscreen_directorytree:focus .tree--cursor {
-    background: $panel-lighten-2;
-}
-
-/* Light mode Directory Tree */
-
-#tabscreen_directorytree:light {
-    border: tall wide $panel-darken-3;
-    background: $boost;
-}
-
-#tabscreen_directorytree:light:focus .tree--cursor {
-    background: $panel-lighten-2;
-}
-
 /* Create Tab --------------------------------------------------------------------------- */
 
 #tabscreen_create_tab > Label {
     padding: 1 0 1 1;
-    text-style: bold;
-}
-
-#tabscreen_create_tab > DatatypeCheckboxes {
-    layout: grid;
-    grid-size: 2 2;
-    grid-columns: 15;
-    grid_rows: 3;
-    width: auto;
-    padding: 0 0 1 0;
-}
-
-CreateFoldersTab > Horizontal > Button{
-    width: 30%;
-}
-
-CreateFoldersTab > Horizontal{
-    align-horizontal: left;
 }
 
 #tabscreen_create_tab > Input.-valid {
@@ -69,7 +27,11 @@ CreateFoldersTab > Horizontal{
 }
 
 #tabscreen_create_tab > Input.-invalid:focus {
-    border: tall $error
+    border: tall $error;
+}
+
+#tabscreen_template_settings_button {
+    dock: right;
 }
 
 #template_settings_validation_on_checkbox.-on > .toggle--button{
@@ -82,4 +44,90 @@ CreateFoldersTab > Horizontal{
 
 #template_settings_validation_on_checkbox > .toggle--button{
     color: $error;
+}
+
+/* Transfer Tab --------------------------------------------------------------------------- */
+
+#transfer_radioset {
+    layout: horizontal;
+    background: transparent;
+}
+
+#transfer_radioset:focus {
+    border: transparent;
+}
+
+#transfer_radioset > RadioButton {
+    margin: 0 3 0 0;
+}
+
+#transfer_params_container {
+    border: solid $panel-lighten-1;
+    margin: 0 1 2 1;
+    padding: 0 0 0 2;
+    height: 60%;
+    overflow: hidden auto;
+    align: left top;
+}
+
+#transfer_params_container > Label {
+    padding: 1 0 1 1;
+    text-style: bold;
+    width: auto;
+    height: auto;
+}
+
+#transfer_params_container > Input {
+    width: 96%;
+}
+
+#transfer_params_container > Select {
+    width: 96%;
+}
+
+#transfer_switch > .switch--slider {
+    color: $success;
+}
+
+#transfer_switch_container {
+    width: auto;
+    height: auto;
+    align-vertical: middle;
+    margin: 0 0 0 2;
+}
+
+#transfer_switch_container > Label{
+    margin: 1 0 0 0;
+}
+
+#transfer_button_container {
+    align-horizontal: right;
+    height: auto;
+}
+
+TransferStatusTree {
+    padding: 1 2 3 2;
+}
+
+#transfer_legend {
+    layer: top;
+    dock: left;
+    align-vertical: bottom;
+    background: $primary-background-darken-1;
+    width: auto;
+    margin: 2 2;
+}
+
+Tooltip {
+    outline: solid $panel-lighten-1;
+}
+
+/* Light mode */
+
+#transfer_params_container:light {
+    border: solid black;
+}
+
+#transfer_transfer_button {
+    margin: 0 0 0 4;
 }
