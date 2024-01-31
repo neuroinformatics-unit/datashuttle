@@ -3,7 +3,6 @@ from pathlib import Path
 import yaml
 from showinfm import show_in_file_manager
 from textual.app import App
-from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import (
     Button,
@@ -38,10 +37,6 @@ class TuiApp(App):
 
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
-
-    BINDINGS = [
-        Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
-    ]
 
     def compose(self):
         yield Container(
