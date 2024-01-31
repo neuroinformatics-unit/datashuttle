@@ -12,6 +12,7 @@ from textual.widgets import (
 )
 
 
+# TODO: need to do some renaming to distinguish template settings vs. general create settings
 class TemplateSettingsScreen(ModalScreen):
     """
     This screen handles setting datashuttle's `name_template`'s.
@@ -54,7 +55,14 @@ class TemplateSettingsScreen(ModalScreen):
         Visit the [@click=screen.link_docs()]Documentation[/] for more information.
         """
 
+        bypass_validation = self.project.get_bypass_validation()
+
         yield Container(
+            Checkbox(
+                "Bypass validation",
+                value=bypass_validation,
+                id="create_settings_bypass_validation_checkbox",
+            ),
             Horizontal(
                 Checkbox(
                     "Template Validation",
@@ -107,16 +115,26 @@ class TemplateSettingsScreen(ModalScreen):
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "template_sessions_close_button":
             self.dismiss(self.templates)
+        elif event.button.id == "create_settings_bypass_validation_button":
+            self.project.set_bypass_validation(on=False)
 
-    def on_checkbox_changed(self, message):
+    def on_checkbox_changed(self, event):
         """
         Turn `name_templates` on or off and update the TUI accordingly.
         """
-        is_on = message.value
+        is_on = event.value
 
-        self.templates["on"] = is_on
-        self.project.set_name_templates(self.templates)
-        self.set_disabled_mode_widgets()
+        if event.checkbox.id == "template_settings_validation_on_checkbox":
+            self.templates["on"] = is_on
+            self.project.set_name_templates(self.templates)
+            self.set_disabled_mode_widgets()
+
+        elif event.checkbox.id == "create_settings_bypass_validation_checkbox":
+            self.project.set_bypass_validation(on=is_on)
+            self.query_one("#template_inner_container").disabled = is_on
+            self.query_one(
+                "#template_settings_validation_on_checkbox"
+            ).disabled = is_on
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """

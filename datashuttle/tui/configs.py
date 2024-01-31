@@ -133,7 +133,8 @@ class ConfigsContent(Container):
                     "documentation. Once configs are set, you will "
                     "be able\nto use the 'Create' and 'Transfer' tabs.",
                     id="configs_info_label",
-                )
+                ),
+                id="configs_info_label_container",
             ),
             Label("Project Name", id="configs_name_label"),
             ClickableInput(

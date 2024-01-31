@@ -134,6 +134,10 @@ MessageBox:light > #messagebox_top_container {
     height: 5;
 }
 
+#configs_info_label_container {
+    align: center top;
+}
+
 #configs_info_label {
     align: center middle;
     text-align: center;

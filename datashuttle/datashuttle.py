@@ -235,14 +235,15 @@ class DataShuttle:
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
         name_templates = self.get_name_templates()
+        bypass_validation = self.get_bypass_validation()
 
         sub_names = formatting.check_and_format_names(
-            sub_names, "sub", name_templates
+            sub_names, "sub", name_templates, bypass_validation
         )
 
         if ses_names is not None:
             ses_names = formatting.check_and_format_names(
-                ses_names, "ses", name_templates
+                ses_names, "ses", name_templates, bypass_validation
             )
         else:
             ses_names = []
@@ -252,14 +253,15 @@ class DataShuttle:
             [sub_names, ses_names],
         )
 
-        validation.validate_names_against_project(
-            self.cfg,
-            sub_names,
-            ses_names,
-            local_only=True,
-            error_or_warn="error",
-            name_templates=name_templates,
-        )
+        if not bypass_validation:
+            validation.validate_names_against_project(
+                self.cfg,
+                sub_names,
+                ses_names,
+                local_only=True,
+                error_or_warn="error",
+                name_templates=name_templates,
+            )
 
         utils.log("\nMaking folders...")
         folders.make_folder_trees(
@@ -972,6 +974,17 @@ class DataShuttle:
         """
         self._update_persistent_setting("name_templates", new_name_templates)
 
+    def set_bypass_validation(self, on):
+        self._update_persistent_setting(
+            "bypass_validation", on
+        )  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+
+    def get_bypass_validation(
+        self,
+    ):  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+        settings = self._load_persistent_settings()
+        return settings["bypass_validation"]
+
     # -------------------------------------------------------------------------
     # Showers
     # -------------------------------------------------------------------------
@@ -1286,6 +1299,9 @@ class DataShuttle:
 
         if "tui" not in settings:
             settings.update(canonical_configs.get_tui_config_defaults())
+
+        if "bypass_validation" not in settings:
+            settings.update(canonical_configs.get_validation_defaults())
 
     @check_configs_set
     def _display_top_level_folder(self) -> None:

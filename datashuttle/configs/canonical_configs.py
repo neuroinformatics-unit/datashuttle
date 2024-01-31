@@ -309,6 +309,10 @@ def get_name_templates_defaults() -> Dict:
     return {"name_templates": {"on": False, "sub": None, "ses": None}}
 
 
+def get_validation_defaults() -> Dict:
+    return {"bypass_validation": False}
+
+
 def get_persistent_settings_defaults() -> Dict:
     """
     Persistent settings are settings that are maintained

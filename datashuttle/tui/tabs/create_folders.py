@@ -65,7 +65,8 @@ class CreateFoldersTab(TreeAndInputTab):
         yield Horizontal(
             Button("Make Folders", id="tabscreen_make_folder_button"),
             Button(
-                "Template Settings", id="tabscreen_template_settings_button"
+                "Settings",
+                id="tabscreen_template_settings_button",  # TODO: rename tabscreen here
             ),
         )
 
