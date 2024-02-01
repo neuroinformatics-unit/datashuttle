@@ -217,9 +217,9 @@ config label and button align center */
 }
 
 
-/* TemplateSettingsScreen --------------------------------------------------------------- */
+/* CreateFoldersSettingsScreen --------------------------------------------------------------- */
 
-TemplateSettingsScreen {
+CreateFoldersSettingsScreen {
     align: center middle;
 }
 
@@ -287,7 +287,7 @@ TemplateSettingsScreen {
     color: $panel-lighten-3;
 }
 
-/* TemplateSettingsScreen Light Mode */
+/* CreateFoldersSettingsScreen Light Mode */
 
 #template_top_container:light {
     border: tall $panel-darken-3;

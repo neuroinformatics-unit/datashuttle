@@ -35,8 +35,6 @@ class CreateFoldersTab(TreeAndInputTab):
 
         self.prev_click_time = 0.0
 
-        self.templates = self.interface.project.get_name_templates()  # TODO!
-
     def compose(self):
         yield CustomDirectoryTree(
             self.mainwindow,
@@ -73,6 +71,9 @@ class CreateFoldersTab(TreeAndInputTab):
         """
         Enables the Make Folders button to read out current input values
         and use these to call project.create_folders().
+
+        `unused_bool` is necessary to get dismiss to call
+        the callback.
         """
         if event.button.id == "create_folders_make_button":
             self.create_folders()
@@ -80,7 +81,7 @@ class CreateFoldersTab(TreeAndInputTab):
         elif event.button.id == "create_folders_settings_button":
             self.mainwindow.push_screen(
                 CreateFoldersSettingsScreen(self.mainwindow, self.interface),
-                self.update_templates,
+                lambda unused_bool: self.revalidate_inputs(["sub", "ses"]),
             )
 
     @require_double_click
@@ -122,17 +123,23 @@ class CreateFoldersTab(TreeAndInputTab):
 
     def fill_input_with_template(self, prefix, input_id):
         """
-        Given the `name_template` stored in `self.templates`,
-        fill the sub or ses Input with the template (based on `prefix`).
+        Given the `name_template`, fill the sub or ses
+        Input with the template (based on `prefix`).
         If `self.templates` is off, then just suggest "sub-" or "ses-".
         """
-        if self.templates["on"] and self.templates[prefix] is not None:
-            fill_value = self.templates[prefix]
+        if self.templates_on(prefix):
+            fill_value = self.interface.get_templates()[prefix]
         else:
             fill_value = f"{prefix}-"
 
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
+
+    def templates_on(self, prefix):
+        return (
+            self.interface.get_templates()["on"]
+            and self.interface.get_templates()[prefix] is not None
+        )
 
     # Validation
     # ----------------------------------------------------------------------------------
@@ -165,14 +172,13 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(id)
         input.tooltip = message
 
-    def update_templates(self, templates):
-        """
-        Update the datashuttle name templates. This is a callback
-        function which is called within the Template Settings screen.
-        """
-        self.interface.project.set_name_templates(templates)
-        self.templates = templates
-        self.revalidate_inputs(["sub", "ses"])
+    #   def update_templates(self, templates):
+    #      """
+    #     Update the datashuttle name templates. This is a callback
+    #    function which is called within the Template Settings screen.
+    #   """
+    #  self.interface.set_name_templates(templates)
+    # self.revalidate_inputs(["sub", "ses"])
 
     # ----------------------------------------------------------------------------------
     # Datashuttle Callers
@@ -243,8 +249,8 @@ class CreateFoldersTab(TreeAndInputTab):
             next_val = self.interface.project.get_next_ses_number(  # TODO # TODO # TODO # TODO # TODO # TODO
                 sub, return_with_prefix=True, local_only=True
             )
-        if self.templates["on"] and self.templates[prefix] is not None:
-            split_name = self.templates[prefix].split("_")
+        if self.templates_on(prefix):
+            split_name = self.interface.get_templates()[prefix].split("_")
             fill_value = "_".join([next_val, *split_name[1:]])
         else:
             fill_value = next_val
@@ -294,7 +300,6 @@ class CreateFoldersTab(TreeAndInputTab):
         success, output = self.interface.validate_names(
             sub_names,
             ses_names,
-            self.templates,  # COULD HANDLE TEMPLATES CENTRALLY! # COULD HANDLE TEMPLATES CENTRALLY! # COULD HANDLE TEMPLATES CENTRALLY! # COULD HANDLE TEMPLATES CENTRALLY!
         )
 
         if not success:

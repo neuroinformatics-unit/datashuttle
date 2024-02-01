@@ -14,7 +14,7 @@ from textual.widgets import (
 from datashuttle.tui.custom_widgets import TopLevelFolderSelect
 
 
-class CreateFoldersSettingsScreen(ModalScreen):
+class CreateFoldersSettingsScreen(ModalScreen):  # TODO: DOC!
     """
     This screen handles setting datashuttle's `name_template`'s, as well
     as the top-level-folder select and option to bypass all validation.
@@ -41,9 +41,11 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.input_mode = "sub"
         self.interface = interface
 
-        self.templates = (
-            self.interface.project.get_name_templates()
-        )  # TODO TODO TODO TODO NAME TEMPLATES # TODO TODO TODO TODO NAME TEMPLATES # TODO TODO TODO TODO NAME TEMPLATES
+        # TODO: doc...
+        self.input_values = {
+            "sub": "",
+            "ses": "",
+        }
 
     def action_link_docs(self) -> None:
         webbrowser.open("https://datashuttle.neuroinformatics.dev/")
@@ -84,7 +86,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
                     Checkbox(
                         "Template Validation",
                         id="template_settings_validation_on_checkbox",
-                        value=self.templates["on"],
+                        value=self.interface.get_name_templates()["on"],
                     ),
                     id="template_inner_horizontal_container",
                 ),
@@ -117,25 +119,51 @@ class CreateFoldersSettingsScreen(ModalScreen):
         )
 
     def on_mount(self):
+        self.init_input_values_holding_variable()
         self.fill_input_from_template()
-        self.set_disabled_mode_widgets()
+        self.switch_template_container_disabled()
 
-    def set_disabled_mode_widgets(self):
-        """
-        When `self.templates["on"]` is `False`, all
-        template widgets are disabled.
-        """
-        self.query_one("#template_inner_container").disabled = (
-            not self.templates["on"]
-        )
+    def init_input_values_holding_variable(self):
+        name_templates = self.interface.get_name_templates()
+        self.input_values["sub"] = name_templates["sub"]
+        self.input_values["ses"] = name_templates["ses"]
+
+    def switch_template_container_disabled(self):
+        is_on = self.query_one(
+            "#template_settings_validation_on_checkbox"
+        ).value
+        self.query_one("#template_inner_container").disabled = not is_on
+
+    def fill_input_from_template(self):
+        """TODO: explain, bit confusing because single Input is shared"""
+        input = self.query_one("#template_settings_input")
+        value = self.input_values[self.input_mode]
+
+        if value is None:
+            input.value = ""
+            input.placeholder = f"{self.input_mode}-"
+        else:
+            input.value = value
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "create_folders_settings_close_button":
-            self.dismiss(self.templates)
+            self.interface.set_name_templates(
+                self.make_name_templates_from_widgets()
+            )
+            self.dismiss(True)
         elif event.button.id == "create_settings_bypass_validation_button":
             self.interface.project.set_bypass_validation(
                 on=False
             )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
+
+    def make_name_templates_from_widgets(self):
+        return {
+            "on": self.query_one(
+                "#template_settings_validation_on_checkbox"
+            ).value,
+            "sub": self.input_values["sub"],
+            "ses": self.input_values["ses"],
+        }
 
     def on_checkbox_changed(self, event):
         """
@@ -144,19 +172,16 @@ class CreateFoldersSettingsScreen(ModalScreen):
         is_on = event.value
 
         if event.checkbox.id == "template_settings_validation_on_checkbox":
-            self.templates["on"] = is_on
-            self.interface.project.set_name_templates(
-                self.templates
-            )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
-            self.set_disabled_mode_widgets()
+            self.switch_template_container_disabled()
 
         elif (
             event.checkbox.id
             == "create_folders_settings_bypass_validation_checkbox"
         ):
-            self.interface.project.set_bypass_validation(
+            self.interface.project.set_bypass_validation(  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
                 on=is_on
-            )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
+            )
+
             self.query_one(
                 "#template_settings_validation_on_checkbox"
             ).disabled = is_on
@@ -184,13 +209,4 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     def on_input_changed(self, message: Input.Changed) -> None:
         if message.input.id == "template_settings_input":
-            self.templates[self.input_mode] = message.value
-
-    def fill_input_from_template(self):
-        input = self.query_one("#template_settings_input")
-        value = self.templates[self.input_mode]
-
-        if value is None:
-            input.placeholder = f"{self.input_mode}-"
-        else:
-            input.value = value
+            self.input_values[self.input_mode] = message.value

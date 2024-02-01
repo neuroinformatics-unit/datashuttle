@@ -19,6 +19,7 @@ class DsInterface:
     def __init__(self):
 
         self.project: App
+        self.name_templates: Optional[str] = None
 
     def select_existing_project(self, project_name: str) -> Output:
 
@@ -81,17 +82,17 @@ class DsInterface:
             return False, str(e)
 
     def validate_names(
-        self, sub_names: List[str], ses_names: List[str], templates: Dict
+        self, sub_names: List[str], ses_names: List[str]
     ) -> Output:
         """"""
         try:
             format_sub = formatting.check_and_format_names(
-                sub_names, "sub", name_templates=templates
+                sub_names, "sub", name_templates=self.get_name_templates()
             )
 
             if ses_names is not None:
                 format_ses = formatting.check_and_format_names(
-                    ses_names, "ses", name_templates=templates
+                    ses_names, "ses", name_templates=self.get_name_templates()
                 )
             else:
                 format_ses = None
@@ -103,7 +104,7 @@ class DsInterface:
                 local_only=True,
                 error_or_warn="error",
                 log=False,
-                name_templates=templates,
+                name_templates=self.get_name_templates(),
             )
 
             return True, {
@@ -181,6 +182,20 @@ class DsInterface:
 
             self.project.set_top_level_folder(temp_top_level_folder)
             return False, str(e)
+
+    # Setup SSH
+    # ----------------------------------------------------------------------------------
+
+    def get_name_templates(self):  # TODO: figure out initialisation
+        # Hold in a var to stop file read every time this is called.
+        if self.name_templates is None:
+            self.name_templates = self.project.get_name_templates()
+
+        return self.name_templates  # TODO: handle properly
+
+    def set_name_templates(self, templates):
+        self.name_templates = templates
+        self.project.set_name_templates(templates)
 
     # Setup SSH
     # ----------------------------------------------------------------------------------
