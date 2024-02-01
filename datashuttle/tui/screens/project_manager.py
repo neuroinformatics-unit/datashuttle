@@ -96,8 +96,8 @@ class ProjectManagerScreen(Screen):
         shows the central path it will have to be updated.
         """
         self.query_one("#tabscreen_create_tab").update_directorytree_root(
-            self.interface.project.cfg["local_path"]
+            self.interface.get_configs()["local_path"]
         )
         self.query_one("#tabscreen_transfer_tab").update_directorytree_root(
-            self.interface.project.cfg["local_path"]
+            self.interface.get_configs()["local_path"]
         )

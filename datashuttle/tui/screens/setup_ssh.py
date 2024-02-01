@@ -133,7 +133,7 @@ class SetupSshScreen(ModalScreen):
         else:
             message = (
                 f"Could not store host key. Check permissions "
-                f"to: \n\n {self.interface.project.cfg.hostkeys_path}.\n\n Traceback: {output}"
+                f"to: \n\n {self.interface.get_configs().hostkeys_path}.\n\n Traceback: {output}"
             )
             self.query_one("#setup_ssh_ok_button").disabled = True
 
@@ -155,7 +155,7 @@ class SetupSshScreen(ModalScreen):
         if success:
             message = (
                 f"Connection successful! SSH key "
-                f"saved to {self.interface.project.cfg.ssh_key_path}"
+                f"saved to {self.interface.get_configs().ssh_key_path}"
             )
             self.query_one("#setup_ssh_ok_button").label = "Finish"
             self.query_one("#setup_ssh_cancel_button").disabled = True

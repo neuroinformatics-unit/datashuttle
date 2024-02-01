@@ -532,10 +532,3 @@ class TopLevelFolderSelect(Select):
         self.interface.update_tui_settings(
             top_level_folder, "top_level_folder_select", self.settings_key
         )
-
-
-#      persistent_settings = self.project._load_persistent_settings()
-
-#     persistent_settings["tui"]["top_level_folder_select"][self.settings_key] = top_level_folder
-
-#    self.project._save_persistent_settings(persistent_settings)
