@@ -12,7 +12,7 @@ class ProjectSelectorScreen(Screen):
     projects present on the local system.
 
     `self.dismiss()` returns an initialised project if initialisation
-    was successful. Otherwise, in case "Main Menu` button is pressed,
+    was successful. Otherwise, in case `Main Menu` button is pressed,
     returns None to return without effect to the main menu.,
 
     Parameters

@@ -83,6 +83,8 @@ class ConfirmScreen(ModalScreen):
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
+    """ """
+
     def __init__(self, mainwindow, path_=None):
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
