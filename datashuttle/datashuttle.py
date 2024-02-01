@@ -710,7 +710,6 @@ class DataShuttle:
 
         cfg.setup_after_load()  # will raise error if fails
         self.cfg = cfg
-        #   if self.cfg:
 
         self.cfg.dump_to_file()
 
