@@ -176,7 +176,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.print_message_to_user(
             f"Making project folder at: {config_dict['local_path']}"
         )
-        folders.make_folders(config_dict["local_path"])
+        folders.create_folders(config_dict["local_path"])
 
     except OSError:
         utils.log_and_raise_error(

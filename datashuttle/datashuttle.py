@@ -97,7 +97,7 @@ class DataShuttle:
             self._temp_log_path,
         ) = canonical_folders.get_project_datashuttle_path(self.project_name)
 
-        folders.make_folders([self._datashuttle_path, self._temp_log_path])
+        folders.create_folders([self._datashuttle_path, self._temp_log_path])
 
         self._config_path = self._datashuttle_path / "config.yaml"
 
@@ -142,7 +142,7 @@ class DataShuttle:
         Set the working top level folder (e.g. 'rawdata', 'derivatives').
 
         The top_level_folder defines in which top level folder new
-        sub-folders will be made (e.g. make_folders) or at which level
+        sub-folders will be made (e.g. create_folders) or at which level
         folders  are transferred with the commands upload / download
         and upload_all / download all.
 
@@ -167,7 +167,7 @@ class DataShuttle:
         self._display_top_level_folder()
 
     @check_configs_set
-    def make_folders(
+    def create_folders(
         self,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]] = None,
@@ -221,13 +221,13 @@ class DataShuttle:
 
         Examples
         --------
-        project.make_folders("sub-001", datatype="all")
+        project.create_folders("sub-001", datatype="all")
 
-        project.make_folders("sub-002@TO@005",
+        project.create_folders("sub-002@TO@005",
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make-folders", local_vars=locals())
+        self._start_log("create-folders", local_vars=locals())
 
         self._display_top_level_folder()
 
@@ -264,7 +264,7 @@ class DataShuttle:
             )
 
         utils.log("\nMaking folders...")
-        folders.make_folder_trees(
+        folders.create_folder_trees(
             self.cfg,
             sub_names,
             ses_names,
@@ -319,7 +319,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         datatype :
-            see make_folders()
+            see create_folders()
 
         init_log :
             (Optional). Whether to start the logger. This should
@@ -862,7 +862,7 @@ class DataShuttle:
         'rawdata', 'derivatives')
 
         The top_level_folder defines in which top level folder new
-        sub-folders will be made (e.g. make_folders) or
+        sub-folders will be made (e.g. create_folders) or
         at which level folders are transferred with the commands
         upload / download and upload_all / download all.
         upload_specific_folder_or_file / download_specific_folder_or_file.
@@ -1056,7 +1056,7 @@ class DataShuttle:
     ) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to make_folders() or upload()
+        for example as when passed to create_folders() or upload()
         or download()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
@@ -1214,7 +1214,7 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        folders.make_folders(self.cfg.project_metadata_path, log=False)
+        folders.create_folders(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_central_ssh_config(self, log: bool) -> None:
         rclone.setup_central_as_rclone_target(

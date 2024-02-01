@@ -153,12 +153,12 @@ class TestLogging:
             in log
         )
 
-    def test_make_folders(self, project):
+    def test_create_folders(self, project):
         subs = ["sub-111", f"sub-002{tags('to')}004"]
 
         ses = ["ses-123", "ses-101"]
 
-        project.make_folders(subs, ses, datatype="all")
+        project.create_folders(subs, ses, datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -476,13 +476,13 @@ class TestLogging:
             in log
         )
 
-    def test_logs_bad_make_folders_error(self, project):
+    def test_logs_bad_create_folders_error(self, project):
         """"""
-        project.make_folders("sub-001", datatype="all")
+        project.create_folders("sub-001", datatype="all")
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(NeuroBlueprintError):
-            project.make_folders(
+            project.create_folders(
                 "sub-001_datetime-123213T123122", datatype="all"
             )
         log = self.read_log_file(project.cfg.logging_path)
@@ -499,7 +499,7 @@ class TestLogging:
         and warnings to file.
         """
         # Make conflicting subject folders
-        project.make_folders(["sub-001", "sub-002"])
+        project.create_folders(["sub-001", "sub-002"])
         for sub in ["sub-1", "sub-002_date-2023"]:
             os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
 
@@ -532,11 +532,11 @@ class TestLogging:
         `make_project_folders` is called, that it logs errors
         to file. Warnings are not tested.
         """
-        project.make_folders("sub-001")
+        project.create_folders("sub-001")
         self.delete_log_files(project.cfg.logging_path)  #
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-001_id-a")
+            project.create_folders("sub-001_id-a")
 
         log = self.read_log_file(project.cfg.logging_path)
 

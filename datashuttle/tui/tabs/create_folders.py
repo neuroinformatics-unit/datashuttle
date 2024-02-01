@@ -82,7 +82,7 @@ class CreateFoldersTab(TreeAndInputTab):
     def on_button_pressed(self, event: Button.Pressed):
         """
         Enables the Make Folders button to read out current input values
-        and use these to call project.make_folders().
+        and use these to call project.create_folders().
         """
         if event.button.id == "tabscreen_make_folder_button":
             self.create_folders()
@@ -192,7 +192,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         try:
             self.project.set_top_level_folder(top_level_folder)
-            self.project.make_folders(
+            self.project.create_folders(
                 sub_names=sub_names, ses_names=ses_names, datatype=datatype
             )
             self.reload_directorytree()
@@ -272,7 +272,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         TODO
         ----
-        This basically mirrors the validation done in `make_folders()`.
+        This basically mirrors the validation done in `create_folders()`.
         There is scope for divergence in the logic of these two pathways.
         This can be resolved by carefully testing their outputs or
         ensuring the same code is used underlying both. It is close

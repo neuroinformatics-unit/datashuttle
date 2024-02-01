@@ -219,7 +219,7 @@ class ConfigsContent(Container):
     def on_button_pressed(self, event: Button.Pressed):
         """
         Enables the Make Folders button to read out current input values
-        and use these to call project.make_folders().
+        and use these to call project.create_folders().
         """
         if event.button.id == "configs_set_configs_button":
             if not self.project:

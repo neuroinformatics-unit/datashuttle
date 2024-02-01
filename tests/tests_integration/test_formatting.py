@@ -64,7 +64,7 @@ class TestFormatting(BaseTest):
         ]
 
     def test_warning_non_consecutive_numbers(self, project):
-        project.make_folders(
+        project.create_folders(
             ["sub-01", "sub-02", "sub-04"], ["ses-05", "ses-10"]
         )
 

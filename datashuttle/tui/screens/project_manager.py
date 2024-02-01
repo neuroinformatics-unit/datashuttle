@@ -17,7 +17,7 @@ class ProjectManagerScreen(Screen):
     the primary screen within which the user interacts with
     a pre-configured project.
 
-    The 'Create' tab interacts with Datashuttle's `make_folders()`
+    The 'Create' tab interacts with Datashuttle's `create_folders()`
     method to create new project folders.
 
     The 'Transfer' tab, which handles data upload and download between
