@@ -127,9 +127,9 @@ class TransferTab(TreeAndInputTab):
             yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self):
-        self.query_one(
-            "#transfer_params_container"
-        ).border_title = "Parameters"
+        self.query_one("#transfer_params_container").border_title = (
+            "Parameters"
+        )
         self.switch_transfer_widgets_display()
 
         if self.show_legend:

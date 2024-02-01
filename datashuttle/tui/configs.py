@@ -198,12 +198,12 @@ class ConfigsContent(Container):
         """
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
-        self.query_one(
-            "#configs_central_path_select_button"
-        ).disabled = display_bool
-        self.query_one(
-            "#configs_setup_ssh_connection_button"
-        ).disabled = not display_bool
+        self.query_one("#configs_central_path_select_button").disabled = (
+            display_bool
+        )
+        self.query_one("#configs_setup_ssh_connection_button").disabled = (
+            not display_bool
+        )
 
         if not self.query_one("#configs_central_path_input").value:
             if display_bool:
@@ -212,9 +212,9 @@ class ConfigsContent(Container):
                 )
             else:
                 placeholder = f"e.g. {self.central_input_placeholder_paths['filesystem']}"
-            self.query_one(
-                "#configs_central_path_input"
-            ).placeholder = placeholder
+            self.query_one("#configs_central_path_input").placeholder = (
+                placeholder
+            )
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -252,13 +252,13 @@ class ConfigsContent(Container):
             return
 
         if local_or_central == "local":
-            self.query_one(
-                "#configs_local_path_input"
-            ).value = path_.as_posix()
+            self.query_one("#configs_local_path_input").value = (
+                path_.as_posix()
+            )
         elif local_or_central == "central":
-            self.query_one(
-                "#configs_central_path_input"
-            ).value = path_.as_posix()
+            self.query_one("#configs_central_path_input").value = (
+                path_.as_posix()
+            )
 
     def setup_ssh_connection(self):
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
