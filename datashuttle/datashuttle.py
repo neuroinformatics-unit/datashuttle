@@ -693,7 +693,7 @@ class DataShuttle:
                 "Use `update-config-file` to selectively update settings."
             )
 
-        self.cfg = Configs(
+        cfg = Configs(
             self.project_name,
             self._config_path,
             {
@@ -708,10 +708,11 @@ class DataShuttle:
             },
         )
 
-        self.cfg.setup_after_load()  # will raise error if fails
+        cfg.setup_after_load()  # will raise error if fails
+        self.cfg = cfg
+        #   if self.cfg:
 
-        if self.cfg:
-            self.cfg.dump_to_file()
+        self.cfg.dump_to_file()
 
         self._set_attributes_after_config_load()
 
@@ -972,6 +973,16 @@ class DataShuttle:
             where "sub" or "ses" can be a regexp that subject and session
             names respectively are validated against.
         """
+        if new_name_templates["on"] and None in [
+            new_name_templates["sub"],
+            new_name_templates["ses"],
+        ]:
+            utils.log_and_raise_error(
+                "Subject and session name templates must be set"
+                "if `new_name_templates['on'] is `True`",
+                ValueError,
+            )
+
         self._update_persistent_setting("name_templates", new_name_templates)
 
     def set_bypass_validation(self, on):
