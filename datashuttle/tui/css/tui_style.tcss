@@ -73,7 +73,7 @@ CustomDirectoryTree:light:focus .tree--cursor {
 /* Could not figure out how to selectively override dock by CustomDirectoryTree that do not
 want to dock left */
 
-#tabscreen_directorytree {
+#create_folders_directorytree {
     dock: left;
 }
 #transfer_directorytree {

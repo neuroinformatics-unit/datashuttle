@@ -83,7 +83,22 @@ class ConfirmScreen(ModalScreen):
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
-    """ """
+    """
+    A modal screen that includes a DirectoryTree to browse
+    and select folders. If a folder is double-clicked,
+    the path to the folder is returned through 'dismiss'
+    callback mechanism.
+
+    Parameters
+    ----------
+
+    mainwindow : App
+        Textual main app screen
+
+    path_ : Optional[Path]
+        Path to use as the DirectoryTree root,
+        if `None` set to the system user home.
+    """
 
     def __init__(self, mainwindow, path_=None):
         super(SelectDirectoryTreeScreen, self).__init__()

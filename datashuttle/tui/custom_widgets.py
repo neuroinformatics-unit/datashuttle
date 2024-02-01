@@ -451,6 +451,31 @@ class TreeAndInputTab(TabPane):
 
 
 class TopLevelFolderSelect(Select):
+    """
+    A Select widget for display and updating of top-level-folders. The
+    Create tab and transfer tabs (custom, top-level-folder) all have
+    top level folder selects that perform the same function. This
+    widget unifies these in a single place.
+
+    When updated,the status of the widget is stored in the persistent_settings "tui"
+    value specific to the select widget. When folders a made / transferred,
+    the top-level folder to use is read from the settings.
+
+    Parameters
+    ----------
+
+    project : DataShuttle
+        Current datashuttle project instance
+
+    existing_only : bool
+        If `True`, only top level folders that actually exist in the
+        project are displayed. Otherwise, all possible canonical
+        top-level-folders are displayed.
+
+    id : str
+        Textualize widget id
+    """
+
     def __init__(self, project, existing_only, id):
         self.project = project
 
@@ -466,7 +491,7 @@ class TopLevelFolderSelect(Select):
                 if (self.project.get_local_path() / folders_tuple[0]).exists()
             ]
 
-        if id == "tabscreen_toplevel_select":
+        if id == "create_folders_settings_toplevel_select":
             self.settings_key = "create_tab"
         elif id == "transfer_toplevel_select":
             self.settings_key = "toplevel_transfer"
@@ -485,10 +510,18 @@ class TopLevelFolderSelect(Select):
         )
 
     def get_displayed_top_level_folder(self):
+        """
+        Get the top level folder that is currently selected
+        on the select widget.
+        """
         assert self.value in canonical_folders.get_top_level_folders()
         return self.value
 
     def get_top_level_folder_from_file(self):
+        """
+        Get the top level folder for this Select widget
+        as stored in `persistent settings`.
+        """
         persistent_settings = self.project._load_persistent_settings()
         top_level_folder = persistent_settings["tui"][
             "top_level_folder_select"
@@ -496,13 +529,20 @@ class TopLevelFolderSelect(Select):
         return top_level_folder
 
     def get_top_level_folder(self):
+        """
+        Get the top level folder from `persistent settings`,
+        performing a confidence-check that it matches the textual display.
+        """
         top_level_folder = self.get_top_level_folder_from_file()
         assert (
             top_level_folder == self.get_displayed_top_level_folder()
-        ), "config and widget should never be out of sync."  # TODO: should be tested in a dedicated unit test.
+        ), "config and widget should never be out of sync."
         return top_level_folder
 
     def on_select_changed(self, event):
+        """
+        When the select is changed, update the linked persistent setting.
+        """
         top_level_folder = event.value
         persistent_settings = self.project._load_persistent_settings()
         persistent_settings["tui"]["top_level_folder_select"][

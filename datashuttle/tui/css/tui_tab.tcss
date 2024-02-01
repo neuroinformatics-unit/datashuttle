@@ -30,7 +30,7 @@ TabScreen > TabbedContent {
     border: tall $error;
 }
 
-#tabscreen_template_settings_button {
+#create_folders_settings_button {
     dock: right;
 }
 

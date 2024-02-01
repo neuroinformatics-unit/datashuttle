@@ -94,6 +94,10 @@ class TuiApp(App):
         self.push_screen(modal_dialogs.MessageBox(message, border_color="red"))
 
     def handle_open_filesystem_browser(self, path_):
+        """
+        Open the system file browser to the path with the `showinfm`
+        package, performing checks that the path exists prior to opening.
+        """
         if not path_.exists():
             self.show_modal_error_dialog(
                 f"{path_.as_posix()} cannot be opened as it "

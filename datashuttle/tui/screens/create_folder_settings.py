@@ -14,10 +14,13 @@ from textual.widgets import (
 from datashuttle.tui.custom_widgets import TopLevelFolderSelect
 
 
-# TODO: need to do some renaming to distinguish template settings vs. general create settings
-class TemplateSettingsScreen(ModalScreen):
+class CreateFoldersSettingsScreen(ModalScreen):
     """
-    This screen handles setting datashuttle's `name_template`'s.
+    This screen handles setting datashuttle's `name_template`'s, as well
+    as the top-level-folder select and option to bypass all validation.
+
+    Name Templates
+    --------------
     These are regexp templates that can be validated against
     during folder creation / project validation.
 
@@ -29,10 +32,10 @@ class TemplateSettingsScreen(ModalScreen):
     of this screen.
     """
 
-    TITLE = "Template Settings"
+    TITLE = "Create Folders Settings"
 
     def __init__(self, mainwindow, project):
-        super(TemplateSettingsScreen, self).__init__()
+        super(CreateFoldersSettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
         self.input_mode = "sub"
@@ -65,13 +68,13 @@ class TemplateSettingsScreen(ModalScreen):
                 TopLevelFolderSelect(
                     self.project,
                     existing_only=True,
-                    id="tabscreen_toplevel_select",
+                    id="create_folders_settings_toplevel_select",
                 ),
             ),
             Checkbox(
                 "Bypass validation",
                 value=bypass_validation,
-                id="create_settings_bypass_validation_checkbox",
+                id="create_folders_settings_bypass_validation_checkbox",
             ),
             Container(
                 Horizontal(
@@ -106,7 +109,7 @@ class TemplateSettingsScreen(ModalScreen):
                 id="template_top_container",
             ),
             Container(),
-            Button("Close", id="template_sessions_close_button"),
+            Button("Close", id="create_folders_settings_close_button"),
             id="template_top_container2",
         )
 
@@ -123,7 +126,7 @@ class TemplateSettingsScreen(ModalScreen):
         cont.disabled = not self.templates["on"]
 
     def on_button_pressed(self, event: Button.Pressed):
-        if event.button.id == "template_sessions_close_button":
+        if event.button.id == "create_folders_settings_close_button":
             self.dismiss(self.templates)
         elif event.button.id == "create_settings_bypass_validation_button":
             self.project.set_bypass_validation(on=False)
@@ -139,7 +142,10 @@ class TemplateSettingsScreen(ModalScreen):
             self.project.set_name_templates(self.templates)
             self.set_disabled_mode_widgets()
 
-        elif event.checkbox.id == "create_settings_bypass_validation_checkbox":
+        elif (
+            event.checkbox.id
+            == "create_folders_settings_bypass_validation_checkbox"
+        ):
             self.project.set_bypass_validation(on=is_on)
             self.query_one("#template_inner_container").disabled = is_on
             self.query_one(
