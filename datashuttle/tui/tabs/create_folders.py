@@ -38,7 +38,7 @@ class CreateFoldersTab(TreeAndInputTab):
     def compose(self):
         yield CustomDirectoryTree(
             self.mainwindow,
-            self.interface.project.cfg.data["local_path"],  # TODO !
+            self.interface.get_configs()["local_path"],
             id="create_folders_directorytree",
         )
         yield Label("Subject(s)", id="create_folders_subject_label")
@@ -58,7 +58,7 @@ class CreateFoldersTab(TreeAndInputTab):
             validators=[NeuroBlueprintValidator("ses", self)],
         )
         yield Label("Datatype(s)", id="create_folders_datatype_label")
-        yield DatatypeCheckboxes(self.interface.project)  # TODO!
+        yield DatatypeCheckboxes(self.interface)
         yield Horizontal(
             Button("Make Folders", id="create_folders_make_button"),
             Button(
@@ -128,7 +128,7 @@ class CreateFoldersTab(TreeAndInputTab):
         If `self.templates` is off, then just suggest "sub-" or "ses-".
         """
         if self.templates_on(prefix):
-            fill_value = self.interface.get_templates()[prefix]
+            fill_value = self.interface.get_name_templates()[prefix]
         else:
             fill_value = f"{prefix}-"
 
@@ -137,8 +137,8 @@ class CreateFoldersTab(TreeAndInputTab):
 
     def templates_on(self, prefix):
         return (
-            self.interface.get_templates()["on"]
-            and self.interface.get_templates()[prefix] is not None
+            self.interface.get_name_templates()["on"]
+            and self.interface.get_name_templates()[prefix] is not None
         )
 
     # Validation
@@ -171,14 +171,6 @@ class CreateFoldersTab(TreeAndInputTab):
         )
         input = self.query_one(id)
         input.tooltip = message
-
-    #   def update_templates(self, templates):
-    #      """
-    #     Update the datashuttle name templates. This is a callback
-    #    function which is called within the Template Settings screen.
-    #   """
-    #  self.interface.set_name_templates(templates)
-    # self.revalidate_inputs(["sub", "ses"])
 
     # ----------------------------------------------------------------------------------
     # Datashuttle Callers
@@ -229,9 +221,7 @@ class CreateFoldersTab(TreeAndInputTab):
             The textual input name to update.
         """
         if prefix == "sub":
-            next_val = self.interface.project.get_next_sub_number(  # TODO # TODO # TODO # TODO # TODO # TODO
-                return_with_prefix=True, local_only=True
-            )
+            next_val = self.interface.get_next_sub_number()
         else:
             sub_names = self.query_one(
                 "#create_folders_subject_input"
@@ -243,14 +233,21 @@ class CreateFoldersTab(TreeAndInputTab):
                     "single subject is provided."
                 )
                 return
+
+            if sub_names == [""]:
+                self.mainwindow.show_modal_error_dialog(
+                    "Must input a subject number before suggesting "
+                    "next session number."
+                )
+                return
+
             else:
                 sub = sub_names[0]
 
-            next_val = self.interface.project.get_next_ses_number(  # TODO # TODO # TODO # TODO # TODO # TODO
-                sub, return_with_prefix=True, local_only=True
-            )
+            next_val = self.interface.get_next_ses_number(sub)
+
         if self.templates_on(prefix):
-            split_name = self.interface.get_templates()[prefix].split("_")
+            split_name = self.interface.get_name_templates()[prefix].split("_")
             fill_value = "_".join([next_val, *split_name[1:]])
         else:
             fill_value = next_val
@@ -258,9 +255,7 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    def run_local_validation(
-        self, prefix
-    ):  # TODO:TODOTODOTODOTODOTODOTODO might be easier to handle sub and ses separately, though would need to handle errors twice...
+    def run_local_validation(self, prefix):
         """
         Run validation of the values stored in the
         sub / ses Input according to the passed prefix

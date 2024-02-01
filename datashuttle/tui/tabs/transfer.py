@@ -33,7 +33,7 @@ class TransferTab(TreeAndInputTab):
 
     mainwindow : App
 
-    interface : DsInterface
+    interface : Interface
         TUI-datashuttle interface object
 
     id : str
@@ -68,7 +68,7 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_toplevel_label_top",
             ),
             TopLevelFolderSelect(
-                self.interface.project,
+                self.interface,
                 id="transfer_toplevel_select",
             ),
         ]
@@ -78,7 +78,7 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_custom_label_top",
             ),
             TopLevelFolderSelect(
-                self.interface.project,
+                self.interface,
                 id="transfer_custom_select",
             ),
             Label("Subject(s)"),
@@ -94,9 +94,7 @@ class TransferTab(TreeAndInputTab):
                 placeholder="e.g. ses-001",
             ),
             Label("Datatype(s)"),
-            DatatypeCheckboxes(
-                self.interface.project, create_or_transfer="transfer"
-            ),
+            DatatypeCheckboxes(self.interface, create_or_transfer="transfer"),
         ]
 
         yield RadioSet(
@@ -107,7 +105,7 @@ class TransferTab(TreeAndInputTab):
         )
         yield TransferStatusTree(
             self.mainwindow,
-            self.interface.project,
+            self.interface,
             id="transfer_directorytree",
         )
         yield Container(

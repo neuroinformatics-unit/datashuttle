@@ -52,17 +52,17 @@ class DatatypeCheckboxes(Static):
                       the `persistent_settings` dictionaries.
     """
 
-    def __init__(self, project, create_or_transfer="create"):
+    def __init__(self, interface, create_or_transfer="create"):
         super(DatatypeCheckboxes, self).__init__()
 
-        self.project = project
+        self.interface = interface
 
         if create_or_transfer == "create":
             self.settings_key = "create_checkboxes_on"
         else:
             self.settings_key = "transfer_checkboxes_on"
 
-        self.datatype_config = self.project._load_persistent_settings()["tui"][
+        self.datatype_config = self.interface.get_tui_settings()[
             self.settings_key
         ]
 
@@ -85,11 +85,9 @@ class DatatypeCheckboxes(Static):
                 f"#tabscreen_{datatype}_checkbox"
             ).value
 
-        # This is slightly wasteful as update entire dict instead
-        # of changed entry, but is negligible.
-        persistent_settings = self.project._load_persistent_settings()
-        persistent_settings["tui"][self.settings_key] = self.datatype_config
-        self.project._save_persistent_settings(persistent_settings)
+        self.interface.update_tui_settings(
+            self.datatype_config, self.settings_key
+        )
 
     def selected_datatypes(self) -> List[str]:
         """
@@ -464,9 +462,6 @@ class TopLevelFolderSelect(Select):
     Parameters
     ----------
 
-    project : DataShuttle
-        Current datashuttle project instance # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
-
     existing_only : bool
         If `True`, only top level folders that actually exist in the
         project are displayed. Otherwise, all possible canonical
@@ -476,10 +471,8 @@ class TopLevelFolderSelect(Select):
         Textualize widget id
     """
 
-    def __init__(self, project, id):
-        self.project = (
-            project  # TODO: could centralise all this on app or interface?!
-        )
+    def __init__(self, interface, id):
+        self.interface = interface
 
         top_level_folders = [
             (folder, folder)
@@ -501,55 +494,48 @@ class TopLevelFolderSelect(Select):
         if not any(top_level_folders):
             value = Select.BLANK
         else:
-            value = self.get_top_level_folder_from_file()
+            value = self.get_top_level_folder()
 
         super(TopLevelFolderSelect, self).__init__(
             top_level_folders, value=value, id=id, allow_blank=True
         )
-
-    def get_displayed_top_level_folder(self):
-        """
-        Get the top level folder that is currently selected
-        on the select widget.
-        """
-        assert self.value in canonical_folders.get_top_level_folders()
-        return self.value
-
-    def get_top_level_folder_from_file(self):
-        """
-        Get the top level folder for this Select widget
-        as stored in `persistent settings`.
-        """
-        persistent_settings = (
-            self.project._load_persistent_settings()
-        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
-        top_level_folder = persistent_settings["tui"][
-            "top_level_folder_select"
-        ][self.settings_key]
-        return top_level_folder
 
     def get_top_level_folder(self):
         """
         Get the top level folder from `persistent settings`,
         performing a confidence-check that it matches the textual display.
         """
-        top_level_folder = self.get_top_level_folder_from_file()
-        assert (
-            top_level_folder == self.get_displayed_top_level_folder()
-        ), "config and widget should never be out of sync."
+        top_level_folder = self.interface.tui_settings[
+            "top_level_folder_select"
+        ][self.settings_key]
+
+        #      assert (
+        #             top_level_folder == self.get_displayed_top_level_folder()
+        #    ), "config and widget should never be out of sync."
+
         return top_level_folder
+
+    def get_displayed_top_level_folder(self):
+        """
+        Get the top level folder that is currently selected
+        on the select widget.
+        """
+        #      assert self.value in canonical_folders.get_top_level_folders()
+        return self.value
 
     def on_select_changed(self, event):
         """
         When the select is changed, update the linked persistent setting.
         """
         top_level_folder = event.value
-        persistent_settings = (
-            self.project._load_persistent_settings()
-        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
-        persistent_settings["tui"]["top_level_folder_select"][
-            self.settings_key
-        ] = top_level_folder
-        self.project._save_persistent_settings(
-            persistent_settings
-        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
+
+        self.interface.update_tui_settings(
+            top_level_folder, "top_level_folder_select", self.settings_key
+        )
+
+
+#      persistent_settings = self.project._load_persistent_settings()
+
+#     persistent_settings["tui"]["top_level_folder_select"][self.settings_key] = top_level_folder
+
+#    self.project._save_persistent_settings(persistent_settings)

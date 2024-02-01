@@ -18,18 +18,43 @@ class TransferStatusTree(CustomDirectoryTree):
     A directorytree in which the nodes are styled depending on their
     transfer status. e.g. indicates whether files are changed between
     local or central, or appear in local only.
+
+    Keep the local path as a string, linked to project.cfg["local_path"],
+    so that no conversion to string is necessary in `format_transfer_label`
+    which is called many times.
     """
 
-    def __init__(self, mainwindow, project, id=None):
-        super(TransferStatusTree, self).__init__(
-            path=project.get_local_path(), mainwindow=mainwindow, id=id
-        )
+    def __init__(self, mainwindow, interface, id=None):
 
-        self.project = project
+        self.interface = interface
+        self.local_path_str = self.interface.get_configs()[
+            "local_path"
+        ].as_posix()
         self.transfer_diffs = None
+
+        super(TransferStatusTree, self).__init__(
+            path=self.local_path_str, mainwindow=mainwindow, id=id
+        )
 
     def on_mount(self):
         self.update_transfer_tree(init=True)
+
+    def update_transfer_tree(self, init=False):
+        """
+        Updates tree styling to reflect the current TUI state
+        and project transfer status.
+        """
+        self.local_path_str = self.interface.get_configs()[
+            "local_path"
+        ].as_posix()
+
+        self.update_local_transfer_paths()
+
+        if self.mainwindow.load_global_settings()["show_transfer_tree_status"]:
+            self.update_transfer_diffs()
+
+        if not init:
+            self.reload()
 
     def update_local_transfer_paths(self):
         """
@@ -38,16 +63,13 @@ class TransferStatusTree(CustomDirectoryTree):
         paths_list = []
 
         for top_level_folder in canonical_folders.get_top_level_folders():
-            walk_paths = os.walk(
-                (self.project.get_local_path() / top_level_folder).as_posix()
-            )
+            walk_paths = os.walk(f"{self.local_path_str}/{top_level_folder}")
             for path in walk_paths:
                 paths_list.append(Path(path[0]))
                 if path[2]:
                     paths_list.extend(
                         [Path(f"{path[0]}/{file}") for file in path[2]]
                     )
-
         self.transfer_paths = paths_list
 
     def update_transfer_diffs(self):
@@ -59,19 +81,8 @@ class TransferStatusTree(CustomDirectoryTree):
         by default we set to 'all'.
         """
         self.transfer_diffs = get_local_and_central_file_differences(
-            self.project.cfg, all_top_level_folder=True
+            self.interface.get_configs(), all_top_level_folder=True
         )
-
-    def update_transfer_tree(self, init=False):
-        """
-        Updates tree styling to reflect the current TUI state
-        and project transfer status.
-        """
-        self.update_local_transfer_paths()
-        if self.mainwindow.load_global_settings()["show_transfer_tree_status"]:
-            self.update_transfer_diffs()
-        if not init:
-            self.reload()
 
     # Overridden Methods
     # ----------------------------------------------------------------------------------
@@ -128,7 +139,7 @@ class TransferStatusTree(CustomDirectoryTree):
         formatting according to the node's transfer status.
         """
         node_relative_path = node_path.as_posix().replace(
-            f"{self.project.cfg['local_path'] .as_posix()}/", ""
+            f"{self.local_path_str}/", ""
         )
 
         # Checks whether the current node's file path is staged for transfer

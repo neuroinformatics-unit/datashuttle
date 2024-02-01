@@ -13,9 +13,8 @@ from textual.widgets import (
 )
 
 from datashuttle.tui.custom_widgets import ClickableInput
-from datashuttle.tui.ds_interface import DsInterface
+from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs, setup_ssh
-from datashuttle.tui.utils import tui_utils
 
 
 class ConfigsContent(Container):
@@ -262,7 +261,7 @@ class ConfigsContent(Container):
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
         if any(
-            self.interface.project.cfg[key] != value
+            self.interface.get_configs()[key] != value
             for key, value in cfg_kwargs.items()
         ):
             self.parent_class.mainwindow.show_modal_error_dialog(
@@ -290,7 +289,7 @@ class ConfigsContent(Container):
         project_name = self.query_one("#configs_name_input").value
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
-        interface = DsInterface()
+        interface = Interface()
 
         success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
@@ -343,9 +342,7 @@ class ConfigsContent(Container):
         "ssh" widgets are hidden / displayed based on the current setting,
         in `self.switch_ssh_widgets_display()`.
         """
-        cfg_to_load = tui_utils.get_textual_compatible_project_configs(
-            self.interface.project.cfg
-        )
+        cfg_to_load = self.interface.get_textual_compatible_project_configs()
 
         # Local Path
         input = self.query_one("#configs_local_path_input")
@@ -386,7 +383,7 @@ class ConfigsContent(Container):
 
         # Overwrite Files Checkbox
         checkbox = self.query_one("#configs_overwrite_files_checkbox")
-        checkbox.value = self.interface.project.cfg["overwrite_old_files"]
+        checkbox.value = self.interface.get_configs()["overwrite_old_files"]
 
     def get_datashuttle_inputs_from_widgets(self):
         """

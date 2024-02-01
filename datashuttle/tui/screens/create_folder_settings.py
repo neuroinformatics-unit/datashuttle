@@ -64,15 +64,13 @@ class CreateFoldersSettingsScreen(ModalScreen):  # TODO: DOC!
         Visit the [@click=screen.link_docs()]Documentation[/] for more information.
         """
 
-        bypass_validation = (
-            self.interface.project.get_bypass_validation()
-        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
+        bypass_validation = self.interface.project.get_bypass_validation()
 
         yield Container(
             Horizontal(
                 Label("Top level folder:", id="labelTESTEST"),
                 TopLevelFolderSelect(
-                    self.interface.project,  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
+                    self.interface,
                     id="create_folders_settings_toplevel_select",
                 ),
             ),
@@ -152,9 +150,7 @@ class CreateFoldersSettingsScreen(ModalScreen):  # TODO: DOC!
             )
             self.dismiss(True)
         elif event.button.id == "create_settings_bypass_validation_button":
-            self.interface.project.set_bypass_validation(
-                on=False
-            )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
+            self.interface.project.set_bypass_validation(on=False)
 
     def make_name_templates_from_widgets(self):
         return {
@@ -178,9 +174,7 @@ class CreateFoldersSettingsScreen(ModalScreen):  # TODO: DOC!
             event.checkbox.id
             == "create_folders_settings_bypass_validation_checkbox"
         ):
-            self.interface.project.set_bypass_validation(  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
-                on=is_on
-            )
+            self.interface.project.set_bypass_validation(on=is_on)
 
             self.query_one(
                 "#template_settings_validation_on_checkbox"

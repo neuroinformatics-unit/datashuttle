@@ -2,7 +2,7 @@ from textual.containers import Container
 from textual.screen import Screen
 from textual.widgets import Button, Header
 
-from datashuttle.tui.ds_interface import DsInterface
+from datashuttle.tui.interface import Interface
 from datashuttle.utils.getters import (
     get_existing_project_paths,  # TODO: should just get from interface? then no DS imports at all!
 )
@@ -49,7 +49,7 @@ class ProjectSelectorScreen(Screen):
 
             project_name = event.button.id
 
-            interface = DsInterface()
+            interface = Interface()
             success, output = interface.select_existing_project(project_name)
 
             if success:

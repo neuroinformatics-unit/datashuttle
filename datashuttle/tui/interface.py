@@ -1,4 +1,8 @@
-from typing import Dict, List, Optional, Tuple
+import copy
+from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+
+if TYPE_CHECKING:
+    from datashuttle.tui.app import App
 
 import paramiko
 
@@ -8,7 +12,7 @@ from datashuttle.utils import formatting, ssh, validation
 Output = Tuple[bool, Optional[str]]  # TODO: rename
 
 
-class DsInterface:
+class Interface:
     """
     An interface class between the TUI and datashuttle API. Takes input
     to all datashuttle functions as passed from the TUI, outputs
@@ -20,6 +24,7 @@ class DsInterface:
 
         self.project: App
         self.name_templates: Optional[str] = None
+        self.tui_settings: Optional[Dict] = None
 
     def select_existing_project(self, project_name: str) -> Output:
 
@@ -197,11 +202,46 @@ class DsInterface:
         self.name_templates = templates
         self.project.set_name_templates(templates)
 
+    def get_tui_settings(self):
+        if self.tui_settings is None:
+            self.tui_settings = self.project._load_persistent_settings()["tui"]
+
+        return self.tui_settings
+
+    def update_tui_settings(self, value, key, key_2=None):
+
+        if key_2 is None:
+            self.tui_settings[key] = value
+        else:
+            self.tui_settings[key][key_2] = value
+
+        self.project._update_persistent_setting("tui", self.tui_settings)
+
     # Setup SSH
     # ----------------------------------------------------------------------------------
 
     def get_central_host_id(self) -> str:
         return self.project.cfg["central_host_id"]
+
+    def get_configs(self):
+        return self.project.cfg
+
+    def get_textual_compatible_project_configs(self):
+        cfg_to_load = copy.deepcopy(self.project.cfg)
+        cfg_to_load.convert_str_and_pathlib_paths(
+            cfg_to_load, "path_to_str"
+        )  # TODO: bit weird...
+        return cfg_to_load
+
+    def get_next_sub_number(self):
+        return self.project.get_next_sub_number(
+            return_with_prefix=True, local_only=True
+        )
+
+    def get_next_ses_number(self, sub):
+        return self.project.get_next_ses_number(
+            sub, return_with_prefix=True, local_only=True
+        )
 
     def get_ssh_hostkey(self):
 

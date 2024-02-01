@@ -1,3 +1,8 @@
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import paramiko
+
 from textual.app import ComposeResult
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
@@ -93,7 +98,7 @@ class SetupSshScreen(ModalScreen):
 
             message = (
                 f"The host key is not cached for this server: "
-                f"{self.interface.get_central_host_id()}.\nYou have no guarantee "
+                f"{self.interface.get_configs()['central_host_id']}.\nYou have no guarantee "
                 f"that the server is the computer you think it is.\n"
                 f"The server's {self.key.get_name()} key fingerprint is:\n\n "
                 f"{self.key.get_base64()}\n\nIf you trust this host, to connect"
@@ -102,7 +107,8 @@ class SetupSshScreen(ModalScreen):
         else:
             message = (
                 "Could not connect to server. \nCheck the connection "
-                f"and the central host ID : \n\n{self.interface.get_central_host_id()} \n\n Traceback: {output}"
+                f"and the central host ID : \n\n"
+                f"{self.interface.get_configs()['central_host_id']} \n\n Traceback: {output}"
             )
             self.query_one("#setup_ssh_ok_button").disabled = True
 
@@ -164,29 +170,3 @@ class SetupSshScreen(ModalScreen):
             self.failed_password_attempts += 1
 
         self.query_one("#messagebox_message_label").update(message)
-
-
-#       try:
-#          password = self.query_one("#setup_ssh_password_input").value
-#
-#           ssh.add_public_key_to_central_authorized_keys(
-#              self.interface.project.cfg, password, log=False
-#         )
-#        self.interface.project._setup_rclone_central_ssh_config(log=False)
-#
-#           message = (
-#              f"Connection successful! SSH key "
-#             f"saved to {self.interface.project.cfg.ssh_key_path}"
-#        )
-#       self.query_one("#setup_ssh_ok_button").label = "Finish"
-#      self.query_one("#setup_ssh_cancel_button").disabled = True
-#     self.stage += 1
-#       except BaseException as e:
-#          message = (
-#             f"Password setup failed. Check password is correct and try again."
-#            f"\n\n{self.failed_password_attempts} failed password attempts."
-#           f"\n\n Traceback: {e}"
-#        )
-#      self.failed_password_attempts += 1
-#
-#       self.query_one("#messagebox_message_label").update(message)
