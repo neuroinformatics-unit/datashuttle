@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -185,7 +186,8 @@ def get_existing_project_paths() -> List[Path]:
     Return full path and names of datashuttle projects on
     this local machine. A project is determined by a project
     folder in the home / .datashuttle folder that contains a
-    config.yaml file.
+    config.yaml file. Returns in order of most recently modified
+    first.
     """
     datashuttle_path = canonical_folders.get_datashuttle_path()
 
@@ -208,6 +210,8 @@ def get_existing_project_paths() -> List[Path]:
             )
         elif len(config_file) == 1:
             existing_project_paths.append(datashuttle_path / folder_name)
+
+    existing_project_paths.sort(key=os.path.getmtime, reverse=True)
 
     return existing_project_paths
 

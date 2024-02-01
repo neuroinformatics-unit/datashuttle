@@ -5,14 +5,13 @@ from textual.widgets import (
     Label,
     RadioButton,
     RadioSet,
-    Select,
     Switch,
 )
 
-from datashuttle.configs import canonical_folders
 from datashuttle.tui.custom_widgets import (
     ClickableInput,
     DatatypeCheckboxes,
+    TopLevelFolderSelect,
     TreeAndInputTab,
 )
 from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
@@ -46,6 +45,9 @@ class TransferTab(TreeAndInputTab):
         self.mainwindow = mainwindow
         self.project = project
         self.prev_click_time = 0.0
+        self.show_legend = self.mainwindow.load_global_settings()[
+            "show_transfer_tree_status"
+        ]
 
     def compose(self):
         self.transfer_all_widgets = [
@@ -57,23 +59,15 @@ class TransferTab(TreeAndInputTab):
 
         # Fill the select for top-level folder changing, if no top-level
         # folders are found in the project then it will be blank.
-        existing_top_level_folders = [
-            (folder, folder)
-            for folder in canonical_folders.get_top_level_folders()
-            if (self.project.get_local_path() / folder).exists()
-        ]
         self.transfer_toplevel_widgets = [
             Label(
                 "Select top-level folder to transfer.",
                 id="transfer_toplevel_label_top",
             ),
-            Select(
-                existing_top_level_folders,
-                value=self.project.get_top_level_folder()
-                if any(existing_top_level_folders)
-                else Select.BLANK,
+            TopLevelFolderSelect(
+                self.project,
+                existing_only=True,
                 id="transfer_toplevel_select",
-                allow_blank=True,
             ),
         ]
         self.transfer_custom_widgets = [
@@ -81,13 +75,10 @@ class TransferTab(TreeAndInputTab):
                 "Select top-level folder to transfer.",
                 id="transfer_custom_label_top",
             ),
-            Select(
-                existing_top_level_folders,
-                value=self.project.get_top_level_folder()
-                if any(existing_top_level_folders)
-                else Select.BLANK,
+            TopLevelFolderSelect(
+                self.project,
+                existing_only=True,
                 id="transfer_custom_select",
-                allow_blank=True,
             ),
             Label("Subject(s)"),
             ClickableInput(
@@ -132,7 +123,8 @@ class TransferTab(TreeAndInputTab):
             Button("Transfer", id="transfer_transfer_button"),
             Horizontal(),  # push button to left
         )
-        yield Label("⭕ Legend", id="transfer_legend")
+        if self.show_legend:
+            yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self):
         self.query_one(
@@ -140,13 +132,14 @@ class TransferTab(TreeAndInputTab):
         ).border_title = "Parameters"
         self.switch_transfer_widgets_display()
 
-        self.query_one("#transfer_legend").tooltip = Text.assemble(
-            "Unchanged\n",
-            ("Changed\n", "gold3"),
-            ("Local Only\n", "green3"),
-            # ("Central Only\n", "italic dodger_blue3"),
-            ("Error\n", "bright_red"),
-        )
+        if self.show_legend:
+            self.query_one("#transfer_legend").tooltip = Text.assemble(
+                "Unchanged\n",
+                ("Changed\n", "gold3"),
+                ("Local Only\n", "green3"),
+                # ("Central Only\n", "italic dodger_blue3"),
+                ("Error\n", "bright_red"),
+            )
 
     def switch_transfer_widgets_display(self):
         """
@@ -214,14 +207,6 @@ class TransferTab(TreeAndInputTab):
     def reload_directorytree(self):
         self.query_one("#transfer_directorytree").update_transfer_tree()
 
-    def get_top_level_folder_select(self, key):
-        assert (
-            selected_val := self.query_one(
-                key,
-            ).value
-        ) in canonical_folders.get_top_level_folders()
-        return selected_val
-
     # Transfer data method
     # ----------------------------------------------------------------------------------
     # TODO: everything non-GUI related should be factored to separate module
@@ -274,9 +259,9 @@ class TransferTab(TreeAndInputTab):
         as an argument that can override the project settings. However, from
         an API level this might be confusing so have changed it yet.
         """
-        selected_top_level_folder = self.get_top_level_folder_select(
+        selected_top_level_folder = self.query_one(
             "#transfer_toplevel_select"
-        )
+        ).get_top_level_folder()
 
         temp_top_level_folder = self.project.get_top_level_folder()
         self.project.set_top_level_folder(selected_top_level_folder)
@@ -305,9 +290,9 @@ class TransferTab(TreeAndInputTab):
         as an argument that can override the project settings. However, from
         an API level this might be confusing so have changed it yet.
         """
-        selected_top_level_folder = self.get_top_level_folder_select(
+        selected_top_level_folder = self.query_one(
             "#transfer_custom_select"
-        )
+        ).get_top_level_folder()
 
         temp_top_level_folder = self.project.get_top_level_folder()
         self.project.set_top_level_folder(selected_top_level_folder)

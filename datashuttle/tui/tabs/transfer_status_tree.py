@@ -26,10 +26,10 @@ class TransferStatusTree(CustomDirectoryTree):
         )
 
         self.project = project
-        self.update_transfer_diffs()
+        self.transfer_diffs = None
 
     def on_mount(self):
-        self.update_local_transfer_paths()
+        self.update_transfer_tree(init=True)
 
     def update_local_transfer_paths(self):
         """
@@ -62,38 +62,16 @@ class TransferStatusTree(CustomDirectoryTree):
             self.project.cfg, all_top_level_folder=True
         )
 
-    def update_transfer_tree(self):
+    def update_transfer_tree(self, init=False):
         """
         Updates tree styling to reflect the current TUI state
         and project transfer status.
         """
         self.update_local_transfer_paths()
-        self.update_transfer_diffs()
-        self.reload()
-
-    def format_transfer_label(self, node_label, node_path):
-        """
-        Takes nodes being formatted using `render_label` and applies custom
-        formatting according to the node's transfer status.
-        """
-
-        node_relative_path = node_path.as_posix().replace(
-            f"{self.project.cfg['local_path'] .as_posix()}/", ""
-        )
-
-        # Checks whether the current node's file path is staged for transfer
-        if node_path in self.transfer_paths:
-            # Sets sub- and ses-level folders to orange if files within have changed
-            # fmt: off
-            if node_relative_path in self.transfer_diffs["same"]:
-                pass
-            elif node_relative_path in self.transfer_diffs["different"] or any([node_relative_path in file for file in self.transfer_diffs["different"]]):
-                node_label.stylize_before("gold3")
-            elif node_relative_path in self.transfer_diffs["local_only"] or any([node_relative_path in file for file in self.transfer_diffs["local_only"]]):
-                node_label.stylize_before("green3")
-            elif node_label.plain in self.transfer_diffs["error"] or any([node_relative_path in file for file in self.transfer_diffs["error"]]):
-                node_label.stylize_before("bright_red")
-            # fmt: on
+        if self.mainwindow.load_global_settings()["show_transfer_tree_status"]:
+            self.update_transfer_diffs()
+        if not init:
+            self.reload()
 
     # Overridden Methods
     # ----------------------------------------------------------------------------------
@@ -138,7 +116,32 @@ class TransferStatusTree(CustomDirectoryTree):
                 ),
             )
 
-        self.format_transfer_label(node_label, node_path)
+        if self.transfer_diffs:
+            self.format_transfer_label(node_label, node_path)
 
         text = Text.assemble(prefix, node_label)
         return text
+
+    def format_transfer_label(self, node_label, node_path):
+        """
+        Takes nodes being formatted using `render_label` and applies custom
+        formatting according to the node's transfer status.
+        """
+
+        node_relative_path = node_path.as_posix().replace(
+            f"{self.project.cfg['local_path'] .as_posix()}/", ""
+        )
+
+        # Checks whether the current node's file path is staged for transfer
+        if node_path in self.transfer_paths:
+            # Sets sub- and ses-level folders to orange if files within have changed
+            # fmt: off
+            if node_relative_path in self.transfer_diffs["same"]:
+                pass
+            elif node_relative_path in self.transfer_diffs["different"] or any([node_relative_path in file for file in self.transfer_diffs["different"]]):
+                node_label.stylize_before("gold3")
+            elif node_relative_path in self.transfer_diffs["local_only"] or any([node_relative_path in file for file in self.transfer_diffs["local_only"]]):
+                node_label.stylize_before("green3")
+            elif node_label.plain in self.transfer_diffs["error"] or any([node_relative_path in file for file in self.transfer_diffs["error"]]):
+                node_label.stylize_before("bright_red")
+            # fmt: on

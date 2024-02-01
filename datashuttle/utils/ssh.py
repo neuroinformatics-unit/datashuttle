@@ -17,8 +17,87 @@ import paramiko
 from datashuttle.utils import utils
 
 # -----------------------------------------------------------------------------
-# SSH Setup
+# Core Functions
 # -----------------------------------------------------------------------------
+# These functions are called by both API and TUI.
+# Unfortunately it is not possible for TUI to call API directly in the case of
+# setting up SSH, because it requires user input to proceed.
+
+
+def connect_client_core(
+    client: paramiko.SSHClient,
+    cfg: Configs,
+    password: Optional[str] = None,
+):
+    client.get_host_keys().load(cfg.hostkeys_path.as_posix())
+    client.set_missing_host_key_policy(paramiko.RejectPolicy())
+
+    client.connect(
+        cfg["central_host_id"],
+        username=cfg["central_host_username"],
+        password=password,
+        key_filename=cfg.ssh_key_path.as_posix()
+        if isinstance(cfg.ssh_key_path, Path)
+        else None,
+        look_for_keys=True,
+    )
+
+
+def add_public_key_to_central_authorized_keys(
+    cfg: Configs, password: str, log=True
+) -> None:
+    """
+    Append the public part of key to central server ~/.ssh/authorized_keys.
+    """
+    generate_and_write_ssh_key(cfg.ssh_key_path)
+
+    key = paramiko.RSAKey.from_private_key_file(cfg.ssh_key_path.as_posix())
+
+    client: paramiko.SSHClient
+    with paramiko.SSHClient() as client:
+        if log:
+            connect_client_with_logging(client, cfg, password=password)
+        else:
+            connect_client_core(client, cfg, password=password)
+
+        client.exec_command("mkdir -p ~/.ssh/")
+        client.exec_command(
+            # double >> for concatenate
+            f'echo "{key.get_name()} {key.get_base64()}" '
+            f">> ~/.ssh/authorized_keys"
+        )
+        client.exec_command("chmod 644 ~/.ssh/authorized_keys")
+        client.exec_command("chmod 700 ~/.ssh/")
+
+
+def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
+    key = paramiko.RSAKey.generate(4096)
+    key.write_private_key_file(ssh_key_path.as_posix())
+
+
+def get_remote_server_key(central_host_id: str):
+    """
+    Get the remove server host key for validation before
+    connection.
+    """
+    transport: paramiko.Transport
+    with paramiko.Transport(central_host_id) as transport:
+        transport.connect()
+        key = transport.get_remote_server_key()
+    return key
+
+
+def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
+    client = paramiko.SSHClient()
+    client.get_host_keys().add(central_host_id, key.get_name(), key)
+    client.get_host_keys().save(hostkeys_path.as_posix())
+
+
+# -----------------------------------------------------------------------------
+# Setup SSH - API Wrappers
+# -----------------------------------------------------------------------------
+# These functions wrap core SSH setup functions (above) for the API. See
+# tui/screens/setup_ssh for the TUI equivalents.
 
 
 def setup_ssh_key(
@@ -58,16 +137,12 @@ def setup_ssh_key(
             RuntimeError,
         )
 
-    generate_and_write_ssh_key(cfg.ssh_key_path)
-
     password = getpass.getpass(
         "Please enter password to your central host to add the public key. "
         "You will not have to enter your password again."
     )
 
-    key = paramiko.RSAKey.from_private_key_file(cfg.ssh_key_path.as_posix())
-
-    add_public_key_to_central_authorized_keys(cfg, password, key)
+    add_public_key_to_central_authorized_keys(cfg, password)
 
     success_message = (
         f"SSH key pair setup successfully. "
@@ -80,7 +155,7 @@ def setup_ssh_key(
         utils.log(f"\n{success_message}")
 
 
-def connect_client(
+def connect_client_with_logging(
     client: paramiko.SSHClient,
     cfg: Configs,
     password: Optional[str] = None,
@@ -92,19 +167,7 @@ def connect_client(
     Paramiko does not support pathlib.
     """
     try:
-        client.get_host_keys().load(cfg.hostkeys_path.as_posix())
-        client.set_missing_host_key_policy(paramiko.RejectPolicy())
-        client.connect(
-            cfg["central_host_id"],
-            username=cfg["central_host_username"],
-            password=password,
-            key_filename=(
-                cfg.ssh_key_path.as_posix()
-                if isinstance(cfg.ssh_key_path, Path)
-                else None
-            ),
-            look_for_keys=True,
-        )
+        connect_client_core(client, cfg, password)
         if message_on_sucessful_connection:
             utils.print_message_to_user(
                 f"Connection to { cfg['central_host_id']} made successfully."
@@ -123,26 +186,6 @@ def connect_client(
         )
 
 
-def add_public_key_to_central_authorized_keys(
-    cfg: Configs, password: str, key: paramiko.RSAKey
-) -> None:
-    """
-    Append the public part of key to central server ~/.ssh/authorized_keys.
-    """
-    client: paramiko.SSHClient
-    with paramiko.SSHClient() as client:
-        connect_client(client, cfg, password=password)
-
-        client.exec_command("mkdir -p ~/.ssh/")
-        client.exec_command(
-            # double >> for concatenate
-            f'echo "{key.get_name()} {key.get_base64()}" '
-            f">> ~/.ssh/authorized_keys"
-        )
-        client.exec_command("chmod 644 ~/.ssh/authorized_keys")
-        client.exec_command("chmod 700 ~/.ssh/")
-
-
 def verify_ssh_central_host(
     central_host_id: str, hostkeys_path: Path, log: bool = True
 ) -> bool:
@@ -151,10 +194,7 @@ def verify_ssh_central_host(
     get the server key and present when connecting
     for manual validation.
     """
-    transport: paramiko.Transport
-    with paramiko.Transport(central_host_id) as transport:
-        transport.connect()
-        key = transport.get_remote_server_key()
+    key = get_remote_server_key(central_host_id)
 
     message = (
         f"The host key is not cached for this server: "
@@ -167,9 +207,7 @@ def verify_ssh_central_host(
     input_ = utils.get_user_input(message)
 
     if input_ == "y":
-        client = paramiko.SSHClient()
-        client.get_host_keys().add(central_host_id, key.get_name(), key)
-        client.get_host_keys().save(hostkeys_path.as_posix())
+        save_hostkey_locally(key, central_host_id, hostkeys_path)
         success = True
         utils.print_message_to_user("Host accepted.")
     else:
@@ -184,11 +222,6 @@ def verify_ssh_central_host(
             utils.log("Host not accepted. No connection made.")
 
     return success
-
-
-def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
-    key = paramiko.RSAKey.generate(4096)
-    key.write_private_key_file(ssh_key_path.as_posix())
 
 
 # -----------------------------------------------------------------------------
@@ -213,14 +246,16 @@ def search_ssh_central_for_folders(
 
     search_prefix : search prefix for folder names e.g. "sub-*"
 
-    cfg : see connect_client()
+    cfg : see connect_client_with_logging()
 
     verbose : If `True`, if a search folder cannot be found, a message
               will be printed with the un-found path.
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
-        connect_client(client, cfg, message_on_sucessful_connection=verbose)
+        connect_client_with_logging(
+            client, cfg, message_on_sucessful_connection=verbose
+        )
 
         sftp = client.open_sftp()
 

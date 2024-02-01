@@ -290,9 +290,7 @@ class TransferData:
         Given a particular subject and session, get a list of all
         canonical datatype folders.
         """
-        datatype = list(
-            filter(lambda x: x != "all_ses_level_non_datatype", datatype)
-        )
+        datatype = list(filter(lambda x: x != "all_non_datatype", datatype))
 
         datatype_items = folders.items_from_datatype_input(
             self.cfg, self.local_or_central, datatype, sub, ses
@@ -443,8 +441,5 @@ class TransferData:
         are to be transferred
         """
         return any(
-            [
-                name in ["all_ses_level_non_datatype", "all"]
-                for name in datatype_checked
-            ]
+            [name in ["all_non_datatype", "all"] for name in datatype_checked]
         )

@@ -298,7 +298,12 @@ def get_tui_config_defaults() -> Dict:
                 "anat": False,
                 "all": True,
                 "all_datatype": False,
-                "all_ses_level_non_datatype": False,
+                "all_non_datatype": False,
+            },
+            "top_level_folder_select": {
+                "create_tab": "rawdata",
+                "toplevel_transfer": "rawdata",
+                "custom_transfer": "rawdata",
             },
         }
     }
@@ -307,6 +312,10 @@ def get_tui_config_defaults() -> Dict:
 
 def get_name_templates_defaults() -> Dict:
     return {"name_templates": {"on": False, "sub": None, "ses": None}}
+
+
+def get_validation_defaults() -> Dict:
+    return {"bypass_validation": False}
 
 
 def get_persistent_settings_defaults() -> Dict:

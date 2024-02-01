@@ -875,7 +875,7 @@ Datashuttle provides a number of keyword arguments to allow separate
 handling of files that are not found in *datatype* folders.
 
 These are:
-`all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_datatype` (for `-dt`).
+`all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `all_non_datatype` (for `-dt`).
 
 
 #### For use with the `-sub` / `--sub-names` flag
@@ -910,7 +910,7 @@ as well as all files and folders within selected *session* folders.
 `behav`, `ephys`, `funcimg`, `anat`) within a *session* folder will be
 transferred. Non-*datatype* folders at the *session* level will not be transferred
 
-`all_ses_level_non_datatype` : Non-*datatype* folders within *session* folders only will be transferred
+`all_non_datatype` : Non-*datatype* folders within *session* folders only will be transferred
 
 Below, a number of examples are given to exemplify how these arguments effect data transfer.
 Given our example *local* project folder above:
@@ -923,7 +923,7 @@ Given our example *local* project folder above:
 
 :::{tab-item} Python API
 ```{code-block} console
-project.upload("all", "all", "all_ses_level_non_datatype")
+project.upload("all", "all", "all_non_datatype")
 ```
 :::
 
@@ -935,7 +935,7 @@ my_first_project \
 upload \
 -sub all \
 -ses all \
--dt all_ses_level_non_datatype
+-dt all_non_datatype
 ```
 :::
 
@@ -946,7 +946,7 @@ my_first_project ^
 upload ^
 -sub all ^
 -ses all ^
--dt all_ses_level_non_datatype
+-dt all_non_datatype
 ```
 :::
 

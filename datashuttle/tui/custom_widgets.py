@@ -14,7 +14,16 @@ from rich.text import Text
 from textual._segment_tools import line_pad
 from textual.message import Message
 from textual.strip import Strip
-from textual.widgets import Checkbox, DirectoryTree, Input, Static, TabPane
+from textual.widgets import (
+    Checkbox,
+    DirectoryTree,
+    Input,
+    Select,
+    Static,
+    TabPane,
+)
+
+from datashuttle.configs import canonical_folders
 
 # --------------------------------------------------------------------------------------
 # DatatypeCheckboxes
@@ -60,7 +69,7 @@ class DatatypeCheckboxes(Static):
     def compose(self):
         for datatype in self.datatype_config.keys():
             yield Checkbox(
-                datatype.title(),
+                datatype.title().replace("_", " "),
                 id=f"tabscreen_{datatype}_checkbox",
                 value=self.datatype_config[datatype],
             )
@@ -439,3 +448,64 @@ class TreeAndInputTab(TabPane):
         datatype = self.query_one("DatatypeCheckboxes").selected_datatypes()
 
         return sub_names, ses_names, datatype
+
+
+class TopLevelFolderSelect(Select):
+    def __init__(self, project, existing_only, id):
+        self.project = project
+
+        top_level_folders = [
+            (folder, folder)
+            for folder in canonical_folders.get_top_level_folders()
+        ]
+
+        if existing_only:
+            top_level_folders = [
+                folders_tuple
+                for folders_tuple in top_level_folders
+                if (self.project.get_local_path() / folders_tuple[0]).exists()
+            ]
+
+        if id == "tabscreen_toplevel_select":
+            self.settings_key = "create_tab"
+        elif id == "transfer_toplevel_select":
+            self.settings_key = "toplevel_transfer"
+        elif id == "transfer_custom_select":
+            self.settings_key = "custom_transfer"
+        else:
+            raise ValueError(
+                "TopLevelSelect id not recognised. Must be matched to"
+                "a persistent settings field"
+            )
+
+        value = self.get_top_level_folder_from_file()
+
+        super(TopLevelFolderSelect, self).__init__(
+            top_level_folders, value=value, id=id, allow_blank=True
+        )
+
+    def get_displayed_top_level_folder(self):
+        assert self.value in canonical_folders.get_top_level_folders()
+        return self.value
+
+    def get_top_level_folder_from_file(self):
+        persistent_settings = self.project._load_persistent_settings()
+        top_level_folder = persistent_settings["tui"][
+            "top_level_folder_select"
+        ][self.settings_key]
+        return top_level_folder
+
+    def get_top_level_folder(self):
+        top_level_folder = self.get_top_level_folder_from_file()
+        assert (
+            top_level_folder == self.get_displayed_top_level_folder()
+        ), "config and widget should never be out of sync."  # TODO: should be tested in a dedicated unit test.
+        return top_level_folder
+
+    def on_select_changed(self, event):
+        top_level_folder = event.value
+        persistent_settings = self.project._load_persistent_settings()
+        persistent_settings["tui"]["top_level_folder_select"][
+            self.settings_key
+        ] = top_level_folder
+        self.project._save_persistent_settings(persistent_settings)

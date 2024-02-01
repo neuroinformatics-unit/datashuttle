@@ -38,37 +38,65 @@ Header {
 
 /* Directory Tree ------------------------------------------------------------------- */
 
-DirectoryTree {
-    dock: left;
+CustomDirectoryTree {
     width: 45%;
     padding: 1 2;
     margin: 0 4 0 0;
     border: tall wide $panel-lighten-1;
 }
-DirectoryTree:focus .tree--cursor {
+CustomDirectoryTree:focus .tree--cursor {
     background: $panel-lighten-2;
 }
-DirectoryTree .tree--guides {
+CustomDirectoryTree .tree--guides {
     color: #949494;
     text-style: none;
 }
-DirectoryTree .tree--guides-selected {
+CustomDirectoryTree .tree--guides-selected {
     color: #949494;
     text-style: none;
 }
-DirectoryTree:focus .tree--guides-hover {
+CustomDirectoryTree:focus .tree--guides-hover {
     color: #949494;
     text-style: none;
 }
 /* Light mode Directory Tree */
 
-DirectoryTree:light {
+CustomDirectoryTree:light {
     border: tall wide $panel-darken-3;
     background: $boost;
 }
 
-DirectoryTree:light:focus .tree--cursor {
+CustomDirectoryTree:light:focus .tree--cursor {
     background: $panel-lighten-2;
+}
+
+/* Could not figure out how to selectively override dock by CustomDirectoryTree that do not
+want to dock left */
+
+#tabscreen_directorytree {
+    dock: left;
+}
+#transfer_directorytree {
+    dock: left;
+}
+
+/* SelectDirectoryTreeScreen -------------------------------------------------------- */
+
+SelectDirectoryTreeScreen {
+    align: center middle;
+}
+
+#select_directory_tree_container {
+    height: 85%;
+    width: 70%;
+    background: $primary-background;
+    border: thick rgb(5, 5, 5);
+    align: center middle;
+}
+
+#select_directory_tree_directory_tree {
+    height: 80%;
+    width: 80%
 }
 
 /* Checkboxes ----------------------------------------------------------------------- */

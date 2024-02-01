@@ -1,19 +1,21 @@
 from pathlib import Path
 
+import yaml
 from showinfm import show_in_file_manager
 from textual.app import App
-from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import (
     Button,
     Label,
 )
 
+from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens import (
     modal_dialogs,
     new_project,
     project_manager,
     project_selector,
+    settings,
 )
 
 
@@ -36,10 +38,6 @@ class TuiApp(App):
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
 
-    BINDINGS = [
-        Binding("ctrl+d", "toggle_dark", "Toggle Dark Mode", priority=True)
-    ]
-
     def compose(self):
         yield Container(
             Label("DataShuttle", id="mainwindow_banner_label"),
@@ -52,6 +50,9 @@ class TuiApp(App):
             Button("Get Help", id="mainwindow_get_help_button"),
             id="mainwindow_contents_container",
         )
+
+    def on_mount(self):
+        self.dark = self.load_global_settings()["dark_mode"]
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -76,6 +77,13 @@ class TuiApp(App):
                 self.load_project_page,
             )
 
+        elif event.button.id == "mainwindow_settings_button":
+            self.push_screen(
+                settings.SettingsScreen(
+                    self,
+                )
+            )
+
     def load_project_page(self, project):
         if project:
             self.push_screen(
@@ -83,7 +91,7 @@ class TuiApp(App):
             )
 
     def show_modal_error_dialog(self, message):
-        self.push_screen(modal_dialogs.ErrorScreen(message))
+        self.push_screen(modal_dialogs.MessageBox(message, border_color="red"))
 
     def handle_open_filesystem_browser(self, path_):
         if not path_.exists():
@@ -110,6 +118,48 @@ class TuiApp(App):
                 )
 
             self.show_modal_error_dialog(message)
+
+    # Global Settings ---------------------------------------------------------
+    # TODO: there is now a lot of code that does this kind of thing
+    # here, persistent settings, configs. See if it can be centralised
+
+    def load_global_settings(self):
+        """
+        Load the 'global settings' for the TUI that determine
+        project-independent settings that are persistent across
+        sessions. These are stored in the canonical
+        .datashuttle folder (see `get_global_settings_path`).
+        """
+        settings_path = self.get_global_settings_path()
+
+        if not settings_path.is_file():
+            global_settings = self.get_default_global_settings()
+            self.save_global_settings(global_settings)
+        else:
+            with open(settings_path, "r") as file:
+                global_settings = yaml.full_load(file)
+
+        return global_settings
+
+    def get_global_settings_path(self):
+        """
+        The cannoincal path for the TUI's global settings.
+
+        """
+        path_ = canonical_folders.get_datashuttle_path()
+        return path_ / "global_tui_settings.yaml"
+
+    def get_default_global_settings(self):
+        return {
+            "dark_mode": True,
+            "show_transfer_tree_status": False,
+        }
+
+    def save_global_settings(self, global_settings):
+        settings_path = self.get_global_settings_path()
+
+        with open(settings_path, "w") as file:
+            yaml.dump(global_settings, file, sort_keys=False)
 
 
 if __name__ == "__main__":

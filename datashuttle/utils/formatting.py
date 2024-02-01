@@ -17,6 +17,7 @@ def check_and_format_names(
     names: Union[list, str],
     prefix: Literal["sub", "ses"],
     name_templates: Optional[Dict] = None,
+    bypass_validation: bool = False,
 ) -> List[str]:
     """
     Format a list of subject or session names, e.g.
@@ -45,27 +46,32 @@ def check_and_format_names(
         A dictionary of templates to validate subject and session name against.
         e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
         where the "sub" and "ses" may contain a regexp to validate against.
+
+    bypass_validation : Dict
+        If `True`, NeuroBlueprint validation will be performed
+        on the passed names.
     """
     if isinstance(names, str):
         names = [names]
 
-    names_to_check, reserved_keywords = [], []
+    names_to_format, reserved_keywords = [], []
     for name in names:
         if name in canonical_reserved_keywords() or tags("*") in name:
             reserved_keywords.append(name)
         else:
-            names_to_check.append(name)
+            names_to_format.append(name)
 
-    formatted_names = format_names(names_to_check, prefix)
+    formatted_names = format_names(names_to_format, prefix)
 
-    validation.validate_list_of_names(
-        formatted_names,
-        prefix,
-        "error",
-        check_duplicates=True,
-        name_templates=name_templates,
-        log=True,
-    )
+    if not bypass_validation:
+        validation.validate_list_of_names(
+            formatted_names,
+            prefix,
+            "error",
+            check_duplicates=True,
+            name_templates=name_templates,
+            log=True,
+        )
 
     return formatted_names + reserved_keywords
 

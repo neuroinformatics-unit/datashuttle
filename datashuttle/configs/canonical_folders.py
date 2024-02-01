@@ -62,7 +62,7 @@ def get_non_sub_names() -> List[str]:
         "all_ses",
         "all_non_ses",
         "all_datatype",
-        "all_ses_level_non_datatype",
+        "all_non_datatype",
     ]
 
 
@@ -75,7 +75,7 @@ def get_non_ses_names() -> List[str]:
         "all_sub",
         "all_non_sub",
         "all_datatype",
-        "all_ses_level_non_datatype",
+        "all_non_datatype",
     ]
 
 
