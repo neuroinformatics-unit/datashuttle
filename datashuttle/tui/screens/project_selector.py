@@ -2,8 +2,10 @@ from textual.containers import Container
 from textual.screen import Screen
 from textual.widgets import Button, Header
 
-from datashuttle import DataShuttle
-from datashuttle.utils.getters import get_existing_project_paths
+from datashuttle.tui.ds_interface import DsInterface
+from datashuttle.utils.getters import (
+    get_existing_project_paths,  # TODO: should just get from interface? then no DS imports at all!
+)
 
 
 class ProjectSelectorScreen(Screen):
@@ -44,12 +46,16 @@ class ProjectSelectorScreen(Screen):
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id in self.project_names:
-            try:
-                project = DataShuttle(str(event.button.id))
-            except BaseException as e:
-                self.mainwindow.show_modal_error_dialog(str(e))
-                return
-            self.dismiss(project)
+
+            project_name = event.button.id
+
+            interface = DsInterface()
+            success, output = interface.select_existing_project(project_name)
+
+            if success:
+                self.dismiss(interface)
+            else:
+                self.mainwindow.show_modal_error_dialog(output)
 
         elif event.button.id == "all_main_menu_buttons":
             self.dismiss(False)

@@ -465,7 +465,7 @@ class TopLevelFolderSelect(Select):
     ----------
 
     project : DataShuttle
-        Current datashuttle project instance
+        Current datashuttle project instance # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
 
     existing_only : bool
         If `True`, only top level folders that actually exist in the
@@ -476,20 +476,15 @@ class TopLevelFolderSelect(Select):
         Textualize widget id
     """
 
-    def __init__(self, project, existing_only, id):
-        self.project = project
+    def __init__(self, project, id):
+        self.project = (
+            project  # TODO: could centralise all this on app or interface?!
+        )
 
         top_level_folders = [
             (folder, folder)
             for folder in canonical_folders.get_top_level_folders()
         ]
-
-        if existing_only:
-            top_level_folders = [
-                folders_tuple
-                for folders_tuple in top_level_folders
-                if (self.project.get_local_path() / folders_tuple[0]).exists()
-            ]
 
         if id == "create_folders_settings_toplevel_select":
             self.settings_key = "create_tab"
@@ -503,7 +498,10 @@ class TopLevelFolderSelect(Select):
                 "a persistent settings field"
             )
 
-        value = self.get_top_level_folder_from_file()
+        if not any(top_level_folders):
+            value = Select.BLANK
+        else:
+            value = self.get_top_level_folder_from_file()
 
         super(TopLevelFolderSelect, self).__init__(
             top_level_folders, value=value, id=id, allow_blank=True
@@ -522,7 +520,9 @@ class TopLevelFolderSelect(Select):
         Get the top level folder for this Select widget
         as stored in `persistent settings`.
         """
-        persistent_settings = self.project._load_persistent_settings()
+        persistent_settings = (
+            self.project._load_persistent_settings()
+        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
         top_level_folder = persistent_settings["tui"][
             "top_level_folder_select"
         ][self.settings_key]
@@ -544,8 +544,12 @@ class TopLevelFolderSelect(Select):
         When the select is changed, update the linked persistent setting.
         """
         top_level_folder = event.value
-        persistent_settings = self.project._load_persistent_settings()
+        persistent_settings = (
+            self.project._load_persistent_settings()
+        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
         persistent_settings["tui"]["top_level_folder_select"][
             self.settings_key
         ] = top_level_folder
-        self.project._save_persistent_settings(persistent_settings)
+        self.project._save_persistent_settings(
+            persistent_settings
+        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO

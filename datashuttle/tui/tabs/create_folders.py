@@ -19,39 +19,28 @@ from datashuttle.tui.screens.create_folder_settings import (
 )
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
-from datashuttle.utils import formatting, validation
 
 
 class CreateFoldersTab(TreeAndInputTab):
     """
     Create new project files formatted according to the NeuroBlueprint specification.
-
-    Parameters
-    ----------
-
-    mainwindow : App
-        Textualize app object
-
-    project : DataShuttle
-        Datashuttle project attached to the current `ProjectManager`
-
     """
 
-    def __init__(self, mainwindow, project):
+    def __init__(self, mainwindow, interface):
         super(CreateFoldersTab, self).__init__(
             "Create", id="tabscreen_create_tab"
         )
         self.mainwindow = mainwindow
-        self.project = project
+        self.interface = interface
 
         self.prev_click_time = 0.0
 
-        self.templates = project.get_name_templates()
+        self.templates = self.interface.project.get_name_templates()  # TODO!
 
     def compose(self):
         yield CustomDirectoryTree(
             self.mainwindow,
-            self.project.cfg.data["local_path"],
+            self.interface.project.cfg.data["local_path"],  # TODO !
             id="create_folders_directorytree",
         )
         yield Label("Subject(s)", id="create_folders_subject_label")
@@ -71,7 +60,7 @@ class CreateFoldersTab(TreeAndInputTab):
             validators=[NeuroBlueprintValidator("ses", self)],
         )
         yield Label("Datatype(s)", id="create_folders_datatype_label")
-        yield DatatypeCheckboxes(self.project)
+        yield DatatypeCheckboxes(self.interface.project)  # TODO!
         yield Horizontal(
             Button("Make Folders", id="create_folders_make_button"),
             Button(
@@ -90,7 +79,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         elif event.button.id == "create_folders_settings_button":
             self.mainwindow.push_screen(
-                CreateFoldersSettingsScreen(self.mainwindow, self.project),
+                CreateFoldersSettingsScreen(self.mainwindow, self.interface),
                 self.update_templates,
             )
 
@@ -181,7 +170,7 @@ class CreateFoldersTab(TreeAndInputTab):
         Update the datashuttle name templates. This is a callback
         function which is called within the Template Settings screen.
         """
-        self.project.set_name_templates(templates)
+        self.interface.project.set_name_templates(templates)
         self.templates = templates
         self.revalidate_inputs(["sub", "ses"])
 
@@ -200,27 +189,14 @@ class CreateFoldersTab(TreeAndInputTab):
         if ses_names == [""]:
             ses_names = None
 
-        # This can't use the top level folder argument on the select
-        # because it is on another screen, which is not good...
-        # In general this handling of top level folder is not ideal...
-        tmp_top_level_folder = self.project.get_top_level_folder()
-        persistent_settings = self.project._load_persistent_settings()
-        top_level_folder = persistent_settings["tui"][
-            "top_level_folder_select"
-        ]["create_tab"]
+        success, output = self.interface.create_folders(
+            sub_names, ses_names, datatype
+        )
 
-        try:
-            self.project.set_top_level_folder(top_level_folder)
-            self.project.create_folders(
-                sub_names=sub_names, ses_names=ses_names, datatype=datatype
-            )
+        if success:
             self.reload_directorytree()
-
-            self.project.set_top_level_folder(tmp_top_level_folder)
-        except BaseException as e:
-            self.project.set_top_level_folder(tmp_top_level_folder)
-            self.mainwindow.show_modal_error_dialog(str(e))
-            return
+        else:
+            self.mainwindow.show_modal_error_dialog(output)
 
     def reload_directorytree(self):
         self.query_one("#create_folders_directorytree").reload()
@@ -247,7 +223,7 @@ class CreateFoldersTab(TreeAndInputTab):
             The textual input name to update.
         """
         if prefix == "sub":
-            next_val = self.project.get_next_sub_number(
+            next_val = self.interface.project.get_next_sub_number(  # TODO # TODO # TODO # TODO # TODO # TODO
                 return_with_prefix=True, local_only=True
             )
         else:
@@ -264,7 +240,7 @@ class CreateFoldersTab(TreeAndInputTab):
             else:
                 sub = sub_names[0]
 
-            next_val = self.project.get_next_ses_number(
+            next_val = self.interface.project.get_next_ses_number(  # TODO # TODO # TODO # TODO # TODO # TODO
                 sub, return_with_prefix=True, local_only=True
             )
         if self.templates["on"] and self.templates[prefix] is not None:
@@ -276,7 +252,9 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    def run_local_validation(self, prefix):
+    def run_local_validation(
+        self, prefix
+    ):  # TODO:TODOTODOTODOTODOTODOTODO might be easier to handle sub and ses separately, though would need to handle errors twice...
         """
         Run validation of the values stored in the
         sub / ses Input according to the passed prefix
@@ -302,40 +280,29 @@ class CreateFoldersTab(TreeAndInputTab):
 
         prefix : Literal["sub", "ses"]
         """
-        try:
-            sub_names = self.query_one(
-                "#create_folders_subject_input"
+        sub_names = self.query_one(
+            "#create_folders_subject_input"
+        ).as_names_list()
+
+        if prefix == "sub":
+            ses_names = None
+        else:
+            ses_names = self.query_one(
+                "#create_folders_session_input"
             ).as_names_list()
 
-            format_sub = formatting.check_and_format_names(
-                sub_names, "sub", name_templates=self.templates
-            )
+        success, output = self.interface.validate_names(
+            sub_names,
+            ses_names,
+            self.templates,  # COULD HANDLE TEMPLATES CENTRALLY! # COULD HANDLE TEMPLATES CENTRALLY! # COULD HANDLE TEMPLATES CENTRALLY! # COULD HANDLE TEMPLATES CENTRALLY!
+        )
 
-            if prefix == "sub":
-                format_ses = None
-            else:
-                ses_names = self.query_one(
-                    "#create_folders_session_input"
-                ).as_names_list()
+        if not success:
+            return False, output
 
-                format_ses = formatting.check_and_format_names(
-                    ses_names, "ses", name_templates=self.templates
-                )
-
-            validation.validate_names_against_project(
-                self.project.cfg,
-                format_sub,
-                format_ses,
-                local_only=True,
-                error_or_warn="error",
-                log=False,
-                name_templates=self.templates,
-            )
-
-        except Exception as e:
-            return False, str(e)
-
-        names = format_sub if prefix == "sub" else format_ses
+        names = (
+            output["format_sub"] if prefix == "sub" else output["format_ses"]
+        )
 
         return True, f"Formatted names: {names}"
 

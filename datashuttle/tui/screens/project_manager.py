@@ -27,23 +27,14 @@ class ProjectManagerScreen(Screen):
     and allows configs to be reset. This is an instantiation of the
     ConfigsContent window, which is also shared by `Make New Project`.
     See ConfigsContent for more information.
-
-    Parameters
-    ----------
-
-    mainwindow : TuiApp
-        The main application window used for coordinating screen display.
-
-    project : DataShuttle
-        An instantiated datashuttle project.
     """
 
-    def __init__(self, mainwindow, project):
+    def __init__(self, mainwindow, interface):
         super(ProjectManagerScreen, self).__init__()
 
         self.mainwindow = mainwindow
-        self.project = project
-        self.title = f"Project: {self.project.project_name}"
+        self.interface = interface
+        self.title = f"Project: {self.interface.project.project_name}"
 
         # see `on_tabbed_content_tab_activated()`
         self.tabbed_content_mount_signal = True
@@ -55,16 +46,16 @@ class ProjectManagerScreen(Screen):
             id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
         ):
             yield create_folders.CreateFoldersTab(
-                self.mainwindow, self.project
+                self.mainwindow, self.interface
             )
             yield transfer.TransferTab(
                 "Transfer",
                 self.mainwindow,
-                self.project,
+                self.interface,
                 id="tabscreen_transfer_tab",
             )
             with TabPane("Configs", id="tabscreen_configs_tab"):
-                yield ConfigsContent(self, self.project)
+                yield ConfigsContent(self, self.interface)
 
     def on_button_pressed(self, event: Button.Pressed):
         """
@@ -105,8 +96,8 @@ class ProjectManagerScreen(Screen):
         shows the central path it will have to be updated.
         """
         self.query_one("#tabscreen_create_tab").update_directorytree_root(
-            self.project.cfg["local_path"]
+            self.interface.project.cfg["local_path"]
         )
         self.query_one("#tabscreen_transfer_tab").update_directorytree_root(
-            self.project.cfg["local_path"]
+            self.interface.project.cfg["local_path"]
         )

@@ -34,14 +34,16 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     TITLE = "Create Folders Settings"
 
-    def __init__(self, mainwindow, project):
+    def __init__(self, mainwindow, interface):
         super(CreateFoldersSettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
         self.input_mode = "sub"
-        self.project = project
+        self.interface = interface
 
-        self.templates = self.project.get_name_templates()
+        self.templates = (
+            self.interface.project.get_name_templates()
+        )  # TODO TODO TODO TODO NAME TEMPLATES # TODO TODO TODO TODO NAME TEMPLATES # TODO TODO TODO TODO NAME TEMPLATES
 
     def action_link_docs(self) -> None:
         webbrowser.open("https://datashuttle.neuroinformatics.dev/")
@@ -60,14 +62,15 @@ class CreateFoldersSettingsScreen(ModalScreen):
         Visit the [@click=screen.link_docs()]Documentation[/] for more information.
         """
 
-        bypass_validation = self.project.get_bypass_validation()
+        bypass_validation = (
+            self.interface.project.get_bypass_validation()
+        )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
 
         yield Container(
             Horizontal(
                 Label("Top level folder:", id="labelTESTEST"),
                 TopLevelFolderSelect(
-                    self.project,
-                    existing_only=True,
+                    self.interface.project,  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
                     id="create_folders_settings_toplevel_select",
                 ),
             ),
@@ -122,14 +125,17 @@ class CreateFoldersSettingsScreen(ModalScreen):
         When `self.templates["on"]` is `False`, all
         template widgets are disabled.
         """
-        cont = self.query_one("#template_inner_container")
-        cont.disabled = not self.templates["on"]
+        self.query_one("#template_inner_container").disabled = (
+            not self.templates["on"]
+        )
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "create_folders_settings_close_button":
             self.dismiss(self.templates)
         elif event.button.id == "create_settings_bypass_validation_button":
-            self.project.set_bypass_validation(on=False)
+            self.interface.project.set_bypass_validation(
+                on=False
+            )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
 
     def on_checkbox_changed(self, event):
         """
@@ -139,18 +145,31 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
         if event.checkbox.id == "template_settings_validation_on_checkbox":
             self.templates["on"] = is_on
-            self.project.set_name_templates(self.templates)
+            self.interface.project.set_name_templates(
+                self.templates
+            )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
             self.set_disabled_mode_widgets()
 
         elif (
             event.checkbox.id
             == "create_folders_settings_bypass_validation_checkbox"
         ):
-            self.project.set_bypass_validation(on=is_on)
-            self.query_one("#template_inner_container").disabled = is_on
+            self.interface.project.set_bypass_validation(
+                on=is_on
+            )  # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO # TODO TODO TODO TODO
             self.query_one(
                 "#template_settings_validation_on_checkbox"
             ).disabled = is_on
+
+            if is_on:
+                disable_container = True
+            else:
+                disable_container = not self.query_one(
+                    "#template_settings_validation_on_checkbox"
+                ).value
+            self.query_one("#template_inner_container").disabled = (
+                disable_container
+            )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """

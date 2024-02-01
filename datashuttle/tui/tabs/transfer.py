@@ -33,21 +33,24 @@ class TransferTab(TreeAndInputTab):
 
     mainwindow : App
 
-    project : DataShuttle
-        The initialised datashuttle project to transfer.
+    interface : DsInterface
+        TUI-datashuttle interface object
 
     id : str
         The textual widget id.
     """
 
-    def __init__(self, title, mainwindow, project, id=None):
+    def __init__(self, title, mainwindow, interface, id=None):
         super(TransferTab, self).__init__(title, id=id)
         self.mainwindow = mainwindow
-        self.project = project
+        self.interface = interface
         self.prev_click_time = 0.0
         self.show_legend = self.mainwindow.load_global_settings()[
             "show_transfer_tree_status"
         ]
+
+    # Setup
+    # ----------------------------------------------------------------------------------
 
     def compose(self):
         self.transfer_all_widgets = [
@@ -65,8 +68,7 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_toplevel_label_top",
             ),
             TopLevelFolderSelect(
-                self.project,
-                existing_only=True,
+                self.interface.project,
                 id="transfer_toplevel_select",
             ),
         ]
@@ -76,8 +78,7 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_custom_label_top",
             ),
             TopLevelFolderSelect(
-                self.project,
-                existing_only=True,
+                self.interface.project,
                 id="transfer_custom_select",
             ),
             Label("Subject(s)"),
@@ -93,7 +94,9 @@ class TransferTab(TreeAndInputTab):
                 placeholder="e.g. ses-001",
             ),
             Label("Datatype(s)"),
-            DatatypeCheckboxes(self.project, create_or_transfer="transfer"),
+            DatatypeCheckboxes(
+                self.interface.project, create_or_transfer="transfer"
+            ),
         ]
 
         yield RadioSet(
@@ -104,7 +107,7 @@ class TransferTab(TreeAndInputTab):
         )
         yield TransferStatusTree(
             self.mainwindow,
-            self.project,
+            self.interface.project,
             id="transfer_directorytree",
         )
         yield Container(
@@ -140,6 +143,9 @@ class TransferTab(TreeAndInputTab):
                 # ("Central Only\n", "italic dodger_blue3"),
                 ("Error\n", "bright_red"),
             )
+
+    # Manage Widgets
+    # ----------------------------------------------------------------------------------
 
     def switch_transfer_widgets_display(self):
         """
@@ -207,9 +213,12 @@ class TransferTab(TreeAndInputTab):
     def reload_directorytree(self):
         self.query_one("#transfer_directorytree").update_transfer_tree()
 
-    # Transfer data method
+    def update_directorytree_root(self, new_root_path):
+        """Will automatically refresh the tree"""
+        self.query_one("#transfer_directorytree").path = new_root_path
+
+    # Transfer
     # ----------------------------------------------------------------------------------
-    # TODO: everything non-GUI related should be factored to separate module
 
     def transfer_data(self, transfer_bool: bool) -> None:
         """
@@ -223,104 +232,43 @@ class TransferTab(TreeAndInputTab):
 
         """
         if transfer_bool:
-            upload_selected = not self.query_one("#transfer_switch").value
+            upload = not self.query_one("#transfer_switch").value
 
             if self.query_one("#transfer_all_radiobutton").value:
-                self.transfer_entire_project(upload_selected)
+                success, output = self.interface.transfer_entire_project(
+                    upload
+                )
 
             elif self.query_one("#transfer_toplevel_radiobutton").value:
-                self.upload_top_level_only(upload_selected)
+
+                selected_top_level_folder = self.query_one(
+                    "#transfer_toplevel_select"
+                ).get_top_level_folder()
+
+                success, output = self.interface.upload_top_level_only(
+                    selected_top_level_folder, upload
+                )
 
             elif self.query_one("#transfer_custom_radiobutton").value:
-                self.transfer_custom_selection(upload_selected)
+
+                selected_top_level_folder = self.query_one(
+                    "#transfer_custom_select"
+                ).get_top_level_folder()
+
+                sub_names, ses_names, datatype = (
+                    self.get_sub_ses_names_and_datatype(
+                        "#transfer_subject_input", "#transfer_session_input"
+                    )
+                )
+                success, output = self.interface.transfer_custom_selection(
+                    selected_top_level_folder,
+                    sub_names,
+                    ses_names,
+                    datatype,
+                    upload,
+                )
 
             self.reload_directorytree()
 
-    def transfer_entire_project(self, upload):
-        try:
-            if upload:
-                self.project.upload_entire_project()
-            else:
-                self.project.download_entire_project()
-        except BaseException as e:
-            self.mainwindow.show_modal_error_dialog(str(e))
-            return
-
-    def upload_top_level_only(self, upload):
-        """
-        Transfer all files in specified top-level-folder only.
-
-        TODO
-        ----
-        Currently this implements a  hacky solution to change the project
-        top-level folder, do the transfer then change it back.
-
-        It would be better for the transfer function to take top_level_folder
-        as an argument that can override the project settings. However, from
-        an API level this might be confusing so have changed it yet.
-        """
-        selected_top_level_folder = self.query_one(
-            "#transfer_toplevel_select"
-        ).get_top_level_folder()
-
-        temp_top_level_folder = self.project.get_top_level_folder()
-        self.project.set_top_level_folder(selected_top_level_folder)
-        try:
-            if upload:
-                self.project.upload_all()
-            else:
-                self.project.download_all()
-        except BaseException as e:
-            self.project.set_top_level_folder(temp_top_level_folder)
-            self.mainwindow.show_modal_error_dialog(str(e))
-            return
-        self.project.set_top_level_folder(temp_top_level_folder)
-
-    def transfer_custom_selection(self, upload):
-        """
-        Tranfser the user-selected subset of the project. Collect the
-        sub names, session names and datatypes to transfer, then transfer.
-
-        TODO
-        ----
-        Currently this implements a  hacky solution to change the project
-        top-level folder, do the transfer then change it back.
-
-        It would be better for the transfer function to take top_level_folder
-        as an argument that can override the project settings. However, from
-        an API level this might be confusing so have changed it yet.
-        """
-        selected_top_level_folder = self.query_one(
-            "#transfer_custom_select"
-        ).get_top_level_folder()
-
-        temp_top_level_folder = self.project.get_top_level_folder()
-        self.project.set_top_level_folder(selected_top_level_folder)
-
-        sub_names, ses_names, datatype = self.get_sub_ses_names_and_datatype(
-            "#transfer_subject_input", "#transfer_session_input"
-        )
-
-        try:
-            if upload:
-                self.project.upload(
-                    sub_names=sub_names,
-                    ses_names=ses_names,
-                    datatype=datatype,
-                )
-            else:
-                self.project.download(
-                    sub_names=sub_names,
-                    ses_names=ses_names,
-                    datatype=datatype,
-                )
-        except BaseException as e:
-            self.project.set_top_level_folder(temp_top_level_folder)
-            self.mainwindow.show_modal_error_dialog(str(e))
-            return
-
-        self.project.set_top_level_folder(temp_top_level_folder)
-
-    def update_directorytree_root(self, new_root_path):
-        """Will automatically refresh the tree"""
-        self.query_one("#transfer_directorytree").path = new_root_path
+            if not success:
+                self.mainwindow.show_modal_error_dialog(output)

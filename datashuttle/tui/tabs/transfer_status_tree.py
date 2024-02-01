@@ -127,7 +127,6 @@ class TransferStatusTree(CustomDirectoryTree):
         Takes nodes being formatted using `render_label` and applies custom
         formatting according to the node's transfer status.
         """
-
         node_relative_path = node_path.as_posix().replace(
             f"{self.project.cfg['local_path'] .as_posix()}/", ""
         )

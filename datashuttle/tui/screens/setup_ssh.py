@@ -7,8 +7,6 @@ from textual.widgets import (
     Static,
 )
 
-from datashuttle.utils import ssh
-
 
 class SetupSshScreen(ModalScreen):
     """
@@ -26,12 +24,14 @@ class SetupSshScreen(ModalScreen):
     core functionality is centralised in ssh.py functions.
     """
 
-    def __init__(self, project):
+    def __init__(self, interface):
         super(SetupSshScreen, self).__init__()
 
-        self.project = project
+        self.interface = interface
         self.stage = 0
         self.failed_password_attempts = 1
+
+        self.key: paramiko.RSAKey
 
     def compose(self) -> ComposeResult:
         yield Container(
@@ -86,24 +86,26 @@ class SetupSshScreen(ModalScreen):
         most likely is necessary to edit the central host id) and
         show the traceback.
         """
-        try:
-            self.key = ssh.get_remote_server_key(
-                self.project.cfg["central_host_id"]
-            )
+        success, output = self.interface.get_ssh_hostkey()
+
+        if success:
+            self.key = output
+
             message = (
                 f"The host key is not cached for this server: "
-                f"{self.project.cfg['central_host_id']}.\nYou have no guarantee "
+                f"{self.interface.get_central_host_id()}.\nYou have no guarantee "
                 f"that the server is the computer you think it is.\n"
                 f"The server's {self.key.get_name()} key fingerprint is:\n\n "
                 f"{self.key.get_base64()}\n\nIf you trust this host, to connect"
                 f" and cache the host key, press OK: "
             )
-        except BaseException as e:
-            self.query_one("#setup_ssh_ok_button").disabled = True
+        else:
             message = (
                 "Could not connect to server. \nCheck the connection "
-                f"and the central host ID : \n\n{self.project.cfg['central_host_id']} \n\n Traceback: {e}"
+                f"and the central host ID : \n\n{self.interface.get_central_host_id()} \n\n Traceback: {output}"
             )
+            self.query_one("#setup_ssh_ok_button").disabled = True
+
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
@@ -113,24 +115,21 @@ class SetupSshScreen(ModalScreen):
         for the central server. When 'OK' is pressed we go
         straight to 'use_password_to_setup_ssh_key_pairs'.
         """
-        try:
-            ssh.save_hostkey_locally(
-                self.key,
-                self.project.cfg["central_host_id"],
-                self.project.cfg.hostkeys_path,
-            )
+        success, output = self.interface.save_hostkey_locally(self.key)
+
+        if success:
             message = (
                 "Hostkey accepted. \n\nNext, input your password to the server "
                 "below to setup an SSH key pair. You will not need to enter "
                 "your password again. Press OK to confirm"
             )
             self.query_one("#setup_ssh_password_input").visible = True
-        except BaseException as e:
-            self.query_one("#setup_ssh_ok_button").disabled = True
+        else:
             message = (
                 f"Could not store host key. Check permissions "
-                f"to: \n\n {self.project.cfg.hostkeys_path}.\n\n Traceback: {e}"
+                f"to: \n\n {self.interface.project.cfg.hostkeys_path}.\n\n Traceback: {output}"
             )
+            self.query_one("#setup_ssh_ok_button").disabled = True
 
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
@@ -141,27 +140,53 @@ class SetupSshScreen(ModalScreen):
         SSH key pair is setup and 'OK' button changed to 'Finish'.
         Otherwise, continue allowing failed password attempts.
         """
-        try:
-            password = self.query_one("#setup_ssh_password_input").value
+        password = self.query_one("#setup_ssh_password_input").value
 
-            ssh.add_public_key_to_central_authorized_keys(
-                self.project.cfg, password, log=False
-            )
-            self.project._setup_rclone_central_ssh_config(log=False)
+        success, output = self.interface.setup_key_pair_and_rclone_config(
+            password
+        )
 
+        if success:
             message = (
                 f"Connection successful! SSH key "
-                f"saved to {self.project.cfg.ssh_key_path}"
+                f"saved to {self.interface.project.cfg.ssh_key_path}"
             )
             self.query_one("#setup_ssh_ok_button").label = "Finish"
             self.query_one("#setup_ssh_cancel_button").disabled = True
             self.stage += 1
-        except BaseException as e:
+
+        else:
             message = (
                 f"Password setup failed. Check password is correct and try again."
                 f"\n\n{self.failed_password_attempts} failed password attempts."
-                f"\n\n Traceback: {e}"
+                f"\n\n Traceback: {output}"
             )
             self.failed_password_attempts += 1
 
         self.query_one("#messagebox_message_label").update(message)
+
+
+#       try:
+#          password = self.query_one("#setup_ssh_password_input").value
+#
+#           ssh.add_public_key_to_central_authorized_keys(
+#              self.interface.project.cfg, password, log=False
+#         )
+#        self.interface.project._setup_rclone_central_ssh_config(log=False)
+#
+#           message = (
+#              f"Connection successful! SSH key "
+#             f"saved to {self.interface.project.cfg.ssh_key_path}"
+#        )
+#       self.query_one("#setup_ssh_ok_button").label = "Finish"
+#      self.query_one("#setup_ssh_cancel_button").disabled = True
+#     self.stage += 1
+#       except BaseException as e:
+#          message = (
+#             f"Password setup failed. Check password is correct and try again."
+#            f"\n\n{self.failed_password_attempts} failed password attempts."
+#           f"\n\n Traceback: {e}"
+#        )
+#      self.failed_password_attempts += 1
+#
+#       self.query_one("#messagebox_message_label").update(message)

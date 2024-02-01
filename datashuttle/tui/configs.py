@@ -12,8 +12,8 @@ from textual.widgets import (
     Static,
 )
 
-from datashuttle import DataShuttle
 from datashuttle.tui.custom_widgets import ClickableInput
+from datashuttle.tui.ds_interface import DsInterface
 from datashuttle.tui.screens import modal_dialogs, setup_ssh
 from datashuttle.tui.utils import tui_utils
 
@@ -36,11 +36,11 @@ class ConfigsContent(Container):
     class ConfigsSaved(Message):
         pass
 
-    def __init__(self, parent_class, project):
+    def __init__(self, parent_class, interface):
         super(ConfigsContent, self).__init__()
 
         self.parent_class = parent_class
-        self.project = project
+        self.interface = interface
         self.config_ssh_widgets = []
 
         self.central_input_placeholder_paths = {
@@ -144,7 +144,7 @@ class ConfigsContent(Container):
             ),
         ]
 
-        if not self.project:
+        if not self.interface:
             config_screen_widgets = (
                 init_only_config_screen_widgets + config_screen_widgets
             )
@@ -169,17 +169,15 @@ class ConfigsContent(Container):
         """
         container = self.query_one("#configs_transfer_options_container")
         container.border_title = "Transfer Options"
-        if self.project:
+        if self.interface:
             self.fill_widgets_with_project_configs()
         else:
-            radiobutton = self.query_one(
-                "#configs_local_filesystem_radiobutton"
+            self.query_one("#configs_local_filesystem_radiobutton").value = (
+                True
             )
-            radiobutton.value = True
             self.switch_ssh_widgets_display(display_bool=False)
 
-            checkbox = self.query_one("#configs_overwrite_files_checkbox")
-            checkbox.value = False
+            self.query_one("#configs_overwrite_files_checkbox").value = False
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
@@ -222,7 +220,7 @@ class ConfigsContent(Container):
         and use these to call project.create_folders().
         """
         if event.button.id == "configs_set_configs_button":
-            if not self.project:
+            if not self.interface:
                 self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
             else:
                 self.setup_configs_for_an_existing_project()
@@ -264,7 +262,8 @@ class ConfigsContent(Container):
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
         if any(
-            self.project.cfg[key] != value for key, value in cfg_kwargs.items()
+            self.interface.project.cfg[key] != value
+            for key, value in cfg_kwargs.items()
         ):
             self.parent_class.mainwindow.show_modal_error_dialog(
                 "The values set above must equal the datashuttle settings. "
@@ -272,7 +271,7 @@ class ConfigsContent(Container):
             )
             return
         self.parent_class.mainwindow.push_screen(
-            setup_ssh.SetupSshScreen(self.project)
+            setup_ssh.SetupSshScreen(self.interface)
         )
 
     def setup_configs_for_a_new_project_and_switch_to_tab_screen(self):
@@ -289,27 +288,25 @@ class ConfigsContent(Container):
         with the new project.
         """
         project_name = self.query_one("#configs_name_input").value
+        cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
-        try:
-            project = DataShuttle(project_name)
+        interface = DsInterface()
 
-            cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
+        success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
-            project.make_config_file(**cfg_kwargs)
-
+        if success:
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.MessageBox(
-                    "A DataShuttle project with the below "
-                    "configs has now been created.\n\n Click 'OK' to proceed to "
+                    "A DataShuttle project has now been created.\n\n "
+                    "Click 'OK' to proceed to "
                     "the project page, where you will be able to create and "
                     "transfer project folders.",
                     border_color="green",
                 ),
-                lambda _: self.parent_class.dismiss(project),
+                lambda _: self.parent_class.dismiss(interface),
             )
-
-        except BaseException as e:
-            self.parent_class.mainwindow.show_modal_error_dialog(str(e))
+        else:
+            self.parent_class.mainwindow.show_modal_error_dialog(output)
 
     def setup_configs_for_an_existing_project(self):
         """
@@ -320,17 +317,20 @@ class ConfigsContent(Container):
         """
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
-        try:
-            self.project.make_config_file(**cfg_kwargs)
+        success, output = self.interface.set_configs_on_existing_project(
+            cfg_kwargs
+        )
 
+        if success:
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.MessageBox(
                     "Configs saved.", border_color="green"
                 )
             )
-        except BaseException as e:
-            self.parent_class.mainwindow.show_modal_error_dialog(str(e))
+        else:
+            self.parent_class.mainwindow.show_modal_error_dialog(output)
 
+        # Update the DirectoryTree anyway just in case.
         self.post_message(self.ConfigsSaved())
 
     def fill_widgets_with_project_configs(self):
@@ -344,7 +344,7 @@ class ConfigsContent(Container):
         in `self.switch_ssh_widgets_display()`.
         """
         cfg_to_load = tui_utils.get_textual_compatible_project_configs(
-            self.project.cfg
+            self.interface.project.cfg
         )
 
         # Local Path
@@ -386,7 +386,7 @@ class ConfigsContent(Container):
 
         # Overwrite Files Checkbox
         checkbox = self.query_one("#configs_overwrite_files_checkbox")
-        checkbox.value = self.project.cfg["overwrite_old_files"]
+        checkbox.value = self.interface.project.cfg["overwrite_old_files"]
 
     def get_datashuttle_inputs_from_widgets(self):
         """

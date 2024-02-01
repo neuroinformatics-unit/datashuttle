@@ -35,7 +35,7 @@ class NewProjectScreen(Screen):
     def compose(self):
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
-        yield configs.ConfigsContent(self, project=None)
+        yield configs.ConfigsContent(self, interface=None)
 
     def on_button_pressed(self, event: Button.Pressed):
         if event.button.id == "all_main_menu_buttons":

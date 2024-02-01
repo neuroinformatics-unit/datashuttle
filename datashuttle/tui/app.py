@@ -84,10 +84,10 @@ class TuiApp(App):
                 )
             )
 
-    def load_project_page(self, project):
-        if project:
+    def load_project_page(self, interface):
+        if interface:
             self.push_screen(
-                project_manager.ProjectManagerScreen(self, project)
+                project_manager.ProjectManagerScreen(self, interface)
             )
 
     def show_modal_error_dialog(self, message):
