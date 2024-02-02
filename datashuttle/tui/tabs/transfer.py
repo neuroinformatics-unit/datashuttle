@@ -1,3 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from textual.app import ComposeResult
+
+    from datashuttle.tui.app import App
+    from datashuttle.tui.custom_widgets import CustomDirectoryTree
+    from datashuttle.tui.interface import Interface
+
 from rich.text import Text
 from textual.containers import Container, Horizontal
 from textual.widgets import (
@@ -40,7 +53,13 @@ class TransferTab(TreeAndInputTab):
         The textual widget id.
     """
 
-    def __init__(self, title, mainwindow, interface, id=None):
+    def __init__(
+        self,
+        title: str,
+        mainwindow: App,
+        interface: Interface,
+        id: Optional[str] = None,
+    ) -> None:
         super(TransferTab, self).__init__(title, id=id)
         self.mainwindow = mainwindow
         self.interface = interface
@@ -52,7 +71,7 @@ class TransferTab(TreeAndInputTab):
     # Setup
     # ----------------------------------------------------------------------------------
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         self.transfer_all_widgets = [
             Label(
                 "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred.",
@@ -127,7 +146,7 @@ class TransferTab(TreeAndInputTab):
         if self.show_legend:
             yield Label("⭕ Legend", id="transfer_legend")
 
-    def on_mount(self):
+    def on_mount(self) -> None:
         self.query_one("#transfer_params_container").border_title = (
             "Parameters"
         )
@@ -145,7 +164,7 @@ class TransferTab(TreeAndInputTab):
     # Manage Widgets
     # ----------------------------------------------------------------------------------
 
-    def switch_transfer_widgets_display(self):
+    def switch_transfer_widgets_display(self) -> None:
         """
         Show or hide transfer parameters based on whether the transfer mode
         currently selected in `transfer_radioset`.
@@ -199,7 +218,9 @@ class TransferTab(TreeAndInputTab):
                 ConfirmScreen(message), self.transfer_data
             )
 
-    def on_custom_directory_tree_directory_tree_special_key_press(self, event):
+    def on_custom_directory_tree_directory_tree_special_key_press(
+        self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
+    ) -> None:
         if event.key == "ctrl+r":
             self.reload_directorytree()
 
@@ -208,10 +229,10 @@ class TransferTab(TreeAndInputTab):
                 "#transfer_subject_input", "#transfer_session_input", event
             )
 
-    def reload_directorytree(self):
+    def reload_directorytree(self) -> None:
         self.query_one("#transfer_directorytree").update_transfer_tree()
 
-    def update_directorytree_root(self, new_root_path):
+    def update_directorytree_root(self, new_root_path: Path) -> None:
         """Will automatically refresh the tree"""
         self.query_one("#transfer_directorytree").path = new_root_path
 

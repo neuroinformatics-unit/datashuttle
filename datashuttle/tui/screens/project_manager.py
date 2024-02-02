@@ -1,4 +1,13 @@
-from textual.app import ComposeResult
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+    from datashuttle.tui.app import App
+    from datashuttle.tui.interface import Interface
+
 from textual.screen import Screen
 from textual.widgets import (
     Button,
@@ -29,7 +38,7 @@ class ProjectManagerScreen(Screen):
     See ConfigsContent for more information.
     """
 
-    def __init__(self, mainwindow, interface):
+    def __init__(self, mainwindow: App, interface: Interface) -> None:
         super(ProjectManagerScreen, self).__init__()
 
         self.mainwindow = mainwindow
@@ -57,7 +66,7 @@ class ProjectManagerScreen(Screen):
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield ConfigsContent(self, self.interface)
 
-    def on_button_pressed(self, event: Button.Pressed):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """
         Dismisses the TabScreen (and returns to the main menu) once
         the 'Main Menu' button is pressed.
@@ -65,7 +74,9 @@ class ProjectManagerScreen(Screen):
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()
 
-    def on_tabbed_content_tab_activated(self, event):
+    def on_tabbed_content_tab_activated(
+        self, event: TabbedContent.TabActivated
+    ) -> None:
         """
         Refresh the directorytree for create or transfer tabs whenever
         the tabbedcontent is switched to one of these tabs.
@@ -84,7 +95,7 @@ class ProjectManagerScreen(Screen):
         elif event.pane.id == "tabscreen_transfer_tab":
             self.query_one("#tabscreen_transfer_tab").reload_directorytree()
 
-    def on_configs_content_configs_saved(self):
+    def on_configs_content_configs_saved(self) -> None:
         """
         When the config file are refreshed, the local path may have changed.
         In this case the directorytree will be displaying the wrong root,

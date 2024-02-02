@@ -1,9 +1,13 @@
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     import paramiko
+    from textual.app import ComposeResult
 
-from textual.app import ComposeResult
+    from datashuttle.tui.interface import Interface
+
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
@@ -29,7 +33,7 @@ class SetupSshScreen(ModalScreen):
     core functionality is centralised in ssh.py functions.
     """
 
-    def __init__(self, interface):
+    def __init__(self, interface: Interface) -> None:
         super(SetupSshScreen, self).__init__()
 
         self.interface = interface
@@ -56,10 +60,10 @@ class SetupSshScreen(ModalScreen):
             id="setup_ssh_screen_container",
         )
 
-    def on_mount(self):
+    def on_mount(self) -> None:
         self.query_one("#setup_ssh_password_input").visible = False
 
-    def on_button_pressed(self, event):
+    def on_button_pressed(self, event: Button.pressed) -> None:
         """
         When each stage is successfully progressed, `self.stage` is iterated
         by 1. For saving and excepting hostkey, if there is a problem
@@ -83,7 +87,7 @@ class SetupSshScreen(ModalScreen):
             elif self.stage == 3:
                 self.dismiss()
 
-    def ask_user_to_accept_hostkeys(self):
+    def ask_user_to_accept_hostkeys(self) -> None:
         """
         The central server is identified by a hostkey.
         Get this hostkey and present it to user, clicking 'OK' is
@@ -115,7 +119,7 @@ class SetupSshScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
-    def save_hostkeys_and_prompt_password_input(self):
+    def save_hostkeys_and_prompt_password_input(self) -> None:
         """
         Once the hostkey is accepted, get the user password
         for the central server. When 'OK' is pressed we go
@@ -140,7 +144,7 @@ class SetupSshScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
-    def use_password_to_setup_ssh_key_pairs(self):
+    def use_password_to_setup_ssh_key_pairs(self) -> None:
         """
         Get the user password for the central server. If correct,
         SSH key pair is setup and 'OK' button changed to 'Finish'.

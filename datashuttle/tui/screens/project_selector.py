@@ -1,3 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+    from datashuttle.tui.app import App
+
 from textual.containers import Container
 from textual.screen import Screen
 from textual.widgets import Button, Header
@@ -28,7 +37,7 @@ class ProjectSelectorScreen(Screen):
 
     TITLE = "Select Project"
 
-    def __init__(self, mainwindow):
+    def __init__(self, mainwindow: App) -> None:
         super(ProjectSelectorScreen, self).__init__()
 
         self.project_names = [
@@ -36,7 +45,7 @@ class ProjectSelectorScreen(Screen):
         ]
         self.mainwindow = mainwindow
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         yield Header(id="project_select_header")
         yield Button("Main Menu", id="all_main_menu_buttons")
         yield Container(
@@ -44,7 +53,7 @@ class ProjectSelectorScreen(Screen):
             id="project_select_top_container",
         )
 
-    def on_button_pressed(self, event: Button.Pressed):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id in self.project_names:
 
             project_name = event.button.id

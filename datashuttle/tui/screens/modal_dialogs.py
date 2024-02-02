@@ -1,6 +1,16 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from textual.app import ComposeResult
+
+    from datashuttle.tui.app import App
+
 from pathlib import Path
 
-from textual.app import ComposeResult
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Button, Label, Static
@@ -21,7 +31,7 @@ class MessageBox(ModalScreen):
         keywords 'red' and 'green' are overridden for custom style.
     """
 
-    def __init__(self, message, border_color):
+    def __init__(self, message: str, border_color: str) -> None:
         super(MessageBox, self).__init__()
 
         self.message = message
@@ -37,7 +47,7 @@ class MessageBox(ModalScreen):
             id="messagebox_top_container",
         )
 
-    def on_mount(self):
+    def on_mount(self) -> None:
         if self.border_color == "red":
             color = "rgb(140, 12, 0)"
         elif self.border_color == "green":
@@ -59,7 +69,7 @@ class ConfirmScreen(ModalScreen):
     A screen for rendering confirmation messages.
     """
 
-    def __init__(self, message):
+    def __init__(self, message: str) -> None:
         super().__init__()
 
         self.message = message
@@ -75,7 +85,7 @@ class ConfirmScreen(ModalScreen):
             id="confirm_top_container",
         )
 
-    def on_button_pressed(self, event) -> None:
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "confirm_ok_button":
             self.dismiss(True)
         else:
@@ -100,7 +110,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         if `None` set to the system user home.
     """
 
-    def __init__(self, mainwindow, path_=None):
+    def __init__(self, mainwindow: App, path_: Optional[Path] = None) -> None:
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
@@ -123,12 +133,12 @@ class SelectDirectoryTreeScreen(ModalScreen):
         )
 
     @require_double_click
-    def on_directory_tree_directory_selected(self, node):
+    def on_directory_tree_directory_selected(self, node) -> None:
         if node.path.is_file():
             return
         else:
             self.dismiss(node.path)
 
-    def on_button_pressed(self, event):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "cancel_button":
             self.dismiss(False)

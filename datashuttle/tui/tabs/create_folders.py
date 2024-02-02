@@ -1,6 +1,14 @@
 from __future__ import annotations
 
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Literal, Optional
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from textual.app import ComposeResult
+
+    from datashuttle.tui.app import App
+    from datashuttle.tui.interface import Interface
 
 from textual.containers import Horizontal
 from textual.widgets import (
@@ -20,13 +28,15 @@ from datashuttle.tui.screens.create_folder_settings import (
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 
+Prefix = Literal["sub", "ses"]
+
 
 class CreateFoldersTab(TreeAndInputTab):
     """
     Create new project files formatted according to the NeuroBlueprint specification.
     """
 
-    def __init__(self, mainwindow, interface):
+    def __init__(self, mainwindow: App, interface: Interface) -> None:
         super(CreateFoldersTab, self).__init__(
             "Create", id="tabscreen_create_tab"
         )
@@ -35,7 +45,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         self.prev_click_time = 0.0
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         yield CustomDirectoryTree(
             self.mainwindow,
             self.interface.get_configs()["local_path"],
@@ -67,7 +77,7 @@ class CreateFoldersTab(TreeAndInputTab):
             ),
         )
 
-    def on_button_pressed(self, event: Button.Pressed):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """
         Enables the Make Folders button to read out current input values
         and use these to call project.create_folders().
@@ -98,14 +108,18 @@ class CreateFoldersTab(TreeAndInputTab):
         """
         input_id = event.input.id
 
-        prefix = "sub" if "subject" in input_id else "ses"
+        prefix: Literal["sub", "ses"] = (
+            "sub" if "subject" in input_id else "ses"
+        )
 
         if event.button == 1:
             self.fill_input_with_template(prefix, input_id)
         elif event.button == 3:
             self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
 
-    def on_custom_directory_tree_directory_tree_special_key_press(self, event):
+    def on_custom_directory_tree_directory_tree_special_key_press(
+        self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
+    ):
         """
         Handle a key press on the directory tree, which can refresh the
         directorytree or fill / append subject/session folder name to
@@ -121,7 +135,7 @@ class CreateFoldersTab(TreeAndInputTab):
                 event,
             )
 
-    def fill_input_with_template(self, prefix, input_id):
+    def fill_input_with_template(self, prefix: Prefix, input_id: str) -> None:
         """
         Given the `name_template`, fill the sub or ses
         Input with the template (based on `prefix`).
@@ -135,7 +149,7 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    def templates_on(self, prefix):
+    def templates_on(self, prefix: Prefix) -> bool:
         return (
             self.interface.get_name_templates()["on"]
             and self.interface.get_name_templates()[prefix] is not None
@@ -144,7 +158,7 @@ class CreateFoldersTab(TreeAndInputTab):
     # Validation
     # ----------------------------------------------------------------------------------
 
-    def revalidate_inputs(self, all_prefixes: List[str]):
+    def revalidate_inputs(self, all_prefixes: List[str]) -> None:
         """
         Revalidate and style both subject and session
         inputs based on their value.
@@ -159,7 +173,9 @@ class CreateFoldersTab(TreeAndInputTab):
             value = self.query_one(key).value
             self.query_one(key).validate(value=value)
 
-    def update_input_tooltip(self, message: Optional[str], prefix):
+    def update_input_tooltip(
+        self, message: Optional[str], prefix: Prefix
+    ) -> None:
         """
         Update the value of a subject or session tooltip, which
         indicates the validation status of the input value.
@@ -179,7 +195,10 @@ class CreateFoldersTab(TreeAndInputTab):
     # Create Folders
     # ----------------------------------------------------------------------------------
 
-    def create_folders(self):
+    def create_folders(self) -> None:
+
+        ses_names: Optional[List[str]]
+
         sub_names, ses_names, datatype = self.get_sub_ses_names_and_datatype(
             "#create_folders_subject_input", "#create_folders_session_input"
         )
@@ -196,13 +215,15 @@ class CreateFoldersTab(TreeAndInputTab):
         else:
             self.mainwindow.show_modal_error_dialog(output)
 
-    def reload_directorytree(self):
+    def reload_directorytree(self) -> None:
         self.query_one("#create_folders_directorytree").reload()
 
     # Filling Inputs
     # ----------------------------------------------------------------------------------
 
-    def fill_input_with_next_sub_or_ses_template(self, prefix, input_id):
+    def fill_input_with_next_sub_or_ses_template(
+        self, prefix: Prefix, input_id: str
+    ) -> None:
         """
         This fills a sub / ses Input with a suggested name based on the
         next subject / session in the project (local).
@@ -214,7 +235,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
         Parameters
 
-        prefix : Literal["sub", "ses"]
+        prefix : Prefix
             Whether to fill the subject or session Input
 
         input_id : str
@@ -255,7 +276,7 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    def run_local_validation(self, prefix):
+    def run_local_validation(self, prefix: Prefix):
         """
         Run validation of the values stored in the
         sub / ses Input according to the passed prefix
@@ -279,7 +300,7 @@ class CreateFoldersTab(TreeAndInputTab):
         Parameters
         ----------
 
-        prefix : Literal["sub", "ses"]
+        prefix : Prefix
         """
         sub_names = self.query_one(
             "#create_folders_subject_input"
@@ -306,6 +327,6 @@ class CreateFoldersTab(TreeAndInputTab):
 
         return True, f"Formatted names: {names}"
 
-    def update_directorytree_root(self, new_root_path):
+    def update_directorytree_root(self, new_root_path: Path) -> None:
         """Will automatically refresh the tree"""
         self.query_one("#create_folders_directorytree").path = new_root_path

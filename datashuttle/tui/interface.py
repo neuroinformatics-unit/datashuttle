@@ -1,15 +1,18 @@
+from __future__ import annotations
+
 import copy
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 if TYPE_CHECKING:
-    from datashuttle.tui.app import App
+    import paramiko
 
-import paramiko
+    from datashuttle.configs.config_class import Configs
+    from datashuttle.tui.app import App
 
 from datashuttle import DataShuttle
 from datashuttle.utils import formatting, ssh, validation
 
-Output = Tuple[bool, Optional[str]]  # TODO: rename
+Output = Tuple[bool, Any]
 
 
 class Interface:
@@ -20,11 +23,11 @@ class Interface:
     of False.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
 
         self.project: App
-        self.name_templates: Optional[str] = None
-        self.tui_settings: Optional[Dict] = None
+        self.name_templates: Dict = {}
+        self.tui_settings: Dict = {}
 
     def select_existing_project(self, project_name: str) -> Output:
 
@@ -60,7 +63,10 @@ class Interface:
             return False, str(e)
 
     def create_folders(
-        self, sub_names: List[str], ses_names: List[str], datatype: List[str]
+        self,
+        sub_names: List[str],
+        ses_names: Optional[List[str]],
+        datatype: List[str],
     ) -> Output:
 
         # This can't use the top level folder argument on the select
@@ -87,7 +93,7 @@ class Interface:
             return False, str(e)
 
     def validate_names(
-        self, sub_names: List[str], ses_names: List[str]
+        self, sub_names: List[str], ses_names: Optional[List[str]]
     ) -> Output:
         """"""
         try:
@@ -123,7 +129,7 @@ class Interface:
     # Transfer
     # ----------------------------------------------------------------------------------
 
-    def transfer_entire_project(self, upload: bool):
+    def transfer_entire_project(self, upload: bool) -> Output:
         try:
             if upload:
                 self.project.upload_entire_project()
@@ -191,24 +197,26 @@ class Interface:
     # Setup SSH
     # ----------------------------------------------------------------------------------
 
-    def get_name_templates(self):  # TODO: figure out initialisation
+    def get_name_templates(self) -> Dict:  # TODO: figure out initialisation
         # Hold in a var to stop file read every time this is called.
         if self.name_templates is None:
             self.name_templates = self.project.get_name_templates()
 
         return self.name_templates  # TODO: handle properly
 
-    def set_name_templates(self, templates):
+    def set_name_templates(self, templates: Dict) -> None:
         self.name_templates = templates
         self.project.set_name_templates(templates)
 
-    def get_tui_settings(self):
+    def get_tui_settings(self) -> Dict:
         if self.tui_settings is None:
             self.tui_settings = self.project._load_persistent_settings()["tui"]
 
         return self.tui_settings
 
-    def update_tui_settings(self, value, key, key_2=None):
+    def update_tui_settings(
+        self, value: Any, key: str, key_2: Optional[str] = None
+    ) -> None:
 
         if key_2 is None:
             self.tui_settings[key] = value
@@ -223,27 +231,27 @@ class Interface:
     def get_central_host_id(self) -> str:
         return self.project.cfg["central_host_id"]
 
-    def get_configs(self):
+    def get_configs(self) -> Configs:
         return self.project.cfg
 
-    def get_textual_compatible_project_configs(self):
+    def get_textual_compatible_project_configs(self) -> Configs:
         cfg_to_load = copy.deepcopy(self.project.cfg)
         cfg_to_load.convert_str_and_pathlib_paths(
             cfg_to_load, "path_to_str"
         )  # TODO: bit weird...
         return cfg_to_load
 
-    def get_next_sub_number(self):
+    def get_next_sub_number(self) -> str:
         return self.project.get_next_sub_number(
             return_with_prefix=True, local_only=True
         )
 
-    def get_next_ses_number(self, sub):
+    def get_next_ses_number(self, sub: str) -> str:
         return self.project.get_next_ses_number(
             sub, return_with_prefix=True, local_only=True
         )
 
-    def get_ssh_hostkey(self):
+    def get_ssh_hostkey(self) -> Output:
 
         try:
             key = ssh.get_remote_server_key(
@@ -253,7 +261,7 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def save_hostkey_locally(self, key: paramiko.RSAKey):
+    def save_hostkey_locally(self, key: paramiko.RSAKey) -> Output:
 
         try:
             ssh.save_hostkey_locally(

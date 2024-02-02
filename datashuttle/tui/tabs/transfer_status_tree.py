@@ -1,9 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Dict, Optional
+
+if TYPE_CHECKING:
+
+    from rich.style import Style
+    from textual.widgets._directory_tree import DirEntry
+
+    from datashuttle.tui.app import App
+    from datashuttle.tui.interface import Interface
+
 import os
 from pathlib import Path
 
-from rich.style import Style
 from rich.text import Text
-from textual.widgets._directory_tree import DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
@@ -24,22 +34,24 @@ class TransferStatusTree(CustomDirectoryTree):
     which is called many times.
     """
 
-    def __init__(self, mainwindow, interface, id=None):
+    def __init__(
+        self, mainwindow: App, interface: Interface, id: Optional[str] = None
+    ):
 
         self.interface = interface
         self.local_path_str = self.interface.get_configs()[
             "local_path"
         ].as_posix()
-        self.transfer_diffs = None
+        self.transfer_diffs: Dict = {}
 
         super(TransferStatusTree, self).__init__(
             path=self.local_path_str, mainwindow=mainwindow, id=id
         )
 
-    def on_mount(self):
+    def on_mount(self) -> None:
         self.update_transfer_tree(init=True)
 
-    def update_transfer_tree(self, init=False):
+    def update_transfer_tree(self, init: bool = False) -> None:
         """
         Updates tree styling to reflect the current TUI state
         and project transfer status.
@@ -56,7 +68,7 @@ class TransferStatusTree(CustomDirectoryTree):
         if not init:
             self.reload()
 
-    def update_local_transfer_paths(self):
+    def update_local_transfer_paths(self) -> None:
         """
         Compiles a list of all project files and paths.
         """
@@ -72,7 +84,7 @@ class TransferStatusTree(CustomDirectoryTree):
                     )
         self.transfer_paths = paths_list
 
-    def update_transfer_diffs(self):
+    def update_transfer_diffs(self) -> None:
         """
         Updates the transfer diffs used to style the DirectoryTree.
 
@@ -133,7 +145,7 @@ class TransferStatusTree(CustomDirectoryTree):
         text = Text.assemble(prefix, node_label)
         return text
 
-    def format_transfer_label(self, node_label, node_path):
+    def format_transfer_label(self, node_label, node_path) -> None:
         """
         Takes nodes being formatted using `render_label` and applies custom
         formatting according to the node's transfer status.

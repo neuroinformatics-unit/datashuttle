@@ -2,18 +2,28 @@
 Tools for live validation of user inputs in the DataShuttle TUI.
 """
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Literal
+
+if TYPE_CHECKING:
+    from datashuttle.tui.tabs.create_folders import CreateFoldersTab
+
+
 from textual.validation import ValidationResult, Validator
 
 
 class NeuroBlueprintValidator(Validator):
-    def __init__(self, prefix, parent):
+    def __init__(
+        self, prefix: Literal["sub", "ses"], parent: CreateFoldersTab
+    ) -> None:
         """
         Custom Validator() class that takes
         sub / ses prefix as input. Runs validation of
         the name against the project and propagates
         any error message through the Input tooltip.
         """
-        super(NeuroBlueprintValidator).__init__()
+        super(NeuroBlueprintValidator, self).__init__()
         self.parent = parent
         self.prefix = prefix
 
