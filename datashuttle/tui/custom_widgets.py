@@ -494,13 +494,13 @@ class TopLevelFolderSelect(Select):
         if not any(top_level_folders):
             value = Select.BLANK
         else:
-            value = self.get_top_level_folder()
+            value = self.get_top_level_folder(init=True)
 
         super(TopLevelFolderSelect, self).__init__(
             top_level_folders, value=value, id=id, allow_blank=True
         )
 
-    def get_top_level_folder(self):
+    def get_top_level_folder(self, init=False):
         """
         Get the top level folder from `persistent settings`,
         performing a confidence-check that it matches the textual display.
@@ -509,9 +509,10 @@ class TopLevelFolderSelect(Select):
             "top_level_folder_select"
         ][self.settings_key]
 
-        #      assert (
-        #             top_level_folder == self.get_displayed_top_level_folder()
-        #    ), "config and widget should never be out of sync."
+        if not init:  # TODO: this assert is just temp
+            assert (
+                top_level_folder == self.get_displayed_top_level_folder()
+            ), "config and widget should never be out of sync."
 
         return top_level_folder
 
@@ -520,7 +521,7 @@ class TopLevelFolderSelect(Select):
         Get the top level folder that is currently selected
         on the select widget.
         """
-        #      assert self.value in canonical_folders.get_top_level_folders()
+        assert self.value in canonical_folders.get_top_level_folders()
         return self.value
 
     def on_select_changed(self, event):
