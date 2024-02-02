@@ -7,7 +7,7 @@ import os
 import shutil
 import warnings
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import paramiko
 import yaml
@@ -237,37 +237,20 @@ class DataShuttle:
         name_templates = self.get_name_templates()
         bypass_validation = self.get_bypass_validation()
 
-        sub_names = formatting.check_and_format_names(
-            sub_names, "sub", name_templates, bypass_validation
+        format_sub, format_ses = self._format_and_validate_names(
+            sub_names, ses_names, name_templates, bypass_validation, log=True
         )
-
-        if ses_names is not None:
-            ses_names = formatting.check_and_format_names(
-                ses_names, "ses", name_templates, bypass_validation
-            )
-        else:
-            ses_names = []
 
         ds_logger.log_names(
             ["formatted_sub_names", "formatted_ses_names"],
-            [sub_names, ses_names],
+            [format_sub, format_ses],
         )
-
-        if not bypass_validation:
-            validation.validate_names_against_project(
-                self.cfg,
-                sub_names,
-                ses_names,
-                local_only=True,
-                error_or_warn="error",
-                name_templates=name_templates,
-            )
 
         utils.log("\nMaking folders...")
         folders.create_folder_trees(
             self.cfg,
-            sub_names,
-            ses_names,
+            format_sub,
+            format_ses,
             datatype,
             log=True,
         )
@@ -281,6 +264,43 @@ class DataShuttle:
         )
 
         ds_logger.close_log_filehandler()
+
+    def _format_and_validate_names(
+        self,
+        sub_names: Union[str, List[str]],
+        ses_names: Optional[Union[str, List[str]]],
+        name_templates: Dict,
+        bypass_validation: bool,
+        log: bool = True,
+    ) -> Tuple[List[str], List[str]]:
+        """
+        A central method for the formatting and validation of subject / session
+        names for folder creation. This is called by both DataShuttle and
+        during TUI validation.
+        """
+        format_sub = formatting.check_and_format_names(
+            sub_names, "sub", name_templates, bypass_validation
+        )
+
+        if ses_names is not None:
+            format_ses = formatting.check_and_format_names(
+                ses_names, "ses", name_templates, bypass_validation
+            )
+        else:
+            format_ses = []
+
+        if not bypass_validation:
+            validation.validate_names_against_project(
+                self.cfg,
+                format_sub,
+                format_ses,
+                local_only=True,
+                error_or_warn="error",
+                log=log,
+                name_templates=name_templates,
+            )
+
+        return format_sub, format_ses
 
     # -------------------------------------------------------------------------
     # Public File Transfer

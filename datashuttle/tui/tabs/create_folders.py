@@ -173,9 +173,7 @@ class CreateFoldersTab(TreeAndInputTab):
             value = self.query_one(key).value
             self.query_one(key).validate(value=value)
 
-    def update_input_tooltip(
-        self, message: Optional[str], prefix: Prefix
-    ) -> None:
+    def update_input_tooltip(self, message: List[str], prefix: Prefix) -> None:
         """
         Update the value of a subject or session tooltip, which
         indicates the validation status of the input value.
@@ -186,7 +184,7 @@ class CreateFoldersTab(TreeAndInputTab):
             else "#create_folders_session_input"
         )
         input = self.query_one(id)
-        input.tooltip = message
+        input.tooltip = message if any(message) else None
 
     # ----------------------------------------------------------------------------------
     # Datashuttle Callers

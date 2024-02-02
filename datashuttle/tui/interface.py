@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from datashuttle.tui.app import App
 
 from datashuttle import DataShuttle
-from datashuttle.utils import formatting, ssh, validation
+from datashuttle.utils import ssh
 
 Output = Tuple[bool, Any]
 
@@ -21,6 +21,8 @@ class Interface:
     to all datashuttle functions as passed from the TUI, outputs
     success status (True or False) and optional data, in the case
     of False.
+
+    `self.project` is initialised when project is loaded.
     """
 
     def __init__(self) -> None:
@@ -30,7 +32,16 @@ class Interface:
         self.tui_settings: Dict = {}
 
     def select_existing_project(self, project_name: str) -> Output:
+        """
+        Load an existing project into `self.project`.
 
+        Parameters
+        ----------
+
+        project_name : str
+            The name of the datashuttle project to load.
+            Must already exist.
+        """
         try:
             project = DataShuttle(project_name)
             self.project = project
@@ -40,7 +51,20 @@ class Interface:
             return False, str(e)
 
     def setup_new_project(self, project_name: str, cfg_kwargs: Dict) -> Output:
+        """
+        Set up a new project and load into `self.project`.
 
+        Parameters
+        ----------
+
+        project_name : str
+            Name of the project to set up.
+
+        cfg_kwargs : Dict
+            The configurations to set the new project to. Note that
+            some settings (e.g. `transfer_verbosity`) are not relevant
+            for TUI and so method defaults will be used.
+        """
         try:
             project = DataShuttle(project_name)
 
@@ -54,7 +78,16 @@ class Interface:
             return False, str(e)
 
     def set_configs_on_existing_project(self, cfg_kwargs: Dict) -> Output:
+        """
+        Update the settings on an existing project. Only the settings
+        passed in `cfg_kwargs` are updated.
 
+        Parameters
+        ----------
+
+        cfg_kwargs : Dict
+            The configs and new values to update.
+        """
         try:
             self.project.update_config_file(**cfg_kwargs)
             return True, None
@@ -68,17 +101,20 @@ class Interface:
         ses_names: Optional[List[str]],
         datatype: List[str],
     ) -> Output:
+        """
+        Create folders through datashuttle.
 
-        # This can't use the top level folder argument on the select
-        # because it is on another screen, which is not good...
-        # In general this handling of top level folder is not ideal...
-        tmp_top_level_folder = (
-            self.project.get_top_level_folder()
-        )  # TODO: make very clear how this is set, bit of a mess ATM, all over the place. centralise!
-        persistent_settings = self.project._load_persistent_settings()
-        top_level_folder = persistent_settings["tui"][
-            "top_level_folder_select"
-        ]["create_tab"]
+        Parameters
+        ----------
+
+        sub_names : List[str]
+            A list of un-formatted / validated
+
+        """
+        tmp_top_level_folder = self.project.get_top_level_folder()
+        top_level_folder = self.tui_settings["top_level_folder_select"][
+            "create_tab"
+        ]
 
         try:
             self.project.set_top_level_folder(top_level_folder)
@@ -97,25 +133,11 @@ class Interface:
     ) -> Output:
         """"""
         try:
-            format_sub = formatting.check_and_format_names(
-                sub_names, "sub", name_templates=self.get_name_templates()
-            )
-
-            if ses_names is not None:
-                format_ses = formatting.check_and_format_names(
-                    ses_names, "ses", name_templates=self.get_name_templates()
-                )
-            else:
-                format_ses = None
-
-            validation.validate_names_against_project(
-                self.project.cfg,
-                format_sub,
-                format_ses,
-                local_only=True,
-                error_or_warn="error",
-                log=False,
-                name_templates=self.get_name_templates(),
+            format_sub, format_ses = self.project._format_and_validate_names(
+                sub_names,
+                ses_names,
+                self.get_name_templates(),
+                bypass_validation=False,
             )
 
             return True, {
@@ -197,7 +219,7 @@ class Interface:
     # Setup SSH
     # ----------------------------------------------------------------------------------
 
-    def get_name_templates(self) -> Dict:  # TODO: figure out initialisation
+    def get_name_templates(self) -> Dict:
         # Hold in a var to stop file read every time this is called.
         if not self.name_templates:
             self.name_templates = self.project.get_name_templates()
