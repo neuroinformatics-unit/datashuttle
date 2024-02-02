@@ -199,17 +199,22 @@ class Interface:
 
     def get_name_templates(self) -> Dict:  # TODO: figure out initialisation
         # Hold in a var to stop file read every time this is called.
-        if self.name_templates is None:
+        if not self.name_templates:
             self.name_templates = self.project.get_name_templates()
 
         return self.name_templates  # TODO: handle properly
 
-    def set_name_templates(self, templates: Dict) -> None:
-        self.name_templates = templates
-        self.project.set_name_templates(templates)
+    def set_name_templates(self, templates: Dict) -> Output:
+        try:
+            self.project.set_name_templates(templates)
+            self.name_templates = templates
+            return True, None
+
+        except BaseException as e:
+            return False, str(e)
 
     def get_tui_settings(self) -> Dict:
-        if self.tui_settings is None:
+        if not self.tui_settings:
             self.tui_settings = self.project._load_persistent_settings()["tui"]
 
         return self.tui_settings

@@ -121,7 +121,9 @@ TransferStatusTree {
 Tooltip {
     outline: solid $panel-lighten-1;
 }
-
+Tooltip:light {
+    outline: solid $panel-darken-3;
+}
 /* Light mode */
 
 #transfer_params_container:light {

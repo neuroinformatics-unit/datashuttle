@@ -977,8 +977,8 @@ class DataShuttle:
             new_name_templates["ses"],
         ]:
             utils.log_and_raise_error(
-                "Subject and session name templates must be set"
-                "if `new_name_templates['on'] is `True`",
+                "Subject and session name templates must be set "
+                "if name templates is on.",
                 ValueError,
             )
 

@@ -55,7 +55,7 @@ class SetupSshScreen(ModalScreen):
             Horizontal(
                 Button("OK", id="setup_ssh_ok_button"),
                 Button("Cancel", id="setup_ssh_cancel_button"),
-                id="horizontal_XXX",
+                id="messagebox_buttons_horizontal",
             ),
             id="setup_ssh_screen_container",
         )

@@ -7,7 +7,6 @@ from typing import (
     Literal,
     Optional,
     Tuple,
-    Union,
     cast,
 )
 
@@ -142,7 +141,7 @@ class ClickableInput(Input):
         mainwindow: App,
         placeholder: str,
         id: Optional[str] = None,
-        validate_on: Union[Literal[False], List[str]] = False,
+        validate_on: Optional[List[str]] = None,
         validators: Optional[List[Validator]] = None,
     ) -> None:
         super(ClickableInput, self).__init__(

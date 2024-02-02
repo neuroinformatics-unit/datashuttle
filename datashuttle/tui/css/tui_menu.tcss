@@ -46,7 +46,9 @@
     overflow: hidden auto;
     margin: 0 1;
 }
-
+#settings_screen_top_container:light {
+    border: thick $panel-darken-3;
+}
 #settings_screen_close_button {
     dock: bottom;
 }
@@ -65,14 +67,17 @@ SettingsScreen {
 
 #setup_ssh_screen_container {
     height: 75%;
-    width: auto;
+    width: 80%;
     align: center middle;
-    border: solid $panel-lighten-1;
+    border: thick $panel-lighten-1;
+}
+#setup_ssh_screen_container {
+    border: thick $panel-darken-3;
 }
 #setup_ssh_screen_label {
     align: center middle;
 }
-#horizontal_XXX {
+#messagebox_buttons_horizontal {
     align: center middle;
 }
 #setup_ssh_screen_label_container {
@@ -125,7 +130,6 @@ MessageBox:light > #messagebox_top_container {
 #configs_container > Label {
     margin: 2 0 1 0;
 }
-
 #configs_banner_label {
     text-style: bold;
     content-align: center middle;
@@ -193,7 +197,9 @@ MessageBox:light > #messagebox_top_container {
     width: 30%;
     height: auto;
 }
-
+#configs_transfer_options_container:light {
+    border: solid $panel-darken-3;
+}
 #configs_local_path_input {
     width: 70%;
 }
@@ -207,13 +213,22 @@ MessageBox:light > #messagebox_top_container {
     width: auto;
 }
 
-
 /* This Horizontal wrapper container is necessary to make the
 config label and button align center */
 
 #configs_container > Horizontal {
     width: 85%;
     height: auto;
+}
+#select_directory_tree_container {
+    height: 85%;
+    width: 70%;
+    border: thick $panel-lighten-3;
+    align: center middle;
+}
+#select_directory_tree_container:light {
+    border: thick $panel-darken-3;
+    background: $boost;
 }
 
 
@@ -229,7 +244,7 @@ CreateFoldersSettingsScreen {
 #tabscreen_toplevel_select {
     padding: 0 0 0 1;
 }
-#template_top_container2 {
+#create_tab_settings_outer_container {
     height: 80%;
     width: 80%;
     background: $primary-background;
@@ -289,6 +304,10 @@ CreateFoldersSettingsScreen {
 
 /* CreateFoldersSettingsScreen Light Mode */
 
+#create_tab_settings_outer_container:light {
+    border: tall $panel-darken-3;
+    background: $boost;
+}
 #template_top_container:light {
     border: tall $panel-darken-3;
     background: $boost;

@@ -124,7 +124,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             ),
             Container(),
             Button("Close", id="create_folders_settings_close_button"),
-            id="template_top_container2",
+            id="create_tab_settings_outer_container",
         )
 
     def on_mount(self) -> None:
@@ -156,10 +156,14 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "create_folders_settings_close_button":
-            self.interface.set_name_templates(
+            success, output = self.interface.set_name_templates(
                 self.make_name_templates_from_widgets()
             )
-            self.dismiss(True)
+            if success:
+                self.dismiss(True)
+            else:
+                self.mainwindow.show_modal_error_dialog(output)
+
         elif event.button.id == "create_settings_bypass_validation_button":
             self.interface.project.set_bypass_validation(on=False)
 
