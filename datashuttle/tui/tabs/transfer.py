@@ -33,11 +33,10 @@ from datashuttle.tui.tabs.transfer_status_tree import TransferStatusTree
 
 class TransferTab(TreeAndInputTab):
     """
-    This tb handles the upload / download of files between the local
+    This tab handles the upload / download of files between local
     and central folders. It contains a TransferDirectoryTree that
     displays the transfer status of the files in the local folder,
-    provides functionality to call underlying datashuttle transfer
-    functions, and standard TreeAndInputTab and TransferDirectoryTree features.
+    and calls underlying datashuttle transfer functions.
 
     Parameters
     ----------
@@ -51,6 +50,19 @@ class TransferTab(TreeAndInputTab):
 
     id : str
         The textual widget id.
+
+    Attributes
+    ----------
+
+    show_legend : bool
+        Convenience attribute linked to a global setting exists that
+        turns off / on styling of directorytree nodes based on transfer status. `
+
+        `self.mainwindow.load_global_settings()[
+            "show_transfer_tree_status"
+        ]`
+
+        When on, the legend must be hidden.
     """
 
     def __init__(
@@ -233,7 +245,10 @@ class TransferTab(TreeAndInputTab):
         self.query_one("#transfer_directorytree").update_transfer_tree()
 
     def update_directorytree_root(self, new_root_path: Path) -> None:
-        """Will automatically refresh the tree"""
+        """
+        This will automatically refresh the tree through the
+        reactive variable `path`.
+        """
         self.query_one("#transfer_directorytree").path = new_root_path
 
     # Transfer
@@ -264,7 +279,7 @@ class TransferTab(TreeAndInputTab):
                     "#transfer_toplevel_select"
                 ).get_top_level_folder()
 
-                success, output = self.interface.upload_top_level_only(
+                success, output = self.interface.transfer_top_level_only(
                     selected_top_level_folder, upload
                 )
 

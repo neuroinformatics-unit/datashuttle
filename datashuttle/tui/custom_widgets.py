@@ -173,6 +173,12 @@ class ClickableInput(Input):
 
 
 class CustomDirectoryTree(DirectoryTree):
+    """
+    Base class for directory tree with some customised additions:
+        - filter out top-level folders that are not canonical
+        - add additional keyboard shortcuts defined in `on_key`.
+    """
+
     @dataclass
     class DirectoryTreeSpecialKeyPress(Message):
         key: str
@@ -192,7 +198,7 @@ class CustomDirectoryTree(DirectoryTree):
 
         `paths` below are only the folders within the root folder. So this will
         filter out .datashuttle only at the root and not all instances of
-        .datashuttle lower down which I suppose we may want visible.
+        .datashuttle lower down the tree.
         """
         return [
             path for path in paths if not path.name.startswith(".datashuttle")
@@ -525,7 +531,7 @@ class TopLevelFolderSelect(Select):
 
     def get_top_level_folder(self, init: bool = False) -> str:
         """
-        Get the top level folder from `persistent settings`,
+        Get the top level folder from `persistent_settings`,
         performing a confidence-check that it matches the textual display.
         """
         top_level_folder = self.interface.tui_settings[

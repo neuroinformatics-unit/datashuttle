@@ -33,13 +33,6 @@ class TuiApp(App):
     This class acts as a base class from which all windows
     (select existing project, make new project, settings and
     get help) are raised.
-
-    Running this application in a main block as below
-    if __name__ == __main__:
-         app = MyApp()
-         app.run()
-
-    Initialises the TUI event loop and starts the application.
     """
 
     tui_path = Path(__file__).parent
@@ -63,14 +56,8 @@ class TuiApp(App):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
-        When a button is pressed, a new screen is displayed with
-        `push_screen`. The second argument is a callback to
-        load the project page, with an initialised project
-        or `None` (in case no project was selected).
-
-        Error handling is at the level of the individual screens,
-        but presentation of the error dialog is handled in
-        `self.show_modal_error_dialog()`.
+        Raise the relevant screen after button press. `push_screen`
+        second argument is a callback function returned after screen closes.
         """
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(
@@ -131,8 +118,6 @@ class TuiApp(App):
             self.show_modal_error_dialog(message)
 
     # Global Settings ---------------------------------------------------------
-    # TODO: there is now a lot of code that does this kind of thing
-    # here, persistent settings, configs. See if it can be centralised
 
     def load_global_settings(self) -> Dict:
         """
@@ -154,8 +139,7 @@ class TuiApp(App):
 
     def get_global_settings_path(self) -> Path:
         """
-        The cannoincal path for the TUI's global settings.
-
+        The canonical path for the TUI's global settings.
         """
         path_ = canonical_folders.get_datashuttle_path()
         return path_ / "global_tui_settings.yaml"

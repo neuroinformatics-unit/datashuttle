@@ -24,7 +24,7 @@ from datashuttle.utils import ssh, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
-# Make Folders
+# Create Folders
 # -----------------------------------------------------------------------------
 
 
@@ -121,7 +121,7 @@ def make_datatype_folders(
             create_folders(datatype_path, log)
 
 
-# Make Folders Helpers --------------------------------------------------------
+# Create Folders Helpers --------------------------------------------------------
 
 
 def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:

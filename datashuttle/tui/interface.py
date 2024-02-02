@@ -23,6 +23,12 @@ class Interface:
     of False.
 
     `self.project` is initialised when project is loaded.
+
+    Interface functions typically return an `Output` type
+    is contains a boolean in the first entry and output in the second
+    entry. The first entry is True if the API call ran successfully
+    and False if it threw an error. The output will contain any
+    relevant data if successful, otherwise it will contain an error message.
     """
 
     def __init__(self) -> None:
@@ -108,8 +114,13 @@ class Interface:
         ----------
 
         sub_names : List[str]
-            A list of un-formatted / validated
+            A list of un-formatted / unvalidated subject names to create.
 
+        ses_names : List[str]
+            A list of un-formatted / unvalidated session names to create.
+
+        datatype : List[str]
+            A list of canonical datatype names to create.
         """
         tmp_top_level_folder = self.project.get_top_level_folder()
         top_level_folder = self.tui_settings["top_level_folder_select"][
@@ -131,7 +142,22 @@ class Interface:
     def validate_names(
         self, sub_names: List[str], ses_names: Optional[List[str]]
     ) -> Output:
-        """"""
+        """
+        Validate a list of subject / session names. This is used
+        to populate the Input tooltips with validation errors.
+        Uses a central `_format_and_validate_names()` that is also
+        called during folder creation itself, to ensure these a
+        results always match.
+
+        Parameters
+        ----------
+
+        sub_names : List[str]
+            List of subject names to format.
+
+        ses_names : List[str]
+            List of session names to format.
+        """
         try:
             format_sub, format_ses = self.project._format_and_validate_names(
                 sub_names,
@@ -152,6 +178,16 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def transfer_entire_project(self, upload: bool) -> Output:
+        """
+        Transfer the entire project (all canonical top-level folders).
+
+        Parameters
+        ----------
+
+        upload : bool
+            Upload from local to central if `True`, otherwise download
+            from central to remote.
+        """
         try:
             if upload:
                 self.project.upload_entire_project()
@@ -162,10 +198,23 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def upload_top_level_only(
+    def transfer_top_level_only(
         self, selected_top_level_folder: str, upload: bool
     ) -> Output:
-        """"""
+        """
+        Transfer all files within a selected top level folder.
+
+        Parameters
+        ----------
+
+        selected_top_level_folder : str
+            The top level folder selected in the TUI for this transfer window.
+
+        upload : bool
+            Upload from local to central if `True`, otherwise download
+            from central to remote.
+
+        """
         temp_top_level_folder = self.project.get_top_level_folder()
         self.project.set_top_level_folder(selected_top_level_folder)
         try:
@@ -190,7 +239,28 @@ class Interface:
         datatype: List[str],
         upload: bool,
     ) -> Output:
-        """"""
+        """
+        Transfer a custom selection of subjects / sessions / datatypes.
+
+        Parameters
+        ----------
+
+        selected_top_level_folder : str
+            The top level folder selected in the TUI for this transfer window.
+
+        sub_names : List[str]
+            Subject names or subject-level canonical transfer keys to transfer.
+
+        ses_names : List[str]
+            Session names or session-level canonical transfer keys to transfer.
+
+        datatype : List[str]
+            Datatypes or datatype-level canonical transfer keys to transfer.
+
+        upload : bool
+            Upload from local to central if `True`, otherwise download
+            from central to remote.
+        """
         temp_top_level_folder = self.project.get_top_level_folder()
         self.project.set_top_level_folder(selected_top_level_folder)
 
@@ -220,22 +290,38 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def get_name_templates(self) -> Dict:
-        # Hold in a var to stop file read every time this is called.
+        """
+        Get the `name_templates` defining templates to validate
+        against. These are stored in a variable to avoid constantly
+        reading these values from disk where they are stored in
+        `persistent_settings`. It is critical this variable
+        and the file contetns are in sync, so when changed
+        on the TUI side they are updated also, in `get_tui_settings`.
+        """
         if not self.name_templates:
             self.name_templates = self.project.get_name_templates()
 
-        return self.name_templates  # TODO: handle properly
+        return self.name_templates
 
-    def set_name_templates(self, templates: Dict) -> Output:
+    def set_name_templates(self, name_templates: Dict) -> Output:
+        """
+        Set the `name_templates` here and on disk. See `get_name_templates`
+        for more information.
+        """
         try:
-            self.project.set_name_templates(templates)
-            self.name_templates = templates
+            self.project.set_name_templates(name_templates)
+            self.name_templates = name_templates
             return True, None
 
         except BaseException as e:
             return False, str(e)
 
     def get_tui_settings(self) -> Dict:
+        """
+        Get the "tui" field of `persistent_settings`. Similar to
+        `get_name_templates`, there are held on the class to avoid
+        constantly reading from disk.
+        """
         if not self.tui_settings:
             self.tui_settings = self.project._load_persistent_settings()["tui"]
 
@@ -244,7 +330,23 @@ class Interface:
     def update_tui_settings(
         self, value: Any, key: str, key_2: Optional[str] = None
     ) -> None:
+        """
+        Update the "tui" field of the `persistent_settings` on disk.
 
+        Parameters
+        ----------
+
+        value : Any
+            Value to set the `persistent_settings` tui field to
+
+        key_1 : str
+            First key of the tui `persistent_settings` to update
+            e.g. "top_level_folder_select"
+
+        key_2 : str
+            Optionals second level of the dictionary to update.
+            e.g. "create_tab"
+        """
         if key_2 is None:
             self.tui_settings[key] = value
         else:
@@ -262,10 +364,14 @@ class Interface:
         return self.project.cfg
 
     def get_textual_compatible_project_configs(self) -> Configs:
+        """
+        Datashuttle configs keeps paths saved as pathlib.Path
+        objects. In some cases textual requires str representation.
+        This method returns datashuttle configs with all paths that
+        are Path converted to str.
+        """
         cfg_to_load = copy.deepcopy(self.project.cfg)
-        cfg_to_load.convert_str_and_pathlib_paths(
-            cfg_to_load, "path_to_str"
-        )  # TODO: bit weird...
+        cfg_to_load.convert_str_and_pathlib_paths(cfg_to_load, "path_to_str")
         return cfg_to_load
 
     def get_next_sub_number(self) -> str:
@@ -279,7 +385,6 @@ class Interface:
         )
 
     def get_ssh_hostkey(self) -> Output:
-
         try:
             key = ssh.get_remote_server_key(
                 self.project.cfg["central_host_id"]
@@ -289,7 +394,6 @@ class Interface:
             return False, str(e)
 
     def save_hostkey_locally(self, key: paramiko.RSAKey) -> Output:
-
         try:
             ssh.save_hostkey_locally(
                 key,
@@ -302,7 +406,6 @@ class Interface:
             return False, str(e)
 
     def setup_key_pair_and_rclone_config(self, password: str) -> Output:
-
         try:
             ssh.add_public_key_to_central_authorized_keys(
                 self.project.cfg, password, log=False

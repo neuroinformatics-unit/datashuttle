@@ -36,8 +36,8 @@ class ConfigsContent(Container):
     project's configs.
 
     If no project exists, additional widgets are shown to allow
-    entry of a project name for new project initialisation, and some
-    additional information. Widgets are filled with some sensible defaults.
+    entry of a project name for new project initialisation, and
+    additional information.
 
     Otherwise, widgets are filled with the existing projects configs.
     """
@@ -171,15 +171,11 @@ class ConfigsContent(Container):
         we are setting up a new project (`self.project is `None`) or have
         an instantiated project.
 
-        If we have a project, then we want to fill
-        the widgets with the existing configs. Otherwise, we set to some
-        reasonable defaults, required to determine the display of SSH widgets.
-        "overwrite_files_checkbox" should be off by default anyway if
-        `value` is not set, but we set here anyway as it is critical
-        this is not on by default.
-
-        TODO: this duplicates how defaults are set between TUI and
-        datashuttle API, which is not good. This should be centralised.
+        If we have a project, then we want to fill the widgets with the existing
+        configs. Otherwise, we set to some reasonable defaults, required to
+        determine the display of SSH widgets. "overwrite_files_checkbox"
+        should be off by default anyway if `value` is not set, but we set here
+        anyway as it is critical this is not on by default.
         """
         container = self.query_one("#configs_transfer_options_container")
         container.border_title = "Transfer Options"
@@ -207,6 +203,12 @@ class ConfigsContent(Container):
         """
         Show or hide SSH-related configs based on whether the current
         `connection_method` widget is "ssh" or "local_filesystem".
+
+        Parameters
+        ----------
+
+        display_bool : bool
+            If `True`, display the SSH-related widgets.
         """
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
@@ -230,7 +232,7 @@ class ConfigsContent(Container):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
-        Enables the Make Folders button to read out current input values
+        Enables the Create Folders button to read out current input values
         and use these to call project.create_folders().
         """
         if event.button.id == "configs_set_configs_button":
@@ -256,12 +258,28 @@ class ConfigsContent(Container):
                 modal_dialogs.SelectDirectoryTreeScreen(
                     self.parent_class.mainwindow
                 ),
-                lambda path_: self.handle_input_fill(path_, input_to_fill),
+                lambda path_: self.handle_input_fill_from_select_directory(
+                    path_, input_to_fill
+                ),
             )
 
-    def handle_input_fill(
+    def handle_input_fill_from_select_directory(
         self, path_: Path, local_or_central: Literal["local", "central"]
     ) -> None:
+        """
+        Update the `local` or `central` path inputs after
+        `SelectDirectoryTreeScreen` returns a path.
+
+        Parameters
+        ----------
+
+        path_ : Union[Literal[False], Path]
+            The path returned from `SelectDirectoryTreeScreen`. If `False`,
+            the screen exited with no directory selected.
+
+        local_or_central : str
+            The Input to fill with the path.
+        """
         if path_ is False:
             return
 
@@ -275,7 +293,9 @@ class ConfigsContent(Container):
             )
 
     def setup_ssh_connection(self) -> None:
-
+        """
+        Set up the `SetupSshScreen` screen,
+        """
         assert self.interface is not None, "type narrow flexible `interface`"
 
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
@@ -412,9 +432,7 @@ class ConfigsContent(Container):
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
         Get the configs to pass to `make_config_file()` from
-        the current TUI settings. In some instances this requires
-        changing the value form (e.g. from `bool` to `"-v"` in
-        'transfer verbosity'.
+        the current TUI settings.
         """
         cfg_kwargs: Dict[str, Any] = {}
 

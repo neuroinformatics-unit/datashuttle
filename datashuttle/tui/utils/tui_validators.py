@@ -31,6 +31,7 @@ class NeuroBlueprintValidator(Validator):
         """
         Run validation and update the tooltip with the error,
         if no error then the formatted sub / ses name is displayed.
+        This is set on an Input widget.
         """
         valid, message = self.parent.run_local_validation(self.prefix)
 

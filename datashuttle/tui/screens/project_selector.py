@@ -13,7 +13,7 @@ from textual.widgets import Button, Header
 
 from datashuttle.tui.interface import Interface
 from datashuttle.utils.getters import (
-    get_existing_project_paths,  # TODO: should just get from interface? then no DS imports at all!
+    get_existing_project_paths,
 )
 
 

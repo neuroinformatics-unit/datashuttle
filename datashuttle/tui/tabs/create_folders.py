@@ -70,7 +70,7 @@ class CreateFoldersTab(TreeAndInputTab):
         yield Label("Datatype(s)", id="create_folders_datatype_label")
         yield DatatypeCheckboxes(self.interface)
         yield Horizontal(
-            Button("Make Folders", id="create_folders_make_button"),
+            Button("Create Folders", id="create_folders_make_button"),
             Button(
                 "Settings",
                 id="create_folders_settings_button",
@@ -79,7 +79,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
-        Enables the Make Folders button to read out current input values
+        Enables the Create Folders button to read out current input values
         and use these to call project.create_folders().
 
         `unused_bool` is necessary to get dismiss to call
@@ -103,7 +103,7 @@ class CreateFoldersTab(TreeAndInputTab):
         which indicates the input should be filled with a suggested value.
 
         Determine if we have the subject or session input, and
-        if it was a left or right click. Then, fill with a either
+        if it was a left or right click. Then, fill with either
         a generic suggestion or suggestion based on next sub / ses number.
         """
         input_id = event.input.id
@@ -194,7 +194,10 @@ class CreateFoldersTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def create_folders(self) -> None:
-
+        """
+        Create project folders based on current widget input
+        through the datashuttle API.
+        """
         ses_names: Optional[List[str]]
 
         sub_names, ses_names, datatype = self.get_sub_ses_names_and_datatype(
@@ -287,14 +290,6 @@ class CreateFoldersTab(TreeAndInputTab):
         and the error is caught and message returned. Otherwise,
         the formatted name is returned.
 
-        TODO
-        ----
-        This basically mirrors the validation done in `create_folders()`.
-        There is scope for divergence in the logic of these two pathways.
-        This can be resolved by carefully testing their outputs or
-        ensuring the same code is used underlying both. It is close
-        because both call `check_and_format_names` but could be tighter.
-
         Parameters
         ----------
 
@@ -326,5 +321,7 @@ class CreateFoldersTab(TreeAndInputTab):
         return True, f"Formatted names: {names}"
 
     def update_directorytree_root(self, new_root_path: Path) -> None:
-        """Will automatically refresh the tree"""
+        """
+        Will automatically refresh the tree through the reactive attribute `path`.
+        """
         self.query_one("#create_folders_directorytree").path = new_root_path

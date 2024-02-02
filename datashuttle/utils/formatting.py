@@ -37,7 +37,7 @@ def check_and_format_names(
     ----------
 
     names : Union[list, str]
-        str or list containing sub or ses names (e.g. to make folders)
+        str or list containing sub or ses names (e.g. to create folders)
 
     prefix : Literal["sub", "ses"]
         "sub" or "ses" - this defines the prefix checks.

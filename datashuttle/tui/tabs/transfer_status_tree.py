@@ -29,6 +29,9 @@ class TransferStatusTree(CustomDirectoryTree):
     transfer status. e.g. indicates whether files are changed between
     local or central, or appear in local only.
 
+    Attributes
+    ----------
+
     Keep the local path as a string, linked to project.cfg["local_path"],
     so that no conversion to string is necessary in `format_transfer_label`
     which is called many times.
@@ -87,10 +90,6 @@ class TransferStatusTree(CustomDirectoryTree):
     def update_transfer_diffs(self) -> None:
         """
         Updates the transfer diffs used to style the DirectoryTree.
-
-        Use `init` when the widget is initialised, because
-        #transfer_toplevel_radiobutton is not yet available and
-        by default we set to 'all'.
         """
         self.transfer_diffs = get_local_and_central_file_differences(
             self.interface.get_configs(), all_top_level_folder=True
@@ -106,7 +105,6 @@ class TransferStatusTree(CustomDirectoryTree):
         Extends the `DirectoryTree.render_label()` method to allow
         custom styling of file nodes according to their transfer status.
         """
-
         node_label = node._label.copy()
         node_label.stylize(style)
 

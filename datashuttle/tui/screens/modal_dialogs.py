@@ -66,7 +66,8 @@ class MessageBox(ModalScreen):
 
 class ConfirmScreen(ModalScreen):
     """
-    A screen for rendering confirmation messages.
+    A screen for rendering confirmation messages
+    taking user input ('OK' or 'Cancel').
     """
 
     def __init__(self, message: str) -> None:

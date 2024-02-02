@@ -21,7 +21,7 @@ class SettingsScreen(ModalScreen):
     """
     Screen accessible from the main window that contains
     'global' settings for the TUI. 'Global' settings are non-project
-    specific settings (e..g dark mode) and are handled independently
+    specific settings (e.g. dark mode) and are handled independently
     of the main datashuttle API.
     """
 
@@ -57,6 +57,7 @@ class SettingsScreen(ModalScreen):
         label = str(event.pressed.label)
         assert label in ["Light Mode", "Dark Mode"]
         dark_mode = label == "Dark Mode"
+
         self.mainwindow.dark = dark_mode
         self.global_settings["dark_mode"] = dark_mode
         self.mainwindow.save_global_settings(self.global_settings)

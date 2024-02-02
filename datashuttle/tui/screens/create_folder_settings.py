@@ -42,6 +42,13 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     The Create tab validation on Inputs is immediately updated on closing
     of this screen.
+
+    Attributes
+    ----------
+
+    Because the Input for `name_templates` is shared between subject
+    and session, the values are held in the `input_values` attribute.
+    These are loaded from `persistent_settings` on init.
     """
 
     TITLE = "Create Folders Settings"
@@ -144,7 +151,11 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.query_one("#template_inner_container").disabled = not is_on
 
     def fill_input_from_template(self) -> None:
-        """TODO: explain, bit confusing because single Input is shared"""
+        """
+        Fill the `name_templates` Input, that is shared
+        between subject and session, depending on the
+        current radioset value.
+        """
         input = self.query_one("#template_settings_input")
         value = self.input_values[self.input_mode]
 
@@ -155,6 +166,13 @@ class CreateFoldersSettingsScreen(ModalScreen):
             input.value = value
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """
+        On close, update the `name_templates` stored in
+        `persistent_settings` with those set on the TUI.
+
+        Setting may error if templates are turned on but
+        no template exists for either subject or session.
+        """
         if event.button.id == "create_folders_settings_close_button":
             success, output = self.interface.set_name_templates(
                 self.make_name_templates_from_widgets()
@@ -208,7 +226,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
         Update the displayed SSH widgets when the `connection_method`
-        radiobutton's are changed.
+        radiobuttons are changed.
         """
         label = str(event.pressed.label)
         assert label in ["Subject", "Session"], "Unexpected label."

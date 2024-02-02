@@ -27,10 +27,6 @@ class SetupSshScreen(ModalScreen):
     This is the one instance in which it is not possible for
     the TUI to nearly wrap the API, because the logic flow is
     broken up requiring user input (accept hostkey and input password).
-
-    Therefore, these functions mirror as closely as possible
-    the API versions found in /utils/ssh.py As much as possible
-    core functionality is centralised in ssh.py functions.
     """
 
     def __init__(self, interface: Interface) -> None:
@@ -65,11 +61,11 @@ class SetupSshScreen(ModalScreen):
 
     def on_button_pressed(self, event: Button.pressed) -> None:
         """
-        When each stage is successfully progressed, `self.stage` is iterated
-        by 1. For saving and excepting hostkey, if there is a problem
-        (error or user declines) the 'OK' button is frozen so it is
-        not possible to proceed. For accepting password input, multiple
-        attempts are allowed.
+        When each stage is successfully progressed by clicking the "ok" button,
+        `self.stage` is iterated by 1. For saving and excepting hostkey,
+        if there is a problem (error or user declines) the 'OK' button
+        is frozen so it is not possible to proceed. For accepting password
+        input, multiple attempts are allowed.
         """
         if event.button.id == "setup_ssh_cancel_button":
             self.dismiss()

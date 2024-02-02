@@ -22,7 +22,7 @@ from datashuttle.tui.tabs import create_folders, transfer
 
 class ProjectManagerScreen(Screen):
     """
-    Screen containing the Create and Transfer tabs. This is
+    Screen containing the Create, Transfer and Configs tabs. This is
     the primary screen within which the user interacts with
     a pre-configured project.
 
