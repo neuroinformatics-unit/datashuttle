@@ -24,11 +24,11 @@ from datashuttle.utils import ssh, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
-# Make Folders
+# Create Folders
 # -----------------------------------------------------------------------------
 
 
-def make_folder_trees(
+def create_folder_trees(
     cfg: Configs,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
@@ -48,7 +48,7 @@ def make_folder_trees(
     Parameters
     ----------
 
-    sub_names, ses_names, datatype : see make_folders()
+    sub_names, ses_names, datatype : see create_folders()
 
     log : whether to log or not. If True, logging must
         already be initialised.
@@ -68,7 +68,7 @@ def make_folder_trees(
             sub,
         )
 
-        make_folders(sub_path, log)
+        create_folders(sub_path, log)
 
         if datatype_passed:
             make_datatype_folders(cfg, datatype, sub_path, "sub")
@@ -79,7 +79,7 @@ def make_folder_trees(
                 [sub, ses],
             )
 
-            make_folders(ses_path, log)
+            create_folders(ses_path, log)
 
             if datatype_passed:
                 make_datatype_folders(cfg, datatype, ses_path, "ses", log=log)
@@ -118,13 +118,13 @@ def make_datatype_folders(
         if datatype_folder.level == level:
             datatype_path = sub_or_ses_level_path / datatype_folder.name
 
-            make_folders(datatype_path, log)
+            create_folders(datatype_path, log)
 
 
-# Make Folders Helpers --------------------------------------------------------
+# Create Folders Helpers --------------------------------------------------------
 
 
-def make_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
+def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
     """
     For path or list of paths, make them if
     they do not already exist.

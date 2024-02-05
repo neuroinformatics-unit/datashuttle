@@ -1,9 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, List, Optional, cast
+from typing import (
+    TYPE_CHECKING,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    cast,
+)
 
 if TYPE_CHECKING:
     from textual import events
+    from textual.app import ComposeResult
+    from textual.validation import Validator
+
+    from datashuttle.tui.app import App
+    from datashuttle.tui.interface import Interface
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -52,21 +65,25 @@ class DatatypeCheckboxes(Static):
                       the `persistent_settings` dictionaries.
     """
 
-    def __init__(self, project, create_or_transfer="create"):
+    def __init__(
+        self,
+        interface: Interface,
+        create_or_transfer: Literal["create", "transfer"] = "create",
+    ) -> None:
         super(DatatypeCheckboxes, self).__init__()
 
-        self.project = project
+        self.interface = interface
 
         if create_or_transfer == "create":
             self.settings_key = "create_checkboxes_on"
         else:
             self.settings_key = "transfer_checkboxes_on"
 
-        self.datatype_config = self.project._load_persistent_settings()["tui"][
+        self.datatype_config = self.interface.get_tui_settings()[
             self.settings_key
         ]
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         for datatype in self.datatype_config.keys():
             yield Checkbox(
                 datatype.title().replace("_", " "),
@@ -74,7 +91,7 @@ class DatatypeCheckboxes(Static):
                 value=self.datatype_config[datatype],
             )
 
-    def on_checkbox_changed(self):
+    def on_checkbox_changed(self) -> None:
         """
         When a checkbox is changed, update the `self.datatype_config`
         to contain new boolean values for each datatype. Also update
@@ -85,11 +102,9 @@ class DatatypeCheckboxes(Static):
                 f"#tabscreen_{datatype}_checkbox"
             ).value
 
-        # This is slightly wasteful as update entire dict instead
-        # of changed entry, but is negligible.
-        persistent_settings = self.project._load_persistent_settings()
-        persistent_settings["tui"][self.settings_key] = self.datatype_config
-        self.project._save_persistent_settings(persistent_settings)
+        self.interface.update_tui_settings(
+            self.datatype_config, self.settings_key
+        )
 
     def selected_datatypes(self) -> List[str]:
         """
@@ -123,12 +138,12 @@ class ClickableInput(Input):
 
     def __init__(
         self,
-        mainwindow,
-        placeholder,
-        id=None,
-        validate_on=None,
-        validators=None,
-    ):
+        mainwindow: App,
+        placeholder: str,
+        id: Optional[str] = None,
+        validate_on: Optional[List[str]] = None,
+        validators: Optional[List[Validator]] = None,
+    ) -> None:
         super(ClickableInput, self).__init__(
             placeholder=placeholder,
             id=id,
@@ -141,10 +156,10 @@ class ClickableInput(Input):
     def _on_click(self, event: events.Click) -> None:
         self.post_message(self.Clicked(self, event.button))
 
-    def as_names_list(self):
+    def as_names_list(self) -> List[str]:
         return self.value.replace(" ", "").split(",")
 
-    def on_key(self, event):
+    def on_key(self, event: events.Key) -> None:
         if event.key == "ctrl+q":
             pyperclip.copy(self.value)
 
@@ -158,12 +173,20 @@ class ClickableInput(Input):
 
 
 class CustomDirectoryTree(DirectoryTree):
+    """
+    Base class for directory tree with some customised additions:
+        - filter out top-level folders that are not canonical
+        - add additional keyboard shortcuts defined in `on_key`.
+    """
+
     @dataclass
     class DirectoryTreeSpecialKeyPress(Message):
         key: str
         node_path: Optional[Path]
 
-    def __init__(self, mainwindow, path, id=None):
+    def __init__(
+        self, mainwindow: App, path: Path, id: Optional[str] = None
+    ) -> None:
         super(CustomDirectoryTree, self).__init__(path=path, id=id)
 
         self.mainwindow = mainwindow
@@ -175,13 +198,13 @@ class CustomDirectoryTree(DirectoryTree):
 
         `paths` below are only the folders within the root folder. So this will
         filter out .datashuttle only at the root and not all instances of
-        .datashuttle lower down which I suppose we may want visible.
+        .datashuttle lower down the tree.
         """
         return [
             path for path in paths if not path.name.startswith(".datashuttle")
         ]
 
-    def on_key(self, event: events.Key):
+    def on_key(self, event: events.Key) -> None:
         """
         Handle key presses on the CustomDirectoryTree. Depending on the keys pressed,
         copy the path under the cursor, refresh the directorytree or
@@ -246,6 +269,7 @@ class CustomDirectoryTree(DirectoryTree):
                 "tree--guides", partial=True
             )
             guide_hover_style = base_guide_style
+            # Removed from original
             #            guide_hover_style = base_guide_style +
             #            self.get_component_rich_style(
             #               "tree--guides-hover", partial=True
@@ -326,6 +350,7 @@ class CustomDirectoryTree(DirectoryTree):
                 label_style += self.get_component_rich_style(
                     "tree--highlight", partial=True
                 )
+            # Removed from original
             #            if self.cursor_line == y:
             #               label_style += self.get_component_rich_style(
             #                  "tree--cursor", partial=False
@@ -361,8 +386,8 @@ class TreeAndInputTab(TabPane):
     """
 
     def handle_fill_input_from_directorytree(
-        self, sub_input_key, ses_input_key, event
-    ):
+        self, sub_input_key: str, ses_input_key: str, event: events.Key
+    ) -> None:
         """
         When a CustomDirectoryTree key is pressed, we typically
         want to perform an action that involves an Input. These are
@@ -407,8 +432,8 @@ class TreeAndInputTab(TabPane):
             )
 
     def insert_sub_or_ses_name_to_input(
-        self, sub_input_key, ses_input_key, name
-    ):
+        self, sub_input_key: str, ses_input_key: str, name: str
+    ) -> None:
         """
         see `handle_directorytree_key_pressed` for `sub_input_key` and
         `ses_input_key`.
@@ -422,8 +447,8 @@ class TreeAndInputTab(TabPane):
             self.query_one(ses_input_key).value = name
 
     def append_sub_or_ses_name_to_input(
-        self, sub_input_key, ses_input_key, name
-    ):
+        self, sub_input_key: str, ses_input_key: str, name: str
+    ) -> None:
         """
         see `insert_sub_or_ses_name_to_input`.
         """
@@ -439,7 +464,9 @@ class TreeAndInputTab(TabPane):
             else:
                 self.query_one(ses_input_key).value += f", {name}"
 
-    def get_sub_ses_names_and_datatype(self, sub_input_key, ses_input_key):
+    def get_sub_ses_names_and_datatype(
+        self, sub_input_key: str, ses_input_key: str
+    ) -> Tuple[List[str], List[str], List[str]]:
         """
         see `handle_fill_input_from_directorytree` for parameters.
         """
@@ -451,22 +478,37 @@ class TreeAndInputTab(TabPane):
 
 
 class TopLevelFolderSelect(Select):
-    def __init__(self, project, existing_only, id):
-        self.project = project
+    """
+    A Select widget for display and updating of top-level-folders. The
+    Create tab and transfer tabs (custom, top-level-folder) all have
+    top level folder selects that perform the same function. This
+    widget unifies these in a single place.
+
+    When updated,the status of the widget is stored in the persistent_settings "tui"
+    value specific to the select widget. When folders a made / transferred,
+    the top-level folder to use is read from the settings.
+
+    Parameters
+    ----------
+
+    existing_only : bool
+        If `True`, only top level folders that actually exist in the
+        project are displayed. Otherwise, all possible canonical
+        top-level-folders are displayed.
+
+    id : str
+        Textualize widget id
+    """
+
+    def __init__(self, interface: Interface, id: str) -> None:
+        self.interface = interface
 
         top_level_folders = [
             (folder, folder)
             for folder in canonical_folders.get_top_level_folders()
         ]
 
-        if existing_only:
-            top_level_folders = [
-                folders_tuple
-                for folders_tuple in top_level_folders
-                if (self.project.get_local_path() / folders_tuple[0]).exists()
-            ]
-
-        if id == "tabscreen_toplevel_select":
+        if id == "create_folders_settings_toplevel_select":
             self.settings_key = "create_tab"
         elif id == "transfer_toplevel_select":
             self.settings_key = "toplevel_transfer"
@@ -478,34 +520,45 @@ class TopLevelFolderSelect(Select):
                 "a persistent settings field"
             )
 
-        value = self.get_top_level_folder_from_file()
+        if not any(top_level_folders):
+            value = Select.BLANK
+        else:
+            value = self.get_top_level_folder(init=True)
 
         super(TopLevelFolderSelect, self).__init__(
             top_level_folders, value=value, id=id, allow_blank=True
         )
 
-    def get_displayed_top_level_folder(self):
+    def get_top_level_folder(self, init: bool = False) -> str:
+        """
+        Get the top level folder from `persistent_settings`,
+        performing a confidence-check that it matches the textual display.
+        """
+        top_level_folder = self.interface.tui_settings[
+            "top_level_folder_select"
+        ][self.settings_key]
+
+        if not init:  # TODO: this assert is just temp
+            assert (
+                top_level_folder == self.get_displayed_top_level_folder()
+            ), "config and widget should never be out of sync."
+
+        return top_level_folder
+
+    def get_displayed_top_level_folder(self) -> str:
+        """
+        Get the top level folder that is currently selected
+        on the select widget.
+        """
         assert self.value in canonical_folders.get_top_level_folders()
         return self.value
 
-    def get_top_level_folder_from_file(self):
-        persistent_settings = self.project._load_persistent_settings()
-        top_level_folder = persistent_settings["tui"][
-            "top_level_folder_select"
-        ][self.settings_key]
-        return top_level_folder
-
-    def get_top_level_folder(self):
-        top_level_folder = self.get_top_level_folder_from_file()
-        assert (
-            top_level_folder == self.get_displayed_top_level_folder()
-        ), "config and widget should never be out of sync."  # TODO: should be tested in a dedicated unit test.
-        return top_level_folder
-
-    def on_select_changed(self, event):
+    def on_select_changed(self, event: Select.Changed) -> None:
+        """
+        When the select is changed, update the linked persistent setting.
+        """
         top_level_folder = event.value
-        persistent_settings = self.project._load_persistent_settings()
-        persistent_settings["tui"]["top_level_folder_select"][
-            self.settings_key
-        ] = top_level_folder
-        self.project._save_persistent_settings(persistent_settings)
+
+        self.interface.update_tui_settings(
+            top_level_folder, "top_level_folder_select", self.settings_key
+        )

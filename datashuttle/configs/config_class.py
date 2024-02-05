@@ -251,7 +251,7 @@ class Configs(UserDict):
         Currently logging is located in config path
         """
         logging_path = self.project_metadata_path / "logs"
-        folders.make_folders(logging_path)
+        folders.create_folders(logging_path)
         return logging_path
 
     def get_datatype_as_dict_items(

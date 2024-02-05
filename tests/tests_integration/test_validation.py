@@ -170,31 +170,31 @@ class TestValidation(BaseTest):
         """
         # Check trying to make sub only
         subs = ["sub-001_id-123", "sub-002_id-124"]
-        project.make_folders(subs)
+        project.create_folders(subs)
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-001_id-125")
+            project.create_folders("sub-001_id-125")
 
         assert (
             "A sub already "
             "exists with the same sub id as sub-001_id-125" in str(e.value)
         )
 
-        project.make_folders("sub-003")
+        project.create_folders("sub-003")
 
         # check try and make ses within a sub
         sessions = ["ses-001_date-1605", "ses-002_date-1606"]
-        project.make_folders(subs, sessions)
+        project.create_folders(subs, sessions)
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-001_id-123", "ses-002_date-1607")
+            project.create_folders("sub-001_id-123", "ses-002_date-1607")
 
         assert (
             "A ses already exists with the same "
             "ses id as ses-002_date-1607" in str(e.value)
         )
 
-        project.make_folders("sub-001_id-123", "ses-003")
+        project.create_folders("sub-001_id-123", "ses-003")
 
     def test_duplicate_sub_and_ses_num_leading_zeros(self, project):
         """
@@ -202,10 +202,10 @@ class TestValidation(BaseTest):
         but explicitly check that error is raised if the same
         number is used with different number of leading zeros.
         """
-        project.make_folders("sub-1")
+        project.create_folders("sub-1")
 
         with pytest.raises(BaseException) as e:
-            project.make_folders(
+            project.create_folders(
                 "sub-001"
             )  # TODO: sub-1 will now catch leading zeros, which is fine.
 
@@ -213,10 +213,10 @@ class TestValidation(BaseTest):
             e.value
         )
 
-        project.make_folders("sub-1", "ses-3")
+        project.create_folders("sub-1", "ses-3")
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-1", "ses-003")
+            project.create_folders("sub-1", "ses-003")
 
         assert "Inconsistent value lengths for the key ses were found" in str(
             e.value
@@ -227,39 +227,39 @@ class TestValidation(BaseTest):
         Check the unique case that a duplicate subject is
         introduced when the session is made.
         """
-        project.make_folders("sub-001")
+        project.create_folders("sub-001")
 
         for bad_sub_name in ["sub-001_@DATE", "sub-001_extra-key"]:
             with pytest.raises(BaseException) as e:
-                project.make_folders(bad_sub_name, "ses-001")
+                project.create_folders(bad_sub_name, "ses-001")
             assert "A sub already exists" in str(e.value)
 
-        project.make_folders("sub-001", "ses-001")
+        project.create_folders("sub-001", "ses-001")
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-001", "ses-001_extra-key", "behav")
+            project.create_folders("sub-001", "ses-001_extra-key", "behav")
         assert "A ses already exists with the same ses id as ses-001" in str(
             e.value
         )
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-001_extra-key", "ses-001", "behav")
+            project.create_folders("sub-001_extra-key", "ses-001", "behav")
         assert "A sub already exists " in str(e.value)
 
         with pytest.raises(BaseException) as e:
-            project.make_folders(
+            project.create_folders(
                 "sub-001_extra-key", "ses-001_@DATE@", "behav"
             )
         assert "A sub already exists " in str(e.value)
 
-        project.make_folders("sub-001", "ses-001", "behav")
+        project.create_folders("sub-001", "ses-001", "behav")
 
-        project.make_folders("sub-001", ["ses-001", "ses-002"])
+        project.create_folders("sub-001", ["ses-001", "ses-002"])
 
         # Finally check that in a list of subjects, only the correct subject
         # with duplicate session is caught.
         with pytest.raises(BaseException) as e:
-            project.make_folders(
+            project.create_folders(
                 ["sub-001", "sub-002"], "ses-002_@DATE@", "ephys"
             )
         assert "A ses already exists with the same ses id as ses-002" in str(
@@ -277,14 +277,14 @@ class TestValidation(BaseTest):
         extracted, it is also "sub" and so an error is raised.
         """
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub_100")
+            project.create_folders("sub_100")
 
         assert "Invalid character in subject or session value: sub" in str(
             e.value
         )
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-001", "ses_100")
+            project.create_folders("sub-001", "ses_100")
 
         assert "Invalid character in subject or session value: ses" in str(
             e.value
@@ -305,12 +305,12 @@ class TestValidation(BaseTest):
                 project.cfg["central_path"] / "rawdata" / sub, exist_ok=True
             )
 
-        project.make_folders(["sub-002_id-11"])
+        project.create_folders(["sub-002_id-11"])
 
         # The bad sub name is not caught when testing locally only.
         project.validate_project(error_or_warn="error", local_only=True)
 
-        project.make_folders("sub-001")
+        project.create_folders("sub-001")
 
         # Now the bad sub is caught as we check against central also.
         with pytest.raises(BaseException) as e:
@@ -337,7 +337,7 @@ class TestValidation(BaseTest):
         assert "with the same sub id as sub-002" in str(w[2].message)
 
         # Finally, check that some bad sessions (ses-01) are caught.
-        project.make_folders("sub-001", ["ses-0001_id-11", "ses-0002"])
+        project.create_folders("sub-001", ["ses-0001_id-11", "ses-0002"])
         os.makedirs(
             project.cfg["central_path"]
             / "rawdata"
@@ -358,7 +358,7 @@ class TestValidation(BaseTest):
 
     def test_validate_names_against_project(self, project):
         """ """
-        project.make_folders(["sub-1_id-@", "sub-2_id-b", "sub-3_id-c"])
+        project.create_folders(["sub-1_id-@", "sub-2_id-b", "sub-3_id-c"])
 
         # Check an exact match passes
         sub_names = ["sub-1_id-@"]
@@ -432,7 +432,7 @@ class TestValidation(BaseTest):
             / "sub-4_date-2023"
             / "ses-003"
         )
-        project.make_folders("sub-2_id-b", ["ses-001", "ses-002"])
+        project.create_folders("sub-2_id-b", ["ses-001", "ses-002"])
 
         # Check no error is raised for exact match.
         sub_names = ["sub-1_id-@", "sub-2_id-b", "sub-4_date-2023"]

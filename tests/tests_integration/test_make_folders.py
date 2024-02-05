@@ -24,7 +24,7 @@ class TestMakeFolders(BaseTest):
         """
         subs = ["00011", "sub-00002", "30303"]
 
-        project.make_folders(subs)
+        project.create_folders(subs)
 
         test_utils.check_folder_tree_is_correct(
             project,
@@ -47,7 +47,7 @@ class TestMakeFolders(BaseTest):
 
         sessions = ["ses-00001", "50432"]
 
-        project.make_folders(subs, sessions, "all")
+        project.create_folders(subs, sessions, "all")
 
         base_folder = test_utils.get_top_level_folder_path(project)
 
@@ -96,7 +96,7 @@ class TestMakeFolders(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
 
-        project.make_folders(subs, sessions, datatypes_to_make)
+        project.create_folders(subs, sessions, datatypes_to_make)
 
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
@@ -135,7 +135,7 @@ class TestMakeFolders(BaseTest):
         sub = "sub-001"
         ses = "ses-001"
 
-        project.make_folders(sub, ses, "all")
+        project.create_folders(sub, ses, "all")
 
         # Check the correct folder names were made
         base_folder = test_utils.get_top_level_folder_path(project)
@@ -180,7 +180,7 @@ class TestMakeFolders(BaseTest):
         """
         sub = "sub-001"
         ses = "ses-001"
-        project.make_folders(sub, ses, files_to_test)
+        project.create_folders(sub, ses, files_to_test)
 
         base_folder = test_utils.get_top_level_folder_path(project)
 
@@ -210,7 +210,7 @@ class TestMakeFolders(BaseTest):
         """
         date, time_ = self.get_formatted_date_and_time()
 
-        project.make_folders(
+        project.create_folders(
             ["sub-001", "sub-002"],
             [f"ses-001_{tags('date')}", f"002_{tags('date')}"],
             "ephys",
@@ -231,7 +231,7 @@ class TestMakeFolders(BaseTest):
         """
         date, time_ = self.get_formatted_date_and_time()
 
-        project.make_folders(
+        project.create_folders(
             ["sub-001", "sub-002"],
             [f"ses-001_{tags('datetime')}", f"002_{tags('datetime')}"],
             "ephys",
@@ -270,7 +270,7 @@ class TestMakeFolders(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-003"]
 
-        project.make_folders(subs, sessions, "all")
+        project.create_folders(subs, sessions, "all")
 
         # Check folder tree is made in the desired top level folder
         test_utils.check_working_top_level_folder_only_exists(
@@ -311,7 +311,7 @@ class TestMakeFolders(BaseTest):
         assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Add large-sub num folders to local and check all are detected.
-        project.make_folders(["004", "005"])
+        project.create_folders(["004", "005"])
 
         new_num = project.get_next_sub_number(return_with_prefix)
         assert new_num == "sub-006" if return_with_prefix else "006"
@@ -368,7 +368,7 @@ class TestMakeFolders(BaseTest):
 
         # Now make a couple more sessions locally, and check
         # the next session is updated accordingly.
-        project.make_folders(sub, ["004", "005"])
+        project.create_folders(sub, ["004", "005"])
 
         new_num = project.get_next_ses_number(sub, return_with_prefix)
         assert new_num == "ses-006" if return_with_prefix else "006"

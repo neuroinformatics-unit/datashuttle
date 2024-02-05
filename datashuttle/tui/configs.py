@@ -1,3 +1,14 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+    from datashuttle.tui.interface import Interface
+    from datashuttle.tui.screens.new_project import NewProjectScreen
+    from datashuttle.tui.screens.project_manager import ProjectManagerScreen
+
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -12,10 +23,9 @@ from textual.widgets import (
     Static,
 )
 
-from datashuttle import DataShuttle
 from datashuttle.tui.custom_widgets import ClickableInput
+from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs, setup_ssh
-from datashuttle.tui.utils import tui_utils
 
 
 class ConfigsContent(Container):
@@ -26,8 +36,8 @@ class ConfigsContent(Container):
     project's configs.
 
     If no project exists, additional widgets are shown to allow
-    entry of a project name for new project initialisation, and some
-    additional information. Widgets are filled with some sensible defaults.
+    entry of a project name for new project initialisation, and
+    additional information.
 
     Otherwise, widgets are filled with the existing projects configs.
     """
@@ -36,19 +46,23 @@ class ConfigsContent(Container):
     class ConfigsSaved(Message):
         pass
 
-    def __init__(self, parent_class, project):
+    def __init__(
+        self,
+        parent_class: Union[ProjectManagerScreen, NewProjectScreen],
+        interface: Optional[Interface],
+    ) -> None:
         super(ConfigsContent, self).__init__()
 
         self.parent_class = parent_class
-        self.project = project
-        self.config_ssh_widgets = []
+        self.interface = interface
+        self.config_ssh_widgets: List[Any] = []
 
         self.central_input_placeholder_paths = {
             "filesystem": r"C:\path\to\central\my_projects\my_first_project",
             "ssh": r"/nfs/path_on_server/myprojects/central",
         }
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """
         `self.config_ssh_widgets` are SSH-setup related widgets
         that are only required when the user selects the SSH
@@ -144,42 +158,36 @@ class ConfigsContent(Container):
             ),
         ]
 
-        if not self.project:
+        if not self.interface:
             config_screen_widgets = (
                 init_only_config_screen_widgets + config_screen_widgets
             )
 
         yield Container(*config_screen_widgets, id="configs_container")
 
-    def on_mount(self):
+    def on_mount(self) -> None:
         """
         When we have mounted the widgets, the following logic depends on whether
         we are setting up a new project (`self.project is `None`) or have
         an instantiated project.
 
-        If we have a project, then we want to fill
-        the widgets with the existing configs. Otherwise, we set to some
-        reasonable defaults, required to determine the display of SSH widgets.
-        "overwrite_files_checkbox" should be off by default anyway if
-        `value` is not set, but we set here anyway as it is critical
-        this is not on by default.
-
-        TODO: this duplicates how defaults are set between TUI and
-        datashuttle API, which is not good. This should be centralised.
+        If we have a project, then we want to fill the widgets with the existing
+        configs. Otherwise, we set to some reasonable defaults, required to
+        determine the display of SSH widgets. "overwrite_files_checkbox"
+        should be off by default anyway if `value` is not set, but we set here
+        anyway as it is critical this is not on by default.
         """
         container = self.query_one("#configs_transfer_options_container")
         container.border_title = "Transfer Options"
-        if self.project:
+        if self.interface:
             self.fill_widgets_with_project_configs()
         else:
-            radiobutton = self.query_one(
-                "#configs_local_filesystem_radiobutton"
+            self.query_one("#configs_local_filesystem_radiobutton").value = (
+                True
             )
-            radiobutton.value = True
             self.switch_ssh_widgets_display(display_bool=False)
 
-            checkbox = self.query_one("#configs_overwrite_files_checkbox")
-            checkbox.value = False
+            self.query_one("#configs_overwrite_files_checkbox").value = False
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
@@ -191,10 +199,16 @@ class ConfigsContent(Container):
         display_bool = True if label == "SSH" else False
         self.switch_ssh_widgets_display(display_bool)
 
-    def switch_ssh_widgets_display(self, display_bool):
+    def switch_ssh_widgets_display(self, display_bool: bool) -> None:
         """
         Show or hide SSH-related configs based on whether the current
         `connection_method` widget is "ssh" or "local_filesystem".
+
+        Parameters
+        ----------
+
+        display_bool : bool
+            If `True`, display the SSH-related widgets.
         """
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
@@ -216,13 +230,13 @@ class ConfigsContent(Container):
                 placeholder
             )
 
-    def on_button_pressed(self, event: Button.Pressed):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """
-        Enables the Make Folders button to read out current input values
-        and use these to call project.make_folders().
+        Enables the Create Folders button to read out current input values
+        and use these to call project.create_folders().
         """
         if event.button.id == "configs_set_configs_button":
-            if not self.project:
+            if not self.interface:
                 self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
             else:
                 self.setup_configs_for_an_existing_project()
@@ -234,7 +248,7 @@ class ConfigsContent(Container):
             "configs_local_path_select_button",
             "configs_central_path_select_button",
         ]:
-            input_to_fill = (
+            input_to_fill: Literal["local", "central"] = (
                 "local"
                 if event.button.id == "configs_local_path_select_button"
                 else "central"
@@ -244,10 +258,28 @@ class ConfigsContent(Container):
                 modal_dialogs.SelectDirectoryTreeScreen(
                     self.parent_class.mainwindow
                 ),
-                lambda path_: self.handle_input_fill(path_, input_to_fill),
+                lambda path_: self.handle_input_fill_from_select_directory(
+                    path_, input_to_fill
+                ),
             )
 
-    def handle_input_fill(self, path_, local_or_central):
+    def handle_input_fill_from_select_directory(
+        self, path_: Path, local_or_central: Literal["local", "central"]
+    ) -> None:
+        """
+        Update the `local` or `central` path inputs after
+        `SelectDirectoryTreeScreen` returns a path.
+
+        Parameters
+        ----------
+
+        path_ : Union[Literal[False], Path]
+            The path returned from `SelectDirectoryTreeScreen`. If `False`,
+            the screen exited with no directory selected.
+
+        local_or_central : str
+            The Input to fill with the path.
+        """
         if path_ is False:
             return
 
@@ -260,11 +292,17 @@ class ConfigsContent(Container):
                 path_.as_posix()
             )
 
-    def setup_ssh_connection(self):
+    def setup_ssh_connection(self) -> None:
+        """
+        Set up the `SetupSshScreen` screen,
+        """
+        assert self.interface is not None, "type narrow flexible `interface`"
+
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
         if any(
-            self.project.cfg[key] != value for key, value in cfg_kwargs.items()
+            self.interface.get_configs()[key] != value
+            for key, value in cfg_kwargs.items()
         ):
             self.parent_class.mainwindow.show_modal_error_dialog(
                 "The values set above must equal the datashuttle settings. "
@@ -272,10 +310,10 @@ class ConfigsContent(Container):
             )
             return
         self.parent_class.mainwindow.push_screen(
-            setup_ssh.SetupSshScreen(self.project)
+            setup_ssh.SetupSshScreen(self.interface)
         )
 
-    def setup_configs_for_a_new_project_and_switch_to_tab_screen(self):
+    def setup_configs_for_a_new_project_and_switch_to_tab_screen(self) -> None:
         """
         If a project does not exist, we are in NewProjectScreen.
         We need to instantiate a new project based on the project name,
@@ -289,51 +327,54 @@ class ConfigsContent(Container):
         with the new project.
         """
         project_name = self.query_one("#configs_name_input").value
+        cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
-        try:
-            project = DataShuttle(project_name)
+        interface = Interface()
 
-            cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
+        success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
-            project.make_config_file(**cfg_kwargs)
-
+        if success:
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.MessageBox(
-                    "A DataShuttle project with the below "
-                    "configs has now been created.\n\n Click 'OK' to proceed to "
+                    "A DataShuttle project has now been created.\n\n "
+                    "Click 'OK' to proceed to "
                     "the project page, where you will be able to create and "
                     "transfer project folders.",
                     border_color="green",
                 ),
-                lambda _: self.parent_class.dismiss(project),
+                lambda _: self.parent_class.dismiss(interface),
             )
+        else:
+            self.parent_class.mainwindow.show_modal_error_dialog(output)
 
-        except BaseException as e:
-            self.parent_class.mainwindow.show_modal_error_dialog(str(e))
-
-    def setup_configs_for_an_existing_project(self):
+    def setup_configs_for_an_existing_project(self) -> None:
         """
         If the project already exists, we are on the TabbedContent
         screen. We need to get the configs to set from the current
         widget values and display the set values (or an error if
         there was a problem during setup) to the user.
         """
+        assert self.interface is not None, "type narrow flexible `interface`"
+
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
-        try:
-            self.project.make_config_file(**cfg_kwargs)
+        success, output = self.interface.set_configs_on_existing_project(
+            cfg_kwargs
+        )
 
+        if success:
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.MessageBox(
                     "Configs saved.", border_color="green"
                 )
             )
-        except BaseException as e:
-            self.parent_class.mainwindow.show_modal_error_dialog(str(e))
+        else:
+            self.parent_class.mainwindow.show_modal_error_dialog(output)
 
+        # Update the DirectoryTree anyway just in case.
         self.post_message(self.ConfigsSaved())
 
-    def fill_widgets_with_project_configs(self):
+    def fill_widgets_with_project_configs(self) -> None:
         """
         If a configured project already exists, we want to fill the
         widgets with the current project configs. This in some instances
@@ -343,9 +384,9 @@ class ConfigsContent(Container):
         "ssh" widgets are hidden / displayed based on the current setting,
         in `self.switch_ssh_widgets_display()`.
         """
-        cfg_to_load = tui_utils.get_textual_compatible_project_configs(
-            self.project.cfg
-        )
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        cfg_to_load = self.interface.get_textual_compatible_project_configs()
 
         # Local Path
         input = self.query_one("#configs_local_path_input")
@@ -386,16 +427,14 @@ class ConfigsContent(Container):
 
         # Overwrite Files Checkbox
         checkbox = self.query_one("#configs_overwrite_files_checkbox")
-        checkbox.value = self.project.cfg["overwrite_old_files"]
+        checkbox.value = self.interface.get_configs()["overwrite_old_files"]
 
-    def get_datashuttle_inputs_from_widgets(self):
+    def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
         Get the configs to pass to `make_config_file()` from
-        the current TUI settings. In some instances this requires
-        changing the value form (e.g. from `bool` to `"-v"` in
-        'transfer verbosity'.
+        the current TUI settings.
         """
-        cfg_kwargs = {}
+        cfg_kwargs: Dict[str, Any] = {}
 
         cfg_kwargs["local_path"] = Path(
             self.query_one("#configs_local_path_input").value

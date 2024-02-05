@@ -392,7 +392,7 @@ def make_and_check_local_project_folders(
 def make_local_folders_with_files_in(
     project, subs, sessions=None, datatype="all"
 ):
-    project.make_folders(subs, sessions, datatype)
+    project.create_folders(subs, sessions, datatype)
     for root, dirs, _ in os.walk(project.cfg["local_path"]):
         if not dirs:
             path_ = Path(root) / "placeholder_file.txt"

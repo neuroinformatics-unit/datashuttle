@@ -1,9 +1,19 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Dict, Optional
+
+if TYPE_CHECKING:
+
+    from rich.style import Style
+    from textual.widgets._directory_tree import DirEntry
+
+    from datashuttle.tui.app import App
+    from datashuttle.tui.interface import Interface
+
 import os
 from pathlib import Path
 
-from rich.style import Style
 from rich.text import Text
-from textual.widgets._directory_tree import DirEntry
 from textual.widgets._tree import TOGGLE_STYLE, TreeNode
 
 from datashuttle.configs import canonical_folders
@@ -18,60 +28,72 @@ class TransferStatusTree(CustomDirectoryTree):
     A directorytree in which the nodes are styled depending on their
     transfer status. e.g. indicates whether files are changed between
     local or central, or appear in local only.
+
+    Attributes
+    ----------
+
+    Keep the local path as a string, linked to project.cfg["local_path"],
+    so that no conversion to string is necessary in `format_transfer_label`
+    which is called many times.
     """
 
-    def __init__(self, mainwindow, project, id=None):
+    def __init__(
+        self, mainwindow: App, interface: Interface, id: Optional[str] = None
+    ):
+
+        self.interface = interface
+        self.local_path_str = self.interface.get_configs()[
+            "local_path"
+        ].as_posix()
+        self.transfer_diffs: Dict = {}
+
         super(TransferStatusTree, self).__init__(
-            path=project.get_local_path(), mainwindow=mainwindow, id=id
+            path=self.local_path_str, mainwindow=mainwindow, id=id
         )
 
-        self.project = project
-        self.transfer_diffs = None
-
-    def on_mount(self):
+    def on_mount(self) -> None:
         self.update_transfer_tree(init=True)
 
-    def update_local_transfer_paths(self):
+    def update_transfer_tree(self, init: bool = False) -> None:
+        """
+        Updates tree styling to reflect the current TUI state
+        and project transfer status.
+        """
+        self.local_path_str = self.interface.get_configs()[
+            "local_path"
+        ].as_posix()
+
+        self.update_local_transfer_paths()
+
+        if self.mainwindow.load_global_settings()["show_transfer_tree_status"]:
+            self.update_transfer_diffs()
+
+        if not init:
+            self.reload()
+
+    def update_local_transfer_paths(self) -> None:
         """
         Compiles a list of all project files and paths.
         """
         paths_list = []
 
         for top_level_folder in canonical_folders.get_top_level_folders():
-            walk_paths = os.walk(
-                (self.project.get_local_path() / top_level_folder).as_posix()
-            )
+            walk_paths = os.walk(f"{self.local_path_str}/{top_level_folder}")
             for path in walk_paths:
                 paths_list.append(Path(path[0]))
                 if path[2]:
                     paths_list.extend(
                         [Path(f"{path[0]}/{file}") for file in path[2]]
                     )
-
         self.transfer_paths = paths_list
 
-    def update_transfer_diffs(self):
+    def update_transfer_diffs(self) -> None:
         """
         Updates the transfer diffs used to style the DirectoryTree.
-
-        Use `init` when the widget is initialised, because
-        #transfer_toplevel_radiobutton is not yet available and
-        by default we set to 'all'.
         """
         self.transfer_diffs = get_local_and_central_file_differences(
-            self.project.cfg, all_top_level_folder=True
+            self.interface.get_configs(), all_top_level_folder=True
         )
-
-    def update_transfer_tree(self, init=False):
-        """
-        Updates tree styling to reflect the current TUI state
-        and project transfer status.
-        """
-        self.update_local_transfer_paths()
-        if self.mainwindow.load_global_settings()["show_transfer_tree_status"]:
-            self.update_transfer_diffs()
-        if not init:
-            self.reload()
 
     # Overridden Methods
     # ----------------------------------------------------------------------------------
@@ -83,7 +105,6 @@ class TransferStatusTree(CustomDirectoryTree):
         Extends the `DirectoryTree.render_label()` method to allow
         custom styling of file nodes according to their transfer status.
         """
-
         node_label = node._label.copy()
         node_label.stylize(style)
 
@@ -122,14 +143,13 @@ class TransferStatusTree(CustomDirectoryTree):
         text = Text.assemble(prefix, node_label)
         return text
 
-    def format_transfer_label(self, node_label, node_path):
+    def format_transfer_label(self, node_label, node_path) -> None:
         """
         Takes nodes being formatted using `render_label` and applies custom
         formatting according to the node's transfer status.
         """
-
         node_relative_path = node_path.as_posix().replace(
-            f"{self.project.cfg['local_path'] .as_posix()}/", ""
+            f"{self.local_path_str}/", ""
         )
 
         # Checks whether the current node's file path is staged for transfer

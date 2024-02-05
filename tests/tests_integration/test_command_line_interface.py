@@ -145,9 +145,9 @@ class TestCommandLineInterface(BaseTest):
         self.check_kwargs(changed_configs, kwargs_)
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_make_folders_variable(self, sep):
+    def test_create_folders_variable(self, sep):
         stdout, _ = test_utils.run_cli(
-            f" make{sep}folders "
+            f" create{sep}folders "
             f"--datatype all "
             f"--sub_names 001 "
             f"--ses_names 002 "
@@ -246,7 +246,9 @@ class TestCommandLineInterface(BaseTest):
         assert args_[0] == "/fake/filepath"
         assert kwargs_["dry_run"] is True
 
-    @pytest.mark.parametrize("command", ["make_folders", "upload", "download"])
+    @pytest.mark.parametrize(
+        "command", ["create_folders", "upload", "download"]
+    )
     def test_multiple_inputs(self, command):
         """
         To process lists, a syntax "<>" is used
@@ -358,7 +360,7 @@ class TestCommandLineInterface(BaseTest):
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_make_folders(self, project):
+    def test_create_folders(self, project):
         """
         see test_filesystem_transfer.py
         """
@@ -366,7 +368,7 @@ class TestCommandLineInterface(BaseTest):
         ses = ["ses-123", "ses-999"]
 
         test_utils.run_cli(
-            f"make_folders --datatype all --sub_names "
+            f"create_folders --datatype all --sub_names "
             f"{self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
             project.project_name,
         )
@@ -607,7 +609,7 @@ class TestCommandLineInterface(BaseTest):
         Check the CLI arguments to get the next subject
         or session number, shows the correct sub / ses number.
         """
-        project.make_folders("sub-001", "ses-001")
+        project.create_folders("sub-001", "ses-001")
 
         stdout, _ = test_utils.run_cli(
             f"get{sep}next{sep}sub{sep}number", project.project_name
@@ -630,7 +632,7 @@ class TestCommandLineInterface(BaseTest):
         )
         assert str(project.cfg["local_path"].as_posix()) in stdout
 
-        project.make_folders("sub-001_hello-world")
+        project.create_folders("sub-001_hello-world")
         stdout, _ = test_utils.run_cli(
             f"show{sep}local{sep}tree", project.project_name
         )
@@ -643,7 +645,7 @@ class TestCommandLineInterface(BaseTest):
         some validation, indicating the underlying function
         is called correctly.
         """
-        project.make_folders("sub-001")
+        project.create_folders("sub-001")
         os.makedirs(project.cfg["central_path"] / "rawdata" / "sub-1")
 
         _, stderr = test_utils.run_cli(

@@ -30,7 +30,7 @@ TabScreen > TabbedContent {
     border: tall $error;
 }
 
-#tabscreen_template_settings_button {
+#create_folders_settings_button {
     dock: right;
 }
 
@@ -121,7 +121,9 @@ TransferStatusTree {
 Tooltip {
     outline: solid $panel-lighten-1;
 }
-
+Tooltip:light {
+    outline: solid $panel-darken-3;
+}
 /* Light mode */
 
 #transfer_params_container:light {
