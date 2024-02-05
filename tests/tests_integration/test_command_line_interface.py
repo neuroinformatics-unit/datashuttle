@@ -147,7 +147,7 @@ class TestCommandLineInterface(BaseTest):
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_create_folders_variable(self, sep):
         stdout, _ = test_utils.run_cli(
-            f" make{sep}folders "
+            f" create{sep}folders "
             f"--datatype all "
             f"--sub_names 001 "
             f"--ses_names 002 "
