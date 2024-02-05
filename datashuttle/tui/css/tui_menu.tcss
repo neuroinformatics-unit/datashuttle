@@ -158,7 +158,7 @@ MessageBox:light > #messagebox_top_container {
     align-horizontal: center;
 }
 
-#configs_set_configs_button {
+#configs_save_configs_button {
     align-horizontal: left;
     margin: 2 5 0 0;
     padding: 0 4 0 4;

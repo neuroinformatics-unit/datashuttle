@@ -50,8 +50,9 @@ class ConfigsContent(Container):
         self,
         parent_class: Union[ProjectManagerScreen, NewProjectScreen],
         interface: Optional[Interface],
+        id: str,
     ) -> None:
-        super(ConfigsContent, self).__init__()
+        super(ConfigsContent, self).__init__(id=id)
 
         self.parent_class = parent_class
         self.interface = interface
@@ -130,7 +131,7 @@ class ConfigsContent(Container):
                 id="configs_transfer_options_container",
             ),
             Horizontal(
-                Button("Save", id="configs_set_configs_button"),
+                Button("Save", id="configs_save_configs_button"),
                 Button(
                     "Setup SSH Connection",
                     id="configs_setup_ssh_connection_button",
@@ -235,7 +236,7 @@ class ConfigsContent(Container):
         Enables the Create Folders button to read out current input values
         and use these to call project.create_folders().
         """
-        if event.button.id == "configs_set_configs_button":
+        if event.button.id == "configs_save_configs_button":
             if not self.interface:
                 self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
             else:
@@ -450,13 +451,20 @@ class ConfigsContent(Container):
             else "local_filesystem"
         )
 
-        cfg_kwargs["central_host_id"] = self.query_one(
+        central_host_id = self.query_one(
             "#configs_central_host_id_input"
         ).value
+        cfg_kwargs["central_host_id"] = (
+            None if central_host_id == "" else central_host_id
+        )
 
-        cfg_kwargs["central_host_username"] = self.query_one(
+        central_host_username = self.query_one(
             "#configs_central_host_username_input"
         ).value
+
+        cfg_kwargs["central_host_username"] = (
+            None if central_host_username == "" else central_host_username
+        )
 
         cfg_kwargs["overwrite_old_files"] = self.query_one(
             "#configs_overwrite_files_checkbox"
