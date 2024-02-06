@@ -77,13 +77,16 @@ class ConfigsContent(Container):
         are instantiating a new project.
         """
         self.config_ssh_widgets = [
-            Label("Central Host ID"),
+            Label("Central Host ID", id="configs_central_host_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
                 placeholder="e.g. username",
                 id="configs_central_host_id_input",
             ),
-            Label("Central Host Username"),
+            Label(
+                "Central Host Username",
+                id="configs_central_host_username_label",
+            ),
             ClickableInput(
                 self.parent_class.mainwindow,
                 placeholder="e.g. ssh.swc.ucl.ac.uk",
@@ -213,6 +216,7 @@ class ConfigsContent(Container):
         """
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
+
         self.query_one("#configs_central_path_select_button").disabled = (
             display_bool
         )

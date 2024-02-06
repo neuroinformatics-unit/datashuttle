@@ -153,6 +153,9 @@ class TuiApp(App):
     def save_global_settings(self, global_settings: Dict) -> None:
         settings_path = self.get_global_settings_path()
 
+        if not settings_path.parent.is_dir():
+            settings_path.parent.mkdir(parents=True)
+
         with open(settings_path, "w") as file:
             yaml.dump(global_settings, file, sort_keys=False)
 

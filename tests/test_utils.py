@@ -404,9 +404,10 @@ def make_local_folders_with_files_in(
 # -----------------------------------------------------------------------------
 
 
-def check_configs(project, kwargs):
+def check_configs(project, kwargs, config_path=None):
     """"""
-    config_path = project._config_path
+    if config_path is None:
+        config_path = project._config_path
 
     if not config_path.is_file():
         raise FileNotFoundError("Config file not found.")
