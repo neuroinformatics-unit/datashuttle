@@ -10,6 +10,7 @@ from os.path import join
 from pathlib import Path
 
 import yaml
+from _pytest.monkeypatch import MonkeyPatch
 from file_conflicts_pathtable import get_pathtable
 
 from datashuttle import DataShuttle
@@ -19,6 +20,22 @@ from datashuttle.utils import ds_logger, rclone
 # -----------------------------------------------------------------------------
 # Setup and Teardown Test Project
 # -----------------------------------------------------------------------------
+
+
+def get_monkeypatched_config_path(tmp_path):
+    """"""
+    tmp_config_path = tmp_path / "config"
+
+    def mock_get_datashuttle_path():
+        return tmp_config_path
+
+    monkeypatch = MonkeyPatch()
+    monkeypatch.setattr(
+        "datashuttle.configs.canonical_folders.get_datashuttle_path",
+        mock_get_datashuttle_path,
+    )
+    # Do an assert to ensure it's empty
+    return tmp_config_path
 
 
 def setup_project_default_configs(
@@ -32,7 +49,20 @@ def setup_project_default_configs(
 
     local_path / central_path: provide the config paths to set
     """
-    delete_project_if_it_exists(project_name)
+    # tmp_config_path = tmp_path / "config"
+
+    tmp_config_path = get_monkeypatched_config_path(tmp_path)
+
+    #  def mock_get_datashuttle_path():
+    #     return tmp_config_path
+
+    # monkeypatch = MonkeyPatch()
+    # monkeypatch.setattr(
+    #     "datashuttle.configs.canonical_folders.get_datashuttle_path",
+    #     mock_get_datashuttle_path,
+    # )
+
+    #   delete_project_if_it_exists(project_name)
 
     warnings.filterwarnings("ignore")
 
@@ -130,7 +160,6 @@ def delete_project_if_it_exists(project_name):
     config_path, _ = canonical_folders.get_project_datashuttle_path(
         project_name
     )
-
     if config_path.is_dir():
         ds_logger.close_log_filehandler()
         shutil.rmtree(config_path)
