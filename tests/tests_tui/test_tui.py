@@ -1,3 +1,4 @@
+import copy
 from pathlib import Path
 
 import pytest
@@ -11,39 +12,36 @@ from datashuttle.tui.screens.new_project import NewProjectScreen
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 
-# TODO: carefully check configs tests after refactor!
-
 # https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
 # -installed add to configs
 
-# need to allow name templates to be sub oR ses
-# Select Existing Project
-
-# Make New Project
+# TODO: carefully check configs tests after refactor!
+# TODO: need to allow name templates to be sub oR ses
 # TODO: add green to light mode css
-
 # TODO: could do CTRL+D to input to delete all content .
-
 # test mainmenu button
 # test with ssh
 # test without ssh
 # test bad ssh
 # test some configs errors
-
-# TODO: need to check Selects + whether they are disabled.
-# Test everything mocl
-# Sanity check just check it actually works
 # TODO: ssh setup not tested, need images!
+# test all create files at once
+# test all keyboard shortcuts
+# test template validation settings etc.
+# Settings
+# Light / Dark mode
+# DirectoryTree Setting
 
 
 class TestTUI:
-    # Just make a break here, and set configs also in the tmp_config
-    # but don't do for any other tests because 1) command_line_interface issue
-    # and 2) it is further away from real use case.
 
     @pytest_asyncio.fixture(scope="function")
     async def empty_project_paths(self, tmp_path_factory, monkeypatch):
-        """ """
+        """
+        Get the paths and project name for a non-existent (i.e. not
+        yet setup) project.
+        """
+        project_name = "my-test-project"
         tmp_path = tmp_path_factory.mktemp("test")
         tmp_config_path = tmp_path / "config"
 
@@ -52,23 +50,35 @@ class TestTUI:
 
         assert not any(tmp_config_path.glob("**"))
 
-        yield [tmp_config_path, tmp_path]
+        yield {
+            "tmp_path": tmp_path,
+            "tmp_config_path": tmp_config_path,
+            "project_name": project_name,
+        }
 
     @pytest_asyncio.fixture(scope="function")
-    async def setup_project_paths(self, tmp_path_factory, monkeypatch):
-        """"""
-        project_name = "my-test-project"  # TODO: global?
-        tmp_path = tmp_path_factory.mktemp("test")
-        tmp_config_path = tmp_path / "config"
+    async def setup_project_paths(self, empty_project_paths):
+        """
+        Get the paths and project name for a setup project.
+        """
+        test_utils.setup_project_fixture(
+            empty_project_paths["tmp_path"],
+            empty_project_paths["project_name"],
+        )
 
-        self.monkeypatch_get_datashuttle_path(tmp_config_path, monkeypatch)
-        self.monkeypatch_print(monkeypatch)
-
-        test_utils.setup_project_fixture(tmp_path, project_name)
-
-        return [tmp_config_path, tmp_path, project_name]
+        return empty_project_paths
 
     def monkeypatch_get_datashuttle_path(self, tmp_config_path, _monkeypatch):
+        """
+        For these tests, store the datashuttle configs (usually stored in
+        Path.home()) in the `tmp_path` provided by pytest, as it simplifies
+        testing here.
+
+        This is not done for general tests because
+        1) It is further from the actual datashuttle behaviour
+        2) It fails for testing CLI, because CLI spawns a new process in
+           which `get_datashuttle_path()` is not monkeypatched.
+        """
 
         def mock_get_datashuttle_path():
             return tmp_config_path
@@ -79,6 +89,11 @@ class TestTUI:
         )
 
     def monkeypatch_print(self, _monkeypatch):
+        """
+        Calls to `print` in datashuttle crash the TUI in the
+        test environment. I am not sure why. Get around this
+        in tests by monkeypatching the datashuttle print method.
+        """
 
         def return_none(arg1, arg2=None):
             return
@@ -98,7 +113,16 @@ class TestTUI:
         empty_project_paths,
         kwargs_set,
     ):
-        """ """
+        """
+        Check the ConfigsContent when making a new project. This contains
+        many widgets shared with the ConfigsContent on the tab page, however also
+        includes an additional information banner and input for the project name.
+
+        Here check these widgets are display correctly, and fill them. Next
+        check the config widgets are empty, then fill the widgets, save,
+        and check the interface.project and saved configs match the new
+        settings.
+        """
         tmp_config_path, tmp_path = empty_project_paths  # TODO: use dict
 
         project_name = "my-test-project"
@@ -134,6 +158,8 @@ class TestTUI:
 
         app = TuiApp()
         async with app.run_test() as pilot:
+
+            # Select a new project, check NewProjectScreen is displayed correctly.
             await pilot.click("#mainwindow_new_project_button")
             await pilot.pause()
 
@@ -141,6 +167,9 @@ class TestTUI:
             assert isinstance(pilot.app.screen_stack[1], NewProjectScreen)
             assert pilot.app.screen_stack[1].title == "Make New Project"
 
+            # Get the ConfigsContent and check all configs are displayed correctly.
+            # `check_new_project_configs` checks empty defaults are displayed,
+            # then updates with the kwargs and checks.
             configs_content = pilot.app.screen.query_one(
                 "#new_project_configs_content"
             )
@@ -149,6 +178,7 @@ class TestTUI:
                 pilot, project_name, configs_content, kwargs
             )
 
+            # Save the configs and check the correct messages are shown.
             await self.scroll_to_click_pause(
                 pilot,
                 configs_content.query_one("#configs_save_configs_button"),
@@ -163,24 +193,97 @@ class TestTUI:
                 "transfer project folders."
             )
 
-            pilot.app.screen.on_button_pressed()  # for some reason clicking does not work...
+            # for some reason clicking does not work...
+            pilot.app.screen.on_button_pressed()
             await pilot.pause()
 
             assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
+            # After saving, check all configs are correct on the DataShuttle
+            # instance as well as the stored configs.
             test_utils.check_configs(
                 pilot.app.screen.interface.project,
                 kwargs,
                 tmp_config_path / project_name / "config.yaml",
             )
+            assert (
+                pilot.app.screen.interface.project.project_name == project_name
+            )
+
+    async def check_new_project_configs(
+        self, pilot, project_name, configs_content, kwargs
+    ):
+        """
+        Check the configs displayed on the TUI match those founds in `kwargs`.
+        Also, check the widgets unique to ConfigsContent on the configs selection
+        for a new project.
+        """
+        # New Project Labels --------------------------------------------------
+
+        assert (
+            configs_content.query_one(
+                "#configs_banner_label"
+            ).renderable._text[0]
+            == "Configure A New Project"
+        )
+        assert (
+            configs_content.query_one("#configs_info_label").renderable._text[
+                0
+            ]
+            == "Set your configurations for a new project. For more details on "
+            "each section,\nsee the Datashuttle documentation. Once configs "
+            "are set, you will be able\nto use the 'Create' and 'Transfer' tabs."
+        )
+
+        # Project Name --------------------------------------------------------
+
+        assert (
+            configs_content.query_one("#configs_name_label").renderable._text[
+                0
+            ]
+            == "Project Name"
+        )
+        assert configs_content.query_one("#configs_name_input").value == ""
+
+        await pilot.click("#configs_name_input")
+        await pilot.press(*project_name)
+        assert (
+            configs_content.query_one("#configs_name_input").value
+            == project_name
+        )
+
+        # Shared Config Widgets -----------------------------------------------
+
+        default_kwargs = {
+            "local_path": "",
+            "central_path": "",
+            "connection_method": "local_filesystem",
+            "overwrite_old_files": False,
+        }
+        await self.check_configs_widgets_match_configs(
+            configs_content, default_kwargs
+        )
+        await self.set_configs_content_widgets(pilot, configs_content, kwargs)
+        await self.check_configs_widgets_match_configs(configs_content, kwargs)
 
     @pytest.mark.asyncio
     async def test_configs_select_path(self, monkeypatch):
+        """
+        Test the 'Select' buttons / DirectoryTree on the ConfigsContent.
+        These are used to select folders that are filled into the Input.
+        Open the select dialog, select a folder, check the path is
+        filled into the Input. There is one for both local
+        and central path.
 
+        When SSH is selected, the central path 'Select' should be disabled,
+        as it only makes sense to choose this for local filesystem transfer.
+        """
         self.monkeypatch_print(monkeypatch)
 
         app = TuiApp()
         async with app.run_test() as pilot:
+
+            # Select the page and ConfigsContent for setting up new project
             await pilot.click("#mainwindow_new_project_button")
             await pilot.pause()
 
@@ -195,6 +298,8 @@ class TestTUI:
                 "#configs_central_path_select_button"
             )
 
+            # For central and local path selects, click the button, select
+            # the first folder from the DirectoryTree and check the input is filled.
             for select_button, path_input_id in zip(
                 [local_path_button, central_path_button],
                 ["#configs_local_path_input", "#configs_central_path_input"],
@@ -226,7 +331,7 @@ class TestTUI:
 
                 await pilot.pause()
 
-            # Now check displayed!
+            # Check the central path only is disabled in SSH mode.
             assert local_path_button.disabled is False
             assert central_path_button.disabled is False
 
@@ -237,55 +342,54 @@ class TestTUI:
             assert local_path_button.disabled is False
             assert central_path_button.disabled is True
 
-    async def check_and_click_onto_existing_project(self, pilot, project_name):
-        """ """
-        await pilot.click("#mainwindow_existing_project_button")
-
-        assert isinstance(pilot.app.screen, ProjectSelectorScreen)
-        assert len(pilot.app.screen.project_names) == 1
-        assert project_name in pilot.app.screen.project_names
-
-        await pilot.click(f"#{project_name}")
-
-        assert isinstance(pilot.app.screen, ProjectManagerScreen)
-        assert pilot.app.screen.title == f"Project: {project_name}"
-        assert (
-            pilot.app.screen.query_one("#tabscreen_tabbed_content").active
-            == "tabscreen_create_tab"
-        )
-
     @pytest.mark.asyncio
     async def test_update_config_on_project_manager_screen(
         self, setup_project_paths
     ):
-        """"""
-        tmp_config_path, tmp_path, project_name = setup_project_paths
+        """
+        Test the ConfigsContent on the project manager tab screen.
+        The project is set up in the fixture, navigate to the project page.
+        Check that the default configs are displayed. Change all the configs,
+        save, and check these are updated on the config file and on the
+        `project` stored in `interface`.
+
+        Next, exit out of the project with the "Main Menu" button, go back
+        into the project and check the new configs are displayed.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test() as pilot:
+
+            # Navigate to the existing project and click onto the
+            # configs tab.
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
 
             await pilot.click(
                 f"Tab#{ContentTab.add_prefix('tabscreen_configs_tab')}"
-            )  # see  https://github.com/Textualize/textual/blob/main/tests/test_tabbed_content.py
+            )
 
             configs_content = pilot.app.screen.query_one(
                 "#tabscreen_configs_content"
             )
-            import copy
 
+            # Now get the default datashuttle configs, and check they match
+            # those displayed on the ConfigsContent.
             project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
             project_cfg.convert_str_and_pathlib_paths(
                 project_cfg, "path_to_str"
-            )  # this syntax is so weird.
+            )  # TODO: this syntax is so weird.
 
             await self.check_configs_widgets_match_configs(
-                pilot, configs_content, project_cfg
+                configs_content, project_cfg
             )
 
-            # TODO: rename
+            # Now we make some new settings, and set the ConfigsContent.
+            # Make sure they are all different to the existing configs,
+            # then save and check the configs on the DataShuttle instance
+            # and file are updated.
             local_path = tmp_path / f"some-random-path/{project_name}"
             central_path = tmp_path / f"some-random-path2/{project_name}"
 
@@ -310,7 +414,7 @@ class TestTUI:
             )
 
             await self.check_configs_widgets_match_configs(
-                pilot, configs_content, new_kwargs
+                configs_content, new_kwargs
             )
 
             await self.scroll_to_click_pause(
@@ -324,7 +428,8 @@ class TestTUI:
                 == "Configs saved."
             )
 
-            pilot.app.screen.on_button_pressed()  # for some reason clicking does not work...
+            # for some reason clicking does not work...
+            pilot.app.screen.on_button_pressed()
             await pilot.pause()
 
             test_utils.check_configs(
@@ -333,6 +438,9 @@ class TestTUI:
                 tmp_config_path / project_name / "config.yaml",
             )
 
+            # Finally, use "Main Menu" button to go back to the home screen,
+            # navigate back to the project and check the new configs are now
+            # displayed.
             await self.scroll_to_click_pause(
                 pilot, pilot.app.screen.query_one("#all_main_menu_buttons")
             )
@@ -346,33 +454,59 @@ class TestTUI:
             )
             configs_content = pilot.app.screen.query_one(
                 "#tabscreen_configs_content"
-            )  # I guess this is necessary
-
+            )
             await self.check_configs_widgets_match_configs(
-                pilot, configs_content, new_kwargs
+                configs_content, new_kwargs
             )
             await pilot.pause()
-
-    # test all create files at once
-    # test all keyboard shortcuts
-    # test template validation settings etc.
 
     # -------------------------------------------------------------------------
     # Helpers
     # -------------------------------------------------------------------------
 
     async def scroll_to_and_pause(self, pilot, widget):
+        """
+        Scroll to a widget and pause.
+        """
         widget.scroll_visible(animate=False)
         await pilot.pause()
 
     async def scroll_to_click_pause(self, pilot, widget):
+        """
+        Scroll to a widget, click it and call pause.
+        """
         await self.scroll_to_and_pause(pilot, widget)
         await pilot.click(f"#{widget.id}")
         await pilot.pause()
 
+    async def check_and_click_onto_existing_project(self, pilot, project_name):
+        """
+        From the main menu, go onto the select project page and
+        select the project created in the test environment.
+        Perform general TUI checks during the navigation.
+        """
+        await pilot.click("#mainwindow_existing_project_button")
+
+        assert isinstance(pilot.app.screen, ProjectSelectorScreen)
+        assert len(pilot.app.screen.project_names) == 1
+        assert project_name in pilot.app.screen.project_names
+
+        await pilot.click(f"#{project_name}")
+
+        assert isinstance(pilot.app.screen, ProjectManagerScreen)
+        assert pilot.app.screen.title == f"Project: {project_name}"
+        assert (
+            pilot.app.screen.query_one("#tabscreen_tabbed_content").active
+            == "tabscreen_create_tab"
+        )
+
     async def check_configs_widgets_match_configs(
-        self, pilot, configs_content, kwargs
+        self, configs_content, kwargs
     ):
+        """
+        Check that the widgets of the TUI configs match those found
+        in `kwargs`.
+        """
 
         # Local Path ----------------------------------------------------------
 
@@ -480,64 +614,13 @@ class TestTUI:
             is kwargs["overwrite_old_files"]
         )
 
-    async def check_new_project_configs(
-        self, pilot, project_name, configs_content, kwargs
-    ):
-
-        # New Project Labels --------------------------------------------------
-
-        assert (
-            configs_content.query_one(
-                "#configs_banner_label"
-            ).renderable._text[0]
-            == "Configure A New Project"
-        )
-        assert (
-            configs_content.query_one("#configs_info_label").renderable._text[
-                0
-            ]
-            == "Set your configurations for a new project. For more details on "
-            "each section,\nsee the Datashuttle documentation. Once configs "
-            "are set, you will be able\nto use the 'Create' and 'Transfer' tabs."
-        )
-
-        # Project Name --------------------------------------------------------
-
-        assert (
-            configs_content.query_one("#configs_name_label").renderable._text[
-                0
-            ]
-            == "Project Name"
-        )
-        assert configs_content.query_one("#configs_name_input").value == ""
-
-        await pilot.click("#configs_name_input")
-        await pilot.press(*project_name)
-        assert (
-            configs_content.query_one("#configs_name_input").value
-            == project_name
-        )
-
-        # Shared Config Widgets -----------------------------------------------
-
-        default_kwargs = {
-            "local_path": "",
-            "central_path": "",
-            "connection_method": "local_filesystem",
-            "overwrite_old_files": False,
-        }
-        await self.check_configs_widgets_match_configs(
-            pilot, configs_content, default_kwargs
-        )
-        await self.set_configs_content_widgets(pilot, configs_content, kwargs)
-        await self.check_configs_widgets_match_configs(
-            pilot, configs_content, kwargs
-        )
-
     async def set_configs_content_widgets(
         self, pilot, configs_content, kwargs
     ):
-        """ """
+        """
+        Given a dict of options that can be set on the configs TUI
+        in kwargs, set all configs widgets according to kwargs.
+        """
 
         # Local Path ----------------------------------------------------------
 
@@ -596,9 +679,3 @@ class TestTUI:
                 pilot,
                 configs_content.query_one("#configs_overwrite_files_checkbox"),
             )
-
-
-# Settings
-
-# Light / Dark mode
-# DirectoryTree Setting
