@@ -28,7 +28,7 @@ class MessageBox(ModalScreen):
 
     border_color : str
         The color to pass to the `border` style on the widget. Note that the
-        keywords 'red' and 'green' are overridden for custom style.
+        keywords 'red' 'grey' 'green' are overridden for custom style.
     """
 
     def __init__(self, message: str, border_color: str) -> None:
@@ -52,6 +52,8 @@ class MessageBox(ModalScreen):
             color = "rgb(140, 12, 0)"
         elif self.border_color == "green":
             color = "rgb(1, 138, 13)"
+        elif self.border_color in ["gray", "grey"]:
+            color = "rgb(184, 184, 184)"
         else:
             color = self.border_color
 
@@ -64,7 +66,7 @@ class MessageBox(ModalScreen):
         self.dismiss(True)
 
 
-class ConfirmScreen(ModalScreen):
+class FinishTransferScreen(ModalScreen):
     """
     A screen for rendering confirmation messages
     taking user input ('OK' or 'Cancel').
@@ -88,7 +90,13 @@ class ConfirmScreen(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "confirm_ok_button":
-            self.dismiss(True)
+            # Update the display to 'transferring' before TUI freezes
+            # during data transfer.
+            self.query_one("#confirm_button_container").visible = False
+            self.query_one("#confirm_message_label").update("Transferring...")
+            self.query_one("#confirm_message_label").call_after_refresh(
+                lambda: self.dismiss(True)
+            )
         else:
             self.dismiss(False)
 

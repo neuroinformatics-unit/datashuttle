@@ -27,7 +27,10 @@ from datashuttle.tui.custom_widgets import (
     TopLevelFolderSelect,
     TreeAndInputTab,
 )
-from datashuttle.tui.screens.modal_dialogs import ConfirmScreen
+from datashuttle.tui.screens.modal_dialogs import (
+    FinishTransferScreen,
+    MessageBox,
+)
 from datashuttle.tui.tabs.transfer_status_tree import TransferStatusTree
 
 
@@ -227,7 +230,7 @@ class TransferTab(TreeAndInputTab):
             )
 
             self.mainwindow.push_screen(
-                ConfirmScreen(message), self.transfer_data
+                FinishTransferScreen(message), self.transfer_data
             )
 
     def on_custom_directory_tree_directory_tree_special_key_press(
@@ -261,7 +264,7 @@ class TransferTab(TreeAndInputTab):
 
         Parameters
         ----------
-        transfer_bool: Passed by `ConfirmScreen`. True if user confirmed
+        transfer_bool: Passed by `FinishTransferScreen`. True if user confirmed
             transfer by clicking "Yes".
 
         """
@@ -304,5 +307,15 @@ class TransferTab(TreeAndInputTab):
 
             self.reload_directorytree()
 
-            if not success:
+            if success:
+                self.mainwindow.push_screen(
+                    MessageBox(
+                        "Transfer finished."
+                        "\n\n"
+                        "Check the most recent logs to "
+                        "ensure transfer completed successfully.",
+                        border_color="grey",
+                    )
+                )
+            else:
                 self.mainwindow.show_modal_error_dialog(output)
