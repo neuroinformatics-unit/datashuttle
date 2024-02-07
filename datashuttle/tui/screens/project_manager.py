@@ -68,11 +68,11 @@ class ProjectManagerScreen(Screen):
                     self, self.interface, id="tabscreen_configs_content"
                 )
             yield logging.LoggingTab(
-                            "Logs",
-                            self.mainwindow,
-                            self.interface.project,
-                            id="tabscreen_logging_tab",
-                        )
+                "Logs",
+                self.mainwindow,
+                self.interface.project,
+                id="tabscreen_logging_tab",
+            )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """

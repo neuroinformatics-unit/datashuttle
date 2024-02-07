@@ -367,7 +367,10 @@ class TestCommandLineInterface(BaseTest):
         subs = ["sub-011", "sub-002", "sub-333"]
         ses = ["ses-123", "ses-999"]
 
-        test_utils.run_cli(f"create_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ", project.project_name,)
+        test_utils.run_cli(
+            f"create_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
+            project.project_name,
+        )
         try:
             test_utils.check_folder_tree_is_correct(
                 project,
