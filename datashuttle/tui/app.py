@@ -37,6 +37,7 @@ class TuiApp(App):
 
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
+    ENABLE_COMMAND_PALETTE = False
 
     def compose(self) -> ComposeResult:
         yield Container(

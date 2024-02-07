@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
@@ -46,8 +47,12 @@ class LoggingTab(TabPane):
         self.prev_click_time = 0
 
     def update_latest_log_path(self):
-        logs = self.project.get_logging_path().glob("*.log")
-        self.latest_log_path = max(logs, key=os.path.getctime)
+        logs = list(self.project.get_logging_path().glob("*.log"))
+        self.latest_log_path = (
+            max(logs, key=os.path.getctime)
+            if any(logs)
+            else Path("None found.")
+        )
 
     def compose(self):
         yield Container(
