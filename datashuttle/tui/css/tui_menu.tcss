@@ -328,7 +328,7 @@ CreateFoldersSettingsScreen {
 
 /* Confirmation Screen --------------------------------------------------------------------- */
 
-ConfirmScreen {
+FinishTransferScreen {
     align: center middle;
 }
 

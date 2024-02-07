@@ -17,7 +17,7 @@ from textual.widgets import (
 )
 
 from datashuttle.tui.configs import ConfigsContent
-from datashuttle.tui.tabs import create_folders, transfer
+from datashuttle.tui.tabs import create_folders, logging, transfer
 
 
 class ProjectManagerScreen(Screen):
@@ -65,6 +65,12 @@ class ProjectManagerScreen(Screen):
             )
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield ConfigsContent(self, self.interface)
+            yield logging.LoggingTab(
+                "Logs",
+                self.mainwindow,
+                self.interface.project,
+                id="tabscreen_logging_tab",
+            )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -90,10 +96,12 @@ class ProjectManagerScreen(Screen):
             self.tabbed_content_mount_signal = False
             return
 
-        if event.pane.id == "tabscreen_create_tab":
-            self.query_one("#tabscreen_create_tab").reload_directorytree()
-        elif event.pane.id == "tabscreen_transfer_tab":
-            self.query_one("#tabscreen_transfer_tab").reload_directorytree()
+        if event.pane.id in [
+            "tabscreen_create_tab",
+            "tabscreen_transfer_tab",
+            "tabscreen_logging_tab",
+        ]:
+            self.query_one(f"#{event.pane.id}").reload_directorytree()
 
     def on_configs_content_configs_saved(self) -> None:
         """
