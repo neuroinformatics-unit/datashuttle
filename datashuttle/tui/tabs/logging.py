@@ -1,6 +1,6 @@
 import os
 
-from textual.containers import Horizontal
+from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Button, Label, RichLog, TabPane
 
@@ -18,15 +18,17 @@ class RichLogScreen(ModalScreen):
             self.log_contents = "".join(file.readlines())
 
     def compose(self):
-        yield RichLog(highlight=True, markup=True)
-        yield Button("Close", id="rich_log_screen_close_button")
+        yield Container(
+            RichLog(highlight=True, markup=True, id="richlog_screen_rich_log"),
+            Button("Close", id="richlog_screen_close_button"),
+        )
 
     def on_mount(self):
         text_log = self.query_one(RichLog)
         text_log.write(self.log_contents)
 
     def on_button_pressed(self, event):
-        if event.button.id == "rich_log_screen_close_button":
+        if event.button.id == "richlog_screen_close_button":
             self.dismiss()
 
 
@@ -48,18 +50,27 @@ class LoggingTab(TabPane):
         self.latest_log_path = max(logs, key=os.path.getctime)
 
     def compose(self):
-        yield Label("Double click logging file to select")
-        yield CustomDirectoryTree(
-            self.mainwindow,
-            self.project.get_logging_path(),
-            id="logging_tab_custom_directory_tree",
-        )
-        yield Label("or select most recent:")
-        yield Horizontal(
-            Button(
-                "Open Most Recent", id="logging_tab_open_most_recent_button"
+        yield Container(
+            Label(
+                "Double click logging file to select:",
+                id="logging_tab_top_label",
             ),
-            Label(f"{self.latest_log_path.stem}"),
+            CustomDirectoryTree(
+                self.mainwindow,
+                self.project.get_logging_path(),
+                id="logging_tab_custom_directory_tree",
+            ),
+            Label(
+                f"or open most recent: {self.latest_log_path.stem}",
+                id="logging_most_recent_label",
+            ),
+            Horizontal(
+                Button(
+                    "Open Most Recent",
+                    id="logging_tab_open_most_recent_button",
+                ),
+            ),
+            id="logging_tab_outer_container",
         )
 
     def on_button_pressed(self, event):
