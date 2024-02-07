@@ -24,7 +24,7 @@ from datashuttle.utils import ds_logger, rclone
 
 def get_monkeypatched_config_path(tmp_path):
     """"""
-    tmp_config_path = tmp_path / "config"
+    tmp_config_path = Path(tmp_path) / "config"
 
     def mock_get_datashuttle_path():
         return tmp_config_path

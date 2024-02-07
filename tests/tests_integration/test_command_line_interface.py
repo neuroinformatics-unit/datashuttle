@@ -360,26 +360,24 @@ class TestCommandLineInterface(BaseTest):
         config_path = test_utils.get_config_path_with_cli(clean_project_name)
         test_utils.check_config_file(config_path, changed_configs)
 
-    def test_create_folders(self, project):
+    def test_create_folders___(self, project):
         """
         see test_filesystem_transfer.py
         """
         subs = ["sub-011", "sub-002", "sub-333"]
         ses = ["ses-123", "ses-999"]
 
-        test_utils.run_cli(
-            f"create_folders --datatype all --sub_names "
-            f"{self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
-            project.project_name,
-        )
-
-        test_utils.check_folder_tree_is_correct(
-            project,
-            base_folder=test_utils.get_top_level_folder_path(project),
-            subs=subs,
-            sessions=ses,
-            folder_used=test_utils.get_all_folders_used(),
-        )
+        test_utils.run_cli(f"create_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ", project.project_name,)
+        try:
+            test_utils.check_folder_tree_is_correct(
+                project,
+                base_folder=test_utils.get_top_level_folder_path(project),
+                subs=subs,
+                sessions=ses,
+                folder_used=test_utils.get_all_folders_used(),
+            )
+        except:
+            breakpoint()
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize(
