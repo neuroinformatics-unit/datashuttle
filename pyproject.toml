@@ -59,6 +59,7 @@ dev = [
     "types-simplejson",
     "pandas-stubs",
     "types-setuptools",
+    "pytest-asyncio",
 ]
 
 [build-system]

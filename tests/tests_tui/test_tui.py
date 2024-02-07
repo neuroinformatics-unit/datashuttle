@@ -31,11 +31,6 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 # test without ssh
 # test bad ssh
 # test some configs errors
-# class TestTUI:
-class CallbackCompleted(BaseException):
-    def __init__(self):
-        pass
-
 
 # TODO: need to check Selects + whether they are disabled.
 # Test everything mocl
@@ -44,7 +39,9 @@ class CallbackCompleted(BaseException):
 
 
 class TestTUI:
-
+    # Just make a break here, and set configs also in the tmp_config
+    # but dont do for any other tests because 1) command_line_interface issue
+    # and 2) it is further away from real use case.
     async def scroll_to_and_pause(self, pilot, widget):
         widget.scroll_visible(animate=False)
         await pilot.pause()
