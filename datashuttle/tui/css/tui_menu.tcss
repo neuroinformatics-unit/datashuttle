@@ -336,8 +336,13 @@ FinishTransferScreen {
     align: center middle;
     height: 15;
     width: 65;
-    border: tall $accent;
+    border: tall $panel-lighten-1;
     background: $primary-background;
+ }
+
+#confirm_top_container:light {
+    background: $boost;
+    border: tall $panel-darken-3;
  }
 
 #confirm_message_label {
