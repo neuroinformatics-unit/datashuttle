@@ -298,13 +298,13 @@ class TestFileTransfer(BaseTest):
 
                 datetime_regexp = "datetime-\d{8}T\d{6}"
 
-                assert re.match(
+                assert re.fullmatch(
                     "ses-001_" + datetime_regexp, sessions_in_path[0]
                 )
-                assert re.match(
+                assert re.fullmatch(
                     "ses-002_" + datetime_regexp, sessions_in_path[1]
                 )
-                assert re.match(
+                assert re.fullmatch(
                     "ses-003_" + datetime_regexp, sessions_in_path[2]
                 )
 

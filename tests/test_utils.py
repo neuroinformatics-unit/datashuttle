@@ -307,6 +307,8 @@ def check_folder_tree_is_correct(
                     "test_custom_folder_names(), test_explicitly_session_list()"
                 )
 
+                assert folder.level in ["sub", "ses"]
+
                 if folder.level == "sub":
                     datatype_path = join(path_to_sub_folder, folder.name)
                 elif folder.level == "ses":

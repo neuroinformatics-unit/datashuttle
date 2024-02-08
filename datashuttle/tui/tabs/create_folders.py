@@ -68,13 +68,18 @@ class CreateFoldersTab(TreeAndInputTab):
             validators=[NeuroBlueprintValidator("ses", self)],
         )
         yield Label("Datatype(s)", id="create_folders_datatype_label")
-        yield DatatypeCheckboxes(self.interface)
+        yield DatatypeCheckboxes(
+            self.interface, id="create_folders_datatype_checkboxes"
+        )
         yield Horizontal(
-            Button("Create Folders", id="create_folders_make_button"),
+            Button(
+                "Create Folders", id="create_folders_create_folders_button"
+            ),
             Button(
                 "Settings",
                 id="create_folders_settings_button",
             ),
+            id="create_folders_buttons_horizontal",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -85,7 +90,7 @@ class CreateFoldersTab(TreeAndInputTab):
         `unused_bool` is necessary to get dismiss to call
         the callback.
         """
-        if event.button.id == "create_folders_make_button":
+        if event.button.id == "create_folders_create_folders_button":
             self.create_folders()
 
         elif event.button.id == "create_folders_settings_button":
@@ -112,10 +117,10 @@ class CreateFoldersTab(TreeAndInputTab):
             "sub" if "subject" in input_id else "ses"
         )
 
-        if event.button == 1:
-            self.fill_input_with_template(prefix, input_id)
-        elif event.button == 3:
+        if event.ctrl:
             self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
+        else:
+            self.fill_input_with_template(prefix, input_id)
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress

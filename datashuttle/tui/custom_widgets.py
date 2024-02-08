@@ -69,12 +69,14 @@ class DatatypeCheckboxes(Static):
         self,
         interface: Interface,
         create_or_transfer: Literal["create", "transfer"] = "create",
+        id: Optional[str] = None,
     ) -> None:
-        super(DatatypeCheckboxes, self).__init__()
+        super(DatatypeCheckboxes, self).__init__(id=id)
 
         self.interface = interface
+        self.create_or_transfer = create_or_transfer
 
-        if create_or_transfer == "create":
+        if self.create_or_transfer == "create":
             self.settings_key = "create_checkboxes_on"
         else:
             self.settings_key = "transfer_checkboxes_on"
@@ -87,7 +89,7 @@ class DatatypeCheckboxes(Static):
         for datatype in self.datatype_config.keys():
             yield Checkbox(
                 datatype.title().replace("_", " "),
-                id=f"tabscreen_{datatype}_checkbox",
+                id=self.get_checkbox_name(datatype),
                 value=self.datatype_config[datatype],
             )
 
@@ -99,7 +101,7 @@ class DatatypeCheckboxes(Static):
         """
         for datatype in self.datatype_config.keys():
             self.datatype_config[datatype] = self.query_one(
-                f"#tabscreen_{datatype}_checkbox"
+                f"#{self.get_checkbox_name(datatype)}"
             ).value
 
         self.interface.update_tui_settings(
@@ -118,6 +120,9 @@ class DatatypeCheckboxes(Static):
         ]
         return selected_datatypes
 
+    def get_checkbox_name(self, datatype):
+        return f"{self.create_or_transfer}_{datatype}_checkbox"
+
 
 # --------------------------------------------------------------------------------------
 # ClickableInput
@@ -134,7 +139,7 @@ class ClickableInput(Input):
     @dataclass
     class Clicked(Message):
         input: ClickableInput
-        button: int
+        ctrl: bool
 
     def __init__(
         self,
@@ -154,7 +159,7 @@ class ClickableInput(Input):
         self.mainwindow = mainwindow
 
     def _on_click(self, event: events.Click) -> None:
-        self.post_message(self.Clicked(self, event.button))
+        self.post_message(self.Clicked(self, event.ctrl))
 
     def as_names_list(self) -> List[str]:
         return self.value.replace(" ", "").split(",")

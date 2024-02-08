@@ -1,4 +1,5 @@
 import copy
+import re
 from pathlib import Path
 
 import pytest
@@ -6,8 +7,12 @@ import pytest_asyncio
 import test_utils
 from textual.widgets._tabbed_content import ContentTab
 
+from datashuttle.configs import canonical_folders
 from datashuttle.tui.app import TuiApp
-from datashuttle.tui.screens.modal_dialogs import SelectDirectoryTreeScreen
+from datashuttle.tui.screens.modal_dialogs import (
+    MessageBox,
+    SelectDirectoryTreeScreen,
+)
 from datashuttle.tui.screens.new_project import NewProjectScreen
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
@@ -15,6 +20,7 @@ from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 # https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
 # -installed add to configs
 
+# TODO: do we need to show anything when create folders is clicked?
 # TODO: carefully check configs tests after refactor!
 # TODO: need to allow name templates to be sub oR ses
 # TODO: add green to light mode css
@@ -51,8 +57,8 @@ class TestTUI:
         assert not any(list(tmp_config_path.glob("**")))
 
         yield {
-            "tmp_path": tmp_path,
             "tmp_config_path": tmp_config_path,
+            "tmp_path": tmp_path,
             "project_name": project_name,
         }
 
@@ -103,6 +109,587 @@ class TestTUI:
         )
 
     # -------------------------------------------------------------------------
+    # Test Create
+    # -------------------------------------------------------------------------
+
+    @pytest.mark.asyncio
+    async def test_create_folders_widgets_display(self, setup_project_paths):
+        """"""
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_label"
+                ).renderable._text[0]
+                == "Subject(s)"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).placeholder
+                == "e.g. sub-001"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#tabscreen_session_label"
+                ).renderable._text[0]
+                == "Session(s)"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).placeholder
+                == "e.g. ses-001"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_datatype_label"
+                ).renderable._text[0]
+                == "Datatype(s)"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_behav_checkbox"
+                ).label._text[0]
+                == "Behav"
+            )  # TODO: CHECK PERSISTENT SETTINGS
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_ephys_checkbox"
+                ).label._text[0]
+                == "Ephys"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_funcimg_checkbox"
+                ).label._text[0]
+                == "Funcimg"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_anat_checkbox"
+                ).label._text[0]
+                == "Anat"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_create_folders_button"
+                ).label._text[0]
+                == "Create Folders"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_button"
+                ).label._text[0]
+                == "Settings"
+            )
+
+    async def fill_input(self, pilot, id, value):
+        await self.scroll_to_click_pause(  # TODO: just take the key here!!
+            pilot, pilot.app.screen.query_one(id)
+        )
+        pilot.app.screen.query_one(id).value = ""
+        await pilot.press(*value)
+        await pilot.pause()
+
+    @pytest.mark.asyncio
+    async def test_create_folders_bad_validation_tooltips(
+        self, setup_project_paths
+    ):
+        # Not exhaustive
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            # SUB
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-abc"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).tooltip
+                == "Invalid character in subject or session value: abc"
+            )
+
+            # SES
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-001_ses-001"
+            )
+
+            # Unfortunately the validation is currently setup to validate both subject and
+            # session together
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).tooltip
+                == "Invalid character in subject or session value: abc"
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).tooltip
+                == "Formatted names: ['sub-001']"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).tooltip
+                == "There is more than one instance of ses in ses-001_ses-001. NeuroBlueprint names must contain only one instance of each key."
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-001"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot,
+                pilot.app.screen.query_one(
+                    "#create_folders_create_folders_button"
+                ),
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001_@DATE@"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).tooltip
+                == "A sub already exists with the same sub id as sub-001_date-20240208. The existing folder is sub-001."
+            )  # TODO: set these inputs to variables
+
+    @pytest.mark.asyncio
+    async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
+        """"""
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )  # TODO: own function? if used a lot...
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-001"
+            )
+            await self.scroll_to_click_pause(
+                pilot,
+                pilot.app.screen.query_one(
+                    "#create_folders_create_folders_button"
+                ),
+            )
+            # TODO: event just saving ID to var would be nice....
+
+            await self.double_click(pilot, "#create_folders_subject_input")
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-"
+            )  # TODO: own get_value function
+
+            await self.double_click(pilot, "#create_folders_session_input")
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-"
+            )  # TODO: own get_value function
+
+            await self.double_click(
+                pilot, "#create_folders_subject_input", control=True
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-002"
+            )  # TODO: own get_value function
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+            await self.double_click(
+                pilot, "#create_folders_session_input", control=True
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-002"
+            )  # TODO: own get_value function
+
+    async def double_click(self, pilot, id, control=False):
+        for _ in range(2):
+            await self.scroll_to_click_pause(
+                pilot, pilot.app.screen.query_one(id), control=control
+            )
+
+    @pytest.mark.asyncio
+    async def test_fill_and_append_next_sub_and_ses(self, setup_project_paths):
+        """"""
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-001"
+            )
+            await self.scroll_to_click_pause(
+                pilot,
+                pilot.app.screen.query_one(
+                    "#create_folders_create_folders_button"
+                ),
+            )
+
+            for node in range(4):
+                await pilot.app.screen.query_one(
+                    "#create_folders_directorytree"
+                ).reload_node(
+                    pilot.app.screen.query_one(
+                        "#create_folders_directorytree"
+                    ).get_node_at_line(node)
+                )
+
+            await self.hover_and_press_tree(
+                pilot,
+                "#create_folders_directorytree",
+                hover_line=2,
+                press_string="ctrl+a",
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-001, sub-001"
+            )
+
+            await self.hover_and_press_tree(
+                pilot,
+                "#create_folders_directorytree",
+                hover_line=3,
+                press_string="ctrl+a",
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-001, ses-001"
+            )
+
+            await self.hover_and_press_tree(
+                pilot,
+                "#create_folders_directorytree",
+                hover_line=2,
+                press_string="ctrl+f",
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-001"
+            )
+
+            await self.hover_and_press_tree(
+                pilot,
+                "#create_folders_directorytree",
+                hover_line=3,
+                press_string="ctrl+f",
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-001"
+            )
+
+    async def hover_and_press_tree(self, pilot, id, hover_line, press_string):
+        pilot.app.screen.query_one(id).hover_line = hover_line
+        await self.scroll_to_click_pause(pilot, pilot.app.screen.query_one(id))
+        await pilot.press(press_string)
+        await pilot.pause()
+
+    # Settings
+    # TODO: for all shared directorytree fujnctions, do on both trees!
+    # TODO: don't bother testing tree highlgihting yet.
+    async def test_create_folders_directorytree_clipboard(self):
+        pass
+
+    async def test_create_folders_directorytree_open_filesystem(self):
+        pass
+
+    async def test_create_folders_directorytree_reload(self):
+        pass
+
+    async def test_create_folders_settings_top_level_folder(
+        self,
+    ):  # TODO: test all other widgets...
+        pass
+
+    async def test_create_folder_settings_bypass_validation(
+        self,
+    ):  # check validation errors here also, PROBABLY JUST COMBINE WITH BELOW...
+        pass
+
+    async def test_create_folders_settings_name_templates(self):
+        pass
+
+    async def test_create_folder_persistent_settings(self):
+        pass
+
+    async def get_next_sub_and_ses_with_templates(self):
+        pass
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("test_multi_input", [True, False])
+    async def test_create_folders_single_sub_and_ses(
+        self, setup_project_paths, test_multi_input
+    ):
+        """ """
+        # We could create test_lists from text but we want to be SUPER explicitly here
+        if test_multi_input:
+            sub_text = "sub-001, sub-002"
+            sub_test_list = ["sub-001", "sub-002"]
+            ses_text = "ses-001,ses-010"
+            ses_test_list = ["ses-001", "ses-010"]
+        else:
+            sub_text = "sub-001"
+            sub_test_list = [sub_text]
+            ses_text = "ses-001"
+            ses_test_list = [ses_text]
+
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            project = pilot.app.screen.interface.project
+
+            await self.turn_off_all_datatype_checkboxes(pilot)
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", sub_text
+            )
+
+            await self.create_folders_and_check_output(
+                pilot,
+                project,
+                subs=sub_test_list,
+                sessions=[],
+                folder_used=test_utils.get_all_folders_used(value=False),
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_session_input", ses_text
+            )
+            await self.create_folders_and_check_output(
+                pilot,
+                project,
+                subs=sub_test_list,
+                sessions=ses_test_list,
+                folder_used=test_utils.get_all_folders_used(value=False),
+            )
+
+            await self.iterate_and_check_all_datatype_folders(
+                pilot, subs=sub_test_list, sessions=ses_test_list
+            )
+
+    @pytest.mark.asyncio
+    async def test_create_folders_formatted_names(self, setup_project_paths):
+        # TODO: tidy this up, some horrible decisions!
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            # SUB
+            await self.fill_input(
+                pilot,
+                "#create_folders_subject_input",
+                "sub-001_@DATE@, sub-002_@DATE@",
+            )
+
+            sub_1_regexp = "sub\-001_date\-\d{8}"
+            sub_2_regexp = "sub\-002_date\-\d{8}"
+            sub_tooltip_regexp = (
+                "Formatted names: \['"
+                + sub_1_regexp
+                + "', '"
+                + sub_2_regexp
+                + "'\]"
+            )
+            sub_tooltip = pilot.app.screen.query_one(
+                "#create_folders_subject_input"
+            ).tooltip
+
+            assert re.fullmatch(sub_tooltip_regexp, sub_tooltip)
+
+            # SES
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-001@TO@003_@DATE@"
+            )
+
+            ses_1_regexp = "ses\-001_date\-\d{8}"
+            ses_2_regexp = "ses\-002_date\-\d{8}"
+            ses_3_regexp = "ses\-003_date\-\d{8}"
+            ses_tooltip_regexp = (
+                "Formatted names: \['"
+                + ses_1_regexp
+                + "', '"
+                + ses_2_regexp
+                + "', '"
+                + ses_3_regexp
+                + "'\]"
+            )
+            ses_tooltip = pilot.app.screen.query_one(
+                "#create_folders_session_input"
+            ).tooltip
+            assert re.fullmatch(ses_tooltip_regexp, ses_tooltip)
+
+            await self.scroll_to_click_pause(
+                pilot,
+                pilot.app.screen.query_one(
+                    "#create_folders_create_folders_button"
+                ),  # TODO: just take the key here!!
+            )
+
+            project = pilot.app.screen.interface.project
+            sub_level_names = list(
+                (project.cfg["local_path"] / "rawdata").glob("sub-*")
+            )
+
+            assert re.fullmatch(sub_1_regexp, sub_level_names[0].stem)
+            assert re.fullmatch(sub_2_regexp, sub_level_names[1].stem)
+
+            for sub in sub_level_names:
+                ses_level_names = list(
+                    (project.cfg["local_path"] / "rawdata" / sub).glob("ses-*")
+                )
+
+                assert re.fullmatch(ses_1_regexp, ses_level_names[0].stem)
+                assert re.fullmatch(ses_2_regexp, ses_level_names[1].stem)
+                assert re.fullmatch(ses_3_regexp, ses_level_names[2].stem)
+
+    async def turn_off_all_datatype_checkboxes(self, pilot):
+        """
+        Make sure all checkboxes are off to start
+        """
+        for datatype in canonical_folders.get_datatype_folders().keys():
+            id = f"#create_{datatype}_checkbox"
+            if pilot.app.screen.query_one(id).value:
+                await self.scroll_to_click_pause(
+                    pilot, pilot.app.screen.query_one(id)
+                )
+                # I don't know why the click is not triggered this, but it
+                # does outside the test environment. sBut this is super critical
+                # It is necessary this function is called on click to update .datatype_config.
+                pilot.app.screen.query_one(
+                    "#create_folders_datatype_checkboxes"
+                ).on_checkbox_changed()
+                await pilot.pause()
+
+        datatype_config = pilot.app.screen.query_one(
+            "#create_folders_datatype_checkboxes"
+        ).datatype_config
+        assert all(val is False for val in datatype_config.values())
+
+    async def create_folders_and_check_output(
+        self, pilot, project, subs, sessions, folder_used
+    ):
+        """"""
+        await self.scroll_to_click_pause(
+            pilot,
+            pilot.app.screen.query_one(
+                "#create_folders_create_folders_button"
+            ),
+        )
+
+        test_utils.check_folder_tree_is_correct(
+            project,
+            base_folder=test_utils.get_top_level_folder_path(project),
+            subs=subs,
+            sessions=sessions,
+            folder_used=folder_used,
+        )
+
+    async def iterate_and_check_all_datatype_folders(
+        self, pilot, subs, sessions
+    ):
+        """ """
+        project = pilot.app.screen.interface.project
+        folder_used = test_utils.get_all_folders_used(value=False)
+
+        for datatype in canonical_folders.get_datatype_folders().keys():
+
+            await self.scroll_to_click_pause(
+                pilot,
+                pilot.app.screen.query_one(f"#create_{datatype}_checkbox"),
+            )
+            folder_used[datatype] = True
+
+            await self.create_folders_and_check_output(
+                pilot, project, subs, sessions, folder_used
+            )
+
+    async def click_create_folders_and_check_messagebox(
+        self, pilot
+    ):  # USE FOR ERROR
+
+        await self.scroll_to_click_pause(
+            pilot,
+            pilot.app.screen.query_one(
+                "#create_folders_create_folders_button"
+            ),
+        )
+
+        assert isinstance(pilot.app.screen, MessageBox)
+        assert pilot.app.screen.query_one(
+            "#messagebox_message_label"
+        ).renderable._text[0]
+
+    # -------------------------------------------------------------------------
     # Tests
     # -------------------------------------------------------------------------
 
@@ -123,9 +710,9 @@ class TestTUI:
         and check the interface.project and saved configs match the new
         settings.
         """
-        tmp_config_path, tmp_path = empty_project_paths  # TODO: use dict
-
-        project_name = "my-test-project"
+        tmp_config_path, tmp_path, project_name = (
+            empty_project_paths.values()
+        )  # TODO: use dict
 
         kwargs = {
             "local_path": (tmp_path / "local" / project_name).as_posix(),
@@ -245,8 +832,7 @@ class TestTUI:
         )
         assert configs_content.query_one("#configs_name_input").value == ""
 
-        await pilot.click("#configs_name_input")
-        await pilot.press(*project_name)
+        await self.fill_input(pilot, "#configs_name_input", project_name)
         assert (
             configs_content.query_one("#configs_name_input").value
             == project_name
@@ -471,12 +1057,12 @@ class TestTUI:
         widget.scroll_visible(animate=False)
         await pilot.pause()
 
-    async def scroll_to_click_pause(self, pilot, widget):
+    async def scroll_to_click_pause(self, pilot, widget, control=False):
         """
         Scroll to a widget, click it and call pause.
         """
         await self.scroll_to_and_pause(pilot, widget)
-        await pilot.click(f"#{widget.id}")
+        await pilot.click(f"#{widget.id}", control=control)
         await pilot.pause()
 
     async def check_and_click_onto_existing_project(self, pilot, project_name):
@@ -631,11 +1217,9 @@ class TestTUI:
             == "Local Path"
         )
 
-        configs_content.query_one("#configs_local_path_input").value = ""
-        await self.scroll_to_click_pause(
-            pilot, configs_content.query_one("#configs_local_path_input")
+        await self.fill_input(
+            pilot, "#configs_local_path_input", kwargs["local_path"]
         )
-        await pilot.press(*kwargs["local_path"])
 
         # Connection Method ---------------------------------------------------
 
@@ -647,29 +1231,27 @@ class TestTUI:
 
             # Central Host ID -------------------------------------------------
 
-            await self.scroll_to_click_pause(
+            await self.fill_input(
                 pilot,
-                configs_content.query_one("#configs_central_host_id_input"),
+                "#configs_central_host_id_input",
+                kwargs["central_host_id"],
             )
-            await pilot.press(*kwargs["central_host_id"])
 
             # Central Host Username -------------------------------------------
 
-            await self.scroll_to_click_pause(
+            await self.fill_input(
                 pilot,
-                configs_content.query_one(
-                    "#configs_central_host_username_input"
-                ),
+                "#configs_central_host_username_input",
+                kwargs["central_host_username"],
             )
-            await pilot.press(*kwargs["central_host_username"])
 
         # Central Path --------------------------------------------------------
 
         configs_content.query_one("#configs_central_path_input").value = ""
-        await self.scroll_to_click_pause(
-            pilot, configs_content.query_one("#configs_central_path_input")
+
+        await self.fill_input(
+            pilot, "#configs_central_path_input", kwargs["central_path"]
         )
-        await pilot.press(*kwargs["central_path"])
 
         # Overwrite Files -----------------------------------------------------
 
