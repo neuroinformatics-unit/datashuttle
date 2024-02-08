@@ -63,7 +63,7 @@ class TestLogging:
     # ----------------------------------------------------------------------------------------------------------
 
     def read_log_file(self, logging_path):
-        log_filepath = glob.glob(str(logging_path / "*.log"))
+        log_filepath = list(glob.glob(str(logging_path / "*.log")))
 
         assert len(log_filepath) == 1, (
             f"there should only be one log "
@@ -78,8 +78,7 @@ class TestLogging:
 
     def delete_log_files(self, logging_path):
         ds_logger.close_log_filehandler()
-        logs = glob.glob((str(logging_path / "*.log")))
-        for log in logs:
+        for log in glob.glob((str(logging_path / "*.log"))):
             os.remove(log)
 
     def test_log_filename(self, project):
@@ -345,8 +344,8 @@ class TestLogging:
             project.cfg["local_path"] / ".datashuttle" / "logs" / "*.log"
         ).as_posix()
 
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        project_path_logs = glob.glob(local_path_search)
+        tmp_path_logs = list(glob.glob(str(project._temp_log_path / "*.log")))
+        project_path_logs = list(glob.glob(local_path_search))
 
         assert len(tmp_path_logs) == 0
         assert len(project_path_logs) == 1
@@ -364,10 +363,10 @@ class TestLogging:
 
         project.make_config_file(**configs)
 
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        project_path_logs = glob.glob(local_path_search)
-        new_local_path_logs = glob.glob(
-            f"{new_local_path}/.datashuttle/logs/*.log"
+        tmp_path_logs = list(glob.glob(str(project._temp_log_path / "*.log")))
+        project_path_logs = list(glob.glob(local_path_search))
+        new_local_path_logs = list(
+            glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
         )
 
         assert len(tmp_path_logs) == 0
@@ -395,7 +394,7 @@ class TestLogging:
         local_path_log_search = str(
             project.cfg["local_path"] / ".datashuttle" / "logs" / "*.log"
         )
-        local_path_logs = glob.glob(local_path_log_search)
+        local_path_logs = list(glob.glob(local_path_log_search))
 
         assert len(local_path_logs) == 1
         assert "supply-config-file" in local_path_logs[0]
@@ -415,8 +414,10 @@ class TestLogging:
         )
         project.supply_config_file(new_configs_path, warn=False)
 
-        local_path_logs = glob.glob(local_path_log_search)
-        new_path_logs = glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
+        local_path_logs = list(glob.glob(local_path_log_search))
+        new_path_logs = list(
+            glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
+        )
 
         assert len(new_path_logs) == 1
         assert len(local_path_logs) == 1
@@ -446,12 +447,16 @@ class TestLogging:
 
         # Because an error was raised, the log will stay in the
         # temp log folder. We clear it and check it is deleted.
-        stored_logs = glob.glob((project._temp_log_path / "*.log").as_posix())
+        stored_logs = list(
+            glob.glob((project._temp_log_path / "*.log").as_posix())
+        )
         assert len(stored_logs) == 1
 
         project._clear_temp_log_path()
 
-        stored_logs = glob.glob((project._temp_log_path / "*.log").as_posix())
+        stored_logs = list(
+            glob.glob((project._temp_log_path / "*.log").as_posix())
+        )
         assert len(stored_logs) == 0
 
     # ----------------------------------------------------------------------------------

@@ -48,7 +48,7 @@ class TestTUI:
         self.monkeypatch_get_datashuttle_path(tmp_config_path, monkeypatch)
         self.monkeypatch_print(monkeypatch)
 
-        assert not any(tmp_config_path.glob("**"))
+        assert not any(list(tmp_config_path.glob("**")))
 
         yield {
             "tmp_path": tmp_path,
