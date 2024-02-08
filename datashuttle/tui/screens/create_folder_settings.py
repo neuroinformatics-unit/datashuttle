@@ -86,7 +86,10 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
         yield Container(
             Horizontal(
-                Label("Top level folder:", id="labelTESTEST"),
+                Label(
+                    "Top level folder:",
+                    id="create_folders_settings_toplevel_label",
+                ),
                 TopLevelFolderSelect(
                     self.interface,
                     id="create_folders_settings_toplevel_select",

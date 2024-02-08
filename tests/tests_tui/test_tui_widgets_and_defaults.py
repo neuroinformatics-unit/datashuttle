@@ -1,4 +1,5 @@
 import pytest
+from textual.widgets._tabbed_content import ContentTab
 
 # https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
 # -installed add to configs
@@ -23,6 +24,9 @@ import pytest
 from tui_base import TuiBase
 
 from datashuttle.tui.app import TuiApp
+from datashuttle.tui.screens.create_folder_settings import (
+    CreateFoldersSettingsScreen,
+)
 from datashuttle.tui.screens.new_project import NewProjectScreen
 
 
@@ -263,6 +267,35 @@ class TestTuiWidgets(TuiBase):
     # Test Configs Existing Project
     # -------------------------------------------------------------------------
 
+    @pytest.mark.asyncio
+    async def test_existing_project_configs(self, setup_project_paths):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            # Navigate to the existing project and click onto the
+            # configs tab.
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            await pilot.click(
+                f"Tab#{ContentTab.add_prefix('tabscreen_configs_tab')}"
+            )
+            configs_content = pilot.app.screen.query_one(
+                "#tabscreen_configs_content"
+            )
+
+            for id in [
+                "#configs_info_label",
+                "#configs_banner_label",
+                "#configs_name_label",
+                "#configs_name_input",
+            ]:
+                with pytest.raises(BaseException) as e:
+                    configs_content.query_one(id)
+                assert "No nodes match" in str(e)
+
     # -------------------------------------------------------------------------
     # Test Create
     # -------------------------------------------------------------------------
@@ -353,6 +386,187 @@ class TestTuiWidgets(TuiBase):
     # -------------------------------------------------------------------------
     # Test Create Settings
     # -------------------------------------------------------------------------
+
+    @pytest.mark.asyncio
+    async def test_create_folder_settings_widgets(self, setup_project_paths):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=False
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+
+            assert isinstance(pilot.app.screen, CreateFoldersSettingsScreen)
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_toplevel_label"
+                ).renderable._text[0]
+                == "Top level folder:"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_toplevel_select"
+                ).value
+                == "rawdata"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).label._text[0]
+                == "Bypass validation"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is False
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#template_settings_validation_on_checkbox"
+                ).label._text[0]
+                == "Template Validation"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#template_settings_validation_on_checkbox"
+                ).value
+                is False
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#template_settings_validation_on_checkbox"
+            )
+
+            # TODO: fix the below
+            assert (
+                pilot.app.screen.query_one(
+                    "#template_message_label"
+                ).renderable._text[0]
+                == "\n        A 'Template' can be set check subject or session names are\n        formatted in a specific way.\n\n        For example:\n            sub-\\d\\d_id-.?.?.?_.*\n\n        Visit the Documentation for more information.\n        "
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#template_settings_radioset"
+                ).pressed_button.label._text[0]
+                == "Subject"
+            )
+            assert (
+                pilot.app.screen.query_one("#template_settings_input").value
+                == ""
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#template_settings_input"
+                ).placeholder
+                == "sub-"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#template_settings_session_radiobutton"
+            )
+            assert (
+                pilot.app.screen.query_one("#template_settings_input").value
+                == ""
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#template_settings_input"
+                ).placeholder
+                == "ses-"
+            )
+
+    @pytest.mark.asyncio
+    async def __test_all_top_level_folder_selects(self, setup_project_paths):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=False
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+
+            assert (
+                pilot.app.screen.interface.tui_settings[
+                    "top_level_folder_select"
+                ]["create_tab"]
+                == "rawdata"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_toplevel_select"
+                ).value
+                == "rawdata"
+            )
+            # CHECK FILE
+
+            await pilot.click("#create_folders_settings_toplevel_select")
+            await pilot.click(
+                "#create_folders_settings_toplevel_select", offset=(2, 5)
+            )
+            await pilot.pause()
+
+            assert (
+                pilot.app.screen.interface.tui_settings[
+                    "top_level_folder_select"
+                ]["create_tab"]
+                == "derivatives"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_toplevel_select"
+                ).value
+                == "derivatives"
+            )
+            # CHECK FILE
+            breakpoint()
+
+            # Close and open
+            # Then do the same for all others
+
+            # TODO: MOVE, also check the saved file! critical!
+
+    async def check_all_top_level_selects(
+        self, pilot, create_val, transfer_toplevel_val, transfer_custom_val
+    ):
+
+        assert (
+            pilot.app.screen.interface.tui_settings["top_level_folder_select"][
+                "create_tab"
+            ]
+            == "derivatives"
+        )
+        assert (
+            pilot.app.screen.query_one(
+                "#create_folders_settings_toplevel_select"
+            ).value
+            == "derivatives"
+        )
+
+    # test transfer widgets
+
+    # test top level folder & settings here
+    # Test checkboxes (create and custom transfer) and underlying settings here
+
+    # Test validation on other tests
+    # Test name templates on other tests
+    # Test name templates settings here?
+
+    # Check on transfer tabs
+    # Check on file
 
     # -------------------------------------------------------------------------
     # Test Global Settings Settings

@@ -333,6 +333,8 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
+            # TODO: all widget checks moved, just stick to
+            # actual create folders tests!
             assert isinstance(
                 pilot.app.screen, CreateFoldersSettingsScreen
             )  # TODO: MOVE

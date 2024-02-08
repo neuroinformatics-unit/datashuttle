@@ -10,9 +10,6 @@ from textual.widgets._tabbed_content import ContentTab
 
 from datashuttle.configs import canonical_folders
 from datashuttle.tui.app import TuiApp
-from datashuttle.tui.screens.create_folder_settings import (
-    CreateFoldersSettingsScreen,
-)
 from datashuttle.tui.screens.modal_dialogs import (
     MessageBox,
     SelectDirectoryTreeScreen,
@@ -193,10 +190,13 @@ class TuiBase:
 
         assert isinstance(pilot.app.screen, ProjectManagerScreen)
         assert pilot.app.screen.title == f"Project: {project_name}"
-        assert (
-            pilot.app.screen.query_one("#tabscreen_tabbed_content").active
-            == "tabscreen_create_tab"
-        )
+        try:
+            assert (
+                pilot.app.screen.query_one("#tabscreen_tabbed_content").active
+                == "tabscreen_create_tab"
+            )
+        except:
+            breakpoint()
 
     # -------------------------------------------------------------------------
     # Test Create
