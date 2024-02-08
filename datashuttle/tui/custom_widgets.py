@@ -527,11 +527,13 @@ class TopLevelFolderSelect(Select):
 
         if not any(top_level_folders):
             value = Select.BLANK
+            allow_blank = True
         else:
             value = self.get_top_level_folder(init=True)
+            allow_blank = False
 
         super(TopLevelFolderSelect, self).__init__(
-            top_level_folders, value=value, id=id, allow_blank=True
+            top_level_folders, value=value, id=id, allow_blank=allow_blank
         )
 
     def get_top_level_folder(self, init: bool = False) -> str:
@@ -564,6 +566,8 @@ class TopLevelFolderSelect(Select):
         """
         top_level_folder = event.value
 
-        self.interface.update_tui_settings(
-            top_level_folder, "top_level_folder_select", self.settings_key
-        )
+        if event.value != Select.BLANK:
+
+            self.interface.update_tui_settings(
+                top_level_folder, "top_level_folder_select", self.settings_key
+            )
