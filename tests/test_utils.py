@@ -253,9 +253,9 @@ def get_test_config_arguments_dict(
     return dict_
 
 
-def get_all_folders_used():
+def get_all_folders_used(value=True):
     datatype_names = canonical_configs.get_datatypes()
-    return {name: True for name in datatype_names}
+    return {name: value for name in datatype_names}
 
 
 def get_config_path_with_cli(project_name=None):
@@ -307,13 +307,15 @@ def check_folder_tree_is_correct(
                     "test_custom_folder_names(), test_explicitly_session_list()"
                 )
 
-                if folder_used[key]:
-                    if folder.level == "sub":
-                        datatype_path = join(path_to_sub_folder, folder.name)
-                    elif folder.level == "ses":
-                        datatype_path = join(path_to_ses_folder, folder.name)
+                if folder.level == "sub":
+                    datatype_path = join(path_to_sub_folder, folder.name)
+                elif folder.level == "ses":
+                    datatype_path = join(path_to_ses_folder, folder.name)
 
+                if folder_used[key]:
                     check_and_cd_folder(datatype_path)
+                else:
+                    assert not os.path.isdir(datatype_path)
 
 
 def check_and_cd_folder(path_):
