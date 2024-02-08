@@ -80,7 +80,7 @@ class ConfigsContent(Container):
             Label("Central Host ID", id="configs_central_host_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="e.g. username",
+                placeholder="e.g. ssh.swc.ucl.ac.uk",
                 id="configs_central_host_id_input",
             ),
             Label(
@@ -89,7 +89,7 @@ class ConfigsContent(Container):
             ),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="e.g. ssh.swc.ucl.ac.uk",
+                placeholder="e.g. username",
                 id="configs_central_host_username_input",
             ),
         ]

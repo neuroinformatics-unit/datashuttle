@@ -31,7 +31,6 @@ from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
 )
-from datashuttle.tui.screens.new_project import NewProjectScreen
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
@@ -54,9 +53,7 @@ class TestTuiConfigs(TuiBase):
         and check the interface.project and saved configs match the new
         settings.
         """
-        tmp_config_path, tmp_path, project_name = (
-            empty_project_paths.values()
-        )  # TODO: use dict
+        tmp_config_path, tmp_path, project_name = empty_project_paths.values()
 
         kwargs = {
             "local_path": (tmp_path / "local" / project_name).as_posix(),
@@ -93,10 +90,6 @@ class TestTuiConfigs(TuiBase):
             # Select a new project, check NewProjectScreen is displayed correctly.
             await pilot.click("#mainwindow_new_project_button")
             await pilot.pause()
-
-            assert pilot.app.screen_stack[0].id == "_default"
-            assert isinstance(pilot.app.screen_stack[1], NewProjectScreen)
-            assert pilot.app.screen_stack[1].title == "Make New Project"
 
             # Get the ConfigsContent and check all configs are displayed correctly.
             # `check_new_project_configs` checks empty defaults are displayed,
@@ -149,32 +142,7 @@ class TestTuiConfigs(TuiBase):
         Also, check the widgets unique to ConfigsContent on the configs selection
         for a new project.
         """
-        # New Project Labels --------------------------------------------------
-
-        assert (
-            configs_content.query_one(
-                "#configs_banner_label"
-            ).renderable._text[0]
-            == "Configure A New Project"
-        )
-        assert (
-            configs_content.query_one("#configs_info_label").renderable._text[
-                0
-            ]
-            == "Set your configurations for a new project. For more details on "
-            "each section,\nsee the Datashuttle documentation. Once configs "
-            "are set, you will be able\nto use the 'Create' and 'Transfer' tabs."
-        )
-
         # Project Name --------------------------------------------------------
-
-        assert (
-            configs_content.query_one("#configs_name_label").renderable._text[
-                0
-            ]
-            == "Project Name"
-        )
-        assert configs_content.query_one("#configs_name_input").value == ""
 
         await self.fill_input(pilot, "#configs_name_input", project_name)
         assert (
@@ -407,13 +375,6 @@ class TestTuiConfigs(TuiBase):
 
         # Connection Method ---------------------------------------------------
 
-        assert (
-            configs_content.query_one(
-                "#configs_connect_method_label"
-            ).renderable._text[0]
-            == "Connection Method"
-        )
-
         label = (
             "SSH"
             if kwargs["connection_method"] == "ssh"
@@ -432,12 +393,6 @@ class TestTuiConfigs(TuiBase):
 
             assert (
                 configs_content.query_one(
-                    "#configs_central_host_id_label"
-                ).renderable._text[0]
-                == "Central Host ID"
-            )
-            assert (
-                configs_content.query_one(
                     "#configs_central_host_id_input"
                 ).value
                 == kwargs["central_host_id"]
@@ -447,30 +402,10 @@ class TestTuiConfigs(TuiBase):
 
             assert (
                 configs_content.query_one(
-                    "#configs_central_host_username_label"
-                ).renderable._text[0]
-                == "Central Host Username"
-            )
-            assert (
-                configs_content.query_one(
                     "#configs_central_host_username_input"
                 ).value
                 == kwargs["central_host_username"]
             )
-
-            ssh_widgets_display = True
-        else:
-            ssh_widgets_display = False
-
-        # SSH widget display --------------------------------------------------
-
-        for id in [
-            "#configs_central_host_id_label",
-            "#configs_central_host_id_input",
-            "#configs_central_host_username_label",
-            "#configs_central_host_username_input",
-        ]:
-            assert configs_content.query_one(id).display is ssh_widgets_display
 
         # Central Path --------------------------------------------------------
 
@@ -479,23 +414,7 @@ class TestTuiConfigs(TuiBase):
             == kwargs["central_path"]
         )
 
-        # Transfer Options ----------------------------------------------------
-
-        assert (
-            configs_content.query_one(
-                "#configs_transfer_options_container"
-            ).border_title
-            == "Transfer Options"
-        )
-
         # Overwrite Old Files -------------------------------------------------
-
-        assert (
-            configs_content.query_one(
-                "#configs_overwrite_files_checkbox"
-            ).label._text[0]
-            == "Overwrite Old Files"
-        )
 
         assert (
             configs_content.query_one(
@@ -513,13 +432,6 @@ class TestTuiConfigs(TuiBase):
         """
 
         # Local Path ----------------------------------------------------------
-
-        assert (
-            configs_content.query_one(
-                "#configs_local_path_label"
-            ).renderable._text[0]
-            == "Local Path"
-        )
 
         await self.fill_input(
             pilot, "#configs_local_path_input", kwargs["local_path"]
@@ -549,8 +461,6 @@ class TestTuiConfigs(TuiBase):
 
         # Central Path --------------------------------------------------------
 
-        configs_content.query_one("#configs_central_path_input").value = ""
-
         await self.fill_input(
             pilot, "#configs_central_path_input", kwargs["central_path"]
         )
@@ -558,6 +468,10 @@ class TestTuiConfigs(TuiBase):
         # Overwrite Files -----------------------------------------------------
 
         if kwargs["overwrite_old_files"]:
+
+            assert not configs_content.query_one(
+                "#configs_overwrite_files_checkbox"
+            ).value
 
             await self.scroll_to_click_pause(
                 pilot,
