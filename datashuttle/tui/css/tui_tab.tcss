@@ -34,6 +34,11 @@ TabScreen > TabbedContent {
     dock: right;
 }
 
+#create_folders_buttons_horizontal {
+    height: 3;
+    margin: 0 0 1 0;
+}
+
 #template_settings_validation_on_checkbox.-on > .toggle--button{
     color: $success;
 }
