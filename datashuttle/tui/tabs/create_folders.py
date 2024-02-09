@@ -118,9 +118,9 @@ class CreateFoldersTab(TreeAndInputTab):
         )
 
         if event.ctrl:
-            self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
-        else:
             self.fill_input_with_template(prefix, input_id)
+        else:
+            self.fill_input_with_next_sub_or_ses_template(prefix, input_id)
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress

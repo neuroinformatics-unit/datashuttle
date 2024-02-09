@@ -130,6 +130,8 @@ class TestTuiConfigs(TuiBase):
                 pilot.app.screen.interface.project.project_name == project_name
             )
 
+            await pilot.pause()
+
     async def check_new_project_configs(
         self, pilot, project_name, configs_content, kwargs
     ):
@@ -159,6 +161,8 @@ class TestTuiConfigs(TuiBase):
         )
         await self.set_configs_content_widgets(pilot, configs_content, kwargs)
         await self.check_configs_widgets_match_configs(configs_content, kwargs)
+
+        await pilot.pause()
 
     @pytest.mark.asyncio
     async def test_configs_select_path(self, monkeypatch):
@@ -233,6 +237,8 @@ class TestTuiConfigs(TuiBase):
 
             assert local_path_button.disabled is False
             assert central_path_button.disabled is True
+
+            await pilot.pause()
 
     @pytest.mark.asyncio
     async def test_update_config_on_project_manager_screen(
@@ -345,6 +351,7 @@ class TestTuiConfigs(TuiBase):
             await self.check_configs_widgets_match_configs(
                 configs_content, new_kwargs
             )
+
             await pilot.pause()
 
     # -------------------------------------------------------------------------

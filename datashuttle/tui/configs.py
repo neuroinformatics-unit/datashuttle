@@ -139,6 +139,7 @@ class ConfigsContent(Container):
                     "Setup SSH Connection",
                     id="configs_setup_ssh_connection_button",
                 ),
+                id="configs_bottom_buttons_horizontal",
             ),
         ]
 

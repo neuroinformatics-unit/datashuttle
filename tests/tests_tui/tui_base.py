@@ -187,6 +187,7 @@ class TuiBase:
         assert project_name in pilot.app.screen.project_names
 
         await pilot.click(f"#{project_name}")
+        await pilot.pause()
 
         assert isinstance(pilot.app.screen, ProjectManagerScreen)
         assert pilot.app.screen.title == f"Project: {project_name}"

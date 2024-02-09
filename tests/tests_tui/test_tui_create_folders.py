@@ -107,17 +107,14 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001_@DATE@"
             )
-
             assert (
-                pilot.app.screen.query_one(
+                "A sub already exists with the same sub id as"
+                in pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).tooltip
-                == "A sub already exists with the same sub id as sub-001_date-20240208. The existing folder is sub-001."
-            )  # TODO: set these inputs to variables
+            )
 
-    # TODO: need to check validation and other persistent settings? name t empaltes? genera settings persistent settings!??!?!?!?
-    # TODO: couble click to add next, ctrl for generic validation
-    # TODO: there is a deep reason that sub and ses need to be validate together - to check for ses duplicates within sub ...
+            await pilot.pause()
 
     # This comes under some kind of 'settings' tab
     @pytest.mark.asyncio
@@ -159,7 +156,6 @@ class TestTuiCreateFolders(TuiBase):
                     ).glob("*")
                 )
             )
-
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_button"
             )
@@ -173,7 +169,6 @@ class TestTuiCreateFolders(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_create_folders_button"
             )
-
             assert (
                 pilot.app.screen.interface.project.cfg["local_path"]
                 / "rawdata"
@@ -186,7 +181,135 @@ class TestTuiCreateFolders(TuiBase):
                 / "ses-abc"
             ).is_dir()
 
-    # Check name tampltes with get next sub and ses here!
+            await pilot.pause()
+
+    # Check name templates with get next sub and ses here!
+
+    @pytest.mark.asyncio
+    async def test_name_template_next_sub_or_ses_and_validation(
+        self, setup_project_paths
+    ):
+        """ """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            # Set some name template and check the tooltips indicate mismatches correctly
+            pilot.app.screen.interface.project.set_name_templates(
+                {"on": True, "sub": "sub-\d\d\d", "ses": "ses-...."}
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-0001"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).tooltip
+                == "The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+            )
+
+            # It is expected that sub errors propagate to session input. This is because
+            # subject and ses must be validated at the same time, to check duplicate ses
+            # within subjects.
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-0001"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).tooltip
+                == "The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+            )
+
+            # Try and make the folders, displaying a validation error.
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_create_folders_button"
+            )
+
+            pilot.app.screen.query_one(
+                "#messagebox_message_label"
+            ).renderable._text[
+                0
+            ] = "The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+            await self.close_messagebox(pilot)
+
+            # Now make the correct folders respecting the name templates
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_create_folders_button"
+            )
+
+            # Now fill in a bad ses name tempalte, because we tested sub above but not ses.
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-001"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).tooltip
+                == "Formatted names: ['sub-001']"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).tooltip
+                == "The name: ses-001 does not match the template: ses-...."
+            )
+
+            # Finally, double click the intput to suggest next ses / sub numbers, which should
+            # respect the name templates.
+            await self.double_click(
+                pilot, "#create_folders_subject_input", control=True
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-\\d\\d\\d"
+            )
+
+            await self.double_click(
+                pilot, "#create_folders_session_input", control=True
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-...."
+            )
+
+            await self.double_click(
+                pilot, "#create_folders_subject_input", control=False
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-002"
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+            await self.double_click(
+                pilot, "#create_folders_session_input", control=False
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-0002"
+            )
 
     @pytest.mark.asyncio
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
@@ -200,7 +323,9 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, project_name, create_folders=True
             )
 
-            await self.double_click(pilot, "#create_folders_subject_input")
+            await self.double_click(
+                pilot, "#create_folders_subject_input", control=True
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -208,7 +333,9 @@ class TestTuiCreateFolders(TuiBase):
                 == "sub-"
             )  # TODO: own get_value function
 
-            await self.double_click(pilot, "#create_folders_session_input")
+            await self.double_click(
+                pilot, "#create_folders_session_input", control=True
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -216,9 +343,7 @@ class TestTuiCreateFolders(TuiBase):
                 == "ses-"
             )  # TODO: own get_value function
 
-            await self.double_click(
-                pilot, "#create_folders_subject_input", control=True
-            )
+            await self.double_click(pilot, "#create_folders_subject_input")
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -229,15 +354,15 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
             )
-            await self.double_click(
-                pilot, "#create_folders_session_input", control=True
-            )
+            await self.double_click(pilot, "#create_folders_session_input")
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).value
                 == "ses-002"
             )  # TODO: own get_value function
+
+            await pilot.pause()
 
     @pytest.mark.asyncio
     async def test_fill_and_append_next_sub_and_ses(self, setup_project_paths):
@@ -318,6 +443,8 @@ class TestTuiCreateFolders(TuiBase):
                 == "ses-001"
             )
 
+            await pilot.pause()
+
     @pytest.mark.asyncio
     async def test_create_folders_directorytree_clipboard(
         self, setup_project_paths
@@ -347,6 +474,8 @@ class TestTuiCreateFolders(TuiBase):
                 .get_node_at_line(2)
                 .data.path.as_posix()
             )
+
+            await pilot.pause()
 
     @pytest.mark.asyncio
     async def test_create_folders_directorytree_open_filesystem(
@@ -386,6 +515,8 @@ class TestTuiCreateFolders(TuiBase):
                 .get_node_at_line(3)
                 .data.path.as_posix()
             )
+
+            await pilot.pause()
 
     # TOOD: check all settings widgets... check they change underlying persistent settings. Figure out how to tis thi sin with the rest of persistent settings tests
     # TODO: fully split out all 'widgets' tests.
@@ -464,6 +595,8 @@ class TestTuiCreateFolders(TuiBase):
                 folder_used=test_utils.get_all_folders_used(),
             )
 
+            await pilot.pause()
+
     # TODO: TEST EVERYTHING ELSE IN WIDGETS CHECKS. SHOULD PROBABLY DO THAT NOW...
 
     # maybe separte checks as part of persistent settings to check if they dont change eachother.
@@ -538,6 +671,8 @@ class TestTuiCreateFolders(TuiBase):
             await self.iterate_and_check_all_datatype_folders(
                 pilot, subs=sub_test_list, sessions=ses_test_list
             )
+
+            await pilot.pause()
 
     @pytest.mark.asyncio
     async def test_create_folders_formatted_names(self, setup_project_paths):
@@ -616,6 +751,8 @@ class TestTuiCreateFolders(TuiBase):
                 assert re.fullmatch(ses_1_regexp, ses_level_names[0].stem)
                 assert re.fullmatch(ses_2_regexp, ses_level_names[1].stem)
                 assert re.fullmatch(ses_3_regexp, ses_level_names[2].stem)
+
+            await pilot.pause()
 
     # -------------------------------------------------------------------------
     # Helpers
