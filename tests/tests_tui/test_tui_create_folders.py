@@ -39,7 +39,6 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiCreateFolders(TuiBase):
-
     @pytest.mark.asyncio
     async def test_create_folders_bad_validation_tooltips(
         self, setup_project_paths
@@ -115,6 +114,77 @@ class TestTuiCreateFolders(TuiBase):
                 ).tooltip
                 == "A sub already exists with the same sub id as sub-001_date-20240208. The existing folder is sub-001."
             )  # TODO: set these inputs to variables
+
+    # TODO: need to check validation and other persistent settings? name t empaltes? genera settings persistent settings!??!?!?!?
+
+    # This comes under some kind of 'settings' tab
+    @pytest.mark.asyncio
+    async def test_validation_error_and_bypass_validation(
+        self, setup_project_paths
+    ):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-abc"
+            )
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-abc"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_create_folders_button"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#messagebox_message_label"
+                ).renderable._text[0]
+                == "Invalid character in subject or session value: abc"
+            )
+            await self.close_messagebox(pilot)
+            assert not any(
+                list(
+                    (
+                        pilot.app.screen.interface.project.cfg["local_path"]
+                        / "rawdata"
+                    ).glob("*")
+                )
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_bypass_validation_checkbox"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_create_folders_button"
+            )
+
+            assert (
+                pilot.app.screen.interface.project.cfg["local_path"]
+                / "rawdata"
+                / "sub-abc"
+            ).is_dir()
+            assert (
+                pilot.app.screen.interface.project.cfg["local_path"]
+                / "rawdata"
+                / "sub-abc"
+                / "ses-abc"
+            ).is_dir()
+
+    # Check name tampltes with get next sub and ses here!
 
     @pytest.mark.asyncio
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
@@ -548,27 +618,6 @@ class TestTuiCreateFolders(TuiBase):
     # -------------------------------------------------------------------------
     # Helpers
     # -------------------------------------------------------------------------
-
-    async def turn_off_all_datatype_checkboxes(self, pilot):
-        """
-        Make sure all checkboxes are off to start
-        """
-        for datatype in canonical_folders.get_datatype_folders().keys():
-            id = f"#create_{datatype}_checkbox"
-            if pilot.app.screen.query_one(id).value:
-                await self.scroll_to_click_pause(pilot, id)
-                # I don't know why the click is not triggered this, but it
-                # does outside the test environment. sBut this is super critical
-                # It is necessary this function is called on click to update .datatype_config.
-                pilot.app.screen.query_one(
-                    "#create_folders_datatype_checkboxes"
-                ).on_checkbox_changed()
-                await pilot.pause()
-
-        datatype_config = pilot.app.screen.query_one(
-            "#create_folders_datatype_checkboxes"
-        ).datatype_config
-        assert all(val is False for val in datatype_config.values())
 
     async def create_folders_and_check_output(
         self, pilot, project, subs, sessions, folder_used

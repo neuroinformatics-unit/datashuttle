@@ -35,7 +35,6 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiConfigs(TuiBase):
-
     @pytest.mark.asyncio
     @pytest.mark.parametrize("kwargs_set", [1, 2])
     async def test_make_new_project_configs(
@@ -116,10 +115,7 @@ class TestTuiConfigs(TuiBase):
                 "proceed to the project page, where you will be able to create and "
                 "transfer project folders."
             )
-
-            # for some reason clicking does not work...
-            pilot.app.screen.on_button_pressed()
-            await pilot.pause()
+            await self.close_messagebox(pilot)
 
             assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
@@ -323,10 +319,7 @@ class TestTuiConfigs(TuiBase):
                 ).renderable._text[0]
                 == "Configs saved."
             )
-
-            # for some reason clicking does not work...
-            pilot.app.screen.on_button_pressed()
-            await pilot.pause()
+            await self.close_messagebox(pilot)
 
             test_utils.check_configs(
                 pilot.app.screen.interface.project,

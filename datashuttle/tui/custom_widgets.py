@@ -24,6 +24,7 @@ from pathlib import Path
 import pyperclip
 from rich.style import Style
 from rich.text import Text
+from textual import on
 from textual._segment_tools import line_pad
 from textual.message import Message
 from textual.strip import Strip
@@ -81,6 +82,8 @@ class DatatypeCheckboxes(Static):
         else:
             self.settings_key = "transfer_checkboxes_on"
 
+        # `datatype_config` is basically just a convenience wrapper
+        # around interface.get_tui_settings...
         self.datatype_config = self.interface.get_tui_settings()[
             self.settings_key
         ]
@@ -93,6 +96,7 @@ class DatatypeCheckboxes(Static):
                 value=self.datatype_config[datatype],
             )
 
+    @on(Checkbox.Changed)
     def on_checkbox_changed(self) -> None:
         """
         When a checkbox is changed, update the `self.datatype_config`

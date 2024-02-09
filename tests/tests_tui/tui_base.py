@@ -190,13 +190,51 @@ class TuiBase:
 
         assert isinstance(pilot.app.screen, ProjectManagerScreen)
         assert pilot.app.screen.title == f"Project: {project_name}"
-        try:
-            assert (
-                pilot.app.screen.query_one("#tabscreen_tabbed_content").active
-                == "tabscreen_create_tab"
-            )
-        except:
-            breakpoint()
+        assert (
+            pilot.app.screen.query_one("#tabscreen_tabbed_content").active
+            == "tabscreen_create_tab"
+        )
+
+    # TODO: check local / central path deleted!
+
+    async def change_checkbox(self, pilot, id):
+        pilot.app.screen.query_one(id).toggle()
+        await pilot.pause()
+
+    async def turn_off_all_datatype_checkboxes(self, pilot, tab="create"):
+        """
+        Make sure all checkboxes are off to start
+        """
+        assert tab in ["create", "transfer"]
+
+        checkbox_names = list(canonical_folders.get_datatype_folders().keys())
+        if tab == "create":
+            checkboxes_id = "#create_folders_datatype_checkboxes"
+        else:
+            checkbox_names.extend(["all", "all_datatype", "all_non_datatype"])
+            checkboxes_id = "#transfer_custom_datatype_checkboxes"
+
+        for datatype in checkbox_names:
+            id = f"#{tab}_{datatype}_checkbox"
+            if pilot.app.screen.query_one(id).value:
+                await self.change_checkbox(pilot, id)
+
+        datatype_config = pilot.app.screen.query_one(
+            checkboxes_id
+        ).datatype_config
+        assert all(val is False for val in datatype_config.values())
+
+    async def exit_to_main_menu_and_reeneter_project_manager(
+        self, pilot, project_name
+    ):
+        await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
+        assert pilot.app.screen.id == "_default"
+        await self.check_and_click_onto_existing_project(pilot, project_name)
+
+    async def close_messagebox(self, pilot):
+        # for some reason clicking does not work...
+        pilot.app.screen.on_button_pressed()
+        await pilot.pause()
 
     # -------------------------------------------------------------------------
     # Test Create
@@ -823,27 +861,6 @@ class TuiBase:
                     assert re.fullmatch(ses_1_regexp, ses_level_names[0].stem)
                     assert re.fullmatch(ses_2_regexp, ses_level_names[1].stem)
                     assert re.fullmatch(ses_3_regexp, ses_level_names[2].stem)
-
-        async def turn_off_all_datatype_checkboxes(self, pilot):
-            """
-            Make sure all checkboxes are off to start
-            """
-            for datatype in canonical_folders.get_datatype_folders().keys():
-                id = f"#create_{datatype}_checkbox"
-                if pilot.app.screen.query_one(id).value:
-                    await self.scroll_to_click_pause(pilot, id)
-                    # I don't know why the click is not triggered this, but it
-                    # does outside the test environment. sBut this is super critical
-                    # It is necessary this function is called on click to update .datatype_config.
-                    pilot.app.screen.query_one(
-                        "#create_folders_datatype_checkboxes"
-                    ).on_checkbox_changed()
-                    await pilot.pause()
-
-            datatype_config = pilot.app.screen.query_one(
-                "#create_folders_datatype_checkboxes"
-            ).datatype_config
-            assert all(val is False for val in datatype_config.values())
 
         async def create_folders_and_check_output(
             self, pilot, project, subs, sessions, folder_used

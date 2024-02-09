@@ -1,4 +1,5 @@
 import pytest
+import test_utils
 from textual.widgets._tabbed_content import ContentTab
 
 # https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
@@ -388,6 +389,7 @@ class TestTuiWidgets(TuiBase):
     # -------------------------------------------------------------------------
 
     @pytest.mark.asyncio
+    # CHECK PERSISTENT SETTINGS HERE TOO?!??!
     async def test_create_folder_settings_widgets(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
@@ -448,10 +450,10 @@ class TestTuiWidgets(TuiBase):
 
             # TODO: fix the below
             assert (
-                pilot.app.screen.query_one(
+                " A 'Template' can be set check subject or session names"
+                in pilot.app.screen.query_one(
                     "#template_message_label"
                 ).renderable._text[0]
-                == "\n        A 'Template' can be set check subject or session names are\n        formatted in a specific way.\n\n        For example:\n            sub-\\d\\d_id-.?.?.?_.*\n\n        Visit the Documentation for more information.\n        "
             )
 
             assert (
@@ -485,13 +487,16 @@ class TestTuiWidgets(TuiBase):
                 == "ses-"
             )
 
+            # Just check the persistent settings, fill in some values and check they are still shown!
+
     @pytest.mark.asyncio
-    async def __test_all_top_level_folder_selects(self, setup_project_paths):
+    async def test_all_top_level_folder_selects(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test() as pilot:
 
+            # Open project, check top level folder are correct
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
             )
@@ -499,74 +504,302 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
-            assert (
-                pilot.app.screen.interface.tui_settings[
-                    "top_level_folder_select"
-                ]["create_tab"]
-                == "rawdata"
+            await self.check_top_folder_select(
+                pilot,
+                "#create_folders_settings_toplevel_select",
+                "create_tab",
+                "rawdata",
+                move_to_position=False,
             )
-            assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_settings_toplevel_select"
-                ).value
-                == "rawdata"
+            await self.check_top_folder_select(
+                pilot,
+                "#create_folders_settings_toplevel_select",
+                "create_tab",
+                "derivatives",
+                move_to_position=5,
             )
-            # CHECK FILE
 
-            await pilot.click("#create_folders_settings_toplevel_select")
-            await pilot.click(
-                "#create_folders_settings_toplevel_select", offset=(2, 5)
+            # Exit project, return and check values are updated property
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
             )
-            await pilot.pause()
-
-            assert (
-                pilot.app.screen.interface.tui_settings[
-                    "top_level_folder_select"
-                ]["create_tab"]
-                == "derivatives"
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
             )
-            assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_settings_toplevel_select"
-                ).value
-                == "derivatives"
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
             )
-            # CHECK FILE
-            breakpoint()
+            await self.check_top_folder_select(
+                pilot,
+                "#create_folders_settings_toplevel_select",
+                "create_tab",
+                "derivatives",
+                move_to_position=5,
+            )
 
-            # Close and open
-            # Then do the same for all others
+            # Move to transfer tab top level folder option, perform the same actions,
+            # checking create settings toplevel select is not changed
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, f"Tab#{ContentTab.add_prefix('tabscreen_transfer_tab')}"
+            )
 
-            # TODO: MOVE, also check the saved file! critical!
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_toplevel_radiobutton"
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_toplevel_select",
+                "toplevel_transfer",
+                "rawdata",
+                move_to_position=False,
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_toplevel_select",
+                "toplevel_transfer",
+                "derivatives",
+                move_to_position=5,
+            )
 
-    async def check_all_top_level_selects(
-        self, pilot, create_val, transfer_toplevel_val, transfer_custom_val
+            # Now the same for custom
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_custom_select",
+                "custom_transfer",
+                "rawdata",
+                move_to_position=False,
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_custom_select",
+                "custom_transfer",
+                "derivatives",
+                move_to_position=5,
+            )
+
+            # Now go back to main menu, go back and check all are as expected and switch back to original value for good measure.
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+
+            # recheck create settings
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#create_folders_settings_toplevel_select",
+                "create_tab",
+                "derivatives",
+                move_to_position=False,
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#create_folders_settings_toplevel_select",
+                "create_tab",
+                "rawdata",
+                move_to_position=4,
+            )
+
+            # recheck transfer toplevel
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, f"Tab#{ContentTab.add_prefix('tabscreen_transfer_tab')}"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_toplevel_radiobutton"
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_toplevel_select",
+                "toplevel_transfer",
+                "derivatives",
+                move_to_position=False,
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_toplevel_select",
+                "toplevel_transfer",
+                "rawdata",
+                move_to_position=4,
+            )
+
+            # recheck transfer custom
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_custom_select",
+                "custom_transfer",
+                "derivatives",
+                move_to_position=False,
+            )
+            await self.check_top_folder_select(
+                pilot,
+                "#transfer_custom_select",
+                "custom_transfer",
+                "rawdata",
+                move_to_position=4,
+            )
+
+    async def check_top_folder_select(
+        self, pilot, id, tab_name, expected_val, move_to_position: False
     ):
+        """
+        If move to position is not False, must be int specifying position
+        """
+        if move_to_position:
+            await pilot.click(id)
+            await pilot.click(id, offset=(2, move_to_position))
+            await pilot.pause()
 
         assert (
             pilot.app.screen.interface.tui_settings["top_level_folder_select"][
-                "create_tab"
+                tab_name
             ]
-            == "derivatives"
+            == expected_val
         )
+        assert pilot.app.screen.query_one(id).value == expected_val
+
         assert (
-            pilot.app.screen.query_one(
-                "#create_folders_settings_toplevel_select"
-            ).value
-            == "derivatives"
+            pilot.app.screen.interface.project._load_persistent_settings()[
+                "tui"
+            ]["top_level_folder_select"][tab_name]
+            == expected_val
+        )
+
+    # TODO: all transfer checkboxes off
+
+    @pytest.mark.asyncio
+    async def test_all_checkboxes(self, setup_project_paths):
+        """"""
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            await self.turn_off_all_datatype_checkboxes(
+                pilot
+            )  # TODO: this is only for create
+
+            # Cycle through all checkboxes, turning on sequentially and
+            # checking all configs are correct.
+            expected_create = test_utils.get_all_folders_used(value=False)
+
+            for datatype in ["behav", "ephys", "funcimg", "anat"]:
+                await self.change_checkbox(
+                    pilot, f"#create_{datatype}_checkbox"
+                )
+                expected_create[datatype] = True
+                self.check_datatype_checkboxes(
+                    pilot, "create", expected_create
+                )
+
+            # Now turn off an arbitary subset so they are not longer all on (which is default).
+            # Reload the screen, and check the checkboxes are still correct.
+            await self.change_checkbox(pilot, "#create_ephys_checkbox")
+            await self.change_checkbox(pilot, "#create_anat_checkbox")
+            expected_create = test_utils.get_all_folders_used(value=False)
+            expected_create.update({"behav": True, "funcimg": True})
+
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+
+            self.check_datatype_checkboxes(pilot, "create", expected_create)
+
+            # Now we got to custom transfer checkboxes and do the same.
+            # These are done in the same test to check they don't interact in a weird way.
+            await self.scroll_to_click_pause(
+                pilot, f"Tab#{ContentTab.add_prefix('tabscreen_transfer_tab')}"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+
+            await self.turn_off_all_datatype_checkboxes(pilot, tab="transfer")
+
+            expected_transfer = test_utils.get_all_folders_used(value=False)
+            expected_transfer.update(
+                {
+                    "all": False,
+                    "all_datatype": False,
+                    "all_non_datatype": False,
+                }
+            )
+
+            for datatype in [
+                "behav",
+                "ephys",
+                "funcimg",
+                "anat",
+                "all",
+                "all_datatype",
+                "all_non_datatype",
+            ]:
+                await self.change_checkbox(
+                    pilot, f"#transfer_{datatype}_checkbox"
+                )
+                expected_transfer[datatype] = True
+                self.check_datatype_checkboxes(
+                    pilot, "transfer", expected_transfer
+                )
+
+            # Reload the screen, and check everything is as previously
+            # set on both create and transfer tabs
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+
+            self.check_datatype_checkboxes(pilot, "create", expected_create)
+
+            await self.scroll_to_click_pause(
+                pilot, f"Tab#{ContentTab.add_prefix('tabscreen_transfer_tab')}"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+            self.check_datatype_checkboxes(pilot, "create", expected_create)
+
+    def check_datatype_checkboxes(self, pilot, tab, expected_on):
+        """"""
+        assert tab in ["create", "transfer"]
+        if tab == "create":
+            id = "#create_folders_datatype_checkboxes"
+            dict_key = "create_checkboxes_on"
+        else:
+            id = "#transfer_custom_datatype_checkboxes"
+            dict_key = "transfer_checkboxes_on"
+
+        assert pilot.app.screen.query_one(id).datatype_config == expected_on
+        assert pilot.app.screen.interface.tui_settings[dict_key] == expected_on
+        assert (
+            pilot.app.screen.interface.project._load_persistent_settings()[
+                "tui"
+            ][dict_key]
+            == expected_on
         )
 
     # test transfer widgets
-
-    # test top level folder & settings here
-    # Test checkboxes (create and custom transfer) and underlying settings here
-
     # Test validation on other tests
+
     # Test name templates on other tests
     # Test name templates settings here?
-
-    # Check on transfer tabs
-    # Check on file
 
     # -------------------------------------------------------------------------
     # Test Global Settings Settings

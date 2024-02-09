@@ -128,7 +128,11 @@ class TransferTab(TreeAndInputTab):
                 placeholder="e.g. ses-001",
             ),
             Label("Datatype(s)"),
-            DatatypeCheckboxes(self.interface, create_or_transfer="transfer"),
+            DatatypeCheckboxes(
+                self.interface,
+                create_or_transfer="transfer",
+                id="transfer_custom_datatype_checkboxes",
+            ),
         ]
 
         yield RadioSet(
