@@ -346,25 +346,25 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_behav_checkbox"
                 ).label._text[0]
-                == "Behav"
-            )  # TODO: CHECK PERSISTENT SETTINGS
+                == "behav"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_ephys_checkbox"
                 ).label._text[0]
-                == "Ephys"
+                == "ephys"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#create_funcimg_checkbox"
                 ).label._text[0]
-                == "Funcimg"
+                == "funcimg"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#create_anat_checkbox"
                 ).label._text[0]
-                == "Anat"
+                == "anat"
             )
 
             assert (
@@ -1041,6 +1041,197 @@ class TestTuiWidgets(TuiBase):
                 pilot, project_name
             )
             await self.switch_tab(pilot, "transfer")
+
+            # convenience functions...
+            # get_value
+            # get_text
+            # TODO: Check project title checked
+
+            # Checkboxes, on and label
+            # TODO: other radiobutton labels are not tested...
+            breakpoint()
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_all_radiobutton"
+                ).label._text[0]
+                == "All"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_toplevel_radiobutton"
+                ).label._text[0]
+                == "Top Level"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_custom_radiobutton"
+                ).label._text[0]
+                == "Custom"
+            )
+
+            # parameters container
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_params_container"
+                ).border_title
+                == "Parameters"
+            )
+
+            # All data label
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_all_label"
+                ).renderable._text[0]
+                == "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred."
+            )
+
+            # upload / download widget
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_switch_upload_label"
+                ).renderable._text[0]
+                == "Upload"
+            )
+            assert (
+                pilot.app.screen.query_one("#transfer_switch").value is False
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_switch_download_label"
+                ).renderable._text[0]
+                == "Download"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_transfer_button"
+                ).label._text[0]
+                == "Transfer"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_toplevel_radiobutton"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_toplevel_label_top"
+                ).renderable._text[0]
+                == "Select top-level folder to transfer."
+            )
+            assert (
+                pilot.app.screen.query_one("#transfer_toplevel_select").value
+                == "rawdata"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#transfer_custom_radiobutton"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_custom_label_top"
+                ).renderable._text[0]
+                == "Select top-level folder to transfer."
+            )
+            assert (
+                pilot.app.screen.query_one("#transfer_custom_select").value
+                == "rawdata"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_subject_label"
+                ).renderable._text[0]
+                == "Subject(s)"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_subject_input"
+                ).placeholder
+                == "e.g. sub-001"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_session_label"
+                ).renderable._text[0]
+                == "Session(s)"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_session_input"
+                ).placeholder
+                == "e.g. ses-001"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_datatype_label"
+                ).renderable._text[0]
+                == "Datatype(s)"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_behav_checkbox"
+                ).label._text[0]
+                == "behav"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_ephys_checkbox"
+                ).label._text[0]
+                == "ephys"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_funcimg_checkbox"
+                ).label._text[0]
+                == "funcimg"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_anat_checkbox"
+                ).label._text[0]
+                == "anat"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_all_checkbox"
+                ).label._text[0]
+                == "all"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_all_datatype_checkbox"
+                ).label._text[0]
+                == "all datatype"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#transfer_all_non_datatype_checkbox"
+                ).label._text[0]
+                == "all non datatype"
+            )
+
+            for id in [
+                "#transfer_behav_checkbox",
+                "#transfer_ephys_checkbox",
+                "#transfer_funcimg_checkbox",
+                "#transfer_anat_checkbox",
+                "#transfer_all_datatype_checkbox",
+                "#transfer_all_non_datatype_checkbox",
+            ]:
+                assert (
+                    pilot.app.screen.query_one("#transfer_anat_checkbox").value
+                    is False
+                )
+
+            assert (
+                pilot.app.screen.query_one("#transfer_all_checkbox").value
+                is True
+            )
+
+            await pilot.pause()
 
     # -------------------------------------------------------------------------
     # Test Logging
