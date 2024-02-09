@@ -448,7 +448,6 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#template_settings_validation_on_checkbox"
             )
 
-            # TODO: fix the below
             assert (
                 " A 'Template' can be set check subject or session names"
                 in pilot.app.screen.query_one(
@@ -487,7 +486,68 @@ class TestTuiWidgets(TuiBase):
                 == "ses-"
             )
 
-            # Just check the persistent settings, fill in some values and check they are still shown!
+    @pytest.mark.asyncio
+    async def test_bypass_validation_settings(
+        self, setup_project_paths
+    ):  # TODO: need to add this to generate d.s. tests, as well as new persistent settings?
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=False
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is False
+            )
+            assert (
+                pilot.app.screen.interface.project.get_bypass_validation()
+                is False
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_bypass_validation_checkbox"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is True
+            )
+            assert (
+                pilot.app.screen.interface.project.get_bypass_validation()
+                is True
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_settings_bypass_validation_checkbox"
+                ).value
+                is True
+            )
+            assert (
+                pilot.app.screen.interface.project.get_bypass_validation()
+                is True
+            )
 
     @pytest.mark.asyncio
     async def test_all_top_level_folder_selects(self, setup_project_paths):
