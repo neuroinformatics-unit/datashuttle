@@ -3,7 +3,6 @@ from pathlib import Path
 
 import pytest
 import test_utils
-from textual.widgets._tabbed_content import ContentTab
 
 # https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
 # -installed add to configs
@@ -265,9 +264,7 @@ class TestTuiConfigs(TuiBase):
                 pilot, project_name
             )
 
-            await pilot.click(
-                f"Tab#{ContentTab.add_prefix('tabscreen_configs_tab')}"
-            )
+            await self.switch_tab(pilot, "configs")
 
             configs_content = pilot.app.screen.query_one(
                 "#tabscreen_configs_content"
@@ -342,9 +339,7 @@ class TestTuiConfigs(TuiBase):
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
-            await pilot.click(
-                f"Tab#{ContentTab.add_prefix('tabscreen_configs_tab')}"
-            )
+            await self.switch_tab(pilot, "transfer")
             configs_content = pilot.app.screen.query_one(
                 "#tabscreen_configs_content"
             )

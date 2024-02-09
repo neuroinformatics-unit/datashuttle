@@ -202,6 +202,11 @@ class TuiBase:
         pilot.app.screen.query_one(id).toggle()
         await pilot.pause()
 
+    async def switch_tab(self, pilot, tab):
+        assert tab in ["create", "transfer", "configs", "logging"]
+        content_tab = ContentTab.add_prefix(f"tabscreen_{tab}_tab")
+        await self.scroll_to_click_pause(pilot, f"Tab#{content_tab}")
+
     async def turn_off_all_datatype_checkboxes(self, pilot, tab="create"):
         """
         Make sure all checkboxes are off to start
