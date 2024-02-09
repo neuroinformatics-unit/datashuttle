@@ -91,7 +91,7 @@ class DatatypeCheckboxes(Static):
     def compose(self) -> ComposeResult:
         for datatype in self.datatype_config.keys():
             yield Checkbox(
-                datatype.title().replace("_", " "),
+                datatype.replace("_", " "),
                 id=self.get_checkbox_name(datatype),
                 value=self.datatype_config[datatype],
             )
