@@ -212,6 +212,9 @@ MessageBox:light > #messagebox_top_container {
 #configs_central_path_select_button {
     width: auto;
 }
+#configs_bottom_buttons_horizontal {
+    padding: 0 0 2 0;
+}
 
 /* This Horizontal wrapper container is necessary to make the
 config label and button align center */
