@@ -239,4 +239,5 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     def on_input_changed(self, message: Input.Changed) -> None:
         if message.input.id == "template_settings_input":
-            self.input_values[self.input_mode] = message.value
+            val = None if message.value == "" else message.value
+            self.input_values[self.input_mode] = val

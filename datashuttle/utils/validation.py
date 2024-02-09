@@ -91,10 +91,13 @@ def names_dont_match_templates(
     if name_templates["on"] is False:
         return (
             False,
-            "Names templates is set to off and " "will not be checked.",
+            "Names templates is set to off and will not be checked.",
         )
 
     regexp = name_templates[prefix]
+
+    if regexp is None:
+        return False, f"No template set for prefix: {prefix}"
 
     bad_names = []
     for name in names_list:

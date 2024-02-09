@@ -116,6 +116,8 @@ class TestTuiCreateFolders(TuiBase):
             )  # TODO: set these inputs to variables
 
     # TODO: need to check validation and other persistent settings? name t empaltes? genera settings persistent settings!??!?!?!?
+    # TODO: couble click to add next, ctrl for generic validation
+    # TODO: there is a deep reason that sub and ses need to be validate together - to check for ses duplicates within sub ...
 
     # This comes under some kind of 'settings' tab
     @pytest.mark.asyncio
