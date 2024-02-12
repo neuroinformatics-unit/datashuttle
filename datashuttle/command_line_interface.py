@@ -399,15 +399,6 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-# Show Local Tree -------------------------------------------------------------
-
-
-def show_local_tree(*args: Any) -> None:
-    """"""
-    project = args[0]
-    project.show_local_tree()
-
-
 # Show Top Level Folder -------------------------------------------------------
 
 
@@ -941,17 +932,6 @@ def construct_parser():
         help="",
     )
     show_configs_parser.set_defaults(func=show_configs)
-
-    # Show Local tree
-    # -------------------------------------------------------------------------
-
-    show_local_tree_parser = subparsers.add_parser(
-        "show-local-tree",
-        aliases=["show_local_tree"],
-        description=process_docstring(DataShuttle.show_local_tree.__doc__),
-        help="",
-    )
-    show_local_tree_parser.set_defaults(func=show_local_tree)
 
     # Show Top Level Folder
     # -------------------------------------------------------------------------
