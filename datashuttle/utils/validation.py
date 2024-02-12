@@ -59,7 +59,7 @@ def validate_list_of_names(
 
     tests_to_run = [
         lambda: name_begins_with_bad_key(names_list, prefix),
-        lambda: names_include_spaces(names_list),
+        lambda: names_include_special_characters(names_list),
         lambda: dashes_and_underscore_alternate_incorrectly(names_list),
         lambda: value_lengths_are_inconsistent(names_list, prefix),
         lambda: names_dont_match_templates(names_list, prefix, name_templates),
@@ -157,24 +157,27 @@ def name_begins_with_bad_key(
     return False, ""
 
 
-def names_include_spaces(names_list: List[str]) -> Tuple[bool, str]:
+def names_include_special_characters(
+    names_list: List[str],
+) -> Tuple[bool, str]:
     """
     Check that a list of NeuroBlueprint formatted
-    names do not contain spaces.
+    names do not contain special characters (i.e. characters
+    that are not integers, letters, dash or underscore).
 
     Returns `True` if an invalid name was found, along
     with a message detailing the error.
     """
     bad_names = []
     for name in names_list:
-        if " " in name:
+        if not re.match("^[A-Za-z0-9_-]*$", name):
             bad_names.append(name)
 
     if bad_names:
         return (
             True,
-            f"Spaces are in the {get_names_format(bad_names)}, "
-            f"which is not permitted.",
+            f"The name: {get_names_format(bad_names)}, contains characters "
+            f"which are not alphanumeric, dash or underscore.",
         )
     return False, ""
 

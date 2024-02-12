@@ -4,7 +4,7 @@ import shutil
 import pytest
 from base import BaseTest
 
-from datashuttle.utils import validation
+from datashuttle.utils import formatting, validation
 
 # -----------------------------------------------------------------------------
 # Inconsistent sub or ses value lengths
@@ -46,6 +46,9 @@ class TestValidation(BaseTest):
         is tested elsewhere.
         """
         # First make conflicting leading zero subject names in the local repo
+        sub_name = formatting.format_names([sub_name], "sub")[0]
+        bad_sub_name = formatting.format_names([bad_sub_name], "sub")[0]
+
         os.makedirs(project.cfg["local_path"] / "rawdata" / sub_name)
         os.makedirs(project.cfg["local_path"] / "rawdata" / bad_sub_name)
         self.check_inconsistent_sub_or_ses_value_length_warning(project, "sub")
@@ -92,6 +95,9 @@ class TestValidation(BaseTest):
         factoring the main logic out got very messy and hard to follow.
 
         """
+        ses_name = formatting.format_names([ses_name], "ses")[0]
+        bad_ses_name = formatting.format_names([bad_ses_name], "ses")[0]
+
         # Have conflicting session names (in different subject directories)
         # on the local filesystem
         os.makedirs(
@@ -229,7 +235,7 @@ class TestValidation(BaseTest):
         """
         project.create_folders("sub-001")
 
-        for bad_sub_name in ["sub-001_@DATE", "sub-001_extra-key"]:
+        for bad_sub_name in ["sub-001_@DATE@", "sub-001_extra-key"]:
             with pytest.raises(BaseException) as e:
                 project.create_folders(bad_sub_name, "ses-001")
             assert "A sub already exists" in str(e.value)
@@ -358,10 +364,10 @@ class TestValidation(BaseTest):
 
     def test_validate_names_against_project(self, project):
         """ """
-        project.create_folders(["sub-1_id-@", "sub-2_id-b", "sub-3_id-c"])
+        project.create_folders(["sub-1_id-abc", "sub-2_id-b", "sub-3_id-c"])
 
         # Check an exact match passes
-        sub_names = ["sub-1_id-@"]
+        sub_names = ["sub-1_id-abc"]
         validation.validate_names_against_project(
             project.cfg, sub_names, local_only=True, error_or_warn="error"
         )
@@ -375,7 +381,7 @@ class TestValidation(BaseTest):
             )
         assert (
             "same sub id as sub-1_id-11. "
-            "The existing folder is sub-1_id-@." in str(e.value)
+            "The existing folder is sub-1_id-abc." in str(e.value)
         )
 
         # Now check multiple different types of error are warned about
@@ -395,7 +401,7 @@ class TestValidation(BaseTest):
         )
         assert (
             "sub already exists with the same sub id as sub-1_id-11. "
-            "The existing folder is sub-1_id-@." in str(w[2].message)
+            "The existing folder is sub-1_id-abc." in str(w[2].message)
         )
 
         # Now make some new paths on central. Pass a bad new subject name
@@ -435,7 +441,7 @@ class TestValidation(BaseTest):
         project.create_folders("sub-2_id-b", ["ses-001", "ses-002"])
 
         # Check no error is raised for exact match.
-        sub_names = ["sub-1_id-@", "sub-2_id-b", "sub-4_date-2023"]
+        sub_names = ["sub-1_id-abc", "sub-2_id-b", "sub-4_date-2023"]
         ses_names = ["ses-001", "ses-002"]
 
         validation.validate_names_against_project(
@@ -447,7 +453,7 @@ class TestValidation(BaseTest):
         )
 
         # ses-002 is bad for sub-2, ses-003 is bad for sub-4
-        sub_names = ["sub-1_id-@", "sub-2_id-b", "sub-4_date-2023"]
+        sub_names = ["sub-1_id-abc", "sub-2_id-b", "sub-4_date-2023"]
         ses_names = ["ses-002_id-11", "ses-003_id-random"]
 
         with pytest.warns(UserWarning) as w:
