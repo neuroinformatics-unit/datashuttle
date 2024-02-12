@@ -296,10 +296,8 @@ def raise_error_or_warn(
     assert error_or_warn in ["error", "warn"], "Must be 'error' or 'warn'."
 
     if error_or_warn == "error":
-        if log:
-            utils.log_and_raise_error(message, NeuroBlueprintError)
-        else:
-            utils.raise_error(message, NeuroBlueprintError)
+        utils.log_and_raise_error(message, NeuroBlueprintError)
+
     else:
         utils.warn(message, log=log)
 

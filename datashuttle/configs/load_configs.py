@@ -147,7 +147,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
 
         if isinstance(value, str):
             if value not in ["True", "False", "true", "false"]:
-                utils.raise_error(
+                utils.log_and_raise_error(
                     f"Input value for '{key}' must be True or False",
                     ConfigError,
                 )
