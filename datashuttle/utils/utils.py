@@ -41,9 +41,10 @@ def log_and_raise_error(message: str, exception: Any) -> None:
     """
     Log the message before raising the same message as an error.
     """
-    logger = logging.getLogger("datashuttle")
-    logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
-    logger.error(message)
+    if "datashuttle" in logging.root.manager.loggerDict.keys():
+        logger = logging.getLogger("datashuttle")
+        logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
+        logger.error(message)
     raise_error(message, exception)
 
 
@@ -166,12 +167,14 @@ def get_values_from_bids_formatted_name(
     all_values = []
     for name in all_names:
         if key not in name:
-            raise_error(f"The key {key} is not found in {name}", KeyError)
+            log_and_raise_error(
+                f"The key {key} is not found in {name}", KeyError
+            )
 
         value = get_value_from_key_regexp(name, key)
 
         if len(value) > 1:
-            raise_error(
+            log_and_raise_error(
                 f"There is more than one instance of {key} in {name}. "
                 f"NeuroBlueprint names must contain only one instance of "
                 f"each key.",
@@ -195,7 +198,7 @@ def sub_or_ses_value_to_int(value: str) -> int:
     try:
         int_value = int(value)
     except ValueError:
-        raise_error(
+        log_and_raise_error(
             f"Invalid character in subject or session value: {value}",
             NeuroBlueprintError,
         )

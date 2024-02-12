@@ -128,7 +128,7 @@ def setup_ssh_key(
     log : log if True, logger must already be initialised.
     """
     if not sys.stdin.isatty():
-        utils.raise_error(
+        utils.log_and_raise_error(
             f"Attempting to run outside of a TTY terminal. "
             f"This may happen if attempting to run in an IDE console. "
             f"`getpass` (used for ssh password input) cannot run. "

@@ -153,7 +153,7 @@ class DataShuttle:
         canonical_top_level_folders = canonical_folders.get_top_level_folders()
 
         if folder_name not in canonical_top_level_folders:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"Folder name: {folder_name} "
                 f"is not in permitted top-level folder"
                 f" names: {canonical_top_level_folders}",
@@ -1282,7 +1282,7 @@ class DataShuttle:
         settings = self._load_persistent_settings()
 
         if setting_name not in settings:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"Setting key {setting_name} not found in "
                 f"settings dictionary",
                 KeyError,

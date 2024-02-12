@@ -158,7 +158,7 @@ def get_max_sub_or_ses_num_and_value_length(
         all_num_value_digits = [len(value) for value in all_values_str]
 
         if len(set(all_num_value_digits)) != 1:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"The number of value digits for the {prefix} level are not "
                 f"consistent. Cannot suggest a {prefix} number.",
                 NeuroBlueprintError,
@@ -202,7 +202,7 @@ def get_existing_project_paths() -> List[Path]:
         )
 
         if len(config_file) > 1:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"There are two config files in project"
                 f"{folder_name} at path {datashuttle_path}. There "
                 f"should only ever be one config per project. ",
