@@ -255,9 +255,6 @@ class DataShuttle:
             log=True,
         )
 
-        utils.log("\nFinished file creation. Local folder tree is now:\n")
-        ds_logger.log_tree(self.cfg["local_path"])
-
         utils.print_message_to_user(
             f"Finished making folders. \nFor log of all created "
             f"folders, please see {self.cfg.logging_path}"
@@ -1025,14 +1022,6 @@ class DataShuttle:
         Print the current configs to the terminal.
         """
         utils.print_message_to_user(self._get_json_dumps_config())
-
-    @check_configs_set
-    def show_local_tree(self) -> None:
-        """
-        Print a tree schematic of all files and folders
-        in the local project.
-        """
-        ds_logger.print_tree(self.cfg["local_path"])
 
     # -------------------------------------------------------------------------
     # Validators
