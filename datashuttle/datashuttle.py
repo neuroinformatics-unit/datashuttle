@@ -989,26 +989,14 @@ class DataShuttle:
             where "sub" or "ses" can be a regexp that subject and session
             names respectively are validated against.
         """
-        #        if new_name_templates["on"] and None in [
-        #            new_name_templates["sub"],
-        #            new_name_templates["ses"],
-        #        ]:
-        #            utils.log_and_raise_error(
-        #                "Subject and session name templates must be set "
-        #                "if name templates is on.",
-        #                ValueError,
-        #            )
-
         self._update_persistent_setting("name_templates", new_name_templates)
 
     def set_bypass_validation(self, on):
-        self._update_persistent_setting(
-            "bypass_validation", on
-        )  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+        self._update_persistent_setting("bypass_validation", on)
 
     def get_bypass_validation(
         self,
-    ):  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+    ):
         settings = self._load_persistent_settings()
         return settings["bypass_validation"]
 
