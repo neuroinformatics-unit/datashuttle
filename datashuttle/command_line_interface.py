@@ -6,6 +6,7 @@ import simplejson
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, load_configs
+from datashuttle.tui.app import main as tui_main
 from datashuttle.utils import utils
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
@@ -1035,6 +1036,9 @@ def main() -> None:
     through run_command().
     """
     args = parser.parse_args()
+
+    if args.project_name in ["tui", "gui"]:
+        tui_main()
 
     if "func" in args and str(args.func.__name__) == "make_config_file":
         warn = "ignore"
