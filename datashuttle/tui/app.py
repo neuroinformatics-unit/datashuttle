@@ -164,5 +164,8 @@ class TuiApp(App):
             yaml.dump(global_settings, file, sort_keys=False)
 
 
-if __name__ == "__main__":
+def main():
     TuiApp().run()
+
+if __name__ == "__main__":
+    main()
