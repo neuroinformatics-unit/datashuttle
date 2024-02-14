@@ -248,7 +248,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_create_folders_button"
             )
 
-            # Now fill in a bad ses name tempalte, because we tested sub above but not ses.
+            # Now fill in a bad ses name template, because we tested sub above but not ses.
             await self.fill_input(
                 pilot, "#create_folders_session_input", "ses-001"
             )
@@ -266,7 +266,7 @@ class TestTuiCreateFolders(TuiBase):
                 == "The name: ses-001 does not match the template: ses-...."
             )
 
-            # Finally, double click the intput to suggest next ses / sub numbers, which should
+            # Finally, double click the input to suggest next ses / sub numbers, which should
             # respect the name templates.
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=True
@@ -507,7 +507,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot,
                 "#create_folders_directorytree",
                 hover_line=3,
-                press_string="ctrl+o",  # TODO: this line is literally the only thing thats changed compaerd to above...
+                press_string="ctrl+o",  # TODO: this line is literally the only thing that's changed compaerd to above...
             )
             assert (
                 signal[0]
@@ -518,7 +518,7 @@ class TestTuiCreateFolders(TuiBase):
 
             await pilot.pause()
 
-    # TOOD: check all settings widgets... check they change underlying persistent settings. Figure out how to tis thi sin with the rest of persistent settings tests
+    # TODO: check all settings widgets... check they change underlying persistent settings. Figure out how to fit this in with the rest of persistent settings tests
     # TODO: fully split out all 'widgets' tests.
     @pytest.mark.asyncio
     async def test_create_folders_settings_top_level_folder(
@@ -599,7 +599,7 @@ class TestTuiCreateFolders(TuiBase):
 
     # TODO: TEST EVERYTHING ELSE IN WIDGETS CHECKS. SHOULD PROBABLY DO THAT NOW...
 
-    # maybe separte checks as part of persistent settings to check if they dont change eachother.
+    # maybe separate checks as part of persistent settings to check if they dont change each other.
 
     async def test_create_folder_settings_bypass_validation(
         self,

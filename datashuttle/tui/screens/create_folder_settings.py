@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
 
@@ -59,6 +59,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.mainwindow = mainwindow
         self.input_mode = "sub"
         self.interface = interface
+
+        self.input_values: Dict[str, Optional[str]]
 
         self.input_values = {
             "sub": "",

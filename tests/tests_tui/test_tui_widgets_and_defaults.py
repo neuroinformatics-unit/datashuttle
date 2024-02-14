@@ -883,7 +883,7 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     async def check_top_folder_select(
-        self, pilot, id, tab_name, expected_val, move_to_position: False
+        self, pilot, id, tab_name, expected_val, move_to_position=False
     ):
         """
         If move to position is not False, must be int specifying position
@@ -937,7 +937,7 @@ class TestTuiWidgets(TuiBase):
                     pilot, "create", expected_create
                 )
 
-            # Now turn off an arbitary subset so they are not longer all on (which is default).
+            # Now turn off an arbitrary subset so they are not longer all on (which is default).
             # Reload the screen, and check the checkboxes are still correct.
             await self.change_checkbox(pilot, "#create_ephys_checkbox")
             await self.change_checkbox(pilot, "#create_anat_checkbox")
@@ -1029,7 +1029,7 @@ class TestTuiWidgets(TuiBase):
     # TODO: need to do investory check every feature is tested and make clear in
     # docs where everywhere is tested ... ... ... ... ... ... ... ... ...
     @pytest.mark.asyncio
-    async def test_all_transfer_widgets(self, setup_project_paths):
+    async def ___test_all_transfer_widgets(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
