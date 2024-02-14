@@ -27,8 +27,9 @@ class TestTuiWidgets(TuiBase):
         async with app.run_test() as pilot:
 
             # Select a new project, check NewProjectScreen is displayed correctly.
-            await pilot.click("#mainwindow_new_project_button")
-            await pilot.pause()
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
 
             assert pilot.app.screen_stack[0].id == "_default"
             assert isinstance(pilot.app.screen_stack[1], NewProjectScreen)

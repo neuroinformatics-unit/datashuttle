@@ -34,6 +34,7 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiConfigs(TuiBase):
+
     @pytest.mark.asyncio
     @pytest.mark.parametrize("kwargs_set", [1, 2])
     async def test_make_new_project_configs(
@@ -86,8 +87,9 @@ class TestTuiConfigs(TuiBase):
         async with app.run_test() as pilot:
 
             # Select a new project, check NewProjectScreen is displayed correctly.
-            await pilot.click("#mainwindow_new_project_button")
-            await pilot.pause()
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
 
             # Get the ConfigsContent and check all configs are displayed correctly.
             # `check_new_project_configs` checks empty defaults are displayed,
@@ -181,8 +183,9 @@ class TestTuiConfigs(TuiBase):
         async with app.run_test() as pilot:
 
             # Select the page and ConfigsContent for setting up new project
-            await pilot.click("#mainwindow_new_project_button")
-            await pilot.pause()
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
 
             configs_content = pilot.app.screen.query_one(
                 "#new_project_configs_content"
@@ -348,6 +351,31 @@ class TestTuiConfigs(TuiBase):
             )
 
             await pilot.pause()
+
+    @pytest.mark.asyncio
+    async def test_bad_configs_screen_input(self, empty_project_paths):
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            # Select a new project, check NewProjectScreen is displayed correctly.
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
+
+            await self.fill_input(pilot, "#configs_name_input", "a")
+            await self.fill_input(pilot, "#configs_local_path_input", "a")
+            await self.fill_input(pilot, "#configs_central_path_input", "b")
+            await self.scroll_to_click_pause(
+                pilot, "#configs_save_configs_button"
+            )
+
+            assert (
+                "The central_path does not end in the project name: a"
+                in pilot.app.screen.query_one(
+                    "#messagebox_message_label"
+                ).renderable._text[0]
+            )
 
     # -------------------------------------------------------------------------
     # Helpers

@@ -518,8 +518,6 @@ class TestTuiCreateFolders(TuiBase):
 
             await pilot.pause()
 
-    # TODO: check all settings widgets... check they change underlying persistent settings. Figure out how to fit this in with the rest of persistent settings tests
-    # TODO: fully split out all 'widgets' tests.
     @pytest.mark.asyncio
     async def test_create_folders_settings_top_level_folder(
         self, setup_project_paths

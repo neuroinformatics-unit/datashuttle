@@ -6,19 +6,18 @@ from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 
-# test some configs errors
+# Checking
 # TODO: ADd to notes: there is a deep reason that sub and ses need to be validate together - to check for ses duplicates within sub ...
 # TODO: need to do investory check every feature is tested and make clear in docs where everywhere is tested
 # TODO: other radiobutton labels are not tested... this is probably ok?? hmm
-
 # TODO: carefully check configs tests after refactor!
-# test setup ssh
-# test all create files at once
-# test all keyboard shortcuts
-# test template validation settings etc.
-# Settings, Light / Dark mode, DirectoryTree Setting
 
-# TODO: can crash ssh setup on new project configs
+# Later
+# test setup ssh
+
+# Test all transfer types
+# test double-levle transfer
+# Settings, Light / Dark mode, DirectoryTree Setting
 
 
 class TuiBase:
