@@ -351,6 +351,28 @@ class TestFileTransfer(BaseTest):
                 "ses-002_date-20220516",
             ]
 
+    def test_deep_folder_structure(self, project):
+        """
+        Just a quick test as all other tests only test files directly in the
+        datatyp directly. Check that rlcone is setup to transfer
+        multiple levels down from the datatype level.
+        """
+        make_base_path = (
+            lambda root: root / "rawdata" / "sub-001" / "ses-001" / "behav"
+        )
+        local = make_base_path(project.cfg["local_path"])
+        test_file_path = (
+            Path("level_1") / "level_2" / "level 3" / "deep_test_file"
+        )
+
+        test_utils.write_file(local / test_file_path, "hello world")
+
+        project.upload_entire_project()
+
+        assert (
+            make_base_path(project.cfg["central_path"]) / test_file_path
+        ).is_file()
+
     @pytest.mark.parametrize("overwrite_old_files", [True, False])
     @pytest.mark.parametrize("show_transfer_progress", [True, False])
     @pytest.mark.parametrize("dry_run", [True, False])

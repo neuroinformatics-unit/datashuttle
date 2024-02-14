@@ -13,11 +13,13 @@ from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 # TODO: carefully check configs tests after refactor!
 
 # Later
-# test setup ssh
-
 # Test all transfer types
-# test double-levle transfer
 # Settings, Light / Dark mode, DirectoryTree Setting
+
+# 1) test transfer - all, top level, custom (1 or two will suffice)
+# 2) test transfer settings
+# 3) review all tests
+# 4) I think this will mean done!
 
 
 class TuiBase:
