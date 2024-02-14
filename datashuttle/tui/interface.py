@@ -71,17 +71,17 @@ class Interface:
             some settings (e.g. `transfer_verbosity`) are not relevant
             for TUI and so method defaults will be used.
         """
-        #  try:
-        project = DataShuttle(project_name, print_startup_message=False)
+        try:
+            project = DataShuttle(project_name, print_startup_message=False)
 
-        project.make_config_file(**cfg_kwargs)
+            project.make_config_file(**cfg_kwargs)
 
-        self.project = project
+            self.project = project
 
-        return True, None
+            return True, None
 
-    #    except BaseException as e:
-    #       return False, str(e)
+        except BaseException as e:
+            return False, str(e)
 
     def set_configs_on_existing_project(self, cfg_kwargs: Dict) -> Output:
         """

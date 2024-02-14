@@ -221,9 +221,15 @@ class ConfigsContent(Container):
         self.query_one("#configs_central_path_select_button").disabled = (
             display_bool
         )
-        self.query_one("#configs_setup_ssh_connection_button").disabled = (
-            not display_bool
-        )
+
+        if self.interface is not None:
+            self.query_one("#configs_setup_ssh_connection_button").disabled = (
+                not display_bool
+            )
+        else:
+            self.query_one("#configs_setup_ssh_connection_button").disabled = (
+                True
+            )
 
         if not self.query_one("#configs_central_path_input").value:
             if display_bool:
@@ -340,16 +346,44 @@ class ConfigsContent(Container):
         success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
         if success:
-            self.parent_class.mainwindow.push_screen(
-                modal_dialogs.MessageBox(
+            # Could not find a neater way to combine the push screen
+            # while initiating the callback in one case but not the other.
+            if cfg_kwargs["connection_method"] == "ssh":
+
+                self.query_one(
+                    "#configs_setup_ssh_connection_button"
+                ).disabled = False
+                self.interface = interface
+
+                message = (
+                    "A DataShuttle project has now been created.\n\n "
+                    "Next, setup the SSH connection. Once complete, navigate to the "
+                    "'Main Menu' and proceed to "
+                    "the project page, where you will be able to create and "
+                    "transfer project folders."
+                )
+
+                self.parent_class.mainwindow.push_screen(
+                    modal_dialogs.MessageBox(
+                        message,
+                        border_color="green",
+                    ),
+                )
+
+            else:
+                message = (
                     "A DataShuttle project has now been created.\n\n "
                     "Click 'OK' to proceed to "
                     "the project page, where you will be able to create and "
-                    "transfer project folders.",
-                    border_color="green",
-                ),
-                lambda _: self.parent_class.dismiss(interface),
-            )
+                    "transfer project folders."
+                )
+                self.parent_class.mainwindow.push_screen(
+                    modal_dialogs.MessageBox(
+                        message,
+                        border_color="green",
+                    ),
+                    lambda _: self.parent_class.dismiss(interface),
+                )
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
