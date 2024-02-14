@@ -1,30 +1,7 @@
+from typing import Union
+
 import pytest
 import test_utils
-
-# https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
-# -installed add to configs
-# TODO: do we need to show anything when create folders is clicked?
-# TODO: carefully check configs tests after refactor!
-# TODO: need to allow name templates to be sub oR ses
-# TODO: add green to light mode css
-# TODO: could do CTRL+D to input to delete all content .
-# test mainmenu button
-# test with ssh
-# test without ssh
-# test bad ssh
-# test some configs errors
-# TODO: ssh setup not tested, need images!
-# test all create files at once
-# test all keyboard shortcuts
-# test template validation settings etc.
-# Settings
-# Light / Dark mode
-# DirectoryTree Setting
-# TODO: don't bother testing tree highlgihting yet.
-# TODO: need to add bypass validation and new configs in datashuttle itself. to generate d.s. tests, as well as new persistent settings?
-# TODO: need to check validation and other persistent settings? name t empaltes? genera settings persistent settings!??!?!?!?
-# TODO: couble click to add next, ctrl for generic validation
-# TODO: there is a deep reason that sub and ses need to be validate together - to check for ses duplicates within sub ...
 from tui_base import TuiBase
 
 from datashuttle.tui.app import TuiApp
@@ -255,10 +232,6 @@ class TestTuiWidgets(TuiBase):
             "#configs_central_host_username_input",
         ]:
             assert configs_content.query_one(id).display is ssh_on
-
-    # TODO: can crash ssh setup on new project configs
-
-    # Also test the select at the end..
 
     # -------------------------------------------------------------------------
     # Test Configs Existing Project
@@ -883,7 +856,12 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     async def check_top_folder_select(
-        self, pilot, id, tab_name, expected_val, move_to_position=False
+        self,
+        pilot,
+        id,
+        tab_name,
+        expected_val,
+        move_to_position: Union[bool, int] = False,
     ):
         """
         If move to position is not False, must be int specifying position
@@ -1024,10 +1002,6 @@ class TestTuiWidgets(TuiBase):
     # Test Transfer
     # -------------------------------------------------------------------------
 
-    # checkboxes are tested already
-    # top level select are tested already
-    # TODO: need to do investory check every feature is tested and make clear in
-    # docs where everywhere is tested ... ... ... ... ... ... ... ... ...
     @pytest.mark.asyncio
     async def ___test_all_transfer_widgets(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
@@ -1042,13 +1016,7 @@ class TestTuiWidgets(TuiBase):
             )
             await self.switch_tab(pilot, "transfer")
 
-            # convenience functions...
-            # get_value
-            # get_text
-            # TODO: Check project title checked
-
             # Checkboxes, on and label
-            # TODO: other radiobutton labels are not tested...
             breakpoint()
             assert (
                 pilot.app.screen.query_one(
@@ -1221,10 +1189,7 @@ class TestTuiWidgets(TuiBase):
                 "#transfer_all_datatype_checkbox",
                 "#transfer_all_non_datatype_checkbox",
             ]:
-                assert (
-                    pilot.app.screen.query_one("#transfer_anat_checkbox").value
-                    is False
-                )
+                assert pilot.app.screen.query_one(id).value is False
 
             assert (
                 pilot.app.screen.query_one("#transfer_all_checkbox").value

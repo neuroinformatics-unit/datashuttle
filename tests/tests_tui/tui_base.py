@@ -6,27 +6,19 @@ from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 
-# https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
-# -installed add to configs
-
-# TODO: do we need to show anything when create folders is clicked?
-# TODO: carefully check configs tests after refactor!
-# TODO: need to allow name templates to be sub oR ses
-# TODO: add green to light mode css
-# TODO: could do CTRL+D to input to delete all content .
-# test mainmenu button
-# test with ssh
-# test without ssh
-# test bad ssh
 # test some configs errors
-# TODO: ssh setup not tested, need images!
+# TODO: ADd to notes: there is a deep reason that sub and ses need to be validate together - to check for ses duplicates within sub ...
+# TODO: need to do investory check every feature is tested and make clear in docs where everywhere is tested
+# TODO: other radiobutton labels are not tested... this is probably ok?? hmm
+
+# TODO: carefully check configs tests after refactor!
+# test setup ssh
 # test all create files at once
 # test all keyboard shortcuts
 # test template validation settings etc.
-# Settings
-# Light / Dark mode
-# DirectoryTree Setting
-# TODO: don't bother testing tree highlgihting yet.
+# Settings, Light / Dark mode, DirectoryTree Setting
+
+# TODO: can crash ssh setup on new project configs
 
 
 class TuiBase:
@@ -143,8 +135,6 @@ class TuiBase:
         await pilot.press(press_string)
         await pilot.pause()
 
-    # TODO: for all shared directorytree fujnctions, do on both trees!
-
     async def scroll_to_and_pause(self, pilot, id):
         """
         Scroll to a widget and pause.
@@ -157,7 +147,6 @@ class TuiBase:
         """
         Scroll to a widget, click it and call pause.
         """
-
         await self.scroll_to_and_pause(pilot, id)
         await pilot.click(id, control=control)
         await pilot.pause()
@@ -183,8 +172,6 @@ class TuiBase:
             pilot.app.screen.query_one("#tabscreen_tabbed_content").active
             == "tabscreen_create_tab"
         )
-
-    # TODO: check local / central path deleted!
 
     async def change_checkbox(self, pilot, id):
         pilot.app.screen.query_one(id).toggle()
