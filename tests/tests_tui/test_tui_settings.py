@@ -9,8 +9,6 @@ class TestTuiSettings(TuiBase):
     @pytest.mark.asyncio
     async def test_light_dark_mode(self, empty_project_paths):
 
-        tmp_config_path, tmp_path, project_name = empty_project_paths.values()
-
         app = TuiApp()
         async with app.run_test() as pilot:
 
@@ -75,7 +73,7 @@ class TestTuiSettings(TuiBase):
             )
 
             await self.scroll_to_click_pause(
-                pilot, "#generic_screen_close_button"
+                pilot, "#settings_screen_close_button"
             )
 
             await self.check_and_click_onto_existing_project(

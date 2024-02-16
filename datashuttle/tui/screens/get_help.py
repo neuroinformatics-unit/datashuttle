@@ -23,10 +23,6 @@ class GetHelpScreen(ModalScreen):
     def __init__(self) -> None:
         super(GetHelpScreen, self).__init__()
 
-        self.help_message = """
-            Hello world
-        """
-
         self.text = """
             For help getting started, check out the [@click=screen.link_docs()]Documentation[/],
             or ask at our [@click=screen.link_zulip()]Zulip Chat[/].
