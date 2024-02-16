@@ -1,8 +1,5 @@
-import pytest
-
-from datashuttle.utils import formatting, validation
-
 import validators
+
 from datashuttle.configs import links
 
 
