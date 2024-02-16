@@ -19,7 +19,7 @@ class TestTuiTransfer(TuiBase):
             project = DataShuttle(project_name)
             project.update_config_file(overwrite_old_files=True)
 
-            await pilot.pause(2)  # small delay to ensure order of logs
+            await pilot.pause(5)  # small delay to ensure order of logs
             project.create_folders("sub-001")
 
             #
