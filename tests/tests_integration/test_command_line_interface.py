@@ -373,7 +373,6 @@ class TestCommandLineInterface(BaseTest):
         )
         try:
             test_utils.check_folder_tree_is_correct(
-                project,
                 base_folder=test_utils.get_top_level_folder_path(project),
                 subs=subs,
                 sessions=ses,

@@ -273,9 +273,7 @@ def add_quotes(string: str):
 # -----------------------------------------------------------------------------
 
 
-def check_folder_tree_is_correct(
-    project, base_folder, subs, sessions, folder_used
-):
+def check_folder_tree_is_correct(base_folder, subs, sessions, folder_used):
     """
     Automated test that folders are made based
     on the structure specified on project itself.
@@ -384,7 +382,6 @@ def make_and_check_local_project_folders(
     make_local_folders_with_files_in(project, subs, sessions, datatype)
 
     check_folder_tree_is_correct(
-        project,
         get_top_level_folder_path(project, folder_name=folder_name),
         subs,
         sessions,
@@ -628,7 +625,7 @@ def set_datashuttle_loggers(disable):
 
 
 def check_working_top_level_folder_only_exists(
-    folder_name, project, base_path_to_check, subs, sessions
+    folder_name, base_path_to_check, subs, sessions, folders_used=None
 ):
     """
     Check that the folder tree made in the 'folder_name'
@@ -637,12 +634,14 @@ def check_working_top_level_folder_only_exists(
     that folders made / transferred from one top-level folder
     do not inadvertently transfer other top-level folders.
     """
+    if folders_used is None:
+        folders_used = get_all_folders_used()
+
     check_folder_tree_is_correct(
-        project,
         base_path_to_check,
         subs,
         sessions,
-        get_all_folders_used(),
+        folders_used,
     )
 
     # Check other top-level folders are not made

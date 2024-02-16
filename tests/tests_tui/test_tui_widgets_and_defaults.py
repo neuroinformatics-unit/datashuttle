@@ -124,11 +124,15 @@ class TestTuiWidgets(TuiBase):
             )
 
             # Check Non SSH widgets hidden / disabled ----------------------------------
-            await self.check_ssh_widgets(configs_content, ssh_on=False)
+            await self.check_new_project_ssh_widgets(
+                configs_content, ssh_on=False
+            )
 
             # Change to SSH
             await self.scroll_to_click_pause(pilot, "#configs_ssh_radiobutton")
-            await self.check_ssh_widgets(configs_content, ssh_on=True)
+            await self.check_new_project_ssh_widgets(
+                configs_content, ssh_on=True
+            )
 
             # Central Path (SSH) ------------------------------------------
 
@@ -211,13 +215,13 @@ class TestTuiWidgets(TuiBase):
 
             await pilot.pause()
 
-    async def check_ssh_widgets(self, configs_content, ssh_on):
+    async def check_new_project_ssh_widgets(self, configs_content, ssh_on):
         """"""
         assert (
             configs_content.query_one(
                 "#configs_setup_ssh_connection_button"
             ).disabled
-            is not ssh_on
+            is True  # Only enabled after project creation.
         )
         assert (
             configs_content.query_one(
@@ -868,9 +872,7 @@ class TestTuiWidgets(TuiBase):
         If move to position is not False, must be int specifying position
         """
         if move_to_position:
-            await pilot.click(id)
-            await pilot.click(id, offset=(2, move_to_position))
-            await pilot.pause()
+            await self.move_select_to_position(pilot, id, move_to_position)
 
         assert (
             pilot.app.screen.interface.tui_settings["top_level_folder_select"][
@@ -1004,7 +1006,7 @@ class TestTuiWidgets(TuiBase):
     # -------------------------------------------------------------------------
 
     @pytest.mark.asyncio
-    async def ___test_all_transfer_widgets(self, setup_project_paths):
+    async def test_all_transfer_widgets(self, setup_project_paths):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -1018,7 +1020,6 @@ class TestTuiWidgets(TuiBase):
             await self.switch_tab(pilot, "transfer")
 
             # Checkboxes, on and label
-            breakpoint()
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_all_radiobutton"
@@ -1201,11 +1202,15 @@ class TestTuiWidgets(TuiBase):
 
     # -------------------------------------------------------------------------
     # Test Logging
-    # -------------------------------------------------------------------------
+    # -------------------------------------------------------------s------------
 
     # TODO: need to think a little bit more about the DirectoryTree,
     # test all functionality for both create and transfer at the same time!!
 
     # -------------------------------------------------------------------------
     # Test Global Settings Settings
+    # -------------------------------------------------------------------------
+
+    # -------------------------------------------------------------------------
+    # Test TUI Get Help
     # -------------------------------------------------------------------------

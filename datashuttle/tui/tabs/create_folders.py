@@ -295,6 +295,14 @@ class CreateFoldersTab(TreeAndInputTab):
         and the error is caught and message returned. Otherwise,
         the formatted name is returned.
 
+        Because validation requires both subject and session
+        as input (to check for duplicate sessions within
+        subjects) in some cases the 'session' Input will
+        show validation error for the subject (i.e. where
+        the validation has failed). This is a little ugly
+        but subject validation errors will be required to
+        fix before dealing with session errors anyway.
+
         Parameters
         ----------
 

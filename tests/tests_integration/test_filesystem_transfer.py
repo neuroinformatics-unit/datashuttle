@@ -43,7 +43,6 @@ class TestFileTransfer(BaseTest):
             transfer_function("all", "all", "all")
 
         test_utils.check_folder_tree_is_correct(
-            project,
             os.path.join(base_path_to_check, project.cfg.top_level_folder),
             subs,
             sessions,
@@ -97,7 +96,7 @@ class TestFileTransfer(BaseTest):
         )
 
         test_utils.check_working_top_level_folder_only_exists(
-            folder_name, project, full_base_path_to_check, subs, sessions
+            folder_name, full_base_path_to_check, subs, sessions
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -124,7 +123,6 @@ class TestFileTransfer(BaseTest):
         for folder_name in canonical_folders.get_top_level_folders():
             project.set_top_level_folder(folder_name)
             test_utils.check_folder_tree_is_correct(
-                project,
                 os.path.join(base_path_to_check, project.cfg.top_level_folder),
                 subs,
                 sessions,

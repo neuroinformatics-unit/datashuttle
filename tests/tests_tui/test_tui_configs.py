@@ -26,6 +26,7 @@ import test_utils
 # TODO: don't bother testing tree highlgihting yet.
 from tui_base import TuiBase
 
+from datashuttle import DataShuttle
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
@@ -108,27 +109,50 @@ class TestTuiConfigs(TuiBase):
                 "#configs_save_configs_button",
             )
 
-            assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable._text[0]
-                == "A DataShuttle project has now been created.\n\n Click 'OK' to "
-                "proceed to the project page, where you will be able to create and "
-                "transfer project folders."
-            )
-            await self.close_messagebox(pilot)
+            # if SSH is set, then the config window remains up and the
+            # 'setup ssh' button is enabled. Otherwise, the screen will automatically
+            # move to the project page.
+            if kwargs["connection_method"] == "ssh":
+                assert (
+                    pilot.app.screen.query_one(
+                        "#messagebox_message_label"
+                    ).renderable._text[0]
+                    == "A DataShuttle project has now been created.\n\n Next, setup the SSH connection. "
+                    "Once complete, navigate to the 'Main Menu' and proceed to the project page, "
+                    "where you will be able to create and transfer project folders."
+                )
+                await self.close_messagebox(pilot)
+                assert (
+                    pilot.app.screen.query_one(
+                        "#configs_setup_ssh_connection_button"
+                    ).disabled
+                    is False
+                )
+                project = DataShuttle(project_name)
+            else:
+                assert (
+                    pilot.app.screen.query_one(
+                        "#messagebox_message_label"
+                    ).renderable._text[0]
+                    == "A DataShuttle project has now been created.\n\n Click 'OK' to "
+                    "proceed to the project page, where you will be able to create and "
+                    "transfer project folders."
+                )
+                await self.close_messagebox(pilot)
+                assert isinstance(pilot.app.screen, ProjectManagerScreen)
+                project = pilot.app.screen.interface.project
 
-            assert isinstance(pilot.app.screen, ProjectManagerScreen)
+                assert (
+                    pilot.app.screen.interface.project.project_name
+                    == project_name
+                )
 
             # After saving, check all configs are correct on the DataShuttle
             # instance as well as the stored configs.
             test_utils.check_configs(
-                pilot.app.screen.interface.project,
+                project,
                 kwargs,
                 tmp_config_path / project_name / "config.yaml",
-            )
-            assert (
-                pilot.app.screen.interface.project.project_name == project_name
             )
 
             await pilot.pause()
@@ -137,7 +161,7 @@ class TestTuiConfigs(TuiBase):
         self, pilot, project_name, configs_content, kwargs
     ):
         """
-        Check the configs displayed on the TUI match those founds in `kwargs`.
+        Check the configs displayed on the TUI match those found in `kwargs`.
         Also, check the widgets unique to ConfigsContent on the configs selection
         for a new project.
         """

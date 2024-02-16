@@ -6,21 +6,6 @@ from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 
-# Checking
-# TODO: ADd to notes: there is a deep reason that sub and ses need to be validate together - to check for ses duplicates within sub ...
-# TODO: need to do investory check every feature is tested and make clear in docs where everywhere is tested
-# TODO: other radiobutton labels are not tested... this is probably ok?? hmm
-# TODO: carefully check configs tests after refactor!
-
-# Later
-# Test all transfer types
-# Settings, Light / Dark mode, DirectoryTree Setting
-
-# 1) test transfer - all, top level, custom (1 or two will suffice)
-# 2) test transfer settings
-# 3) review all tests
-# 4) I think this will mean done!
-
 
 class TuiBase:
     @pytest_asyncio.fixture(scope="function")
@@ -216,4 +201,9 @@ class TuiBase:
     async def close_messagebox(self, pilot):
         # for some reason clicking does not work...
         pilot.app.screen.on_button_pressed()
+        await pilot.pause()
+
+    async def move_select_to_position(self, pilot, id, position):
+        await pilot.click(id)
+        await pilot.click(id, offset=(2, position))
         await pilot.pause()
