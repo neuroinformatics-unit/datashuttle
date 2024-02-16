@@ -584,7 +584,6 @@ class TestTuiCreateFolders(TuiBase):
 
             project = pilot.app.screen.interface.project
             test_utils.check_folder_tree_is_correct(
-                project,
                 base_folder=(project.cfg["local_path"] / "derivatives"),
                 subs=["sub-001"],
                 sessions=[
@@ -766,7 +765,6 @@ class TestTuiCreateFolders(TuiBase):
         )
 
         test_utils.check_folder_tree_is_correct(
-            project,
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=subs,
             sessions=sessions,
