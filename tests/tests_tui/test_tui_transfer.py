@@ -151,9 +151,6 @@ class TestTuiTransfer(TuiBase):
                 folders_used,
             )
 
-    # copy the default, then mock it for very thorough tests
-    # really bother? blah why not... will take 10 mins... if take longer than 20 give us...
-
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):
