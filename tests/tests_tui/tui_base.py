@@ -107,7 +107,7 @@ class TuiBase:
         """
         Not sure why this is necsaey
         """
-        for node in range(4):
+        for node in range(num_nodes):
             await pilot.app.screen.query_one(id).reload_node(
                 pilot.app.screen.query_one(id).get_node_at_line(node)
             )
