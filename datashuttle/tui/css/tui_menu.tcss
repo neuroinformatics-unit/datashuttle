@@ -38,7 +38,7 @@
 
 /* Error Screen --------------------------------------------------------------------- */
 
-#settings_screen_top_container {
+#generic_screen_container {
     height: 85%;
     width: 85%;
     align: center middle;
@@ -46,10 +46,10 @@
     overflow: hidden auto;
     margin: 0 1;
 }
-#settings_screen_top_container:light {
+#generic_screen_container:light {
     border: thick $panel-darken-3;
 }
-#settings_screen_close_button {
+#generic_screen_close_button {
     dock: bottom;
 }
 #settings_color_scheme_radioset {  /* TODO: duplicate with other css */
@@ -64,7 +64,13 @@ SetupSshScreen {
 SettingsScreen {
     align: center middle;
 }
-
+GetHelpScreen {
+    align: center middle;
+}
+#get_help_label {
+    align: center middle;
+    text-align: center;
+}
 #setup_ssh_screen_container {
     height: 75%;
     width: 80%;

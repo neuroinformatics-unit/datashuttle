@@ -75,7 +75,7 @@ class TestTuiSettings(TuiBase):
             )
 
             await self.scroll_to_click_pause(
-                pilot, "#settings_screen_close_button"
+                pilot, "#generic_screen_close_button"
             )
 
             await self.check_and_click_onto_existing_project(

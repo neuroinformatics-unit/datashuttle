@@ -52,8 +52,8 @@ class SettingsScreen(ModalScreen):
                 value=self.global_settings["show_transfer_tree_status"],
                 id="show_transfer_tree_status_checkbox",
             ),
-            Button("Close", id="settings_screen_close_button"),
-            id="settings_screen_top_container",
+            Button("Close", id="generic_screen_close_button"),
+            id="generic_screen_container",
         )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
@@ -70,5 +70,5 @@ class SettingsScreen(ModalScreen):
         self.mainwindow.save_global_settings(self.global_settings)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "settings_screen_close_button":
+        if event.button.id == "generic_screen_close_button":
             self.dismiss()

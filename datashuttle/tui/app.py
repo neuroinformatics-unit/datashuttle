@@ -18,6 +18,7 @@ from textual.widgets import (
 
 from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens import (
+    get_help,
     modal_dialogs,
     new_project,
     project_manager,
@@ -78,6 +79,8 @@ class TuiApp(App):
                     self,
                 )
             )
+        elif event.button.id == "mainwindow_get_help_button":
+            self.push_screen(get_help.GetHelpScreen())
 
     def load_project_page(self, interface: Interface) -> None:
         if interface:

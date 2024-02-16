@@ -60,6 +60,7 @@ dev = [
     "pandas-stubs",
     "types-setuptools",
     "pytest-asyncio",
+    "validators",
 ]
 
 [build-system]

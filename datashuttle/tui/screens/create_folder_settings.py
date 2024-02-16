@@ -22,10 +22,10 @@ from textual.widgets import (
     RadioSet,
 )
 
+from datashuttle.configs import links
 from datashuttle.tui.custom_widgets import TopLevelFolderSelect
 
 
-# TODO: doc this function properly because it is confusing how one input shared between sub and ses
 class CreateFoldersSettingsScreen(ModalScreen):
     """
     This screen handles setting datashuttle's `name_template`'s, as well
@@ -68,7 +68,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def action_link_docs(self) -> None:
-        webbrowser.open("https://datashuttle.neuroinformatics.dev/")
+        webbrowser.open(links.get_docs_link())
 
     def compose(self) -> ComposeResult:
         sub_on = True if self.input_mode == "sub" else False
