@@ -4,27 +4,6 @@ from pathlib import Path
 import pyperclip
 import pytest
 import test_utils
-
-# https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
-# -installed add to configs
-# TODO: do we need to show anything when create folders is clicked?
-# TODO: carefully check configs tests after refactor!
-# TODO: need to allow name templates to be sub oR ses
-# TODO: add green to light mode css
-# TODO: could do CTRL+D to input to delete all content .
-# test mainmenu button
-# test with ssh
-# test without ssh
-# test bad ssh
-# test some configs errors
-# TODO: ssh setup not tested, need images!
-# test all create files at once
-# test all keyboard shortcuts
-# test template validation settings etc.
-# Settings
-# Light / Dark mode
-# DirectoryTree Setting
-# TODO: don't bother testing tree highlgihting yet.
 from tui_base import TuiBase
 
 from datashuttle.configs import canonical_folders
@@ -310,6 +289,7 @@ class TestTuiCreateFolders(TuiBase):
                 ).value
                 == "ses-0002"
             )
+            await pilot.pause()
 
     @pytest.mark.asyncio
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
@@ -480,7 +460,7 @@ class TestTuiCreateFolders(TuiBase):
     @pytest.mark.asyncio
     async def test_create_folders_directorytree_open_filesystem(
         self, setup_project_paths, monkeypatch
-    ):  # TODO: these tests are getting a lot of boilerplate!! stupid await...
+    ):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -491,7 +471,7 @@ class TestTuiCreateFolders(TuiBase):
 
             await self.reload_tree_nodes(
                 pilot, "#create_folders_directorytree", 4
-            )  # TODO: maybe add this line to the above function...
+            )
 
             signal = [Path()]
 
@@ -507,7 +487,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot,
                 "#create_folders_directorytree",
                 hover_line=3,
-                press_string="ctrl+o",  # TODO: this line is literally the only thing that's changed compaerd to above...
+                press_string="ctrl+o",
             )
             assert (
                 signal[0]
@@ -534,18 +514,14 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
-            # TODO: all widget checks moved, just stick to
-            # actual create folders tests!
-            assert isinstance(
-                pilot.app.screen, CreateFoldersSettingsScreen
-            )  # TODO: MOVE
+            assert isinstance(pilot.app.screen, CreateFoldersSettingsScreen)
 
             assert (
                 pilot.app.screen.interface.tui_settings[
                     "top_level_folder_select"
                 ]["create_tab"]
                 == "rawdata"
-            )  # TODO: MOVE, also check the saved file! critical!
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_toplevel_select"
@@ -564,7 +540,7 @@ class TestTuiCreateFolders(TuiBase):
                     "top_level_folder_select"
                 ]["create_tab"]
                 == "derivatives"
-            )  # TODO: MOVE, also check the saved file! critical!
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_toplevel_select"
@@ -586,31 +562,11 @@ class TestTuiCreateFolders(TuiBase):
             test_utils.check_folder_tree_is_correct(
                 base_folder=(project.cfg["local_path"] / "derivatives"),
                 subs=["sub-001"],
-                sessions=[
-                    "ses-001"
-                ],  # TODO: these are defaults linked to `setup_existing_project_create_tab_filled_sub_and_ses`
+                sessions=["ses-001"],
                 folder_used=test_utils.get_all_folders_used(),
             )
 
             await pilot.pause()
-
-    # TODO: TEST EVERYTHING ELSE IN WIDGETS CHECKS. SHOULD PROBABLY DO THAT NOW...
-
-    # maybe separate checks as part of persistent settings to check if they dont change each other.
-
-    async def test_create_folder_settings_bypass_validation(
-        self,
-    ):  # check validation errors here also, PROBABLY JUST COMBINE WITH BELOW...
-        pass
-
-    async def test_create_folders_settings_name_templates(self):
-        pass
-
-    async def test_create_folder_persistent_settings(self):
-        pass
-
-    async def get_next_sub_and_ses_with_templates(self):
-        pass
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("test_multi_input", [True, False])
@@ -673,7 +629,7 @@ class TestTuiCreateFolders(TuiBase):
 
     @pytest.mark.asyncio
     async def test_create_folders_formatted_names(self, setup_project_paths):
-        # TODO: tidy this up, some horrible decisions!
+        """"""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -729,7 +685,7 @@ class TestTuiCreateFolders(TuiBase):
 
             await self.scroll_to_click_pause(
                 pilot,
-                "#create_folders_create_folders_button",  # TODO: just take the key here!!
+                "#create_folders_create_folders_button",
             )
 
             project = pilot.app.screen.interface.project
@@ -790,10 +746,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, project, subs, sessions, folder_used
             )
 
-    async def click_create_folders_and_check_messagebox(
-        self, pilot
-    ):  # USE FOR ERROR
-
+    async def click_create_folders_and_check_messagebox(self, pilot):
         await self.scroll_to_click_pause(
             pilot,
             "#create_folders_create_folders_button",

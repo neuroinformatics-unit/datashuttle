@@ -33,6 +33,8 @@ class TestTuiSettings(TuiBase):
             assert pilot.app.dark is True
             assert pilot.app.load_global_settings()["dark_mode"] is True
 
+            await pilot.pause()
+
     @pytest.mark.asyncio
     async def test_show_transfer_tree_status(self, setup_project_paths):
         # doesn't actually test coloring. non-critical
@@ -73,7 +75,7 @@ class TestTuiSettings(TuiBase):
             )
 
             await self.scroll_to_click_pause(
-                pilot, "#settings_screen_close_button"
+                pilot, "#generic_screen_close_button"
             )
 
             await self.check_and_click_onto_existing_project(
@@ -90,3 +92,5 @@ class TestTuiSettings(TuiBase):
                 is True
             )
             assert transfer_tab.query_one("#transfer_legend").visible is True
+
+            await pilot.pause()

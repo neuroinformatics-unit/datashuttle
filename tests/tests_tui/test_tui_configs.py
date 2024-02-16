@@ -400,6 +400,7 @@ class TestTuiConfigs(TuiBase):
                     "#messagebox_message_label"
                 ).renderable._text[0]
             )
+            await pilot.pause()
 
     # -------------------------------------------------------------------------
     # Helpers

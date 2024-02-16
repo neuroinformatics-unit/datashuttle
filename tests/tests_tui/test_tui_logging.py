@@ -69,3 +69,5 @@ class TestTuiTransfer(TuiBase):
             )
 
             assert isinstance(pilot.app.screen, RichLogScreen)
+
+            await pilot.pause()

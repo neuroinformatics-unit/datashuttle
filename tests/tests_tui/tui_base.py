@@ -111,6 +111,7 @@ class TuiBase:
             await pilot.app.screen.query_one(id).reload_node(
                 pilot.app.screen.query_one(id).get_node_at_line(node)
             )
+            await pilot.pause()
 
     async def hover_and_press_tree(self, pilot, id, hover_line, press_string):
         pilot.app.screen.query_one(id).hover_line = hover_line

@@ -85,6 +85,7 @@ class TestTuiTransfer(TuiBase):
                 subs,
                 sessions,
             )
+            await pilot.pause()
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -150,6 +151,8 @@ class TestTuiTransfer(TuiBase):
                 [ses_to_transfer],
                 folders_used,
             )
+
+            await pilot.pause()
 
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder

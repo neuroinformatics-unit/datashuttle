@@ -27,6 +27,6 @@ class TestTuiSettings(TuiBase):
                 pilot, "#generic_screen_close_button"
             )
 
-            breakpoint()
-
             assert pilot.app.screen.id == "_default"
+
+            await pilot.pause()
