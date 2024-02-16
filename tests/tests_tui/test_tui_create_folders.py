@@ -16,6 +16,12 @@ from datashuttle.tui.screens.modal_dialogs import (
 )
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
+try:
+    pyperclip.paste()
+    HAS_GUI = True
+except pyperclip.PyperclipException:
+    HAS_GUI = False
+
 
 class TestTuiCreateFolders(TuiBase):
     @pytest.mark.asyncio
@@ -425,6 +431,7 @@ class TestTuiCreateFolders(TuiBase):
 
             await pilot.pause()
 
+    @pytest.mark.skipif(HAS_GUI is False, reason="Requires system has GUI.")
     @pytest.mark.asyncio
     async def test_create_folders_directorytree_clipboard(
         self, setup_project_paths
@@ -447,12 +454,7 @@ class TestTuiCreateFolders(TuiBase):
                 press_string="ctrl+q",
             )
 
-            try:
-                pasted_path = pyperclip.paste()
-            except:
-                # skip test, no GUI installed
-                await pilot.pause()
-                return
+            pasted_path = pyperclip.paste()
 
             assert (
                 pasted_path
