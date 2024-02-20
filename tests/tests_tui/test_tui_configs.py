@@ -3,27 +3,6 @@ from pathlib import Path
 
 import pytest
 import test_utils
-
-# https://stackoverflow.com/questions/55893235/pytest-skips-test-saying-asyncio-not
-# -installed add to configs
-# TODO: do we need to show anything when create folders is clicked?
-# TODO: carefully check configs tests after refactor!
-# TODO: need to allow name templates to be sub oR ses
-# TODO: add green to light mode css
-# TODO: could do CTRL+D to input to delete all content .
-# test mainmenu button
-# test with ssh
-# test without ssh
-# test bad ssh
-# test some configs errors
-# TODO: ssh setup not tested, need images!
-# test all create files at once
-# test all keyboard shortcuts
-# test template validation settings etc.
-# Settings
-# Light / Dark mode
-# DirectoryTree Setting
-# TODO: don't bother testing tree highlgihting yet.
 from tui_base import TuiBase
 
 from datashuttle import DataShuttle
@@ -36,6 +15,10 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 class TestTuiConfigs(TuiBase):
 
+    # -------------------------------------------------------------------------
+    # Test New Project Configs
+    # -------------------------------------------------------------------------
+
     @pytest.mark.asyncio
     @pytest.mark.parametrize("kwargs_set", [1, 2])
     async def test_make_new_project_configs(
@@ -45,8 +28,9 @@ class TestTuiConfigs(TuiBase):
     ):
         """
         Check the ConfigsContent when making a new project. This contains
-        many widgets shared with the ConfigsContent on the tab page, however also
-        includes an additional information banner and input for the project name.
+        many widgets shared with the ConfigsContent on the tab page, however
+        also includes an additional information banner and input for the
+        project name.
 
         Here check these widgets are display correctly, and fill them. Next
         check the config widgets are empty, then fill the widgets, save,
@@ -87,14 +71,15 @@ class TestTuiConfigs(TuiBase):
         app = TuiApp()
         async with app.run_test() as pilot:
 
-            # Select a new project, check NewProjectScreen is displayed correctly.
+            # Select a new project, check NewProjectScreen is
+            # displayed correctly.
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_new_project_button"
             )
 
-            # Get the ConfigsContent and check all configs are displayed correctly.
-            # `check_new_project_configs` checks empty defaults are displayed,
-            # then updates with the kwargs and checks.
+            # Get the ConfigsContent and check all configs are displayed
+            # correctly. `check_new_project_configs` checks empty defaults
+            # are displayed, then updates with the kwargs and checks.
             configs_content = pilot.app.screen.query_one(
                 "#new_project_configs_content"
             )
@@ -110,16 +95,18 @@ class TestTuiConfigs(TuiBase):
             )
 
             # if SSH is set, then the config window remains up and the
-            # 'setup ssh' button is enabled. Otherwise, the screen will automatically
-            # move to the project page.
+            # 'setup ssh' button is enabled. Otherwise, the screen
+            # will automatically move to the project page.
             if kwargs["connection_method"] == "ssh":
                 assert (
                     pilot.app.screen.query_one(
                         "#messagebox_message_label"
                     ).renderable._text[0]
-                    == "A DataShuttle project has now been created.\n\n Next, setup the SSH connection. "
-                    "Once complete, navigate to the 'Main Menu' and proceed to the project page, "
-                    "where you will be able to create and transfer project folders."
+                    == "A DataShuttle project has now been created.\n\n Next, "
+                    "setup the SSH connection. Once complete, navigate to "
+                    "the 'Main Menu' and proceed to the project page, "
+                    "where you will be able to create and transfer "
+                    "project folders."
                 )
                 await self.close_messagebox(pilot)
                 assert (
@@ -134,9 +121,9 @@ class TestTuiConfigs(TuiBase):
                     pilot.app.screen.query_one(
                         "#messagebox_message_label"
                     ).renderable._text[0]
-                    == "A DataShuttle project has now been created.\n\n Click 'OK' to "
-                    "proceed to the project page, where you will be able to create and "
-                    "transfer project folders."
+                    == "A DataShuttle project has now been created.\n\n "
+                    "Click 'OK' to proceed to the project page, where you "
+                    "will be able to create and transfer project folders."
                 )
                 await self.close_messagebox(pilot)
                 assert isinstance(pilot.app.screen, ProjectManagerScreen)
@@ -157,37 +144,123 @@ class TestTuiConfigs(TuiBase):
 
             await pilot.pause()
 
-    async def check_new_project_configs(
-        self, pilot, project_name, configs_content, kwargs
+    # -------------------------------------------------------------------------
+    # Test Existing Project Configs
+    # -------------------------------------------------------------------------
+
+    @pytest.mark.asyncio
+    async def test_update_config_on_project_manager_screen(
+        self, setup_project_paths
     ):
         """
-        Check the configs displayed on the TUI match those found in `kwargs`.
-        Also, check the widgets unique to ConfigsContent on the configs selection
-        for a new project.
+        Test the ConfigsContent on the project manager tab screen.
+        The project is set up in the fixture, navigate to the project page.
+        Check that the default configs are displayed. Change all the configs,
+        save, and check these are updated on the config file and on the
+        `project` stored in `interface`.
+
+        Next, exit out of the project with the "Main Menu" button, go back
+        into the project and check the new configs are displayed.
         """
-        # Project Name --------------------------------------------------------
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
-        await self.fill_input(pilot, "#configs_name_input", project_name)
-        assert (
-            configs_content.query_one("#configs_name_input").value
-            == project_name
-        )
+        app = TuiApp()
+        async with app.run_test() as pilot:
 
-        # Shared Config Widgets -----------------------------------------------
+            # Navigate to the existing project and click onto the
+            # configs tab.
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
 
-        default_kwargs = {
-            "local_path": "",
-            "central_path": "",
-            "connection_method": "local_filesystem",
-            "overwrite_old_files": False,
-        }
-        await self.check_configs_widgets_match_configs(
-            configs_content, default_kwargs
-        )
-        await self.set_configs_content_widgets(pilot, configs_content, kwargs)
-        await self.check_configs_widgets_match_configs(configs_content, kwargs)
+            await self.switch_tab(pilot, "configs")
 
-        await pilot.pause()
+            configs_content = pilot.app.screen.query_one(
+                "#tabscreen_configs_content"
+            )
+
+            # Now get the default datashuttle configs, and check they match
+            # those displayed on the ConfigsContent.
+            project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
+            project_cfg.convert_str_and_pathlib_paths(
+                project_cfg, "path_to_str"
+            )
+
+            await self.check_configs_widgets_match_configs(
+                configs_content, project_cfg
+            )
+
+            # Now we make some new settings, and set the ConfigsContent.
+            # Make sure they are all different to the existing configs,
+            # then save and check the configs on the DataShuttle instance
+            # and file are updated.
+            local_path = tmp_path / f"some-random-path/{project_name}"
+            central_path = tmp_path / f"some-random-path2/{project_name}"
+
+            local_path.mkdir(parents=True)
+            central_path.mkdir(parents=True)
+
+            new_kwargs = {
+                "local_path": local_path.as_posix(),
+                "central_path": central_path.as_posix(),
+                "connection_method": "ssh",
+                "central_host_id": "random_host",
+                "central_host_username": "random_username",
+                "overwrite_old_files": True,
+            }
+
+            for key in new_kwargs.keys():
+                # The purpose is to update to completely new configs
+                assert new_kwargs[key] != project_cfg[key]
+
+            await self.set_configs_content_widgets(
+                pilot, configs_content, new_kwargs
+            )
+
+            await self.check_configs_widgets_match_configs(
+                configs_content, new_kwargs
+            )
+
+            await self.scroll_to_click_pause(
+                pilot,
+                "#configs_save_configs_button",
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#messagebox_message_label"
+                ).renderable._text[0]
+                == "Configs saved."
+            )
+            await self.close_messagebox(pilot)
+
+            test_utils.check_configs(
+                pilot.app.screen.interface.project,
+                new_kwargs,
+                tmp_config_path / project_name / "config.yaml",
+            )
+
+            # Finally, use "Main Menu" button to go back to the home screen,
+            # navigate back to the project and check the new configs are now
+            # displayed.
+            await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
+            assert pilot.app.screen.id == "_default"
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+            configs_content = pilot.app.screen.query_one(
+                "#tabscreen_configs_content"
+            )
+            await self.check_configs_widgets_match_configs(
+                configs_content, new_kwargs
+            )
+
+            await pilot.pause()
+
+    # -------------------------------------------------------------------------
+    # Test the config page widgets
+    # -------------------------------------------------------------------------
 
     @pytest.mark.asyncio
     async def test_configs_select_path(self, monkeypatch):
@@ -263,116 +336,6 @@ class TestTuiConfigs(TuiBase):
 
             assert local_path_button.disabled is False
             assert central_path_button.disabled is True
-
-            await pilot.pause()
-
-    @pytest.mark.asyncio
-    async def test_update_config_on_project_manager_screen(
-        self, setup_project_paths
-    ):
-        """
-        Test the ConfigsContent on the project manager tab screen.
-        The project is set up in the fixture, navigate to the project page.
-        Check that the default configs are displayed. Change all the configs,
-        save, and check these are updated on the config file and on the
-        `project` stored in `interface`.
-
-        Next, exit out of the project with the "Main Menu" button, go back
-        into the project and check the new configs are displayed.
-        """
-        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
-
-        app = TuiApp()
-        async with app.run_test() as pilot:
-
-            # Navigate to the existing project and click onto the
-            # configs tab.
-            await self.check_and_click_onto_existing_project(
-                pilot, project_name
-            )
-
-            await self.switch_tab(pilot, "configs")
-
-            configs_content = pilot.app.screen.query_one(
-                "#tabscreen_configs_content"
-            )
-
-            # Now get the default datashuttle configs, and check they match
-            # those displayed on the ConfigsContent.
-            project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
-            project_cfg.convert_str_and_pathlib_paths(
-                project_cfg, "path_to_str"
-            )  # TODO: this syntax is so weird.
-
-            await self.check_configs_widgets_match_configs(
-                configs_content, project_cfg
-            )
-
-            # Now we make some new settings, and set the ConfigsContent.
-            # Make sure they are all different to the existing configs,
-            # then save and check the configs on the DataShuttle instance
-            # and file are updated.
-            local_path = tmp_path / f"some-random-path/{project_name}"
-            central_path = tmp_path / f"some-random-path2/{project_name}"
-
-            local_path.mkdir(parents=True)
-            central_path.mkdir(parents=True)
-
-            new_kwargs = {
-                "local_path": local_path.as_posix(),
-                "central_path": central_path.as_posix(),
-                "connection_method": "ssh",
-                "central_host_id": "random_host",
-                "central_host_username": "random_username",
-                "overwrite_old_files": True,
-            }
-
-            for key in new_kwargs.keys():
-                # The purpose is to update to completely new configs
-                assert new_kwargs[key] != project_cfg[key]
-
-            await self.set_configs_content_widgets(
-                pilot, configs_content, new_kwargs
-            )
-
-            await self.check_configs_widgets_match_configs(
-                configs_content, new_kwargs
-            )
-
-            await self.scroll_to_click_pause(
-                pilot,
-                "#configs_save_configs_button",
-            )
-            assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable._text[0]
-                == "Configs saved."
-            )
-            await self.close_messagebox(pilot)
-
-            test_utils.check_configs(
-                pilot.app.screen.interface.project,
-                new_kwargs,
-                tmp_config_path / project_name / "config.yaml",
-            )
-
-            # Finally, use "Main Menu" button to go back to the home screen,
-            # navigate back to the project and check the new configs are now
-            # displayed.
-            await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
-            assert pilot.app.screen.id == "_default"
-
-            await self.check_and_click_onto_existing_project(
-                pilot, project_name
-            )
-            await self.switch_tab(pilot, "transfer")
-            configs_content = pilot.app.screen.query_one(
-                "#tabscreen_configs_content"
-            )
-            await self.check_configs_widgets_match_configs(
-                configs_content, new_kwargs
-            )
 
             await pilot.pause()
 
@@ -525,3 +488,35 @@ class TestTuiConfigs(TuiBase):
                 pilot,
                 "#configs_overwrite_files_checkbox",
             )
+
+    async def check_new_project_configs(
+        self, pilot, project_name, configs_content, kwargs
+    ):
+        """
+        Check the configs displayed on the TUI match those found in `kwargs`.
+        Also, check the widgets unique to ConfigsContent on the
+        configs selection for a new project.
+        """
+        # Project Name --------------------------------------------------------
+
+        await self.fill_input(pilot, "#configs_name_input", project_name)
+        assert (
+            configs_content.query_one("#configs_name_input").value
+            == project_name
+        )
+
+        # Shared Config Widgets -----------------------------------------------
+
+        default_kwargs = {
+            "local_path": "",
+            "central_path": "",
+            "connection_method": "local_filesystem",
+            "overwrite_old_files": False,
+        }
+        await self.check_configs_widgets_match_configs(
+            configs_content, default_kwargs
+        )
+        await self.set_configs_content_widgets(pilot, configs_content, kwargs)
+        await self.check_configs_widgets_match_configs(configs_content, kwargs)
+
+        await pilot.pause()

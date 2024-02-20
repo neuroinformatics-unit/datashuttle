@@ -13,7 +13,10 @@ from datashuttle.tui.screens.new_project import NewProjectScreen
 
 class TestTuiWidgets(TuiBase):
     """
-    Explain logic of this class...
+    This class performs fundamental checks on the default display
+    of widgets and that changing widgets properly change underlying
+    configs. This does not perform any functional tests e.g.
+    creation of configs of new files.
     """
 
     # -------------------------------------------------------------------------
@@ -22,7 +25,9 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_new_project_configs(self, empty_project_paths):
-
+        """
+        Test all widgets display as expected on the New Project configs page.
+        """
         app = TuiApp()
         async with app.run_test() as pilot:
 
@@ -244,6 +249,11 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_existing_project_configs(self, setup_project_paths):
+        """
+        Because the underlying screen is shared between new and existing
+        project configs, in the existing project configs just check
+        widgets are hidden as expected.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -277,7 +287,10 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_create_folders_widgets_display(self, setup_project_paths):
-        """"""
+        """
+        Test all widgets on the 'Create' tab of the project manager screen
+        are displayed as expected.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -366,6 +379,10 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_create_folder_settings_widgets(self, setup_project_paths):
+        """
+        Test the widgets in the 'Settings' menu of the project
+        manager's 'Create' tab.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -479,7 +496,12 @@ class TestTuiWidgets(TuiBase):
     async def test_name_templates_widgets_and_settings(
         self, setup_project_paths
     ):
-
+        """
+        Check the 'Name Templates' section of the 'Create' tab 'Settings
+        page. Here both subject and session configs share the same
+        input, so ensure these are mapped correctly by the radiobutton setting,
+        and that the underlying configs are set correctly.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         sub_regexp = "sub-\d\d\d"
@@ -594,8 +616,8 @@ class TestTuiWidgets(TuiBase):
                 == expected_template
             )
 
-            # Refresh the project and do a final check all settings have persisted and
-            # are updated correctly on the TUI.
+            # Refresh the project and do a final check all settings have
+            # persisted and are updated correctly on the TUI.
             await self.exit_to_main_menu_and_reeneter_project_manager(
                 pilot, project_name
             )
@@ -637,6 +659,10 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_bypass_validation_settings(self, setup_project_paths):
+        """
+        Test all configs that underly the 'bypass validation'
+        setting are updated correctly by the widget.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -700,6 +726,10 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_all_top_level_folder_selects(self, setup_project_paths):
+        """
+        Test all 'top level folder' selects (in Create and Transfer tabs)
+        update the underlying configs correctly.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -747,8 +777,8 @@ class TestTuiWidgets(TuiBase):
                 move_to_position=5,
             )
 
-            # Move to transfer tab top level folder option, perform the same actions,
-            # checking create settings toplevel select is not changed
+            # Move to transfer tab top level folder option, perform the same
+            # actions, checking create settings toplevel select is not changed
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_close_button"
             )
@@ -791,7 +821,8 @@ class TestTuiWidgets(TuiBase):
                 move_to_position=5,
             )
 
-            # Now go back to main menu, go back and check all are as expected and switch back to original value for good measure.
+            # Now go back to main menu, go back and check all are as expected
+            # and switch back to original value for good measure.
             await self.exit_to_main_menu_and_reeneter_project_manager(
                 pilot, project_name
             )
@@ -891,7 +922,13 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_all_checkboxes(self, setup_project_paths):
-        """"""
+        """
+        Check all datatype checkboxes (Create and Transfer tab)
+        correctly update the underlying configs. These are tested
+        together to ensure there are no strange interaction between
+        these as they both share stored in the project's 'tui'
+        persistent settings.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -901,9 +938,7 @@ class TestTuiWidgets(TuiBase):
                 pilot, project_name
             )
 
-            await self.turn_off_all_datatype_checkboxes(
-                pilot
-            )  # TODO: this is only for create
+            await self.turn_off_all_datatype_checkboxes(pilot)
 
             # Cycle through all checkboxes, turning on sequentially and
             # checking all configs are correct.
@@ -918,8 +953,9 @@ class TestTuiWidgets(TuiBase):
                     pilot, "create", expected_create
                 )
 
-            # Now turn off an arbitrary subset so they are not longer all on (which is default).
-            # Reload the screen, and check the checkboxes are still correct.
+            # Now turn off an arbitrary subset so they are not longer all on
+            # (which is default). Reload the screen, and check the checkboxes
+            # are still correct.
             await self.change_checkbox(pilot, "#create_ephys_checkbox")
             await self.change_checkbox(pilot, "#create_anat_checkbox")
             expected_create = test_utils.get_all_folders_used(value=False)
@@ -932,7 +968,8 @@ class TestTuiWidgets(TuiBase):
             self.check_datatype_checkboxes(pilot, "create", expected_create)
 
             # Now we got to custom transfer checkboxes and do the same.
-            # These are done in the same test to check they don't interact in a weird way.
+            # These are done in the same test to check they don't
+            # interact in a weird way.
             await self.switch_tab(pilot, "transfer")
             await self.scroll_to_click_pause(
                 pilot, "#transfer_custom_radiobutton"
@@ -1052,7 +1089,8 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#transfer_all_label"
                 ).renderable._text[0]
-                == "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred."
+                == "All data from: \n\n - Rawdata \n - "
+                "Derivatives \n\nwill be transferred."
             )
 
             # upload / download widget

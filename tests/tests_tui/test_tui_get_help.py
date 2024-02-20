@@ -5,6 +5,10 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestTuiSettings(TuiBase):
+    """
+    Test that the 'Get Help' page from the main menu.
+    Open it, check the expected label is displayed, close it.
+    """
 
     @pytest.mark.asyncio
     async def test_light_dark_mode(self, empty_project_paths):

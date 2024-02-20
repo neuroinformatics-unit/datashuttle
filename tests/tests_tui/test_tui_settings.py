@@ -5,10 +5,17 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestTuiSettings(TuiBase):
+    """
+    Test the 'Settings' screen accessible from the Main Menu.
+    """
 
     @pytest.mark.asyncio
     async def test_light_dark_mode(self, empty_project_paths):
-
+        """
+        Check the light / dark mode switch which is stored
+        in the global tui settings. Global refers to set
+        across all projects not related to a specific project.
+        """
         app = TuiApp()
         async with app.run_test() as pilot:
 
@@ -16,16 +23,17 @@ class TestTuiSettings(TuiBase):
                 pilot, "#mainwindow_settings_button"
             )
 
+            # Check default is dark mode, switch to light mode
             assert pilot.app.dark is True
             assert pilot.app.load_global_settings()["dark_mode"] is True
 
             await self.scroll_to_click_pause(
                 pilot, "#settings_screen_light_mode_radiobutton"
             )
-
             assert pilot.app.dark is False
             assert pilot.app.load_global_settings()["dark_mode"] is False
 
+            # Switch back to dark mode
             await self.scroll_to_click_pause(
                 pilot, "#settings_screen_dark_mode_radiobutton"
             )
@@ -37,12 +45,20 @@ class TestTuiSettings(TuiBase):
 
     @pytest.mark.asyncio
     async def test_show_transfer_tree_status(self, setup_project_paths):
-        # doesn't actually test coloring. non-critical
+        """
+        Check the 'show transfer tree' option that turns off transfer
+        tree styling by default has the intended effects. It is
+        difficult to test whether the tree is actually styled, so
+        here all underlying configs + the transfer tree legend
+        display is checked.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test() as pilot:
 
+            # First check the show transfer tree styling is off
+            # in the project manager tab and legend does not exist.
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -64,6 +80,7 @@ class TestTuiSettings(TuiBase):
             assert "No nodes match <DOMQuery query" in str(e)
             await pilot.pause()
 
+            # Go to the settings page and turn on transfer tree styling.
             await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
 
             await self.scroll_to_click_pause(
@@ -78,6 +95,8 @@ class TestTuiSettings(TuiBase):
                 pilot, "#generic_screen_close_button"
             )
 
+            # Go back to the project manager screen and now
+            # check everything is switched on.
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )

@@ -8,6 +8,10 @@ from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
 
 
 class TuiBase:
+    """
+    Contains fixtuers and helper functions for TUI tests.
+    """
+
     @pytest_asyncio.fixture(scope="function")
     async def empty_project_paths(self, tmp_path_factory, monkeypatch):
         """
@@ -76,6 +80,9 @@ class TuiBase:
         )
 
     async def fill_input(self, pilot, id, value):
+        """
+        Fill and input of `id` with `value`.
+        """
         await self.scroll_to_click_pause(pilot, id)
         pilot.app.screen.query_one(id).value = ""
         await pilot.press(*value)
@@ -84,7 +91,10 @@ class TuiBase:
     async def setup_existing_project_create_tab_filled_sub_and_ses(
         self, pilot, project_name, create_folders=False
     ):
-        """"""
+        """
+        Set up an existing project and switch to the 'Create' tab
+        on the project manager screen.
+        """
         await self.check_and_click_onto_existing_project(pilot, project_name)
 
         await self.fill_input(
@@ -100,12 +110,18 @@ class TuiBase:
             )
 
     async def double_click(self, pilot, id, control=False):
+        """
+        Double-click on a widget of `id`, if `control` is `True` the
+        control modifier key will be used.
+        """
         for _ in range(2):
             await self.scroll_to_click_pause(pilot, id, control=control)
 
     async def reload_tree_nodes(self, pilot, id, num_nodes):
         """
-        Not sure why this is necsaey
+        For some reason, for TUI tree nodes to register in the
+        test environment all need to have `reload_node` called on
+        the node.
         """
         for node in range(num_nodes):
             await pilot.app.screen.query_one(id).reload_node(
@@ -114,10 +130,16 @@ class TuiBase:
             await pilot.pause()
 
     async def hover_and_press_tree(self, pilot, id, hover_line, press_string):
+        """
+        Hover over a directorytree at a node-line and press a specific string
+        """
         pilot.app.screen.query_one(id).hover_line = hover_line
         await self.press_tree(pilot, id, press_string)
 
     async def press_tree(self, pilot, id, press_string):
+        """
+        Click on a tree to give it focus and press buttons
+        """
         await self.scroll_to_click_pause(pilot, id)
         await pilot.press(press_string)
         await pilot.pause()
@@ -195,16 +217,29 @@ class TuiBase:
     async def exit_to_main_menu_and_reeneter_project_manager(
         self, pilot, project_name
     ):
+        """
+        Exist from the project manager screen, then re-enter back
+        into the project. This refreshes the screen and is important in
+        testing state is preserved across re-loading.
+        """
         await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
         assert pilot.app.screen.id == "_default"
         await self.check_and_click_onto_existing_project(pilot, project_name)
 
     async def close_messagebox(self, pilot):
-        # for some reason clicking does not work...
+        """
+        Close a messageobox, for some reason clicking the 'OK'
+        button does not work.
+        """
         pilot.app.screen.on_button_pressed()
         await pilot.pause()
 
     async def move_select_to_position(self, pilot, id, position):
+        """
+        Move a select widget to a specific position (e.g. "rawdata"
+        or "derivatives" select). The position can be determined
+        by trial and error.
+        """
         await pilot.click(id)
         await pilot.click(id, offset=(2, position))
         await pilot.pause()

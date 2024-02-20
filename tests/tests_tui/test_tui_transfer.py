@@ -6,6 +6,11 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestTuiTransfer(TuiBase):
+    """
+    Test transferring through the TUI (entire project, top
+    level only or custom). This class leverages the underlying
+    test utils that check API transfers.
+    """
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.asyncio
