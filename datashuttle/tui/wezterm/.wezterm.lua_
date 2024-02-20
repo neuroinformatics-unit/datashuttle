@@ -1,0 +1,21 @@
+-- Pull in the wezterm API
+local wezterm = require 'wezterm'
+
+return {
+    color_scheme = 'Catppuccin Mocha',
+    font = wezterm.font('Iosevka NF', {weight = 'Light',}),
+      window_padding = {
+        left = 0,
+        right = 0,
+        top = 0,
+        bottom = 0,
+      },
+    set_environment_variables = {
+        EDITOR='nvim',
+
+        PATH = 'C:/some/pathA;'
+            .. os.getenv('PATH')
+
+
+    },
+}
