@@ -16,15 +16,15 @@ if platform == "win32":  # TODO: really, all windows?
     font_line = font = (
         """font = wezterm.font({family = "Cascadia Mono", weight="DemiLight" }),"""
     )
-    path_to_wezterm = "wezterm/_vendored/windows/wezterm.exe"
+    path_to_wezterm = "_vendored/wezterm/windows/wezterm.exe"
 elif platform == "darwin":
     default_prog_line = (
-        "default_prog = { 'bash', '-l', '-c', 'conda activate " + f"{my_env['CONDA_DEFAULT_ENV']}" + " && python " + f"{dir_path}" + "/app.py' },")
+        "default_prog = { 'bash', '-l', '-c', 'conda activate " + f"{my_env['CONDA_DEFAULT_ENV']}" + " && python " + f"{dir_path}" + "/tui/app.py' },")
     font_line = ""
-    path_to_wezterm = "wezterm/_vendored/macos/WezTerm.app"
+    path_to_wezterm = "_vendored/wezterm/macos/WezTerm.app"
 else:
     default_prog_line = (
-        "default_prog = { 'bash', '-i', '-c', 'source activate && conda activate " + f"{my_env['CONDA_DEFAULT_ENV']}" + " && python " + f"{dir_path}" + "/app.py' },")
+        "default_prog = { 'bash', '-i', '-c', 'source activate && conda activate " + f"{my_env['CONDA_DEFAULT_ENV']}" + " && python " + f"{dir_path}" + "/tui/app.py' },")
     font_line = ""
 
 my_str = """ """
@@ -56,19 +56,19 @@ return {
 """
 )
 
-with open(f"{dir_path}/wezterm/.wezterm.lua", "w") as text_file:
+with open(f"{dir_path}/_vendored/wezterm/.wezterm.lua", "w") as text_file:
     text_file.write(message)
 
-my_env["WEZTERM_CONFIG_FILE"] = f"{dir_path}/wezterm/.wezterm.lua"
+my_env["WEZTERM_CONFIG_FILE"] = f"{dir_path}/_vendored/wezterm/.wezterm.lua"
 my_env["CONDA_AUTO_ACTIVATE_BASE"] = "true"
 
 print(f"{dir_path}/{path_to_wezterm}")
 if platform == "darwin":
     subprocess.Popen(["open", f"{dir_path}/{path_to_wezterm}"], env=my_env)  # TODO: don't need `path_to_wezterm` anymore.
 elif platform == "win32":
-    subprocess.Popen(f"{dir_path}/{path_to_wezterm}  start conda activate {my_env['CONDA_DEFAULT_ENV']} && python {dir_path}/app.py", env=my_env)
+    subprocess.Popen(f"{dir_path}/{path_to_wezterm}  start conda activate {my_env['CONDA_DEFAULT_ENV']} && python {dir_path}/tui/app.py", env=my_env)
 else:
-    subprocess.Popen(f"chmod +x {dir_path}/wezterm/_vendored/linux/wezterm.AppImage")
-    subprocess.Popen([f"{dir_path}/wezterm/_vendored/linux/wezterm.AppImage"], env=my_env)
+    subprocess.Popen(f"chmod +x {dir_path}/_vendored/wezterm/linux/wezterm.AppImage")
+    subprocess.Popen([f"{dir_path}/_vendored/wezterm/linux/wezterm.AppImage"], env=my_env)
 
 # fmt: on
