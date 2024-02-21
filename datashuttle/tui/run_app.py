@@ -2,6 +2,7 @@ import os
 import subprocess
 from pathlib import Path
 from sys import platform
+
 # fmt: off
 
 dir_path = Path(os.path.dirname(os.path.realpath(__file__))).as_posix()
@@ -45,7 +46,7 @@ local wezterm = require 'wezterm'
 
 return {
      exit_behavior = "Hold",
-     font_size = 12.0, 
+     font_size = 12.0,
      """ + default_prog_line + """
      set_environment_variables = { """
     + my_str

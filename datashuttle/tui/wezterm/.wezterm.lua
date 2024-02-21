@@ -4,9 +4,9 @@ local wezterm = require 'wezterm'
 
 return {
      exit_behavior = "Hold",
-     font_size = 12.0, 
+     font_size = 12.0,
      default_prog = { 'bash', '-i', '-c', 'source activate && conda activate datashuttle10 && python /home/joe/git-repos/datashuttle/datashuttle/tui/app.py' },
-     set_environment_variables = {  
+     set_environment_variables = {
             CONDA_EXE='/home/joe/programs/miniconda3/bin/conda',
             CONDA_PREFIX='/home/joe/programs/miniconda3/envs/datashuttle10',
             CONDA_PROMPT_MODIFIER='(datashuttle10) ',
