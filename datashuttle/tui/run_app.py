@@ -2,43 +2,36 @@ import os
 import subprocess
 from pathlib import Path
 from sys import platform
+# fmt: off
 
 dir_path = Path(os.path.dirname(os.path.realpath(__file__))).as_posix()
 
 my_env = os.environ.copy()
 
 # TODO: deal with font size
-if platform == "windows":
-    default_prog_line = ""
+
+if platform == "win32":  # TODO: really, all windows?
+    default_prog_line = ""# default_prog = { 'conda activate datashuttle_conda' }," #  && python " + f"{dir_path}" + "/app.py' },"
     font_line = font = (
-        """wezterm.font({family = "Cascadia Mono", weight="DemiLight" }),"""
+        """font = wezterm.font({family = "Cascadia Mono", weight="DemiLight" }),"""
     )
+    path_to_wezterm = "wezterm/_vendored/windows/wezterm.exe"
 elif platform == "darwin":
     default_prog_line = (
-        "default_prog = { 'bash', '-l', '-c', 'conda activate datashuttle && python "
-        + f"{dir_path}"
-        + "/app.py' },"
-    )
+        "default_prog = { 'bash', '-l', '-c', 'conda activate " + f"{}" + " && python " + f"{dir_path}" + "/app.py' },")
     font_line = ""
+    path_to_wezterm = "wezterm/_vendored/macos/WezTerm.app"
 else:
     default_prog_line = ""
     font_line = ""
 
 my_str = """ """
 for key, value in os.environ.items():
-    if "(" in key:  # "CONDA" in key or key == "PATH":
+    if "CONDA" in key or key == "PATH":  # "(" not in key:  #  !! was in!
         my_str += f"""
             {key}='{Path(value).as_posix()}',"""
 
 #      font = wezterm.font({family = "Cascadia Mono", weight="DemiLight" }),
-default_prog = (
-    {
-        "zsh",
-        "-l",
-        "-c",
-        "conda activate datashuttle && python /Users/joeziminski/git_repos/datashuttle/datashuttle/tui/app.py",
-    },
-)
 
 #     exit_behavior = "Hold"
 #      default_prog = { 'zsh', '-l', '-c', 'source activate datashuttle && conda activate datashuttle && python /Users/joeziminski/git_repos/datashuttle/datashuttle/tui/app.py' },,
@@ -51,12 +44,6 @@ local wezterm = require 'wezterm'
 
 return {
      font_size = 14.0,
-     """
-    + default_prog_line
-    + """
-     """
-    + font_line
-    + """
      set_environment_variables = { """
     + my_str
     + """
@@ -70,4 +57,10 @@ with open(f"{dir_path}/wezterm/.wezterm.lua", "w") as text_file:
 
 my_env["WEZTERM_CONFIG_FILE"] = f"{dir_path}/wezterm/.wezterm.lua"
 my_env["CONDA_AUTO_ACTIVATE_BASE"] = "true"
-subprocess.Popen(["open", f"{dir_path}/wezterm/WezTerm.app"], env=my_env)
+
+if platform == "darwin":
+    subprocess.Popen(["open", f"{dir_path}/{path_to_wezterm}"], env=my_env)  # TODO: don't need `path_to_wezterm` anymore.
+elif platform == "win32":
+    subprocess.Popen(f"{dir_path}/{path_to_wezterm}  start conda activate {my_env['CONDA_DEFAULT_ENV']} && python {dir_path}/app.py", env=my_env)
+
+# fmt: on
