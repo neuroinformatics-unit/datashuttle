@@ -18,11 +18,12 @@ if platform == "win32":  # TODO: really, all windows?
     path_to_wezterm = "wezterm/_vendored/windows/wezterm.exe"
 elif platform == "darwin":
     default_prog_line = (
-        "default_prog = { 'bash', '-l', '-c', 'conda activate " + f"{}" + " && python " + f"{dir_path}" + "/app.py' },")
+        "default_prog = { 'bash', '-l', '-c', 'conda activate " + f"{my_env['CONDA_DEFAULT_ENV']}" + " && python " + f"{dir_path}" + "/app.py' },")
     font_line = ""
     path_to_wezterm = "wezterm/_vendored/macos/WezTerm.app"
 else:
-    default_prog_line = ""
+    default_prog_line = (
+        "default_prog = { 'bash', '-i', '-c', 'source activate && conda activate " + f"{my_env['CONDA_DEFAULT_ENV']}" + " && python " + f"{dir_path}" + "/app.py' },")
     font_line = ""
 
 my_str = """ """
@@ -43,7 +44,9 @@ message = (
 local wezterm = require 'wezterm'
 
 return {
-     font_size = 14.0,
+     exit_behavior = "Hold",
+     font_size = 12.0, 
+     """ + default_prog_line + """
      set_environment_variables = { """
     + my_str
     + """
@@ -62,5 +65,8 @@ if platform == "darwin":
     subprocess.Popen(["open", f"{dir_path}/{path_to_wezterm}"], env=my_env)  # TODO: don't need `path_to_wezterm` anymore.
 elif platform == "win32":
     subprocess.Popen(f"{dir_path}/{path_to_wezterm}  start conda activate {my_env['CONDA_DEFAULT_ENV']} && python {dir_path}/app.py", env=my_env)
+else:
+    subprocess.run(f"chmod +x {dir_path}/wezterm/_vendored/linux/wezterm.AppImage")
+    subprocess.run([f"{dir_path}/wezterm/_vendored/linux/wezterm.AppImage"], env=my_env)
 
 # fmt: on
