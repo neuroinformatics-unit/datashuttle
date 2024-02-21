@@ -62,12 +62,13 @@ with open(f"{dir_path}/wezterm/.wezterm.lua", "w") as text_file:
 my_env["WEZTERM_CONFIG_FILE"] = f"{dir_path}/wezterm/.wezterm.lua"
 my_env["CONDA_AUTO_ACTIVATE_BASE"] = "true"
 
+print(f"{dir_path}/{path_to_wezterm}")
 if platform == "darwin":
     subprocess.Popen(["open", f"{dir_path}/{path_to_wezterm}"], env=my_env)  # TODO: don't need `path_to_wezterm` anymore.
 elif platform == "win32":
     subprocess.Popen(f"{dir_path}/{path_to_wezterm}  start conda activate {my_env['CONDA_DEFAULT_ENV']} && python {dir_path}/app.py", env=my_env)
 else:
-    subprocess.run(f"chmod +x {dir_path}/wezterm/_vendored/linux/wezterm.AppImage")
-    subprocess.run([f"{dir_path}/wezterm/_vendored/linux/wezterm.AppImage"], env=my_env)
+    subprocess.Popen(f"chmod +x {dir_path}/wezterm/_vendored/linux/wezterm.AppImage")
+    subprocess.Popen([f"{dir_path}/wezterm/_vendored/linux/wezterm.AppImage"], env=my_env)
 
 # fmt: on
