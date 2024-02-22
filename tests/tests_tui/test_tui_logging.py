@@ -27,7 +27,7 @@ class TestTuiLogging(TuiBase):
             # update-config-file log here. Not sure why, it's not
             # been seen to occur outside and CI and happens randomly
             # across builds in CI.
-            for file in project.get_logging_path.glob("*.log"):
+            for file in project.get_logging_path().glob("*.log"):
                 file.unlink()
 
             project.update_config_file(overwrite_old_files=True)
