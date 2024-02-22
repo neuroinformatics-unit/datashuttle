@@ -125,12 +125,10 @@ class TestValidationUnit:
             with pytest.raises(BaseException) as e:
                 validation.validate_list_of_names(all_names, f"{prefix}")
 
-            try:
-                assert error_message(bad_names) in str(
-                    e.value
-                ), f"failed: {all_names}"
-            except:
-                breakpoint()
+            assert error_message(bad_names) in str(
+                e.value
+            ), f"failed: {all_names}"
+
         # check these don't raise
         all_names = [f"{prefix}-001_hello-world_one-hundred"]
         validation.validate_list_of_names(all_names, f"{prefix}")

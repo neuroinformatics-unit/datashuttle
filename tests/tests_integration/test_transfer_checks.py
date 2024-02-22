@@ -91,10 +91,7 @@ class TestTransferChecks(BaseTest):
 
             for results_type, results_paths in results.items():
                 if results_type == type_:
-                    try:
-                        assert path_ in results_paths
-                    except:
-                        breakpoint()
+                    assert path_ in results_paths
                 else:
                     assert path_ not in results_paths
 

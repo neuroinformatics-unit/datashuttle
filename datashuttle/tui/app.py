@@ -167,5 +167,6 @@ class TuiApp(App):
 def main():
     TuiApp().run()
 
+
 if __name__ == "__main__":
     main()

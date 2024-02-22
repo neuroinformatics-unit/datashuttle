@@ -105,7 +105,7 @@ class DataShuttle:
         )
         self.cfg: Any = None
 
-        self.cfg = load_configs.make_config_file_attempt_load(
+        self.cfg = load_configs.attempt_load_configs(
             self.project_name, self._config_path
         )
 
@@ -1220,8 +1220,7 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        if not self.cfg.project_metadata_path.is_dir():
-            folders.create_folders(self.cfg.project_metadata_path, log=False)
+        folders.create_folders(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_central_ssh_config(self, log: bool) -> None:
         rclone.setup_rclone_config_for_ssh(
