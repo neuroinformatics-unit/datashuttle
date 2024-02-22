@@ -5,7 +5,6 @@ import glob
 import json
 import os
 import shutil
-import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
@@ -702,12 +701,10 @@ class DataShuttle:
         )
 
         if self._config_path.is_file():
-            warnings.warn(
-                "A config file already exists. This function will completely"
-                "overwrite the existing config file, and any arguments not"
-                "passed to `make-config-file` will be set to the function "
-                "defaults. "
-                "Use `update-config-file` to selectively update settings."
+            utils.log_and_raise_error(
+                "A config file already exists for this project. "
+                "Use `update_config_file` to update settings.",
+                RuntimeError,
             )
 
         cfg = Configs(
