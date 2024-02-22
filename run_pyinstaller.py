@@ -1,5 +1,5 @@
-import subprocess
 import os
+import subprocess
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 path_to_spec = f"{dir_path}/windows_spec.spec"

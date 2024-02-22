@@ -1395,7 +1395,7 @@ if __name__ == "main":
             """
         -- Pull in the wezterm API
         local wezterm = require 'wezterm'
-    
+
         return {
              exit_behavior = "Hold",
              font_size = 12.0,
@@ -1429,4 +1429,3 @@ if __name__ == "main":
                          env=my_env)
 
     # fmt: on
-
