@@ -1,10 +1,11 @@
 import os
 from pathlib import Path
 
+from textual import events
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Button, Label, RichLog, TabPane
-from textual import events
+
 from datashuttle.tui.custom_widgets import (
     CustomDirectoryTree,
 )
@@ -66,7 +67,7 @@ class LoggingTab(TabPane):
                 id="logging_tab_custom_directory_tree",
             ),
             Label(
-                f"",
+                "",
                 id="logging_most_recent_label",
             ),
             Horizontal(

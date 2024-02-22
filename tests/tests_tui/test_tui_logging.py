@@ -39,7 +39,7 @@ class TestTuiLogging(TuiBase):
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
-            breakpoint()
+
             # Open the logging tab and check the logs are shown in
             # the correct filetree nodes
             await self.switch_tab(pilot, "logging")

@@ -13,12 +13,6 @@ wrapper for API this, along with checking
 variables, is sufficient. However, it does
 lead to some very similar logic tests between
 this module and other tests.
-
-NOTE: when testing these functions with breakpoint(),
-the debugger is acting very strangely and breaks in
-1 level lower than usual, requires 'u' to go
-up a level. This is probably because testing in subprocess.
-Might be better to use mock.
 """
 
 import argparse
@@ -371,15 +365,12 @@ class TestCommandLineInterface(BaseTest):
             f"create_folders --datatype all --sub_names {self.to_cli_input(subs)} --ses_names {self.to_cli_input(ses)} ",
             project.project_name,
         )
-        try:
-            test_utils.check_folder_tree_is_correct(
-                base_folder=test_utils.get_top_level_folder_path(project),
-                subs=subs,
-                sessions=ses,
-                folder_used=test_utils.get_all_folders_used(),
-            )
-        except:
-            breakpoint()
+        test_utils.check_folder_tree_is_correct(
+            base_folder=test_utils.get_top_level_folder_path(project),
+            subs=subs,
+            sessions=ses,
+            folder_used=test_utils.get_all_folders_used(),
+        )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize(

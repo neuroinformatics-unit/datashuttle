@@ -106,7 +106,9 @@ class ProjectManagerScreen(Screen):
             self.query_one(f"#{event.pane.id}").reload_directorytree()
 
             if event.pane.id == "tabscreen_logging_tab":
-                self.query_one("#tabscreen_logging_tab").update_most_recent_label()
+                self.query_one(
+                    "#tabscreen_logging_tab"
+                ).update_most_recent_label()
 
     def on_configs_content_configs_saved(self) -> None:
         """

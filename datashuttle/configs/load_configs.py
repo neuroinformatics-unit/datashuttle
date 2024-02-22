@@ -14,7 +14,7 @@ ConfigValueTypes = Union[Path, str, bool, None]
 # -----------------------------------------------------------------------------
 
 
-def make_config_file_attempt_load(
+def attempt_load_configs(
     project_name: str, config_path: Path
 ) -> Optional[Configs]:
     """
@@ -147,7 +147,7 @@ def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
 
         if isinstance(value, str):
             if value not in ["True", "False", "true", "false"]:
-                utils.log_and_raise_error(
+                utils.raise_error(
                     f"Input value for '{key}' must be True or False",
                     ConfigError,
                 )
