@@ -111,12 +111,12 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
+        else:
+            rclone.prompt_rclone_download_if_does_not_exist()
 
         if print_startup_message:
             if self.cfg:
                 self._display_top_level_folder()
-
-        rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
         """
@@ -729,6 +729,8 @@ class DataShuttle:
 
         self._set_attributes_after_config_load()
 
+        # This is just a placeholder rclone config that will suffice
+        # if ever central is a 'local filesystem'.
         self._setup_rclone_central_local_filesystem_config()
 
         utils.log_and_message(
@@ -1218,11 +1220,11 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        folders.create_folders(self.cfg.project_metadata_path, log=False)
+        if not self.cfg.project_metadata_path.is_dir():
+            folders.create_folders(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_central_ssh_config(self, log: bool) -> None:
-        rclone.setup_central_as_rclone_target(
-            "ssh",
+        rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
             self.cfg.ssh_key_path,
@@ -1230,12 +1232,8 @@ class DataShuttle:
         )
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
-        rclone.setup_central_as_rclone_target(
-            "local_filesystem",
-            self.cfg,
+        rclone.setup_rclone_config_for_local_filesystem(
             self.cfg.get_rclone_config_name("local_filesystem"),
-            self.cfg.ssh_key_path,
-            log=True,
         )
 
     # Persistent settings

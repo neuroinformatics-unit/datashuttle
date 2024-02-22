@@ -46,8 +46,7 @@ def setup_project_default_configs(
 
     project.make_config_file(**default_configs)
 
-    rclone.setup_central_as_rclone_target(
-        "ssh",
+    rclone.setup_rclone_config_for_ssh(
         project.cfg,
         project.cfg.get_rclone_config_name("ssh"),
         project.cfg.ssh_key_path,
