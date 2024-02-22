@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from tui_base import TuiBase
 
@@ -24,7 +26,9 @@ class TestTuiLogging(TuiBase):
             project = DataShuttle(project_name)
             project.update_config_file(overwrite_old_files=True)
 
-            await pilot.pause(5)  # small delay to ensure order of logs
+            await pilot.pause()
+            time.sleep(10)
+
             project.create_folders("sub-001")
 
             await self.check_and_click_onto_existing_project(
@@ -54,7 +58,7 @@ class TestTuiLogging(TuiBase):
             )
             assert (
                 "create-folders" in widg.get_node_at_line(2).data.path.stem
-            ), f"{widg.get_node_at_line(0).data.path}-{widg.get_node_at_line(1).data.path}-{widg.get_node_at_line(2).data.path}"
+            ), f"ERROR MESSAGE: {widg.get_node_at_line(0).data.path}-{widg.get_node_at_line(1).data.path}-{widg.get_node_at_line(2).data.path}"
 
             # Check the latest logging path is correct
             assert (
