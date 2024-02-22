@@ -64,7 +64,9 @@ class ProjectManagerScreen(Screen):
                 id="tabscreen_transfer_tab",
             )
             with TabPane("Configs", id="tabscreen_configs_tab"):
-                yield ConfigsContent(self, self.interface)
+                yield ConfigsContent(
+                    self, self.interface, id="tabscreen_configs_content"
+                )
             yield logging.LoggingTab(
                 "Logs",
                 self.mainwindow,

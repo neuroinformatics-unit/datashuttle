@@ -72,7 +72,7 @@ class Interface:
             for TUI and so method defaults will be used.
         """
         try:
-            project = DataShuttle(project_name)
+            project = DataShuttle(project_name, print_startup_message=False)
 
             project.make_config_file(**cfg_kwargs)
 

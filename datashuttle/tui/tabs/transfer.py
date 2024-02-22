@@ -115,20 +115,24 @@ class TransferTab(TreeAndInputTab):
                 self.interface,
                 id="transfer_custom_select",
             ),
-            Label("Subject(s)"),
+            Label("Subject(s)", id="transfer_subject_label"),
             ClickableInput(
                 self.mainwindow,
                 id="transfer_subject_input",
                 placeholder="e.g. sub-001",
             ),
-            Label("Session(s)"),
+            Label("Session(s)", id="transfer_session_label"),
             ClickableInput(
                 self.mainwindow,
                 id="transfer_session_input",
                 placeholder="e.g. ses-001",
             ),
-            Label("Datatype(s)"),
-            DatatypeCheckboxes(self.interface, create_or_transfer="transfer"),
+            Label("Datatype(s)", id="transfer_datatype_label"),
+            DatatypeCheckboxes(
+                self.interface,
+                create_or_transfer="transfer",
+                id="transfer_custom_datatype_checkboxes",
+            ),
         ]
 
         yield RadioSet(
@@ -150,9 +154,9 @@ class TransferTab(TreeAndInputTab):
         )
         yield Horizontal(
             Horizontal(
-                Label("Upload"),
+                Label("Upload", id="transfer_switch_upload_label"),
                 Switch(id="transfer_switch"),
-                Label("Download"),
+                Label("Download", id="transfer_switch_download_label"),
                 id="transfer_switch_container",
             ),
             Button("Transfer", id="transfer_transfer_button"),

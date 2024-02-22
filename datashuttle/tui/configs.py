@@ -50,8 +50,9 @@ class ConfigsContent(Container):
         self,
         parent_class: Union[ProjectManagerScreen, NewProjectScreen],
         interface: Optional[Interface],
+        id: str,
     ) -> None:
-        super(ConfigsContent, self).__init__()
+        super(ConfigsContent, self).__init__(id=id)
 
         self.parent_class = parent_class
         self.interface = interface
@@ -76,16 +77,19 @@ class ConfigsContent(Container):
         are instantiating a new project.
         """
         self.config_ssh_widgets = [
-            Label("Central Host ID"),
-            ClickableInput(
-                self.parent_class.mainwindow,
-                placeholder="e.g. username",
-                id="configs_central_host_id_input",
-            ),
-            Label("Central Host Username"),
+            Label("Central Host ID", id="configs_central_host_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
                 placeholder="e.g. ssh.swc.ucl.ac.uk",
+                id="configs_central_host_id_input",
+            ),
+            Label(
+                "Central Host Username",
+                id="configs_central_host_username_label",
+            ),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="e.g. username",
                 id="configs_central_host_username_input",
             ),
         ]
@@ -130,11 +134,12 @@ class ConfigsContent(Container):
                 id="configs_transfer_options_container",
             ),
             Horizontal(
-                Button("Save", id="configs_set_configs_button"),
+                Button("Save", id="configs_save_configs_button"),
                 Button(
                     "Setup SSH Connection",
                     id="configs_setup_ssh_connection_button",
                 ),
+                id="configs_bottom_buttons_horizontal",
             ),
         ]
 
@@ -212,12 +217,19 @@ class ConfigsContent(Container):
         """
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
+
         self.query_one("#configs_central_path_select_button").disabled = (
             display_bool
         )
-        self.query_one("#configs_setup_ssh_connection_button").disabled = (
-            not display_bool
-        )
+
+        if self.interface is not None:
+            self.query_one("#configs_setup_ssh_connection_button").disabled = (
+                not display_bool
+            )
+        else:
+            self.query_one("#configs_setup_ssh_connection_button").disabled = (
+                True
+            )
 
         if not self.query_one("#configs_central_path_input").value:
             if display_bool:
@@ -235,7 +247,7 @@ class ConfigsContent(Container):
         Enables the Create Folders button to read out current input values
         and use these to call project.create_folders().
         """
-        if event.button.id == "configs_set_configs_button":
+        if event.button.id == "configs_save_configs_button":
             if not self.interface:
                 self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
             else:
@@ -334,16 +346,44 @@ class ConfigsContent(Container):
         success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
         if success:
-            self.parent_class.mainwindow.push_screen(
-                modal_dialogs.MessageBox(
+            # Could not find a neater way to combine the push screen
+            # while initiating the callback in one case but not the other.
+            if cfg_kwargs["connection_method"] == "ssh":
+
+                self.query_one(
+                    "#configs_setup_ssh_connection_button"
+                ).disabled = False
+                self.interface = interface
+
+                message = (
+                    "A DataShuttle project has now been created.\n\n "
+                    "Next, setup the SSH connection. Once complete, navigate to the "
+                    "'Main Menu' and proceed to "
+                    "the project page, where you will be able to create and "
+                    "transfer project folders."
+                )
+
+                self.parent_class.mainwindow.push_screen(
+                    modal_dialogs.MessageBox(
+                        message,
+                        border_color="green",
+                    ),
+                )
+
+            else:
+                message = (
                     "A DataShuttle project has now been created.\n\n "
                     "Click 'OK' to proceed to "
                     "the project page, where you will be able to create and "
-                    "transfer project folders.",
-                    border_color="green",
-                ),
-                lambda _: self.parent_class.dismiss(interface),
-            )
+                    "transfer project folders."
+                )
+                self.parent_class.mainwindow.push_screen(
+                    modal_dialogs.MessageBox(
+                        message,
+                        border_color="green",
+                    ),
+                    lambda _: self.parent_class.dismiss(interface),
+                )
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
@@ -450,13 +490,20 @@ class ConfigsContent(Container):
             else "local_filesystem"
         )
 
-        cfg_kwargs["central_host_id"] = self.query_one(
+        central_host_id = self.query_one(
             "#configs_central_host_id_input"
         ).value
+        cfg_kwargs["central_host_id"] = (
+            None if central_host_id == "" else central_host_id
+        )
 
-        cfg_kwargs["central_host_username"] = self.query_one(
+        central_host_username = self.query_one(
             "#configs_central_host_username_input"
         ).value
+
+        cfg_kwargs["central_host_username"] = (
+            None if central_host_username == "" else central_host_username
+        )
 
         cfg_kwargs["overwrite_old_files"] = self.query_one(
             "#configs_overwrite_files_checkbox"

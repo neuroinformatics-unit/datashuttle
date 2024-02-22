@@ -27,7 +27,6 @@ class TestMakeFolders(BaseTest):
         project.create_folders(subs)
 
         test_utils.check_folder_tree_is_correct(
-            project,
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=["sub-00011", "sub-00002", "sub-30303"],
             sessions=[],
@@ -100,7 +99,6 @@ class TestMakeFolders(BaseTest):
 
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
-            project,
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=subs,
             sessions=sessions,
@@ -275,7 +273,6 @@ class TestMakeFolders(BaseTest):
         # Check folder tree is made in the desired top level folder
         test_utils.check_working_top_level_folder_only_exists(
             folder_name,
-            project,
             project.cfg["local_path"] / folder_name,
             subs,
             sessions,

@@ -34,6 +34,10 @@ TabScreen > TabbedContent {
     dock: right;
 }
 
+#create_folders_buttons_horizontal {
+    height: 3;
+}
+
 #template_settings_validation_on_checkbox.-on > .toggle--button{
     color: $success;
 }
@@ -132,4 +136,35 @@ Tooltip:light {
 
 #transfer_transfer_button {
     margin: 0 0 0 4;
+}
+
+/* Logging Tab ------------------------------------------------------------- */
+
+#logging_tab_top_label {
+    padding: 0 0 0 1;
+}
+#logging_most_recent_label {
+    padding: 1 0 1 1;
+}
+
+
+#logging_tab_custom_directory_tree {
+    width: 100%;
+    height: 70%;
+}
+
+#logging_tab_outer_container {
+    align: center top;
+    content-align: center top;
+    width: 100%;
+    overflow: hidden auto;
+}
+
+RichLog {
+    padding: 1 1 1 1;
+    border: solid grey;
+}
+
+#richlog_screen_close_button {
+    margin: 1 1 1 1;
 }

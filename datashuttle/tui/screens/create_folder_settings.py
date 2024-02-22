@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
 
@@ -22,10 +22,10 @@ from textual.widgets import (
     RadioSet,
 )
 
+from datashuttle.configs import links
 from datashuttle.tui.custom_widgets import TopLevelFolderSelect
 
 
-# TODO: doc this function properly because it is confusing how one input shared between sub and ses
 class CreateFoldersSettingsScreen(ModalScreen):
     """
     This screen handles setting datashuttle's `name_template`'s, as well
@@ -60,13 +60,15 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.input_mode = "sub"
         self.interface = interface
 
+        self.input_values: Dict[str, Optional[str]]
+
         self.input_values = {
             "sub": "",
             "ses": "",
         }
 
     def action_link_docs(self) -> None:
-        webbrowser.open("https://datashuttle.neuroinformatics.dev/")
+        webbrowser.open(links.get_docs_link())
 
     def compose(self) -> ComposeResult:
         sub_on = True if self.input_mode == "sub" else False
@@ -86,7 +88,10 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
         yield Container(
             Horizontal(
-                Label("Top level folder:", id="labelTESTEST"),
+                Label(
+                    "Top level folder:",
+                    id="create_folders_settings_toplevel_label",
+                ),
                 TopLevelFolderSelect(
                     self.interface,
                     id="create_folders_settings_toplevel_select",
@@ -236,4 +241,5 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     def on_input_changed(self, message: Input.Changed) -> None:
         if message.input.id == "template_settings_input":
-            self.input_values[self.input_mode] = message.value
+            val = None if message.value == "" else message.value
+            self.input_values[self.input_mode] = val

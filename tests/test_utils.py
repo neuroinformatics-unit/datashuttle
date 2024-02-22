@@ -130,7 +130,6 @@ def delete_project_if_it_exists(project_name):
     config_path, _ = canonical_folders.get_project_datashuttle_path(
         project_name
     )
-
     if config_path.is_dir():
         ds_logger.close_log_filehandler()
         shutil.rmtree(config_path)
@@ -254,9 +253,9 @@ def get_test_config_arguments_dict(
     return dict_
 
 
-def get_all_folders_used():
+def get_all_folders_used(value=True):
     datatype_names = canonical_configs.get_datatypes()
-    return {name: True for name in datatype_names}
+    return {name: value for name in datatype_names}
 
 
 def get_config_path_with_cli(project_name=None):
@@ -274,9 +273,7 @@ def add_quotes(string: str):
 # -----------------------------------------------------------------------------
 
 
-def check_folder_tree_is_correct(
-    project, base_folder, subs, sessions, folder_used
-):
+def check_folder_tree_is_correct(base_folder, subs, sessions, folder_used):
     """
     Automated test that folders are made based
     on the structure specified on project itself.
@@ -308,13 +305,17 @@ def check_folder_tree_is_correct(
                     "test_custom_folder_names(), test_explicitly_session_list()"
                 )
 
-                if folder_used[key]:
-                    if folder.level == "sub":
-                        datatype_path = join(path_to_sub_folder, folder.name)
-                    elif folder.level == "ses":
-                        datatype_path = join(path_to_ses_folder, folder.name)
+                assert folder.level in ["sub", "ses"]
 
+                if folder.level == "sub":
+                    datatype_path = join(path_to_sub_folder, folder.name)
+                elif folder.level == "ses":
+                    datatype_path = join(path_to_ses_folder, folder.name)
+
+                if folder_used[key]:
                     check_and_cd_folder(datatype_path)
+                else:
+                    assert not os.path.isdir(datatype_path)
 
 
 def check_and_cd_folder(path_):
@@ -381,7 +382,6 @@ def make_and_check_local_project_folders(
     make_local_folders_with_files_in(project, subs, sessions, datatype)
 
     check_folder_tree_is_correct(
-        project,
         get_top_level_folder_path(project, folder_name=folder_name),
         subs,
         sessions,
@@ -404,9 +404,10 @@ def make_local_folders_with_files_in(
 # -----------------------------------------------------------------------------
 
 
-def check_configs(project, kwargs):
+def check_configs(project, kwargs, config_path=None):
     """"""
-    config_path = project._config_path
+    if config_path is None:
+        config_path = project._config_path
 
     if not config_path.is_file():
         raise FileNotFoundError("Config file not found.")
@@ -624,7 +625,7 @@ def set_datashuttle_loggers(disable):
 
 
 def check_working_top_level_folder_only_exists(
-    folder_name, project, base_path_to_check, subs, sessions
+    folder_name, base_path_to_check, subs, sessions, folders_used=None
 ):
     """
     Check that the folder tree made in the 'folder_name'
@@ -633,12 +634,14 @@ def check_working_top_level_folder_only_exists(
     that folders made / transferred from one top-level folder
     do not inadvertently transfer other top-level folders.
     """
+    if folders_used is None:
+        folders_used = get_all_folders_used()
+
     check_folder_tree_is_correct(
-        project,
         base_path_to_check,
         subs,
         sessions,
-        get_all_folders_used(),
+        folders_used,
     )
 
     # Check other top-level folders are not made

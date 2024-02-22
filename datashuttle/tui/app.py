@@ -7,8 +7,8 @@ if TYPE_CHECKING:
 
 from pathlib import Path
 
+import showinfm
 import yaml
-from showinfm import show_in_file_manager
 from textual.app import App, ComposeResult
 from textual.containers import Container
 from textual.widgets import (
@@ -18,6 +18,7 @@ from textual.widgets import (
 
 from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens import (
+    get_help,
     modal_dialogs,
     new_project,
     project_manager,
@@ -37,6 +38,7 @@ class TuiApp(App):
 
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
+    ENABLE_COMMAND_PALETTE = False
 
     def compose(self) -> ComposeResult:
         yield Container(
@@ -77,6 +79,8 @@ class TuiApp(App):
                     self,
                 )
             )
+        elif event.button.id == "mainwindow_get_help_button":
+            self.push_screen(get_help.GetHelpScreen())
 
     def load_project_page(self, interface: Interface) -> None:
         if interface:
@@ -100,7 +104,7 @@ class TuiApp(App):
             return
 
         try:
-            show_in_file_manager(path_.as_posix())
+            showinfm.show_in_file_manager(path_.as_posix())
         except BaseException:
             if path_.is_file():
                 # I don't see why this is not working as according to docs it
@@ -152,6 +156,9 @@ class TuiApp(App):
 
     def save_global_settings(self, global_settings: Dict) -> None:
         settings_path = self.get_global_settings_path()
+
+        if not settings_path.parent.is_dir():
+            settings_path.parent.mkdir(parents=True)
 
         with open(settings_path, "w") as file:
             yaml.dump(global_settings, file, sort_keys=False)
