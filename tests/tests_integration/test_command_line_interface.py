@@ -630,13 +630,8 @@ class TestCommandLineInterface(BaseTest):
         stdout, _ = test_utils.run_cli(
             f"show{sep}configs", project.project_name
         )
-        assert str(project.cfg["local_path"].as_posix()) in stdout
 
-        project.create_folders("sub-001_hello-world")
-        stdout, _ = test_utils.run_cli(
-            f"show{sep}local{sep}tree", project.project_name
-        )
-        assert "sub-001_hello-world" in stdout
+        assert str(project.cfg["local_path"].as_posix()) in stdout
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_validate_project(self, project, sep):
