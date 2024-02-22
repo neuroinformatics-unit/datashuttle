@@ -133,7 +133,9 @@ class TuiBase:
         """
         Hover over a directorytree at a node-line and press a specific string
         """
+        await pilot.pause()
         pilot.app.screen.query_one(id).hover_line = hover_line
+        await pilot.pause()
         await self.press_tree(pilot, id, press_string)
 
     async def press_tree(self, pilot, id, press_string):

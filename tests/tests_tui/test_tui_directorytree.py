@@ -133,6 +133,8 @@ class TestTuiDirectoryTree(TuiBase):
             await self.reload_tree_nodes(
                 pilot, "#create_folders_directorytree", 4
             )
+            pyperclip.copy("STARTING VAL")
+
             await self.hover_and_press_tree(
                 pilot,
                 "#create_folders_directorytree",
@@ -188,6 +190,7 @@ class TestTuiDirectoryTree(TuiBase):
             )
 
             assert signal[0] == Path()
+
             await self.hover_and_press_tree(
                 pilot,
                 "#create_folders_directorytree",
