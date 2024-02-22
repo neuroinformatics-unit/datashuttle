@@ -141,13 +141,10 @@ def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
         paths = [paths]
 
     for path_ in paths:
-        try:
-            if not path_.is_dir():
-                path_.mkdir(parents=True)
-                if log:
-                    utils.log(f"Made folder at path: {path_}")
-        except:
-            breakpoint()
+        if not path_.is_dir():
+            path_.mkdir(parents=True)
+            if log:
+                utils.log(f"Made folder at path: {path_}")
 
 
 # -----------------------------------------------------------------------------
