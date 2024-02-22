@@ -18,8 +18,7 @@ def setup_project_for_ssh(
     project.update_config_file(central_host_username=central_host_username)
     project.update_config_file(connection_method="ssh")
 
-    rclone.setup_central_as_rclone_target(
-        "ssh",
+    rclone.setup_rclone_config_for_ssh(
         project.cfg,
         project.cfg.get_rclone_config_name("ssh"),
         project.cfg.ssh_key_path,
