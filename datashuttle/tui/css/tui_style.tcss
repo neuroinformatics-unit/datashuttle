@@ -79,6 +79,9 @@ want to dock left */
 #transfer_directorytree {
     dock: left;
 }
+#transfer_legend:light {
+    background: $boost;
+}
 
 /* SelectDirectoryTreeScreen -------------------------------------------------------- */
 
