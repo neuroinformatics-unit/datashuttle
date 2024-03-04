@@ -65,8 +65,13 @@ class TransferStatusTree(CustomDirectoryTree):
 
         self.update_local_transfer_paths()
 
-        if self.mainwindow.load_global_settings()["show_transfer_tree_status"]:
+        if (
+            self.interface.project.cfg["connection_method"]
+            == "local_filesystem"
+        ):
             self.update_transfer_diffs()
+        else:
+            self.transfer_diffs = {}
 
         if not init:
             self.reload()
