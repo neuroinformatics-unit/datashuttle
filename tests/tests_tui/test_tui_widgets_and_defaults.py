@@ -50,7 +50,7 @@ class TestTuiWidgets(TuiBase):
                 configs_content.query_one(
                     "#configs_banner_label"
                 ).renderable._text[0]
-                == "Configure A New Project"
+                == "Make A New Project"
             )
             assert (
                 configs_content.query_one(
