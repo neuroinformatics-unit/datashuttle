@@ -85,11 +85,8 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str, print_startup_message: bool = True):
-        if " " in project_name:
-            utils.log_and_raise_error(
-                "'project_name' must not include spaces.", ValueError
-            )
 
+        self._error_on_base_project_name(project_name)
         self.project_name = project_name
         (
             self._datashuttle_path,
@@ -1192,6 +1189,13 @@ class DataShuttle:
         log_files = glob.glob(str(self._temp_log_path / "*.log"))
         for file in log_files:
             os.remove(file)
+
+    def _error_on_base_project_name(self, project_name):
+        if validation.name_has_special_character(project_name):
+            utils.log_and_raise_error(
+                "The project name must contain alphanumeric characters only.",
+                ValueError,
+            )
 
     def _log_successful_config_change(self, message: bool = False) -> None:
         """
