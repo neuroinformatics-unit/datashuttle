@@ -11,6 +11,7 @@ from textual.containers import Container
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
+    Checkbox,
     RadioButton,
     RadioSet,
 )
@@ -46,6 +47,11 @@ class SettingsScreen(ModalScreen):
                 ),
                 id="settings_color_scheme_radioset",
             ),
+            Checkbox(
+                "Show transfer status on directory tree",
+                value=self.global_settings["show_transfer_tree_status"],
+                id="show_transfer_tree_status_checkbox",
+            ),
             Button("Close", id="generic_screen_close_button"),
             id="generic_screen_container",
         )
@@ -57,6 +63,10 @@ class SettingsScreen(ModalScreen):
 
         self.mainwindow.dark = dark_mode
         self.global_settings["dark_mode"] = dark_mode
+        self.mainwindow.save_global_settings(self.global_settings)
+
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        self.global_settings["show_transfer_tree_status"] = event.value
         self.mainwindow.save_global_settings(self.global_settings)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

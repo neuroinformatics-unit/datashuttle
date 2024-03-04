@@ -110,11 +110,6 @@ class ProjectManagerScreen(Screen):
                     "#tabscreen_logging_tab"
                 ).update_most_recent_label()
 
-            if event.pane.id == "tabscreen_transfer_tab":
-                self.query_one(
-                    "#tabscreen_transfer_tab"
-                ).update_legend_display()
-
     def update_active_tab_tree(self):
         active_tab_id = self.query_one("#tabscreen_tabbed_content").active
         self.query_one(f"#{active_tab_id}").reload_directorytree()
