@@ -88,10 +88,6 @@ class TestTuiSettings(TuiBase):
             )
 
             await self.scroll_to_click_pause(
-                pilot, "#show_transfer_tree_status_checkbox"
-            )
-
-            await self.scroll_to_click_pause(
                 pilot, "#generic_screen_close_button"
             )
 

@@ -184,7 +184,6 @@ class TuiApp(App):
     def get_default_global_settings(self) -> Dict:
         return {
             "dark_mode": True,
-            "show_transfer_tree_status": False,
         }
 
     def save_global_settings(self, global_settings: Dict) -> None:

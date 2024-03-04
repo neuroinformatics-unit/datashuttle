@@ -58,14 +58,7 @@ class TransferTab(TreeAndInputTab):
     ----------
 
     show_legend : bool
-        Convenience attribute linked to a global setting exists that
-        turns off / on styling of directorytree nodes based on transfer status. `
-
-        `self.mainwindow.load_global_settings()[
-            "show_transfer_tree_status"
-        ]`
-
-        When on, the legend must be hidden.
+        When `False`, the legend for showing transfer status is hidden.
     """
 
     def __init__(
@@ -79,9 +72,6 @@ class TransferTab(TreeAndInputTab):
         self.mainwindow = mainwindow
         self.interface = interface
         self.prev_click_time = 0.0
-        self.show_legend = self.mainwindow.load_global_settings()[
-            "show_transfer_tree_status"
-        ]
 
     # Setup
     # ----------------------------------------------------------------------------------
@@ -162,8 +152,7 @@ class TransferTab(TreeAndInputTab):
             Button("Transfer", id="transfer_transfer_button"),
             Horizontal(),  # push button to left
         )
-        if self.show_legend:
-            yield Label("⭕ Legend", id="transfer_legend")
+        yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self) -> None:
         self.query_one("#transfer_params_container").border_title = (
@@ -171,14 +160,21 @@ class TransferTab(TreeAndInputTab):
         )
         self.switch_transfer_widgets_display()
 
-        if self.show_legend:
-            self.query_one("#transfer_legend").tooltip = Text.assemble(
-                "Unchanged\n",
-                ("Changed\n", "gold3"),
-                ("Local Only\n", "green3"),
-                # ("Central Only\n", "italic dodger_blue3"),
-                ("Error\n", "bright_red"),
-            )
+        self.query_one("#transfer_legend").tooltip = Text.assemble(
+            "Unchanged\n",
+            ("Changed\n", "gold3"),
+            ("Local Only\n", "green3"),
+            # ("Central Only\n", "italic dodger_blue3"),
+            ("Error\n", "bright_red"),
+        )
+        self.update_legend_display()
+
+    def update_legend_display(self):
+        display = (
+            self.interface.project.cfg["connection_method"]
+            == "local_filesystem"
+        )
+        self.query_one("#transfer_legend").visible = display
 
     # Manage Widgets
     # ----------------------------------------------------------------------------------
