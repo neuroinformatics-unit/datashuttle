@@ -232,7 +232,7 @@ class CustomDirectoryTree(DirectoryTree):
                 self.DirectoryTreeSpecialKeyPress(event.key, node_path=None)
             )
 
-        elif event.key in ["ctrl+a", "ctrl+f"]:
+        elif event.key in ["ctrl+a", "ctrl+f", "ctrl+n"]:
             path_ = self.get_node_at_line(self.hover_line).data.path
             self.post_message(
                 self.DirectoryTreeSpecialKeyPress(event.key, node_path=path_)

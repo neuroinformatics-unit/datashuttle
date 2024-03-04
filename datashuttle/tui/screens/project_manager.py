@@ -38,8 +38,8 @@ class ProjectManagerScreen(Screen):
     See ConfigsContent for more information.
     """
 
-    def __init__(self, mainwindow: App, interface: Interface) -> None:
-        super(ProjectManagerScreen, self).__init__()
+    def __init__(self, mainwindow: App, interface: Interface, id) -> None:
+        super(ProjectManagerScreen, self).__init__(id=id)
 
         self.mainwindow = mainwindow
         self.interface = interface
@@ -109,6 +109,10 @@ class ProjectManagerScreen(Screen):
                 self.query_one(
                     "#tabscreen_logging_tab"
                 ).update_most_recent_label()
+
+    def update_active_tab_tree(self):
+        active_tab_id = self.query_one("#tabscreen_tabbed_content").active
+        self.query_one(f"#{active_tab_id}").reload_directorytree()
 
     def on_configs_content_configs_saved(self) -> None:
         """
