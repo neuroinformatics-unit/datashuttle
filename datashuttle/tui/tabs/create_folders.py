@@ -251,7 +251,12 @@ class CreateFoldersTab(TreeAndInputTab):
             The textual input name to update.
         """
         if prefix == "sub":
-            next_val = self.interface.get_next_sub_number()
+            success, output = self.interface.get_next_sub_number()
+            if not success:
+                self.mainwindow.show_modal_error_dialog(output)
+                return
+            else:
+                next_val = output
         else:
             sub_names = self.query_one(
                 "#create_folders_subject_input"
@@ -274,7 +279,12 @@ class CreateFoldersTab(TreeAndInputTab):
             else:
                 sub = sub_names[0]
 
-            next_val = self.interface.get_next_ses_number(sub)
+            success, output = self.interface.get_next_ses_number(sub)
+            if not success:
+                self.mainwindow.show_modal_error_dialog(output)
+                return
+            else:
+                next_val = output
 
         if self.templates_on(prefix):
             split_name = self.interface.get_name_templates()[prefix].split("_")
