@@ -142,8 +142,6 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         project_name = config_dict.project_name
         if config_dict[path_type].stem != project_name:
             utils.log_and_raise_error(
-                f"The {path_type} does not end in the "
-                f"project name: {project_name}. \n"
                 f"The last folder in the passed {path_type} "
                 f"should be {project_name}.\n"
                 f"The passed path was {config_dict[path_type]}",
