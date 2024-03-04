@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
@@ -85,7 +86,9 @@ class TuiApp(App):
     def load_project_page(self, interface: Interface) -> None:
         if interface:
             self.push_screen(
-                project_manager.ProjectManagerScreen(self, interface)
+                project_manager.ProjectManagerScreen(
+                    self, interface, id="project_manager_screen"
+                )
             )
 
     def show_modal_error_dialog(self, message: str) -> None:
@@ -120,6 +123,36 @@ class TuiApp(App):
                 )
 
             self.show_modal_error_dialog(message)
+
+    def prompt_rename_file_or_folder(self, path_):
+        """ """
+        self.push_screen(
+            modal_dialogs.RenameFileOrFolderScreen(self, path_),
+            lambda new_name: self.rename_file_or_folder(path_, new_name),
+        )
+
+    def rename_file_or_folder(self, path_, new_name):
+        """ """
+        if new_name is False:
+            return
+        try:
+            if path_.is_dir():
+                os.rename(
+                    path_.as_posix(), (path_.parent / new_name).as_posix()
+                )
+            else:
+                os.rename(
+                    path_.as_posix(),
+                    path_.parent / f"{new_name}{path_.suffix}",
+                )
+            self.query_one("#project_manager_screen").update_active_tab_tree()
+        except BaseException as e:
+            self.show_modal_error_dialog(
+                f"Could not rename the file or folder."
+                f"Check the new name is valid, and correct "
+                f"permissions are set. \n\n"
+                f"Full error log {str(e)}"
+            )
 
     # Global Settings ---------------------------------------------------------
 

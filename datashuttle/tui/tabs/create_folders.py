@@ -140,6 +140,9 @@ class CreateFoldersTab(TreeAndInputTab):
                 event,
             )
 
+        elif event.key == "ctrl+n":
+            self.mainwindow.prompt_rename_file_or_folder(event.node_path)
+
     def fill_input_with_template(self, prefix: Prefix, input_id: str) -> None:
         """
         Given the `name_template`, fill the sub or ses

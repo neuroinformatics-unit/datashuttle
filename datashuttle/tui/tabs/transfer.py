@@ -248,6 +248,10 @@ class TransferTab(TreeAndInputTab):
                 "#transfer_subject_input", "#transfer_session_input", event
             )
 
+        elif event.key == "ctrl+n":
+            self.mainwindow.prompt_rename_file_or_folder(event.node_path)
+            self.reload_directorytree()
+
     def reload_directorytree(self) -> None:
         self.query_one("#transfer_directorytree").update_transfer_tree()
 

@@ -379,3 +379,40 @@ MessageBox:light > #confirm_top_container {
     border: tall $accent;
     background: $boost;
  }
+
+/* Rename File or Folders Screen ------------------------------------------------------------ */
+
+RenameFileOrFolderScreen {
+    align: center middle;
+    content-align: center middle;
+}
+
+#rename_screen_container {
+    align: center middle;
+    content-align: center middle;
+    height: 12;
+    width: 65;
+    border: tall $panel-lighten-1;
+    background: $primary-background;
+ }
+ RenameFileOrFolderScreen:light > #rename_screen_container {
+    border: tall $panel-darken-3;
+    background: $boost;
+ }
+#rename_screen_label {
+    align: center middle;
+    margin: 0 0 1 2;
+    text-align: center;
+ }
+#rename_screen_input {
+    align: center middle;
+ }
+#rename_screen_horizontal {
+    align: center middle;
+}
+#rename_screen_okay_button {
+    align: center middle;
+ }
+#rename_screen_cancel_button {
+    align: center middle;
+ }

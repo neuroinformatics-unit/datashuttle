@@ -13,7 +13,7 @@ from pathlib import Path
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Label, Static
+from textual.widgets import Button, Input, Label, Static
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -150,4 +150,34 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "cancel_button":
+            self.dismiss(False)
+
+
+class RenameFileOrFolderScreen(ModalScreen):
+    """ """
+
+    def __init__(self, mainwindow: App, path_: Path) -> None:
+        super(RenameFileOrFolderScreen, self).__init__()
+
+        self.mainwindow = mainwindow
+        self.path_ = path_
+
+    def compose(self) -> ComposeResult:
+        yield Container(
+            Label("Input the new name:", id="rename_screen_label"),
+            Input(value=self.path_.stem, id="rename_screen_input"),
+            Horizontal(
+                Button("Ok", id="rename_screen_okay_button"),
+                Button("Cancel", id="rename_screen_cancel_button"),
+                id="rename_screen_horizontal",
+            ),
+            id="rename_screen_container",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """"""
+        if event.button.id == "rename_screen_okay_button":
+            self.dismiss(self.query_one("#rename_screen_input").value)
+
+        elif event.button.id == "rename_screen_cancel_button":
             self.dismiss(False)
