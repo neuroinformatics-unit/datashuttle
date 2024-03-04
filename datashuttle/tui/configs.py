@@ -144,7 +144,7 @@ class ConfigsContent(Container):
         ]
 
         init_only_config_screen_widgets = [
-            Label("Configure A New Project", id="configs_banner_label"),
+            Label("Make A New Project", id="configs_banner_label"),
             Horizontal(
                 Static(
                     "Set your configurations for a new project. For more "
