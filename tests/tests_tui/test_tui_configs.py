@@ -358,7 +358,7 @@ class TestTuiConfigs(TuiBase):
             )
 
             assert (
-                "The central_path does not end in the project name: a"
+                "The central_path: b that the project folder will reside in does not yet exist"
                 in pilot.app.screen.query_one(
                     "#messagebox_message_label"
                 ).renderable._text[0]

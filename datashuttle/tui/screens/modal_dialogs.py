@@ -130,8 +130,14 @@ class SelectDirectoryTreeScreen(ModalScreen):
         self.prev_click_time = 0
 
     def compose(self) -> ComposeResult:
+
+        label_message = (
+            "Select (double click) a folder with the same name as the project.\n"
+            "If the project folder does not exist, select the parent folder and it will be created."
+        )
+
         yield Container(
-            Label("Double click a folder to select:", id="test_label"),
+            Static(label_message, id="select_directory_tree_screen_label"),
             CustomDirectoryTree(
                 self.mainwindow,
                 self.path_,
