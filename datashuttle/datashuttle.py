@@ -335,8 +335,8 @@ class DataShuttle:
             see create_folders()
 
         init_log :
-            (Optional). Whether to start the logger. This should
-            always be True, unless logger has already been started
+            (Optional). Whether handle logging. This should
+            always be True, unless logger is handled elsewhere
             (e.g. in a calling function).
 
         Notes
@@ -374,7 +374,9 @@ class DataShuttle:
             dry_run,
             log=True,
         )
-        ds_logger.close_log_filehandler()
+
+        if init_log:
+            ds_logger.close_log_filehandler()
 
     @check_configs_set
     def download(
@@ -411,30 +413,42 @@ class DataShuttle:
             dry_run,
             log=True,
         )
-        ds_logger.close_log_filehandler()
+
+        if init_log:
+            ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def upload_all(self, dry_run: bool = False) -> None:
+    def upload_all(self, dry_run: bool = False, init_log: bool = True) -> None:
         """
         Convenience function to upload all data.
 
         Alias for:
             project.upload("all", "all", "all")
         """
-        self._start_log("upload-all", local_vars=locals())
+        if init_log:
+            self._start_log("upload-all", local_vars=locals())
 
         self.upload("all", "all", "all", dry_run=dry_run, init_log=False)
 
+        if init_log:
+            ds_logger.close_log_filehandler()
+
     @check_configs_set
-    def download_all(self, dry_run: bool = False) -> None:
+    def download_all(
+        self, dry_run: bool = False, init_log: bool = True
+    ) -> None:
         """
         Convenience function to download all data.
 
         Alias for : project.download("all", "all", "all")
         """
-        self._start_log("download-all", local_vars=locals())
+        if init_log:
+            self._start_log("download-all", local_vars=locals())
 
         self.download("all", "all", "all", dry_run=dry_run, init_log=False)
+
+        if init_log:
+            ds_logger.close_log_filehandler()
 
     @check_configs_set
     def upload_entire_project(self) -> None:
@@ -443,7 +457,9 @@ class DataShuttle:
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
+        self._start_log("transfer-entire-project", local_vars=locals())
         self._transfer_entire_project("upload")
+        ds_logger.close_log_filehandler()
 
     @check_configs_set
     def download_entire_project(self) -> None:
@@ -452,7 +468,9 @@ class DataShuttle:
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
+        self._start_log("transfer-entire-project", local_vars=locals())
         self._transfer_entire_project("download")
+        ds_logger.close_log_filehandler()
 
     @check_configs_set
     def upload_specific_folder_or_file(
@@ -1108,8 +1126,9 @@ class DataShuttle:
         tmp_current_top_level_folder = copy.copy(self.cfg.top_level_folder)
 
         for folder_name in canonical_folders.get_top_level_folders():
+            utils.log_and_message(f"Transferring `{folder_name}`")
             self.cfg.top_level_folder = folder_name
-            transfer_all_func()
+            transfer_all_func(init_log=False)
 
         self.cfg.top_level_folder = tmp_current_top_level_folder
 
