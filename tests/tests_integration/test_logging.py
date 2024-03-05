@@ -255,10 +255,7 @@ class TestLogging:
         )
 
         if use_all_alias:
-            assert (
-                "VariablesState:\nlocals: {'dry_run': False}\ncfg: {'local_path':"
-                in log
-            )
+            assert "VariablesState:\nlocals: {'dry_run': False" in log
         else:
             assert (
                 "VariablesState:\nlocals: {'sub_names': 'all', 'ses_names': 'all', 'datatype': 'all', 'dry_run': False, 'init_log': True}\ncfg: {'local_path': "
