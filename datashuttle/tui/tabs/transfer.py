@@ -15,6 +15,7 @@ from rich.text import Text
 from textual.containers import Container, Horizontal
 from textual.widgets import (
     Button,
+    Checkbox,
     Label,
     RadioButton,
     RadioSet,
@@ -135,16 +136,16 @@ class TransferTab(TreeAndInputTab):
             ),
         ]
 
+        yield TransferStatusTree(
+            self.mainwindow,
+            self.interface,
+            id="transfer_directorytree",
+        )
         yield RadioSet(
             RadioButton("All", id="transfer_all_radiobutton", value=True),
             RadioButton("Top Level", id="transfer_toplevel_radiobutton"),
             RadioButton("Custom", id="transfer_custom_radiobutton"),
             id="transfer_radioset",
-        )
-        yield TransferStatusTree(
-            self.mainwindow,
-            self.interface,
-            id="transfer_directorytree",
         )
         yield Container(
             *self.transfer_all_widgets,
@@ -159,16 +160,21 @@ class TransferTab(TreeAndInputTab):
                 Label("Download", id="transfer_switch_download_label"),
                 id="transfer_switch_container",
             ),
-            Button("Transfer", id="transfer_transfer_button"),
-            Horizontal(),  # push button to left
+            Checkbox(
+                "Overwrite Old Files",
+                value=self.interface.project.cfg["overwrite_old_files"],
+                id="configs_overwrite_files_checkbox",
+            ),
+            id="transfer_tab_transfer_settings_container",
         )
+        yield Horizontal(
+            Button("Transfer", id="transfer_transfer_button"), id="test4"
+        )
+        yield Horizontal()
         if self.show_legend:
             yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self) -> None:
-        self.query_one("#transfer_params_container").border_title = (
-            "Parameters"
-        )
         self.switch_transfer_widgets_display()
 
         if self.show_legend:
@@ -236,6 +242,16 @@ class TransferTab(TreeAndInputTab):
             self.mainwindow.push_screen(
                 FinishTransferScreen(message), self.transfer_data
             )
+
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        """"""
+        if event.checkbox.id == "configs_overwrite_files_checkbox":
+
+            success, message = self.interface.update_overwrite_existing_files(
+                event.checkbox.value
+            )
+            if not success:
+                self.mainwindow.show_modal_error_dialog(message)
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
