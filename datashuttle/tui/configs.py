@@ -205,8 +205,8 @@ class ConfigsContent(Container):
         for widget in self.config_ssh_widgets:
             widget.display = display_bool
 
-        self.query_one("#configs_central_path_select_button").disabled = (
-            display_bool
+        self.query_one("#configs_central_path_select_button").display = (
+            not display_bool
         )
 
         if self.interface is not None:
