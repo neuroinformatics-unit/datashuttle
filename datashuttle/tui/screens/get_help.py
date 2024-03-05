@@ -49,10 +49,10 @@ class GetHelpScreen(ModalScreen):
 
         yield Container(
             Static(self.text, id="get_help_label"),
-            Button("Close", id="generic_screen_close_button"),
+            Button("Main Menu", id="all_main_menu_buttons"),
             id="generic_screen_container",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "generic_screen_close_button":
+        if event.button.id == "all_main_menu_buttons":
             self.dismiss()
