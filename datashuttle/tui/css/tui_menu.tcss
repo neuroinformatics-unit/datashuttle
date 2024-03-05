@@ -49,9 +49,6 @@
 #generic_screen_container:light {
     border: thick $panel-darken-3;
 }
-#generic_screen_close_button {
-    dock: bottom;
-}
 #settings_color_scheme_radioset {  /* TODO: duplicate with other css */
     layout: horizontal;
     width: auto;
