@@ -162,7 +162,7 @@ class TransferTab(TreeAndInputTab):
             ),
             Checkbox(
                 "Overwrite Old Files",
-                value=self.interface.project.cfg["overwrite_old_files"],
+                value=self.interface.project.cfg["overwrite_existing_files"],
                 id="configs_overwrite_files_checkbox",
             ),
             id="transfer_tab_transfer_settings_container",

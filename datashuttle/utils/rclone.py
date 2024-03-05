@@ -311,7 +311,7 @@ def handle_rclone_arguments(
 
     extra_arguments_list += ["-" + rclone_options["transfer_verbosity"]]
 
-    if not rclone_options["overwrite_old_files"]:
+    if not rclone_options["overwrite_existing_files"]:
         extra_arguments_list += [rclone_args("ignore_existing")]
 
     if rclone_options["show_transfer_progress"]:
