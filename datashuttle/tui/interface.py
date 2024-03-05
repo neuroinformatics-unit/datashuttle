@@ -395,7 +395,7 @@ class Interface:
 
     def update_overwrite_existing_files(self, value: bool) -> Output:
         try:
-            self.project.update_config_file(overwrite_old_files=value)
+            self.project.update_config_file(overwrite_existing_files=value)
             return True, None
         except BaseException as e:
             return False, str(e)

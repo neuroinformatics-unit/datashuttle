@@ -241,7 +241,7 @@ class Configs(UserDict):
 
     def make_rclone_transfer_options(self, dry_run: bool) -> Dict:
         return {
-            "overwrite_old_files": self["overwrite_old_files"],
+            "overwrite_existing_files": self["overwrite_existing_files"],
             "transfer_verbosity": self["transfer_verbosity"],
             "show_transfer_progress": self["show_transfer_progress"],
             "dry_run": dry_run,

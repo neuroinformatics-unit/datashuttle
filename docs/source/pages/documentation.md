@@ -251,7 +251,7 @@ more information.
 If connection method is `ssh`, the **central_host_id** and **central_host_username**
 must be set. See the [SSH section](#ssh) for details.
 
-The optional arguments **overwrite_old_files**, **transfer_verbosity** and
+The optional arguments **overwrite_existing_files**, **transfer_verbosity** and
 **show_transfer_progress** determine how data transfer is performed
 (see the [Data Transfer](#data-transfer) section for details).
 
@@ -817,7 +817,7 @@ A number of [Rclone](https://rclone.org/) options are exposed in Datashuttle to 
 
 ### Overwriting existing files
 
-`overwrite_old_files` determines whether folders and files are overwritten
+`overwrite_existing_files` determines whether folders and files are overwritten
 during transfer. By default, Datashuttle does not overwrite any existing
 folder during data transfer.
 
@@ -825,7 +825,7 @@ For example, if the file `sub-001_ses-001_measure-trajectories.csv` exists on
 the *central* repository, it will never be over-written during upload
 from *local* to *central*, even if the version on *local* is newer.
 
-To change this behaviour, the configuration `overwrite_old_files` can be set to `True`.
+To change this behaviour, the configuration `overwrite_existing_files` can be set to `True`.
 In this case, files in which the  timestamp of the target directory (e.g. *central*
 in our example) will be overwritten if their timestamp is
 older than the corresponding file in the source directory.
