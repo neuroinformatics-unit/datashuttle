@@ -425,15 +425,6 @@ class TestTuiConfigs(TuiBase):
             == kwargs["central_path"]
         )
 
-        # Overwrite Old Files -------------------------------------------------
-
-        assert (
-            configs_content.query_one(
-                "#configs_overwrite_files_checkbox"
-            ).value
-            is kwargs["overwrite_old_files"]
-        )
-
     async def set_configs_content_widgets(
         self, pilot, configs_content, kwargs
     ):
@@ -475,19 +466,6 @@ class TestTuiConfigs(TuiBase):
         await self.fill_input(
             pilot, "#configs_central_path_input", kwargs["central_path"]
         )
-
-        # Overwrite Files -----------------------------------------------------
-
-        if kwargs["overwrite_old_files"]:
-
-            assert not configs_content.query_one(
-                "#configs_overwrite_files_checkbox"
-            ).value
-
-            await self.scroll_to_click_pause(
-                pilot,
-                "#configs_overwrite_files_checkbox",
-            )
 
     async def check_new_project_configs(
         self, pilot, project_name, configs_content, kwargs

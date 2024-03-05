@@ -194,30 +194,6 @@ class TestTuiWidgets(TuiBase):
                 == "e.g. username"
             )
 
-            # Transfer Options Container -----------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_transfer_options_container"
-                ).border_title
-                == "Transfer Options"
-            )
-
-            # Overwrite Old Files Checkbox ---------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_overwrite_files_checkbox"
-                ).label._text[0]
-                == "Overwrite Old Files"
-            )
-            assert (
-                configs_content.query_one(
-                    "#configs_overwrite_files_checkbox"
-                ).value
-                is False
-            )
-
             await pilot.pause()
 
     async def check_new_project_ssh_widgets(self, configs_content, ssh_on):

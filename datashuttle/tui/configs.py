@@ -16,7 +16,6 @@ from textual.containers import Container, Horizontal
 from textual.message import Message
 from textual.widgets import (
     Button,
-    Checkbox,
     Label,
     RadioButton,
     RadioSet,
@@ -125,14 +124,6 @@ class ConfigsContent(Container):
                 Button("Select", id="configs_central_path_select_button"),
                 id="configs_central_path_button_input_container",
             ),
-            Container(
-                Checkbox(
-                    "Overwrite Old Files",
-                    value=False,
-                    id="configs_overwrite_files_checkbox",
-                ),
-                id="configs_transfer_options_container",
-            ),
             Horizontal(
                 Button("Save", id="configs_save_configs_button"),
                 Button(
@@ -182,8 +173,6 @@ class ConfigsContent(Container):
         should be off by default anyway if `value` is not set, but we set here
         anyway as it is critical this is not on by default.
         """
-        container = self.query_one("#configs_transfer_options_container")
-        container.border_title = "Transfer Options"
         if self.interface:
             self.fill_widgets_with_project_configs()
         else:
@@ -191,8 +180,6 @@ class ConfigsContent(Container):
                 True
             )
             self.switch_ssh_widgets_display(display_bool=False)
-
-            self.query_one("#configs_overwrite_files_checkbox").value = False
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
@@ -465,10 +452,6 @@ class ConfigsContent(Container):
         )
         input.value = value
 
-        # Overwrite Files Checkbox
-        checkbox = self.query_one("#configs_overwrite_files_checkbox")
-        checkbox.value = self.interface.get_configs()["overwrite_old_files"]
-
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
         Get the configs to pass to `make_config_file()` from
@@ -504,9 +487,5 @@ class ConfigsContent(Container):
         cfg_kwargs["central_host_username"] = (
             None if central_host_username == "" else central_host_username
         )
-
-        cfg_kwargs["overwrite_old_files"] = self.query_one(
-            "#configs_overwrite_files_checkbox"
-        ).value
 
         return cfg_kwargs

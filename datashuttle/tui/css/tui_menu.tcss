@@ -192,17 +192,6 @@ MessageBox:light > #messagebox_top_container {
     border: none;
 }
 
-#configs_transfer_options_container {
-    margin: 2 0 0 0;
-    padding: 1 1;
-    border: solid $panel-lighten-1;
-    border-title-color: $text;
-    width: 30%;
-    height: auto;
-}
-#configs_transfer_options_container:light {
-    border: solid $panel-darken-3;
-}
 #configs_local_path_input {
     width: 70%;
 }
