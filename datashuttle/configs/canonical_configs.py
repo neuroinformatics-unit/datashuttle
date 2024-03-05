@@ -41,7 +41,7 @@ def get_canonical_configs() -> dict:
         "connection_method": Literal["ssh", "local_filesystem"],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
-        "overwrite_old_files": bool,
+        "overwrite_existing_files": bool,
         "transfer_verbosity": Literal["v", "vv"],
         "show_transfer_progress": bool,
     }
@@ -63,7 +63,7 @@ def get_flags() -> List[str]:
     testing and type checking config inputs.
     """
     return [
-        "overwrite_old_files",
+        "overwrite_existing_files",
         "show_transfer_progress",
     ]
 

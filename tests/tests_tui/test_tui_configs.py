@@ -52,7 +52,7 @@ class TestTuiConfigs(TuiBase):
                     "connection_method": "local_filesystem",
                     "central_host_id": None,
                     "central_host_username": None,
-                    "overwrite_old_files": False,
+                    "overwrite_existing_files": False,
                 }
             )
         elif kwargs_set == 2:
@@ -61,7 +61,7 @@ class TestTuiConfigs(TuiBase):
                     "connection_method": "ssh",
                     "central_host_id": "@test.host.id",
                     "central_host_username": "test_username",
-                    "overwrite_old_files": True,
+                    "overwrite_existing_files": True,
                 }
             )
 
@@ -206,7 +206,7 @@ class TestTuiConfigs(TuiBase):
                 "connection_method": "ssh",
                 "central_host_id": "random_host",
                 "central_host_username": "random_username",
-                "overwrite_old_files": True,
+                "overwrite_existing_files": True,
             }
 
             for key in new_kwargs.keys():
@@ -489,7 +489,7 @@ class TestTuiConfigs(TuiBase):
             "local_path": "",
             "central_path": "",
             "connection_method": "local_filesystem",
-            "overwrite_old_files": False,
+            "overwrite_existing_files": False,
         }
         await self.check_configs_widgets_match_configs(
             configs_content, default_kwargs

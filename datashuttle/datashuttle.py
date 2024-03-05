@@ -342,7 +342,7 @@ class DataShuttle:
         Notes
         -----
 
-        The configs "overwrite_old_files", "transfer_verbosity"
+        The configs "overwrite_existing_files", "transfer_verbosity"
         and "show_transfer_progress" pertain to data-transfer settings.
         See make_config_file() for more information.
 
@@ -645,7 +645,7 @@ class DataShuttle:
         connection_method: str,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
-        overwrite_old_files: bool = False,
+        overwrite_existing_files: bool = False,
         transfer_verbosity: str = "v",
         show_transfer_progress: bool = False,
     ) -> None:
@@ -691,7 +691,7 @@ class DataShuttle:
             username for which to log in to central host.
             e.g. "jziminski"
 
-        overwrite_old_files :
+        overwrite_existing_files :
             If True, when copying data (upload or download) files
             will be overwritten if the timestamp of the copied
             version is later than the target folder version
@@ -731,7 +731,7 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
-                "overwrite_old_files": overwrite_old_files,
+                "overwrite_existing_files": overwrite_existing_files,
                 "transfer_verbosity": transfer_verbosity,
                 "show_transfer_progress": show_transfer_progress,
             },

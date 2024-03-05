@@ -505,8 +505,8 @@ def construct_parser():
         help="(str)",
     )
     make_config_file_parser.add_argument(
-        "--overwrite-old-files",
-        "--overwrite_old_files",
+        "--overwrite-existing-files",
+        "--overwrite_existing_files",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
