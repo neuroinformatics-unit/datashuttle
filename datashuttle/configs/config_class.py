@@ -56,7 +56,20 @@ class Configs(UserDict):
 
     def setup_after_load(self) -> None:
         self.convert_str_and_pathlib_paths(self, "str_to_path")
+        self.ensure_local_and_central_path_end_in_project_name()
         self.check_dict_values_raise_on_fail()
+
+    def ensure_local_and_central_path_end_in_project_name(self):
+        """"""
+        for path_type in ["local_path", "central_path"]:
+
+            # important to check for "." path name as these
+            # disappear when paths are concatenated.
+            canonical_configs.raise_on_bad_path_syntax(
+                self[path_type].as_posix(), path_type
+            )
+            if self[path_type].name != self.project_name:
+                self[path_type] = self[path_type] / self.project_name
 
     def check_dict_values_raise_on_fail(self) -> None:
         """

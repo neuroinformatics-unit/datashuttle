@@ -122,31 +122,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
     for path_type in ["local_path", "central_path"]:
-        path_name = config_dict[path_type].as_posix()
-        if path_name[0] == "~":
-            utils.log_and_raise_error(
-                f"{path_type} must contain the full folder path "
-                "with no ~ syntax.",
-                ConfigError,
-            )
-
-        # pathlib strips "./" so not checked.
-        for bad_start in [".", "../"]:
-            if path_name.startswith(bad_start):
-                utils.log_and_raise_error(
-                    f"{path_type} must contain the full folder path "
-                    "with no dot syntax.",
-                    ConfigError,
-                )
-
-        project_name = config_dict.project_name
-        if config_dict[path_type].stem != project_name:
-            utils.log_and_raise_error(
-                f"The last folder in the passed {path_type} "
-                f"should be {project_name}.\n"
-                f"The passed path was {config_dict[path_type]}",
-                ConfigError,
-            )
+        raise_on_bad_path_syntax(config_dict[path_type].as_posix(), path_type)
 
     check_folder_above_project_name_exists(config_dict)
 
@@ -181,6 +157,31 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             f"Config file not updated.",
             RuntimeError,
         )
+
+
+def raise_on_bad_path_syntax(
+    path_name: str,
+    path_type: str,
+) -> None:
+    """
+    Error if some common, unsupported patterns are observed
+    (e.g. ~, .) for path.
+    """
+    if path_name[0] == "~":
+        utils.log_and_raise_error(
+            f"{path_type} must contain the full folder path "
+            "with no ~ syntax.",
+            ConfigError,
+        )
+
+    # pathlib strips "./" so not checked.
+    for bad_start in [".", "../"]:
+        if path_name.startswith(bad_start):
+            utils.log_and_raise_error(
+                f"{path_type} must contain the full folder path "
+                "with no dot syntax.",
+                ConfigError,
+            )
 
 
 def check_folder_above_project_name_exists(config_dict: Configs) -> None:

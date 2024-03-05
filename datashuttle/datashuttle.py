@@ -758,20 +758,13 @@ class DataShuttle:
 
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
+        new_cfg.setup_after_load()  # Will raise on error
 
-        check_change = new_cfg.safe_check_current_dict_is_valid()
-
-        if check_change["passed"]:
-            self.cfg = new_cfg
-            self._set_attributes_after_config_load()
-            self.cfg.dump_to_file()
-            self._log_successful_config_change(message=True)
-            ds_logger.close_log_filehandler()
-        else:
-            utils.log_and_raise_error(
-                f"{check_change['error']}\nConfigs were not updated.",
-                ConfigError,
-            )
+        self.cfg = new_cfg
+        self._set_attributes_after_config_load()
+        self.cfg.dump_to_file()
+        self._log_successful_config_change(message=True)
+        ds_logger.close_log_filehandler()
 
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
