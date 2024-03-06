@@ -25,6 +25,7 @@ from datashuttle.tui.custom_widgets import (
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
+from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 
@@ -59,7 +60,7 @@ class CreateFoldersTab(TreeAndInputTab):
             validate_on=["changed", "submitted"],
             validators=[NeuroBlueprintValidator("sub", self)],
         )
-        yield Label("Session(s)", id="tabscreen_session_label")
+        yield Label("Session(s)", id="create_folders_session_label")
         yield ClickableInput(
             self.mainwindow,
             id="create_folders_session_input",
@@ -81,6 +82,23 @@ class CreateFoldersTab(TreeAndInputTab):
             ),
             id="create_folders_buttons_horizontal",
         )
+
+    def on_mount(self) -> None:
+        """"""
+        if not self.interface:
+            self.query_one("#configs_name_input").tooltip = get_tooltip(
+                "#configs_name_input"
+            )
+
+        for id in [
+            "#create_folders_directorytree",
+            "#create_folders_subject_label",
+            "#create_folders_session_label",
+            "#create_folders_subject_input",
+            "#create_folders_session_input",
+            "#create_folders_datatype_label",
+        ]:
+            self.query_one(id).tooltip = get_tooltip(id)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
