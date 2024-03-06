@@ -130,6 +130,12 @@ class ConfigsContent(Container):
                     "Setup SSH Connection",
                     id="configs_setup_ssh_connection_button",
                 ),
+                # Below button is always hidden when accessing
+                # configs from project manager screen
+                Button(
+                    "Go to Project Screen",
+                    id="configs_go_to_project_screen_button",
+                ),
                 id="configs_bottom_buttons_horizontal",
             ),
         ]
@@ -173,6 +179,7 @@ class ConfigsContent(Container):
         should be off by default anyway if `value` is not set, but we set here
         anyway as it is critical this is not on by default.
         """
+        self.query_one("#configs_go_to_project_screen_button").visible = False
         if self.interface:
             self.fill_widgets_with_project_configs()
         else:
@@ -180,6 +187,9 @@ class ConfigsContent(Container):
                 True
             )
             self.switch_ssh_widgets_display(display_bool=False)
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
+            )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
@@ -209,13 +219,13 @@ class ConfigsContent(Container):
             not display_bool
         )
 
-        if self.interface is not None:
-            self.query_one("#configs_setup_ssh_connection_button").disabled = (
-                not display_bool
+        if self.interface is None:
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
             )
         else:
-            self.query_one("#configs_setup_ssh_connection_button").disabled = (
-                True
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                display_bool
             )
 
         if not self.query_one("#configs_central_path_input").value:
@@ -236,12 +246,15 @@ class ConfigsContent(Container):
         """
         if event.button.id == "configs_save_configs_button":
             if not self.interface:
-                self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
+                self.setup_configs_for_a_new_project()
             else:
                 self.setup_configs_for_an_existing_project()
 
         elif event.button.id == "configs_setup_ssh_connection_button":
             self.setup_ssh_connection()
+
+        elif event.button.id == "configs_go_to_project_screen_button":
+            self.parent_class.dismiss(self.interface)
 
         elif event.button.id in [
             "configs_local_path_select_button",
@@ -297,22 +310,41 @@ class ConfigsContent(Container):
         """
         assert self.interface is not None, "type narrow flexible `interface`"
 
-        cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
-
-        if any(
-            self.interface.get_configs()[key] != value
-            for key, value in cfg_kwargs.items()
-        ):
+        if not self.widget_configs_match_saved_configs():
             self.parent_class.mainwindow.show_modal_error_dialog(
                 "The values set above must equal the datashuttle settings. "
                 "Either press 'Save' or reload this page."
             )
             return
+
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.interface)
         )
 
-    def setup_configs_for_a_new_project_and_switch_to_tab_screen(self) -> None:
+    def widget_configs_match_saved_configs(self):
+        """
+        Check that the configs currently stored in the widgets
+        on the screen match those stored in the app. This check
+        is to avoid user starting to set up SSH with unexpected
+        settings. It is a little fiddly as the Input for local
+        and central path may or may not contain the project name.
+        Therefore, need to check the stored values against
+        a version with the project name.
+        """
+        cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
+
+        project_name = self.interface.project.cfg.project_name
+
+        for key, value in cfg_kwargs.items():
+            saved_val = self.interface.get_configs()[key]
+            if key in ["central_path", "local_path"]:
+                if value.name != project_name:
+                    value = value / project_name
+            if saved_val != value:
+                return False
+        return True
+
+    def setup_configs_for_a_new_project(self) -> None:
         """
         If a project does not exist, we are in NewProjectScreen.
         We need to instantiate a new project based on the project name,
@@ -333,44 +365,44 @@ class ConfigsContent(Container):
         success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
         if success:
+
+            self.interface = interface
+
+            self.query_one("#configs_go_to_project_screen_button").visible = (
+                True
+            )
+
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.
             if cfg_kwargs["connection_method"] == "ssh":
 
                 self.query_one(
                     "#configs_setup_ssh_connection_button"
+                ).visible = True
+                self.query_one(
+                    "#configs_setup_ssh_connection_button"
                 ).disabled = False
-                self.interface = interface
 
                 message = (
                     "A DataShuttle project has now been created.\n\n "
                     "Next, setup the SSH connection. Once complete, navigate to the "
-                    "'Main Menu' and proceed to "
-                    "the project page, where you will be able to create and "
-                    "transfer project folders."
-                )
-
-                self.parent_class.mainwindow.push_screen(
-                    modal_dialogs.MessageBox(
-                        message,
-                        border_color="green",
-                    ),
+                    "'Main Menu' and proceed to the project page, where you will be "
+                    "able to create and transfer project folders."
                 )
 
             else:
                 message = (
                     "A DataShuttle project has now been created.\n\n "
-                    "Click 'OK' to proceed to "
-                    "the project page, where you will be able to create and "
-                    "transfer project folders."
+                    "Next proceed to the project page, where you will be "
+                    "able to create and transfer project folders."
                 )
-                self.parent_class.mainwindow.push_screen(
-                    modal_dialogs.MessageBox(
-                        message,
-                        border_color="green",
-                    ),
-                    lambda _: self.parent_class.dismiss(interface),
-                )
+
+            self.parent_class.mainwindow.push_screen(
+                modal_dialogs.MessageBox(
+                    message,
+                    border_color="green",
+                ),
+            )
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
@@ -382,6 +414,10 @@ class ConfigsContent(Container):
         there was a problem during setup) to the user.
         """
         assert self.interface is not None, "type narrow flexible `interface`"
+
+        # Handle the edge case where connection method is changed after
+        # saving on the 'Make New Project' screen.
+        self.query_one("#configs_setup_ssh_connection_button").visible = True
 
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
