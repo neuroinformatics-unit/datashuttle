@@ -25,6 +25,7 @@ from textual.widgets import (
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs, setup_ssh
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class ConfigsContent(Container):
@@ -179,6 +180,21 @@ class ConfigsContent(Container):
         should be off by default anyway if `value` is not set, but we set here
         anyway as it is critical this is not on by default.
         """
+        if not self.interface:
+            id = "#configs_name_input"
+            self.query_one(id).tooltip = get_tooltip(id)
+
+        for id in [
+            "#configs_local_path_input",
+            "#configs_connect_method_label",
+            "#configs_local_filesystem_radiobutton",
+            "#configs_ssh_radiobutton",
+            "#configs_central_host_username_input",
+            "#configs_central_host_id_input",
+            "#configs_central_path_input",
+        ]:
+            self.query_one(id).tooltip = get_tooltip(id)
+
         self.query_one("#configs_go_to_project_screen_button").visible = False
         if self.interface:
             self.fill_widgets_with_project_configs()

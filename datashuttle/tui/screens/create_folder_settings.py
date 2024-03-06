@@ -24,6 +24,7 @@ from textual.widgets import (
 
 from datashuttle.configs import links
 from datashuttle.tui.custom_widgets import TopLevelFolderSelect
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class CreateFoldersSettingsScreen(ModalScreen):
@@ -140,6 +141,13 @@ class CreateFoldersSettingsScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
+        for id in [
+            "#create_folders_settings_toplevel_select",
+            "#create_folders_settings_bypass_validation_checkbox",
+            "#template_settings_validation_on_checkbox",
+        ]:
+            self.query_one(id).tooltip = get_tooltip(id)
+
         self.init_input_values_holding_variable()
         self.fill_input_from_template()
         self.switch_template_container_disabled()
