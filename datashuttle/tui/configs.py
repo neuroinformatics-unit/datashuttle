@@ -25,6 +25,7 @@ from textual.widgets import (
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs, setup_ssh
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class ConfigsContent(Container):
@@ -179,6 +180,7 @@ class ConfigsContent(Container):
         should be off by default anyway if `value` is not set, but we set here
         anyway as it is critical this is not on by default.
         """
+        # Setup display widget defaults
         self.query_one("#configs_go_to_project_screen_button").visible = False
         if self.interface:
             self.fill_widgets_with_project_configs()
@@ -186,10 +188,37 @@ class ConfigsContent(Container):
             self.query_one("#configs_local_filesystem_radiobutton").value = (
                 True
             )
-            self.switch_ssh_widgets_display(display_bool=False)
+            self.switch_ssh_widgets_display(display_ssh=False)
             self.query_one("#configs_setup_ssh_connection_button").visible = (
                 False
             )
+
+        # Setup tooltips
+        if not self.interface:
+            id = "#configs_name_input"
+            self.query_one(id).tooltip = get_tooltip(id)
+
+            # Assumes 'local_filesystem' is default if no project set.
+            assert (
+                self.query_one("#configs_local_filesystem_radiobutton").value
+                is True
+            )
+            self.set_central_path_input_tooltip(display_ssh=False)
+        else:
+            display_ssh = (
+                self.interface.project.cfg["connection_method"] == "ssh"
+            )
+            self.set_central_path_input_tooltip(display_ssh)
+
+        for id in [
+            "#configs_local_path_input",
+            "#configs_connect_method_label",
+            "#configs_local_filesystem_radiobutton",
+            "#configs_ssh_radiobutton",
+            "#configs_central_host_username_input",
+            "#configs_central_host_id_input",
+        ]:
+            self.query_one(id).tooltip = get_tooltip(id)
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
@@ -198,10 +227,26 @@ class ConfigsContent(Container):
         """
         label = str(event.pressed.label)
         assert label in ["SSH", "Local Filesystem"], "Unexpected label."
-        display_bool = True if label == "SSH" else False
-        self.switch_ssh_widgets_display(display_bool)
+        display_ssh = True if label == "SSH" else False
+        self.switch_ssh_widgets_display(display_ssh)
+        self.set_central_path_input_tooltip(display_ssh)
 
-    def switch_ssh_widgets_display(self, display_bool: bool) -> None:
+    def set_central_path_input_tooltip(self, display_ssh: bool) -> None:
+        """
+        Use a different tooltip depending on whether connection method
+        is ssh or local filesystem.
+        """
+        id = "#configs_central_path_input"
+        if display_ssh:
+            self.query_one(id).tooltip = get_tooltip(
+                "config_central_path_input_mode-ssh"
+            )
+        else:
+            self.query_one(id).tooltip = get_tooltip(
+                "config_central_path_input_mode-local_filesystem"
+            )
+
+    def switch_ssh_widgets_display(self, display_ssh: bool) -> None:
         """
         Show or hide SSH-related configs based on whether the current
         `connection_method` widget is "ssh" or "local_filesystem".
@@ -209,14 +254,14 @@ class ConfigsContent(Container):
         Parameters
         ----------
 
-        display_bool : bool
+        display_ssh : bool
             If `True`, display the SSH-related widgets.
         """
         for widget in self.config_ssh_widgets:
-            widget.display = display_bool
+            widget.display = display_ssh
 
         self.query_one("#configs_central_path_select_button").display = (
-            not display_bool
+            not display_ssh
         )
 
         if self.interface is None:
@@ -225,11 +270,11 @@ class ConfigsContent(Container):
             )
         else:
             self.query_one("#configs_setup_ssh_connection_button").visible = (
-                display_bool
+                display_ssh
             )
 
         if not self.query_one("#configs_central_path_input").value:
-            if display_bool:
+            if display_ssh:
                 placeholder = (
                     f"e.g. {self.central_input_placeholder_paths['ssh']}"
                 )
@@ -468,7 +513,7 @@ class ConfigsContent(Container):
         radiobutton = self.query_one("#configs_local_filesystem_radiobutton")
         radiobutton.value = not ssh_on
 
-        self.switch_ssh_widgets_display(display_bool=ssh_on)
+        self.switch_ssh_widgets_display(display_ssh=ssh_on)
 
         # Central Host ID
         input = self.query_one("#configs_central_host_id_input")

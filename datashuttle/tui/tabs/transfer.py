@@ -33,6 +33,7 @@ from datashuttle.tui.screens.modal_dialogs import (
     MessageBox,
 )
 from datashuttle.tui.tabs.transfer_status_tree import TransferStatusTree
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class TransferTab(TreeAndInputTab):
@@ -175,6 +176,19 @@ class TransferTab(TreeAndInputTab):
             yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self) -> None:
+
+        for id in [
+            "#transfer_directorytree",
+            "#transfer_switch_container",
+            "#configs_overwrite_files_checkbox",
+            "#transfer_subject_input",
+            "#transfer_session_input",
+            "#transfer_all_checkbox",
+            "#transfer_all_datatype_checkbox",
+            "#transfer_all_non_datatype_checkbox",
+        ]:
+            self.query_one(id).tooltip = get_tooltip(id)
+
         self.switch_transfer_widgets_display()
 
         if self.show_legend:

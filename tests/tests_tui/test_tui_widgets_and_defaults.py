@@ -291,7 +291,7 @@ class TestTuiWidgets(TuiBase):
 
             assert (
                 pilot.app.screen.query_one(
-                    "#tabscreen_session_label"
+                    "#create_folders_session_label"
                 ).renderable._text[0]
                 == "Session(s)"
             )
