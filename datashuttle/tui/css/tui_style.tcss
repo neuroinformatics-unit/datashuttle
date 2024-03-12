@@ -1,0 +1,147 @@
+
+/* Buttons -------------------------------------------------------------------------- */
+
+Button {
+    background: $panel;
+    border: tall $panel-lighten-1;
+}
+Button:focus {
+    text-style: bold;
+}
+Button:hover {
+    background: $panel-lighten-2;
+}
+
+/* Light Mode Buttons */
+
+Button:light {
+    background: $boost;
+    border: tall $panel-darken-3;
+}
+Button:light:hover {
+    background: $panel-darken-3;
+}
+
+/* Main Menu Buttons --------------------------------------------------------------------- */
+
+#all_main_menu_buttons {
+    dock: right;
+    height: 3;
+    layer: top;
+}
+
+/* Header --------------------------------------------------------------------------- */
+
+Header {
+    margin: 0 0 1 0;
+}
+
+/* Directory Tree ------------------------------------------------------------------- */
+
+CustomDirectoryTree {
+    width: 45%;
+    padding: 1 2;
+    margin: 0 4 0 0;
+    border: tall wide $panel-lighten-1;
+}
+CustomDirectoryTree:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+CustomDirectoryTree .tree--guides {
+    color: #949494;
+    text-style: none;
+}
+CustomDirectoryTree .tree--guides-selected {
+    color: #949494;
+    text-style: none;
+}
+CustomDirectoryTree:focus .tree--guides-hover {
+    color: #949494;
+    text-style: none;
+}
+/* Light mode Directory Tree */
+
+CustomDirectoryTree:light {
+    border: tall wide $panel-darken-3;
+    background: $boost;
+}
+
+CustomDirectoryTree:light:focus .tree--cursor {
+    background: $panel-lighten-2;
+}
+
+/* Could not figure out how to selectively override dock by CustomDirectoryTree that do not
+want to dock left */
+
+#create_folders_directorytree {
+    dock: left;
+}
+#transfer_directorytree {
+    dock: left;
+}
+
+/* SelectDirectoryTreeScreen -------------------------------------------------------- */
+
+SelectDirectoryTreeScreen {
+    align: center middle;
+}
+#select_directory_tree_directory_tree {
+    height: 80%;
+    width: 80%
+}
+
+/* Checkboxes ----------------------------------------------------------------------- */
+
+ToggleButton {
+    margin: 0 0 0 1;
+    content-align: left middle;
+    width: auto;
+    background: transparent;
+    padding: 0;
+    border: transparent;
+}
+ToggleButton:focus > .toggle--label {
+    text-style: none;
+}
+ToggleButton.-on > .toggle--button {
+    color: $success;
+}
+ToggleButton:hover > .toggle--button {
+    background: $panel-lighten-3;
+}
+
+/* Light mode Checkboxes */
+
+ToggleButton:light.-on > .toggle--button {
+    color: $text;
+}
+ToggleButton:light:hover > .toggle--button {
+    background: $panel-darken-3;
+}
+
+/* Input ---------------------------------------------------------------------------- */
+
+Input {
+    border: tall $panel-lighten-1;
+}
+
+Input:light {
+    border: tall $panel-darken-3;
+}
+
+/* RadioButtons --------------------------------------------------------------------- */
+
+RadioButton {
+    width: auto;
+}
+
+/* DatatypeCheckboxes --------------------------------------------------------------------- */
+
+DatatypeCheckboxes {
+    layout: grid;
+    grid-size: 2 4;
+    grid-columns: 30;
+    grid_rows: 3;
+    width: auto;
+    padding: 0 0 1 0;
+}

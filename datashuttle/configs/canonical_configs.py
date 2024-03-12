@@ -172,18 +172,19 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
     # Initialise the local project folder
-    try:
-        utils.print_message_to_user(
-            f"Making project folder at: {config_dict['local_path']}"
-        )
-        folders.make_folders(config_dict["local_path"])
+    #  try:
+    utils.print_message_to_user(
+        f"Making project folder at: {config_dict['local_path']}"
+    )
+    folders.create_folders(config_dict["local_path"])
 
-    except OSError:
-        utils.log_and_raise_error(
-            f"Could not make project folder at: {config_dict['local_path']}."
-            f" Config file not updated.",
-            RuntimeError,
-        )
+
+# except OSError:
+#    utils.log_and_raise_error(
+#       f"Could not make project folder at: {config_dict['local_path']}."
+#      f" Config file not updated.",
+#     RuntimeError,
+# )
 
 
 def check_folder_above_project_name_exists(config_dict: Configs) -> None:
@@ -285,12 +286,26 @@ def get_tui_config_defaults() -> Dict:
     """
     settings = {
         "tui": {
-            "checkboxes_on": {
+            "create_checkboxes_on": {
                 "behav": True,
                 "ephys": True,
                 "funcimg": True,
                 "anat": True,
-            }
+            },
+            "transfer_checkboxes_on": {
+                "behav": False,
+                "ephys": False,
+                "funcimg": False,
+                "anat": False,
+                "all": True,
+                "all_datatype": False,
+                "all_non_datatype": False,
+            },
+            "top_level_folder_select": {
+                "create_tab": "rawdata",
+                "toplevel_transfer": "rawdata",
+                "custom_transfer": "rawdata",
+            },
         }
     }
     return settings
@@ -298,6 +313,10 @@ def get_tui_config_defaults() -> Dict:
 
 def get_name_templates_defaults() -> Dict:
     return {"name_templates": {"on": False, "sub": None, "ses": None}}
+
+
+def get_validation_defaults() -> Dict:
+    return {"bypass_validation": False}
 
 
 def get_persistent_settings_defaults() -> Dict:

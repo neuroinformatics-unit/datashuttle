@@ -404,7 +404,7 @@ project folder trees.
 In a typical neuroscience experiment, data collection sessions begin by
 creating the folder for the current *subject* (e.g. mouse, rat) and current *session*.
 
-The command `make-folders` can be used to automatically create standardised
+The command `create-folders` can be used to automatically create standardised
 folder trees (see
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) for details on the standardisation scheme).
 
@@ -427,7 +427,7 @@ In Datashuttle, this folder tree can be created with the below command
 
 :::{tab-item} Python API
 ```{code-block} python
-project.make_folders(
+project.create_folders(
 	sub_names="001",
 	ses_names="001_@DATE@",
 	datatype="behav"
@@ -439,7 +439,7 @@ project.make_folders(
 ```{code-block} console
 datashuttle \
 my_first_project \
-make-folders -sub 001 -ses 001_@DATE@ -dt behav
+create-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```
 :::
 
@@ -447,7 +447,7 @@ make-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```{code-block} console
 datashuttle ^
 my_first_project ^
-make-folders -sub 001 -ses 001_@DATE@ -dt behav
+create-folders -sub 001 -ses 001_@DATE@ -dt behav
 ```
 :::
 
@@ -483,7 +483,7 @@ The main data transfer commands are: `upload`, `download`, `upload-all`,
 
 These commands act differently in regard to the *top-level-folder*. In Datashuttle, the current working
 *top-level-folder* is by default *rawdata*. The working *top-level-folder* determines  where folders
-are created (e.g. `make_folders`) and how commands transfer data.
+are created (e.g. `create_folders`) and how commands transfer data.
 
 
 :::{dropdown} *top-level-folders*
@@ -649,7 +649,7 @@ For example, the command:
 
 :::{tab-item} Python API
 ```{code-block} python
-project.make_folders(
+project.create_folders(
 	sub_names="sub-001",
 	ses_names=["001_@DATETIME@", "002_@DATETIME@"],
 	datatype="behav",
@@ -661,7 +661,7 @@ project.make_folders(
 ```{code-block} console
 datashuttle \
 my_first_project \
-make_folders \
+create_folders \
 -sub sub-001 \
 -ses 001_@DATETIME@ 002_@DATETIME@ \
 -dt behav
@@ -672,7 +672,7 @@ make_folders \
 ```{code-block} console
 datashuttle ^
 my_first_project ^
-make_folders ^
+create_folders ^
 -sub sub-001 ^
 -ses 001_@DATETIME@ 002_@DATETIME@ ^
 -dt behav
@@ -875,7 +875,7 @@ Datashuttle provides a number of keyword arguments to allow separate
 handling of files that are not found in *datatype* folders.
 
 These are:
-`all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `-all_ses_level_non_datatype` (for `-dt`).
+`all_sub` and `all_non_sub` (for `-sub`), `all_ses` and `all_non_ses` (for `-ses`) and `all_non_datatype` (for `-dt`).
 
 
 #### For use with the `-sub` / `--sub-names` flag
@@ -910,7 +910,7 @@ as well as all files and folders within selected *session* folders.
 `behav`, `ephys`, `funcimg`, `anat`) within a *session* folder will be
 transferred. Non-*datatype* folders at the *session* level will not be transferred
 
-`all_ses_level_non_datatype` : Non-*datatype* folders within *session* folders only will be transferred
+`all_non_datatype` : Non-*datatype* folders within *session* folders only will be transferred
 
 Below, a number of examples are given to exemplify how these arguments effect data transfer.
 Given our example *local* project folder above:
@@ -923,7 +923,7 @@ Given our example *local* project folder above:
 
 :::{tab-item} Python API
 ```{code-block} console
-project.upload("all", "all", "all_ses_level_non_datatype")
+project.upload("all", "all", "all_non_datatype")
 ```
 :::
 
@@ -935,7 +935,7 @@ my_first_project \
 upload \
 -sub all \
 -ses all \
--dt all_ses_level_non_datatype
+-dt all_non_datatype
 ```
 :::
 
@@ -946,7 +946,7 @@ my_first_project ^
 upload ^
 -sub all ^
 -ses all ^
--dt all_ses_level_non_datatype
+-dt all_non_datatype
 ```
 :::
 
@@ -1007,7 +1007,7 @@ The command:
 
 :::{tab-item} Python API
 ```{code-block} python
-project.make_folders(
+project.create_folders(
 	sub_names="001",
 	ses_names="all",
 	datatype="all_datatype"
@@ -1053,7 +1053,7 @@ but not the non-*datatype* file `ses-001_extra-file.json`.
 
 :::{tab-item} Python API
 ```{code-block} python
-project.make_folders(
+project.create_folders(
 	sub_names="all_non_sub",
 	ses_names="all",
 	datatype="all"
@@ -1104,11 +1104,11 @@ Detailed logs of all configuration changes, folder creation and data transfers a
 to the `.datashuttle` folder that is created in the *local* project folder.
 
 The log itself contains relevant information pertaining to that command.
-For example, if the commands `make_folders`, `upload`, `download` were run sequentially,
+For example, if the commands `create_folders`, `upload`, `download` were run sequentially,
 the logs output folder would look like:
 
 ```
-20230608T095514_make-folders.log
+20230608T095514_create-folders.log
 20230608T095545_upload-data.log
 20230608T095621_download-data.log
 ```

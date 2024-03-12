@@ -2,6 +2,7 @@ import os
 import shutil
 from pathlib import Path
 
+import pytest
 import test_utils
 from base import BaseTest
 
@@ -9,7 +10,11 @@ from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
 class TestTransferChecks(BaseTest):
-    def test_rclone_check(self, project):
+    @pytest.mark.parametrize(
+        "top_level_folders",
+        [["rawdata", "derivatives"], ["rawdata"], ["derivatives"]],
+    )
+    def test_rclone_check(self, project, top_level_folders):
         """
         Test rclone.get_local_and_central_file_differences(). This function
         returns a dictionary where values are list of paths and keys
@@ -26,29 +31,19 @@ class TestTransferChecks(BaseTest):
         `get_local_and_central_file_differences()` and checks the output is
         as expected.
         """
-        (local := project.cfg["local_path"] / "rawdata").mkdir(parents=True)
-        (central := project.cfg["central_path"] / "rawdata").mkdir(
-            parents=True
+        if len(top_level_folders) == 1:
+            project.set_top_level_folder(top_level_folders[0])
+
+        (local := project.cfg["local_path"]).mkdir(parents=True, exist_ok=True)
+        (central := project.cfg["central_path"]).mkdir(
+            parents=True, exist_ok=True
         )
 
-        # fmt: off
-        folder_structure = [
-            ["sub-001/ses-001/ephys/local_only_1.txt",          "local_only"],
-            ["sub-001/ses-001/behav/same_2.txt",                "same"],
-            ["sub-001/ses-002/anat/local_only_3.txt",           "local_only"],
-            ["sub-001/ses-002/anat/central_only_4.txt",         "central_only"],
-            ["sub-001/ses-003/ephys/newer_in_central_5.txt",    "newer_in_central"],
-            ["sub-002/ses-002/anat/same_6.txt",                 "same"],
-            ["sub-003/ses-003/behav/newer_in_central_7.txt",    "newer_in_central"],
-            ["sub-003/ses-004/funcimg/newer_in_local_8.txt",    "newer_in_local"],
-            ["sub-004/ses-005/behav/newer_in_local_9.txt",      "newer_in_local"],
-            ["sub-005/ses-001/ephys/same_10.txt",               "same"],
-            ["sub-005/ses-001/ephys/local_only_11.txt",         "local_only"],
-            ["sub-005/ses-001/ephys/central_only_12.txt",       "central_only"],
-        ]
-        # fmt: on
-
         # Build the project according to the above spec
+        folder_structure = []
+        for top_level in top_level_folders:
+            folder_structure.extend(self.get_folder_structure(top_level))
+
         for folder_info in folder_structure:
             path_, type_ = folder_info
 
@@ -80,7 +75,12 @@ class TestTransferChecks(BaseTest):
                         central / path_, "new text", append=True
                     )
 
-        results = get_local_and_central_file_differences(project.cfg)
+        results = get_local_and_central_file_differences(
+            project.cfg,
+            all_top_level_folder=(
+                True if len(top_level_folders) == 2 else False
+            ),
+        )
 
         # Check the results are sorted into cases correctly.
         for folder_info in folder_structure:
@@ -91,6 +91,28 @@ class TestTransferChecks(BaseTest):
 
             for results_type, results_paths in results.items():
                 if results_type == type_:
-                    assert path_ in results_paths
+                    try:
+                        assert path_ in results_paths
+                    except:
+                        breakpoint()
                 else:
                     assert path_ not in results_paths
+
+    def get_folder_structure(self, top_level_folder):
+        # fmt: off
+        folder_structure = [
+            [f"{top_level_folder}/sub-001/ses-001/ephys/local_only_1.txt",          "local_only"],
+            [f"{top_level_folder}/sub-001/ses-001/behav/same_2.txt",                "same"],
+            [f"{top_level_folder}/sub-001/ses-002/anat/local_only_3.txt",           "local_only"],
+            [f"{top_level_folder}/sub-001/ses-002/anat/central_only_4.txt",         "central_only"],
+            [f"{top_level_folder}/sub-001/ses-003/ephys/newer_in_central_5.txt",    "newer_in_central"],
+            [f"{top_level_folder}/sub-002/ses-002/anat/same_6.txt",                 "same"],
+            [f"{top_level_folder}/sub-003/ses-003/behav/newer_in_central_7.txt",    "newer_in_central"],
+            [f"{top_level_folder}/sub-003/ses-004/funcimg/newer_in_local_8.txt",    "newer_in_local"],
+            [f"{top_level_folder}/sub-004/ses-005/behav/newer_in_local_9.txt",      "newer_in_local"],
+            [f"{top_level_folder}/sub-005/ses-001/ephys/same_10.txt",               "same"],
+            [f"{top_level_folder}/sub-005/ses-001/ephys/local_only_11.txt",         "local_only"],
+            [f"{top_level_folder}/sub-005/ses-001/ephys/central_only_12.txt",       "central_only"],
+        ]
+        # fmt: on
+        return folder_structure

@@ -15,12 +15,12 @@ class TestPersistentSettings(BaseTest):
     def test_persistent_settings(self, project, unused_repeat):
         """
         Test persistent settings functions by editing the
-        persistent settings, checking they are changed and
-        the program settings are changed accordingly.
+        persistent settings top-level-folder entry, checking they are
+        changed and the program settings are changed accordingly.
         """
         settings = project._load_persistent_settings()
 
-        assert len(settings) == 3
+        assert len(settings) == 4
         assert settings["top_level_folder"] == "rawdata"
 
         # Update they persistent setting and check this is reflected
@@ -94,7 +94,7 @@ class TestPersistentSettings(BaseTest):
 
         # Bad sub name
         with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders(bad_sub)
+            project.create_folders(bad_sub)
         assert (
             str(e.value) == "The name: "
             "sub-3_id-abC_random-helloworld "
@@ -103,11 +103,11 @@ class TestPersistentSettings(BaseTest):
         )
 
         # Good sub name (should not raise)
-        project.make_folders(good_sub)
+        project.create_folders(good_sub)
 
         # Bad ses name
         with pytest.raises(NeuroBlueprintError) as e:
-            project.make_folders(good_sub, bad_ses)
+            project.create_folders(good_sub, bad_ses)
 
         assert (
             str(e.value) == "The name: "
@@ -117,7 +117,7 @@ class TestPersistentSettings(BaseTest):
         )
 
         # Good ses name (should not raise)
-        project.make_folders(good_sub, good_ses)
+        project.create_folders(good_sub, good_ses)
 
         # Now just test the other validation functions explicitly
         # here as well to avoid duplicate of test setup.
@@ -149,7 +149,7 @@ class TestPersistentSettings(BaseTest):
         reload_name_templates["on"] = False
         project.set_name_templates(reload_name_templates)
 
-        project.make_folders(good_sub, "ses-02")
+        project.create_folders(good_sub, "ses-02")
 
     def test_set_top_level_folder_is_persistent(self, project):
         """

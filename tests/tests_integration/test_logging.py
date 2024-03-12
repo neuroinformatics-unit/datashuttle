@@ -63,7 +63,7 @@ class TestLogging:
     # ----------------------------------------------------------------------------------------------------------
 
     def read_log_file(self, logging_path):
-        log_filepath = glob.glob(str(logging_path / "*.log"))
+        log_filepath = list(glob.glob(str(logging_path / "*.log")))
 
         assert len(log_filepath) == 1, (
             f"there should only be one log "
@@ -78,8 +78,7 @@ class TestLogging:
 
     def delete_log_files(self, logging_path):
         ds_logger.close_log_filehandler()
-        logs = glob.glob((str(logging_path / "*.log")))
-        for log in logs:
+        for log in glob.glob((str(logging_path / "*.log"))):
             os.remove(log)
 
     def test_log_filename(self, project):
@@ -153,12 +152,12 @@ class TestLogging:
             in log
         )
 
-    def test_make_folders(self, project):
+    def test_create_folders(self, project):
         subs = ["sub-111", f"sub-002{tags('to')}004"]
 
         ses = ["ses-123", "ses-101"]
 
-        project.make_folders(subs, ses, datatype="all")
+        project.create_folders(subs, ses, datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -345,8 +344,8 @@ class TestLogging:
             project.cfg["local_path"] / ".datashuttle" / "logs" / "*.log"
         ).as_posix()
 
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        project_path_logs = glob.glob(local_path_search)
+        tmp_path_logs = list(glob.glob(str(project._temp_log_path / "*.log")))
+        project_path_logs = list(glob.glob(local_path_search))
 
         assert len(tmp_path_logs) == 0
         assert len(project_path_logs) == 1
@@ -364,10 +363,10 @@ class TestLogging:
 
         project.make_config_file(**configs)
 
-        tmp_path_logs = glob.glob(str(project._temp_log_path / "*.log"))
-        project_path_logs = glob.glob(local_path_search)
-        new_local_path_logs = glob.glob(
-            f"{new_local_path}/.datashuttle/logs/*.log"
+        tmp_path_logs = list(glob.glob(str(project._temp_log_path / "*.log")))
+        project_path_logs = list(glob.glob(local_path_search))
+        new_local_path_logs = list(
+            glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
         )
 
         assert len(tmp_path_logs) == 0
@@ -395,7 +394,7 @@ class TestLogging:
         local_path_log_search = str(
             project.cfg["local_path"] / ".datashuttle" / "logs" / "*.log"
         )
-        local_path_logs = glob.glob(local_path_log_search)
+        local_path_logs = list(glob.glob(local_path_log_search))
 
         assert len(local_path_logs) == 1
         assert "supply-config-file" in local_path_logs[0]
@@ -415,8 +414,10 @@ class TestLogging:
         )
         project.supply_config_file(new_configs_path, warn=False)
 
-        local_path_logs = glob.glob(local_path_log_search)
-        new_path_logs = glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
+        local_path_logs = list(glob.glob(local_path_log_search))
+        new_path_logs = list(
+            glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
+        )
 
         assert len(new_path_logs) == 1
         assert len(local_path_logs) == 1
@@ -446,12 +447,16 @@ class TestLogging:
 
         # Because an error was raised, the log will stay in the
         # temp log folder. We clear it and check it is deleted.
-        stored_logs = glob.glob((project._temp_log_path / "*.log").as_posix())
+        stored_logs = list(
+            glob.glob((project._temp_log_path / "*.log").as_posix())
+        )
         assert len(stored_logs) == 1
 
         project._clear_temp_log_path()
 
-        stored_logs = glob.glob((project._temp_log_path / "*.log").as_posix())
+        stored_logs = list(
+            glob.glob((project._temp_log_path / "*.log").as_posix())
+        )
         assert len(stored_logs) == 0
 
     # ----------------------------------------------------------------------------------
@@ -476,13 +481,13 @@ class TestLogging:
             in log
         )
 
-    def test_logs_bad_make_folders_error(self, project):
+    def test_logs_bad_create_folders_error(self, project):
         """"""
-        project.make_folders("sub-001", datatype="all")
+        project.create_folders("sub-001", datatype="all")
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(NeuroBlueprintError):
-            project.make_folders(
+            project.create_folders(
                 "sub-001_datetime-123213T123122", datatype="all"
             )
         log = self.read_log_file(project.cfg.logging_path)
@@ -499,7 +504,7 @@ class TestLogging:
         and warnings to file.
         """
         # Make conflicting subject folders
-        project.make_folders(["sub-001", "sub-002"])
+        project.create_folders(["sub-001", "sub-002"])
         for sub in ["sub-1", "sub-002_date-2023"]:
             os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
 
@@ -532,11 +537,11 @@ class TestLogging:
         `make_project_folders` is called, that it logs errors
         to file. Warnings are not tested.
         """
-        project.make_folders("sub-001")
+        project.create_folders("sub-001")
         self.delete_log_files(project.cfg.logging_path)  #
 
         with pytest.raises(BaseException) as e:
-            project.make_folders("sub-001_id-a")
+            project.create_folders("sub-001_id-a")
 
         log = self.read_log_file(project.cfg.logging_path)
 

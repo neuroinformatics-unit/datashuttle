@@ -1,0 +1,170 @@
+
+/* General Tab Content ---------------------------------------------------------------------- */
+
+TabScreen {
+    align: center middle;
+}
+TabScreen > TabbedContent {
+    width: 90%;
+    height: 100%
+}
+
+/* Create Tab --------------------------------------------------------------------------- */
+
+#tabscreen_create_tab > Label {
+    padding: 1 0 1 1;
+}
+
+#tabscreen_create_tab > Input.-valid {
+    border: tall $success 60%;
+}
+#tabscreen_create_tab > Input.-valid:focus {
+        border: tall $success;
+}
+
+#tabscreen_create_tab > Input.-invalid {
+    border: tall $error 60%;
+}
+
+#tabscreen_create_tab > Input.-invalid:focus {
+    border: tall $error;
+}
+
+#create_folders_settings_button {
+    dock: right;
+}
+
+#create_folders_buttons_horizontal {
+    height: 3;
+}
+
+#template_settings_validation_on_checkbox.-on > .toggle--button{
+    color: $success;
+}
+
+#template_settings_validation_on_checkbox.-on > .toggle--label{
+    color: $success;
+}
+
+#template_settings_validation_on_checkbox > .toggle--button{
+    color: $error;
+}
+
+/* Transfer Tab --------------------------------------------------------------------------- */
+
+#transfer_radioset {
+    layout: horizontal;
+    background: transparent;
+}
+
+#transfer_radioset:focus {
+    border: transparent;
+}
+
+#transfer_radioset > RadioButton {
+    margin: 0 3 0 0;
+}
+
+#transfer_params_container {
+    border: solid $panel-lighten-1;
+    margin: 0 1 2 1;
+    padding: 0 0 0 2;
+    height: 60%;
+    overflow: hidden auto;
+    align: left top;
+}
+
+#transfer_params_container > Label {
+    padding: 1 0 1 1;
+    text-style: bold;
+    width: auto;
+    height: auto;
+}
+
+#transfer_params_container > Input {
+    width: 96%;
+}
+
+#transfer_params_container > Select {
+    width: 96%;
+}
+
+#transfer_switch > .switch--slider {
+    color: $success;
+}
+
+#transfer_switch_container {
+    width: auto;
+    height: auto;
+    align-vertical: middle;
+    margin: 0 0 0 2;
+}
+
+#transfer_switch_container > Label{
+    margin: 1 0 0 0;
+}
+
+#transfer_button_container {
+    align-horizontal: right;
+    height: auto;
+}
+
+TransferStatusTree {
+    padding: 1 2 3 2;
+}
+
+#transfer_legend {
+    layer: top;
+    dock: left;
+    align-vertical: bottom;
+    background: $primary-background-darken-1;
+    width: auto;
+    margin: 2 2;
+}
+
+Tooltip {
+    outline: solid $panel-lighten-1;
+}
+Tooltip:light {
+    outline: solid $panel-darken-3;
+}
+/* Light mode */
+
+#transfer_params_container:light {
+    border: solid black;
+}
+
+#transfer_transfer_button {
+    margin: 0 0 0 4;
+}
+
+/* Logging Tab ------------------------------------------------------------- */
+
+#logging_tab_top_label {
+    padding: 0 0 0 1;
+}
+#logging_most_recent_label {
+    padding: 1 0 1 1;
+}
+
+
+#logging_tab_custom_directory_tree {
+    width: 100%;
+    height: 70%;
+}
+
+#logging_tab_outer_container {
+    align: center top;
+    content-align: center top;
+    width: 100%;
+    overflow: hidden auto;
+}
+
+RichLog {
+    padding: 1 1 1 1;
+    border: solid grey;
+}
+
+#richlog_screen_close_button {
+    margin: 1 1 1 1;
+}

@@ -100,7 +100,7 @@ class TestFileTransfer:
             shutil.copy(ssh_config.SSH_KEY_PATH, project.cfg.file_path.parent)
 
         pathtable = get_pathtable(project.cfg["local_path"])
-        self.create_all_pathtable_files(pathtable)
+        test_utils.create_all_pathtable_files(pathtable)
         project.testing_ssh = testing_ssh
 
         yield [pathtable, project]
@@ -148,13 +148,13 @@ class TestFileTransfer:
         "datatype",
         [
             ["all"],
-            ["all_ses_level_non_datatype"],
+            ["all_non_datatype"],
             ["all_datatype"],
             ["behav"],
             ["ephys"],
             ["anat"],
             ["funcimg"],
-            ["anat", "behav", "all_ses_level_non_datatype"],
+            ["anat", "behav", "all_non_datatype"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -268,17 +268,10 @@ class TestFileTransfer:
                 entries += (
                     [f"all_non_{field}"]
                     if field != "datatype"
-                    else ["all_ses_level_non_datatype"]
+                    else ["all_non_datatype"]
                 )
             list_of_names = entries
         return list_of_names
-
-    def create_all_pathtable_files(self, pathtable):
-        """ """
-        for i in range(pathtable.shape[0]):
-            filepath = pathtable["base_folder"][i] / pathtable["path"][i]
-            filepath.parents[0].mkdir(parents=True, exist_ok=True)
-            test_utils.write_file(filepath, contents="test_entry")
 
     def make_pathtable_search_filter(self, sub_names, ses_names, datatype):
         """
@@ -304,7 +297,7 @@ class TestFileTransfer:
                         ]
                     else:
                         for dtype in datatype:
-                            if dtype == "all_ses_level_non_datatype":
+                            if dtype == "all_non_datatype":
                                 extra_arguments += [
                                     f"(parent_sub == '{sub}' & parent_ses == '{ses}' & is_ses_level_non_datatype == True)"
                                 ]

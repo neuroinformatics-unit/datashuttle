@@ -290,9 +290,7 @@ class TransferData:
         Given a particular subject and session, get a list of all
         canonical datatype folders.
         """
-        datatype = list(
-            filter(lambda x: x != "all_ses_level_non_datatype", datatype)
-        )
+        datatype = list(filter(lambda x: x != "all_non_datatype", datatype))
 
         datatype_items = folders.items_from_datatype_input(
             self.cfg, self.local_or_central, datatype, sub, ses
@@ -323,7 +321,7 @@ class TransferData:
     ) -> None:
         """
         Check the sub / session names passed. The checking here
-        is stricter than for make_folders / formatting.check_and_format_names
+        is stricter than for create_folders / formatting.check_and_format_names
         because we want to ensure that a) non-datatype arguments are not
         passed at the wrong input (e.g. all_non_ses as a subject name).
 
@@ -363,6 +361,16 @@ class TransferData:
                 "or 'all_datatype' if these options are used.",
                 ValueError,
             )
+
+        for name, list_ in zip(
+            ["sub_names", "ses_names", "datatype"],
+            [self.sub_names, self.ses_names, self.datatype],
+        ):
+            if len(list_) == 0:
+                utils.log_and_raise_error(
+                    f"`{name}` input cannot be empty.",
+                    ValueError,
+                )
 
     # -------------------------------------------------------------------------
     # Format Arguments
@@ -433,8 +441,5 @@ class TransferData:
         are to be transferred
         """
         return any(
-            [
-                name in ["all_ses_level_non_datatype", "all"]
-                for name in datatype_checked
-            ]
+            [name in ["all_non_datatype", "all"] for name in datatype_checked]
         )

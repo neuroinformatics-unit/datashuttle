@@ -7,7 +7,7 @@ import os
 import shutil
 import warnings
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
 import paramiko
 import yaml
@@ -97,7 +97,7 @@ class DataShuttle:
             self._temp_log_path,
         ) = canonical_folders.get_project_datashuttle_path(self.project_name)
 
-        folders.make_folders([self._datashuttle_path, self._temp_log_path])
+        folders.create_folders([self._datashuttle_path, self._temp_log_path])
 
         self._config_path = self._datashuttle_path / "config.yaml"
 
@@ -142,7 +142,7 @@ class DataShuttle:
         Set the working top level folder (e.g. 'rawdata', 'derivatives').
 
         The top_level_folder defines in which top level folder new
-        sub-folders will be made (e.g. make_folders) or at which level
+        sub-folders will be made (e.g. create_folders) or at which level
         folders  are transferred with the commands upload / download
         and upload_all / download all.
 
@@ -167,7 +167,7 @@ class DataShuttle:
         self._display_top_level_folder()
 
     @check_configs_set
-    def make_folders(
+    def create_folders(
         self,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]] = None,
@@ -221,13 +221,13 @@ class DataShuttle:
 
         Examples
         --------
-        project.make_folders("sub-001", datatype="all")
+        project.create_folders("sub-001", datatype="all")
 
-        project.make_folders("sub-002@TO@005",
+        project.create_folders("sub-002@TO@005",
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("make-folders", local_vars=locals())
+        self._start_log("create-folders", local_vars=locals())
 
         self._display_top_level_folder()
 
@@ -235,37 +235,22 @@ class DataShuttle:
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
         name_templates = self.get_name_templates()
+        bypass_validation = self.get_bypass_validation()
 
-        sub_names = formatting.check_and_format_names(
-            sub_names, "sub", name_templates
+        format_sub, format_ses = self._format_and_validate_names(
+            sub_names, ses_names, name_templates, bypass_validation, log=True
         )
-
-        if ses_names is not None:
-            ses_names = formatting.check_and_format_names(
-                ses_names, "ses", name_templates
-            )
-        else:
-            ses_names = []
 
         ds_logger.log_names(
             ["formatted_sub_names", "formatted_ses_names"],
-            [sub_names, ses_names],
-        )
-
-        validation.validate_names_against_project(
-            self.cfg,
-            sub_names,
-            ses_names,
-            local_only=True,
-            error_or_warn="error",
-            name_templates=name_templates,
+            [format_sub, format_ses],
         )
 
         utils.log("\nMaking folders...")
-        folders.make_folder_trees(
+        folders.create_folder_trees(
             self.cfg,
-            sub_names,
-            ses_names,
+            format_sub,
+            format_ses,
             datatype,
             log=True,
         )
@@ -279,6 +264,43 @@ class DataShuttle:
         )
 
         ds_logger.close_log_filehandler()
+
+    def _format_and_validate_names(
+        self,
+        sub_names: Union[str, List[str]],
+        ses_names: Optional[Union[str, List[str]]],
+        name_templates: Dict,
+        bypass_validation: bool,
+        log: bool = True,
+    ) -> Tuple[List[str], List[str]]:
+        """
+        A central method for the formatting and validation of subject / session
+        names for folder creation. This is called by both DataShuttle and
+        during TUI validation.
+        """
+        format_sub = formatting.check_and_format_names(
+            sub_names, "sub", name_templates, bypass_validation
+        )
+
+        if ses_names is not None:
+            format_ses = formatting.check_and_format_names(
+                ses_names, "ses", name_templates, bypass_validation
+            )
+        else:
+            format_ses = []
+
+        if not bypass_validation:
+            validation.validate_names_against_project(
+                self.cfg,
+                format_sub,
+                format_ses,
+                local_only=True,
+                error_or_warn="error",
+                log=log,
+                name_templates=name_templates,
+            )
+
+        return format_sub, format_ses
 
     # -------------------------------------------------------------------------
     # Public File Transfer
@@ -317,7 +339,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         datatype :
-            see make_folders()
+            see create_folders()
 
         init_log :
             (Optional). Whether to start the logger. This should
@@ -691,7 +713,7 @@ class DataShuttle:
                 "Use `update-config-file` to selectively update settings."
             )
 
-        self.cfg = Configs(
+        cfg = Configs(
             self.project_name,
             self._config_path,
             {
@@ -706,10 +728,10 @@ class DataShuttle:
             },
         )
 
-        self.cfg.setup_after_load()  # will raise error if fails
+        cfg.setup_after_load()  # will raise error if fails
+        self.cfg = cfg
 
-        if self.cfg:
-            self.cfg.dump_to_file()
+        self.cfg.dump_to_file()
 
         self._set_attributes_after_config_load()
 
@@ -860,7 +882,7 @@ class DataShuttle:
         'rawdata', 'derivatives')
 
         The top_level_folder defines in which top level folder new
-        sub-folders will be made (e.g. make_folders) or
+        sub-folders will be made (e.g. create_folders) or
         at which level folders are transferred with the commands
         upload / download and upload_all / download all.
         upload_specific_folder_or_file / download_specific_folder_or_file.
@@ -970,7 +992,28 @@ class DataShuttle:
             where "sub" or "ses" can be a regexp that subject and session
             names respectively are validated against.
         """
+        #        if new_name_templates["on"] and None in [
+        #            new_name_templates["sub"],
+        #            new_name_templates["ses"],
+        #        ]:
+        #            utils.log_and_raise_error(
+        #                "Subject and session name templates must be set "
+        #                "if name templates is on.",
+        #                ValueError,
+        #            )
+
         self._update_persistent_setting("name_templates", new_name_templates)
+
+    def set_bypass_validation(self, on):
+        self._update_persistent_setting(
+            "bypass_validation", on
+        )  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+
+    def get_bypass_validation(
+        self,
+    ):  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+        settings = self._load_persistent_settings()
+        return settings["bypass_validation"]
 
     # -------------------------------------------------------------------------
     # Showers
@@ -1043,7 +1086,7 @@ class DataShuttle:
     ) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to make_folders() or upload()
+        for example as when passed to create_folders() or upload()
         or download()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
@@ -1201,7 +1244,7 @@ class DataShuttle:
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
-        folders.make_folders(self.cfg.project_metadata_path, log=False)
+        folders.create_folders(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_central_ssh_config(self, log: bool) -> None:
         rclone.setup_central_as_rclone_target(
@@ -1280,12 +1323,19 @@ class DataShuttle:
         return settings
 
     def _update_settings_with_new_canonical_keys(self, settings: Dict):
-        """"""
+        """
+
+        TODO: this is not really sufficient, e.g. a new field in tui
+        will not be discoverd.
+        """
         if "name_templates" not in settings:
             settings.update(canonical_configs.get_name_templates_defaults())
 
         if "tui" not in settings:
             settings.update(canonical_configs.get_tui_config_defaults())
+
+        if "bypass_validation" not in settings:
+            settings.update(canonical_configs.get_validation_defaults())
 
     @check_configs_set
     def _display_top_level_folder(self) -> None:

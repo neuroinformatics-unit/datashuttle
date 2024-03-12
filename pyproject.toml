@@ -18,6 +18,9 @@ dependencies = [
     "rich",
     "fancylog[git]",
     "simplejson",
+    "pyperclip",
+    "textual",
+    "show-in-file-manager",
 ]
 
 classifiers = [
@@ -57,6 +60,8 @@ dev = [
     "types-simplejson",
     "pandas-stubs",
     "types-setuptools",
+    "pytest-asyncio",
+    "validators",
 ]
 
 [build-system]

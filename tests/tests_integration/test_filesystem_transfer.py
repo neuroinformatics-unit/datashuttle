@@ -43,7 +43,6 @@ class TestFileTransfer(BaseTest):
             transfer_function("all", "all", "all")
 
         test_utils.check_folder_tree_is_correct(
-            project,
             os.path.join(base_path_to_check, project.cfg.top_level_folder),
             subs,
             sessions,
@@ -51,7 +50,7 @@ class TestFileTransfer(BaseTest):
         )
 
     def test_empty_folder_is_not_transferred(self, project):
-        project.make_folders("sub-001")
+        project.create_folders("sub-001")
         project.upload_all()
         assert not (project.cfg["central_path"] / "sub-001").is_dir()
 
@@ -97,7 +96,7 @@ class TestFileTransfer(BaseTest):
         )
 
         test_utils.check_working_top_level_folder_only_exists(
-            folder_name, project, full_base_path_to_check, subs, sessions
+            folder_name, full_base_path_to_check, subs, sessions
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -124,7 +123,6 @@ class TestFileTransfer(BaseTest):
         for folder_name in canonical_folders.get_top_level_folders():
             project.set_top_level_folder(folder_name)
             test_utils.check_folder_tree_is_correct(
-                project,
                 os.path.join(base_path_to_check, project.cfg.top_level_folder),
                 subs,
                 sessions,
@@ -268,7 +266,7 @@ class TestFileTransfer(BaseTest):
         """
         Test the @TO@ keyword is accepted properly when making a session and
         transferring it. First pass @TO@-formatted sub and sessions to
-        make_folders. Then transfer the files (upload or download).
+        create_folders. Then transfer the files (upload or download).
 
         Finally, check the expected formatting on the subject and session
         is observed on the created and transferred file paths.
@@ -298,13 +296,13 @@ class TestFileTransfer(BaseTest):
 
                 datetime_regexp = "datetime-\d{8}T\d{6}"
 
-                assert re.match(
+                assert re.fullmatch(
                     "ses-001_" + datetime_regexp, sessions_in_path[0]
                 )
-                assert re.match(
+                assert re.fullmatch(
                     "ses-002_" + datetime_regexp, sessions_in_path[1]
                 )
-                assert re.match(
+                assert re.fullmatch(
                     "ses-003_" + datetime_regexp, sessions_in_path[2]
                 )
 
@@ -350,6 +348,28 @@ class TestFileTransfer(BaseTest):
                 "ses-001_date-20220501",
                 "ses-002_date-20220516",
             ]
+
+    def test_deep_folder_structure(self, project):
+        """
+        Just a quick test as all other tests only test files directly in the
+        datatyp directly. Check that rlcone is setup to transfer
+        multiple levels down from the datatype level.
+        """
+        make_base_path = (
+            lambda root: root / "rawdata" / "sub-001" / "ses-001" / "behav"
+        )
+        local = make_base_path(project.cfg["local_path"])
+        test_file_path = (
+            Path("level_1") / "level_2" / "level 3" / "deep_test_file"
+        )
+
+        test_utils.write_file(local / test_file_path, "hello world")
+
+        project.upload_entire_project()
+
+        assert (
+            make_base_path(project.cfg["central_path"]) / test_file_path
+        ).is_file()
 
     @pytest.mark.parametrize("overwrite_old_files", [True, False])
     @pytest.mark.parametrize("show_transfer_progress", [True, False])
@@ -405,7 +425,7 @@ class TestFileTransfer(BaseTest):
         """
         see test_rclone_options()
         """
-        project.make_folders(["sub-001"], ["ses-002"], ["behav"])
+        project.create_folders(["sub-001"], ["ses-002"], ["behav"])
         project.update_config_file(transfer_verbosity=transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
@@ -435,7 +455,7 @@ class TestFileTransfer(BaseTest):
             Path("rawdata") / "sub-001" / "ses-001" / "anat" / "test_file.txt"
         )
 
-        project.make_folders("sub-001", "ses-001", datatype="anat")
+        project.create_folders("sub-001", "ses-001", datatype="anat")
 
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         central_test_file_path = (
@@ -535,7 +555,7 @@ class TestFileTransfer(BaseTest):
 
     def setup_specific_file_or_folder_files(self, project):
         """ """
-        project.make_folders(
+        project.create_folders(
             ["sub-001", "sub-002"], "ses-003", ["behav", "ephys"]
         )
 
