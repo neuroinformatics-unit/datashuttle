@@ -1037,7 +1037,7 @@ def main() -> None:
     """
     args = parser.parse_args()
 
-    if args.project_name in ["tui", "gui"]:
+    if args.project_name in ["tui", "gui", "start"]:
         tui_main()
 
     if "func" in args and str(args.func.__name__) == "make_config_file":
