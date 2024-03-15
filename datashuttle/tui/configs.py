@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
 
 if TYPE_CHECKING:
@@ -58,11 +59,6 @@ class ConfigsContent(Container):
         self.interface = interface
         self.config_ssh_widgets: List[Any] = []
 
-        self.central_input_placeholder_paths = {
-            "filesystem": r"C:\path\to\central\my_projects\my_first_project",
-            "ssh": r"/nfs/path_on_server/myprojects/central",
-        }
-
     def compose(self) -> ComposeResult:
         """
         `self.config_ssh_widgets` are SSH-setup related widgets
@@ -99,7 +95,7 @@ class ConfigsContent(Container):
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=r"e.g. C:\path\to\local\my_projects\my_first_project",
+                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('local')}",
                     id="configs_local_path_input",
                 ),
                 Button("Select", id="configs_local_path_select_button"),
@@ -119,7 +115,7 @@ class ConfigsContent(Container):
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=f"e.g. {self.central_input_placeholder_paths['filesystem']}",
+                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}",
                     id="configs_central_path_input",
                 ),
                 Button("Select", id="configs_central_path_select_button"),
@@ -246,6 +242,26 @@ class ConfigsContent(Container):
                 "config_central_path_input_mode-local_filesystem"
             )
 
+    def get_platform_dependent_example_paths(
+        self, local_or_central: Literal["local", "central"], ssh: bool = False
+    ) -> str:
+        """ """
+        assert local_or_central in ["local", "central"]
+
+        # Handle the ssh central case separately
+        # because it is always the same
+        if local_or_central == "central" and ssh:
+            example_path = "/nfs/path_on_server/myprojects/central"
+        else:
+            if platform.system() == "Windows":
+                example_path = rf"C:\path\to\{local_or_central}\my_projects\my_first_project"
+            else:
+                example_path = (
+                    f"/path/to/{local_or_central}/my_projects/my_first_project"
+                )
+
+        return example_path
+
     def switch_ssh_widgets_display(self, display_ssh: bool) -> None:
         """
         Show or hide SSH-related configs based on whether the current
@@ -275,11 +291,9 @@ class ConfigsContent(Container):
 
         if not self.query_one("#configs_central_path_input").value:
             if display_ssh:
-                placeholder = (
-                    f"e.g. {self.central_input_placeholder_paths['ssh']}"
-                )
+                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=True)}"
             else:
-                placeholder = f"e.g. {self.central_input_placeholder_paths['filesystem']}"
+                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}"
             self.query_one("#configs_central_path_input").placeholder = (
                 placeholder
             )
