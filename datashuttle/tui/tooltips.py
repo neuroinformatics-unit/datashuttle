@@ -45,12 +45,17 @@ def get_tooltip(id: str) -> str:
         tooltip = "The account username through which to access the server."
 
     # central path input
-    elif id == "#configs_central_path_input":
+    elif id == "config_central_path_input_mode-ssh":
         tooltip = (
             "The path to the project folder on the central machine (or it's parent folder).\n\n"
-            "If using 'local filesystem', this path is relative to the current machine and directs "
-            "to a project folder on the mounted drive.\n\n"
-            "If using 'SSH', this path is relative to the server e.g. /nhome/users/myusername"
+            "With 'SSH', this path is relative to the server e.g. /nhome/users/myusername"
+        )
+
+    elif id == "config_central_path_input_mode-local_filesystem":
+        tooltip = (
+            "The path to the project folder on the central machine (or it's parent folder).\n\n"
+            "With 'local filesystem', this path is relative to the current machine and directs "
+            "to a project folder, possibly on a mounted drive.\n\n"
         )
 
     # Settings
