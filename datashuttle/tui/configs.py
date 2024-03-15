@@ -176,7 +176,6 @@ class ConfigsContent(Container):
         should be off by default anyway if `value` is not set, but we set here
         anyway as it is critical this is not on by default.
         """
-
         # Setup display widget defaults
         self.query_one("#configs_go_to_project_screen_button").visible = False
         if self.interface:
