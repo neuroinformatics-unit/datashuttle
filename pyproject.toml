@@ -54,6 +54,7 @@ dev = [
     "pre-commit",
     "ruff",
     "setuptools_scm",
+    "textual-dev",
     "types-requests",
     "types-PyYAML",
     "types-appdirs",
