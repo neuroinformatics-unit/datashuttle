@@ -62,6 +62,8 @@ myst_enable_extensions = [
     "strikethrough",
     "substitution",
     "tasklist",
+    "attrs_block",  # https://stackoverflow.com/questions/78183173/custom-styling-a-header-in-sphinx-website?noredirect=1#comment137843002_78183173
+    "attrs_inline"
 ]
 # Automatically add anchors to markdown headings
 myst_heading_anchors = 3

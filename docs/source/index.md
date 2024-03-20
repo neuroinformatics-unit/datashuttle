@@ -1,42 +1,59 @@
 :html_theme.sidebar_secondary.remove:
 
-# DataShuttle Documentation
+<h1 style="text-align: center;"><b>datashuttle</b></h1>
 
-This website includes the documentation and API documentation for DataShuttle.
+<p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation and transfer.</p>
 
-For additional information, please visit the [GitHub Page](https://github.com/neuroinformatics-unit/datashuttle).
-
-Any feedback is much appreciated, please open at [GitHub Issue](https://github.com/neuroinformatics-unit/datashuttle/issues)
-or join our [Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle) if you have any problems or suggestions.
-
-## Explore the Documentation
-
+```{image} _static/datashuttle-overview.png
+:alt: My Logo
+:class: logo, mainlogo
+:align: center
+:width: 600
+```
 ::::{grid} 1 2 2 3
-:gutter: 3
+:gutter: 4
 
-:::{grid-item-card} User Guide
-:link: pages/documentation
+:::{grid-item-card} Tutorials
+:link: pages/tutorials
 :link-type: doc
 
-Get started with DataShuttle.
+Walk-through **datashuttle**.
+:::
 
+:::{grid-item-card} How To
+:link: pages/how_tos
+:link-type: doc
+
+Short guides on specific actions.
 :::
 
 :::{grid-item-card} Python API
 :link: pages/api_index
 :link-type: doc
 
-Check out the API reference.
+Full Python API reference.
 :::
-
-:::{grid-item-card} Command-line interface
-:link: pages/cli_index
-:link-type: doc
-
-Use datashuttle with the CLI.
-:::
-
 ::::
+
+<p style="text-align: center; font-size: 16px; margin: 0.5cm auto 0.5cm; width: 80%;">
+<br>
+Datashuttle allows you to rapidy
+create and validate project folders standardised to the
+<a href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> specification.
+Standardised data can be conveniently transferred between
+acquisition, storage and analysis machines.
+<br><br>
+Get started with our full 'tutorials[ADD AS LINK]' above or our 'get started quickly' video below.
+<br><br>
+Don't hesitate to get in contact through our
+<a href="https://github.com/neuroinformatics-unit/datashuttle/issues">GitHub Issues</a>
+or
+<a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle">Zulip chat</a>.
+</p>
+
+{#quickstart_video}
+Text
+<h2 style="text-align: center;">[Get Started Video]</h2>
 
 ```{toctree}
 :maxdepth: 2
