@@ -1,12 +1,7 @@
 (gui_walkthrough)=
 # Graphical Walkthrough
 
-1) go thrugh with a fine tooth comb - make things extremely simple
-2) Partition into shared vs. TUI parts
-3) Possibly re-write non-tui parts with the existing python API docs
-4) add tui images
-5) TODO: add estimated time to complete
-
+1) TODO: add estimated time to complete
 
 ## Introduction
 
@@ -28,7 +23,8 @@ and transferring a 'mock' experiment, standardised to the
    :class: only-light
    :width: 550px
 ```
-\
+<br>
+
 We will create standardised folders then upload 'acquired' data (empty text files)
 to a central data storage, as you would do in a typical data acquisition session.
 Then we will download a subset of data (e.g. test sessions only) from the central
@@ -36,9 +32,15 @@ storage, as you would do during analysis.
 
 ## Installing **datashuttle**
 
-The first step is to install datashuttle, by following the instructions
-at the [How to Install](how-to-install). Once **datashuttle** is installed,
-typing `datashuttle launch` will launch the application in your terminal
+The first step is to install **datashuttle**, by following the instructions
+at the [How to Install](how-to-install).
+
+
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+Once **datashuttle** is installed,  typing `datashuttle launch` will
+launch the application in your terminal
 
 ```{image} /_static/screenshots/tutorial-1-landing-screen-dark.png
    :align: center
@@ -50,7 +52,13 @@ typing `datashuttle launch` will launch the application in your terminal
    :class: only-light
    :width: 700px
 ```
-\
+
+:::
+:::{tab-item} Python API
+test
+:::
+::::
+
 ## Make a new project
 
 The first thing to do when using **datashuttle** on a new machine is
@@ -70,6 +78,10 @@ connecting a mounted drive or SSH connection.
 In this walkthrough, we will set our central storage as a
 folder on our machine for simplicity.
 
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+
 Now we will set up a new project. Click `Make New Project` and you
 will be taken to the project setup page.
 
@@ -83,11 +95,22 @@ will be taken to the project setup page.
    :class: only-light
    :width: 900px
 ```
-\
+<br>
+
 We'll call our project `my_first_project`, and can type this into
 the first input box on the page.
 
-[PICTURE]
+```{image} /_static/screenshots/tutorial-1-make-project-name-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-make-project-name-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 Next we need to specify the _local path_, the location on our machine where
 we will save our acquired data. Choose any directory that is
@@ -95,7 +118,17 @@ convenient, and then add `local` to the end of the filepath.
 The filepath can be typed into the input, copied in with `CTRL+V`
 or selected from a directory tree using the `Select` button.
 
-[PICTURE]
+```{image} /_static/screenshots/tutorial-1-make-local-path-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-make-local-path-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 Finally, we need to  select the _local path_. Usually this would be
 a path to a mounted central storage drive or relative to the server path
@@ -105,21 +138,52 @@ set this next to the _local path_ for convenience:
 1) Copy the contents of the _local path_ input by hovering over it and pressing `CTRL+Q` to copy.
 2) Paste it into the _central path_ input with `CTRL+V` and change 'local' to 'central'.
 
-[!! page of filled out project setup !!]
+```{image} /_static/screenshots/tutorial-1-make-central-path-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-make-central-path-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 You can now click `Save` to set up the project. Once the project
 is created, the `Go to Project Screen` button will appear.
 Click to move on to the `Create Project` page.
 
+:::
+
+:::{tab-item} Python API
+test
+::::
 ## Creating folders
 
 Let's imagine today is our first day of data collection,
 and we are acquiring  behaviour (`behav`) and electrophysiology (`ephys`) data.
-We need to create standardised subject, session and datatype folders
-to put our data into.
 
-Following the
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+
+We will create standardised subject, session and datatype folders
+to put our data into using the `Create` tab.
+
+```{image} /_static/screenshots/tutorial-1-create-screen-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/tutorial-1-create-screen-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
+Following the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
 style we will  call the first subject `sub-001`. Additional key-value pairs in
 the subject name could be included if desired (see the
 [NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html)
@@ -128,36 +192,74 @@ for more details).
 In the session name we can include today's date,
 so our first session will be `ses-001_date-<todays_date>`.
 
-[!! Create Project Page Image !!]
-
 We could start by typing `sub-001` into the subject input box, but
 it is more convenient to simply double-left-click it. This will suggest
 the next subject number based on the current subjects in the project.
 As currently this project is empty, the suggested next subject is `sub-001`.
 
-[!! ADD PHOTO !!]
+```{image} /_static/screenshots/tutorial-1-create-subject-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-create-subject-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 ```{note}
 The subject and session folder input boxes have live validation.
 This will flag any
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
-errors with a red border.
+errors with a red border. Hover over the input box with the mouse
+to see the nature of the error.
 ```
 
 Next, we can input the session name. Double-left-click on the session
 input to automatically fill with `ses-001`. We can then add
 today's date with the `@DATE@` convenience tag.
 
-[!! ADD PHOTO !! ]
-
 When the session folder is created, today's date will be automatically added.
+
+```{image} /_static/screenshots/tutorial-1-create-session-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-create-session-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 Next, uncheck the `funcimg` and `anat` datatype boxes, to ensure
 we only create `behav` and `ephys` folders in our session folder.
 
-[ !! Photo !! ]
+```{image} /_static/screenshots/tutorial-1-create-datatype-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-create-datatype-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 Finally, click `Create Folders` to create the folder structure in the project!
+
+:::
+
+:::{tab-item} Python API
+test
+:::
+
+::::
+
 This was a quick overview of the creating folders functionality—see [How to use Name Templates](how-to-use-name-templates)
 and [Create Folder Tags](how-to-create-folders2) for more detail on validation and convenience tags.
 
@@ -166,12 +268,28 @@ and [Create Folder Tags](how-to-create-folders2) for more detail on validation a
 In our imagined experiment, we will next want to save data from
 acquisition software into our newly created, standardised folders.
 
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+
 When folders are created, the `Directory Tree` on the left-hand side
 will update to display the new folders.
 By hovering over a folder on the `Directory Tree` we can quickly
 copy the full path to the folder (`CTRL+Q)`).
 
 Alternatively, pressing `CTRL+O` will open the folder in your file browser.
+
+```{image} /_static/screenshots/tutorial-1-explore-folders-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-explore-folders-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 These shortcuts aim to make it simple to direct your acquisition software
 to the datatype folders. Hover over the `DirectoryTree`
@@ -198,8 +316,14 @@ electrophysiology file to the `ephys` folder.
 
 Finally, hover the mouse over the `Directory Tree` and press `CTRL+R` to refresh.
 
-[!! Expected File Tree !!]
 ```
+
+:::
+
+:::{tab-item} Python API
+test
+:::
+::::
 
 ## Uploading to central storage
 
@@ -210,10 +334,25 @@ Typically,  this would be an external machine or server, connected through a mou
 drive or via SSH. In this walkthrough, we set the _central path_ on our
 local machine for convenience.
 
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+
+
 First, switch to the `Transfer` tab, where on the left we will again
 see a `Directory Tree` displaying the local version of the project.
 
-[!! Image of transfer tab !!]
+```{image} /_static/screenshots/tutorial-1-transfer-screen-upload-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/tutorial-1-transfer-screen-upload-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
 
 The first page on the `Transfer` tab allows us to upload the entire project,
 both the `rawdata` and `derivatives` (the `derivatives` folder is used for
@@ -246,8 +385,16 @@ or `Custom` buttons for refined transfers (for example, if we also had a
 `derivatives` folder). For more information
 see [How to Transfer Data](how-to-transfer-data) and the next section for `Custom` transfers.
 
+:::
+
+:::{tab-item} Python API
+test
+:::
+::::
+
 With the data safely on our central storage,
 our experimental acquisition session is complete!
+
 
 ## Downloading from central storage
 
@@ -255,7 +402,7 @@ Finally, let's imagine we are on a different, analysis machine and want to
 download a subset of data for further processing. In this example we will
 download only the behavioural data from the second session.
 
-In practice the `Custom` interface works well when there
+In practice **datashuttle**'s custom data transfers work well when there
 are many subjects and sessions (for example, downloading only the behavioural
 'test' sessions from a specific range of subjects).
 
@@ -269,24 +416,68 @@ In practice when setting up **datashuttle** on a new machine, you would
 again [Make a new project](make-a-new-project).
 ```
 
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+
 The `Custom` transfer screen has options for selecting specific combinations
 of subjects, sessions and datatypes. We will look at a small subset of possible
 options here, but see [How to make Custom Transfers](making-custom-transfers) for more information.
 
-[!! custom transfer screen !!]
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-dark.png
+   :align: center
+   :class: only-dark
+   :width: 600px
+```
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-light.png
+   :align: center
+   :class: only-light
+   :width: 600px
+```
+<br>
 
 In the subject input, we can simply type `all` (in this case, we only have one subject anyway).
 
-[ !! Image of subject input !!]
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-subjects-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-subjects-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 Next, let's specify to download only the second session.
 We can use the [wildcard tag](transfer-the-wildcard-tag) to avoid typing the exact date—`ses-002_@*@`.
 
-[ !! Image of session input !!]
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-sessions-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-sessions-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 Then, select only the `behav` datatype from the datatype checkboxes.
 
-[ !! Image of behav checkbox !!]
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-datatypes-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-datatypes-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 Finally, we can select `Download` from the upload / download switch,
 and click `Transfer`.
@@ -295,15 +486,32 @@ Note that the `Overwrite Existing Files` setting affects both upload
 and downloads—any local versions of a file will be overwritten
 by newer versions downloaded from central storage when it is turned on.
 
-[ !! Image of upload / download and Transfer input !!]
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-switch-dark.png
+   :align: center
+   :class: only-dark
+   :width: 400px
+```
+```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-switch-light.png
+   :align: center
+   :class: only-light
+   :width: 400px
+```
+<br>
 
 The transfer will complete, and the custom selection
 of files will now be available in the _local path_ folder.
 
 ```{note}
 Detailed information on data transfers can be found in the `Logs` tab.
-Visit [How to Read the Logs](how-to-read-the-logs) for more information¬
+Visit [How to Read the Logs](how-to-read-the-logs) for more information.
 ```
+
+:::
+
+:::{tab-item} Python API
+test
+:::
+::::
 
 ## Summary
 
