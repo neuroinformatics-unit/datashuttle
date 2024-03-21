@@ -17,38 +17,18 @@ We will get an overview of  **datashuttle**'s key features by creating
 and transferring a 'mock' experiment, standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) style.
 
-```{image} /_static/light-tree.png
-   :align: center
-   :class: only-light
-```
 
-```{image} /_static/light-tree2.png
-   :align: center
-   :class: only-light
-   :width: 533px
-```
-
-```{image} /_static/light-tree3.png
-   :align: center
-   :class: only-light
-   :width: 533px
-```
-```{image} /_static/light-tree4.png
-   :align: center
-   :class: only-light
-   :width: 533px
-```
-```{image} /_static/light-tree5.png
-   :align: center
-   :class: only-light
-   :width: 533px
-```
-
-```{image} /_static/dark-tree.png
+```{image} /_static/screenshots/tutorial-1-example-file-tree-dark.png
    :align: center
    :class: only-dark
+   :width: 550px
 ```
-
+```{image} /_static/screenshots/tutorial-1-example-file-tree-light.png
+   :align: center
+   :class: only-light
+   :width: 550px
+```
+\
 We will create standardised folders then upload 'acquired' data (empty text files)
 to a central data storage, as you would do in a typical data acquisition session.
 Then we will download a subset of data (e.g. test sessions only) from the central
@@ -60,8 +40,17 @@ The first step is to install datashuttle, by following the instructions
 at the [How to Install](how-to-install). Once **datashuttle** is installed,
 typing `datashuttle launch` will launch the application in your terminal
 
-[!! IMAGE OF DATASHUTTLE FRONT PAGE !!]
-
+```{image} /_static/screenshots/tutorial-1-landing-screen-dark.png
+   :align: center
+   :class: only-dark
+   :width: 700px
+```
+```{image} /_static/screenshots/tutorial-1-landing-screen-light.png
+   :align: center
+   :class: only-light
+   :width: 700px
+```
+\
 ## Make a new project
 
 The first thing to do when using **datashuttle** on a new machine is
@@ -84,8 +73,17 @@ folder on our machine for simplicity.
 Now we will set up a new project. Click `Make New Project` and you
 will be taken to the project setup page.
 
-[!! page of empty project setup !!]
-
+```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/tutorial-1-make-screen-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+\
 We'll call our project `my_first_project`, and can type this into
 the first input box on the page.
 
