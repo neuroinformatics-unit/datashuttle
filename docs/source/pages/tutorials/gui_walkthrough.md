@@ -17,17 +17,21 @@ We will get an overview of  **datashuttle**'s key features by creating
 and transferring a 'mock' experiment, standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) style.
 
-[!!TODO: should use from filetree?!!]
+```{image} /_static/light-tree.png
+   :align: center
+   :class: only-light
 ```
-└── my_first_project/
-    └── rawdata  /
-        └── sub-001  /
-            └── ses-001_date-16052024/
-                ├── behav/
-                │   └── sub-001_ses-001_camera-top.mp4
-                └── ephys/
-                    └── sub-001_ses-001_g0_t0.imec0.ap
-                    └── sub-001_ses-001_g0_t0.imec0.meta
+
+```{image} /_static/light-tree2.png
+   :align: center
+   :class: only-light
+   :width: 533px
+```
+
+
+```{image} /_static/dark-tree.png
+   :align: center
+   :class: only-dark
 ```
 
 We will create standardised folders then upload 'acquired' data (empty text files)
