@@ -1,4 +1,4 @@
-(choose-a-terminal)=
+(how-to-choose-a-terminal)=
 
 # How to Choose a Terminal
 

@@ -17,7 +17,7 @@
 :link: pages/tutorials
 :link-type: doc
 
-Walk-through **datashuttle**.
+Walkthrough **datashuttle**.
 :::
 
 :::{grid-item-card} How To

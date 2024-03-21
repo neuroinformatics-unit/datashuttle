@@ -1,4 +1,4 @@
-(install)=
+(how-to-install)=
 # How to Install
 
 **datashuttle** requires Python and a number of other dependencies to run.
@@ -6,7 +6,7 @@
 The easiest way to install **datashuttle** is through [conda](https://docs.conda.io/en/latest/),
 but installation via `pip` and for developers is also supported.
 
-## Installation Instructions
+## Installation instructions
 
 ::::{tab-set}
 
@@ -72,5 +72,5 @@ datashuttle launch
 ```
 
 Before using the graphical interface, you may want to
-[choose the best terminal](choose-a-terminal)
+[choose the best terminal](how-to-choose-a-terminal)
 for your operating system.
