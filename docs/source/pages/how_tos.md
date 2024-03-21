@@ -1,5 +1,5 @@
 :html_theme.sidebar_secondary.remove:
-
+(how_tos)=
 # How To
 
 ::::{grid} 1 1 3 3

@@ -1,3 +1,4 @@
+(install)=
 # How to Install
 
 **datashuttle** requires Python and a number of other dependencies to run.
