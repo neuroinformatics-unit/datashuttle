@@ -51,16 +51,4 @@ or
 <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle">Zulip chat</a>.
 </p>
 
-{#quickstart_video}
-Text
 <h2 style="text-align: center;">[Get Started Video]</h2>
-
-```{toctree}
-:maxdepth: 2
-:caption: index
-:hidden:
-
-pages/documentation
-pages/api_index
-pages/cli_index
-```
