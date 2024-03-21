@@ -33,6 +33,11 @@ and transferring a 'mock' experiment, standardised to the
    :class: only-light
    :width: 533px
 ```
+```{image} /_static/light-tree4.png
+   :align: center
+   :class: only-light
+   :width: 533px
+```
 
 
 ```{image} /_static/dark-tree.png
