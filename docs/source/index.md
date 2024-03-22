@@ -1,5 +1,6 @@
 :html_theme.sidebar_secondary.remove:
 
+<title>[PAGE TITLE] &#8212;datashuttle</title>
 <h1 style="text-align: center;"><b>datashuttle</b></h1>
 
 <p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation and transfer.</p>
@@ -10,6 +11,8 @@
 :align: center
 :width: 600
 ```
+<br>
+
 ::::{grid} 1 2 2 3
 :gutter: 4
 

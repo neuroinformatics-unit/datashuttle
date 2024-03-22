@@ -45,4 +45,4 @@ with minor graphical errors.
 
 Once you've chosen a terminal, get started with the
 graphical interface using our
-[Graphical Interface Walk-Through](gui_walkthrough).
+[Graphical Interface Walk-Through](tutorial-getting-started).
