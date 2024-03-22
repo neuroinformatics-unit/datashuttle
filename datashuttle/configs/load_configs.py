@@ -101,9 +101,8 @@ def supplied_configs_confirm_overwrite(
 
     new_cfg = Configs(project_name, path_to_config, None)
     new_cfg.load_from_file()
-
     new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
-    new_cfg.check_dict_values_raise_on_fail()
+    new_cfg.setup_after_load()
 
     return new_cfg
 

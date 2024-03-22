@@ -27,9 +27,7 @@ class TestTuiSettings(TuiBase):
                 ).renderable._text[0]
             )
 
-            await self.scroll_to_click_pause(
-                pilot, "#generic_screen_close_button"
-            )
+            await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
 
             assert pilot.app.screen.id == "_default"
 

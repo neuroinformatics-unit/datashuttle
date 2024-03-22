@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
 
 if TYPE_CHECKING:
@@ -16,7 +17,6 @@ from textual.containers import Container, Horizontal
 from textual.message import Message
 from textual.widgets import (
     Button,
-    Checkbox,
     Label,
     RadioButton,
     RadioSet,
@@ -26,6 +26,7 @@ from textual.widgets import (
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs, setup_ssh
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class ConfigsContent(Container):
@@ -57,11 +58,6 @@ class ConfigsContent(Container):
         self.parent_class = parent_class
         self.interface = interface
         self.config_ssh_widgets: List[Any] = []
-
-        self.central_input_placeholder_paths = {
-            "filesystem": r"C:\path\to\central\my_projects\my_first_project",
-            "ssh": r"/nfs/path_on_server/myprojects/central",
-        }
 
     def compose(self) -> ComposeResult:
         """
@@ -99,7 +95,7 @@ class ConfigsContent(Container):
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=r"e.g. C:\path\to\local\my_projects\my_first_project",
+                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('local')}",
                     id="configs_local_path_input",
                 ),
                 Button("Select", id="configs_local_path_select_button"),
@@ -119,19 +115,11 @@ class ConfigsContent(Container):
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=f"e.g. {self.central_input_placeholder_paths['filesystem']}",
+                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}",
                     id="configs_central_path_input",
                 ),
                 Button("Select", id="configs_central_path_select_button"),
                 id="configs_central_path_button_input_container",
-            ),
-            Container(
-                Checkbox(
-                    "Overwrite Old Files",
-                    value=False,
-                    id="configs_overwrite_files_checkbox",
-                ),
-                id="configs_transfer_options_container",
             ),
             Horizontal(
                 Button("Save", id="configs_save_configs_button"),
@@ -139,12 +127,18 @@ class ConfigsContent(Container):
                     "Setup SSH Connection",
                     id="configs_setup_ssh_connection_button",
                 ),
+                # Below button is always hidden when accessing
+                # configs from project manager screen
+                Button(
+                    "Go to Project Screen",
+                    id="configs_go_to_project_screen_button",
+                ),
                 id="configs_bottom_buttons_horizontal",
             ),
         ]
 
         init_only_config_screen_widgets = [
-            Label("Configure A New Project", id="configs_banner_label"),
+            Label("Make A New Project", id="configs_banner_label"),
             Horizontal(
                 Static(
                     "Set your configurations for a new project. For more "
@@ -182,17 +176,45 @@ class ConfigsContent(Container):
         should be off by default anyway if `value` is not set, but we set here
         anyway as it is critical this is not on by default.
         """
-        container = self.query_one("#configs_transfer_options_container")
-        container.border_title = "Transfer Options"
+        # Setup display widget defaults
+        self.query_one("#configs_go_to_project_screen_button").visible = False
         if self.interface:
             self.fill_widgets_with_project_configs()
         else:
             self.query_one("#configs_local_filesystem_radiobutton").value = (
                 True
             )
-            self.switch_ssh_widgets_display(display_bool=False)
+            self.switch_ssh_widgets_display(display_ssh=False)
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
+            )
 
-            self.query_one("#configs_overwrite_files_checkbox").value = False
+        # Setup tooltips
+        if not self.interface:
+            id = "#configs_name_input"
+            self.query_one(id).tooltip = get_tooltip(id)
+
+            # Assumes 'local_filesystem' is default if no project set.
+            assert (
+                self.query_one("#configs_local_filesystem_radiobutton").value
+                is True
+            )
+            self.set_central_path_input_tooltip(display_ssh=False)
+        else:
+            display_ssh = (
+                self.interface.project.cfg["connection_method"] == "ssh"
+            )
+            self.set_central_path_input_tooltip(display_ssh)
+
+        for id in [
+            "#configs_local_path_input",
+            "#configs_connect_method_label",
+            "#configs_local_filesystem_radiobutton",
+            "#configs_ssh_radiobutton",
+            "#configs_central_host_username_input",
+            "#configs_central_host_id_input",
+        ]:
+            self.query_one(id).tooltip = get_tooltip(id)
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
@@ -201,10 +223,46 @@ class ConfigsContent(Container):
         """
         label = str(event.pressed.label)
         assert label in ["SSH", "Local Filesystem"], "Unexpected label."
-        display_bool = True if label == "SSH" else False
-        self.switch_ssh_widgets_display(display_bool)
+        display_ssh = True if label == "SSH" else False
+        self.switch_ssh_widgets_display(display_ssh)
+        self.set_central_path_input_tooltip(display_ssh)
 
-    def switch_ssh_widgets_display(self, display_bool: bool) -> None:
+    def set_central_path_input_tooltip(self, display_ssh: bool) -> None:
+        """
+        Use a different tooltip depending on whether connection method
+        is ssh or local filesystem.
+        """
+        id = "#configs_central_path_input"
+        if display_ssh:
+            self.query_one(id).tooltip = get_tooltip(
+                "config_central_path_input_mode-ssh"
+            )
+        else:
+            self.query_one(id).tooltip = get_tooltip(
+                "config_central_path_input_mode-local_filesystem"
+            )
+
+    def get_platform_dependent_example_paths(
+        self, local_or_central: Literal["local", "central"], ssh: bool = False
+    ) -> str:
+        """ """
+        assert local_or_central in ["local", "central"]
+
+        # Handle the ssh central case separately
+        # because it is always the same
+        if local_or_central == "central" and ssh:
+            example_path = "/nfs/path_on_server/myprojects/central"
+        else:
+            if platform.system() == "Windows":
+                example_path = rf"C:\path\to\{local_or_central}\my_projects\my_first_project"
+            else:
+                example_path = (
+                    f"/path/to/{local_or_central}/my_projects/my_first_project"
+                )
+
+        return example_path
+
+    def switch_ssh_widgets_display(self, display_ssh: bool) -> None:
         """
         Show or hide SSH-related configs based on whether the current
         `connection_method` widget is "ssh" or "local_filesystem".
@@ -212,32 +270,30 @@ class ConfigsContent(Container):
         Parameters
         ----------
 
-        display_bool : bool
+        display_ssh : bool
             If `True`, display the SSH-related widgets.
         """
         for widget in self.config_ssh_widgets:
-            widget.display = display_bool
+            widget.display = display_ssh
 
-        self.query_one("#configs_central_path_select_button").disabled = (
-            display_bool
+        self.query_one("#configs_central_path_select_button").display = (
+            not display_ssh
         )
 
-        if self.interface is not None:
-            self.query_one("#configs_setup_ssh_connection_button").disabled = (
-                not display_bool
+        if self.interface is None:
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
             )
         else:
-            self.query_one("#configs_setup_ssh_connection_button").disabled = (
-                True
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                display_ssh
             )
 
         if not self.query_one("#configs_central_path_input").value:
-            if display_bool:
-                placeholder = (
-                    f"e.g. {self.central_input_placeholder_paths['ssh']}"
-                )
+            if display_ssh:
+                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=True)}"
             else:
-                placeholder = f"e.g. {self.central_input_placeholder_paths['filesystem']}"
+                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}"
             self.query_one("#configs_central_path_input").placeholder = (
                 placeholder
             )
@@ -249,12 +305,15 @@ class ConfigsContent(Container):
         """
         if event.button.id == "configs_save_configs_button":
             if not self.interface:
-                self.setup_configs_for_a_new_project_and_switch_to_tab_screen()
+                self.setup_configs_for_a_new_project()
             else:
                 self.setup_configs_for_an_existing_project()
 
         elif event.button.id == "configs_setup_ssh_connection_button":
             self.setup_ssh_connection()
+
+        elif event.button.id == "configs_go_to_project_screen_button":
+            self.parent_class.dismiss(self.interface)
 
         elif event.button.id in [
             "configs_local_path_select_button",
@@ -310,22 +369,41 @@ class ConfigsContent(Container):
         """
         assert self.interface is not None, "type narrow flexible `interface`"
 
-        cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
-
-        if any(
-            self.interface.get_configs()[key] != value
-            for key, value in cfg_kwargs.items()
-        ):
+        if not self.widget_configs_match_saved_configs():
             self.parent_class.mainwindow.show_modal_error_dialog(
                 "The values set above must equal the datashuttle settings. "
                 "Either press 'Save' or reload this page."
             )
             return
+
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.interface)
         )
 
-    def setup_configs_for_a_new_project_and_switch_to_tab_screen(self) -> None:
+    def widget_configs_match_saved_configs(self):
+        """
+        Check that the configs currently stored in the widgets
+        on the screen match those stored in the app. This check
+        is to avoid user starting to set up SSH with unexpected
+        settings. It is a little fiddly as the Input for local
+        and central path may or may not contain the project name.
+        Therefore, need to check the stored values against
+        a version with the project name.
+        """
+        cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
+
+        project_name = self.interface.project.cfg.project_name
+
+        for key, value in cfg_kwargs.items():
+            saved_val = self.interface.get_configs()[key]
+            if key in ["central_path", "local_path"]:
+                if value.name != project_name:
+                    value = value / project_name
+            if saved_val != value:
+                return False
+        return True
+
+    def setup_configs_for_a_new_project(self) -> None:
         """
         If a project does not exist, we are in NewProjectScreen.
         We need to instantiate a new project based on the project name,
@@ -346,44 +424,44 @@ class ConfigsContent(Container):
         success, output = interface.setup_new_project(project_name, cfg_kwargs)
 
         if success:
+
+            self.interface = interface
+
+            self.query_one("#configs_go_to_project_screen_button").visible = (
+                True
+            )
+
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.
             if cfg_kwargs["connection_method"] == "ssh":
 
                 self.query_one(
                     "#configs_setup_ssh_connection_button"
+                ).visible = True
+                self.query_one(
+                    "#configs_setup_ssh_connection_button"
                 ).disabled = False
-                self.interface = interface
 
                 message = (
                     "A DataShuttle project has now been created.\n\n "
                     "Next, setup the SSH connection. Once complete, navigate to the "
-                    "'Main Menu' and proceed to "
-                    "the project page, where you will be able to create and "
-                    "transfer project folders."
-                )
-
-                self.parent_class.mainwindow.push_screen(
-                    modal_dialogs.MessageBox(
-                        message,
-                        border_color="green",
-                    ),
+                    "'Main Menu' and proceed to the project page, where you will be "
+                    "able to create and transfer project folders."
                 )
 
             else:
                 message = (
                     "A DataShuttle project has now been created.\n\n "
-                    "Click 'OK' to proceed to "
-                    "the project page, where you will be able to create and "
-                    "transfer project folders."
+                    "Next proceed to the project page, where you will be "
+                    "able to create and transfer project folders."
                 )
-                self.parent_class.mainwindow.push_screen(
-                    modal_dialogs.MessageBox(
-                        message,
-                        border_color="green",
-                    ),
-                    lambda _: self.parent_class.dismiss(interface),
-                )
+
+            self.parent_class.mainwindow.push_screen(
+                modal_dialogs.MessageBox(
+                    message,
+                    border_color="green",
+                ),
+            )
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
@@ -395,6 +473,10 @@ class ConfigsContent(Container):
         there was a problem during setup) to the user.
         """
         assert self.interface is not None, "type narrow flexible `interface`"
+
+        # Handle the edge case where connection method is changed after
+        # saving on the 'Make New Project' screen.
+        self.query_one("#configs_setup_ssh_connection_button").visible = True
 
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
@@ -445,7 +527,7 @@ class ConfigsContent(Container):
         radiobutton = self.query_one("#configs_local_filesystem_radiobutton")
         radiobutton.value = not ssh_on
 
-        self.switch_ssh_widgets_display(display_bool=ssh_on)
+        self.switch_ssh_widgets_display(display_ssh=ssh_on)
 
         # Central Host ID
         input = self.query_one("#configs_central_host_id_input")
@@ -464,10 +546,6 @@ class ConfigsContent(Container):
             else cfg_to_load["central_host_username"]
         )
         input.value = value
-
-        # Overwrite Files Checkbox
-        checkbox = self.query_one("#configs_overwrite_files_checkbox")
-        checkbox.value = self.interface.get_configs()["overwrite_old_files"]
 
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
@@ -504,9 +582,5 @@ class ConfigsContent(Container):
         cfg_kwargs["central_host_username"] = (
             None if central_host_username == "" else central_host_username
         )
-
-        cfg_kwargs["overwrite_old_files"] = self.query_one(
-            "#configs_overwrite_files_checkbox"
-        ).value
 
         return cfg_kwargs

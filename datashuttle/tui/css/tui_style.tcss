@@ -76,8 +76,14 @@ want to dock left */
 #create_folders_directorytree {
     dock: left;
 }
+#create_folders_directorytree .tree-tooltip {
+    width: 45;
+}
 #transfer_directorytree {
     dock: left;
+}
+#transfer_legend:light {
+    background: $boost;
 }
 
 /* SelectDirectoryTreeScreen -------------------------------------------------------- */
@@ -85,9 +91,22 @@ want to dock left */
 SelectDirectoryTreeScreen {
     align: center middle;
 }
+#select_directory_tree_container {
+    width: 90%;
+    height: 90%;
+    overflow: hidden auto;
+    content-align: center middle;
+}
 #select_directory_tree_directory_tree {
-    height: 80%;
-    width: 80%
+    height: 75%;
+    width: 100%;
+    align: center middle;
+    margin: 0 1 0 1;
+}
+
+#select_directory_tree_screen_label {
+    text-align: center;
+    padding: 0 0 0 1;
 }
 
 /* Checkboxes ----------------------------------------------------------------------- */

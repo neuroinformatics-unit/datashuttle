@@ -49,9 +49,6 @@
 #generic_screen_container:light {
     border: thick $panel-darken-3;
 }
-#generic_screen_close_button {
-    dock: bottom;
-}
 #settings_color_scheme_radioset {  /* TODO: duplicate with other css */
     layout: horizontal;
     width: auto;
@@ -166,16 +163,18 @@ MessageBox:light > #messagebox_top_container {
 
 #configs_save_configs_button {
     align-horizontal: left;
-    margin: 2 5 0 0;
+    margin: 2 1 0 0;
     padding: 0 4 0 4;
-    width: 20%;
+    width: 26;
     color: $success;  /* unsure about this */
 }
 
 #configs_setup_ssh_connection_button {
-    margin: 2 0 0 0;
+    margin: 2 1 0 0;
 }
-
+#configs_go_to_project_screen_button {
+    margin: 2 1 0 0;
+}
 #configs_container > DatatypeCheckboxes {
     layout: grid;
     grid-size: 2 2;
@@ -195,17 +194,6 @@ MessageBox:light > #messagebox_top_container {
     border: none;
 }
 
-#configs_transfer_options_container {
-    margin: 2 0 0 0;
-    padding: 1 1;
-    border: solid $panel-lighten-1;
-    border-title-color: $text;
-    width: 30%;
-    height: auto;
-}
-#configs_transfer_options_container:light {
-    border: solid $panel-darken-3;
-}
 #configs_local_path_input {
     width: 70%;
 }
@@ -378,4 +366,41 @@ FinishTransferScreen {
 MessageBox:light > #confirm_top_container {
     border: tall $accent;
     background: $boost;
+ }
+
+/* Rename File or Folders Screen ------------------------------------------------------------ */
+
+RenameFileOrFolderScreen {
+    align: center middle;
+    content-align: center middle;
+}
+
+#rename_screen_container {
+    align: center middle;
+    content-align: center middle;
+    height: 12;
+    width: 65;
+    border: tall $panel-lighten-1;
+    background: $primary-background;
+ }
+ RenameFileOrFolderScreen:light > #rename_screen_container {
+    border: tall $panel-darken-3;
+    background: $boost;
+ }
+#rename_screen_label {
+    align: center middle;
+    margin: 0 0 1 2;
+    text-align: center;
+ }
+#rename_screen_input {
+    align: center middle;
+ }
+#rename_screen_horizontal {
+    align: center middle;
+}
+#rename_screen_okay_button {
+    align: center middle;
+ }
+#rename_screen_cancel_button {
+    align: center middle;
  }

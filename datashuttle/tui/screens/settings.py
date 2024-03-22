@@ -16,6 +16,8 @@ from textual.widgets import (
     RadioSet,
 )
 
+from datashuttle.tui.tooltips import get_tooltip
+
 
 class SettingsScreen(ModalScreen):
     """
@@ -52,9 +54,14 @@ class SettingsScreen(ModalScreen):
                 value=self.global_settings["show_transfer_tree_status"],
                 id="show_transfer_tree_status_checkbox",
             ),
-            Button("Close", id="generic_screen_close_button"),
+            Button("Main Menu", id="all_main_menu_buttons"),
             id="generic_screen_container",
         )
+
+    def on_mount(self) -> None:
+        """"""
+        id = "#show_transfer_tree_status_checkbox"
+        self.query_one(id).tooltip = get_tooltip(id)
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         label = str(event.pressed.label)
@@ -70,5 +77,5 @@ class SettingsScreen(ModalScreen):
         self.mainwindow.save_global_settings(self.global_settings)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "generic_screen_close_button":
+        if event.button.id == "all_main_menu_buttons":
             self.dismiss()

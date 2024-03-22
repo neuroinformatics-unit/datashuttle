@@ -50,7 +50,7 @@ class TestTuiWidgets(TuiBase):
                 configs_content.query_one(
                     "#configs_banner_label"
                 ).renderable._text[0]
-                == "Configure A New Project"
+                == "Make A New Project"
             )
             assert (
                 configs_content.query_one(
@@ -194,30 +194,6 @@ class TestTuiWidgets(TuiBase):
                 == "e.g. username"
             )
 
-            # Transfer Options Container -----------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_transfer_options_container"
-                ).border_title
-                == "Transfer Options"
-            )
-
-            # Overwrite Old Files Checkbox ---------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_overwrite_files_checkbox"
-                ).label._text[0]
-                == "Overwrite Old Files"
-            )
-            assert (
-                configs_content.query_one(
-                    "#configs_overwrite_files_checkbox"
-                ).value
-                is False
-            )
-
             await pilot.pause()
 
     async def check_new_project_ssh_widgets(self, configs_content, ssh_on):
@@ -315,7 +291,7 @@ class TestTuiWidgets(TuiBase):
 
             assert (
                 pilot.app.screen.query_one(
-                    "#tabscreen_session_label"
+                    "#create_folders_session_label"
                 ).renderable._text[0]
                 == "Session(s)"
             )
