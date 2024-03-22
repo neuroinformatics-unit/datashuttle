@@ -2,6 +2,8 @@
 # Graphical Walkthrough
 
 1) TODO: add estimated time to complete
+TODO: there isn't a second session you moron! fix that
+Also this is an old version :'((((( this says 'Overwrite Old Files'!
 
 ## Introduction
 
@@ -39,6 +41,8 @@ at the [How to Install](how-to-install).
 ::::{tab-set}
 
 :::{tab-item} Graphical Interface
+:sync: gui
+
 Once **datashuttle** is installed,  typing `datashuttle launch` will
 launch the application in your terminal
 
@@ -55,7 +59,15 @@ launch the application in your terminal
 
 :::
 :::{tab-item} Python API
-test
+:sync: python
+
+Once **datashuttle** is installed, we can check it has installed correctly
+by importing it into python without error
+
+```python
+from datashuttle import DataShuttle
+```
+
 :::
 ::::
 
@@ -79,8 +91,8 @@ In this walkthrough, we will set our central storage as a
 folder on our machine for simplicity.
 
 ::::{tab-set}
-
 :::{tab-item} Graphical Interface
+:sync: gui
 
 Now we will set up a new project. Click `Make New Project` and you
 will be taken to the project setup page.
@@ -130,7 +142,7 @@ or selected from a directory tree using the `Select` button.
 ```
 <br>
 
-Finally, we need to  select the _local path_. Usually this would be
+Finally, we need to  select the _central path_. Usually this would be
 a path to a mounted central storage drive or relative to the server path
 if connecting via SSH. In this tutorial, we will
 set this next to the _local path_ for convenience:
@@ -155,21 +167,55 @@ is created, the `Go to Project Screen` button will appear.
 Click to move on to the `Create Project` page.
 
 :::
-
 :::{tab-item} Python API
-test
+:sync: python
+
+The first thing we need to do is initialise **datashuttle**
+with our `project_name`. We will call our project `my_first_project` and
+initialise the `DataShuttle` class with this name
+
+```python
+project = DataShuttle("my_first_project")
+```
+
+Next, we need to use the `make_config_file` method to set the `local_path`,
+`central_path` and the `connection_method`.
+
+We will specify the _local path_ as the location on our machine where we
+will save our acquired data. We will also specify the _central path_. Usually this would be
+a path to a mounted central storage drive or relative to the server path
+if connecting via SSH. In this tutorial, we will
+set this next to the _local path_ for convenience. Finally, we
+will set the `connection_method` to `"local_filesystem"` as we are not
+using SSH.
+
+```python
+project.make_config_file(
+    local_path="/Users/joeziminski/data/local",  # TODO: copy from windows!!!
+    central_path="/Users/joeziminski/data/central",
+    connection_method="local_filesystem",
+)
+```
+
+We can also set other configs at this stage related to data transfer,
+which are explored in detail on the [How to Make a New Project](make-a-new-project) page.
+If you want to change any config in the future, use the `update_config_file` method.
+
+Now the project is set up, we are ready to create our standardised project folders!
+:::
 ::::
 ## Creating folders
 
 Let's imagine today is our first day of data collection,
 and we are acquiring  behaviour (`behav`) and electrophysiology (`ephys`) data.
+We will create standardised subject, session and datatype folders
+to put our data into.
 
 ::::{tab-set}
-
 :::{tab-item} Graphical Interface
+:sync: gui
 
-We will create standardised subject, session and datatype folders
-to put our data into using the `Create` tab.
+We will create standardised project folders using the `Create` tab.
 
 ```{image} /_static/screenshots/tutorial-1-create-screen-dark.png
    :align: center
@@ -253,11 +299,63 @@ we only create `behav` and `ephys` folders in our session folder.
 Finally, click `Create Folders` to create the folder structure in the project!
 
 :::
-
 :::{tab-item} Python API
-test
-:::
+:sync: python
+We will create standardised project folders with the `make_folders` method.
 
+Following the NeuroBlueprint style we will call the first subject sub-001.
+Additional key-value pairs in the subject name could be included if desired (see the NeuroBlueprint specification for more details).
+
+In the session name we can include today’s date, so our first session will
+be ses-001_date-<todays_date>. We can use the `@DATE@` convenience tag.
+
+Finally, we will tell **datashuttle** to create `behav` and `ephys` datatype
+folders only.
+
+```python
+project.make_folders(
+    sub_names="sub-001",  # the list syntax is optional when there is only one entry.
+    ses_names="ses-001_@DATE@",
+    datatypes=["behav", "ephys"]
+
+)
+```
+
+Navigating to the `central_path` in your system filebrowser, you will
+see the newly created folders where we will store our 'acquired' data.
+
+
+```{note}
+Note the folder names to be created are validated on the fly against
+the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) specification.
+If the folders will break the specification, an error will be raised and the
+folders will not be created.
+```
+
+A set of useful helpers method to automate folder creation are `get_next_sub_number` and
+`get_next_ses_number`. These can be used to automatically get the next subject
+and session names in a project. For example, to get the next subject
+in this project (`sub-002`) and the next session for that subject (in this case,
+as it is the first session for `sub-002`, it will be `ses-001`) we can run
+
+```python
+
+next_sub = project.get_next_sub_number(local_only=True)                # returns "sub-001"
+next_ses = project.get_next_sub_number(sub=next_sub, local_only=True)  # returns "ses-001"
+
+project.make_folders(
+    next_sub,
+    f"{next_ses}_@DATE@",
+    datatypes=["behav", "ephys"]
+)
+```
+
+This will create the folders, with today's date included in the session folder name.
+The `local_only` argument restricts the search to subjects and sessions in
+the local project folder. To also consider subjects and sessions in
+the central storage, set this to `True`.
+
+:::
 ::::
 
 This was a quick overview of the creating folders functionality—see [How to use Name Templates](how-to-use-name-templates)
@@ -269,8 +367,8 @@ In our imagined experiment, we will next want to save data from
 acquisition software into our newly created, standardised folders.
 
 ::::{tab-set}
-
 :::{tab-item} Graphical Interface
+:sync: gui
 
 When folders are created, the `Directory Tree` on the left-hand side
 will update to display the new folders.
@@ -312,16 +410,49 @@ Move the mock behavioural data file (`sub-001_ses-001_camera-top.mp4`)
 into the `behav` datatype folder.
 
 Next, repeat this for the `ephys` datatype by moving the remaining
-electrophysiology file to the `ephys` folder.
+electrophysiology files to the `ephys` folder.
 
 Finally, hover the mouse over the `Directory Tree` and press `CTRL+R` to refresh.
 
 ```
 
 :::
-
 :::{tab-item} Python API
-test
+:sync: python
+
+The `make_folders` function has a return value of the full filepath to
+created datatype folders. These can be used to save data in to in acquisition
+scripts
+
+```python
+folder_path_list = project.make_folders(
+    sub_names=["sub-001"],
+    ses_names=["ses-001_@DATE@"],
+    datatypes=["behav", "ephys"]
+
+)
+
+print([path_ for path_ in folder_path_list if path_.name == "behav"])
+# ["/Users/joeziminski/data/local/sub-001/ses-001_16052024/behav"]
+```
+
+
+```{admonition} Creating mock data for the tutorial
+
+To continue with our experiment, we will need to create 'mock'
+acquired data to transfer to central storage. These will
+take the form of simple text files with their extensions changed.
+
+You can download these files from
+[this link](https://gin.g-node.org/joe-ziminski/datashuttle/src/master/docs/tutorial-mock-data-files),
+by right-clicking each file and selecting 'Download (or) Save Link As..'.
+Alternatively you can create them in your favourite text editor.
+
+Move the mock behavioural data file (`sub-001_ses-001_camera-top.mp4`)
+into the `behav` datatype folder and the remaining
+electrophysiology file to the `ephys` folder.
+
+```
 :::
 ::::
 
@@ -335,9 +466,8 @@ drive or via SSH. In this walkthrough, we set the _central path_ on our
 local machine for convenience.
 
 ::::{tab-set}
-
 :::{tab-item} Graphical Interface
-
+:sync: gui
 
 First, switch to the `Transfer` tab, where on the left we will again
 see a `Directory Tree` displaying the local version of the project.
@@ -356,7 +486,7 @@ see a `Directory Tree` displaying the local version of the project.
 
 The first page on the `Transfer` tab allows us to upload the entire project,
 both the `rawdata` and `derivatives` (the `derivatives` folder is used for
-preprocessing outputs, see the
+outputs of processing `rawdata`, see the
 [NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html)).
 
 As we only have a `rawdata` folder, we can simply click `Transfer` to
@@ -367,9 +497,55 @@ the newly transferred data will have appeared, simulating transfer
 to a separate data storage machine. (An easy way to navigate to the *central path*
 is to go to the `Config` tab and press `CTRL+O` on the _central path_ input box).
 
+We can also click the `Top Level`
+or `Custom` buttons for refined transfers (for example, if we also had a
+`derivatives` folder we did not want to upload). For more information
+see [How to Transfer Data](how-to-transfer-data) and the next section for `Custom` transfers.
+
+:::
+:::{tab-item} Python API
+:sync: python
+
+The `upload_entire_project` method allows us to upload everything, both the
+`rawdata` and `derivatives` (the `derivatives` folder is used for outputs of
+processing `rawdata`, see the
+[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html)).
+
+As we only have a `rawdata` folder, we can simply run
+
+```python
+project.upload_entire_project()
+```
+
+and all files will be uploaded from the local project to central storage.
+
+Navigating to the central path in the file browser, the newly transferred data
+will have appeared, simulating transfer to a separate data storage machine.
+
+Additional methods (`upload_all()` and `upload_data()`) provide more refined
+data transfers (for example, if we also had a `derivatives` folder we did not
+want to upload). Also, every `upload` method has an equivalent `download` method.
+For more information  see
+[How to Transfer Data](how-to-transfer-data)
+and the next section for customisable transfers.
+
+Note that the `overwrite_existing_files` config controls whether
+transferred data will overwrite data on the target machine. This config
+can be set initially  with `make_config_file` or updated with with
+`update_config_file`
+
+```shell
+project.update_config_file(
+  overwrite_existing_files=True,
+)
+```
+
+:::
+::::
+
 ```{warning}
-The `Overwrite Existing Files` checkbox on the transfer tab is an important
-setting. By default it is turned off and a transfer will never overwrite a
+The `Overwrite Existing Files` setting is very important.
+By default it is turned off and a transfer will never overwrite a
 file that already exists, even if the source version is newer.
 
 For example, if we upload the first session's behavioural data—and there
@@ -379,18 +555,6 @@ in the same folder—the file will not be uploaded.
 If `Overwrite Existing Files` is on, then any existing files
 will be overwritten by newer versions of the file during transfer.
 ```
-
-We can also click the `Top Level`
-or `Custom` buttons for refined transfers (for example, if we also had a
-`derivatives` folder). For more information
-see [How to Transfer Data](how-to-transfer-data) and the next section for `Custom` transfers.
-
-:::
-
-:::{tab-item} Python API
-test
-:::
-::::
 
 With the data safely on our central storage,
 our experimental acquisition session is complete!
@@ -408,21 +572,22 @@ are many subjects and sessions (for example, downloading only the behavioural
 
 ```{admonition} Replicating a fresh machine for the tutorial
 To replicate starting on a new local machine, delete the `rawdata` folder from
-your _local path_. You can press `CTRL+O` while hovering over the `rawdata`
-folder on the `Directory Tree` to quickly navigate to it.
+your _local path_.
 
 We will next download data from the _central path_ to our now-empty local project.
 In practice when setting up **datashuttle** on a new machine, you would
 again [Make a new project](make-a-new-project).
 ```
 
-::::{tab-set}
+We will look at a small subset of possible
+options here, but see [How to make Custom Transfers](making-custom-transfers) for more information.
 
+::::{tab-set}
 :::{tab-item} Graphical Interface
+:sync: gui
 
 The `Custom` transfer screen has options for selecting specific combinations
-of subjects, sessions and datatypes. We will look at a small subset of possible
-options here, but see [How to make Custom Transfers](making-custom-transfers) for more information.
+of subjects, sessions and datatypes.
 
 ```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-dark.png
    :align: center
@@ -501,17 +666,42 @@ by newer versions downloaded from central storage when it is turned on.
 The transfer will complete, and the custom selection
 of files will now be available in the _local path_ folder.
 
+:::
+:::{tab-item} Python API
+:sync: python
+
+We can use the `download_data` method (the download equivalent method of
+the `upload_data` function).
+
+We will select to download only the behavioural data from our first
+session, using a few convenience shortcuts available for custom transfers
+
+```python
+project.download_data(
+    sub_names="all",
+    ses_names="ses-001_@*@",
+    datatypes="behav"
+)
+```
+
+The `"all"` keyword will upload every subject in the project (in this case,
+we only have one subject anyway).
+
+The `@*@` [wildcard tag](transfer-the-wildcard-tag) can be used to match
+any part of a subject or session name—in this case we use it to avoid
+typing out the date.
+
+Finally, we choose only to download the `behav` data for the session.
+:::
+::::
+
 ```{note}
-Detailed information on data transfers can be found in the `Logs` tab.
+Detailed information on data transfers can be found in the `Logs`.
 Visit [How to Read the Logs](how-to-read-the-logs) for more information.
 ```
 
-:::
-
-:::{tab-item} Python API
-test
-:::
-::::
+The transfer will complete, and the custom selection
+of files will now be available in the _local path_ folder!
 
 ## Summary
 
