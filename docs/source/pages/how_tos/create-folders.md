@@ -47,7 +47,19 @@ Now the specification has been introduced, let's dive in to folder creation!
 :::{tab-item} Graphical Interface
 :sync: gui
 
-ADD PICTURE WITH FILLED IN SUBJECTS.
+
+```{image} /_static/screenshots/how-to-create-folders-example-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-create-folders-example-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
 EXPLAIN ALL SHORTCUTS!
 
 :::
