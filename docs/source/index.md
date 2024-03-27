@@ -1,8 +1,24 @@
 :html_theme.sidebar_secondary.remove:
 
+<title>[PAGE TITLE] &#8212;datashuttle</title>
 <h1 style="text-align: center;"><b>datashuttle</b></h1>
 
 <p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation and transfer.</p>
+
+```{image} _static/datashuttle-overview-light.png
+:alt: My Logo
+:class: logo, mainlogo, only-light
+:align: center
+:width: 600px
+```
+```{image} _static/datashuttle_figure_machines-dark.png
+:alt: My Logo
+:class: logo, mainlogo, only-dark
+:align: center
+:width: 600px
+```
+<br>
+
 
 ```{image} _static/datashuttle-overview.png
 :alt: My Logo

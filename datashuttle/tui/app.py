@@ -40,12 +40,17 @@ class TuiApp(App):
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
     ENABLE_COMMAND_PALETTE = False
-    BINDINGS = [("d", "toggle_dark", "Toggle dark mode")]    ###################### REMOVE AFTER DOCS ##########################################################
+    BINDINGS = [
+        ("d", "toggle_dark", "Toggle dark mode")
+    ]  ###################### REMOVE AFTER DOCS ##########################################################
 
-    def action_toggle_dark(self) -> None:  ###################### REMOVE AFTER DOCS ##########################################################
+    def action_toggle_dark(
+        self,
+    ) -> (
+        None
+    ):  ###################### REMOVE AFTER DOCS ##########################################################
         """An action to toggle dark mode."""
         self.dark = not self.dark
-
 
     def compose(self) -> ComposeResult:
         yield Container(
