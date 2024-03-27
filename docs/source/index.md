@@ -9,9 +9,24 @@
 :alt: My Logo
 :class: logo, mainlogo
 :align: center
-:width: 600
+:width: 600px
 ```
 <br>
+
+```{image} _static/datashuttle-overview.png
+:alt: My Logo
+:class: logo, mainlogo, only-light
+:align: center
+:width: 600px
+```
+```{image} _static/datashuttle_figure_machines-dark.png
+:alt: My Logo
+:class: logo, mainlogo, only-dark
+:align: center
+:width: 600px
+```
+<br>
+
 
 ::::{grid} 1 2 2 3
 :gutter: 4

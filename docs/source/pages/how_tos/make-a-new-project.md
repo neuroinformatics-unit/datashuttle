@@ -177,9 +177,17 @@ the **project name**, it will be automatically included.
 :::{tab-item} Graphical Interface
 :sync: gui
 
-test
-
-IMAGE OF SSH SETTING. OTHERWISE SIMILAR TO ABOVE.
+```{image} /_static/screenshots/how-to-create-project-ssh-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-create-project-ssh-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
 
 THEN CLICK THROUGH SETTING UP SSH
 
@@ -226,7 +234,7 @@ necessary for SSH transfer.
 :::
 ::::
 
-## Updating configs
+## Updating configs  [TODO: OWN HOW-TO]
 
 Once a project has been created, the configs can be updated during at any point.
 
@@ -235,7 +243,17 @@ Once a project has been created, the configs can be updated during at any point.
 :::{tab-item} Graphical Interface
 :sync: gui
 
-[IMAGE]
+```{image} /_static/screenshots/updating-configs-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/updating-configs-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
 
 On the `Project Manager` page, clicking the `Configs` tab will display
 the current configs. Changing any config and clicking `Save` will
