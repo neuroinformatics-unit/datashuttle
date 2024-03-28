@@ -46,8 +46,7 @@ def setup_project_default_configs(
 
     project.make_config_file(**default_configs)
 
-    rclone.setup_central_as_rclone_target(
-        "ssh",
+    rclone.setup_rclone_config_for_ssh(
         project.cfg,
         project.cfg.get_rclone_config_name("ssh"),
         project.cfg.ssh_key_path,
@@ -565,15 +564,13 @@ def run_cli(command, project_name=None):
         get_protected_test_folder() if project_name is None else project_name
     )
 
-    result = subprocess.Popen(
+    result = subprocess.run(
         " ".join(["datashuttle", name, command]),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
         shell=True,
     )
-
-    stdout, stderr = result.communicate()
-    return stdout.decode("utf8"), stderr.decode("utf8")
+    return result.stdout.decode("utf8"), result.stderr.decode("utf8")
 
 
 def move_some_keys_to_end_of_dict(config):
