@@ -34,7 +34,7 @@ class TestTuiLogging(TuiBase):
 
             await pilot.pause(5)
 
-            project.create_folders("sub-001")
+            project.create_folders("rawdata", "sub-001")
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
