@@ -11,13 +11,14 @@
 :align: center
 :width: 600px
 ```
-```{image} _static/datashuttle_figure_machines-dark.png
+```{image} _static/datashuttle-overview-dark.png
 :alt: My Logo
 :class: logo, mainlogo, only-dark
 :align: center
 :width: 600px
 ```
 <br>
+
 
 
 ::::{grid} 1 2 2 3

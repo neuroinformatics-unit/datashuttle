@@ -2,6 +2,7 @@
 # How to Create Folders
 
 TODO: mention the walkthrough here?
+TODO: add in top level folder switch and bypass validation switch
 
 **datashuttle** automates the creation and validation of project folders
 according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)

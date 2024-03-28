@@ -169,7 +169,6 @@ project.download_all()
 
 ## Custom transfers
 
-
 Custom transfers permit full customisation of the files inside
 or outside of subject, session and datatype folders.
 
@@ -234,8 +233,6 @@ and press `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-:::
-
 The `upload_data()` and `download_data()` methods can be used for custom
 data transfers. For example, to perform a custom upload:
 
@@ -250,45 +247,36 @@ project.upload_data(
 In this example, data from all *subject*
 folders, all first session behavioral data will be uploaded.
 
+:::
 ::::
 
 ### Custom transfer keywords
 
+TODO: only affect level. e.g. sub "all" but ses is 001 then only 1st ses from
+all sub will be transferred + non-sub folders
 
+Subject level
+:   * `all` - All subject (i.e. prefixed with `sub-`) folders and non-subject files within the 
+top-level folder will be transferred.
+    * `all_sub` - Subject  <u>folders</u> only and them will be transferred.
+    * `all_non_sub` - All files and folders that are not prefixed with `sub-`, 
+within the top-level folder, will be transferred. 
+Any folders prefixed with `sub-` at this level will not be transferred.
 
-#### For use with the `-sub` / `--sub-names` flag
-
-`all` - All *subject* and non-*subject* files and folders within the *top-level-folder*
-(e.g. _rawdata_) will be transferred.
-
-`all_sub` - *Subject*  <u>folders</u> only (i.e. prefixed with `sub`) and everything
-within them will be transferred.
-
-`all_non_sub` - All files and folders that are not prefixed with `sub`,
-within the *top-level-folder*, will be transferred.
-Any folders prefixed with `sub` at this level will not be transferred.
-
-#### For use with the `-ses` / `--ses-names` flag
-
-`all` : All *session* and non-*session* files and folders within a *subject* level folder
+Session Level
+:   * `all` : All session and non-session files and folders within a subject level folder
 (e.g. `sub-001`) will be transferred.
-
-`all_ses` : *Session* <u>folders</u> only (i.e. prefixed with `ses`) and everything within
+    * `all_ses` : Session* <u>folders</u> only (i.e. prefixed with `ses-`) and everything within
 them will be transferred.
+    * `all_non_ses` : All files and folders that are not prefixed with `ses-`, within a subject folder,
+will be transferred. Any folders prefixed with `ses-` will not be transferred.
 
-`all_non_ses` : All files and folders that are not prefixed with `ses`, within a *subject* folder,
-will be transferred. Any folders prefixed with `ses` will not be transferred.
-
-#### For use with the `-dt` / `--datatype` flag
-
-`all` : All *datatype* folders at the *subject* or *session* folder level will be transferred,
-as well as all files and folders within selected *session* folders.
-
-`all_datatype` : All *datatype* folders (i.e. folders with the pre-determined name:
-`behav`, `ephys`, `funcimg`, `anat`) within a *session* folder will be
-transferred. Non-*datatype* folders at the *session* level will not be transferred
-
-`all_non_datatype` : Non-*datatype* folders within *session* folders only will be transferred
+Datatype Level:
+:   * `all` : All datatype folders at the subject or session folder level will be transferred,
+as well as all files and folders within selected session folders.
+    * `all_datatype` : All datatype folders (e.g. `behav`, `ephys`, `funcimg`, `anat`) within a session folder will be
+transferred. Non-*datatype* folders at the session level will not be transferred
+    * `all_non_datatype` : Non-datatype folders within session folders only will be transferred
 
 
 ### Convenience Tags
