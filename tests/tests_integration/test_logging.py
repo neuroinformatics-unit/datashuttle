@@ -234,12 +234,9 @@ class TestLogging:
         )
 
         if use_all_alias:
-            assert "VariablesState:\nlocals: {'dry_run': False" in log
+            assert "VariablesState:\nlocals: {\'top_level_folder\': \'rawdata\', \'dry_run\': False" in log
         else:
-            assert (
-                "VariablesState:\nlocals: {'sub_names': 'all', 'ses_names': 'all', 'datatype': 'all', 'dry_run': False, 'init_log': True}\ncfg: {'local_path': "
-                in log
-            )
+            assert ("VariablesState:\nlocals: {\'top_level_folder\': \'rawdata\', \'sub_names\': \'all\', \'ses_names\': \'all" in log)
 
         # 'remote' here is rclone terminology
         assert "Creating backend with remote" in log

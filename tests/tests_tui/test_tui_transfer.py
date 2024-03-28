@@ -199,7 +199,6 @@ class TestTuiTransfer(TuiBase):
                 subs,
                 sessions,
                 "all",
-                top_level_folder,
             )
         (
             _,
