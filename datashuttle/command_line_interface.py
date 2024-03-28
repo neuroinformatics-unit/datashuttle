@@ -972,6 +972,7 @@ def construct_parser():
         help="Required: (str, single or multiple)",
     )
 
+    return parser
 
 parser = construct_parser()
 
