@@ -256,11 +256,11 @@ TODO: only affect level. e.g. sub "all" but ses is 001 then only 1st ses from
 all sub will be transferred + non-sub folders
 
 Subject level
-:   * `all` - All subject (i.e. prefixed with `sub-`) folders and non-subject files within the 
+:   * `all` - All subject (i.e. prefixed with `sub-`) folders and non-subject files within the
 top-level folder will be transferred.
     * `all_sub` - Subject  <u>folders</u> only and them will be transferred.
-    * `all_non_sub` - All files and folders that are not prefixed with `sub-`, 
-within the top-level folder, will be transferred. 
+    * `all_non_sub` - All files and folders that are not prefixed with `sub-`,
+within the top-level folder, will be transferred.
 Any folders prefixed with `sub-` at this level will not be transferred.
 
 Session Level
