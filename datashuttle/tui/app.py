@@ -68,8 +68,6 @@ class TuiApp(App):
     def on_mount(self) -> None:
         self.dark = self.load_global_settings()["dark_mode"]
 
-
-
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
         Raise the relevant screen after button press. `push_screen`
