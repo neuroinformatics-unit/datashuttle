@@ -11,7 +11,7 @@
 :align: center
 :width: 600px
 ```
-```{image} _static/datashuttle_figure_machines-dark.png
+```{image} _static/datashuttle-overview-dark.png
 :alt: My Logo
 :class: logo, mainlogo, only-dark
 :align: center
@@ -19,13 +19,6 @@
 ```
 <br>
 
-
-```{image} _static/datashuttle-overview.png
-:alt: My Logo
-:class: logo, mainlogo
-:align: center
-:width: 600
-```
 ::::{grid} 1 2 2 3
 :gutter: 4
 
