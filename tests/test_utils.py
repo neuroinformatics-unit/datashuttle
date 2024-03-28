@@ -363,7 +363,7 @@ def make_and_check_local_project_folders(
     )
 
     check_folder_tree_is_correct(
-        get_top_level_folder_path(project, top_level_folder),
+        get_top_level_folder_path(project, "local", top_level_folder),
         subs,
         sessions,
         get_all_folders_used(),

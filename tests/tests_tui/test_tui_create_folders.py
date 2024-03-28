@@ -298,6 +298,7 @@ class TestTuiCreateFolders(TuiBase):
                 == "Invalid character in subject or session value: abc"
             )
             await self.close_messagebox(pilot)
+
             assert not any(
                 list(
                     (
@@ -319,6 +320,7 @@ class TestTuiCreateFolders(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_create_folders_button"
             )
+
             assert (
                 pilot.app.screen.interface.project.cfg["local_path"]
                 / "rawdata"

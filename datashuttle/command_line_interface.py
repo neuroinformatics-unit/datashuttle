@@ -921,6 +921,7 @@ def construct_parser():
         nargs="+",
         help="Required: (str, single or multiple)",
     )
+    return parser
 
     return parser
 

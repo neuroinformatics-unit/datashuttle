@@ -259,16 +259,12 @@ class TestMakeFolders(BaseTest):
     def test_all_top_level_folders(self, project, top_level_folder):
         """
         Check that when switching the top level folder (e.g. rawdata, derivatives)
-        new folders are made in the correct folder. The code that underpins this
-        is very simple (all the path for folder creation / transfer is determined
-        only by project.cfg.top_level_folder. Therefore if these tests pass,
-        any test that passes for rawdata (all other tests are for rawdata) should
-        pass for all top-level folders.
+        new folders are made in the correct folder.
         """
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-003"]
 
-        project.create_folders("rawdata", subs, sessions, "all")
+        project.create_folders(top_level_folder, subs, sessions, "all")
 
         # Check folder tree is made in the desired top level folder
         test_utils.check_working_top_level_folder_only_exists(
@@ -305,9 +301,9 @@ class TestMakeFolders(BaseTest):
         assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Upload to central, now local and central folders match
-        project.upload_all("rawdata")
+        project.upload_all(top_level_folder)
 
-        shutil.rmtree(project.cfg["local_path"] / "rawdata")
+        shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
         new_num = project.get_next_sub_number(
             top_level_folder, return_with_prefix
@@ -315,7 +311,7 @@ class TestMakeFolders(BaseTest):
         assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Add large-sub num folders to local and check all are detected.
-        project.create_folders("rawdata", ["004", "005"])
+        project.create_folders(top_level_folder, ["004", "005"])
 
         new_num = project.get_next_sub_number(
             top_level_folder, return_with_prefix
@@ -323,7 +319,7 @@ class TestMakeFolders(BaseTest):
         assert new_num == "sub-006" if return_with_prefix else "006"
 
         # check `local_path` option
-        os.makedirs(project.cfg["central_path"] / "rawdata" / "sub-006")
+        os.makedirs(project.cfg["central_path"] / top_level_folder / "sub-006")
         new_num = project.get_next_sub_number(
             top_level_folder, return_with_prefix, local_only=False
         )
@@ -369,9 +365,9 @@ class TestMakeFolders(BaseTest):
 
         # Now upload the data, delete locally, and check the
         # suggested values are correct based on the `central` path.
-        project.upload_all("rawdata")
+        project.upload_all(top_level_folder)
 
-        shutil.rmtree(project.cfg["local_path"] / "rawdata")
+        shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
         new_num = project.get_next_sub_number(
             top_level_folder, return_with_prefix
@@ -385,7 +381,7 @@ class TestMakeFolders(BaseTest):
 
         # Now make a couple more sessions locally, and check
         # the next session is updated accordingly.
-        project.create_folders("rawdata", sub, ["004", "005"])
+        project.create_folders(top_level_folder, sub, ["004", "005"])
 
         new_num = project.get_next_ses_number(
             top_level_folder, sub, return_with_prefix
@@ -393,7 +389,9 @@ class TestMakeFolders(BaseTest):
         assert new_num == "ses-006" if return_with_prefix else "006"
 
         # check `local_path` object
-        os.makedirs(project.cfg["central_path"] / "rawdata" / sub / "ses-006")
+        os.makedirs(
+            project.cfg["central_path"] / top_level_folder / sub / "ses-006"
+        )
         new_num = project.get_next_ses_number(
             top_level_folder, sub, return_with_prefix, local_only=False
         )

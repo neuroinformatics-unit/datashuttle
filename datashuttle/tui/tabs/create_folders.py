@@ -274,9 +274,9 @@ class CreateFoldersTab(TreeAndInputTab):
         input_id : str
             The textual input name to update.
         """
-        top_level_folder = self.tui_settings["top_level_folder_select"][
-            "create_tab"
-        ]
+        top_level_folder = self.interface.tui_settings[
+            "top_level_folder_select"
+        ]["create_tab"]
 
         if prefix == "sub":
             success, output = self.interface.get_next_sub_number(

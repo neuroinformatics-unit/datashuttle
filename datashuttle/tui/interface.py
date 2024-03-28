@@ -159,8 +159,13 @@ class Interface:
         ses_names : List[str]
             List of session names to format.
         """
+        top_level_folder = self.tui_settings["top_level_folder_select"][
+            "create_tab"
+        ]
+
         try:
             format_sub, format_ses = self.project._format_and_validate_names(
+                top_level_folder,
                 sub_names,
                 ses_names,
                 self.get_name_templates(),

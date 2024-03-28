@@ -143,9 +143,8 @@ class TestLogging:
         assert "Formatting Names..." in log
 
         assert (
-            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-111', "
-            "'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-101'], "
-            "'datatype': 'all" in log
+            "VariablesState:\nlocals: {'top_level_folder': 'rawdata', 'sub_names': ['sub-111', 'sub-002@TO@004'],"
+            in log
         )
 
         assert f"sub_names: ['sub-111', 'sub-002{tags('to')}004']" in log

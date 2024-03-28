@@ -588,8 +588,8 @@ class DataShuttle:
         file directly relative to rawdata and not accept entire file.
         then read the root of the path.
         """
-        is_rawdata = "rawdata" in filepath
-        is_derivatives = "derivatives" in filepath
+        is_rawdata = "rawdata" in filepath.as_posix()
+        is_derivatives = "derivatives" in filepath.as_posix()
 
         if is_rawdata and is_derivatives:
             utils.log_and_raise_error(

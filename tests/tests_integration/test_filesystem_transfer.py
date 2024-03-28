@@ -576,7 +576,7 @@ class TestFileTransfer(BaseTest):
                 project.cfg[transfer_from] / formatted_to_transfer
             )
         else:
-            transfer_function(Path(*formatted_to_transfer.parts[1:]))
+            transfer_function(Path(*formatted_to_transfer.parts))
 
         transferred_files = [
             path_
