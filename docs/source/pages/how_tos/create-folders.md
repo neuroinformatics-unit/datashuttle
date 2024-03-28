@@ -86,7 +86,7 @@ EXPLAIN ALL SHORTCUTS!
 :::{tab-item} Python API
 :sync: python
 
-Creating folders can be done with the `make_folders()` method in the Python API.
+Creating folders can be done with the `create_folders()` method in the Python API.
 We simply need to provide the subject, session and datatypes to create:
 
 ```python
@@ -94,7 +94,7 @@ from datashuttle import DataShuttle
 
 project = DataShuttle("my_first_project")
 
-created_folders = project.make_folders(
+created_folders = project.create_folders(
     sub_names=["sub-001", "002"],
     ses_names="ses-001_@DATE@",
     datatype=["behav", "funcimg"]
