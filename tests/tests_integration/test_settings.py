@@ -186,52 +186,10 @@ class TestPersistentSettings(BaseTest):
         settings = project._load_persistent_settings()
         tui_settings = settings["tui"]
 
-        assert tui_settings == {
-            "create_checkboxes_on": {
-                "behav": True,
-                "ephys": True,
-                "funcimg": True,
-                "anat": True,
-            },
-            "transfer_checkboxes_on": {
-                "behav": False,
-                "ephys": False,
-                "funcimg": False,
-                "anat": False,
-                "all": True,
-                "all_datatype": False,
-                "all_non_datatype": False,
-            },
-            "top_level_folder_select": {
-                "create_tab": "rawdata",
-                "toplevel_transfer": "rawdata",
-                "custom_transfer": "rawdata",
-            },
-        }
+        assert tui_settings == self.get_settings_default()
 
         # change all defaults
-        new_tui_settings = {
-            "create_checkboxes_on": {
-                "behav": False,
-                "ephys": False,
-                "funcimg": False,
-                "anat": False,
-            },
-            "transfer_checkboxes_on": {
-                "behav": True,
-                "ephys": True,
-                "funcimg": True,
-                "anat": True,
-                "all": False,
-                "all_datatype": True,
-                "all_non_datatype": True,
-            },
-            "top_level_folder_select": {
-                "create_tab": "derivatives",
-                "toplevel_transfer": "derivatives ",
-                "custom_transfer": "derivatives",
-            },
-        }
+        new_tui_settings = self.get_settings_changed()
 
         project._update_persistent_setting("tui", new_tui_settings)
 
@@ -271,3 +229,51 @@ class TestPersistentSettings(BaseTest):
             "The name: name: sub-@@@, contains characters which are not alphanumeric"
             in str(e)
         )
+
+    def get_settings_default(self):
+        return {
+            "create_checkboxes_on": {
+                "behav": True,
+                "ephys": True,
+                "funcimg": True,
+                "anat": True,
+            },
+            "transfer_checkboxes_on": {
+                "behav": False,
+                "ephys": False,
+                "funcimg": False,
+                "anat": False,
+                "all": True,
+                "all_datatype": False,
+                "all_non_datatype": False,
+            },
+            "top_level_folder_select": {
+                "create_tab": "rawdata",
+                "toplevel_transfer": "rawdata",
+                "custom_transfer": "rawdata",
+            },
+        }
+
+    def get_settings_changed(self):
+        return {
+            "create_checkboxes_on": {
+                "behav": False,
+                "ephys": False,
+                "funcimg": False,
+                "anat": False,
+            },
+            "transfer_checkboxes_on": {
+                "behav": True,
+                "ephys": True,
+                "funcimg": True,
+                "anat": True,
+                "all": False,
+                "all_datatype": True,
+                "all_non_datatype": True,
+            },
+            "top_level_folder_select": {
+                "create_tab": "derivatives",
+                "toplevel_transfer": "derivatives ",
+                "custom_transfer": "derivatives",
+            },
+        }
