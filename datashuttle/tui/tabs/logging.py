@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+from textual import events
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Button, Label, RichLog, TabPane
@@ -66,7 +67,7 @@ class LoggingTab(TabPane):
                 id="logging_tab_custom_directory_tree",
             ),
             Label(
-                f"or open most recent: {self.latest_log_path.stem}",
+                "",
                 id="logging_most_recent_label",
             ),
             Horizontal(
@@ -77,6 +78,16 @@ class LoggingTab(TabPane):
             ),
             id="logging_tab_outer_container",
         )
+
+    def _on_mount(self, event: events.Mount) -> None:
+        self.update_most_recent_label()
+
+    def update_most_recent_label(self):
+        self.update_latest_log_path()
+        self.query_one("#logging_most_recent_label").update(
+            f"or open most recent: {self.latest_log_path.stem}"
+        )
+        self.refresh()
 
     def on_button_pressed(self, event):
         if event.button.id == "logging_tab_open_most_recent_button":

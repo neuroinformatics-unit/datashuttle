@@ -207,7 +207,6 @@ class TestLogging:
             )
             in log
         )
-        assert "Finished file creation. Local folder tree is now:" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("use_all_alias", [True, False])
@@ -350,29 +349,6 @@ class TestLogging:
         assert len(tmp_path_logs) == 0
         assert len(project_path_logs) == 1
         assert "make-config-file" in project_path_logs[0]
-
-        # Make another local path, and re-call `make_config_file`, checking
-        # the logs of the action are found in the new local path.
-        new_local_path = (
-            tmp_path / "new_path_for_log_tests" / clean_project_name
-        ).as_posix()
-
-        os.makedirs(new_local_path, exist_ok=True)
-
-        configs["local_path"] = new_local_path
-
-        project.make_config_file(**configs)
-
-        tmp_path_logs = list(glob.glob(str(project._temp_log_path / "*.log")))
-        project_path_logs = list(glob.glob(local_path_search))
-        new_local_path_logs = list(
-            glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
-        )
-
-        assert len(tmp_path_logs) == 0
-        assert len(project_path_logs) == 1
-        assert len(new_local_path_logs) == 1
-        assert all("make-config-file" in log for log in project_path_logs)
 
     def test_logs_new_supply_config(self, clean_project_name, tmp_path):
         """

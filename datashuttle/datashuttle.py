@@ -5,7 +5,6 @@ import glob
 import json
 import os
 import shutil
-import warnings
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Tuple, Union
 
@@ -106,18 +105,18 @@ class DataShuttle:
         )
         self.cfg: Any = None
 
-        self.cfg = load_configs.make_config_file_attempt_load(
+        self.cfg = load_configs.attempt_load_configs(
             self.project_name, self._config_path
         )
 
         if self.cfg:
             self._set_attributes_after_config_load()
+        else:
+            rclone.prompt_rclone_download_if_does_not_exist()
 
         if print_startup_message:
             if self.cfg:
                 self._display_top_level_folder()
-
-        rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
         """
@@ -153,7 +152,7 @@ class DataShuttle:
         canonical_top_level_folders = canonical_folders.get_top_level_folders()
 
         if folder_name not in canonical_top_level_folders:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"Folder name: {folder_name} "
                 f"is not in permitted top-level folder"
                 f" names: {canonical_top_level_folders}",
@@ -254,9 +253,6 @@ class DataShuttle:
             datatype,
             log=True,
         )
-
-        utils.log("\nFinished file creation. Local folder tree is now:\n")
-        ds_logger.log_tree(self.cfg["local_path"])
 
         utils.print_message_to_user(
             f"Finished making folders. \nFor log of all created "
@@ -705,12 +701,10 @@ class DataShuttle:
         )
 
         if self._config_path.is_file():
-            warnings.warn(
-                "A config file already exists. This function will completely"
-                "overwrite the existing config file, and any arguments not"
-                "passed to `make-config-file` will be set to the function "
-                "defaults. "
-                "Use `update-config-file` to selectively update settings."
+            utils.log_and_raise_error(
+                "A config file already exists for this project. "
+                "Use `update_config_file` to update settings.",
+                RuntimeError,
             )
 
         cfg = Configs(
@@ -735,6 +729,8 @@ class DataShuttle:
 
         self._set_attributes_after_config_load()
 
+        # This is just a placeholder rclone config that will suffice
+        # if ever central is a 'local filesystem'.
         self._setup_rclone_central_local_filesystem_config()
 
         utils.log_and_message(
@@ -992,26 +988,14 @@ class DataShuttle:
             where "sub" or "ses" can be a regexp that subject and session
             names respectively are validated against.
         """
-        #        if new_name_templates["on"] and None in [
-        #            new_name_templates["sub"],
-        #            new_name_templates["ses"],
-        #        ]:
-        #            utils.log_and_raise_error(
-        #                "Subject and session name templates must be set "
-        #                "if name templates is on.",
-        #                ValueError,
-        #            )
-
         self._update_persistent_setting("name_templates", new_name_templates)
 
     def set_bypass_validation(self, on):
-        self._update_persistent_setting(
-            "bypass_validation", on
-        )  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+        self._update_persistent_setting("bypass_validation", on)
 
     def get_bypass_validation(
         self,
-    ):  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!  # TODO: test this!
+    ):
         settings = self._load_persistent_settings()
         return settings["bypass_validation"]
 
@@ -1025,14 +1009,6 @@ class DataShuttle:
         Print the current configs to the terminal.
         """
         utils.print_message_to_user(self._get_json_dumps_config())
-
-    @check_configs_set
-    def show_local_tree(self) -> None:
-        """
-        Print a tree schematic of all files and folders
-        in the local project.
-        """
-        ds_logger.print_tree(self.cfg["local_path"])
 
     # -------------------------------------------------------------------------
     # Validators
@@ -1048,7 +1024,7 @@ class DataShuttle:
             - the digit lengths are consistent (e.g. 'sub-001'
               with 'sub-02' is not allowed)
             - 'sub-' or 'ses-' is the first key of the sub / ses names
-            - names do not include spaces
+            - names online include integers, letters, dash or underscore
             - names are checked against name templates (if set)
             - no duplicate names exist across the project
               (e.g. 'sub-001' and 'sub-001_date-1010120').
@@ -1247,8 +1223,7 @@ class DataShuttle:
         folders.create_folders(self.cfg.project_metadata_path, log=False)
 
     def _setup_rclone_central_ssh_config(self, log: bool) -> None:
-        rclone.setup_central_as_rclone_target(
-            "ssh",
+        rclone.setup_rclone_config_for_ssh(
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
             self.cfg.ssh_key_path,
@@ -1256,12 +1231,8 @@ class DataShuttle:
         )
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
-        rclone.setup_central_as_rclone_target(
-            "local_filesystem",
-            self.cfg,
+        rclone.setup_rclone_config_for_local_filesystem(
             self.cfg.get_rclone_config_name("local_filesystem"),
-            self.cfg.ssh_key_path,
-            log=True,
         )
 
     # Persistent settings
@@ -1282,7 +1253,7 @@ class DataShuttle:
         settings = self._load_persistent_settings()
 
         if setting_name not in settings:
-            utils.raise_error(
+            utils.log_and_raise_error(
                 f"Setting key {setting_name} not found in "
                 f"settings dictionary",
                 KeyError,

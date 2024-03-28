@@ -90,10 +90,10 @@ class TestConfigs(BaseTest):
         os.makedirs(central_path, exist_ok=True)
 
         with pytest.raises(ConfigError) as e:
-            project.make_config_file(
-                local_path,
-                central_path,
-                "local_filesystem",
+            project.update_config_file(
+                local_path=local_path,
+                central_path=central_path,
+                connection_method="local_filesystem",
             )
 
         assert "must contain the full folder path with no " in str(e.value)

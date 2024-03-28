@@ -16,7 +16,7 @@ dependencies = [
     "PyYAML",
     "requests",
     "rich",
-    "fancylog[git]",
+    "fancylog",
     "simplejson",
     "pyperclip",
     "textual",
@@ -30,6 +30,7 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
     "Operating System :: OS Independent",
     "License :: OSI Approved :: BSD License",
 ]
@@ -88,7 +89,7 @@ exclude = ["tests*", "docs*"]
 addopts = "--cov=datashuttle"
 
 [tool.black]
-target-version = ['py38', 'py39', 'py310']
+target-version = ['py38', 'py39', 'py310', 'py311']
 skip-string-normalization = false
 line-length = 79
 

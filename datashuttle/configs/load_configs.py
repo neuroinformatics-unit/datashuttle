@@ -14,7 +14,7 @@ ConfigValueTypes = Union[Path, str, bool, None]
 # -----------------------------------------------------------------------------
 
 
-def make_config_file_attempt_load(
+def attempt_load_configs(
     project_name: str, config_path: Path
 ) -> Optional[Configs]:
     """

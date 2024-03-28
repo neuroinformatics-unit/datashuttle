@@ -53,19 +53,24 @@ class TestValidationUnit:
         [
             ["sub", ["sub- 001"]],
             ["sub", ["sub-1992_@DATE@_id 1232", "sub-1993-id_1234"]],
-            ["ses", ["ses-001", "ses-00 2"]],
+            ["ses", ["ses-001!", "ses-00 2"]],
+            ["ses", ["ses-#001", "ses-00 2"]],
+            ["ses", ["ses-001!", "ses-00%2"]],
         ],
     )
-    def test_spaces_in_format_names(self, prefix_and_names):
+    def test_special_characters_in_format_names(self, prefix_and_names):
         """
         Check `validate_list_of_names()` catches
-        spaces in passed names.
+        spaces in passed names (not all names are bad
         """
         prefix, names = prefix_and_names
         with pytest.raises(BaseException) as e:
             validation.validate_list_of_names(names, prefix)
 
-        assert "Spaces are in the name:" in str(e.value)
+        assert (
+            "contains characters which are not alphanumeric, dash or underscore."
+            in str(e.value)
+        )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_formatting_dashes_and_underscore_alternate_incorrectly(
@@ -97,7 +102,7 @@ class TestValidationUnit:
                 [
                     f"{prefix}-001",
                     f"{prefix}-002_ses-002-task-check",
-                    f"{prefix}-003_@DATE@",
+                    f"{prefix}-003_date-123123",
                 ],
                 [f"{prefix}-002_ses-002-task-check"],
             ],

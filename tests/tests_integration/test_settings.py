@@ -12,7 +12,9 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 class TestPersistentSettings(BaseTest):
     @pytest.mark.parametrize("unused_repeat", [1, 2])
-    def test_persistent_settings(self, project, unused_repeat):
+    def test_persistent_settings_top_level_folder(
+        self, project, unused_repeat
+    ):
         """
         Test persistent settings functions by editing the
         persistent settings top-level-folder entry, checking they are
@@ -171,3 +173,101 @@ class TestPersistentSettings(BaseTest):
         )
 
         assert "derivatives" in stdout[0]
+
+    def test_persistent_settings_tui(self, project):
+        """
+        Test persistent settings for the project that
+        determine display of the TUI. First check defaults
+        are correct, change every one and save, then check
+        they are correct on re-load.
+        """
+
+        # test all defaults
+        settings = project._load_persistent_settings()
+        tui_settings = settings["tui"]
+
+        assert tui_settings == {
+            "create_checkboxes_on": {
+                "behav": True,
+                "ephys": True,
+                "funcimg": True,
+                "anat": True,
+            },
+            "transfer_checkboxes_on": {
+                "behav": False,
+                "ephys": False,
+                "funcimg": False,
+                "anat": False,
+                "all": True,
+                "all_datatype": False,
+                "all_non_datatype": False,
+            },
+            "top_level_folder_select": {
+                "create_tab": "rawdata",
+                "toplevel_transfer": "rawdata",
+                "custom_transfer": "rawdata",
+            },
+        }
+
+        # change all defaults
+        new_tui_settings = {
+            "create_checkboxes_on": {
+                "behav": False,
+                "ephys": False,
+                "funcimg": False,
+                "anat": False,
+            },
+            "transfer_checkboxes_on": {
+                "behav": True,
+                "ephys": True,
+                "funcimg": True,
+                "anat": True,
+                "all": False,
+                "all_datatype": True,
+                "all_non_datatype": True,
+            },
+            "top_level_folder_select": {
+                "create_tab": "derivatives",
+                "toplevel_transfer": "derivatives ",
+                "custom_transfer": "derivatives",
+            },
+        }
+
+        project._update_persistent_setting("tui", new_tui_settings)
+
+        # Reload and check
+        project = DataShuttle(project.project_name)
+
+        reloaded_settings = project._load_persistent_settings()
+        assert reloaded_settings["tui"] == new_tui_settings
+
+    def test_bypass_validation(self, project):
+        """
+        Check bypass validation which will allow folder
+        creation even when validation fails. Check it is
+        off by default, turn on, check bad name can be created.
+        Reload, turn off, check for error on attempting to create
+        bad name.
+        """
+        assert project.get_bypass_validation() is False
+
+        project.set_bypass_validation(True)
+
+        assert project.get_bypass_validation() is True
+
+        # should not raise
+        project.create_folders("sub-@@@")
+
+        project = DataShuttle(project.project_name)
+
+        assert project.get_bypass_validation() is True
+
+        project.set_bypass_validation(False)
+
+        with pytest.raises(BaseException) as e:
+            project.create_folders("sub-@@@")
+
+        assert (
+            "The name: name: sub-@@@, contains characters which are not alphanumeric"
+            in str(e)
+        )

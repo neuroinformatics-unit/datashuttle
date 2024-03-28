@@ -6,6 +6,7 @@ import simplejson
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, load_configs
+from datashuttle.tui.app import main as tui_main
 from datashuttle.utils import utils
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
@@ -397,15 +398,6 @@ def show_configs(*args: Any) -> None:
     """"""
     project = args[0]
     project.show_configs()
-
-
-# Show Local Tree -------------------------------------------------------------
-
-
-def show_local_tree(*args: Any) -> None:
-    """"""
-    project = args[0]
-    project.show_local_tree()
 
 
 # Show Top Level Folder -------------------------------------------------------
@@ -942,17 +934,6 @@ def construct_parser():
     )
     show_configs_parser.set_defaults(func=show_configs)
 
-    # Show Local tree
-    # -------------------------------------------------------------------------
-
-    show_local_tree_parser = subparsers.add_parser(
-        "show-local-tree",
-        aliases=["show_local_tree"],
-        description=process_docstring(DataShuttle.show_local_tree.__doc__),
-        help="",
-    )
-    show_local_tree_parser.set_defaults(func=show_local_tree)
-
     # Show Top Level Folder
     # -------------------------------------------------------------------------
 
@@ -1055,6 +1036,9 @@ def main() -> None:
     through run_command().
     """
     args = parser.parse_args()
+
+    if args.project_name in ["tui", "gui"]:
+        tui_main()
 
     if "func" in args and str(args.func.__name__) == "make_config_file":
         warn = "ignore"
