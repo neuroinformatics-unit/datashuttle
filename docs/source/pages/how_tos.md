@@ -55,13 +55,6 @@ The ultimate guide to data-transfer.
 How to access full logs of everything **datashuttle** does.
 :::
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate the Project.
-:link: how_tos/validate-project
-:link-type: doc
-
-An overview of project validation possibilities.
-:::
-
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Use Name Templates
 :link: how_tos/use-name-templates
 :link-type: doc
