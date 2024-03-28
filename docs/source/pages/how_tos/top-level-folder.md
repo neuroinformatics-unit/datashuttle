@@ -3,7 +3,7 @@
 # How to set Top Level Folder
 
 The [NeuroBlueprint]() specficiation the top-level folder inside the
-project folder must be `rawdata` or `derivatives`. 
+project folder must be `rawdata` or `derivatives`.
 
 `rawdata` is where acquired, raw data goes and it is never changed.
 `derivatives` is where anything processing goes (and does not necessarily
@@ -13,14 +13,14 @@ In **datashuttle**, the top level folder is relevant when
 1) creating folders (i.e. in `rawdata` or `derivatives`)
 2) transferring data with the top-level method or custom.
 
-When using the Graphical interface, the top-level folder is 
+When using the Graphical interface, the top-level folder is
 set by the drop-down menu on the relevant tab (Create or Tansfer).
 However, in the Python API methods act depending on the set
 'top level folder'.
 
 # Setting the level folder in the Python API
 
-In the Python API the 'working' top level folder 
+In the Python API the 'working' top level folder
 is held as a variable ont he class. The `make_folders`
 and upload and download functions (example) will
 act relate to top-level folder.
