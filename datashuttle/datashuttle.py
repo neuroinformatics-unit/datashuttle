@@ -474,7 +474,7 @@ class DataShuttle:
 
     @check_configs_set
     def upload_specific_folder_or_file(
-        self, filepath: str, dry_run: bool = False
+        self, filepath: Union[str, Path], dry_run: bool = False
     ) -> None:
         """
         Upload a specific file or folder. If transferring
@@ -502,6 +502,9 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
+        if isinstance(filepath, str):
+            filepath = Path(filepath)
+
         self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
         top_level_folder = self._get_top_level_folder_from_specific_filepath(
@@ -510,7 +513,7 @@ class DataShuttle:
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("local", top_level_folder),
-            Path(filepath),
+            filepath,
         )
 
         include_list = [f"--include {processed_filepath.as_posix()}"]
@@ -528,7 +531,7 @@ class DataShuttle:
 
     @check_configs_set
     def download_specific_folder_or_file(
-        self, filepath: str, dry_run: bool = False
+        self, filepath: Union[str, Path], dry_run: bool = False
     ) -> None:
         """
         Download a specific file or folder. If transferring
@@ -556,6 +559,9 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
+        if isinstance(filepath, str):
+            filepath = Path(filepath)
+
         self._start_log(
             "download-specific-folder-or-file", local_vars=locals()
         )
@@ -566,7 +572,7 @@ class DataShuttle:
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("central", top_level_folder),
-            Path(filepath),
+            filepath,
         )
 
         include_list = [f"--include /{processed_filepath.as_posix()}"]
@@ -582,7 +588,7 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
-    def _get_top_level_folder_from_specific_filepath(self, filepath: str):
+    def _get_top_level_folder_from_specific_filepath(self, filepath: Path):
         """
         TODO: this is so hacky, it would be better just force passing
         file directly relative to rawdata and not accept entire file.
