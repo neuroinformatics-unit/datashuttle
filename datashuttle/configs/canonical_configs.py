@@ -323,8 +323,7 @@ def get_persistent_settings_defaults() -> Dict:
     TUI checkboxes and name templates (i.e. regexp
     validation for sub and ses names) are stored.
     """
-    settings = {"top_level_folder": "rawdata"}
-
+    settings = {}
     settings.update(get_tui_config_defaults())
     settings.update(get_name_templates_defaults())
 

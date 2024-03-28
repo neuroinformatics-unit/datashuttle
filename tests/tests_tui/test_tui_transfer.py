@@ -193,9 +193,13 @@ class TestTuiTransfer(TuiBase):
     ):
         """"""
         for top_level_folder in top_level_folder_list:
-            project.set_top_level_folder(top_level_folder)
             test_utils.make_and_check_local_project_folders(
-                project, subs, sessions, "all", top_level_folder
+                project,
+                top_level_folder,
+                subs,
+                sessions,
+                "all",
+                top_level_folder,
             )
         (
             _,

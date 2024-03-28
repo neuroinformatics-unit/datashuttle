@@ -2,7 +2,6 @@ import os
 import shutil
 
 import pytest
-import test_utils
 from base import BaseTest
 
 from datashuttle import DataShuttle
@@ -11,42 +10,6 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestPersistentSettings(BaseTest):
-    @pytest.mark.parametrize("unused_repeat", [1, 2])
-    def test_persistent_settings_top_level_folder(
-        self, project, unused_repeat
-    ):
-        """
-        Test persistent settings functions by editing the
-        persistent settings top-level-folder entry, checking they are
-        changed and the program settings are changed accordingly.
-        """
-        settings = project._load_persistent_settings()
-
-        assert len(settings) == 3
-        assert settings["top_level_folder"] == "rawdata"
-
-        # Update they persistent setting and check this is reflected
-        # in a newly loading version of the settings
-        project._update_persistent_setting("top_level_folder", "derivatives")
-
-        settings_changed = project._load_persistent_settings()
-        assert settings_changed["top_level_folder"] == "derivatives"
-
-        # Re-load the project - this should now take top_level_folder
-        # from the new persistent settings
-        project_reload = DataShuttle(project.project_name)
-        assert project_reload.cfg.top_level_folder == "derivatives"
-
-        # Delete the persistent settings .yaml and check the next
-        # time a project is loaded, it is initialized gracefully to the
-        # default value.
-        (
-            project_reload._datashuttle_path / "persistent_settings.yaml"
-        ).unlink()
-
-        fresh_project = DataShuttle(project.project_name)
-
-        assert fresh_project.cfg.top_level_folder == "rawdata"
 
     def test_persistent_settings_name_templates(self, project):
         """
@@ -96,7 +59,7 @@ class TestPersistentSettings(BaseTest):
 
         # Bad sub name
         with pytest.raises(NeuroBlueprintError) as e:
-            project.create_folders(bad_sub)
+            project.create_folders("rawdata", bad_sub)
         assert (
             str(e.value) == "The name: "
             "sub-3_id-abC_random-helloworld "
@@ -105,11 +68,11 @@ class TestPersistentSettings(BaseTest):
         )
 
         # Good sub name (should not raise)
-        project.create_folders(good_sub)
+        project.create_folders("rawdata", good_sub)
 
         # Bad ses name
         with pytest.raises(NeuroBlueprintError) as e:
-            project.create_folders(good_sub, bad_ses)
+            project.create_folders("rawdata", good_sub, bad_ses)
 
         assert (
             str(e.value) == "The name: "
@@ -119,7 +82,7 @@ class TestPersistentSettings(BaseTest):
         )
 
         # Good ses name (should not raise)
-        project.create_folders(good_sub, good_ses)
+        project.create_folders("rawdata", good_sub, good_ses)
 
         # Now just test the other validation functions explicitly
         # here as well to avoid duplicate of test setup.
@@ -128,6 +91,7 @@ class TestPersistentSettings(BaseTest):
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
                 project.cfg,
+                "rawdata",
                 [bad_sub],
                 ses_names=None,
                 local_only=True,
@@ -141,7 +105,7 @@ class TestPersistentSettings(BaseTest):
 
         # Test `validate_project()`
         with pytest.raises(NeuroBlueprintError) as e:
-            project.validate_project("error", local_only=True)
+            project.validate_project("rawdata", "error", local_only=True)
         shutil.rmtree(bad_sub_path)
 
         assert "sub-3_id-abC_random-helloworld" in str(e.value)
@@ -151,28 +115,7 @@ class TestPersistentSettings(BaseTest):
         reload_name_templates["on"] = False
         project.set_name_templates(reload_name_templates)
 
-        project.create_folders(good_sub, "ses-02")
-
-    def test_set_top_level_folder_is_persistent(self, project):
-        """
-        Test that set_top_level_folder sets the top
-        level folder name persistently across sessions.
-        """
-        assert project.cfg.top_level_folder == "rawdata"
-
-        project.set_top_level_folder("derivatives")
-
-        assert project.cfg.top_level_folder == "derivatives"
-
-        project_reload = DataShuttle(project.project_name)
-
-        assert project_reload.cfg.top_level_folder == "derivatives"
-
-        stdout = test_utils.run_cli(
-            " get-top-level-folder", project.project_name
-        )
-
-        assert "derivatives" in stdout[0]
+        project.create_folders("rawdata", good_sub, "ses-02")
 
     def test_persistent_settings_tui(self, project):
         """
@@ -208,12 +151,12 @@ class TestPersistentSettings(BaseTest):
         bad name.
         """
         # should not raise
-        project.create_folders("sub-@@@", bypass_validation=True)
+        project.create_folders("rawdata", "sub-@@@", bypass_validation=True)
 
         project = DataShuttle(project.project_name)
 
         with pytest.raises(BaseException) as e:
-            project.create_folders("sub-@@@")
+            project.create_folders("rawdata", "sub-@@@")
 
         assert (
             "The name: name: sub-@@@, contains characters which are not alphanumeric"

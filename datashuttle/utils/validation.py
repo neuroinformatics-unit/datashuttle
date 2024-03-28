@@ -316,6 +316,7 @@ def raise_error_or_warn(
 
 def validate_project(
     cfg: Configs,
+    top_level_folder: Literal["rawdata", "derivatives"],
     local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
     log: bool = True,
@@ -338,6 +339,9 @@ def validate_project(
     cfg : Configs
         datashuttle Configs class.
 
+    top_level_folder:  Literal["rawdata", "derivatives"]
+        The top level folder to validate.
+
     local_only : bool
         If `True`, only project folders in the `local_path` will
         be validated. Otherwise, project folders in both the `local_path`
@@ -349,7 +353,9 @@ def validate_project(
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
     """
-    folder_names = getters.get_all_sub_and_ses_names(cfg, local_only)
+    folder_names = getters.get_all_sub_and_ses_names(
+        cfg, top_level_folder, local_only
+    )
 
     # Check subjects
     sub_names = folder_names["sub"]
@@ -390,6 +396,7 @@ def validate_project(
 
 def validate_names_against_project(
     cfg: Configs,
+    top_level_folder: Literal["rawdata", "derivatives"],
     sub_names: List[str],
     ses_names: Optional[List[str]] = None,
     local_only: bool = False,
@@ -419,6 +426,9 @@ def validate_names_against_project(
     cfg : Configs
         datashuttle Configs class.
 
+    top_level_folder :  Literal["rawdata", "derivatives"]
+        The top level folder to validate
+
     sub_names : List[str]
         A list of subject-level names to validate against the
         subject names that exist in the project.
@@ -440,7 +450,9 @@ def validate_names_against_project(
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
     """
-    folder_names = getters.get_all_sub_and_ses_names(cfg, local_only)
+    folder_names = getters.get_all_sub_and_ses_names(
+        cfg, top_level_folder, local_only
+    )
 
     # Check subjects
     if folder_names["sub"]:

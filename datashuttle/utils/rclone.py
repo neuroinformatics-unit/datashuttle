@@ -148,6 +148,7 @@ def prompt_rclone_download_if_does_not_exist() -> None:
 def transfer_data(
     cfg: Configs,
     upload_or_download: Literal["upload", "download"],
+    top_level_folder: Literal["rawdata", "derivatives"],
     include_list: List[str],
     rclone_options: Dict,
 ) -> subprocess.CompletedProcess:
@@ -176,8 +177,10 @@ def transfer_data(
         "download",
     ], "must be 'upload' or 'download'"
 
-    local_filepath = cfg.get_base_folder("local").as_posix()
-    central_filepath = cfg.get_base_folder("central").as_posix()
+    local_filepath = cfg.get_base_folder("local", top_level_folder).as_posix()
+    central_filepath = cfg.get_base_folder(
+        "central", top_level_folder
+    ).as_posix()
 
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
@@ -201,8 +204,9 @@ def transfer_data(
 
 
 def get_local_and_central_file_differences(
-    cfg: Configs, all_top_level_folder: bool = False
-) -> Dict:  # TODO: top level folder behaviour not tested.
+    cfg: Configs,
+    top_level_folders_to_check: List[str],
+) -> Dict:
     """
     Convert the output of rclone's check (with `--combine`) flag
     to a dictionary separating each case.
@@ -210,6 +214,12 @@ def get_local_and_central_file_differences(
     Rclone output comes as a list of files, separated by newlines,
     with symbols indicating whether the file paths are same across
     local and central, different, or found in local / central only.
+
+    Parameters
+    ----------
+
+    top_level_folders_to_check :
+        Either 'all' for all top-level folder or list of top-level folders.
 
     Returns
     -------
@@ -231,40 +241,38 @@ def get_local_and_central_file_differences(
     parsed_output: Dict[str, List]
     parsed_output = {val: [] for val in convert_symbols.values()}
 
-    # TODO: this is kind of wasteful as check all folders and then filter.
-    # Would be more efficient (but messier) to only check top level folder
-    # required or loop over specified top level folders.
-    rclone_output = perform_rclone_check(cfg)
-    split_rclone_output = rclone_output.split("\n")
-
-    if all_top_level_folder:
+    if "all" in top_level_folders_to_check:
+        assert (
+            len(top_level_folders_to_check) == 1
+        ), "If using `all` can be only list entry."
         permitted_top_level_folders = canonical_folders.get_top_level_folders()
     else:
-        permitted_top_level_folders = [cfg.top_level_folder]
+        permitted_top_level_folders = top_level_folders_to_check
 
-    for result in split_rclone_output:
-        if result == "":
-            continue
+    for top_level_folder in permitted_top_level_folders:
 
-        symbol = result[0]
-        filepath = Path(result[2:])
+        rclone_output = perform_rclone_check(cfg, top_level_folder)  # type: ignore
+        split_rclone_output = rclone_output.split("\n")
 
-        if filepath.parts[0] not in permitted_top_level_folders:
-            continue
+        for result in split_rclone_output:
+            if result == "":
+                continue
 
-        assert_rclone_check_output_is_as_expected(
-            result, symbol, convert_symbols
-        )
+            symbol = result[0]
 
-        key = convert_symbols[symbol]
-        parsed_output[key].append(result[2:])  # TODO: use path
+            assert_rclone_check_output_is_as_expected(
+                result, symbol, convert_symbols
+            )
+
+            key = convert_symbols[symbol]
+            parsed_output[key].append(result[2:])  # TODO: use path
 
     return parsed_output
 
 
 def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
     """
-    Ensure the output of Rclone check is as expected. Currently the "error"
+    Ensure the output of Rclone check is as expected. Currently, the "error"
     case is untested and a test case is required. Once the test case is
     obtained this should most likely be moved to tests.
     """
@@ -280,14 +288,20 @@ def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
     )
 
 
-def perform_rclone_check(cfg: Configs) -> str:
+def perform_rclone_check(
+    cfg: Configs, top_level_folder: Literal["rawdata", "derivatives"]
+) -> str:
     """
     Use Rclone's `check` command to build a list of files that
     are the same ("="), different ("*"), found in local only ("+")
     or central only ("-"). The output is formatted as "<symbol> <path>\n".
     """
-    local_filepath = cfg.get_base_folder("local").parent.as_posix()
-    central_filepath = cfg.get_base_folder("central").parent.as_posix()
+    local_filepath = cfg.get_base_folder(
+        "local", top_level_folder
+    ).parent.as_posix()
+    central_filepath = cfg.get_base_folder(
+        "central", top_level_folder
+    ).parent.as_posix()
 
     output = call_rclone(
         f'{rclone_args("check")} '

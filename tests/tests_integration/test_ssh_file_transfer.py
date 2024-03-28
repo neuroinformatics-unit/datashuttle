@@ -184,7 +184,9 @@ class TestFileTransfer:
             swap_last_folder_only=project.testing_ssh,
         )[0]
 
-        transfer_function(sub_names, ses_names, datatype, init_log=False)
+        transfer_function(
+            "rawdata", sub_names, ses_names, datatype, init_log=False
+        )
 
         if upload_or_download == "download":
             test_utils.swap_local_and_central_paths(

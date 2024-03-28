@@ -11,11 +11,14 @@ from datashuttle.configs.canonical_tags import tags
 
 
 class TestFileTransfer(BaseTest):
+
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("use_all_alias", [True, False])
     def test_transfer_empty_folder_structure(
         self,
         project,
+        top_level_folder,
         upload_or_download,
         use_all_alias,
     ):
@@ -27,7 +30,7 @@ class TestFileTransfer(BaseTest):
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project_folders(
-            project, subs, sessions, "all"
+            project, top_level_folder, subs, sessions, "all"
         )
 
         (
@@ -38,29 +41,36 @@ class TestFileTransfer(BaseTest):
         )
 
         if use_all_alias:
-            transfer_function()
+            transfer_function(top_level_folder)
         else:
-            transfer_function("all", "all", "all")
+            transfer_function(top_level_folder, "all", "all", "all")
 
         test_utils.check_folder_tree_is_correct(
-            os.path.join(base_path_to_check, project.cfg.top_level_folder),
+            os.path.join(base_path_to_check, top_level_folder),
             subs,
             sessions,
             test_utils.get_all_folders_used(),
         )
 
     def test_empty_folder_is_not_transferred(self, project):
-        project.create_folders("sub-001")
-        project.upload_all()
-        assert not (project.cfg["central_path"] / "sub-001").is_dir()
+        project.create_folders("rawdata", "sub-001")
+        project.upload_all("rawdata")
+        assert not (
+            project.cfg["central_path"] / "rawdata" / "sub-001"
+        ).is_dir()
 
     @pytest.mark.parametrize(
-        "folder_name", canonical_folders.get_top_level_folders()
+        "top_level_folder_to_transfer",
+        canonical_folders.get_top_level_folders(),
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("use_all_alias", [True, False])
     def test_transfer_across_top_level_folders(
-        self, project, folder_name, upload_or_download, use_all_alias
+        self,
+        project,
+        top_level_folder_to_transfer,
+        upload_or_download,
+        use_all_alias,
     ):
         """
         For each possible top level folder (e.g. rawdata, derivatives)
@@ -69,15 +79,16 @@ class TestFileTransfer(BaseTest):
         upload_all / download_all that only the working top-level folder
         is transferred.
         """
-        project.set_top_level_folder(folder_name)
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        for making_folder_name in canonical_folders.get_top_level_folders():
-            project.cfg.top_level_folder = making_folder_name
+        for top_level_folder in canonical_folders.get_top_level_folders():
             test_utils.make_and_check_local_project_folders(
-                project, subs, sessions, "all", folder_name=making_folder_name
+                project,
+                top_level_folder,
+                subs,
+                sessions,
+                "all",
             )
-        project.cfg.top_level_folder = folder_name
 
         (
             transfer_function,
@@ -87,16 +98,21 @@ class TestFileTransfer(BaseTest):
         )
 
         if use_all_alias:
-            transfer_function()
+            transfer_function(top_level_folder_to_transfer)
         else:
-            transfer_function("all", "all", "all")
+            transfer_function(
+                top_level_folder_to_transfer, "all", "all", "all"
+            )
 
         full_base_path_to_check = (
-            base_path_to_check / project.cfg.top_level_folder
+            base_path_to_check / top_level_folder_to_transfer
         )
 
         test_utils.check_working_top_level_folder_only_exists(
-            folder_name, full_base_path_to_check, subs, sessions
+            top_level_folder_to_transfer,
+            full_base_path_to_check,
+            subs,
+            sessions,
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -104,11 +120,9 @@ class TestFileTransfer(BaseTest):
         """ """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        for folder_name in canonical_folders.get_top_level_folders():
-            project.set_top_level_folder(folder_name)
-
+        for top_level_folder in canonical_folders.get_top_level_folders():
             test_utils.make_and_check_local_project_folders(
-                project, subs, sessions, "all", folder_name=folder_name
+                project, top_level_folder, subs, sessions, "all"
             )
 
         (
@@ -120,10 +134,10 @@ class TestFileTransfer(BaseTest):
 
         transfer_function()
 
-        for folder_name in canonical_folders.get_top_level_folders():
-            project.set_top_level_folder(folder_name)
+        for top_level_folder in canonical_folders.get_top_level_folders():
+
             test_utils.check_folder_tree_is_correct(
-                os.path.join(base_path_to_check, project.cfg.top_level_folder),
+                os.path.join(base_path_to_check, top_level_folder),
                 subs,
                 sessions,
                 test_utils.get_all_folders_used(),
@@ -154,7 +168,7 @@ class TestFileTransfer(BaseTest):
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
         test_utils.make_and_check_local_project_folders(
-            project, subs, sessions, "all"
+            project, "rawdata", subs, sessions, "all"
         )
 
         (
@@ -162,10 +176,10 @@ class TestFileTransfer(BaseTest):
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
-        transfer_function(subs, sessions, datatype_to_transfer)
+        transfer_function("rawdata", subs, sessions, datatype_to_transfer)
 
         test_utils.check_datatype_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_folder),
+            os.path.join(base_path_to_check, "rawdata"),
             datatype_to_transfer,
             subs,
             sessions,
@@ -198,7 +212,7 @@ class TestFileTransfer(BaseTest):
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
         test_utils.make_and_check_local_project_folders(
-            project, subs, sessions, "all"
+            project, "rawdata", subs, sessions, "all"
         )
 
         (
@@ -207,10 +221,12 @@ class TestFileTransfer(BaseTest):
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
-        transfer_function(subs_to_upload, sessions, datatype_to_transfer)
+        transfer_function(
+            "rawdata", subs_to_upload, sessions, datatype_to_transfer
+        )
 
         test_utils.check_datatype_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_folder),
+            os.path.join(base_path_to_check, "rawdata"),
             datatype_to_transfer,
             subs_to_upload,
         )
@@ -239,7 +255,7 @@ class TestFileTransfer(BaseTest):
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project_folders(
-            project, subs, sessions, "all"
+            project, "rawdata", subs, sessions, "all"
         )
 
         (
@@ -250,10 +266,12 @@ class TestFileTransfer(BaseTest):
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         ses_to_upload = [sessions[i] for i in ses_idx_to_upload]
 
-        transfer_function(subs_to_upload, ses_to_upload, datatype_to_transfer)
+        transfer_function(
+            "rawdata", subs_to_upload, ses_to_upload, datatype_to_transfer
+        )
 
         test_utils.check_datatype_sub_ses_uploaded_correctly(
-            os.path.join(base_path_to_check, project.cfg.top_level_folder),
+            os.path.join(base_path_to_check, "rawdata"),
             datatype_to_transfer,
             subs_to_upload,
             ses_to_upload,
@@ -275,7 +293,7 @@ class TestFileTransfer(BaseTest):
         sessions = [f"ses-01{tags('to')}003_{tags('datetime')}"]
 
         test_utils.make_local_folders_with_files_in(
-            project, subs, sessions, "all"
+            project, "rawdata", subs, sessions, "all"
         )
 
         (
@@ -283,7 +301,7 @@ class TestFileTransfer(BaseTest):
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
-        transfer_function(subs, "all", "all")
+        transfer_function("rawdata", subs, "all", "all")
 
         for base_local in [
             project.cfg["local_path"],
@@ -320,7 +338,7 @@ class TestFileTransfer(BaseTest):
         ]
 
         test_utils.make_local_folders_with_files_in(
-            project, subs, sessions, "all"
+            project, "rawdata", subs, sessions, "all"
         )
 
         (
@@ -329,6 +347,7 @@ class TestFileTransfer(BaseTest):
         ) = test_utils.handle_upload_or_download(project, upload_or_download)
 
         transfer_function(
+            "rawdata",
             f"sub-{tags('*')}89",
             f"ses-{tags('*')}_date-202205{tags('*')}",
             ["ephys", "behav", "funcimg"],
@@ -389,7 +408,7 @@ class TestFileTransfer(BaseTest):
         as expected. verbosity itself is tested in another method.
         """
         test_utils.make_local_folders_with_files_in(
-            project, ["sub-001"], ["ses-002"], ["behav"]
+            project, "rawdata", ["sub-001"], ["ses-002"], ["behav"]
         )
 
         project.update_config_file(
@@ -401,7 +420,7 @@ class TestFileTransfer(BaseTest):
         )
 
         test_utils.clear_capsys(capsys)
-        project.upload_all(dry_run=dry_run)
+        project.upload_all("rawdata", dry_run=dry_run)
 
         log = capsys.readouterr().out
 
@@ -427,11 +446,11 @@ class TestFileTransfer(BaseTest):
         """
         see test_rclone_options()
         """
-        project.create_folders(["sub-001"], ["ses-002"], ["behav"])
+        project.create_folders("rawdata", ["sub-001"], ["ses-002"], ["behav"])
         project.update_config_file(transfer_verbosity=transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
-        project.upload_all()
+        project.upload_all("rawdata")
 
         log = capsys.readouterr().out
 
@@ -442,9 +461,13 @@ class TestFileTransfer(BaseTest):
         else:
             raise BaseException("wrong parameter passed as transfer_verbosity")
 
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("overwrite_existing_files", [True, False])
     def test_rclone_overwrite_modified_file(
-        self, project, overwrite_existing_files
+        self,
+        project,
+        top_level_folder,
+        overwrite_existing_files,
     ):
         """
         Test how rclone deals with existing files. In datashuttle
@@ -454,10 +477,16 @@ class TestFileTransfer(BaseTest):
         the version in source is newer than target.
         """
         path_to_test_file = (
-            Path("rawdata") / "sub-001" / "ses-001" / "anat" / "test_file.txt"
+            Path(top_level_folder)
+            / "sub-001"
+            / "ses-001"
+            / "anat"
+            / "test_file.txt"
         )
 
-        project.create_folders("sub-001", "ses-001", datatype="anat")
+        project.create_folders(
+            top_level_folder, "sub-001", "ses-001", datatype="anat"
+        )
 
         local_test_file_path = project.cfg["local_path"] / path_to_test_file
         central_test_file_path = (
@@ -472,7 +501,7 @@ class TestFileTransfer(BaseTest):
         if overwrite_existing_files:
             project.update_config_file(overwrite_existing_files=True)
 
-        project.upload_all()
+        project.upload_all(top_level_folder)
 
         # Update the file and transfer and transfer again
         test_utils.write_file(
@@ -481,7 +510,7 @@ class TestFileTransfer(BaseTest):
 
         assert time_written < os.path.getatime(local_test_file_path)
 
-        project.upload_all()
+        project.upload_all(top_level_folder)
 
         central_contents = test_utils.read_file(central_test_file_path)
 
@@ -490,11 +519,17 @@ class TestFileTransfer(BaseTest):
         else:
             assert central_contents == ["first edit"]
 
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("transfer_file", [True, False])
     @pytest.mark.parametrize("full_path", [True, False])
     def test_specific_file_or_folder(
-        self, project, transfer_file, full_path, upload_or_download
+        self,
+        project,
+        top_level_folder,
+        transfer_file,
+        full_path,
+        upload_or_download,
     ):
         """
         Test upload_specific_folder_or_file() and download_specific_folder_or_file().
@@ -517,7 +552,7 @@ class TestFileTransfer(BaseTest):
         (
             path_to_test_file_behav,
             path_to_test_file_ephys,
-        ) = self.setup_specific_file_or_folder_files(project)
+        ) = self.setup_specific_file_or_folder_files(project, top_level_folder)
 
         if upload_or_download == "upload":
             transfer_function = project.upload_specific_folder_or_file
@@ -555,14 +590,17 @@ class TestFileTransfer(BaseTest):
 
         assert transferred_files == to_test_against
 
-    def setup_specific_file_or_folder_files(self, project):
+    def setup_specific_file_or_folder_files(self, project, top_level_folder):
         """ """
         project.create_folders(
-            ["sub-001", "sub-002"], "ses-003", ["behav", "ephys"]
+            top_level_folder,
+            ["sub-001", "sub-002"],
+            "ses-003",
+            ["behav", "ephys"],
         )
 
         path_to_test_file_behav = (
-            Path("rawdata")
+            Path(top_level_folder)
             / "sub-002"
             / "ses-003"
             / "behav"
@@ -570,7 +608,7 @@ class TestFileTransfer(BaseTest):
         )
 
         path_to_test_file_ephys = (
-            Path("rawdata")
+            Path(top_level_folder)
             / "sub-002"
             / "ses-003"
             / "ephys"

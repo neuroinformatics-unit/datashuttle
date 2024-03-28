@@ -348,7 +348,7 @@ def check_datatype_sub_ses_uploaded_correctly(
 
 
 def make_and_check_local_project_folders(
-    project, subs, sessions, datatype, folder_name="rawdata"
+    project, top_level_folder, subs, sessions, datatype
 ):
     """
     Make a local project folder tree with the specified datatype,
@@ -358,10 +358,12 @@ def make_and_check_local_project_folders(
     to write a placeholder file in all bottom-level
     directories so ensure they are transferred.
     """
-    make_local_folders_with_files_in(project, subs, sessions, datatype)
+    make_local_folders_with_files_in(
+        project, top_level_folder, subs, sessions, datatype
+    )
 
     check_folder_tree_is_correct(
-        get_top_level_folder_path(project, folder_name=folder_name),
+        get_top_level_folder_path(project, top_level_folder),
         subs,
         sessions,
         get_all_folders_used(),
@@ -369,9 +371,9 @@ def make_and_check_local_project_folders(
 
 
 def make_local_folders_with_files_in(
-    project, subs, sessions=None, datatype="all"
+    project, top_level_folder, subs, sessions=None, datatype="all"
 ):
-    project.create_folders(subs, sessions, datatype)
+    project.create_folders(top_level_folder, subs, sessions, datatype)
     for root, dirs, _ in os.walk(project.cfg["local_path"]):
         if not dirs:
             path_ = Path(root) / "placeholder_file.txt"

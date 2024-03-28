@@ -136,7 +136,7 @@ class TestLogging:
 
         ses = ["ses-123", "ses-101"]
 
-        project.create_folders(subs, ses, datatype="all")
+        project.create_folders("rawdata", subs, ses, datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -201,6 +201,7 @@ class TestLogging:
 
         test_utils.make_and_check_local_project_folders(
             project,
+            "rawdata",
             subs,
             sessions,
             "all",
@@ -220,9 +221,9 @@ class TestLogging:
         self.delete_log_files(project.cfg.logging_path)
 
         (
-            transfer_function()
+            transfer_function("rawdata")
             if use_all_alias
-            else transfer_function("all", "all", "all")
+            else transfer_function("rawdata", "all", "all", "all")
         )
 
         log = self.read_log_file(project.cfg.logging_path)
@@ -261,6 +262,7 @@ class TestLogging:
         """
         test_utils.make_and_check_local_project_folders(
             project,
+            "rawdata",
             subs=["sub-001"],
             sessions=["ses-001"],
             datatype="all",
@@ -386,12 +388,12 @@ class TestLogging:
 
     def test_logs_bad_create_folders_error(self, project):
         """"""
-        project.create_folders("sub-001", datatype="all")
+        project.create_folders("rawdata", "sub-001", datatype="all")
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(NeuroBlueprintError):
             project.create_folders(
-                "sub-001_datetime-123213T123122", datatype="all"
+                "rawdata", "sub-001_datetime-123213T123122", datatype="all"
             )
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -407,7 +409,7 @@ class TestLogging:
         and warnings to file.
         """
         # Make conflicting subject folders
-        project.create_folders(["sub-001", "sub-002"])
+        project.create_folders("rawdata", ["sub-001", "sub-002"])
         for sub in ["sub-1", "sub-002_date-2023"]:
             os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
 
@@ -415,7 +417,7 @@ class TestLogging:
 
         # Check a validation error is logged.
         with pytest.raises(BaseException) as e:
-            project.validate_project(error_or_warn="error")
+            project.validate_project("rawdata", error_or_warn="error")
 
         log = self.read_log_file(project.cfg.logging_path)
         assert "ERROR" in log
@@ -425,7 +427,7 @@ class TestLogging:
 
         # Check that validation warnings are logged.
         with pytest.warns(UserWarning) as w:
-            project.validate_project(error_or_warn="warn")
+            project.validate_project("rawdata", error_or_warn="warn")
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -440,11 +442,11 @@ class TestLogging:
         `make_project_folders` is called, that it logs errors
         to file. Warnings are not tested.
         """
-        project.create_folders("sub-001")
+        project.create_folders("rawdata", "sub-001")
         self.delete_log_files(project.cfg.logging_path)  #
 
         with pytest.raises(BaseException) as e:
-            project.create_folders("sub-001_id-a")
+            project.create_folders("rawdata", "sub-001_id-a")
 
         log = self.read_log_file(project.cfg.logging_path)
 

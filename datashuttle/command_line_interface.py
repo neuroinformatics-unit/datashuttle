@@ -192,6 +192,7 @@ def setup_ssh_connection_to_central_server(*args: Any) -> None:
 
 def create_folders(project: DataShuttle, args: Any) -> None:
     """"""
+    raise NotImplementedError("Requires adding 'top_level_folder")
     kwargs = make_kwargs(args)
 
     filtered_kwargs = remove_nonetype_entries(kwargs)
@@ -224,6 +225,7 @@ def upload(project: DataShuttle, args: Any) -> None:
 
 def upload_all(*args: Any) -> None:
     """"""
+    raise NotImplementedError
     project = args[0]
     project.upload_all()
 
@@ -258,6 +260,7 @@ def download(project: DataShuttle, args: Any) -> None:
 
 def download_all(*args: Any) -> None:
     """"""
+    raise NotImplementedError
     project = args[0]
     project.download_all()
 
@@ -298,20 +301,6 @@ def download_specific_folder_or_file(project: DataShuttle, args: Any) -> None:
         project.download_specific_folder_or_file,
         kwargs.pop("filepath"),
         **kwargs,
-    )
-
-
-# Set Top Level Folder or File ------------------------------------------------
-
-
-def set_top_level_folder(project: DataShuttle, args: Any) -> None:
-    """"""
-    kwargs = make_kwargs(args)
-
-    run_command(
-        project,
-        project.set_top_level_folder,
-        kwargs["folder_name"],
     )
 
 
@@ -378,6 +367,7 @@ def get_existing_projects(*args: Any) -> None:
 
 def get_next_sub_number(*args: Any) -> None:
     """"""
+    raise NotImplementedError("This function is not stable.")
     project = args[0]
     print(project.get_next_sub_number())
 
@@ -387,6 +377,7 @@ def get_next_sub_number(*args: Any) -> None:
 
 def get_next_ses_number(project: DataShuttle, args: Any) -> None:
     """"""
+    raise NotImplementedError("This function is not stable.")
     kwargs = make_kwargs(args)
     print(project.get_next_ses_number(kwargs["sub"]))
 
@@ -400,20 +391,12 @@ def show_configs(*args: Any) -> None:
     project.show_configs()
 
 
-# Show Top Level Folder -------------------------------------------------------
-
-
-def get_top_level_folder(*args: Any) -> None:
-    """"""
-    project = args[0]
-    print(project.get_top_level_folder())
-
-
 # Validate Project  -----------------------------------------------------------
 
 
 def validate_project(*args: Any) -> None:
     """"""
+    raise NotImplementedError
     project = args[0]
     project.validate_project(error_or_warn="warn", local_only=False)
 
@@ -790,26 +773,6 @@ def construct_parser():
         help=help("flag_default_false"),
     )
 
-    # Set Top Level Folder
-    # -------------------------------------------------------------------------
-
-    set_top_level_folder_parser = subparsers.add_parser(
-        "set-top-level-folder",
-        aliases=["set_top_level_folder"],
-        description=process_docstring(
-            DataShuttle.set_top_level_folder.__doc__
-        ),
-        formatter_class=argparse.RawTextHelpFormatter,
-        help="",
-    )
-    set_top_level_folder_parser.set_defaults(func=set_top_level_folder)
-
-    set_top_level_folder_parser.add_argument(
-        "folder_name",
-        type=str,
-        help=help("required_str"),
-    )
-
     # Get Local Path
     # -------------------------------------------------------------------------
 
@@ -920,19 +883,6 @@ def construct_parser():
         help="",
     )
     show_configs_parser.set_defaults(func=show_configs)
-
-    # Show Top Level Folder
-    # -------------------------------------------------------------------------
-
-    get_top_level_folder_parser = subparsers.add_parser(
-        "get-top-level-folder",
-        aliases=["get_top_level_folder"],
-        description=process_docstring(
-            DataShuttle.get_top_level_folder.__doc__
-        ),
-        help="",
-    )
-    get_top_level_folder_parser.set_defaults(func=get_top_level_folder)
 
     # Validate Project
     # -------------------------------------------------------------------------

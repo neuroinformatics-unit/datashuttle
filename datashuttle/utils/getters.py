@@ -27,6 +27,7 @@ from datashuttle.utils.custom_exceptions import (
 
 def get_next_sub_or_ses_number(
     cfg: Configs,
+    top_level_folder,
     sub: Optional[str],
     search_str: str,
     local_only: bool = False,
@@ -83,7 +84,7 @@ def get_next_sub_or_ses_number(
         prefix = "sub"
 
     folder_names = folders.search_project_for_sub_or_ses_names(
-        cfg, sub, search_str, local_only=local_only
+        cfg, top_level_folder, sub, search_str, local_only=local_only
     )
 
     all_folders = list(set(folder_names["local"] + folder_names["central"]))
@@ -216,7 +217,11 @@ def get_existing_project_paths() -> List[Path]:
     return existing_project_paths
 
 
-def get_all_sub_and_ses_names(cfg: Configs, local_only: bool) -> Dict:
+def get_all_sub_and_ses_names(
+    cfg: Configs,
+    top_level_folder: Literal["rawdata", "derivatives"],
+    local_only: bool,
+) -> Dict:
     """
     Get a list of every subject and session name in the
     local and central project folders. Local and central names are combined
@@ -236,7 +241,7 @@ def get_all_sub_and_ses_names(cfg: Configs, local_only: bool) -> Dict:
         `local_path` and `central_path`.
     """
     sub_folder_names = folders.search_project_for_sub_or_ses_names(
-        cfg, None, "sub-*", local_only
+        cfg, top_level_folder, None, "sub-*", local_only
     )
 
     if local_only:
@@ -249,7 +254,7 @@ def get_all_sub_and_ses_names(cfg: Configs, local_only: bool) -> Dict:
     all_ses_folder_names = {}
     for sub in all_sub_folder_names:
         ses_folder_names = folders.search_project_for_sub_or_ses_names(
-            cfg, sub, "ses-*", local_only
+            cfg, top_level_folder, sub, "ses-*", local_only
         )
 
         if local_only:

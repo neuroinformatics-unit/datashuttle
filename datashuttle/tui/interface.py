@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple
 
 if TYPE_CHECKING:
     import paramiko
@@ -122,25 +122,22 @@ class Interface:
         datatype : List[str]
             A list of canonical datatype names to create.
         """
-        tmp_top_level_folder = self.project.get_top_level_folder()
         top_level_folder = self.tui_settings["top_level_folder_select"][
             "create_tab"
         ]
         bypass_validation = self.tui_settings["bypass_validation"]
 
         try:
-            self.project.set_top_level_folder(top_level_folder)
             self.project.create_folders(
+                top_level_folder,
                 sub_names=sub_names,
                 ses_names=ses_names,
                 datatype=datatype,
                 bypass_validation=bypass_validation,
             )
-            self.project.set_top_level_folder(tmp_top_level_folder)
             return True, None
 
         except BaseException as e:
-            self.project.set_top_level_folder(tmp_top_level_folder)
             return False, str(e)
 
     def validate_names(
@@ -219,25 +216,19 @@ class Interface:
             from central to remote.
 
         """
-        temp_top_level_folder = self.project.get_top_level_folder()
-        self.project.set_top_level_folder(selected_top_level_folder)
         try:
             if upload:
-                self.project.upload_all()
+                self.project.upload_all(selected_top_level_folder)
             else:
-                self.project.download_all()
-
-            self.project.set_top_level_folder(temp_top_level_folder)
+                self.project.download_all(selected_top_level_folder)
             return True, None
 
         except BaseException as e:
-
-            self.project.set_top_level_folder(temp_top_level_folder)
             return False, str(e)
 
     def transfer_custom_selection(
         self,
-        selected_top_level_folder: str,
+        selected_top_level_folder: Literal["rawdata", "derivatives"],
         sub_names: List[str],
         ses_names: List[str],
         datatype: List[str],
@@ -265,29 +256,24 @@ class Interface:
             Upload from local to central if `True`, otherwise download
             from central to remote.
         """
-        temp_top_level_folder = self.project.get_top_level_folder()
-        self.project.set_top_level_folder(selected_top_level_folder)
-
         try:
             if upload:
                 self.project.upload(
+                    selected_top_level_folder,
                     sub_names=sub_names,
                     ses_names=ses_names,
                     datatype=datatype,
                 )
             else:
                 self.project.download(
+                    selected_top_level_folder,
                     sub_names=sub_names,
                     ses_names=ses_names,
                     datatype=datatype,
                 )
-
-            self.project.set_top_level_folder(temp_top_level_folder)
             return True, None
 
         except BaseException as e:
-
-            self.project.set_top_level_folder(temp_top_level_folder)
             return False, str(e)
 
     # Setup SSH
@@ -378,20 +364,24 @@ class Interface:
         cfg_to_load.convert_str_and_pathlib_paths(cfg_to_load, "path_to_str")
         return cfg_to_load
 
-    def get_next_sub_number(self) -> Output:
+    def get_next_sub_number(
+        self, top_level_folder: Literal["rawdata", "derivatives"]
+    ) -> Output:
         try:
             next_sub = self.project.get_next_sub_number(
-                return_with_prefix=True, local_only=True
+                top_level_folder, return_with_prefix=True, local_only=True
             )
             return True, next_sub
         except BaseException as e:
             return False, str(e)
 
-    def get_next_ses_number(self, sub: str) -> Output:
+    def get_next_ses_number(
+        self, top_level_folder: Literal["rawdata", "derivatives"], sub: str
+    ) -> Output:
 
         try:
             next_ses = self.project.get_next_ses_number(
-                sub, return_with_prefix=True, local_only=True
+                top_level_folder, sub, return_with_prefix=True, local_only=True
             )
             return True, next_ses
         except BaseException as e:
