@@ -63,6 +63,24 @@ Now the specification has been introduced, let's dive in to folder creation!
 
 EXPLAIN ALL SHORTCUTS!
 
+
+### Settings
+
+```{image} /_static/screenshots/how-to-create-folders-settings-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-create-folders-settings-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
+
+
+
 :::
 
 :::{tab-item} Python API

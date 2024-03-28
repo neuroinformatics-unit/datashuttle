@@ -1,38 +1,66 @@
 (how-to-set-top-level-folder)=
 
-# How to set Top Level Folder
+# How to Set the Top-level Folder
 
-The [NeuroBlueprint]() specficiation the top-level folder inside the
-project folder must be `rawdata` or `derivatives`.
+ [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) specifies
+the top-level folder inside the project folder must be `rawdata` or `derivatives`.
 
-`rawdata` is where acquired, raw data goes and it is never changed.
-`derivatives` is where anything processing goes (and does not necessarily
-need to be formatted in neuroblueprint style).
+TODO: use a different image
 
-In **datashuttle**, the top level folder is relevant when
+```{image} /_static/NeuroBlueprint_project_tree_dark.png
+   :align: center
+   :class: only-dark
+   :width: 650px
+```
+```{image} /_static/NeuroBlueprint_project_tree_light.png
+   :align: center
+   :class: only-light
+   :width: 650px
+```
+<br>
+
+In **datashuttle**, the top level folder is relevant when:
 1) creating folders (i.e. in `rawdata` or `derivatives`)
 2) transferring data with the top-level method or custom.
 
-When using the Graphical interface, the top-level folder is
-set by the drop-down menu on the relevant tab (Create or Tansfer).
-However, in the Python API methods act depending on the set
-'top level folder'.
+Using the Graphical interface, the top-level folder is
+set by a drop-down menu on the relevant tab (`Create` or `Transfer`).
+^^ TODO: link to sections!!!  TODO TODO TODO
 
-# Setting the level folder in the Python API
 
-In the Python API the 'working' top level folder
-is held as a variable ont he class. The `make_folders`
-and upload and download functions (example) will
-act relate to top-level folder.
+However, in the Python API methods act in `rawdata` or `derivatives`
+according to a stored top-level folder setting.
 
-The working top-level folder is used to avoid entering
-it every time you make folders or transfer data.
+## Setting the level folder in the Python API
 
-The `get_top_level_folder()` and `set_top_level_folder()`
-can be used to get and set the working top level folder respectively.
+In the Python API the *working* top level folder
+is stored as a persistent property, accessible with
+the `get_top_level_folder()` and `set_top_level_folder()` methods.
+
+This is to avoid continuously inputting the top-level folder
+for every method call.
+
+:::{info}
+:class: info
+
+Top-level folder is persistent across sessions on a machine. If you
+change the working top-level folder with `set_top_level_folder()` then
+close-and-reopen python, the change is remembered.
+
+Changing the working top-level folder only affects the
+project on the local machine you are using.
+
+:::
+
+When making folders, `make_folders` will only create folders in the
+working top-level folder.
+
+Transferring folders (e.g. with `upload_data` or `download_data`) will
+only transfer folders in the working top-level folder
+(unless `upload_entire_project()` or `download_entire_project()` is used).
 
 In the below example we weill create and transfer folders in `rawdata`.
-Then we will switch to do the same in `derivatives`.
+Then, the top-level folder is switched to `derivatives` and the actions repeated.#
 
 ```python
 project.set_top_level_folder("rawdata")
