@@ -285,8 +285,8 @@ def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
     assert symbol in convert_symbols.keys(), "rclone check symbol is unknown."
     assert symbol != "!", (
         "Could not complete rlcone check. "
-        "This is unexpected. Please contact DataShuttle "
-        "devs at our GitHub page."
+        "This is unexpected. Please contact datashuttle "
+        "at our GitHub page."
     )
 
 
