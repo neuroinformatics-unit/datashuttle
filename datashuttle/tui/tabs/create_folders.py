@@ -243,6 +243,12 @@ class CreateFoldersTab(TreeAndInputTab):
             self.mainwindow.show_modal_error_dialog(output)
 
     def reload_directorytree(self) -> None:
+        """
+        This reloads the directorytree and also updates validation.
+        Not now a good method name but done for consistency with other
+        tab refresh methods.
+        """
+        self.revalidate_inputs(["sub", "ses"])
         self.query_one("#create_folders_directorytree").reload()
 
     # Filling Inputs
