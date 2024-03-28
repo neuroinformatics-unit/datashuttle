@@ -534,16 +534,6 @@ class TestFileTransfer(BaseTest):
         """
         Test upload_specific_folder_or_file() and download_specific_folder_or_file().
 
-        This test has a few different parameterisations. It tests
-        1) transfer_file : this transfers a file or folder. if transferring
-           a folder, all contents are transferred with /** wildcard.
-        2) full path : the functions can accept full path or path
-           relative to rawdata/ . Test both these instances
-        3) upload_or_download : Test the direction. As it is more convenient
-           to  make all test project file in local_path then swap the paths
-           if downloading, this is done here (see
-           test_utils.swap_local_and_central_paths()) for details.
-
         Make a project with two different files (just to
         ensure non-target files are not transferred). Transfer
         a single file or the folder containing the file. Check that

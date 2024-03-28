@@ -511,6 +511,9 @@ class DataShuttle:
             filepath
         )
 
+        if filepath.parts[0] == top_level_folder:
+            filepath = Path(*filepath.parts[1:])
+
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("local", top_level_folder),
             filepath,
@@ -569,6 +572,9 @@ class DataShuttle:
         top_level_folder = self._get_top_level_folder_from_specific_filepath(
             filepath
         )
+
+        if filepath.parts[0] == top_level_folder:
+            filepath = Path(*filepath.parts[1:])
 
         processed_filepath = utils.get_path_after_base_folder(
             self.cfg.get_base_folder("central", top_level_folder),

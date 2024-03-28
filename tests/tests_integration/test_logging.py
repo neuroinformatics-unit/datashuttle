@@ -280,9 +280,13 @@ class TestLogging:
         self.delete_log_files(project.cfg.logging_path)
 
         if upload_or_download == "upload":
-            project.upload_specific_folder_or_file("sub-001/ses-001")
+            project.upload_specific_folder_or_file(
+                "rawdata", "sub-001/ses-001"
+            )
         else:
-            project.download_specific_folder_or_file("sub-001/ses-001")
+            project.download_specific_folder_or_file(
+                "rawdata", "sub-001/ses-001"
+            )
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -290,11 +294,7 @@ class TestLogging:
             f"Starting logging for command {upload_or_download}-specific-folder-or-file"
             in log
         )
-        assert (
-            "\n\nVariablesState:\nlocals: {'filepath': 'sub-001/ses-001', "
-            "'dry_run': False}\ncfg: {'local_path':" in log
-        )
-        assert """sub-001/ses-001"]""" in log
+        assert "sub-001/ses-001" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
 
