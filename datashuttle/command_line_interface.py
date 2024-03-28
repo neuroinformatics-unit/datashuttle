@@ -113,7 +113,7 @@ def help(help_type: str) -> str:
 
 description = (
     "-----------------------------------------------------------------------\n"
-    "DataShuttle command line interface. "
+    "datashuttle command line interface. "
     "\n\n"
     "datashuttle [PROJECT NAME] [COMMAND] [OPTIONS]"
     "\n\n"

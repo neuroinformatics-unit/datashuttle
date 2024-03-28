@@ -46,3 +46,7 @@ html[data-theme=light] {
   height: auto;
   margin: 5px auto;
 }
+
+.center {
+    text-align: center;
+}
