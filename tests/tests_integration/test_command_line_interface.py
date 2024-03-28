@@ -465,17 +465,6 @@ class TestCommandLineInterface(BaseTest):
     # Test Errors Propagate from API
     # -------------------------------------------------------------------------
 
-    def test_warning_on_startup_cli(self, clean_project_name):
-        """
-        Check that warning from API are propagated to CLI
-        """
-        _, stderr = test_utils.run_cli("", clean_project_name)
-
-        assert (
-            "Configuration file has not been initialized. "
-            "Use make_config_file() to setup before continuing." in stderr
-        )
-
     def test_use_ssh_but_pass_no_ssh_options(self, clean_project_name):
         """
         Check that error from API are propagated to CLI

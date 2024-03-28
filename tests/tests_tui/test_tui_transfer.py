@@ -134,9 +134,12 @@ class TestTuiTransfer(TuiBase):
             )
 
             # only transfer behav and funcimg
+            # TODO: this is broken, not updating, not sure why.
+            # Seems a general problem with clicks not registered on transfer tab
             await self.scroll_to_click_pause(
                 pilot, "#transfer_all_checkbox"
             )  # turn this off
+
             await self.scroll_to_click_pause(
                 pilot, "#transfer_behav_checkbox"
             )  # and these on...
