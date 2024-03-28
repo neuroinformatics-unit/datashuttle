@@ -80,6 +80,7 @@ be taken to the page where project details must be entered
 ```
 <br>
 
+(general-tui-datashuttle-setup)=
 Setting up **datashuttle** is as simple as entering the `Project name`,
 `Local Path` and `Central Path` into the relevant input boxes. The paths
 do not need to end in the project name - this will be automatically added.
@@ -189,7 +190,19 @@ the **project name**, it will be automatically included.
 ```
 <br>
 
-THEN CLICK THROUGH SETTING UP SSH
+When setting up a new project, the **project name** and **local path**
+can be input exactly the
+[same as when setting without SSH](general-tui-datashuttle-setup).
+
+Next, input the `Central Host ID`, `Central Host Username` and
+`Central Path` as described above.
+
+Clicking `Save` will save these project configs. A button
+`Setup SSH Connection` will appear. Click this to
+confirm the server and enter your password to the server
+(you will only need to do this once)
+``
+
 
 :::
 :::{tab-item} Python API
@@ -199,17 +212,13 @@ In Datashuttle, the
 `connection_method` configuration must be set to `"ssh"`
 to use the SSH protocol for data transfers.
 
-Prior to using the SSH protocol, the host ID must be accepted and your
-user account password entered. This is only required once, following this
-SSH key-pairs will be used to connect via SSH. The
-command `setup-ssh-connection-to-central-server` can be used to
-set up an SSH connection to the *central* machine.
-
+Enter the `central_path`, `central_host_id` and
+`central_host_username` as  described above.
 
 ```{code-block} python
 project.make_config_file(
-	local_path="/path/to/my_projects/my_first_project",
-	central_path="/central/live/username/my_projects/my_first_project",
+	local_path=r"C:\path\to\local\my_projects\my_first_project",
+	central_path="/nfs/path_on_server/myprojects/central",
 	connection_method="ssh",
 	central_host_id="ssh.swc.ucl.ac.uk",
 	central_host_username="username",
@@ -225,65 +234,11 @@ project.setup_ssh_connection_to_central_server()
 Running `setup-ssh-connection-to-central-server` will require verification
 that the SSH server connected to is correct (pressing `y` to proceed).
 
-Next, your password to the *central* machine will be requested.
-This command sets up SSH key pairs between *local* and *central* machines.
-
-Password-less SSH communication is set up and no further configuration should be
-necessary for SSH transfer.
+Finally, your password to the central server will be requested (you will
+only need to do this once).
 
 :::
 ::::
-
-## Updating configs  [TODO: OWN HOW-TO]
-
-Once a project has been created, the configs can be updated during at any point.
-
-::::{tab-set}
-
-:::{tab-item} Graphical Interface
-:sync: gui
-
-```{image} /_static/screenshots/updating-configs-dark.png
-   :align: center
-   :class: only-dark
-   :width: 900px
-```
-```{image} /_static/screenshots/updating-configs-light.png
-   :align: center
-   :class: only-light
-   :width: 900px
-```
-<br>
-
-On the `Project Manager` page, clicking the `Configs` tab will display
-the current configs. Changing any config and clicking `Save` will
-update the configs.
-
-If `SSH` configs are changed, the connection to the server will need
-to be reset with `Setup SSH Connection`.
-
-:::
-
-:::{tab-item} Python API
-:sync: python
-
-The project configs can be selectively updated with the `update_config_file()`
-method. For example, to change the `local_path` and `central_path`:
-
-```python
-project.update_config_file(
-    local_path="/a/new/local/path",
-    central_path="/a/new/central/path"
-)
-```
-
-:::
-::::
-To set up, we can use the `make-config-file` command to tell Datashuttle our project details.
-
-`make-config-file` should be used when first setting up a project's configs. To update
-an existing config file, use `update-config-file` with the arguments to be updated.
-
 
 (make-project-extra-arguments)=
 ## Extra arguments (Python API)
@@ -293,8 +248,9 @@ can be set with the `make_config_file()` method.
 
 These configs are not relevant for the graphical interface, with the exception of
 `overwrite_existing_folders` which set directly on the
-Graphical Interface's `Transfer` screen.
+graphical interface's `Transfer` screen.
 
+(overwrite-existing-files-config)=
 overwrite_existing_files
 : Determines whether folders and files are overwritten
 during transfer. By default, Datashuttle does not overwrite any existing

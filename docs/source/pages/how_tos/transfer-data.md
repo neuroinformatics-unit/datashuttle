@@ -40,14 +40,23 @@ Below we will explore each method in turn, as well as consider
 [configuring transfer](configuring-transfer) including the important
 **overwrite existing files** option.
 
-[TODO: Add the overwrite existing folders option here.]
+```{warning}
+The
+[`Overwrite Existing Files`](overwrite-existing-files-config)
+setting is very important.
+
+By default it is turned off and a transfer will never overwrite a
+file that already exists, even if the source version is newer.
+
+```
+
 
 (transfer-entire-project)=
 ## Transfer the entire project
 
 The first option is to transfer the entire project,
 that is all files in the `rawdata` and `derivatives`
-[top-level-folders]().  # TODO: LINK TO HOW TO
+[top-level-folders](https://neuroblueprint.neuroinformatics.dev/specification.html#basic-principles).
 
 This includes all files inside or outside a subject, session
 or datatype folder.
@@ -104,7 +113,7 @@ project.download_entire_project()
 ## Transfer the top-level folder
 
 This mode acts almost identically to
-[transfering the entire project](transfer-entire-project)
+[transferring the entire project](transfer-entire-project)
 however it will only transfer files within a
 particular top-level folder (`rawdata` or `derivatives`).
 
@@ -213,6 +222,12 @@ Next, subject and session keywords can be added to customise
 files to transfer. In this example, data from all *subject*
 folders, all first session behavioral data will be transferred.
 
+Subject and sessions can be added to the input boxes automatically
+by hovering over `sub-` or `ses-` folders on the `DirectoryTree`.
+Pressing `CTRL+F` will 'fill' the input with the foldername,
+while `CTRL+A` will 'append' the foldername, creating a list of
+subjects or sessions to transfer.
+
 Use the `Upload / Download` switch to control transfer direction,
 and press `Transfer` to begin.
 
@@ -252,8 +267,16 @@ folders, all first session behavioral data will be uploaded.
 
 ### Custom transfer keywords
 
-TODO: only affect level. e.g. sub "all" but ses is 001 then only 1st ses from
-all sub will be transferred + non-sub folders
+Custom transfer keywords determine how files and folders
+outside of subject, session and datatype folders are handled.
+
+Ideally, all data will be stored in datatype folders. However, this
+is not always feasible.
+
+In this case, custom transfer keywords allows flexible handling of
+the transfer of non `sub-`, `ses-` prefixed or datatype folders at the
+subject, session and datatype level.
+
 
 Subject level
 :   * `all` - All subject (i.e. prefixed with `sub-`) folders and non-subject files within the
@@ -281,14 +304,17 @@ transferred. Non-*datatype* folders at the session level will not be transferred
 
 ### Convenience Tags
 
-Tags to include in subject / session names
+These tags can be included in subject or session names to
+allow further customisation of data transfer.
 
 (transfer-the-wildcard-tag)=
-wildcard transfer
-: hello world
+Wildcard
+: The `@*@` tag can be used to match any portion of a subject or session name.
+*e.g.* `ses-001_date-@*@` will transfer all first sessions, matching all possibles date.
 
-transfer a range
-: hello world
+Transfer a range
+: The `@TO@` tag can be used to target a range of subjects for transfer.
+*e.g.* `sub-001@TO@025` will transfer the 1st to up to and including the 25th subject.
 
 (configuring-transfer)=
 ## Configuring data transfer

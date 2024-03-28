@@ -1,7 +1,7 @@
 :html_theme.sidebar_secondary.remove:
 
-<title>[PAGE TITLE] &#8212;datashuttle</title>
-<h1 style="text-align: center;"><b>datashuttle</b></h1>
+{.center}
+# **datashuttle**
 
 <p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation and transfer.</p>
 
@@ -46,23 +46,21 @@ Full Python API reference.
 :::
 ::::
 
-<p style="text-align: center; font-size: 16px; margin: 0.5cm auto 0.5cm; width: 80%;">
-<br>
-Datashuttle allows you to rapidy
-create and validate project folders standardised to the
-<a href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> specification.
-Standardised data can be conveniently transferred between
-acquisition, storage and analysis machines.
-<br><br>
-Get started with our full 'tutorials[ADD AS LINK]' above or our 'get started quickly' video below.
-<br><br>
-Don't hesitate to get in contact through our
-<a href="https://github.com/neuroinformatics-unit/datashuttle/issues">GitHub Issues</a>
-or
-<a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle">Zulip chat</a>.
-</p>
-
 <h2 style="text-align: center;">[Get Started Video]</h2>
+
+=======
+Datashuttle creates and validates projects standardised to the
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
+specification.
+
+Dive right into **datashuttle** with our
+[Getting Started Tutorial]((tutorial-getting-started)=)
+or targeted [How-To Guides](how-tos).
+
+Don't hesitate to get in contact through our
+[GitHub Issues](https://github.com/neuroinformatics-unit/datashuttle/issues)
+or
+[Zulip Chat.](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle)
 
 
 ```{toctree}
@@ -70,6 +68,7 @@ or
 :caption: index
 :hidden:
 
-pages/documentation
+pages/tutorials
+pages/how_tos
 pages/api_index
 ```
