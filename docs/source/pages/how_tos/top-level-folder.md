@@ -52,7 +52,7 @@ project on the local machine you are using.
 
 :::
 
-When making folders, `make_folders` will only create folders in the
+When making folders, `create_folders` will only create folders in the
 working top-level folder.
 
 Transferring folders (e.g. with `upload_data` or `download_data`) will
@@ -66,7 +66,7 @@ Then, the top-level folder is switched to `derivatives` and the actions repeated
 project.set_top_level_folder("rawdata")
 
 # make folders in `rawdata`
-project.make_folders(sub="sub-002")
+project.create_folders(sub="sub-002")
 
 # transfer files in `rawdata`
 project.upload_data(sub_names="all", ses_names="all", datatype="all")
@@ -78,7 +78,7 @@ print(project.get_top_level_folder())
 # "derivatives"
 
 # create folders in derivatives
-project.make_folders("sub-002")
+project.create_folders("sub-002")
 
 # transfer folders in derivatives
 project.download_data()

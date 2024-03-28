@@ -311,7 +311,7 @@ Finally, click `Create Folders` to create the folder structure in the project!
 :::
 :::{tab-item} Python API
 :sync: python
-We will create standardised project folders with the `make_folders()` method.
+We will create standardised project folders with the `create_folders()` method.
 
 Following the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
 style we will call the first subject `sub-001`. Additional key-value pairs in
@@ -326,7 +326,7 @@ Finally, we will tell **datashuttle** to create `behav` and `ephys` datatype
 folders only.
 
 ```python
-project.make_folders(
+project.create_folders(
     sub_names="sub-001",
     ses_names="ses-001_@DATE@",
     datatypes=["behav", "ephys"]
@@ -356,7 +356,7 @@ as it is the first session for `sub-002`, it will be `ses-001`) we can run
 next_sub = project.get_next_sub_number(local_only=True)                # returns "sub-001"
 next_ses = project.get_next_ses_number(sub=next_sub, local_only=True)  # returns "ses-001"
 
-project.make_folders(
+project.create_folders(
     next_sub,
     f"{next_ses}_@DATE@",
     datatypes=["behav", "ephys"]
@@ -434,11 +434,11 @@ Finally, hover the mouse over the `Directory Tree` and press `CTRL+R` to refresh
 :::{tab-item} Python API
 :sync: python
 
-`make_folders()` returns the full filepaths of created datatype folders.
+`create_folders()` returns the full filepaths of created datatype folders.
 These can be used to save data to these folders in acquisition scripts
 
 ```python
-folder_path_list = project.make_folders(
+folder_path_list = project.create_folders(
     sub_names=["sub-001"],
     ses_names=["ses-001_@DATE@"],
     datatypes=["behav", "ephys"]
