@@ -13,7 +13,7 @@
 #mainwindow_banner_label {
     border: hkey $primary;
     content-align: center middle;
-    text-style: italic bold;
+    text-style: bold;
     color: $text;
     width: 50%;
     height: 5;

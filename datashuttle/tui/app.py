@@ -40,21 +40,10 @@ class TuiApp(App):
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
     ENABLE_COMMAND_PALETTE = False
-    BINDINGS = [
-        ("d", "toggle_dark", "Toggle dark mode")
-    ]  ###################### REMOVE AFTER DOCS ##########################################################
-
-    def action_toggle_dark(
-        self,
-    ) -> (
-        None
-    ):  ###################### REMOVE AFTER DOCS ##########################################################
-        """An action to toggle dark mode."""
-        self.dark = not self.dark
 
     def compose(self) -> ComposeResult:
         yield Container(
-            Label("DataShuttle", id="mainwindow_banner_label"),
+            Label("datashuttle", id="mainwindow_banner_label"),
             Button(
                 "Select Existing Project",
                 id="mainwindow_existing_project_button",
@@ -129,7 +118,7 @@ class TuiApp(App):
                 )
             else:
                 message = (
-                    "Unexpected error occurred. Please contact the DataShuttle"
+                    "Unexpected error occurred. Please contact the datashuttle"
                     "development team."
                 )
 

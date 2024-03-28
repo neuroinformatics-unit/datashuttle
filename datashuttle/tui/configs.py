@@ -443,7 +443,7 @@ class ConfigsContent(Container):
                 ).disabled = False
 
                 message = (
-                    "A DataShuttle project has now been created.\n\n "
+                    "A datashuttle project has now been created.\n\n "
                     "Next, setup the SSH connection. Once complete, navigate to the "
                     "'Main Menu' and proceed to the project page, where you will be "
                     "able to create and transfer project folders."
@@ -451,7 +451,7 @@ class ConfigsContent(Container):
 
             else:
                 message = (
-                    "A DataShuttle project has now been created.\n\n "
+                    "A datashuttle project has now been created.\n\n "
                     "Next proceed to the project page, where you will be "
                     "able to create and transfer project folders."
                 )
