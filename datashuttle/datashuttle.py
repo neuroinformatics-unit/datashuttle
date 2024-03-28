@@ -660,8 +660,7 @@ class DataShuttle:
         on the local machine. Use get_config_path() to
         get the full path to the saved config file.
 
-        Use update_config_file() to selectively update settings, and
-        supply_config_file() to use an existing config file.
+        Use update_config_file() to selectively update settings.
 
         Parameters
         ----------
@@ -782,57 +781,6 @@ class DataShuttle:
         self._set_attributes_after_config_load()
         self.cfg.dump_to_file()
         self._log_successful_config_change(message=True)
-        ds_logger.close_log_filehandler()
-
-    def supply_config_file(
-        self, input_path_to_config: str, warn: bool = True
-    ) -> None:
-        """
-        Supply an existing config by passing the path the config
-        file (.yaml). The config file must contain exactly the
-        same keys as the dataShuttle config, with
-        values the same type, or will result in an error.
-
-        If successful, the config will be loaded into datashuttle,
-        and a copy saved in the DataShuttle config folder for future use.
-
-        To check the format of a datashuttle config, one can be generated
-        with make_config_file() or look in configs/canonical_configs.py.
-
-        Logs are stored in a temporary folder and then moved to the
-        new local path provided in the supplied configs.
-
-        Parameters
-        ----------
-
-        input_path_to_config :
-            Path to the config to use as DataShuttle config.
-
-        warn :
-            prompt the user to confirm as supplying
-            config will overwrite existing config.
-            Turned off for testing.
-        """
-        self._start_log(
-            "supply-config-file",
-            local_vars=locals(),
-            store_in_temp_folder=True,
-        )
-
-        path_to_config = Path(input_path_to_config)
-
-        new_cfg = load_configs.supplied_configs_confirm_overwrite(
-            self.project_name, path_to_config, warn
-        )
-
-        if new_cfg:
-            self.cfg = new_cfg
-            self._set_attributes_after_config_load()
-            self.cfg.file_path = self._config_path
-            self.cfg.dump_to_file()
-
-            self._log_successful_config_change(message=True)
-            self._move_logs_from_temp_folder()
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
