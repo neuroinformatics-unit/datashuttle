@@ -103,7 +103,7 @@ class DataShuttle:
         self.cfg: Any = None
 
         self.cfg = load_configs.attempt_load_configs(
-            self.project_name, self._config_path
+            self.project_name, self._config_path, verbose=print_startup_message
         )
 
         if self.cfg:

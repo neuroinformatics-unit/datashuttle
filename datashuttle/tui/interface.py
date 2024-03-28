@@ -49,7 +49,7 @@ class Interface:
             Must already exist.
         """
         try:
-            project = DataShuttle(project_name)
+            project = DataShuttle(project_name, print_startup_message=False)
             self.project = project
             return True, None
 
