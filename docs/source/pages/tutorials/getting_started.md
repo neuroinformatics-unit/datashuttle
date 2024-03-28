@@ -11,12 +11,12 @@ and transferring a 'mock' experiment, standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) style.
 
 
-```{image} /_static/screenshots/tutorial-1-example-file-tree-dark.png
+```{image} /_static/tutorial-1-example-file-tree-dark.png
    :align: center
    :class: only-dark
    :width: 550px
 ```
-```{image} /_static/screenshots/tutorial-1-example-file-tree-light.png
+```{image} /_static/tutorial-1-example-file-tree-light.png
    :align: center
    :class: only-light
    :width: 550px

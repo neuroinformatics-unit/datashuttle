@@ -154,6 +154,7 @@ html_theme_options = {
     },
     "footer_start": ["footer_start"],
     "footer_end": ["footer_end"],
+    "show_prev_next": False,
     "show_toc_level": 2,  # sidebar levels that are expanded before scrolling
 #    "secondary_sidebar_items": [],
  #   "page_sidebar_items": [],

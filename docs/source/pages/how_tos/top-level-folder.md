@@ -5,8 +5,6 @@
  [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) specifies
 the top-level folder inside the project folder must be `rawdata` or `derivatives`.
 
-TODO: use a different image
-
 ```{image} /_static/NeuroBlueprint_project_tree_dark.png
    :align: center
    :class: only-dark
@@ -59,7 +57,7 @@ Transferring folders (e.g. with `upload_data` or `download_data`) will
 only transfer folders in the working top-level folder
 (unless `upload_entire_project()` or `download_entire_project()` is used).
 
-In the below example we weill create and transfer folders in `rawdata`.
+In the below example we will create and transfer folders in `rawdata`.
 Then, the top-level folder is switched to `derivatives` and the actions repeated.#
 
 ```python

@@ -1,5 +1,5 @@
 :html_theme.sidebar_secondary.remove:
-(how_tos)=
+(how-tos)=
 # How To
 
 ## Get Started
@@ -46,6 +46,13 @@ All you need to know about creating folders.
 :link-type: doc
 
 The ultimate guide to data-transfer.
+:::
+
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Update Configs
+:link: how_tos/update-configs
+:link-type: doc
+
+Changing an existing project's configurations.
 :::
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Read the Logs
