@@ -207,20 +207,10 @@ class TestPersistentSettings(BaseTest):
         Reload, turn off, check for error on attempting to create
         bad name.
         """
-        assert project.get_bypass_validation() is False
-
-        project.set_bypass_validation(True)
-
-        assert project.get_bypass_validation() is True
-
         # should not raise
-        project.create_folders("sub-@@@")
+        project.create_folders("sub-@@@", bypass_validation=True)
 
         project = DataShuttle(project.project_name)
-
-        assert project.get_bypass_validation() is True
-
-        project.set_bypass_validation(False)
 
         with pytest.raises(BaseException) as e:
             project.create_folders("sub-@@@")

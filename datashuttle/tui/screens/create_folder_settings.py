@@ -85,7 +85,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         Visit the [@click=screen.link_docs()]Documentation[/] for more information.
         """
 
-        bypass_validation = self.interface.project.get_bypass_validation()
+        bypass_validation = self.interface.tui_settings["bypass_validation"]
 
         yield Container(
             Horizontal(
@@ -196,7 +196,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 self.mainwindow.show_modal_error_dialog(output)
 
         elif event.button.id == "create_settings_bypass_validation_button":
-            self.interface.project.set_bypass_validation(on=False)
+            self.interface.update_tui_settings(False, "bypass_validation")
+            # self.interface.project.set_bypass_validation(on=False)
 
     def make_name_templates_from_widgets(self) -> Dict:
         return {
@@ -220,7 +221,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
             event.checkbox.id
             == "create_folders_settings_bypass_validation_checkbox"
         ):
-            self.interface.project.set_bypass_validation(on=is_on)
+            self.interface.update_tui_settings(is_on, "bypass_validation")
+            # self.interface.project.set_bypass_validation(on=is_on)
 
             self.query_one(
                 "#template_settings_validation_on_checkbox"
