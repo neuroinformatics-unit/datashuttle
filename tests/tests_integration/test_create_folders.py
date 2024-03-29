@@ -95,7 +95,9 @@ class TestMakeFolders(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
 
-        project.create_folders("rawdata", subs, sessions, datatypes_to_make)
+        created_folder_list = project.create_folders(
+            "rawdata", subs, sessions, datatypes_to_make
+        )
 
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
@@ -108,6 +110,7 @@ class TestMakeFolders(BaseTest):
                 "funcimg": funcimg,
                 "anat": anat,
             },
+            created_folder_list=created_folder_list,
         )
 
     def test_custom_folder_names(self, project, monkeypatch):

@@ -36,7 +36,7 @@ def create_folder_trees(
     ses_names: Union[str, list],
     datatype: Union[List[str], str],
     log: bool = True,
-) -> None:
+) -> List[Path]:
     """
     Entry method to make a full folder tree. It will
     iterate through all passed subjects, then sessions, then
@@ -64,6 +64,8 @@ def create_folder_trees(
         if is_invalid:
             utils.log_and_raise_error(message, NeuroBlueprintError)
 
+    all_paths = []
+
     for sub in sub_names:
         sub_path = cfg.make_path(
             "local",
@@ -73,8 +75,9 @@ def create_folder_trees(
 
         create_folders(sub_path, log)
 
-        if datatype_passed:
-            make_datatype_folders(cfg, datatype, sub_path, "sub")
+        if not any(ses_names):
+            all_paths.append(sub_path)
+            continue
 
         for ses in ses_names:
             ses_path = cfg.make_path(
@@ -86,7 +89,14 @@ def create_folder_trees(
             create_folders(ses_path, log)
 
             if datatype_passed:
-                make_datatype_folders(cfg, datatype, ses_path, "ses", log=log)
+                datatype_paths = make_datatype_folders(
+                    cfg, datatype, ses_path, "ses", log=log
+                )
+                all_paths.extend(datatype_paths)
+            else:
+                all_paths.append(ses_path)
+
+    return all_paths
 
 
 def make_datatype_folders(
@@ -95,7 +105,7 @@ def make_datatype_folders(
     sub_or_ses_level_path: Path,
     level: str,
     log: bool = True,
-) -> None:
+) -> List[Path]:
     """
     Make datatype folder (e.g. behav) at the sub or ses
     level. Checks folder_class.Folders attributes,
@@ -118,11 +128,16 @@ def make_datatype_folders(
     """
     datatype_items = cfg.get_datatype_as_dict_items(datatype)
 
+    all_datatype_paths = []
+
     for datatype_key, datatype_folder in datatype_items:  # type: ignore
         if datatype_folder.level == level:
             datatype_path = sub_or_ses_level_path / datatype_folder.name
 
             create_folders(datatype_path, log)
+            all_datatype_paths.append(datatype_path)
+
+    return all_datatype_paths
 
 
 # Create Folders Helpers --------------------------------------------------------
