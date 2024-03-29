@@ -126,11 +126,15 @@ class Interface:
         top_level_folder = self.tui_settings["top_level_folder_select"][
             "create_tab"
         ]
+        bypass_validation = self.tui_settings["bypass_validation"]
 
         try:
             self.project.set_top_level_folder(top_level_folder)
             self.project.create_folders(
-                sub_names=sub_names, ses_names=ses_names, datatype=datatype
+                sub_names=sub_names,
+                ses_names=ses_names,
+                datatype=datatype,
+                bypass_validation=bypass_validation,
             )
             self.project.set_top_level_folder(tmp_top_level_folder)
             return True, None
