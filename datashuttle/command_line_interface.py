@@ -1,5 +1,8 @@
+"""
+The CLI is not currently supported.
+"""
+
 import argparse
-import warnings
 from typing import Any, Callable, Dict
 
 import simplejson
@@ -7,7 +10,6 @@ import simplejson
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, load_configs
 from datashuttle.tui.app import main as tui_main
-from datashuttle.utils import utils
 
 PROTECTED_TEST_PROJECT_NAME = "ds_protected_test_name"
 
@@ -192,7 +194,7 @@ def setup_ssh_connection_to_central_server(*args: Any) -> None:
 
 def create_folders(project: DataShuttle, args: Any) -> None:
     """"""
-    raise NotImplementedError("Requires adding 'top_level_folder")
+    # This function is missing top-level-folder argument
     kwargs = make_kwargs(args)
 
     filtered_kwargs = remove_nonetype_entries(kwargs)
@@ -225,7 +227,7 @@ def upload(project: DataShuttle, args: Any) -> None:
 
 def upload_all(*args: Any) -> None:
     """"""
-    raise NotImplementedError
+    # This function is missing top-level-folder argument
     project = args[0]
     project.upload_all()
 
@@ -260,7 +262,7 @@ def download(project: DataShuttle, args: Any) -> None:
 
 def download_all(*args: Any) -> None:
     """"""
-    raise NotImplementedError
+    # This function is missing top-level-folder argument
     project = args[0]
     project.download_all()
 
@@ -367,7 +369,7 @@ def get_existing_projects(*args: Any) -> None:
 
 def get_next_sub_number(*args: Any) -> None:
     """"""
-    raise NotImplementedError("This function is not stable.")
+    # This function is missing top-level-folder argument
     project = args[0]
     print(project.get_next_sub_number())
 
@@ -377,7 +379,7 @@ def get_next_sub_number(*args: Any) -> None:
 
 def get_next_ses_number(project: DataShuttle, args: Any) -> None:
     """"""
-    raise NotImplementedError("This function is not stable.")
+    # This function is missing top-level-folder argument
     kwargs = make_kwargs(args)
     print(project.get_next_ses_number(kwargs["sub"]))
 
@@ -396,7 +398,7 @@ def show_configs(*args: Any) -> None:
 
 def validate_project(*args: Any) -> None:
     """"""
-    raise NotImplementedError
+    # This function is missing top-level-folder argument
     project = args[0]
     project.validate_project(error_or_warn="warn", local_only=False)
 
@@ -923,8 +925,6 @@ def construct_parser():
     )
     return parser
 
-    return parser
-
 
 parser = construct_parser()
 
@@ -935,6 +935,10 @@ parser = construct_parser()
 
 def main() -> None:
     """
+    Update 29/03/2024. The CLI is not functionality
+    and may be deprecated. Only use to launch
+    datashuttle with `datashuttle launch.`
+
     All arguments from the CLI are collected and
     the function to call determined from the func
     properly on the CLI args. This command name
@@ -955,23 +959,11 @@ def main() -> None:
 
     if args.project_name in ["tui", "gui", "launch"]:
         tui_main()
-        return
-
-    if "func" in args and str(args.func.__name__) == "make_config_file":
-        warn = "ignore"
     else:
-        warn = "default"
-
-    warnings.filterwarnings(warn)  # type: ignore
-    project = DataShuttle(args.project_name, print_startup_message=False)
-    warnings.filterwarnings("default")
-
-    if len(vars(args)) > 1:
-        args.func(project, args)
-    else:
-        utils.print_message_to_user(
-            f"Datashuttle project: {args.project_name}. "
-            f"Add additional commands, see --help for details"
+        raise NotImplementedError(
+            "The command line interface is not supported"
+            "and may only be used to launch datashuttle"
+            "with `datashuttle launch"
         )
 
 
