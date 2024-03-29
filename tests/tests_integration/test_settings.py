@@ -22,7 +22,7 @@ class TestPersistentSettings(BaseTest):
         """
         settings = project._load_persistent_settings()
 
-        assert len(settings) == 4
+        assert len(settings) == 3
         assert settings["top_level_folder"] == "rawdata"
 
         # Update they persistent setting and check this is reflected
@@ -242,6 +242,7 @@ class TestPersistentSettings(BaseTest):
                 "toplevel_transfer": "rawdata",
                 "custom_transfer": "rawdata",
             },
+            "bypass_validation": False,
         }
 
     def get_settings_changed(self):
@@ -266,4 +267,5 @@ class TestPersistentSettings(BaseTest):
                 "toplevel_transfer": "derivatives ",
                 "custom_transfer": "derivatives",
             },
+            "bypass_validation": True,
         }
