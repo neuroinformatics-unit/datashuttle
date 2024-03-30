@@ -45,5 +45,4 @@ Use datashuttle with the CLI.
 
 pages/documentation
 pages/api_index
-pages/cli_index
 ```
