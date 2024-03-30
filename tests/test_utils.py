@@ -426,7 +426,6 @@ def check_config_file(config_path, *kwargs):
 # -----------------------------------------------------------------------------
 
 
-# TODO: rename this 'top level folder path'
 def get_top_level_folder_path(
     project, local_or_central="local", folder_name="rawdata"
 ):
@@ -448,7 +447,7 @@ def handle_upload_or_download(
     project,
     upload_or_download,
     use_all_alias=False,
-    transfer_entire_project=False,  # TODO: fix this signature
+    transfer_entire_project=False,
     swap_last_folder_only=False,
 ):
     """

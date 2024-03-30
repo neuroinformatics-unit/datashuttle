@@ -1291,9 +1291,11 @@ class DataShuttle:
 
     def _update_settings_with_new_canonical_keys(self, settings: Dict):
         """
-
-        TODO: this is not really sufficient, e.g. a new field in tui
-        will not be discoverd.
+        Perform a check on the top-level keys within persistent settings.
+        If they do not exist, persistent settings is from older version
+        and the new keys need adding.
+        If changing keys within the top level (e.g. a dict entry in
+        "tui") this method will need to be extended.
         """
         if "name_templates" not in settings:
             settings.update(canonical_configs.get_name_templates_defaults())

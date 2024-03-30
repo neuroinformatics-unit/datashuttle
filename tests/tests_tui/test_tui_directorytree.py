@@ -13,12 +13,10 @@ except pyperclip.PyperclipException:
     HAS_GUI = False
 
 
-class TestTuiDirectoryTree(TuiBase):
+class TestTuiCreateDirectoryTree(TuiBase):
     """
-    TODO: this only tests create tab but not transfer custom
-         at the moment. This can be parameterised. Currently
-         not done as all underlying architecture is shared so
-         only minimal boilerplate would actually be tested.
+    Test the `Create` tab directory tree.
+    `Transfer`
     """
 
     @pytest.mark.asyncio

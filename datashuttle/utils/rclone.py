@@ -265,7 +265,7 @@ def get_local_and_central_file_differences(
             )
 
             key = convert_symbols[symbol]
-            parsed_output[key].append(result[2:])  # TODO: use path
+            parsed_output[key].append(result[2:])
 
     return parsed_output
 

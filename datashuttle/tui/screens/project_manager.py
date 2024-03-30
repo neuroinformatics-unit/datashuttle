@@ -119,11 +119,6 @@ class ProjectManagerScreen(Screen):
         When the config file are refreshed, the local path may have changed.
         In this case the directorytree will be displaying the wrong root,
         so update it here.
-
-        TODO
-        ----
-        Currently this defaults to the local path always but in future when it
-        shows the central path it will have to be updated.
         """
         self.query_one("#tabscreen_create_tab").update_directorytree_root(
             self.interface.get_configs()["local_path"]

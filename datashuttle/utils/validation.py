@@ -50,9 +50,11 @@ def validate_list_of_names(
     log: bool
         If `True`, output will also be logged to "datashuttle" logger.
 
-    TODO: this is potentially slow because each function loops over
-    the whole list. I'd imagine it would be faster to loop once
-    over and pass each name to the sub-function individually.
+    Notes
+    ------
+    Each subfunction called in this function loops over the entire
+    list of names. This is done in this way so each subfunction
+    is modular. However for large projects this may become slow.
     """
     if len(names_list) == 0:
         return

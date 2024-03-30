@@ -345,9 +345,6 @@ class TestMakeFolders(BaseTest):
 
         Note the main underlying function is tested in
         `test_get_max_sub_or_ses_num_and_value_length()`.
-
-        TODO: note this is only tested by `local_filesystem`. I don't think
-        it is required to be tested SSH but couldn't hurt, need to check.
         """
         sub = "sub-09"
 

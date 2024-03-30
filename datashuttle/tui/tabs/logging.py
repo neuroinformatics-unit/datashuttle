@@ -114,6 +114,5 @@ class LoggingTab(TabPane):
     def reload_directorytree(self):
         self.query_one("#logging_tab_custom_directory_tree").reload()
 
-    # TODO: look into this, should handle on the directorytree itself... dam this sucks!
     def on_custom_directory_tree_directory_tree_special_key_press(self):
         self.reload_directorytree()
