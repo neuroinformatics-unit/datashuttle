@@ -388,7 +388,6 @@ class TestCommandLineInterface(BaseTest):
         in test_upload_download_all_variables() and
         test_upload_download_variables()
         """
-        raise NotImplementedError("need to add in top-level-folder")
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project_folders(
