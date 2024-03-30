@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 import copy
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 if TYPE_CHECKING:
     import paramiko
 
     from datashuttle.configs.config_class import Configs
     from datashuttle.tui.app import App
+    from datashuttle.utils.custom_types import InterfaceOutput, TopLevelFolder
 
 from datashuttle import DataShuttle
 from datashuttle.utils import ssh
-
-Output = Tuple[bool, Any]
 
 
 class Interface:
@@ -24,7 +23,7 @@ class Interface:
 
     `self.project` is initialised when project is loaded.
 
-    Interface functions typically return an `Output` type
+    Interface functions typically return an `InterfaceOutput` type
     is contains a boolean in the first entry and output in the second
     entry. The first entry is True if the API call ran successfully
     and False if it threw an error. The output will contain any
@@ -37,7 +36,7 @@ class Interface:
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
 
-    def select_existing_project(self, project_name: str) -> Output:
+    def select_existing_project(self, project_name: str) -> InterfaceOutput:
         """
         Load an existing project into `self.project`.
 
@@ -56,7 +55,9 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def setup_new_project(self, project_name: str, cfg_kwargs: Dict) -> Output:
+    def setup_new_project(
+        self, project_name: str, cfg_kwargs: Dict
+    ) -> InterfaceOutput:
         """
         Set up a new project and load into `self.project`.
 
@@ -83,7 +84,9 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def set_configs_on_existing_project(self, cfg_kwargs: Dict) -> Output:
+    def set_configs_on_existing_project(
+        self, cfg_kwargs: Dict
+    ) -> InterfaceOutput:
         """
         Update the settings on an existing project. Only the settings
         passed in `cfg_kwargs` are updated.
@@ -106,7 +109,7 @@ class Interface:
         sub_names: List[str],
         ses_names: Optional[List[str]],
         datatype: List[str],
-    ) -> Output:
+    ) -> InterfaceOutput:
         """
         Create folders through datashuttle.
 
@@ -142,7 +145,7 @@ class Interface:
 
     def validate_names(
         self, sub_names: List[str], ses_names: Optional[List[str]]
-    ) -> Output:
+    ) -> InterfaceOutput:
         """
         Validate a list of subject / session names. This is used
         to populate the Input tooltips with validation errors.
@@ -183,7 +186,7 @@ class Interface:
     # Transfer
     # ----------------------------------------------------------------------------------
 
-    def transfer_entire_project(self, upload: bool) -> Output:
+    def transfer_entire_project(self, upload: bool) -> InterfaceOutput:
         """
         Transfer the entire project (all canonical top-level folders).
 
@@ -206,7 +209,7 @@ class Interface:
 
     def transfer_top_level_only(
         self, selected_top_level_folder: str, upload: bool
-    ) -> Output:
+    ) -> InterfaceOutput:
         """
         Transfer all files within a selected top level folder.
 
@@ -233,12 +236,12 @@ class Interface:
 
     def transfer_custom_selection(
         self,
-        selected_top_level_folder: Literal["rawdata", "derivatives"],
+        selected_top_level_folder: TopLevelFolder,
         sub_names: List[str],
         ses_names: List[str],
         datatype: List[str],
         upload: bool,
-    ) -> Output:
+    ) -> InterfaceOutput:
         """
         Transfer a custom selection of subjects / sessions / datatypes.
 
@@ -298,7 +301,7 @@ class Interface:
 
         return self.name_templates
 
-    def set_name_templates(self, name_templates: Dict) -> Output:
+    def set_name_templates(self, name_templates: Dict) -> InterfaceOutput:
         """
         Set the `name_templates` here and on disk. See `get_name_templates`
         for more information.
@@ -370,8 +373,8 @@ class Interface:
         return cfg_to_load
 
     def get_next_sub_number(
-        self, top_level_folder: Literal["rawdata", "derivatives"]
-    ) -> Output:
+        self, top_level_folder: TopLevelFolder
+    ) -> InterfaceOutput:
         try:
             next_sub = self.project.get_next_sub_number(
                 top_level_folder, return_with_prefix=True, local_only=True
@@ -381,8 +384,8 @@ class Interface:
             return False, str(e)
 
     def get_next_ses_number(
-        self, top_level_folder: Literal["rawdata", "derivatives"], sub: str
-    ) -> Output:
+        self, top_level_folder: TopLevelFolder, sub: str
+    ) -> InterfaceOutput:
 
         try:
             next_ses = self.project.get_next_ses_number(
@@ -392,14 +395,14 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def update_overwrite_existing_files(self, value: bool) -> Output:
+    def update_overwrite_existing_files(self, value: bool) -> InterfaceOutput:
         try:
             self.project.update_config_file(overwrite_existing_files=value)
             return True, None
         except BaseException as e:
             return False, str(e)
 
-    def get_ssh_hostkey(self) -> Output:
+    def get_ssh_hostkey(self) -> InterfaceOutput:
         try:
             key = ssh.get_remote_server_key(
                 self.project.cfg["central_host_id"]
@@ -408,7 +411,7 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def save_hostkey_locally(self, key: paramiko.RSAKey) -> Output:
+    def save_hostkey_locally(self, key: paramiko.RSAKey) -> InterfaceOutput:
         try:
             ssh.save_hostkey_locally(
                 key,
@@ -420,7 +423,9 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def setup_key_pair_and_rclone_config(self, password: str) -> Output:
+    def setup_key_pair_and_rclone_config(
+        self, password: str
+    ) -> InterfaceOutput:
         try:
             ssh.add_public_key_to_central_authorized_keys(
                 self.project.cfg, password, log=False

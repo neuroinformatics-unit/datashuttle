@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import datetime
 import re
-from typing import Dict, List, Literal, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Optional, Union
+
+if TYPE_CHECKING:
+    from datashuttle.utils.custom_types import Prefix
 
 from datashuttle.configs.canonical_folders import canonical_reserved_keywords
 from datashuttle.configs.canonical_tags import tags
@@ -15,7 +18,7 @@ from datashuttle.utils import utils, validation
 
 def check_and_format_names(
     names: Union[list, str],
-    prefix: Literal["sub", "ses"],
+    prefix: Prefix,
     name_templates: Optional[Dict] = None,
     bypass_validation: bool = False,
 ) -> List[str]:
@@ -39,7 +42,7 @@ def check_and_format_names(
     names : Union[list, str]
         str or list containing sub or ses names (e.g. to create folders)
 
-    prefix : Literal["sub", "ses"]
+    prefix : Prefix
         "sub" or "ses" - this defines the prefix checks.
 
     name_templates : Dict
@@ -76,7 +79,7 @@ def check_and_format_names(
     return formatted_names + reserved_keywords
 
 
-def format_names(names: List, prefix: Literal["sub", "ses"]) -> List[str]:
+def format_names(names: List, prefix: Prefix) -> List[str]:
     """
     Check a single or list of input session or subject names.
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Literal, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -9,6 +9,7 @@ if TYPE_CHECKING:
 
     from datashuttle.tui.app import App
     from datashuttle.tui.interface import Interface
+    from datashuttle.utils.custom_types import Prefix
 
 from textual.containers import Horizontal
 from textual.widgets import (
@@ -28,8 +29,6 @@ from datashuttle.tui.screens.create_folder_settings import (
 from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
-
-Prefix = Literal["sub", "ses"]
 
 
 class CreateFoldersTab(TreeAndInputTab):
@@ -131,9 +130,7 @@ class CreateFoldersTab(TreeAndInputTab):
         """
         input_id = event.input.id
 
-        prefix: Literal["sub", "ses"] = (
-            "sub" if "subject" in input_id else "ses"
-        )
+        prefix: Prefix = "sub" if "subject" in input_id else "ses"
 
         if event.ctrl:
             self.fill_input_with_template(prefix, input_id)

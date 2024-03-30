@@ -50,7 +50,6 @@ dev = [
     "coverage",
     "tox",
     "black",
-    "isort",
     "mypy",
     "pre-commit",
     "ruff",
@@ -97,9 +96,9 @@ line-length = 79
 [tool.ruff]
 line-length = 79
 exclude = ["__init__.py","build",".eggs"]
-select = ["I", "E", "F", "TCH", "TID252"]
+lint.select = ["I", "E", "F", "TCH", "TID252"]
 fix = true
-ignore = ["E203","E501","E731","C901","W291","W293","E402","E722"]
+lint.ignore = ["E203","E501","E731","C901","W291","W293","E402","E722"]
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F401"]

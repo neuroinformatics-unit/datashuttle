@@ -4,19 +4,17 @@ Tools for live validation of user inputs in the DataShuttle TUI.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from datashuttle.tui.tabs.create_folders import CreateFoldersTab
-
+    from datashuttle.utils.custom_types import Prefix
 
 from textual.validation import ValidationResult, Validator
 
 
 class NeuroBlueprintValidator(Validator):
-    def __init__(
-        self, prefix: Literal["sub", "ses"], parent: CreateFoldersTab
-    ) -> None:
+    def __init__(self, prefix: Prefix, parent: CreateFoldersTab) -> None:
         """
         Custom Validator() class that takes
         sub / ses prefix as input. Runs validation of

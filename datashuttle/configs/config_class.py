@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Literal, Optional, Union, cast
+from typing import TYPE_CHECKING, Dict, Optional, Union, cast
 
 if TYPE_CHECKING:
     from collections.abc import ItemsView, KeysView, ValuesView
+
+    from datashuttle.utils.custom_types import TopLevelFolder
 
 import copy
 from collections import UserDict
@@ -169,11 +171,11 @@ class Configs(UserDict):
                         ValueError,
                     )
 
-    def make_path(
+    def build_project_path(
         self,
         base: str,
         sub_folders: Union[str, list],
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
     ) -> Path:
         """
         Function for joining relative path to base dir.
@@ -210,7 +212,7 @@ class Configs(UserDict):
     def get_base_folder(
         self,
         base: str,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
     ) -> Path:
         """
         Convenience function to return the full base path.
@@ -265,8 +267,8 @@ class Configs(UserDict):
 
     def make_and_get_logging_path(self) -> Path:
         """
-        Currently logging is located in config path, will
-        create folders if do not exist.
+        Build (and create if does not exist) the path where
+        logs are stored.
         """
         logging_path = self.project_metadata_path / "logs"
         folders.create_folders(logging_path)

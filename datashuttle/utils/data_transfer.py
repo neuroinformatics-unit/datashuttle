@@ -4,6 +4,7 @@ from typing import List, Literal, Optional, Union
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import folders, formatting, rclone, utils
+from datashuttle.utils.custom_types import Prefix, TopLevelFolder
 
 
 class TransferData:
@@ -25,7 +26,7 @@ class TransferData:
     upload_or_download : Literal["upload", "download"]
         Direction to perform the transfer.
 
-    top_level_folder: Literal["rawdata", "derivatives"]
+    top_level_folder: TopLevelFolder
 
     sub_names : Union[str, List[str]]
         List of subject names or single subject to transfer. This
@@ -51,7 +52,7 @@ class TransferData:
         self,
         cfg: Configs,
         upload_or_download: Literal["upload", "download"],
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
@@ -421,7 +422,7 @@ class TransferData:
         see transfer_sub_ses_data()
 
         """
-        prefix: Literal["sub", "ses"]
+        prefix: Prefix
         if sub is None:
             prefix = "sub"
         else:

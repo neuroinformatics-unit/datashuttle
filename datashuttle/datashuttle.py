@@ -6,7 +6,19 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+)
+
+if TYPE_CHECKING:
+    from datashuttle.utils.custom_types import Prefix, TopLevelFolder
 
 import paramiko
 import yaml
@@ -127,7 +139,7 @@ class DataShuttle:
     @check_configs_set
     def create_folders(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
@@ -238,7 +250,7 @@ class DataShuttle:
 
     def _format_and_validate_names(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]],
         name_templates: Dict,
@@ -282,7 +294,7 @@ class DataShuttle:
     @check_configs_set
     def upload(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
@@ -365,7 +377,7 @@ class DataShuttle:
     @check_configs_set
     def download(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
@@ -404,7 +416,7 @@ class DataShuttle:
     @check_configs_set
     def upload_all(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -432,7 +444,7 @@ class DataShuttle:
     @check_configs_set
     def download_all(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -890,7 +902,7 @@ class DataShuttle:
     @check_configs_set
     def get_next_sub_number(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         return_with_prefix: bool = True,
         local_only: bool = False,
     ) -> str:
@@ -920,7 +932,7 @@ class DataShuttle:
     @check_configs_set
     def get_next_ses_number(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub: str,
         return_with_prefix: bool = True,
         local_only: bool = False,
@@ -1006,7 +1018,7 @@ class DataShuttle:
     @check_configs_set
     def validate_project(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         error_or_warn: Literal["error", "warn"],
         local_only: bool = False,
     ) -> None:
@@ -1050,9 +1062,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @staticmethod
-    def check_name_formatting(
-        names: Union[str, list], prefix: Literal["sub", "ses"]
-    ) -> None:
+    def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
         for example as when passed to create_folders() or upload()

@@ -6,6 +6,7 @@ from typing import Dict, List, Literal
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
+from datashuttle.utils.custom_types import TopLevelFolder
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -148,7 +149,7 @@ def prompt_rclone_download_if_does_not_exist() -> None:
 def transfer_data(
     cfg: Configs,
     upload_or_download: Literal["upload", "download"],
-    top_level_folder: Literal["rawdata", "derivatives"],
+    top_level_folder: TopLevelFolder,
     include_list: List[str],
     rclone_options: Dict,
 ) -> subprocess.CompletedProcess:
@@ -289,7 +290,7 @@ def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
 
 
 def perform_rclone_check(
-    cfg: Configs, top_level_folder: Literal["rawdata", "derivatives"]
+    cfg: Configs, top_level_folder: TopLevelFolder
 ) -> str:
     """
     Use Rclone's `check` command to build a list of files that

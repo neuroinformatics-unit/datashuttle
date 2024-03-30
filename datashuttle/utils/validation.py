@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Tuple, Union
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
+    from datashuttle.utils.custom_types import Prefix, TopLevelFolder
 
 from itertools import chain
 
@@ -19,7 +20,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 def validate_list_of_names(
     names_list: List[str],
-    prefix: Literal["sub", "ses"],
+    prefix: Prefix,
     error_or_warn: Literal["error", "warn"] = "error",
     check_duplicates: bool = True,
     name_templates: Optional[Dict] = None,
@@ -35,7 +36,7 @@ def validate_list_of_names(
     names_list : List[str]
         A list of NeuroBlueprint-formatted names to validate
 
-    prefix: Literal["sub", "ses"]
+    prefix: Prefix
         Whether these are subject (sub) or session (ses) level names
 
     error_or_warn: Literal["error", "warn"]
@@ -77,7 +78,7 @@ def validate_list_of_names(
 
 def names_dont_match_templates(
     names_list: List[str],
-    prefix: Literal["sub", "ses"],
+    prefix: Prefix,
     name_templates: Optional[Dict] = None,
 ) -> Tuple[bool, str]:
     """
@@ -135,7 +136,7 @@ def get_names_format(bad_names):
 
 
 def name_begins_with_bad_key(
-    names_list: List[str], prefix: Literal["sub", "ses"]
+    names_list: List[str], prefix: Prefix
 ) -> Tuple[bool, str]:
     """
     Check that a list of NeuroBlueprint names begin
@@ -232,7 +233,7 @@ def dashes_and_underscore_alternate_incorrectly(
 
 def value_lengths_are_inconsistent(
     names_list: List[str],
-    prefix: Literal["sub", "ses"],
+    prefix: Prefix,
 ) -> Tuple[bool, str]:
     """
     Given a list of NeuroBlueprint-formatted subject or session
@@ -264,7 +265,7 @@ def value_lengths_are_inconsistent(
 
 
 def duplicated_prefix_values(
-    names_list: List[str], prefix: Literal["sub", "ses"]
+    names_list: List[str], prefix: Prefix
 ) -> Tuple[bool, str]:
     """
     Check a list of subject or session names for duplicate
@@ -318,7 +319,7 @@ def raise_error_or_warn(
 
 def validate_project(
     cfg: Configs,
-    top_level_folder: Literal["rawdata", "derivatives"],
+    top_level_folder: TopLevelFolder,
     local_only: bool = False,
     error_or_warn: Literal["error", "warn"] = "error",
     log: bool = True,
@@ -341,7 +342,7 @@ def validate_project(
     cfg : Configs
         datashuttle Configs class.
 
-    top_level_folder:  Literal["rawdata", "derivatives"]
+    top_level_folder:  TopLevelFolder
         The top level folder to validate.
 
     local_only : bool
@@ -398,7 +399,7 @@ def validate_project(
 
 def validate_names_against_project(
     cfg: Configs,
-    top_level_folder: Literal["rawdata", "derivatives"],
+    top_level_folder: TopLevelFolder,
     sub_names: List[str],
     ses_names: Optional[List[str]] = None,
     local_only: bool = False,
@@ -428,7 +429,7 @@ def validate_names_against_project(
     cfg : Configs
         datashuttle Configs class.
 
-    top_level_folder :  Literal["rawdata", "derivatives"]
+    top_level_folder :  TopLevelFolder
         The top level folder to validate
 
     sub_names : List[str]
@@ -497,7 +498,7 @@ def validate_names_against_project(
 
 
 def new_name_duplicates_existing(
-    new_name: str, existing_names: List[str], prefix: Literal["sub", "ses"]
+    new_name: str, existing_names: List[str], prefix: Prefix
 ) -> Tuple[bool, str]:
     """
     Check that a subject or session does not already exist
