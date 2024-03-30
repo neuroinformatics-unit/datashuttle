@@ -41,7 +41,7 @@ def setup_project_default_configs(
         tmp_path, project_name, set_as_defaults=True
     )
 
-    make_project_paths(default_configs)
+    #  make_project_paths(default_configs)
 
     project.make_config_file(**default_configs)
 
@@ -52,13 +52,6 @@ def setup_project_default_configs(
     )
 
     warnings.filterwarnings("default")
-
-    new_local_path = (
-        project._datashuttle_path / "base_folder" / project_name
-    )  # TODO: can delete this?
-    os.makedirs(new_local_path, exist_ok=True)
-
-    project.update_config_file(local_path=new_local_path)
 
     if local_path:
         os.makedirs(local_path, exist_ok=True)
