@@ -27,10 +27,11 @@ class GetHelpScreen(ModalScreen):
             For help getting started, check out the [@click=screen.link_docs()]Documentation[/],
             or ask at our [@click=screen.link_zulip()]Zulip Chat[/].
 
+            For more information on specific interface features,
+            hover the mouse over the element to see the 'tooltip'.
+
             Free to raise an issue anytime with questions, comments, feedback or
             bug reports on our [@click=screen.link_github_issues()]Issues[/] page.
-
-            For more information on the code, see our [@click=screen.link_github()]GitHub page[/].
         """
 
     def action_link_docs(self) -> None:

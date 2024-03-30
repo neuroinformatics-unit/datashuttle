@@ -1,6 +1,3 @@
-# TODO: add a bit more text to 'get help' page + a keyboard shortcuts pop-up.
-
-
 def get_tooltip(id: str) -> str:
     """
     Master function to get tooltips for all widgets,
