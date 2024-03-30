@@ -169,14 +169,11 @@ class Configs(UserDict):
                         ValueError,
                     )
 
-    # TODO: split this between local / central vs. datashuttle, it is overloaded.
     def make_path(
         self,
         base: str,
         sub_folders: Union[str, list],
-        top_level_folder: Union[
-            None, Literal["rawdata", "derivatives"]
-        ] = None,
+        top_level_folder: Literal["rawdata", "derivatives"],
     ) -> Path:
         """
         Function for joining relative path to base dir.
@@ -213,7 +210,7 @@ class Configs(UserDict):
     def get_base_folder(
         self,
         base: str,
-        top_level_folder: Optional[Literal["rawdata", "derivatives"]] = None,
+        top_level_folder: Literal["rawdata", "derivatives"],
     ) -> Path:
         """
         Convenience function to return the full base path.
@@ -224,20 +221,11 @@ class Configs(UserDict):
         base : base path, "local", "central" or "datashuttle"
 
         """
-        if base != "datashuttle":
-            assert top_level_folder in [
-                "rawdata",
-                "derivatives",
-            ], "Must supply top level folder for `local` or `central."
-
         if base == "local":
             base_folder = self["local_path"] / top_level_folder
         elif base == "central":
             base_folder = self["central_path"] / top_level_folder
-        elif base == "datashuttle":
-            base_folder, _ = canonical_folders.get_project_datashuttle_path(
-                self.project_name
-            )
+
         return base_folder
 
     def get_rclone_config_name(
@@ -265,17 +253,20 @@ class Configs(UserDict):
         """"""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
-        self.ssh_key_path = self.make_path(
-            "datashuttle", self.project_name + "_ssh_key"
+        datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(
+            self.project_name
         )
 
-        self.hostkeys_path = self.make_path("datashuttle", "hostkeys")
+        self.ssh_key_path = datashuttle_path / f"{self.project_name}_ssh_key"
+
+        self.hostkeys_path = datashuttle_path / "hostkeys"
 
         self.logging_path = self.make_and_get_logging_path()
 
     def make_and_get_logging_path(self) -> Path:
         """
-        Currently logging is located in config path
+        Currently logging is located in config path, will
+        create folders if do not exist.
         """
         logging_path = self.project_metadata_path / "logs"
         folders.create_folders(logging_path)
