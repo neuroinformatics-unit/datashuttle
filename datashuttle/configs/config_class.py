@@ -200,9 +200,7 @@ class Configs(UserDict):
 
         base_folder = self.get_base_folder(base, top_level_folder)
 
-        if utils.path_already_stars_with_base_folder(
-            base_folder, sub_folders_path
-        ):
+        if utils.path_starts_with_base_folder(base_folder, sub_folders_path):
             joined_path = sub_folders_path
         else:
             joined_path = base_folder / sub_folders_path

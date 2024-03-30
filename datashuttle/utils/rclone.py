@@ -179,6 +179,7 @@ def transfer_data(
     ], "must be 'upload' or 'download'"
 
     local_filepath = cfg.get_base_folder("local", top_level_folder).as_posix()
+
     central_filepath = cfg.get_base_folder(
         "central", top_level_folder
     ).as_posix()

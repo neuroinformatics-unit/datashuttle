@@ -147,7 +147,7 @@ def get_tooltip(id: str) -> str:
     # Upload / Download
     elif id == "#transfer_switch_container":
         tooltip = (
-            "Upload (local to central) or \n" "Download (central to local)."
+            "Upload (local to central) or \n Download (central to local)."
         )
 
     # Overwrite Existing Files
