@@ -520,9 +520,12 @@ def new_name_duplicates_existing(
     )[0]
 
     for exist_name in existing_names:
-        exist_name_id = utils.get_values_from_bids_formatted_name(
-            [exist_name], prefix, return_as_int=True
-        )[0]
+        try:
+            exist_name_id = utils.get_values_from_bids_formatted_name(
+                [exist_name], prefix, return_as_int=True
+            )[0]
+        except NeuroBlueprintError:
+            continue
 
         if exist_name_id == new_name_id:
             if new_name != exist_name:
