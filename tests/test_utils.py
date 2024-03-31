@@ -4,7 +4,6 @@ import logging
 import os
 import pathlib
 import shutil
-import subprocess
 import warnings
 from os.path import join
 from pathlib import Path
@@ -156,10 +155,6 @@ def make_test_path(base_path, local_or_central, test_project_name):
     return Path(base_path) / local_or_central / test_project_name
 
 
-def get_protected_test_folder():
-    return "ds_protected_test_name"
-
-
 def create_all_pathtable_files(pathtable):
     """ """
     for i in range(pathtable.shape[0]):
@@ -235,16 +230,6 @@ def get_test_config_arguments_dict(
 def get_all_folders_used(value=True):
     datatype_names = canonical_configs.get_datatypes()
     return {name: value for name in datatype_names}
-
-
-def get_config_path_with_cli(project_name=None):
-    stdout = run_cli("get_config_path", project_name)
-    path_ = stdout[0].split(".yaml")[0] + ".yaml"
-    return path_
-
-
-def add_quotes(string: str):
-    return '"' + string + '"'
 
 
 # -----------------------------------------------------------------------------
@@ -544,21 +529,6 @@ def get_default_sub_sessions_to_test():
     subs = ["sub-001", "sub-002", "sub-003"]
     sessions = ["ses-001_datetime-20220516T135022", "ses-002", "ses-003"]
     return subs, sessions
-
-
-def run_cli(command, project_name=None):
-    """"""
-    name = (
-        get_protected_test_folder() if project_name is None else project_name
-    )
-
-    result = subprocess.run(
-        " ".join(["datashuttle", name, command]),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
-    )
-    return result.stdout.decode("utf8"), result.stderr.decode("utf8")
 
 
 def move_some_keys_to_end_of_dict(config):
