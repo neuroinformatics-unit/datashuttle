@@ -96,20 +96,6 @@ def path_starts_with_base_folder(base_folder: Path, path_: Path) -> bool:
     return path_.as_posix().startswith(base_folder.as_posix())
 
 
-def log_and_raise_error_not_exists_or_not_yaml(path_to_config: Path) -> None:
-    """
-    Supplied config path must be a .yaml - use this function to check if the
-    supplied config path is indeed .yaml.
-    """
-    if not path_to_config.exists():
-        log_and_raise_error(
-            f"No file found at: {path_to_config}.", FileNotFoundError
-        )
-
-    if path_to_config.suffix not in [".yaml", ".yml"]:
-        log_and_raise_error("The config file must be a YAML file.", ValueError)
-
-
 # -----------------------------------------------------------------------------
 # BIDS names
 # -----------------------------------------------------------------------------

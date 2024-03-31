@@ -122,21 +122,6 @@ class Configs(UserDict):
 
         self.data = config_dict
 
-    def safe_check_current_dict_is_valid(self) -> dict:
-        """
-        Check the dict, but do not raise error as
-        we need to set the putatively changed key
-        back to the state before change attempt.
-
-        Propagate the error message so it can be
-        shown later.
-        """
-        try:
-            self.check_dict_values_raise_on_fail()
-            return {"passed": True, "error": None}
-        except BaseException as e:
-            return {"passed": False, "error": str(e)}
-
     # -------------------------------------------------------------------------
     # Utils
     # -------------------------------------------------------------------------

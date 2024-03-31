@@ -9,9 +9,6 @@ from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
-from datashuttle.tui.screens.modal_dialogs import (
-    MessageBox,
-)
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
@@ -651,14 +648,3 @@ class TestTuiCreateFolders(TuiBase):
             sessions=sessions,
             folder_used=folder_used,
         )
-
-    async def click_create_folders_and_check_messagebox(self, pilot):
-        await self.scroll_to_click_pause(
-            pilot,
-            "#create_folders_create_folders_button",
-        )
-
-        assert isinstance(pilot.app.screen, MessageBox)
-        assert pilot.app.screen.query_one(
-            "#messagebox_message_label"
-        ).renderable._text[0]

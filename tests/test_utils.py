@@ -126,11 +126,6 @@ def delete_project_if_it_exists(project_name):
         shutil.rmtree(config_path)
 
 
-def dump_config(dict_, path_):
-    with open(path_, "w") as config_file:
-        yaml.dump(dict_, config_file, sort_keys=False)
-
-
 def setup_project_fixture(tmp_path, test_project_name):
     """"""
     project = setup_project_default_configs(
