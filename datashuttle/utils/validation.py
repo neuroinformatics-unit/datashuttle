@@ -412,11 +412,8 @@ def validate_names_against_project(
     check that these names are formatted consistently with the
     rest of the project.
 
-    For basic checks, the new subject / session names are concatenated
-    with the existing ones and checked for consistently in
-    `validate_list_of_names()`. Note this implicitly checks that the
-    passed names are consistent with each-other (i.e. within `sub_names`
-    and within `ses_names`).
+    The passed list of names is first validated in `validate_list_of_names()`
+    without reference to the existing project.
 
     Next, checks for duplicate subjects / sessions are performed. For subjects,
     duplicates are checked for project-wide. For sessions, duplicates are
@@ -460,7 +457,7 @@ def validate_names_against_project(
     # Check subjects
     if folder_names["sub"]:
         validate_list_of_names(
-            sub_names + folder_names["sub"],
+            sub_names,
             prefix="sub",
             check_duplicates=False,
             error_or_warn=error_or_warn,
@@ -476,10 +473,9 @@ def validate_names_against_project(
 
     # Check sessions
     if folder_names["sub"] and ses_names is not None:
-        all_ses_names = list(set(chain(*folder_names["ses"].values())))
 
         validate_list_of_names(
-            all_ses_names + ses_names,
+            ses_names,
             "ses",
             check_duplicates=False,
             error_or_warn=error_or_warn,
