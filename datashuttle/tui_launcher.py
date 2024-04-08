@@ -8,8 +8,8 @@ from datashuttle.tui.app import main as tui_main
 
 description = (
     "-----------------------------------------------------------------------\n"
-    "Use `datashuttle launch` to start datashuttle."
-    "-------------------------------------------------------------------------"
+    "Use `datashuttle launch` to start datashuttle.\n"
+    "-----------------------------------------------------------------------\n"
 )
 
 parser = argparse.ArgumentParser(
