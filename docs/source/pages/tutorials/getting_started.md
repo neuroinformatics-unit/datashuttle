@@ -197,8 +197,8 @@ as we are not using SSH.
 
 ```python
 project.make_config_file(
-    local_path="C:\Users\Joe\data\local\my_first_project",
-    central_path="C:\Users\Joe\data\central\my_first_project",
+    local_path=r"C:\Users\Joe\data\local\my_first_project",
+    central_path=r"C:\Users\Joe\data\central\my_first_project",
     connection_method="local_filesystem",
 )
 ```
@@ -207,7 +207,7 @@ If you want to change any config in the future, use the `update_config_file` met
 
 ```python
 project.update_config_file(
-    local_path="C:\a\new\path"
+    local_path=r"C:\a\new\path"
 )
 ```
 
@@ -327,10 +327,10 @@ folders only.
 
 ```python
 project.create_folders(
+    top_level_folder="rawdata",
     sub_names="sub-001",
     ses_names="ses-001_@DATE@",
-    datatypes=["behav", "ephys"]
-
+    datatype=["behav", "ephys"]
 )
 ```
 
@@ -353,13 +353,14 @@ in this project (`sub-002`) and the next session for that subject (in this case,
 as it is the first session for `sub-002`, it will be `ses-001`) we can run
 
 ```python
-next_sub = project.get_next_sub_number(local_only=True)                # returns "sub-001"
-next_ses = project.get_next_ses_number(sub=next_sub, local_only=True)  # returns "ses-001"
+next_sub = project.get_next_sub_number("rawdata", local_only=True)                # returns "sub-001"
+next_ses = project.get_next_ses_number("rawdata", sub=next_sub, local_only=True)  # returns "ses-001"
 
 project.create_folders(
+    "rawdata",
     next_sub,
     f"{next_ses}_@DATE@",
-    datatypes=["behav", "ephys"]
+    datatype=["behav", "ephys"]
 )
 ```
 
@@ -439,9 +440,10 @@ These can be used to save data to these folders in acquisition scripts
 
 ```python
 folder_path_list = project.create_folders(
+    top_level_folder="rawdata",
     sub_names=["sub-001"],
     ses_names=["ses-001_@DATE@"],
-    datatypes=["behav", "ephys"]
+    datatype=["behav", "ephys"]
 
 )
 
@@ -536,7 +538,7 @@ and all files will be uploaded from the local version of the project to central 
 Navigating to the `central_path` in your systems file browser, the newly transferred data
 will have appeared, simulating transfer to a separate data storage machine.
 
-Other methods (`upload_all()` and `upload_data()`) provide refined
+Other methods (`upload_all()` and `upload()`) provide refined
 data transfers (and every `upload` method has an equivalent `download` method).
 For more information  see the
 [How to Transfer Data](how-to-transfer-data) page
@@ -684,17 +686,18 @@ of files will now be available in the _local path_ folder.
 :::{tab-item} Python API
 :sync: python
 
-We can use the `download_data()` method (the download equivalent method of
-the `upload_data()`).
+We can use the `download()` method (the download equivalent method of
+the `upload()`).
 
 We will download only the behavioural data from the first
 session, using a few shortcuts available for custom transfers
 
 ```python
-project.download_data(
+project.download(
+    top_level_folder="rawdata",
     sub_names="all",
     ses_names="ses-001_@*@",
-    datatypes="behav"
+    datatype="behav"
 )
 ```
 

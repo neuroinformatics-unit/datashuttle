@@ -15,11 +15,15 @@ local machines tied to a project).
 2) **local path**: location of the project our local machine, where we will save acquired data.
 3) **central path**: location of the central data storage, where we will upload the acquired data.
 
-```{image} /_static/datashuttle-overview.png
-:alt: My Logo
-:class: logo, mainlogo
-:align: center
-:width: 500
+```{image} /_static/datashuttle-overview-dark.png
+   :align: center
+   :class: only-dark
+   :width: 500px
+```
+```{image} /_static/datashuttle-overview-light.png
+   :align: center
+   :class: only-light
+   :width: 500px
 ```
 <br>
 
@@ -119,8 +123,8 @@ project with the desired **local path**, **central path** and
 
 ```{code-block} python
 project.make_config_file(
-    local_path="/path/to/my_projects/my_first_project",
-    central_path="X:\username\my_projects\my_first_project",
+    local_path=r"C:\my_local_machine\username\my_projects\my_first_project",
+    central_path=r"X:\a_mounted_drive\username\my_projects\my_first_project",
     connection_method="local_filesystem",
 )
 ```

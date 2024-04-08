@@ -577,6 +577,7 @@ For example, the command:
 :::{tab-item} Python API
 ```{code-block} python
 project.create_folders(
+    top_level_folder="rawdata",
 	sub_names="sub-001",
 	ses_names=["001_@DATETIME@", "002_@DATETIME@"],
 	datatype="behav",
@@ -935,6 +936,7 @@ The command:
 :::{tab-item} Python API
 ```{code-block} python
 project.create_folders(
+    top_level_folder="rawdata",
 	sub_names="001",
 	ses_names="all",
 	datatype="all_datatype"
@@ -981,6 +983,7 @@ but not the non-*datatype* file `ses-001_extra-file.json`.
 :::{tab-item} Python API
 ```{code-block} python
 project.create_folders(
+    top_level_folder="rawdata",
 	sub_names="all_non_sub",
 	ses_names="all",
 	datatype="all"

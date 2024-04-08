@@ -151,24 +151,16 @@ and press `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-The `upload_all()` or `download_all()` methods can be used to
-upload the current
-[working top-level folder](). This is set with the `set_top_level_folder()`.
+The `upload_all()` or `download_all()` methods can be used with the argument `top_level_folder` to specify
+the top-level folder to transfer within.
 
 In the next example, we will upload `rawdata` downloading `derivatives`.
 
 
 ```python
-project.set_top_level_folder("rawdata")
+project.upload_all("rawdata")
 
-print(project.get_top_level_folder())
-# "rawdata"
-
-project.upload_all()
-
-project.set_top_level_folder("derivatives")
-
-project.download_all()
+project.download_all("derivatives")
 ```
 
 :::
@@ -248,11 +240,12 @@ and press `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-The `upload_data()` and `download_data()` methods can be used for custom
+The `upload()` and `download()` methods can be used for custom
 data transfers. For example, to perform a custom upload:
 
 ```python
-project.upload_data(
+project.upload(
+    top_level_folder="rawdata",
     sub_names="all_sub",
     ses_names="ses-001_@*@",
     datatype="behav",

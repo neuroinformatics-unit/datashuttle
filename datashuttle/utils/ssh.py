@@ -129,13 +129,11 @@ def setup_ssh_key(
     """
     if not sys.stdin.isatty():
         utils.log_and_raise_error(
-            f"Attempting to run outside of a TTY terminal. "
-            f"This may happen if attempting to run in an IDE console. "
-            f"`getpass` (used for ssh password input) cannot run. "
-            f"Try running using the command-line-interface with "
-            f"'datashuttle {cfg.project_name} "
-            f"setup-ssh-connection-to-central-server' "
-            f"or in a terminal rather than IDE console.",
+            "Attempting to run outside of a TTY terminal. "
+            "This may happen if attempting to run in an IDE console. "
+            "`getpass` (used for ssh password input) cannot run. "
+            "Try using Python from the operating system "
+            "terminal to run this function.",
             RuntimeError,
         )
 

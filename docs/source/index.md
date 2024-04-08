@@ -44,9 +44,6 @@ Full Python API reference.
 :::
 ::::
 
-<h2 style="text-align: center;">[Get Started Video]</h2>
-
-=======
 Datashuttle creates and validates projects standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
 specification.
