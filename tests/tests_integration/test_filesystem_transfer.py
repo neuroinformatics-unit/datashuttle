@@ -371,13 +371,13 @@ class TestFileTransfer(BaseTest):
             make_base_path(project.cfg["central_path"]) / test_file_path
         ).is_file()
 
-    @pytest.mark.parametrize("overwrite_old_files", [True, False])
+    @pytest.mark.parametrize("overwrite_existing_files", [True, False])
     @pytest.mark.parametrize("show_transfer_progress", [True, False])
     @pytest.mark.parametrize("dry_run", [True, False])
     def test_rclone_options(
         self,
         project,
-        overwrite_old_files,
+        overwrite_existing_files,
         show_transfer_progress,
         dry_run,
         capsys,
@@ -392,7 +392,9 @@ class TestFileTransfer(BaseTest):
             project, ["sub-001"], ["ses-002"], ["behav"]
         )
 
-        project.update_config_file(overwrite_old_files=overwrite_old_files)
+        project.update_config_file(
+            overwrite_existing_files=overwrite_existing_files
+        )
         project.update_config_file(transfer_verbosity="vv")
         project.update_config_file(
             show_transfer_progress=show_transfer_progress
@@ -403,7 +405,7 @@ class TestFileTransfer(BaseTest):
 
         log = capsys.readouterr().out
 
-        if overwrite_old_files:
+        if overwrite_existing_files:
             assert "--ignore-existing" not in log
         else:
             assert "--ignore-existing" in log
@@ -440,13 +442,13 @@ class TestFileTransfer(BaseTest):
         else:
             raise BaseException("wrong parameter passed as transfer_verbosity")
 
-    @pytest.mark.parametrize("overwrite_old_files", [True, False])
+    @pytest.mark.parametrize("overwrite_existing_files", [True, False])
     def test_rclone_overwrite_modified_file(
-        self, project, overwrite_old_files
+        self, project, overwrite_existing_files
     ):
         """
         Test how rclone deals with existing files. In datashuttle
-        if project.cfg["overwrite_old_files"] is on,
+        if project.cfg["overwrite_existing_files"] is on,
         files will be replaced with newer versions. Alternatively,
         if this is off, files will never be overwritten even if
         the version in source is newer than target.
@@ -467,8 +469,8 @@ class TestFileTransfer(BaseTest):
 
         time_written = os.path.getatime(local_test_file_path)
 
-        if overwrite_old_files:
-            project.update_config_file(overwrite_old_files=True)
+        if overwrite_existing_files:
+            project.update_config_file(overwrite_existing_files=True)
 
         project.upload_all()
 
@@ -483,7 +485,7 @@ class TestFileTransfer(BaseTest):
 
         central_contents = test_utils.read_file(central_test_file_path)
 
-        if overwrite_old_files:
+        if overwrite_existing_files:
             assert central_contents == ["first edit second edit"]
         else:
             assert central_contents == ["first edit"]

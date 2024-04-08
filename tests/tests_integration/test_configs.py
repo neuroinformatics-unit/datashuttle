@@ -1,5 +1,4 @@
 import os
-from pathlib import Path
 
 import pytest
 import test_utils
@@ -432,28 +431,6 @@ class TestConfigs(BaseTest):
         project.supply_config_file(new_configs_path, warn=False)
 
         test_utils.check_configs(project, new_configs)
-
-    @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
-    def test_config_wrong_project_name(
-        self, no_cfg_project, path_type, tmp_path
-    ):
-        """ """
-        bad_name_configs = test_utils.get_test_config_arguments_dict(
-            tmp_path, no_cfg_project.project_name
-        )
-
-        bad_name = "wrong_project_name"
-        bad_name_configs[path_type] = (
-            Path(bad_name_configs[path_type]) / bad_name
-        )
-
-        with pytest.raises(ConfigError) as e:
-            no_cfg_project.make_config_file(**bad_name_configs)
-
-        assert (
-            f"The {path_type} does not end in the project name: {no_cfg_project.project_name}."
-            in str(e.value)
-        )
 
     def test_existing_projects(self, monkeypatch, tmp_path):
         """

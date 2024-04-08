@@ -67,9 +67,9 @@ TabScreen > TabbedContent {
 
 #transfer_params_container {
     border: solid $panel-lighten-1;
-    margin: 0 1 2 1;
-    padding: 0 0 0 2;
-    height: 60%;
+    margin: 0 0 0 0;
+    padding: 0 0 0 1;
+    height: 50%;
     overflow: hidden auto;
     align: left top;
 }
@@ -97,7 +97,7 @@ TabScreen > TabbedContent {
     width: auto;
     height: auto;
     align-vertical: middle;
-    margin: 0 0 0 2;
+    margin: 1 0 0 2;
 }
 
 #transfer_switch_container > Label{
@@ -135,7 +135,17 @@ Tooltip:light {
 }
 
 #transfer_transfer_button {
-    margin: 0 0 0 4;
+    width: 25;
+}
+#configs_overwrite_files_checkbox {
+    margin: 1 0 1 10;
+}
+#transfer_tab_transfer_settings_container{
+    height: auto;
+}
+#test4 {
+    height: auto;
+    padding: 0 0 10 0;
 }
 
 /* Logging Tab ------------------------------------------------------------- */

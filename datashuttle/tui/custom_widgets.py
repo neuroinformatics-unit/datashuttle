@@ -202,16 +202,10 @@ class CustomDirectoryTree(DirectoryTree):
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
         """
-        Filter out the top level .datashuttle folder than contains logs from
-        the directorytree display.
-
-        `paths` below are only the folders within the root folder. So this will
-        filter out .datashuttle only at the root and not all instances of
-        .datashuttle lower down the tree.
+        Filter out all hidden folders and files from DirectoryTree
+        display.
         """
-        return [
-            path for path in paths if not path.name.startswith(".datashuttle")
-        ]
+        return [path for path in paths if not path.name.startswith(".")]
 
     def on_key(self, event: events.Key) -> None:
         """
@@ -232,7 +226,7 @@ class CustomDirectoryTree(DirectoryTree):
                 self.DirectoryTreeSpecialKeyPress(event.key, node_path=None)
             )
 
-        elif event.key in ["ctrl+a", "ctrl+f"]:
+        elif event.key in ["ctrl+a", "ctrl+f", "ctrl+n"]:
             path_ = self.get_node_at_line(self.hover_line).data.path
             self.post_message(
                 self.DirectoryTreeSpecialKeyPress(event.key, node_path=path_)

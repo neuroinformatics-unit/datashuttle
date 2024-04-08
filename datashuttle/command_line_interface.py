@@ -505,8 +505,8 @@ def construct_parser():
         help="(str)",
     )
     make_config_file_parser.add_argument(
-        "--overwrite-old-files",
-        "--overwrite_old_files",
+        "--overwrite-existing-files",
+        "--overwrite_existing_files",
         required=False,
         action="store_true",
         help=help("flag_default_false"),
@@ -1037,8 +1037,9 @@ def main() -> None:
     """
     args = parser.parse_args()
 
-    if args.project_name in ["tui", "gui"]:
+    if args.project_name in ["tui", "gui", "launch"]:
         tui_main()
+        return
 
     if "func" in args and str(args.func.__name__) == "make_config_file":
         warn = "ignore"

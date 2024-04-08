@@ -15,7 +15,9 @@ ConfigValueTypes = Union[Path, str, bool, None]
 
 
 def attempt_load_configs(
-    project_name: str, config_path: Path
+    project_name: str,
+    config_path: Path,
+    verbose: bool = True,
 ) -> Optional[Configs]:
     """
     Try to load an existing config file, that was previously
@@ -32,14 +34,17 @@ def attempt_load_configs(
     project_name : name of project
 
     config_path : path to datashuttle config .yaml file
+
+    verbose : warnings and error messages will be printed.
     """
     exists = config_path.is_file()
 
     if not exists:
-        warnings.warn(
-            "Configuration file has not been initialized. "
-            "Use make_config_file() to setup before continuing."
-        )
+        if verbose:
+            warnings.warn(
+                "Configuration file has not been initialized. "
+                "Use make_config_file() to setup before continuing."
+            )
         return None
 
     new_cfg: Optional[Configs]
@@ -101,9 +106,8 @@ def supplied_configs_confirm_overwrite(
 
     new_cfg = Configs(project_name, path_to_config, None)
     new_cfg.load_from_file()
-
     new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
-    new_cfg.check_dict_values_raise_on_fail()
+    new_cfg.setup_after_load()
 
     return new_cfg
 

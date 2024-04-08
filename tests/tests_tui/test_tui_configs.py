@@ -5,7 +5,6 @@ import pytest
 import test_utils
 from tui_base import TuiBase
 
-from datashuttle import DataShuttle
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
@@ -52,7 +51,6 @@ class TestTuiConfigs(TuiBase):
                     "connection_method": "local_filesystem",
                     "central_host_id": None,
                     "central_host_username": None,
-                    "overwrite_old_files": False,
                 }
             )
         elif kwargs_set == 2:
@@ -61,7 +59,6 @@ class TestTuiConfigs(TuiBase):
                     "connection_method": "ssh",
                     "central_host_id": "@test.host.id",
                     "central_host_username": "test_username",
-                    "overwrite_old_files": True,
                 }
             )
 
@@ -112,27 +109,36 @@ class TestTuiConfigs(TuiBase):
                 assert (
                     pilot.app.screen.query_one(
                         "#configs_setup_ssh_connection_button"
-                    ).disabled
-                    is False
+                    ).visible
+                    is True
                 )
-                project = DataShuttle(project_name)
             else:
                 assert (
                     pilot.app.screen.query_one(
                         "#messagebox_message_label"
                     ).renderable._text[0]
                     == "A DataShuttle project has now been created.\n\n "
-                    "Click 'OK' to proceed to the project page, where you "
-                    "will be able to create and transfer project folders."
+                    "Next proceed to the project page, where you will "
+                    "be able to create and transfer project folders."
                 )
                 await self.close_messagebox(pilot)
-                assert isinstance(pilot.app.screen, ProjectManagerScreen)
-                project = pilot.app.screen.interface.project
 
-                assert (
-                    pilot.app.screen.interface.project.project_name
-                    == project_name
-                )
+            assert (
+                pilot.app.screen.query_one(
+                    "#configs_go_to_project_screen_button"
+                ).visible
+                is True
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#configs_go_to_project_screen_button"
+            )
+            assert isinstance(pilot.app.screen, ProjectManagerScreen)
+
+            project = pilot.app.screen.interface.project
+
+            assert (
+                pilot.app.screen.interface.project.project_name == project_name
+            )
 
             # After saving, check all configs are correct on the DataShuttle
             # instance as well as the stored configs.
@@ -206,7 +212,6 @@ class TestTuiConfigs(TuiBase):
                 "connection_method": "ssh",
                 "central_host_id": "random_host",
                 "central_host_username": "random_username",
-                "overwrite_old_files": True,
             }
 
             for key in new_kwargs.keys():
@@ -328,14 +333,14 @@ class TestTuiConfigs(TuiBase):
 
                 await pilot.pause()
 
-            # Check the central path only is disabled in SSH mode.
-            assert local_path_button.disabled is False
-            assert central_path_button.disabled is False
+            # Check the central path only is not displayed in SSH mode.
+            assert local_path_button.display is True
+            assert central_path_button.display is True
 
             await self.scroll_to_click_pause(pilot, "#configs_ssh_radiobutton")
 
-            assert local_path_button.disabled is False
-            assert central_path_button.disabled is True
+            assert local_path_button.display is True
+            assert central_path_button.display is False
 
             await pilot.pause()
 
@@ -358,7 +363,7 @@ class TestTuiConfigs(TuiBase):
             )
 
             assert (
-                "The central_path does not end in the project name: a"
+                "The central_path: b that the project folder will reside in does not yet exist"
                 in pilot.app.screen.query_one(
                     "#messagebox_message_label"
                 ).renderable._text[0]
@@ -425,15 +430,6 @@ class TestTuiConfigs(TuiBase):
             == kwargs["central_path"]
         )
 
-        # Overwrite Old Files -------------------------------------------------
-
-        assert (
-            configs_content.query_one(
-                "#configs_overwrite_files_checkbox"
-            ).value
-            is kwargs["overwrite_old_files"]
-        )
-
     async def set_configs_content_widgets(
         self, pilot, configs_content, kwargs
     ):
@@ -476,19 +472,6 @@ class TestTuiConfigs(TuiBase):
             pilot, "#configs_central_path_input", kwargs["central_path"]
         )
 
-        # Overwrite Files -----------------------------------------------------
-
-        if kwargs["overwrite_old_files"]:
-
-            assert not configs_content.query_one(
-                "#configs_overwrite_files_checkbox"
-            ).value
-
-            await self.scroll_to_click_pause(
-                pilot,
-                "#configs_overwrite_files_checkbox",
-            )
-
     async def check_new_project_configs(
         self, pilot, project_name, configs_content, kwargs
     ):
@@ -511,7 +494,6 @@ class TestTuiConfigs(TuiBase):
             "local_path": "",
             "central_path": "",
             "connection_method": "local_filesystem",
-            "overwrite_old_files": False,
         }
         await self.check_configs_widgets_match_configs(
             configs_content, default_kwargs

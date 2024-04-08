@@ -49,7 +49,7 @@ class Interface:
             Must already exist.
         """
         try:
-            project = DataShuttle(project_name)
+            project = DataShuttle(project_name, print_startup_message=False)
             self.project = project
             return True, None
 
@@ -374,15 +374,31 @@ class Interface:
         cfg_to_load.convert_str_and_pathlib_paths(cfg_to_load, "path_to_str")
         return cfg_to_load
 
-    def get_next_sub_number(self) -> str:
-        return self.project.get_next_sub_number(
-            return_with_prefix=True, local_only=True
-        )
+    def get_next_sub_number(self) -> Output:
+        try:
+            next_sub = self.project.get_next_sub_number(
+                return_with_prefix=True, local_only=True
+            )
+            return True, next_sub
+        except BaseException as e:
+            return False, str(e)
 
-    def get_next_ses_number(self, sub: str) -> str:
-        return self.project.get_next_ses_number(
-            sub, return_with_prefix=True, local_only=True
-        )
+    def get_next_ses_number(self, sub: str) -> Output:
+
+        try:
+            next_ses = self.project.get_next_ses_number(
+                sub, return_with_prefix=True, local_only=True
+            )
+            return True, next_ses
+        except BaseException as e:
+            return False, str(e)
+
+    def update_overwrite_existing_files(self, value: bool) -> Output:
+        try:
+            self.project.update_config_file(overwrite_existing_files=value)
+            return True, None
+        except BaseException as e:
+            return False, str(e)
 
     def get_ssh_hostkey(self) -> Output:
         try:

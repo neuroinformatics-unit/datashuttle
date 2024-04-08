@@ -170,7 +170,7 @@ def names_include_special_characters(
     """
     bad_names = []
     for name in names_list:
-        if not re.match("^[A-Za-z0-9_-]*$", name):
+        if name_has_special_character(name):
             bad_names.append(name)
 
     if bad_names:
@@ -180,6 +180,10 @@ def names_include_special_characters(
             f"which are not alphanumeric, dash or underscore.",
         )
     return False, ""
+
+
+def name_has_special_character(name: str) -> bool:
+    return not re.match("^[A-Za-z0-9_-]*$", name)
 
 
 def dashes_and_underscore_alternate_incorrectly(

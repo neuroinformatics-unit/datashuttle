@@ -25,6 +25,7 @@ from datashuttle.tui.custom_widgets import (
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
+from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import require_double_click
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 
@@ -59,7 +60,7 @@ class CreateFoldersTab(TreeAndInputTab):
             validate_on=["changed", "submitted"],
             validators=[NeuroBlueprintValidator("sub", self)],
         )
-        yield Label("Session(s)", id="tabscreen_session_label")
+        yield Label("Session(s)", id="create_folders_session_label")
         yield ClickableInput(
             self.mainwindow,
             id="create_folders_session_input",
@@ -81,6 +82,23 @@ class CreateFoldersTab(TreeAndInputTab):
             ),
             id="create_folders_buttons_horizontal",
         )
+
+    def on_mount(self) -> None:
+        """"""
+        if not self.interface:
+            self.query_one("#configs_name_input").tooltip = get_tooltip(
+                "#configs_name_input"
+            )
+
+        for id in [
+            "#create_folders_directorytree",
+            "#create_folders_subject_label",
+            "#create_folders_session_label",
+            "#create_folders_subject_input",
+            "#create_folders_session_input",
+            "#create_folders_datatype_label",
+        ]:
+            self.query_one(id).tooltip = get_tooltip(id)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -139,6 +157,9 @@ class CreateFoldersTab(TreeAndInputTab):
                 "#create_folders_session_input",
                 event,
             )
+
+        elif event.key == "ctrl+n":
+            self.mainwindow.prompt_rename_file_or_folder(event.node_path)
 
     def fill_input_with_template(self, prefix: Prefix, input_id: str) -> None:
         """
@@ -222,6 +243,12 @@ class CreateFoldersTab(TreeAndInputTab):
             self.mainwindow.show_modal_error_dialog(output)
 
     def reload_directorytree(self) -> None:
+        """
+        This reloads the directorytree and also updates validation.
+        Not now a good method name but done for consistency with other
+        tab refresh methods.
+        """
+        self.revalidate_inputs(["sub", "ses"])
         self.query_one("#create_folders_directorytree").reload()
 
     # Filling Inputs
@@ -248,7 +275,12 @@ class CreateFoldersTab(TreeAndInputTab):
             The textual input name to update.
         """
         if prefix == "sub":
-            next_val = self.interface.get_next_sub_number()
+            success, output = self.interface.get_next_sub_number()
+            if not success:
+                self.mainwindow.show_modal_error_dialog(output)
+                return
+            else:
+                next_val = output
         else:
             sub_names = self.query_one(
                 "#create_folders_subject_input"
@@ -271,7 +303,12 @@ class CreateFoldersTab(TreeAndInputTab):
             else:
                 sub = sub_names[0]
 
-            next_val = self.interface.get_next_ses_number(sub)
+            success, output = self.interface.get_next_ses_number(sub)
+            if not success:
+                self.mainwindow.show_modal_error_dialog(output)
+                return
+            else:
+                next_val = output
 
         if self.templates_on(prefix):
             split_name = self.interface.get_name_templates()[prefix].split("_")

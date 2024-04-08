@@ -85,11 +85,8 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str, print_startup_message: bool = True):
-        if " " in project_name:
-            utils.log_and_raise_error(
-                "'project_name' must not include spaces.", ValueError
-            )
 
+        self._error_on_base_project_name(project_name)
         self.project_name = project_name
         (
             self._datashuttle_path,
@@ -106,7 +103,7 @@ class DataShuttle:
         self.cfg: Any = None
 
         self.cfg = load_configs.attempt_load_configs(
-            self.project_name, self._config_path
+            self.project_name, self._config_path, verbose=print_startup_message
         )
 
         if self.cfg:
@@ -338,14 +335,14 @@ class DataShuttle:
             see create_folders()
 
         init_log :
-            (Optional). Whether to start the logger. This should
-            always be True, unless logger has already been started
+            (Optional). Whether handle logging. This should
+            always be True, unless logger is handled elsewhere
             (e.g. in a calling function).
 
         Notes
         -----
 
-        The configs "overwrite_old_files", "transfer_verbosity"
+        The configs "overwrite_existing_files", "transfer_verbosity"
         and "show_transfer_progress" pertain to data-transfer settings.
         See make_config_file() for more information.
 
@@ -377,7 +374,9 @@ class DataShuttle:
             dry_run,
             log=True,
         )
-        ds_logger.close_log_filehandler()
+
+        if init_log:
+            ds_logger.close_log_filehandler()
 
     @check_configs_set
     def download(
@@ -414,30 +413,42 @@ class DataShuttle:
             dry_run,
             log=True,
         )
-        ds_logger.close_log_filehandler()
+
+        if init_log:
+            ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def upload_all(self, dry_run: bool = False) -> None:
+    def upload_all(self, dry_run: bool = False, init_log: bool = True) -> None:
         """
         Convenience function to upload all data.
 
         Alias for:
             project.upload("all", "all", "all")
         """
-        self._start_log("upload-all", local_vars=locals())
+        if init_log:
+            self._start_log("upload-all", local_vars=locals())
 
         self.upload("all", "all", "all", dry_run=dry_run, init_log=False)
 
+        if init_log:
+            ds_logger.close_log_filehandler()
+
     @check_configs_set
-    def download_all(self, dry_run: bool = False) -> None:
+    def download_all(
+        self, dry_run: bool = False, init_log: bool = True
+    ) -> None:
         """
         Convenience function to download all data.
 
         Alias for : project.download("all", "all", "all")
         """
-        self._start_log("download-all", local_vars=locals())
+        if init_log:
+            self._start_log("download-all", local_vars=locals())
 
         self.download("all", "all", "all", dry_run=dry_run, init_log=False)
+
+        if init_log:
+            ds_logger.close_log_filehandler()
 
     @check_configs_set
     def upload_entire_project(self) -> None:
@@ -446,7 +457,9 @@ class DataShuttle:
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
+        self._start_log("transfer-entire-project", local_vars=locals())
         self._transfer_entire_project("upload")
+        ds_logger.close_log_filehandler()
 
     @check_configs_set
     def download_entire_project(self) -> None:
@@ -455,7 +468,9 @@ class DataShuttle:
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
+        self._start_log("transfer-entire-project", local_vars=locals())
         self._transfer_entire_project("download")
+        ds_logger.close_log_filehandler()
 
     @check_configs_set
     def upload_specific_folder_or_file(
@@ -630,7 +645,7 @@ class DataShuttle:
         connection_method: str,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
-        overwrite_old_files: bool = False,
+        overwrite_existing_files: bool = False,
         transfer_verbosity: str = "v",
         show_transfer_progress: bool = False,
     ) -> None:
@@ -676,7 +691,7 @@ class DataShuttle:
             username for which to log in to central host.
             e.g. "jziminski"
 
-        overwrite_old_files :
+        overwrite_existing_files :
             If True, when copying data (upload or download) files
             will be overwritten if the timestamp of the copied
             version is later than the target folder version
@@ -716,7 +731,7 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
-                "overwrite_old_files": overwrite_old_files,
+                "overwrite_existing_files": overwrite_existing_files,
                 "transfer_verbosity": transfer_verbosity,
                 "show_transfer_progress": show_transfer_progress,
             },
@@ -761,20 +776,13 @@ class DataShuttle:
 
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
+        new_cfg.setup_after_load()  # Will raise on error
 
-        check_change = new_cfg.safe_check_current_dict_is_valid()
-
-        if check_change["passed"]:
-            self.cfg = new_cfg
-            self._set_attributes_after_config_load()
-            self.cfg.dump_to_file()
-            self._log_successful_config_change(message=True)
-            ds_logger.close_log_filehandler()
-        else:
-            utils.log_and_raise_error(
-                f"{check_change['error']}\nConfigs were not updated.",
-                ConfigError,
-            )
+        self.cfg = new_cfg
+        self._set_attributes_after_config_load()
+        self.cfg.dump_to_file()
+        self._log_successful_config_change(message=True)
+        ds_logger.close_log_filehandler()
 
     def supply_config_file(
         self, input_path_to_config: str, warn: bool = True
@@ -1118,8 +1126,9 @@ class DataShuttle:
         tmp_current_top_level_folder = copy.copy(self.cfg.top_level_folder)
 
         for folder_name in canonical_folders.get_top_level_folders():
+            utils.log_and_message(f"Transferring `{folder_name}`")
             self.cfg.top_level_folder = folder_name
-            transfer_all_func()
+            transfer_all_func(init_log=False)
 
         self.cfg.top_level_folder = tmp_current_top_level_folder
 
@@ -1192,6 +1201,13 @@ class DataShuttle:
         log_files = glob.glob(str(self._temp_log_path / "*.log"))
         for file in log_files:
             os.remove(file)
+
+    def _error_on_base_project_name(self, project_name):
+        if validation.name_has_special_character(project_name):
+            utils.log_and_raise_error(
+                "The project name must contain alphanumeric characters only.",
+                ValueError,
+            )
 
     def _log_successful_config_change(self, message: bool = False) -> None:
         """

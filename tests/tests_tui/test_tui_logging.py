@@ -30,7 +30,7 @@ class TestTuiLogging(TuiBase):
             for file in project.get_logging_path().glob("*.log"):
                 file.unlink()
 
-            project.update_config_file(overwrite_old_files=True)
+            project.update_config_file(overwrite_existing_files=True)
 
             await pilot.pause(5)
 

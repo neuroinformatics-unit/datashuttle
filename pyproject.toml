@@ -21,6 +21,7 @@ dependencies = [
     "pyperclip",
     "textual",
     "show-in-file-manager",
+    "gitpython",
 ]
 
 classifiers = [

@@ -1,3 +1,4 @@
+import platform
 from typing import Union
 
 import pytest
@@ -50,7 +51,7 @@ class TestTuiWidgets(TuiBase):
                 configs_content.query_one(
                     "#configs_banner_label"
                 ).renderable._text[0]
-                == "Configure A New Project"
+                == "Make A New Project"
             )
             assert (
                 configs_content.query_one(
@@ -87,12 +88,21 @@ class TestTuiWidgets(TuiBase):
                 configs_content.query_one("#configs_local_path_input").value
                 == ""
             )
-            assert (
-                configs_content.query_one(
-                    "#configs_local_path_input"
-                ).placeholder
-                == "e.g. C:\\path\\to\\local\\my_projects\\my_first_project"
-            )
+
+            if platform.system() == "Windows":
+                assert (
+                    configs_content.query_one(
+                        "#configs_local_path_input"
+                    ).placeholder
+                    == "e.g. C:\\path\\to\\local\\my_projects\\my_first_project"
+                )
+            else:
+                assert (
+                    configs_content.query_one(
+                        "#configs_local_path_input"
+                    ).placeholder
+                    == "e.g. /path/to/local/my_projects/my_first_project"
+                )
 
             # Connection Method ---------------------------------------------------
 
@@ -121,12 +131,21 @@ class TestTuiWidgets(TuiBase):
                 configs_content.query_one("#configs_central_path_input").value
                 == ""
             )
-            assert (
-                configs_content.query_one(
-                    "#configs_central_path_input"
-                ).placeholder
-                == "e.g. C:\\path\\to\\central\\my_projects\\my_first_project"
-            )
+            if platform.system() == "Windows":
+
+                assert (
+                    configs_content.query_one(
+                        "#configs_central_path_input"
+                    ).placeholder
+                    == "e.g. C:\\path\\to\\central\\my_projects\\my_first_project"
+                )
+            else:
+                assert (
+                    configs_content.query_one(
+                        "#configs_central_path_input"
+                    ).placeholder
+                    == "e.g. /path/to/central/my_projects/my_first_project"
+                )
 
             # Check Non SSH widgets hidden / disabled ----------------------------------
             await self.check_new_project_ssh_widgets(
@@ -194,45 +213,22 @@ class TestTuiWidgets(TuiBase):
                 == "e.g. username"
             )
 
-            # Transfer Options Container -----------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_transfer_options_container"
-                ).border_title
-                == "Transfer Options"
-            )
-
-            # Overwrite Old Files Checkbox ---------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_overwrite_files_checkbox"
-                ).label._text[0]
-                == "Overwrite Old Files"
-            )
-            assert (
-                configs_content.query_one(
-                    "#configs_overwrite_files_checkbox"
-                ).value
-                is False
-            )
-
             await pilot.pause()
 
-    async def check_new_project_ssh_widgets(self, configs_content, ssh_on):
+    async def check_new_project_ssh_widgets(
+        self, configs_content, ssh_on, save_pressed=False
+    ):
         """"""
-        assert (
-            configs_content.query_one(
-                "#configs_setup_ssh_connection_button"
-            ).disabled
-            is True  # Only enabled after project creation.
-        )
+        assert configs_content.query_one(
+            "#configs_setup_ssh_connection_button"
+        ).visible is (
+            ssh_on and save_pressed
+        )  # Only enabled after project creation.
         assert (
             configs_content.query_one(
                 "#configs_central_path_select_button"
-            ).disabled
-            is ssh_on
+            ).display
+            is not ssh_on
         )
 
         for id in [
@@ -315,7 +311,7 @@ class TestTuiWidgets(TuiBase):
 
             assert (
                 pilot.app.screen.query_one(
-                    "#tabscreen_session_label"
+                    "#create_folders_session_label"
                 ).renderable._text[0]
                 == "Session(s)"
             )
@@ -855,6 +851,7 @@ class TestTuiWidgets(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#transfer_toplevel_radiobutton"
             )
+
             await self.check_top_folder_select(
                 pilot,
                 "#transfer_toplevel_select",
@@ -888,7 +885,6 @@ class TestTuiWidgets(TuiBase):
                 "rawdata",
                 move_to_position=4,
             )
-
             await pilot.pause()
 
     async def check_top_folder_select(
@@ -1074,14 +1070,6 @@ class TestTuiWidgets(TuiBase):
                     "#transfer_custom_radiobutton"
                 ).label._text[0]
                 == "Custom"
-            )
-
-            # parameters container
-            assert (
-                pilot.app.screen.query_one(
-                    "#transfer_params_container"
-                ).border_title
-                == "Parameters"
             )
 
             # All data label
