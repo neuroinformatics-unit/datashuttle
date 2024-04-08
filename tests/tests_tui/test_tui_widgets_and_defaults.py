@@ -678,7 +678,7 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
             assert (
-                pilot.app.screen.interface.project.get_bypass_validation()
+                pilot.app.screen.interface.tui_settings["bypass_validation"]
                 is False
             )
 
@@ -693,7 +693,7 @@ class TestTuiWidgets(TuiBase):
                 is True
             )
             assert (
-                pilot.app.screen.interface.project.get_bypass_validation()
+                pilot.app.screen.interface.tui_settings["bypass_validation"]
                 is True
             )
 
@@ -714,7 +714,7 @@ class TestTuiWidgets(TuiBase):
                 is True
             )
             assert (
-                pilot.app.screen.interface.project.get_bypass_validation()
+                pilot.app.screen.interface.tui_settings["bypass_validation"]
                 is True
             )
 

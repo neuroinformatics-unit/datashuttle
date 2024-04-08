@@ -22,7 +22,7 @@ class TestPersistentSettings(BaseTest):
         """
         settings = project._load_persistent_settings()
 
-        assert len(settings) == 4
+        assert len(settings) == 3
         assert settings["top_level_folder"] == "rawdata"
 
         # Update they persistent setting and check this is reflected
@@ -207,20 +207,10 @@ class TestPersistentSettings(BaseTest):
         Reload, turn off, check for error on attempting to create
         bad name.
         """
-        assert project.get_bypass_validation() is False
-
-        project.set_bypass_validation(True)
-
-        assert project.get_bypass_validation() is True
-
         # should not raise
-        project.create_folders("sub-@@@")
+        project.create_folders("sub-@@@", bypass_validation=True)
 
         project = DataShuttle(project.project_name)
-
-        assert project.get_bypass_validation() is True
-
-        project.set_bypass_validation(False)
 
         with pytest.raises(BaseException) as e:
             project.create_folders("sub-@@@")
@@ -252,6 +242,7 @@ class TestPersistentSettings(BaseTest):
                 "toplevel_transfer": "rawdata",
                 "custom_transfer": "rawdata",
             },
+            "bypass_validation": False,
         }
 
     def get_settings_changed(self):
@@ -276,4 +267,5 @@ class TestPersistentSettings(BaseTest):
                 "toplevel_transfer": "derivatives ",
                 "custom_transfer": "derivatives",
             },
+            "bypass_validation": True,
         }
