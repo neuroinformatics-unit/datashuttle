@@ -410,15 +410,20 @@ def validate_names_against_project(
     """
     Given a list of subject and (optionally) session names,
     check that these names are formatted consistently with the
-    rest of the project.
+    rest of the project. Unfortunately this function has become
+    quite complex due to the need to only validate the passed
+    list of subject / session names while ignoring validation errors
+    that may already exist in the project.
 
-    For basic checks, the new subject / session names are concatenated
-    with the existing ones and checked for consistently in
-    `validate_list_of_names()`. Note this implicitly checks that the
-    passed names are consistent with each-other (i.e. within `sub_names`
-    and within `ses_names`).
+    The passed list of names is first validated in `validate_list_of_names()`
+    without reference to the existing project.
 
-    Next, checks for duplicate subjects / sessions are performed. For subjects,
+    Next, checks for inconsistent length of sub or ses values are checked.
+    This cannot be run if there are inconsistent values within the project
+    itself, which will throw an error in this case. Only valid sub / ses
+    names within the project are checked.
+
+    Finally, checks for duplicate subjects / sessions are performed. For subjects,
     duplicates are checked for project-wide. For sessions, duplicates are
     checked for within the corresponding folders. This assumes that
     the passed `ses_names` will be created in all passed `sub_names`.
@@ -452,6 +457,12 @@ def validate_names_against_project(
 
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
+
+    TODO
+    ----
+    This function is now quite confusing, and in general the validation
+    needs optimisation are there are frequent looping over the same
+    list under different circumstances. See issue #355
     """
     folder_names = getters.get_all_sub_and_ses_names(
         cfg, top_level_folder, local_only
@@ -460,28 +471,34 @@ def validate_names_against_project(
     # Check subjects
     if folder_names["sub"]:
         validate_list_of_names(
-            sub_names + folder_names["sub"],
+            sub_names,
             prefix="sub",
-            check_duplicates=False,
+            check_duplicates=True,
             error_or_warn=error_or_warn,
             name_templates=name_templates,
         )
 
+        valid_sub_in_project = strip_invalid_names(folder_names["sub"], "sub")
+
+        check_sub_names_value_length_are_consistent_with_project(
+            sub_names, valid_sub_in_project, error_or_warn, log
+        )
+
         for new_sub in sub_names:
+
             failed, message = new_name_duplicates_existing(
-                new_sub, folder_names["sub"], "sub"
+                new_sub, valid_sub_in_project, "sub"
             )
             if failed:
                 raise_error_or_warn(message, error_or_warn, log)
 
     # Check sessions
     if folder_names["sub"] and ses_names is not None:
-        all_ses_names = list(set(chain(*folder_names["ses"].values())))
 
         validate_list_of_names(
-            all_ses_names + ses_names,
+            ses_names,
             "ses",
-            check_duplicates=False,
+            check_duplicates=True,
             error_or_warn=error_or_warn,
         )
 
@@ -489,12 +506,96 @@ def validate_names_against_project(
         # for all sessions currently within those subjects.
         for new_sub in sub_names:
             if new_sub in folder_names["ses"]:
+
+                valid_ses_in_sub = strip_invalid_names(
+                    folder_names["ses"][new_sub], "ses"
+                )
+
+                check_ses_names_value_length_are_consistent_with_project(
+                    ses_names, valid_ses_in_sub, new_sub, error_or_warn, log
+                )
+
                 for new_ses in ses_names:
                     failed, message = new_name_duplicates_existing(
-                        new_ses, folder_names["ses"][new_sub], "ses"
+                        new_ses, valid_ses_in_sub, "ses"
                     )
                     if failed:
                         raise_error_or_warn(message, error_or_warn, log)
+
+
+def check_sub_names_value_length_are_consistent_with_project(
+    sub_names: List[str],
+    valid_sub_in_project: List[str],
+    error_or_warn: Literal["error", "warn"],
+    log: bool,
+) -> None:
+    """
+    Given a list of names we are validating, and a list of
+    all the other names that current exist in the project, check
+    the list of names has consistent value length with all the
+    other names in the project.
+
+    Note this will throw an error if the project odes not have
+    consistent value length as this check will not be possible
+    otherwise.
+    """
+    if value_lengths_are_inconsistent(valid_sub_in_project, "sub")[0]:
+        raise_error_or_warn(
+            "Cannot check names for inconsistent value lengths "
+            "because the subject value lengths are not consistent "
+            "across the project.",
+            error_or_warn,
+            log,
+        )
+    else:
+        failed, message = value_lengths_are_inconsistent(
+            sub_names + valid_sub_in_project, "sub"
+        )
+        if failed:
+            raise_error_or_warn(message, error_or_warn, log)
+
+
+def check_ses_names_value_length_are_consistent_with_project(
+    ses_names: List[str],
+    valid_ses_in_sub: List[str],
+    sub_name: str,
+    error_or_warn: Literal["error", "warn"],
+    log: bool,
+) -> None:
+    """
+    See check_sub_names_value_length_are_consistent_with_project(),
+    this performs the same function for session. Potential to merge
+    with that function, just some minor annoying differences.
+    """
+    if value_lengths_are_inconsistent(valid_ses_in_sub, "ses")[0]:
+        raise_error_or_warn(
+            f"Cannot check names for inconsistent value lengths "
+            f"because the session value lengths for subject "
+            f"{sub_name} are not consistent.",
+            error_or_warn,
+            log,
+        )
+    else:
+        failed, message = value_lengths_are_inconsistent(
+            ses_names + valid_ses_in_sub, "ses"
+        )
+        if failed:
+            raise_error_or_warn(message, error_or_warn, log)
+
+
+def strip_invalid_names(all_names: List[str], prefix: Prefix) -> List[str]:
+    """ """
+    new_list = []
+    for name in all_names:
+        try:
+            utils.get_values_from_bids_formatted_name(
+                [name], prefix, return_as_int=True
+            )[0]
+        except NeuroBlueprintError:
+            continue
+        new_list.append(name)
+
+    return new_list
 
 
 def new_name_duplicates_existing(
@@ -520,6 +621,7 @@ def new_name_duplicates_existing(
     )[0]
 
     for exist_name in existing_names:
+
         exist_name_id = utils.get_values_from_bids_formatted_name(
             [exist_name], prefix, return_as_int=True
         )[0]

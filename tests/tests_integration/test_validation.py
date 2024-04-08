@@ -5,6 +5,7 @@ import pytest
 from base import BaseTest
 
 from datashuttle.utils import formatting, validation
+from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
 # Inconsistent sub or ses value lengths
@@ -180,7 +181,7 @@ class TestValidation(BaseTest):
         subs = ["sub-001_id-123", "sub-002_id-124"]
         project.create_folders("rawdata", subs)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-001_id-125")
 
         assert (
@@ -194,7 +195,7 @@ class TestValidation(BaseTest):
         sessions = ["ses-001_date-1605", "ses-002_date-1606"]
         project.create_folders("rawdata", subs, sessions)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001_id-123", "ses-002_date-1607"
             )
@@ -214,7 +215,7 @@ class TestValidation(BaseTest):
         """
         project.create_folders("rawdata", "sub-1")
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-001")
 
         assert "Inconsistent value lengths for the key sub were found" in str(
@@ -223,7 +224,7 @@ class TestValidation(BaseTest):
 
         project.create_folders("rawdata", "sub-1", "ses-3")
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-1", "ses-003")
 
         assert "Inconsistent value lengths for the key ses were found" in str(
@@ -238,13 +239,13 @@ class TestValidation(BaseTest):
         project.create_folders("rawdata", "sub-001")
 
         for bad_sub_name in ["sub-001_@DATE@", "sub-001_extra-key"]:
-            with pytest.raises(BaseException) as e:
+            with pytest.raises(NeuroBlueprintError) as e:
                 project.create_folders("rawdata", bad_sub_name, "ses-001")
             assert "A sub already exists" in str(e.value)
 
         project.create_folders("rawdata", "sub-001", "ses-001")
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001", "ses-001_extra-key", "behav"
             )
@@ -252,13 +253,13 @@ class TestValidation(BaseTest):
             e.value
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001_extra-key", "ses-001", "behav"
             )
         assert "A sub already exists " in str(e.value)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001_extra-key", "ses-001_@DATE@", "behav"
             )
@@ -270,7 +271,7 @@ class TestValidation(BaseTest):
 
         # Finally check that in a list of subjects, only the correct subject
         # with duplicate session is caught.
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", ["sub-001", "sub-002"], "ses-002_@DATE@", "ephys"
             )
@@ -288,14 +289,14 @@ class TestValidation(BaseTest):
         prefixed as 'sub-sub_100` but when the value if `sub-` is
         extracted, it is also "sub" and so an error is raised.
         """
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub_100")
 
         assert "Invalid character in subject or session value: sub" in str(
             e.value
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-001", "ses_100")
 
         assert "Invalid character in subject or session value: ses" in str(
@@ -303,7 +304,7 @@ class TestValidation(BaseTest):
         )
 
     # -------------------------------------------------------------------------
-    # Test validation functions all
+    # Test validate project
     # -------------------------------------------------------------------------
 
     def test_validate_project(self, project):
@@ -327,7 +328,7 @@ class TestValidation(BaseTest):
         project.create_folders("rawdata", "sub-001")
 
         # Now the bad sub is caught as we check against central also.
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.validate_project(
                 "rawdata", error_or_warn="error", local_only=False
             )
@@ -378,8 +379,138 @@ class TestValidation(BaseTest):
             w[3].message
         )
 
-    def test_validate_names_against_project(self, project):
-        """ """
+    # -------------------------------------------------------------------------
+    # Test validate names against project
+    # -------------------------------------------------------------------------
+
+    def test_validate_names_against_project_with_bad_existing_names(
+        self, project
+    ):
+        """
+        When using `validate_names_against_project()` there are
+        three possible classes of error:
+        1) error in the passed names.
+        2) an error already exists in the project.
+        3) an error in the 'interaction' between names and project (e.g.
+           all names are okay, all project names are okay, but new names duplicate
+           an existing name).
+
+        `validate_names_against_project()` is only interested in catching 1) and 2)
+        but not reporting errors for names that already exist in the project.
+
+        This checks that the validation of names is not affected by existing
+        bad names in the project. The only case where this matters is if
+        within the project, the subject or session value length is inconsistent.
+        Then we don't know what to validate the names against and an
+        error indicating this specific problem is raised.
+        """
+        # Make some bad project names. We will check these don't interfere
+        # with the validation of the passed names.
+        project.create_folders(
+            "rawdata", "sub-abc", "ses-abc", bypass_validation=True
+        )
+
+        # Check the bad names do not interference with an example
+        # bad validation within the names list.
+        with pytest.raises(NeuroBlueprintError) as e:
+            validation.validate_names_against_project(
+                project.cfg, "rawdata", ["sab-001"], local_only=True
+            )
+
+        assert (
+            str(e.value)
+            == "The name: sab-001 do not begin with the required prefix: sub"
+        )
+
+        # Now check the bad names don't interfere with
+        # inconsistent value lengths or duplicate names.
+        project.create_folders("rawdata", "sub-004", "ses-001")
+
+        # Inconsistent value lengths
+        with pytest.raises(NeuroBlueprintError) as e:
+            validation.validate_names_against_project(
+                project.cfg, "rawdata", ["sub-0002"], local_only=True
+            )
+        assert "Inconsistent value lengths for the key sub" in str(e.value)
+
+        with pytest.raises(NeuroBlueprintError) as e:
+            validation.validate_names_against_project(
+                project.cfg,
+                "rawdata",
+                ["sub-004"],
+                ["ses-0002"],
+                local_only=True,
+            )
+        assert "Inconsistent value lengths for the key ses" in str(e.value)
+
+        # Duplicate names
+        with pytest.raises(NeuroBlueprintError) as e:
+            validation.validate_names_against_project(
+                project.cfg, "rawdata", ["sub-004_id-123"], local_only=True
+            )
+        assert (
+            "A sub already exists with the same sub id as sub-004_id-123."
+            in str(e.value)
+        )
+
+        with pytest.raises(NeuroBlueprintError) as e:
+            validation.validate_names_against_project(
+                project.cfg,
+                "rawdata",
+                ["sub-004"],
+                ["ses-001_date-121212"],
+                local_only=True,
+            )
+        assert (
+            "A ses already exists with the same ses id as ses-001_date-121212."
+            in str(e.value)
+        )
+
+        # Finally make folders within the existing project that have
+        # inconsistent value lengths, and check the correct error is raised.
+
+        # First for session
+        project.create_folders(
+            "rawdata",
+            ["sub-001"],
+            ["ses-01", "ses-002"],
+            bypass_validation=True,
+        )
+
+        with pytest.raises(NeuroBlueprintError) as e:
+            validation.validate_names_against_project(
+                project.cfg,
+                "rawdata",
+                ["sub-001"],
+                ["ses-03"],
+                local_only=True,
+            )
+        assert (
+            "Cannot check names for inconsistent value lengths because the session value"
+            in str(e.value)
+        )
+
+        # Then subject
+        project.create_folders("rawdata", ["sub-02"], bypass_validation=True)
+        with pytest.raises(NeuroBlueprintError) as e:
+            validation.validate_names_against_project(
+                project.cfg,
+                "rawdata",
+                ["sub-003"],
+                local_only=True,
+                error_or_warn="error",
+            )
+        assert (
+            "Cannot check names for inconsistent value lengths because the subject value"
+            in str(e.value)
+        )
+
+    def test_validate_names_against_project_interactions(self, project):
+        """
+        Check that interactions between the list of names and existing
+        project are caught. This includes duplicate subject / session
+        names as well as inconsistent subject / session value lengths.
+        """
         project.create_folders(
             "rawdata", ["sub-1_id-abc", "sub-2_id-b", "sub-3_id-c"]
         )
@@ -397,7 +528,7 @@ class TestValidation(BaseTest):
         # Now check a clashing subject (sub-1) throws an error
         sub_names = ["sub-2_id-b", "sub-1_id-11", "sub-3_id-c"]
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
                 project.cfg,
                 "rawdata",
@@ -421,17 +552,23 @@ class TestValidation(BaseTest):
                 local_only=True,
                 error_or_warn="warn",
             )
-
+        # this warning arises from inconsistent value lengths within the
+        # passed sub_names
         assert "Inconsistent value lengths for the key sub were found." in str(
             w[0].message
         )
+        # This warning arises from inconstant value lengths between
+        # sub_names and the rest of the project. This behaviour could be optimised.
+        assert "Inconsistent value lengths for the key sub were found." in str(
+            w[1].message
+        )
         assert (
             "A sub already exists with the same sub id as sub-002. "
-            "The existing folder is sub-2_id-b." in str(w[1].message)
+            "The existing folder is sub-2_id-b." in str(w[2].message)
         )
         assert (
             "sub already exists with the same sub id as sub-1_id-11. "
-            "The existing folder is sub-1_id-abc." in str(w[2].message)
+            "The existing folder is sub-1_id-abc." in str(w[3].message)
         )
 
         # Now make some new paths on central. Pass a bad new subject name
@@ -450,7 +587,7 @@ class TestValidation(BaseTest):
             error_or_warn="error",
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
                 project.cfg,
                 "rawdata",
