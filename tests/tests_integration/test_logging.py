@@ -281,11 +281,11 @@ class TestLogging:
 
         if upload_or_download == "upload":
             project.upload_specific_folder_or_file(
-                "rawdata", "sub-001/ses-001"
+                f"{project.cfg['local_path']}/rawdata/sub-001/ses-001"
             )
         else:
             project.download_specific_folder_or_file(
-                "rawdata", "sub-001/ses-001"
+                f"{project.cfg['central_path']}/rawdata/sub-001/ses-001"
             )
 
         log = self.read_log_file(project.cfg.logging_path)

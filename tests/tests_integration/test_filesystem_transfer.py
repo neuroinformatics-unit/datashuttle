@@ -522,13 +522,11 @@ class TestFileTransfer(BaseTest):
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.parametrize("transfer_file", [True, False])
-    @pytest.mark.parametrize("full_path", [True, False])
     def test_specific_file_or_folder(
         self,
         project,
         top_level_folder,
         transfer_file,
-        full_path,
         upload_or_download,
     ):
         """
@@ -561,12 +559,7 @@ class TestFileTransfer(BaseTest):
             to_transfer = path_to_test_file_ephys
             formatted_to_transfer = to_transfer.parents[0] / "**"
 
-        if full_path:
-            transfer_function(
-                project.cfg[transfer_from] / formatted_to_transfer
-            )
-        else:
-            transfer_function(Path(*formatted_to_transfer.parts))
+        transfer_function(project.cfg[transfer_from] / formatted_to_transfer)
 
         transferred_files = [
             path_

@@ -236,9 +236,7 @@ class TestUnit:
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_get_max_sub_or_ses_num_and_value_length_edge_case(self, prefix):
         """
-        Test the edge case where the subject does not start at zero,
-        though in practice this should not happen.
-        TODO: this is not explicitly validated in the project.
+        Test the edge case where the subject number does not start at 1.
         """
         names = [f"{prefix}-09", f"{prefix}-10", f"{prefix}-11"]
 

@@ -6,7 +6,19 @@ import json
 import os
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+)
+
+if TYPE_CHECKING:
+    from datashuttle.utils.custom_types import Prefix, TopLevelFolder
 
 import paramiko
 import yaml
@@ -127,7 +139,7 @@ class DataShuttle:
     @check_configs_set
     def create_folders(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
@@ -238,7 +250,7 @@ class DataShuttle:
 
     def _format_and_validate_names(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]],
         name_templates: Dict,
@@ -282,7 +294,7 @@ class DataShuttle:
     @check_configs_set
     def upload(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
@@ -365,7 +377,7 @@ class DataShuttle:
     @check_configs_set
     def download(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
@@ -404,7 +416,7 @@ class DataShuttle:
     @check_configs_set
     def upload_all(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -432,7 +444,7 @@ class DataShuttle:
     @check_configs_set
     def download_all(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -490,51 +502,19 @@ class DataShuttle:
         all files in the folder ("*") or all files
         and sub-folders ("**").
 
-        e.g. "sub-001/ses-002/my_folder/**"
-
-        This function works by passing the file / folder
-        path to transfer to Rclone's --include flag.
-
         Parameters
         ----------
 
         filepath :
-            a string containing the filepath to move,
-            from to the project folder "rawdata"
-            or "derivatives" path (depending on which is currently
-            set). Alternatively, the entire path is accepted.
+            a string containing the full filepath.
         dry_run :
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        if isinstance(filepath, str):
-            filepath = Path(filepath)
-
         self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
-        top_level_folder = self._get_top_level_folder_from_specific_filepath(
-            filepath
-        )
-
-        if filepath.parts[0] == top_level_folder:
-            filepath = Path(*filepath.parts[1:])
-
-        processed_filepath = utils.get_path_after_base_folder(
-            self.cfg.get_base_folder("local", top_level_folder),
-            filepath,
-        )
-
-        include_list = [f"--include {processed_filepath.as_posix()}"]
-        output = rclone.transfer_data(
-            self.cfg,
-            "upload",
-            top_level_folder,
-            include_list,
-            self.cfg.make_rclone_transfer_options(dry_run),
-        )
-
-        utils.log(output.stderr.decode("utf-8"))
+        self._transfer_specific_file_or_folder("upload", filepath, dry_run)
 
         ds_logger.close_log_filehandler()
 
@@ -550,82 +530,58 @@ class DataShuttle:
         all files in the folder ("*") or all files
         and sub-folders ("**").
 
-        e.g. "sub-001/ses-002/my_folder/**"
-
-        This function works by passing the file / folder
-        path to transfer to Rclone's --include flag.
-
         Parameters
         ----------
 
         filepath :
-            a string containing the filepath to move,
-            relative to the project folder "rawdata"
-            or "derivatives" path (depending on which is currently
-            set). Alternatively, the entire path is accepted.
+            a string containing the full filepath.
         dry_run :
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        if isinstance(filepath, str):
-            filepath = Path(filepath)
-
         self._start_log(
             "download-specific-folder-or-file", local_vars=locals()
         )
 
-        top_level_folder = self._get_top_level_folder_from_specific_filepath(
-            filepath
-        )
+        self._transfer_specific_file_or_folder("download", filepath, dry_run)
 
-        if filepath.parts[0] == top_level_folder:
-            filepath = Path(*filepath.parts[1:])
+        ds_logger.close_log_filehandler()
 
-        processed_filepath = utils.get_path_after_base_folder(
-            self.cfg.get_base_folder("central", top_level_folder),
-            filepath,
-        )
+    def _transfer_specific_file_or_folder(
+        self, upload_or_download, filepath, dry_run
+    ):
+        """"""
+        if isinstance(filepath, str):
+            filepath = Path(filepath)
+
+        if upload_or_download == "upload":
+            base_path = self.cfg["local_path"]
+        else:
+            base_path = self.cfg["central_path"]
+
+        if not utils.path_starts_with_base_folder(base_path, filepath):
+            utils.log_and_raise_error(
+                "Transfer failed. "
+                "Must pass the full filepath to file or folder to transfer.",
+                ValueError,
+            )
+
+        processed_filepath = filepath.relative_to(base_path)
+
+        top_level_folder = processed_filepath.parts[0]
+        processed_filepath = Path(*processed_filepath.parts[1:])
 
         include_list = [f"--include /{processed_filepath.as_posix()}"]
         output = rclone.transfer_data(
             self.cfg,
-            "download",
+            upload_or_download,
             top_level_folder,
             include_list,
             self.cfg.make_rclone_transfer_options(dry_run),
         )
 
         utils.log(output.stderr.decode("utf-8"))
-
-        ds_logger.close_log_filehandler()
-
-    def _get_top_level_folder_from_specific_filepath(self, filepath: Path):
-        """
-        TODO: this is so hacky, it would be better just force passing
-        file directly relative to rawdata and not accept entire file.
-        then read the root of the path.
-        """
-        is_rawdata = "rawdata" in filepath.as_posix()
-        is_derivatives = "derivatives" in filepath.as_posix()
-
-        if is_rawdata and is_derivatives:
-            utils.log_and_raise_error(
-                "`filepath` cannot include both rawdata "
-                "and derivatives be either in derivatives "
-                "or rawdata.",
-                ValueError,
-            )
-
-        if not is_rawdata and not is_derivatives:
-            utils.log_and_raise_error(
-                "`filepath` must include the top-level folder "
-                "(`derivatives` or `rawdata`)",
-                ValueError,
-            )
-
-        top_level_folder = "rawdata" if is_rawdata else "derivatives"
-        return top_level_folder
 
     # -------------------------------------------------------------------------
     # SSH
@@ -890,7 +846,7 @@ class DataShuttle:
     @check_configs_set
     def get_next_sub_number(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         return_with_prefix: bool = True,
         local_only: bool = False,
     ) -> str:
@@ -920,7 +876,7 @@ class DataShuttle:
     @check_configs_set
     def get_next_ses_number(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub: str,
         return_with_prefix: bool = True,
         local_only: bool = False,
@@ -1006,7 +962,7 @@ class DataShuttle:
     @check_configs_set
     def validate_project(
         self,
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         error_or_warn: Literal["error", "warn"],
         local_only: bool = False,
     ) -> None:
@@ -1050,9 +1006,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @staticmethod
-    def check_name_formatting(
-        names: Union[str, list], prefix: Literal["sub", "ses"]
-    ) -> None:
+    def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
         for example as when passed to create_folders() or upload()
@@ -1291,9 +1245,11 @@ class DataShuttle:
 
     def _update_settings_with_new_canonical_keys(self, settings: Dict):
         """
-
-        TODO: this is not really sufficient, e.g. a new field in tui
-        will not be discoverd.
+        Perform a check on the top-level keys within persistent settings.
+        If they do not exist, persistent settings is from older version
+        and the new keys need adding.
+        If changing keys within the top level (e.g. a dict entry in
+        "tui") this method will need to be extended.
         """
         if "name_templates" not in settings:
             settings.update(canonical_configs.get_name_templates_defaults())

@@ -543,7 +543,7 @@ class TopLevelFolderSelect(Select):
             "top_level_folder_select"
         ][self.settings_key]
 
-        if not init:  # TODO: this assert is just temp
+        if not init:
             assert (
                 top_level_folder == self.get_displayed_top_level_folder()
             ), "config and widget should never be out of sync."

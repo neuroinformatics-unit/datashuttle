@@ -1,6 +1,3 @@
-# TODO: add a bit more text to 'get help' page + a keyboard shortcuts pop-up.
-
-
 def get_tooltip(id: str) -> str:
     """
     Master function to get tooltips for all widgets,
@@ -150,7 +147,7 @@ def get_tooltip(id: str) -> str:
     # Upload / Download
     elif id == "#transfer_switch_container":
         tooltip = (
-            "Upload (local to central) or \n" "Download (central to local)."
+            "Upload (local to central) or \n Download (central to local)."
         )
 
     # Overwrite Existing Files

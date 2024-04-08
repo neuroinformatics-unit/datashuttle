@@ -5,7 +5,6 @@ from typing import (
     Any,
     Dict,
     List,
-    Literal,
     Optional,
     Tuple,
     Union,
@@ -15,6 +14,7 @@ if TYPE_CHECKING:
     from collections.abc import ItemsView
 
     from datashuttle.configs.config_class import Configs
+    from datashuttle.utils.custom_types import TopLevelFolder
 
 import glob
 import os
@@ -31,7 +31,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 def create_folder_trees(
     cfg: Configs,
-    top_level_folder: Literal["rawdata", "derivatives"],
+    top_level_folder: TopLevelFolder,
     sub_names: Union[str, list],
     ses_names: Union[str, list],
     datatype: Union[List[str], str],
@@ -67,7 +67,7 @@ def create_folder_trees(
     all_paths = []
 
     for sub in sub_names:
-        sub_path = cfg.make_path(
+        sub_path = cfg.build_project_path(
             "local",
             sub,
             top_level_folder,
@@ -80,7 +80,7 @@ def create_folder_trees(
             continue
 
         for ses in ses_names:
-            ses_path = cfg.make_path(
+            ses_path = cfg.build_project_path(
                 "local",
                 [sub, ses],
                 top_level_folder,
@@ -176,7 +176,7 @@ def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
 
 def search_project_for_sub_or_ses_names(
     cfg: Configs,
-    top_level_folder: Literal["rawdata", "derivatives"],
+    top_level_folder: TopLevelFolder,
     sub: Optional[str],
     search_str: str,
     local_only: bool,
@@ -226,7 +226,7 @@ def search_project_for_sub_or_ses_names(
 def items_from_datatype_input(
     cfg: Configs,
     local_or_central: str,
-    top_level_folder: Literal["rawdata", "derivatives"],
+    top_level_folder: TopLevelFolder,
     datatype: Union[list, str],
     sub: str,
     ses: Optional[str] = None,

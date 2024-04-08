@@ -5,7 +5,6 @@ from typing import (
     TYPE_CHECKING,
     Dict,
     List,
-    Literal,
     Optional,
     Tuple,
 )
@@ -14,6 +13,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from datashuttle.configs.config_class import Configs
+    from datashuttle.utils.custom_types import Prefix, TopLevelFolder
 
 import warnings
 
@@ -76,7 +76,7 @@ def get_next_sub_or_ses_number(
     -------
     suggested_new_num : the new suggested sub / ses.
     """
-    prefix: Literal["sub", "ses"]
+    prefix: Prefix
 
     if sub:
         prefix = "ses"
@@ -108,7 +108,7 @@ def get_next_sub_or_ses_number(
 
 def get_max_sub_or_ses_num_and_value_length(
     all_folders: List[str],
-    prefix: Literal["sub", "ses"],
+    prefix: Prefix,
     default_num_value_digits: Optional[int] = None,
 ) -> Tuple[int, int]:
     """
@@ -219,7 +219,7 @@ def get_existing_project_paths() -> List[Path]:
 
 def get_all_sub_and_ses_names(
     cfg: Configs,
-    top_level_folder: Literal["rawdata", "derivatives"],
+    top_level_folder: TopLevelFolder,
     local_only: bool,
 ) -> Dict:
     """

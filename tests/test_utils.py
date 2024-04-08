@@ -41,7 +41,7 @@ def setup_project_default_configs(
         tmp_path, project_name, set_as_defaults=True
     )
 
-    make_project_paths(default_configs)
+    #  make_project_paths(default_configs)
 
     project.make_config_file(**default_configs)
 
@@ -52,13 +52,6 @@ def setup_project_default_configs(
     )
 
     warnings.filterwarnings("default")
-
-    new_local_path = (
-        project._datashuttle_path / "base_folder" / project_name
-    )  # TODO: can delete this?
-    os.makedirs(new_local_path, exist_ok=True)
-
-    project.update_config_file(local_path=new_local_path)
 
     if local_path:
         os.makedirs(local_path, exist_ok=True)
@@ -131,11 +124,6 @@ def delete_project_if_it_exists(project_name):
     if config_path.is_dir():
         ds_logger.close_log_filehandler()
         shutil.rmtree(config_path)
-
-
-def dump_config(dict_, path_):
-    with open(path_, "w") as config_file:
-        yaml.dump(dict_, config_file, sort_keys=False)
 
 
 def setup_project_fixture(tmp_path, test_project_name):
@@ -426,7 +414,6 @@ def check_config_file(config_path, *kwargs):
 # -----------------------------------------------------------------------------
 
 
-# TODO: rename this 'top level folder path'
 def get_top_level_folder_path(
     project, local_or_central="local", folder_name="rawdata"
 ):
@@ -448,7 +435,7 @@ def handle_upload_or_download(
     project,
     upload_or_download,
     use_all_alias=False,
-    transfer_entire_project=False,  # TODO: fix this signature
+    transfer_entire_project=False,
     swap_last_folder_only=False,
 ):
     """

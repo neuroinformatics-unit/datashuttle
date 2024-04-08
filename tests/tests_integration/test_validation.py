@@ -215,9 +215,7 @@ class TestValidation(BaseTest):
         project.create_folders("rawdata", "sub-1")
 
         with pytest.raises(BaseException) as e:
-            project.create_folders(
-                "rawdata", "sub-001"
-            )  # TODO: sub-1 will now catch leading zeros, which is fine.
+            project.create_folders("rawdata", "sub-001")
 
         assert "Inconsistent value lengths for the key sub were found" in str(
             e.value

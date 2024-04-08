@@ -4,6 +4,7 @@ from typing import List, Literal, Optional, Union
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import folders, formatting, rclone, utils
+from datashuttle.utils.custom_types import Prefix, TopLevelFolder
 
 
 class TransferData:
@@ -11,6 +12,10 @@ class TransferData:
     Class to perform data transfers. This works by first building
     a large list of all files to transfer. Then, rclone is called
     once with this list to perform the transfer.
+
+    The properties on this class are to be read during generation
+    of transfer lists and should never be changed during the lifetime
+    of the class.
 
     Parameters
     ----------
@@ -21,7 +26,7 @@ class TransferData:
     upload_or_download : Literal["upload", "download"]
         Direction to perform the transfer.
 
-    top_level_folder: Literal["rawdata", "derivatives"]
+    top_level_folder: TopLevelFolder
 
     sub_names : Union[str, List[str]]
         List of subject names or single subject to transfer. This
@@ -47,23 +52,21 @@ class TransferData:
         self,
         cfg: Configs,
         upload_or_download: Literal["upload", "download"],
-        top_level_folder: Literal["rawdata", "derivatives"],
+        top_level_folder: TopLevelFolder,
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
         dry_run: bool,
         log: bool,
     ):
-        self.cfg = cfg
-        self.upload_or_download = (
-            upload_or_download  # TODO: these should be private or immutable...
-        )
-        self.top_level_folder = top_level_folder
-        self.local_or_central = (
+        self.__cfg = cfg
+        self.__upload_or_download = upload_or_download
+        self.__top_level_folder = top_level_folder
+        self.__local_or_central = (
             "local" if upload_or_download == "upload" else "central"
         )
-        self.base_folder = self.cfg.get_base_folder(
-            self.local_or_central, self.top_level_folder
+        self.__base_folder = self.__cfg.get_base_folder(
+            self.__local_or_central, self.__top_level_folder
         )
 
         self.sub_names = self.to_list(sub_names)
@@ -76,9 +79,9 @@ class TransferData:
 
         if any(include_list):
             output = rclone.transfer_data(
-                self.cfg,
-                self.upload_or_download,
-                self.top_level_folder,
+                self.__cfg,
+                self.__upload_or_download,
+                self.__top_level_folder,
                 include_list,
                 cfg.make_rclone_transfer_options(dry_run),
             )
@@ -200,11 +203,11 @@ class TransferData:
         within "sub-" prefixed folders or not.
         """
         top_level_folders, top_level_files = folders.search_sub_or_ses_level(
-            self.cfg,
-            self.cfg.get_base_folder(
-                self.local_or_central, self.top_level_folder
+            self.__cfg,
+            self.__cfg.get_base_folder(
+                self.__local_or_central, self.__top_level_folder
             ),
-            self.local_or_central,
+            self.__local_or_central,
             search_str="*",
         )
 
@@ -226,11 +229,11 @@ class TransferData:
         not within "ses-" prefixed folders.
         """
         sub_level_folders, sub_level_files = folders.search_sub_or_ses_level(
-            self.cfg,
-            self.cfg.get_base_folder(
-                self.local_or_central, self.top_level_folder
+            self.__cfg,
+            self.__cfg.get_base_folder(
+                self.__local_or_central, self.__top_level_folder
             ),
-            self.local_or_central,
+            self.__local_or_central,
             sub=sub,
             search_str="*",
         )
@@ -265,11 +268,11 @@ class TransferData:
             ses_level_folders,
             ses_level_filenames,
         ) = folders.search_sub_or_ses_level(
-            self.cfg,
-            self.cfg.get_base_folder(
-                self.local_or_central, self.top_level_folder
+            self.__cfg,
+            self.__cfg.get_base_folder(
+                self.__local_or_central, self.__top_level_folder
             ),
-            self.local_or_central,
+            self.__local_or_central,
             sub=sub,
             ses=ses,
             search_str="*",
@@ -308,9 +311,9 @@ class TransferData:
         datatype = list(filter(lambda x: x != "all_non_datatype", datatype))
 
         datatype_items = folders.items_from_datatype_input(
-            self.cfg,
-            self.local_or_central,
-            self.top_level_folder,
+            self.__cfg,
+            self.__local_or_central,
+            self.__top_level_folder,
             datatype,
             sub,
             ses,
@@ -419,7 +422,7 @@ class TransferData:
         see transfer_sub_ses_data()
 
         """
-        prefix: Literal["sub", "ses"]
+        prefix: Prefix
         if sub is None:
             prefix = "sub"
         else:
@@ -427,9 +430,9 @@ class TransferData:
 
         if names_checked in [["all"], [f"all_{prefix}"]]:
             processed_names = folders.search_sub_or_ses_level(
-                self.cfg,
-                self.base_folder,
-                self.local_or_central,
+                self.__cfg,
+                self.__base_folder,
+                self.__local_or_central,
                 sub,
                 search_str=f"{prefix}-*",
             )[0]
@@ -442,9 +445,9 @@ class TransferData:
                 names_checked, prefix
             )
             processed_names = folders.search_for_wildcards(
-                self.cfg,
-                self.base_folder,
-                self.local_or_central,
+                self.__cfg,
+                self.__base_folder,
+                self.__local_or_central,
                 processed_names,
                 sub=sub,
             )

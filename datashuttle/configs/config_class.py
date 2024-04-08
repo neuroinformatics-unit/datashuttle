@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Literal, Optional, Union, cast
+from typing import TYPE_CHECKING, Dict, Optional, Union, cast
 
 if TYPE_CHECKING:
     from collections.abc import ItemsView, KeysView, ValuesView
+
+    from datashuttle.utils.custom_types import TopLevelFolder
 
 import copy
 from collections import UserDict
@@ -120,21 +122,6 @@ class Configs(UserDict):
 
         self.data = config_dict
 
-    def safe_check_current_dict_is_valid(self) -> dict:
-        """
-        Check the dict, but do not raise error as
-        we need to set the putatively changed key
-        back to the state before change attempt.
-
-        Propagate the error message so it can be
-        shown later.
-        """
-        try:
-            self.check_dict_values_raise_on_fail()
-            return {"passed": True, "error": None}
-        except BaseException as e:
-            return {"passed": False, "error": str(e)}
-
     # -------------------------------------------------------------------------
     # Utils
     # -------------------------------------------------------------------------
@@ -169,14 +156,11 @@ class Configs(UserDict):
                         ValueError,
                     )
 
-    # TODO: split this between local / central vs. datashuttle, it is overloaded.
-    def make_path(
+    def build_project_path(
         self,
         base: str,
         sub_folders: Union[str, list],
-        top_level_folder: Union[
-            None, Literal["rawdata", "derivatives"]
-        ] = None,
+        top_level_folder: TopLevelFolder,
     ) -> Path:
         """
         Function for joining relative path to base dir.
@@ -201,9 +185,7 @@ class Configs(UserDict):
 
         base_folder = self.get_base_folder(base, top_level_folder)
 
-        if utils.path_already_stars_with_base_folder(
-            base_folder, sub_folders_path
-        ):
+        if utils.path_starts_with_base_folder(base_folder, sub_folders_path):
             joined_path = sub_folders_path
         else:
             joined_path = base_folder / sub_folders_path
@@ -213,7 +195,7 @@ class Configs(UserDict):
     def get_base_folder(
         self,
         base: str,
-        top_level_folder: Optional[Literal["rawdata", "derivatives"]] = None,
+        top_level_folder: TopLevelFolder,
     ) -> Path:
         """
         Convenience function to return the full base path.
@@ -224,20 +206,11 @@ class Configs(UserDict):
         base : base path, "local", "central" or "datashuttle"
 
         """
-        if base != "datashuttle":
-            assert top_level_folder in [
-                "rawdata",
-                "derivatives",
-            ], "Must supply top level folder for `local` or `central."
-
         if base == "local":
             base_folder = self["local_path"] / top_level_folder
         elif base == "central":
             base_folder = self["central_path"] / top_level_folder
-        elif base == "datashuttle":
-            base_folder, _ = canonical_folders.get_project_datashuttle_path(
-                self.project_name
-            )
+
         return base_folder
 
     def get_rclone_config_name(
@@ -265,17 +238,20 @@ class Configs(UserDict):
         """"""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
-        self.ssh_key_path = self.make_path(
-            "datashuttle", self.project_name + "_ssh_key"
+        datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(
+            self.project_name
         )
 
-        self.hostkeys_path = self.make_path("datashuttle", "hostkeys")
+        self.ssh_key_path = datashuttle_path / f"{self.project_name}_ssh_key"
+
+        self.hostkeys_path = datashuttle_path / "hostkeys"
 
         self.logging_path = self.make_and_get_logging_path()
 
     def make_and_get_logging_path(self) -> Path:
         """
-        Currently logging is located in config path
+        Build (and create if does not exist) the path where
+        logs are stored.
         """
         logging_path = self.project_metadata_path / "logs"
         folders.create_folders(logging_path)
