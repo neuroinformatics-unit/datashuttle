@@ -303,7 +303,6 @@ def get_tui_config_defaults() -> Dict:
                 "toplevel_transfer": "rawdata",
                 "custom_transfer": "rawdata",
             },
-            "bypass_validation": False,
         }
     }
     return settings
@@ -311,6 +310,10 @@ def get_tui_config_defaults() -> Dict:
 
 def get_name_templates_defaults() -> Dict:
     return {"name_templates": {"on": False, "sub": None, "ses": None}}
+
+
+def get_validation_defaults() -> Dict:
+    return {"bypass_validation": False}
 
 
 def get_persistent_settings_defaults() -> Dict:
