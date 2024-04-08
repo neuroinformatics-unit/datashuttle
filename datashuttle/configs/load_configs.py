@@ -1,8 +1,7 @@
 import warnings
 from pathlib import Path
-from typing import Optional, Union, overload
+from typing import Optional, Union
 
-from datashuttle.configs import canonical_configs
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
 from datashuttle.utils.custom_exceptions import ConfigError
@@ -62,55 +61,3 @@ def attempt_load_configs(
         )
 
     return new_cfg
-
-
-# -----------------------------------------------------------------------------
-# Convert keys from string inputs
-# -----------------------------------------------------------------------------
-
-
-@overload
-def handle_cli_or_supplied_config_bools(dict_: Configs) -> Configs: ...
-
-
-@overload
-def handle_cli_or_supplied_config_bools(dict_: dict) -> dict: ...
-
-
-def handle_cli_or_supplied_config_bools(
-    dict_: Union[Configs, dict]
-) -> Union[Configs, dict]:
-    """
-    For supplied configs for CLI input args,
-    in some instances bools will be passed
-    as string type. Handle this case here
-    to cast to correct type.
-    """
-    for key in dict_.keys():
-        dict_[key] = handle_bool(key, dict_[key])
-    return dict_
-
-
-def handle_bool(key: str, value: ConfigValueTypes) -> ConfigValueTypes:
-    """
-    In some instances (CLI call, supplied configs) the configs will
-    be in string format rather than bool or None. Parse these
-    here. This assumes bool are always passed as flags.
-    """
-    if key in canonical_configs.get_flags():
-        if value in ["None", "none", None]:
-            value = False
-
-        if isinstance(value, str):
-            if value not in ["True", "False", "true", "false"]:
-                utils.raise_error(
-                    f"Input value for '{key}' must be True or False",
-                    ConfigError,
-                )
-
-            value = value in ["True", "true"]
-
-    elif value in ["None", "none"]:
-        value = None
-
-    return value

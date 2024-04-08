@@ -127,7 +127,7 @@ ignore = [
 ]
 
 [project.scripts]
-datashuttle = "datashuttle.command_line_interface:main"
+datashuttle = "datashuttle.tui_launcher:main"
 
 [tool.codespell]
 skip = '.git,*.pdf,*.svg'
