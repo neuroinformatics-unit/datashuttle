@@ -252,7 +252,9 @@ def add_quotes(string: str):
 # -----------------------------------------------------------------------------
 
 
-def check_folder_tree_is_correct(base_folder, subs, sessions, folder_used):
+def check_folder_tree_is_correct(
+    base_folder, subs, sessions, folder_used, created_folder_list=None
+):
     """
     Automated test that folders are made based
     on the structure specified on project itself.
@@ -293,8 +295,12 @@ def check_folder_tree_is_correct(base_folder, subs, sessions, folder_used):
 
                 if folder_used[key]:
                     check_and_cd_folder(datatype_path)
+                    if created_folder_list:
+                        assert Path(datatype_path) in created_folder_list
                 else:
                     assert not os.path.isdir(datatype_path)
+                    if created_folder_list:
+                        assert Path(datatype_path) not in created_folder_list
 
 
 def check_and_cd_folder(path_):

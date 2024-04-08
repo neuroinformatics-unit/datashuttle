@@ -132,7 +132,7 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
-    ) -> None:
+    ) -> List[Path]:
         """
         Create a subject / session folder tree in the project
         folder. The passed subject / session names are
@@ -164,6 +164,10 @@ class DataShuttle:
         top_level_folder :
                 Whether to make the folders in `rawdata` or
                 `derivatives`.
+
+        bypass_validation :
+            If `True`, folders will be created even if they are not
+            valid to NeuroBlueprint style.
 
         Notes
         -----
@@ -214,7 +218,7 @@ class DataShuttle:
         )
 
         utils.log("\nMaking folders...")
-        folders.create_folder_trees(
+        created_paths = folders.create_folder_trees(
             self.cfg,
             top_level_folder,
             format_sub,
@@ -229,6 +233,8 @@ class DataShuttle:
         )
 
         ds_logger.close_log_filehandler()
+
+        return created_paths
 
     def _format_and_validate_names(
         self,
