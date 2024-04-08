@@ -460,9 +460,9 @@ def validate_names_against_project(
 
     TODO
     ----
-    This function is now very and confusing, and in general the validation
+    This function is now quite confusing, and in general the validation
     needs optimisation are there are frequent looping over the same
-    list under different circumstances. See issue #
+    list under different circumstances. See issue #355
     """
     folder_names = getters.get_all_sub_and_ses_names(
         cfg, top_level_folder, local_only
