@@ -168,6 +168,7 @@ class DataShuttle:
         sub_names: Union[str, List[str]],
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: str = "",
+        bypass_validation: bool = False,
     ) -> None:
         """
         Create a subject / session folder tree in the project
@@ -231,7 +232,6 @@ class DataShuttle:
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
         name_templates = self.get_name_templates()
-        bypass_validation = self.get_bypass_validation()
 
         format_sub, format_ses = self._format_and_validate_names(
             sub_names, ses_names, name_templates, bypass_validation, log=True
@@ -946,15 +946,6 @@ class DataShuttle:
         """
         self._update_persistent_setting("name_templates", new_name_templates)
 
-    def set_bypass_validation(self, on):
-        self._update_persistent_setting("bypass_validation", on)
-
-    def get_bypass_validation(
-        self,
-    ):
-        settings = self._load_persistent_settings()
-        return settings["bypass_validation"]
-
     # -------------------------------------------------------------------------
     # Showers
     # -------------------------------------------------------------------------
@@ -1268,9 +1259,6 @@ class DataShuttle:
 
         if "tui" not in settings:
             settings.update(canonical_configs.get_tui_config_defaults())
-
-        if "bypass_validation" not in settings:
-            settings.update(canonical_configs.get_validation_defaults())
 
     @check_configs_set
     def _display_top_level_folder(self) -> None:
