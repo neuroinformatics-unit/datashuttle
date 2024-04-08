@@ -391,6 +391,7 @@ class TestCommandLineInterface(BaseTest):
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         test_utils.make_and_check_local_project_folders(
+            "rawdata",
             project,
             subs,
             sessions,
@@ -440,6 +441,7 @@ class TestCommandLineInterface(BaseTest):
 
         test_utils.make_and_check_local_project_folders(
             project,
+            "rawdata",
             subs,
             sessions,
             "all",
@@ -492,43 +494,6 @@ class TestCommandLineInterface(BaseTest):
         assert "['sub-01', 'sub-02', 'sub-03']" in stdout
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_set_top_level_folder(self, project, sep):
-        """
-        Test that the top level folder is "rawdata" by default,
-        setting the top level folder to a new folder ("derivatives")
-        updates the top level folder correctly. Finally, test
-        passing a not-allowed top-level-folder to
-        set-top-level-folder raises an error.
-        """
-        stdout, _ = test_utils.run_cli(
-            f"get{sep}top{sep}level{sep}folder", project.project_name
-        )
-
-        assert "rawdata" in stdout
-
-        stdout, stderr = test_utils.run_cli(
-            f"set{sep}top{sep}level{sep}folder derivatives",
-            project.project_name,
-        )
-        assert "derivatives" in stdout
-
-        stdout, _ = test_utils.run_cli(
-            f"get{sep}top{sep}level{sep}folder", project.project_name
-        )
-
-        assert "derivatives" in stdout
-
-        _, stderr = test_utils.run_cli(
-            f"set{sep}top{sep}level{sep}folder NOT_RECOGNISED",
-            project.project_name,
-        )
-
-        assert (
-            "Folder name: NOT_RECOGNISED is not in permitted top-level folder names"
-            in stderr
-        )
-
-    @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_get_paths(self, project, sep):
         """
         Check that all CLI commands to return a path
@@ -558,19 +523,6 @@ class TestCommandLineInterface(BaseTest):
             f"get{sep}logging{sep}path", project.project_name
         )
         assert str(project.get_logging_path()) in stdout
-
-    @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_cli_get_top_level_folder(self, project, sep):
-        """
-        Check the CLI command to get the top-level-folder
-        shows the correct name.
-        """
-        project.set_top_level_folder("derivatives")
-
-        stdout, stderr = test_utils.run_cli(
-            f"get{sep}top{sep}level{sep}folder", project.project_name
-        )
-        assert str(project.get_top_level_folder()) in stdout
 
     @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_existing_projects(self, project, sep):

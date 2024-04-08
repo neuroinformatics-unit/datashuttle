@@ -63,20 +63,23 @@ class TestFormatting(BaseTest):
             "sub-6",
         ]
 
-    def test_warning_non_consecutive_numbers(self, project):
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
+    def test_warning_non_consecutive_numbers(self, project, top_level_folder):
         project.create_folders(
-            ["sub-01", "sub-02", "sub-04"], ["ses-05", "ses-10"]
+            top_level_folder,
+            ["sub-01", "sub-02", "sub-04"],
+            ["ses-05", "ses-10"],
         )
 
         with pytest.warns(UserWarning) as w:
-            project.get_next_sub_number()
+            project.get_next_sub_number(top_level_folder)
         assert (
             str(w[0].message) == "A subject number has been skipped, "
             "currently used subject numbers are: [1, 2, 4]"
         )
 
         with pytest.warns(UserWarning) as w:
-            project.get_next_ses_number("sub-02")
+            project.get_next_ses_number(top_level_folder, "sub-02")
         assert (
             str(w[0].message)
             == "A subject number has been skipped, currently "

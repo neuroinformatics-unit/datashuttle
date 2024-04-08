@@ -1,8 +1,13 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Dict, Literal, Optional, Union, cast
+
+if TYPE_CHECKING:
+    from collections.abc import ItemsView, KeysView, ValuesView
+
 import copy
 from collections import UserDict
-from collections.abc import ItemsView, KeysView, ValuesView
 from pathlib import Path
-from typing import Dict, Optional, Union, cast
 
 import yaml
 
@@ -46,8 +51,6 @@ class Configs(UserDict):
             "local_path",
             "central_path",
         ]
-
-        self.top_level_folder: str
 
         self.logging_path: Path
         self.hostkeys_path: Path
@@ -166,7 +169,15 @@ class Configs(UserDict):
                         ValueError,
                     )
 
-    def make_path(self, base: str, sub_folders: Union[str, list]) -> Path:
+    # TODO: split this between local / central vs. datashuttle, it is overloaded.
+    def make_path(
+        self,
+        base: str,
+        sub_folders: Union[str, list],
+        top_level_folder: Union[
+            None, Literal["rawdata", "derivatives"]
+        ] = None,
+    ) -> Path:
         """
         Function for joining relative path to base dir.
         If path already starts with base dir, the base
@@ -188,7 +199,7 @@ class Configs(UserDict):
 
         sub_folders_path = Path(sub_folders_str)
 
-        base_folder = self.get_base_folder(base)
+        base_folder = self.get_base_folder(base, top_level_folder)
 
         if utils.path_already_stars_with_base_folder(
             base_folder, sub_folders_path
@@ -200,7 +211,9 @@ class Configs(UserDict):
         return joined_path
 
     def get_base_folder(
-        self, base: str, force_top_level_folder: Optional[str] = None
+        self,
+        base: str,
+        top_level_folder: Optional[Literal["rawdata", "derivatives"]] = None,
     ) -> Path:
         """
         Convenience function to return the full base path.
@@ -211,10 +224,11 @@ class Configs(UserDict):
         base : base path, "local", "central" or "datashuttle"
 
         """
-        if force_top_level_folder:
-            top_level_folder = force_top_level_folder
-        else:
-            top_level_folder = self.top_level_folder
+        if base != "datashuttle":
+            assert top_level_folder in [
+                "rawdata",
+                "derivatives",
+            ], "Must supply top level folder for `local` or `central."
 
         if base == "local":
             base_folder = self["local_path"] / top_level_folder

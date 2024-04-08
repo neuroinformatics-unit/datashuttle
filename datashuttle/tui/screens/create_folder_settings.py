@@ -222,7 +222,6 @@ class CreateFoldersSettingsScreen(ModalScreen):
             == "create_folders_settings_bypass_validation_checkbox"
         ):
             self.interface.update_tui_settings(is_on, "bypass_validation")
-            # self.interface.project.set_bypass_validation(on=is_on)
 
             self.query_one(
                 "#template_settings_validation_on_checkbox"

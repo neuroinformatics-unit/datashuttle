@@ -136,16 +136,15 @@ class TestLogging:
 
         ses = ["ses-123", "ses-101"]
 
-        project.create_folders(subs, ses, datatype="all")
+        project.create_folders("rawdata", subs, ses, datatype="all")
 
         log = self.read_log_file(project.cfg.logging_path)
 
         assert "Formatting Names..." in log
 
         assert (
-            "\n\nVariablesState:\nlocals: {'sub_names': ['sub-111', "
-            "'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-101'], "
-            "'datatype': 'all" in log
+            "VariablesState:\nlocals: {'top_level_folder': 'rawdata', 'sub_names': ['sub-111', 'sub-002@TO@004'],"
+            in log
         )
 
         assert f"sub_names: ['sub-111', 'sub-002{tags('to')}004']" in log
@@ -201,6 +200,7 @@ class TestLogging:
 
         test_utils.make_and_check_local_project_folders(
             project,
+            "rawdata",
             subs,
             sessions,
             "all",
@@ -220,9 +220,9 @@ class TestLogging:
         self.delete_log_files(project.cfg.logging_path)
 
         (
-            transfer_function()
+            transfer_function("rawdata")
             if use_all_alias
-            else transfer_function("all", "all", "all")
+            else transfer_function("rawdata", "all", "all", "all")
         )
 
         log = self.read_log_file(project.cfg.logging_path)
@@ -234,10 +234,13 @@ class TestLogging:
         )
 
         if use_all_alias:
-            assert "VariablesState:\nlocals: {'dry_run': False" in log
+            assert (
+                "VariablesState:\nlocals: {'top_level_folder': 'rawdata', 'dry_run': False"
+                in log
+            )
         else:
             assert (
-                "VariablesState:\nlocals: {'sub_names': 'all', 'ses_names': 'all', 'datatype': 'all', 'dry_run': False, 'init_log': True}\ncfg: {'local_path': "
+                "VariablesState:\nlocals: {'top_level_folder': 'rawdata', 'sub_names': 'all', 'ses_names': 'all"
                 in log
             )
 
@@ -261,6 +264,7 @@ class TestLogging:
         """
         test_utils.make_and_check_local_project_folders(
             project,
+            "rawdata",
             subs=["sub-001"],
             sessions=["ses-001"],
             datatype="all",
@@ -276,9 +280,13 @@ class TestLogging:
         self.delete_log_files(project.cfg.logging_path)
 
         if upload_or_download == "upload":
-            project.upload_specific_folder_or_file("sub-001/ses-001")
+            project.upload_specific_folder_or_file(
+                "rawdata", "sub-001/ses-001"
+            )
         else:
-            project.download_specific_folder_or_file("sub-001/ses-001")
+            project.download_specific_folder_or_file(
+                "rawdata", "sub-001/ses-001"
+            )
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -286,11 +294,7 @@ class TestLogging:
             f"Starting logging for command {upload_or_download}-specific-folder-or-file"
             in log
         )
-        assert (
-            "\n\nVariablesState:\nlocals: {'filepath': 'sub-001/ses-001', "
-            "'dry_run': False}\ncfg: {'local_path':" in log
-        )
-        assert """sub-001/ses-001"]""" in log
+        assert "sub-001/ses-001" in log
         assert "Using config file from" in log
         assert "Waiting for checks to finish" in log
 
@@ -386,12 +390,12 @@ class TestLogging:
 
     def test_logs_bad_create_folders_error(self, project):
         """"""
-        project.create_folders("sub-001", datatype="all")
+        project.create_folders("rawdata", "sub-001", datatype="all")
         self.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(NeuroBlueprintError):
             project.create_folders(
-                "sub-001_datetime-123213T123122", datatype="all"
+                "rawdata", "sub-001_datetime-123213T123122", datatype="all"
             )
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -407,7 +411,7 @@ class TestLogging:
         and warnings to file.
         """
         # Make conflicting subject folders
-        project.create_folders(["sub-001", "sub-002"])
+        project.create_folders("rawdata", ["sub-001", "sub-002"])
         for sub in ["sub-1", "sub-002_date-2023"]:
             os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
 
@@ -415,7 +419,7 @@ class TestLogging:
 
         # Check a validation error is logged.
         with pytest.raises(BaseException) as e:
-            project.validate_project(error_or_warn="error")
+            project.validate_project("rawdata", error_or_warn="error")
 
         log = self.read_log_file(project.cfg.logging_path)
         assert "ERROR" in log
@@ -425,7 +429,7 @@ class TestLogging:
 
         # Check that validation warnings are logged.
         with pytest.warns(UserWarning) as w:
-            project.validate_project(error_or_warn="warn")
+            project.validate_project("rawdata", error_or_warn="warn")
 
         log = self.read_log_file(project.cfg.logging_path)
 
@@ -440,11 +444,11 @@ class TestLogging:
         `make_project_folders` is called, that it logs errors
         to file. Warnings are not tested.
         """
-        project.create_folders("sub-001")
+        project.create_folders("rawdata", "sub-001")
         self.delete_log_files(project.cfg.logging_path)  #
 
         with pytest.raises(BaseException) as e:
-            project.create_folders("sub-001_id-a")
+            project.create_folders("rawdata", "sub-001_id-a")
 
         log = self.read_log_file(project.cfg.logging_path)
 

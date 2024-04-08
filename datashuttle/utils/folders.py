@@ -5,6 +5,7 @@ from typing import (
     Any,
     Dict,
     List,
+    Literal,
     Optional,
     Tuple,
     Union,
@@ -30,6 +31,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 def create_folder_trees(
     cfg: Configs,
+    top_level_folder: Literal["rawdata", "derivatives"],
     sub_names: Union[str, list],
     ses_names: Union[str, list],
     datatype: Union[List[str], str],
@@ -66,6 +68,7 @@ def create_folder_trees(
         sub_path = cfg.make_path(
             "local",
             sub,
+            top_level_folder,
         )
 
         create_folders(sub_path, log)
@@ -77,6 +80,7 @@ def create_folder_trees(
             ses_path = cfg.make_path(
                 "local",
                 [sub, ses],
+                top_level_folder,
             )
 
             create_folders(ses_path, log)
@@ -156,7 +160,11 @@ def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
 
 
 def search_project_for_sub_or_ses_names(
-    cfg: Configs, sub: Optional[str], search_str: str, local_only: bool
+    cfg: Configs,
+    top_level_folder: Literal["rawdata", "derivatives"],
+    sub: Optional[str],
+    search_str: str,
+    local_only: bool,
 ) -> Dict:
     """
     If sub is None, the top-level level folder will be
@@ -173,7 +181,7 @@ def search_project_for_sub_or_ses_names(
     # Search local and central for folders that begin with "sub-*"
     local_foldernames, _ = search_sub_or_ses_level(
         cfg,
-        cfg.get_base_folder("local"),
+        cfg.get_base_folder("local", top_level_folder),
         "local",
         sub=sub,
         search_str=search_str,
@@ -187,7 +195,7 @@ def search_project_for_sub_or_ses_names(
     else:
         central_foldernames, _ = search_sub_or_ses_level(
             cfg,
-            cfg.get_base_folder("central"),
+            cfg.get_base_folder("central", top_level_folder),
             "central",
             sub,
             search_str=search_str,
@@ -203,6 +211,7 @@ def search_project_for_sub_or_ses_names(
 def items_from_datatype_input(
     cfg: Configs,
     local_or_central: str,
+    top_level_folder: Literal["rawdata", "derivatives"],
     datatype: Union[list, str],
     sub: str,
     ses: Optional[str] = None,
@@ -217,7 +226,7 @@ def items_from_datatype_input(
 
     see _transfer_datatype() for parameters.
     """
-    base_folder = cfg.get_base_folder(local_or_central)
+    base_folder = cfg.get_base_folder(local_or_central, top_level_folder)
 
     if datatype not in [
         "all",

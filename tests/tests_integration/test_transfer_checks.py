@@ -31,9 +31,6 @@ class TestTransferChecks(BaseTest):
         `get_local_and_central_file_differences()` and checks the output is
         as expected.
         """
-        if len(top_level_folders) == 1:
-            project.set_top_level_folder(top_level_folders[0])
-
         (local := project.cfg["local_path"]).mkdir(parents=True, exist_ok=True)
         (central := project.cfg["central_path"]).mkdir(
             parents=True, exist_ok=True
@@ -77,8 +74,10 @@ class TestTransferChecks(BaseTest):
 
         results = get_local_and_central_file_differences(
             project.cfg,
-            all_top_level_folder=(
-                True if len(top_level_folders) == 2 else False
+            top_level_folders_to_check=(
+                ["all"]
+                if len(top_level_folders) == 2
+                else [top_level_folders[0]]
             ),
         )
 
