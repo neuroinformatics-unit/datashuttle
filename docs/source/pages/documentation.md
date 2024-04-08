@@ -399,79 +399,6 @@ necessary for SSH transfer.
 Next, we can start setting up the project by automatically creating standardised
 project folder trees.
 
-# Creating *subject* and *session* folders
-
-In a typical neuroscience experiment, data collection sessions begin by
-creating the folder for the current *subject* (e.g. mouse, rat) and current *session*.
-
-The command `create-folders` can be used to automatically create standardised
-folder trees (see
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) for details on the standardisation scheme).
-
-
-An example project directory for the behavioural data for the first *subject*,
-first *session* of an experiment may look like:
-
-```
-└── my_first_project/
-    └── rawdata/
-        └── sub-001/
-            └── ses-001_date-20230516/
-                └── behav
-```
-
-In Datashuttle, this folder tree can be created with the below command
-(assuming today's date is `20230516`):
-
-::::{tab-set}
-
-:::{tab-item} Python API
-```{code-block} python
-project.create_folders(
-	sub_names="001",
-	ses_names="001_@DATE@",
-	datatype="behav"
-)
-```
-:::
-
-:::{tab-item} CLI (macOS / Linux)
-```{code-block} console
-datashuttle \
-my_first_project \
-create-folders -sub 001 -ses 001_@DATE@ -dt behav
-```
-:::
-
-:::{tab-item} CLI (Windows)
-```{code-block} console
-datashuttle ^
-my_first_project ^
-create-folders -sub 001 -ses 001_@DATE@ -dt behav
-```
-:::
-
-::::
-
-The leading `sub-` or `ses-` in the provided *subject* and *session* names
-are optional in the command, these prefixes
-will always be added
-(i.e. both `-sub 001` and `-sub sub-001` are valid inputs).
-
-It is possible to automatically create date, time or datetime key-value pairs with the tags
-`@DATE@`, `@TIME@` or `@DATETIME@` respectively.
-A range of *subjects* and *sessions* can be created with the `@TO@` flag.
-See the [convenience tags](#convenience-tags) section for more details.
-
-
-## *Datatype* Folders
-
-*Datatype* folders contain acquired experimental data and must be named either
-`behav`, `ephys`, `funcimg` or `anat`. *Datatype* folders must be placed
-within a *session* folder.
-See the [*datatype*](https://neuroblueprint.neuroinformatics.dev/specification.html#datatype) section
-of NeuroBlueprint for details.
-
 # Data Transfer
 
 Datashuttle offers a convenient way of transferring entire project folders or
@@ -650,6 +577,7 @@ For example, the command:
 :::{tab-item} Python API
 ```{code-block} python
 project.create_folders(
+    top_level_folder="rawdata",
 	sub_names="sub-001",
 	ses_names=["001_@DATETIME@", "002_@DATETIME@"],
 	datatype="behav",
@@ -1008,6 +936,7 @@ The command:
 :::{tab-item} Python API
 ```{code-block} python
 project.create_folders(
+    top_level_folder="rawdata",
 	sub_names="001",
 	ses_names="all",
 	datatype="all_datatype"
@@ -1054,6 +983,7 @@ but not the non-*datatype* file `ses-001_extra-file.json`.
 :::{tab-item} Python API
 ```{code-block} python
 project.create_folders(
+    top_level_folder="rawdata",
 	sub_names="all_non_sub",
 	ses_names="all",
 	datatype="all"

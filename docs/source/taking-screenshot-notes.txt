@@ -1,0 +1,13 @@
+Screenshots were taken in Windows on
+on a large LG screen monitor model: 35WN75C
+resolution 3440x1440 / 85 Hz.
+
+Windows terminal was used, default size set to 150 x 45.
+
+Then:
+
+1) ShareX 16.0.1 to take screenshot.
+2) Copy these to photoshop. Set DPI to desired. Save as PNG.
+
+The raw screenshots .PSD files available on the NeuroInformatics
+Unit dropbox. Please request if required.

@@ -43,7 +43,7 @@ class TuiApp(App):
 
     def compose(self) -> ComposeResult:
         yield Container(
-            Label("DataShuttle", id="mainwindow_banner_label"),
+            Label("datashuttle", id="mainwindow_banner_label"),
             Button(
                 "Select Existing Project",
                 id="mainwindow_existing_project_button",
@@ -118,7 +118,7 @@ class TuiApp(App):
                 )
             else:
                 message = (
-                    "Unexpected error occurred. Please contact the DataShuttle"
+                    "Unexpected error occurred. Please contact the datashuttle"
                     "development team."
                 )
 
