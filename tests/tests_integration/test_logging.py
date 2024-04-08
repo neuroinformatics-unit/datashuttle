@@ -145,7 +145,7 @@ class TestLogging:
         assert (
             "\n\nVariablesState:\nlocals: {'sub_names': ['sub-111', "
             "'sub-002@TO@004'], 'ses_names': ['ses-123', 'ses-101'], "
-            "'datatype': 'all" in log
+            "'datatype': 'all'}\ncfg: {'local_path':" in log
         )
 
         assert f"sub_names: ['sub-111', 'sub-002{tags('to')}004']" in log
