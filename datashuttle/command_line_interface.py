@@ -432,19 +432,6 @@ def check_name_formatting(project: DataShuttle, args: Any) -> None:
     )
 
 
-# Supply Own Config -----------------------------------------------------------
-
-
-def supply_config_file(project: DataShuttle, args: Any) -> None:
-    kwargs = make_kwargs(args)
-
-    run_command(
-        project,
-        project.supply_config_file,
-        kwargs["path_to_config"],
-    )
-
-
 def construct_parser():
     """
     Return the argparse argument parser. This
@@ -985,24 +972,6 @@ def construct_parser():
         help="Required: (str, single or multiple)",
     )
 
-    # Supply Config
-    # -------------------------------------------------------------------------
-
-    supply_config_file_parser = subparsers.add_parser(
-        "supply-config-file",
-        aliases=["supply_config_file"],
-        description=process_docstring(DataShuttle.supply_config_file.__doc__),
-        formatter_class=argparse.RawTextHelpFormatter,
-        help="",
-    )
-    supply_config_file_parser.set_defaults(func=supply_config_file)
-
-    supply_config_file_parser.add_argument(
-        "path_to_config",
-        type=str,
-        help="Required: (str, single or multiple)",
-    )
-
     return parser
 
 
@@ -1025,11 +994,7 @@ def main() -> None:
     be made on project initialisation when
     a config is being made.
 
-    Finally, call the function associated with the command
-    This is setup above, using the "set defaults" function
-    associated with created parsers, e.g.
-
-    supply_config_file_parser.set_defaults(func=supply_config_file)
+    Finally, call the function associated with the command.
 
     These command functions (all defined above) will process
     the CLI arguments and then call the appropriate API function

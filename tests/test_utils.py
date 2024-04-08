@@ -134,26 +134,6 @@ def delete_project_if_it_exists(project_name):
         shutil.rmtree(config_path)
 
 
-def make_correct_supply_config_file(
-    setup_project, tmp_path, update_configs=False
-):
-    """"""
-    new_configs_path = setup_project._datashuttle_path / "new_configs.yaml"
-    new_configs = get_test_config_arguments_dict(
-        tmp_path, setup_project.project_name
-    )
-
-    canonical_config_dict = canonical_configs.get_canonical_configs()
-    new_configs = {key: new_configs[key] for key in canonical_config_dict}
-
-    if update_configs:
-        new_configs[update_configs["key"]] = update_configs["value"]
-
-    dump_config(new_configs, new_configs_path)
-
-    return new_configs_path.as_posix(), new_configs
-
-
 def dump_config(dict_, path_):
     with open(path_, "w") as config_file:
         yaml.dump(dict_, config_file, sort_keys=False)

@@ -131,27 +131,6 @@ class TestLogging:
         assert "Update successful. New config file:" in log
         assert """ "central_host_id": "test_id",\n """ in log
 
-    def test_logs_supply_config(self, project, tmp_path):
-        """"""
-        new_configs_path, _ = test_utils.make_correct_supply_config_file(
-            project, tmp_path
-        )
-        self.delete_log_files(project.cfg.logging_path)
-
-        project.supply_config_file(new_configs_path, warn=False)
-
-        log = self.read_log_file(
-            project.cfg["local_path"] / ".datashuttle" / "logs"
-        )
-
-        assert "supply-config-file" in log
-        assert "\n\nVariablesState:\nlocals: {'input_path_to_config':" in log
-        assert "Update successful. New config file: " in log
-        assert (
-            f""" "local_path": "{project.cfg['local_path'].as_posix()}",\n """
-            in log
-        )
-
     def test_create_folders(self, project):
         subs = ["sub-111", f"sub-002{tags('to')}004"]
 
@@ -323,7 +302,7 @@ class TestLogging:
         self, clean_project_name, tmp_path
     ):
         """
-        Similar to `test_logs_new_supply_config()`, check that
+        Check that
         logs are moved to the passed `local_path` when
         `make_config_file()` is passed.
         """
@@ -346,55 +325,6 @@ class TestLogging:
         assert len(tmp_path_logs) == 0
         assert len(project_path_logs) == 1
         assert "make-config-file" in project_path_logs[0]
-
-    def test_logs_new_supply_config(self, clean_project_name, tmp_path):
-        """
-        Check that logs are stored in the correct place after
-        supply_config_file() is used. Under the hood, logs are
-        stored to a temporary folder then moved to the local_path
-        passed in the folder.
-        """
-        project = DataShuttle(clean_project_name)
-
-        new_configs_path, _ = test_utils.make_correct_supply_config_file(
-            project,
-            tmp_path,
-        )
-        project.supply_config_file(new_configs_path, warn=False)
-
-        # Check that the logs for the `supply_config_file` command
-        # are found in the `local_path` from the supplied config.
-        local_path_log_search = str(
-            project.cfg["local_path"] / ".datashuttle" / "logs" / "*.log"
-        )
-        local_path_logs = list(glob.glob(local_path_log_search))
-
-        assert len(local_path_logs) == 1
-        assert "supply-config-file" in local_path_logs[0]
-
-        # Next, supply a new config file with a different
-        # `local_path`, and check when this is passed logs
-        # are created in the new `local_path`.
-        new_local_path = (
-            tmp_path / "new_path_for_log_tests" / clean_project_name
-        ).as_posix()
-        os.makedirs(new_local_path, exist_ok=True)
-
-        new_configs_path, _ = test_utils.make_correct_supply_config_file(
-            project,
-            tmp_path,
-            update_configs={"key": "local_path", "value": new_local_path},
-        )
-        project.supply_config_file(new_configs_path, warn=False)
-
-        local_path_logs = list(glob.glob(local_path_log_search))
-        new_path_logs = list(
-            glob.glob(f"{new_local_path}/.datashuttle/logs/*.log")
-        )
-
-        assert len(new_path_logs) == 1
-        assert len(local_path_logs) == 1
-        assert all("supply-config-file" in log for log in local_path_logs)
 
     def test_clear_logging_path(self, clean_project_name, tmp_path):
         """

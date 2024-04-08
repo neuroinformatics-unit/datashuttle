@@ -630,16 +630,6 @@ class TestCommandLineInterface(BaseTest):
         assert "A sub already exists" in stderr
 
     @pytest.mark.parametrize("sep", ["-", "_"])
-    def test_cli_supply_config_file(self, sep):
-        """
-        Here we use the test environment just to check that the
-        CLI argument to supply a config file is passing
-        the correct argument to the datahuttle API.
-        """
-        stdout, _ = test_utils.run_cli(f"supply{sep}config{sep}file some/path")
-        assert "some/path" in stdout
-
-    @pytest.mark.parametrize("sep", ["-", "_"])
     def test_cli_setup_ssh_connection(self, project, sep):
         """
         Test the CLI argument to set up an ssh connection runs,

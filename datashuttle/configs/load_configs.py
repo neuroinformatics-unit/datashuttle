@@ -25,10 +25,6 @@ def attempt_load_configs(
     not already initialised (prompt) or these have been
     changed manually.
 
-    This function is very similar to
-    supplied_configs_confirm_overwrite()
-    but has different set of prompts and some different logic.
-
     Parameters
     ----------
     project_name : name of project
@@ -64,50 +60,6 @@ def attempt_load_configs(
             f"make_config_file()",
             ConfigError,
         )
-
-    return new_cfg
-
-
-def supplied_configs_confirm_overwrite(
-    project_name: str,
-    path_to_config: Path,
-    warn: bool,
-) -> Union[Configs, None]:
-    """
-    Try and load a supplied config file. This will
-    check that the passed path is a true yaml file,
-    confirm that loading this will overwrite existing configs,
-
-    Load and check all configs and return the loaded configs
-    if successful. If unsuccessful, check_dict_values_raise_on_fail()
-    will raise an error.
-
-    Parameters
-    ----------
-
-    project_name : name of project
-
-    path_to_config : path to the datashuttle config .yaml file to load
-
-    warn : option to get confirmation after warning that new config will
-        overwrite old config.
-    """
-    utils.log_and_raise_error_not_exists_or_not_yaml(path_to_config)
-
-    if warn:
-        input_ = utils.get_user_input(
-            "This will overwrite any existing datashuttle config file."
-            "If you wish to proceed, press y."
-        )
-
-        if input_ != "y":
-            utils.log_and_message("y not pressed. Configs not updated.")
-            return None
-
-    new_cfg = Configs(project_name, path_to_config, None)
-    new_cfg.load_from_file()
-    new_cfg = handle_cli_or_supplied_config_bools(new_cfg)
-    new_cfg.setup_after_load()
 
     return new_cfg
 
