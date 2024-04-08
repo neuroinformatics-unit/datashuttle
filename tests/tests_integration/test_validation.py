@@ -181,7 +181,7 @@ class TestValidation(BaseTest):
         subs = ["sub-001_id-123", "sub-002_id-124"]
         project.create_folders("rawdata", subs)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-001_id-125")
 
         assert (
@@ -195,7 +195,7 @@ class TestValidation(BaseTest):
         sessions = ["ses-001_date-1605", "ses-002_date-1606"]
         project.create_folders("rawdata", subs, sessions)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001_id-123", "ses-002_date-1607"
             )
@@ -215,7 +215,7 @@ class TestValidation(BaseTest):
         """
         project.create_folders("rawdata", "sub-1")
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-001")
 
         assert "Inconsistent value lengths for the key sub were found" in str(
@@ -224,7 +224,7 @@ class TestValidation(BaseTest):
 
         project.create_folders("rawdata", "sub-1", "ses-3")
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-1", "ses-003")
 
         assert "Inconsistent value lengths for the key ses were found" in str(
@@ -239,13 +239,13 @@ class TestValidation(BaseTest):
         project.create_folders("rawdata", "sub-001")
 
         for bad_sub_name in ["sub-001_@DATE@", "sub-001_extra-key"]:
-            with pytest.raises(BaseException) as e:
+            with pytest.raises(NeuroBlueprintError) as e:
                 project.create_folders("rawdata", bad_sub_name, "ses-001")
             assert "A sub already exists" in str(e.value)
 
         project.create_folders("rawdata", "sub-001", "ses-001")
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001", "ses-001_extra-key", "behav"
             )
@@ -253,13 +253,13 @@ class TestValidation(BaseTest):
             e.value
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001_extra-key", "ses-001", "behav"
             )
         assert "A sub already exists " in str(e.value)
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", "sub-001_extra-key", "ses-001_@DATE@", "behav"
             )
@@ -271,7 +271,7 @@ class TestValidation(BaseTest):
 
         # Finally check that in a list of subjects, only the correct subject
         # with duplicate session is caught.
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders(
                 "rawdata", ["sub-001", "sub-002"], "ses-002_@DATE@", "ephys"
             )
@@ -289,14 +289,14 @@ class TestValidation(BaseTest):
         prefixed as 'sub-sub_100` but when the value if `sub-` is
         extracted, it is also "sub" and so an error is raised.
         """
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub_100")
 
         assert "Invalid character in subject or session value: sub" in str(
             e.value
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-001", "ses_100")
 
         assert "Invalid character in subject or session value: ses" in str(
@@ -328,7 +328,7 @@ class TestValidation(BaseTest):
         project.create_folders("rawdata", "sub-001")
 
         # Now the bad sub is caught as we check against central also.
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             project.validate_project(
                 "rawdata", error_or_warn="error", local_only=False
             )
@@ -528,7 +528,7 @@ class TestValidation(BaseTest):
         # Now check a clashing subject (sub-1) throws an error
         sub_names = ["sub-2_id-b", "sub-1_id-11", "sub-3_id-c"]
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
                 project.cfg,
                 "rawdata",
@@ -587,7 +587,7 @@ class TestValidation(BaseTest):
             error_or_warn="error",
         )
 
-        with pytest.raises(BaseException) as e:
+        with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
                 project.cfg,
                 "rawdata",
