@@ -186,6 +186,7 @@ class TestPersistentSettings(BaseTest):
                 "custom_transfer": "rawdata",
             },
             "bypass_validation": False,
+            "overwrite_existing_files": False,
         }
 
     def get_settings_changed(self):
@@ -211,4 +212,5 @@ class TestPersistentSettings(BaseTest):
                 "custom_transfer": "derivatives",
             },
             "bypass_validation": True,
+            "overwrite_existing_files": True,
         }
