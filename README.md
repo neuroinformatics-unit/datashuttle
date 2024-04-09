@@ -1,8 +1,5 @@
 # DataShuttle
-
-![datashuttle-overview-dark](https://github.com/neuroinformatics-unit/datashuttle/assets/55797454/9c748ff8-782a-4640-b86d-95f65964e021#gh-dark-mode-only)
 ![datashuttle-overview-light](https://github.com/neuroinformatics-unit/datashuttle/assets/55797454/fd96f383-738f-46e8-92c0-686deba5c57a#gh-dark-light-only)
-
 
 **datashuttle** is a tool to automate creation, validation and transfer of neuroscience project folders.
 
