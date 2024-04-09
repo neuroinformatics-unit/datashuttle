@@ -300,7 +300,11 @@ class TestMakeFolders(BaseTest):
         assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Upload to central, now local and central folders match
-        project.upload_all(top_level_folder)
+        (
+            project.upload_rawdata()
+            if top_level_folder == "rawdata"
+            else project.upload_derivatives()
+        )
 
         shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
@@ -353,7 +357,11 @@ class TestMakeFolders(BaseTest):
 
         # Now upload the data, delete locally, and check the
         # suggested values are correct based on the `central` path.
-        project.upload_all(top_level_folder)
+        (
+            project.upload_rawdata()
+            if top_level_folder == "rawdata"
+            else project.upload_derivatives()
+        )
 
         shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
