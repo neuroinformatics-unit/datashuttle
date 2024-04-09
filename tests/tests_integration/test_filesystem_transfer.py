@@ -14,13 +14,13 @@ class TestFileTransfer(BaseTest):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_all_alias", [True, False])
+    @pytest.mark.parametrize("use_top_level_folder_func", [True, False])
     def test_transfer_empty_folder_structure(
         self,
         project,
         top_level_folder,
         upload_or_download,
-        use_all_alias,
+        use_top_level_folder_func,
     ):
         """
         First make a project (folders only) locally.
@@ -37,11 +37,15 @@ class TestFileTransfer(BaseTest):
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(
-            project, upload_or_download, use_all_alias=use_all_alias
+            project,
+            upload_or_download,
+            specific_top_level_folder=(
+                top_level_folder if use_top_level_folder_func else False
+            ),
         )
 
-        if use_all_alias:
-            transfer_function(top_level_folder)
+        if use_top_level_folder_func:
+            transfer_function()
         else:
             transfer_function(top_level_folder, "all", "all", "all")
 

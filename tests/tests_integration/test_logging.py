@@ -187,9 +187,9 @@ class TestLogging:
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_all_alias", [True, False])
+    @pytest.mark.parametrize("use_top_level_folder_func", [True, False])
     def test_logs_upload_and_download(
-        self, project, upload_or_download, use_all_alias
+        self, project, upload_or_download, use_top_level_folder_func
     ):
         """
         Set transfer verbosity and progress settings so
@@ -215,25 +215,25 @@ class TestLogging:
         ) = test_utils.handle_upload_or_download(
             project,
             upload_or_download,
-            use_all_alias,
+            specific_top_level_folder=(
+                "rawdata" if use_top_level_folder_func else False
+            ),
         )
         self.delete_log_files(project.cfg.logging_path)
 
         (
-            transfer_function("rawdata")
-            if use_all_alias
+            transfer_function()
+            if use_top_level_folder_func
             else transfer_function("rawdata", "all", "all", "all")
         )
 
         log = self.read_log_file(project.cfg.logging_path)
 
-        suffix = "-all" if use_all_alias else ""
-
-        assert (
-            f"Starting logging for command {upload_or_download}{suffix}" in log
-        )
-
-        if use_all_alias:
+        if use_top_level_folder_func:
+            assert (
+                f"Starting logging for command {upload_or_download}-rawdata"
+                in log
+            )
             assert (
                 "VariablesState:\nlocals: {'top_level_folder': 'rawdata', 'dry_run': False"
                 in log
