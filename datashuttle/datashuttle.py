@@ -338,7 +338,7 @@ class DataShuttle:
             (e.g. in a calling function).
         """
         if init_log:
-            self._start_log("upload", local_vars=locals())
+            self._start_log("upload-custom", local_vars=locals())
 
         TransferData(
             self.cfg,
@@ -379,7 +379,7 @@ class DataShuttle:
         project for sub / ses to download.
         """
         if init_log:
-            self._start_log("download", local_vars=locals())
+            self._start_log("download-custom", local_vars=locals())
 
         TransferData(
             self.cfg,
