@@ -36,18 +36,17 @@ allow transfer between:
 2) Only the `rawdata` or `derivatives` folder.
 3) A custom subset of subjects / sessions / datatypes.
 
-Below we will explore each method in turn, as well as consider
-[configuring transfer](configuring-transfer) including the important
-**overwrite existing files** option.
 
 ```{warning}
-The
-[`Overwrite Existing Files`](overwrite-existing-files-config)
-setting is very important.
+All transfer methods take an `overwrite_existing_files`
+argument (default `False`).
 
 By default it is turned off and a transfer will never overwrite a
 file that already exists, even if the source version is newer.
 
+When on, target versions of the file will be overwritten if there
+is any difference between source and destination (e.g. file size,
+modification time).
 ```
 
 
@@ -308,10 +307,3 @@ Wildcard
 Transfer a range
 : The `@TO@` tag can be used to target a range of subjects for transfer.
 *e.g.* `sub-001@TO@025` will transfer the 1st to up to and including the 25th subject.
-
-(configuring-transfer)=
-## Configuring data transfer
-
-!! overview
-
-!! link to configs
