@@ -41,9 +41,6 @@ def get_canonical_configs() -> dict:
         "connection_method": Literal["ssh", "local_filesystem"],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
-        "overwrite_existing_files": bool,
-        "transfer_verbosity": Literal["v", "vv"],
-        "show_transfer_progress": bool,
     }
 
     return canonical_configs
@@ -123,14 +120,6 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.log_and_raise_error(
             "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'.",
-            ConfigError,
-        )
-
-    # Transfer settings
-    if config_dict["transfer_verbosity"] not in ["v", "vv"]:
-        utils.log_and_raise_error(
-            "'transfer_verbosity' must be either "
-            "'v' or 'vv'. Config not updated.",
             ConfigError,
         )
 

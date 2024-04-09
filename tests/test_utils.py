@@ -192,9 +192,6 @@ def get_test_config_arguments_dict(
             {
                 "central_host_id": None,
                 "central_host_username": None,
-                "overwrite_existing_files": False,
-                "transfer_verbosity": "v",
-                "show_transfer_progress": False,
             }
         )
     else:
@@ -205,9 +202,6 @@ def get_test_config_arguments_dict(
                 "connection_method": "ssh",
                 "central_host_id": "test_central_host_id",
                 "central_host_username": "test_central_host_username",
-                "overwrite_existing_files": True,
-                "transfer_verbosity": "vv",
-                "show_transfer_progress": True,
             }
         )
         make_project_paths(dict_)

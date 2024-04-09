@@ -56,6 +56,7 @@ class TransferData:
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
+        overwrite_existing_files: bool,
         dry_run: bool,
         log: bool,
     ):
@@ -83,7 +84,9 @@ class TransferData:
                 self.__upload_or_download,
                 self.__top_level_folder,
                 include_list,
-                cfg.make_rclone_transfer_options(dry_run),
+                cfg.make_rclone_transfer_options(
+                    overwrite_existing_files, dry_run
+                ),
             )
 
             if log:

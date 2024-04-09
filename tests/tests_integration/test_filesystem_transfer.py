@@ -401,13 +401,11 @@ class TestFileTransfer(BaseTest):
         ).is_file()
 
     @pytest.mark.parametrize("overwrite_existing_files", [True, False])
-    @pytest.mark.parametrize("show_transfer_progress", [True, False])
     @pytest.mark.parametrize("dry_run", [True, False])
     def test_rclone_options(
         self,
         project,
         overwrite_existing_files,
-        show_transfer_progress,
         dry_run,
         capsys,
     ):
@@ -421,16 +419,10 @@ class TestFileTransfer(BaseTest):
             project, "rawdata", ["sub-001"], ["ses-002"], ["behav"]
         )
 
-        project.update_config_file(
-            overwrite_existing_files=overwrite_existing_files
-        )
-        project.update_config_file(transfer_verbosity="vv")
-        project.update_config_file(
-            show_transfer_progress=show_transfer_progress
-        )
-
         test_utils.clear_capsys(capsys)
-        project.upload_rawdata(dry_run=dry_run)
+        project.upload_rawdata(
+            overwrite_existing_files=overwrite_existing_files, dry_run=dry_run
+        )
 
         log = capsys.readouterr().out
 
@@ -439,37 +431,12 @@ class TestFileTransfer(BaseTest):
         else:
             assert "--ignore-existing" in log
 
-        if show_transfer_progress:
-            assert "--progress" in log
-        else:
-            assert "--progress" not in log
+        assert "--progress" in log
 
         if dry_run:
             assert "--dry-run" in log
         else:
             assert "--dry-run" not in log
-
-    @pytest.mark.parametrize("transfer_verbosity", ["v", "vv"])
-    def test_rclone_transfer_verbosity(
-        self, project, transfer_verbosity, capsys
-    ):
-        """
-        see test_rclone_options()
-        """
-        project.create_folders("rawdata", ["sub-001"], ["ses-002"], ["behav"])
-        project.update_config_file(transfer_verbosity=transfer_verbosity)
-
-        test_utils.clear_capsys(capsys)
-        project.upload_rawdata()
-
-        log = capsys.readouterr().out
-
-        if transfer_verbosity == "vv":
-            assert "-vv" in log
-        elif transfer_verbosity == "v":
-            assert "starting with parameters [" not in log and "-vv" not in log
-        else:
-            raise BaseException("wrong parameter passed as transfer_verbosity")
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("overwrite_existing_files", [True, False])
@@ -508,16 +475,13 @@ class TestFileTransfer(BaseTest):
 
         time_written = os.path.getatime(local_test_file_path)
 
-        if overwrite_existing_files:
-            project.update_config_file(overwrite_existing_files=True)
-
         upload_func = (
             project.upload_rawdata
             if top_level_folder == "rawdata"
             else project.upload_derivatives
         )
 
-        upload_func()
+        upload_func(overwrite_existing_files=overwrite_existing_files)
 
         # Update the file and transfer and transfer again
         test_utils.write_file(
@@ -526,7 +490,7 @@ class TestFileTransfer(BaseTest):
 
         assert time_written < os.path.getatime(local_test_file_path)
 
-        upload_func()
+        upload_func(overwrite_existing_files=overwrite_existing_files)
 
         central_contents = test_utils.read_file(central_test_file_path)
 

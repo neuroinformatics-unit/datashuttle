@@ -226,11 +226,19 @@ class Configs(UserDict):
 
         return f"central_{self.project_name}_{connection_method}"
 
-    def make_rclone_transfer_options(self, dry_run: bool) -> Dict:
+    def make_rclone_transfer_options(
+        self, overwrite_existing_files: bool, dry_run: bool
+    ) -> Dict:
+        """
+        This function originally collected the relevant arguments
+        from configs. Now, all are passed via command line. However,
+        now we fix the previously configurable arguments
+        `show_transfer_progress` and `dry_run` here.
+        """
         return {
-            "overwrite_existing_files": self["overwrite_existing_files"],
-            "transfer_verbosity": self["transfer_verbosity"],
-            "show_transfer_progress": self["show_transfer_progress"],
+            "overwrite_existing_files": overwrite_existing_files,
+            "show_transfer_progress": True,
+            "transfer_verbosity": "vv",
             "dry_run": dry_run,
         }
 

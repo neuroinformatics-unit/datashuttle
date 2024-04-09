@@ -68,9 +68,7 @@ class Interface:
             Name of the project to set up.
 
         cfg_kwargs : Dict
-            The configurations to set the new project to. Note that
-            some settings (e.g. `transfer_verbosity`) are not relevant
-            for TUI and so method defaults will be used.
+            The configurations to set the new project to.
         """
         try:
             project = DataShuttle(project_name, print_startup_message=False)

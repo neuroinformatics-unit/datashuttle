@@ -298,6 +298,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
+        overwrite_existing_files: bool = False,
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -335,27 +336,6 @@ class DataShuttle:
             (Optional). Whether handle logging. This should
             always be True, unless logger is handled elsewhere
             (e.g. in a calling function).
-
-        Notes
-        -----
-
-        The configs "overwrite_existing_files", "transfer_verbosity"
-        and "show_transfer_progress" pertain to data-transfer settings.
-        See make_config_file() for more information.
-
-        sub_names or ses_names may contain certain formatting tags:
-
-        @*@: wildcard search for subject names. e.g. ses-001_date-@*@
-             will transfer all session 001 collected on all dates.
-        @TO@: used to transfer a range of sub/ses.
-              Number must be either side of the tag
-              e.g. sub-001@TO@003 will generate
-              ["sub-001", "sub-002", "sub-003"]
-        @DATE@, @TIME@ @DATETIME@: will add date-<value>, time-<value> or
-              date-<value>_time-<value> keys respectively. Only one per-name
-              is permitted.
-              e.g. sub-001_@DATE@ will generate sub-001_date-20220101
-              (on the 1st january, 2022).
         """
         if init_log:
             self._start_log("upload", local_vars=locals())
@@ -367,6 +347,7 @@ class DataShuttle:
             sub_names,
             ses_names,
             datatype,
+            overwrite_existing_files,
             dry_run,
             log=True,
         )
@@ -381,6 +362,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
+        overwrite_existing_files: bool = False,
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -406,6 +388,7 @@ class DataShuttle:
             sub_names,
             ses_names,
             datatype,
+            overwrite_existing_files,
             dry_run,
             log=True,
         )
@@ -419,101 +402,89 @@ class DataShuttle:
     # away the 'top_level_folder' concept.
 
     @check_configs_set
-    def upload_rawdata(self, dry_run: bool = False):
-        self._upload_top_level_folder("rawdata", dry_run=dry_run)
-
-    @check_configs_set
-    def upload_derivatives(self, dry_run: bool = False):
-        self._upload_top_level_folder("derivatives", dry_run=dry_run)
-
-    @check_configs_set
-    def download_rawdata(self, dry_run: bool = False):
-        self._download_top_level_folder("rawdata", dry_run=dry_run)
-
-    @check_configs_set
-    def download_derivatives(self, dry_run: bool = False):
-        self._download_top_level_folder("derivatives", dry_run=dry_run)
-
-    def _upload_top_level_folder(
-        self,
-        top_level_folder: TopLevelFolder,
-        dry_run: bool = False,
-        init_log: bool = True,
-    ) -> None:
-        """
-        Convenience function to upload all data.
-
-        Alias for:
-            project.upload_custom("all", "all", "all")
-        """
-        if init_log:
-            self._start_log(f"upload-{top_level_folder}", local_vars=locals())
-
-        self.upload_custom(
-            top_level_folder,
-            "all",
-            "all",
-            "all",
+    def upload_rawdata(
+        self, overwrite_existing_files: bool = False, dry_run: bool = False
+    ):
+        self._transfer_top_level_folder(
+            "upload",
+            "rawdata",
+            overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
-            init_log=False,
         )
 
-        if init_log:
-            ds_logger.close_log_filehandler()
-
-    def _download_top_level_folder(
-        self,
-        top_level_folder: TopLevelFolder,
-        dry_run: bool = False,
-        init_log: bool = True,
-    ) -> None:
-        """
-        Convenience function to download all data.
-
-        Alias for : project.download_custom("all", "all", "all")
-        """
-        if init_log:
-            self._start_log(
-                f"download-{top_level_folder}", local_vars=locals()
-            )
-
-        self.download_custom(
-            top_level_folder,
-            "all",
-            "all",
-            "all",
+    @check_configs_set
+    def upload_derivatives(
+        self, overwrite_existing_files: bool = False, dry_run: bool = False
+    ):
+        self._transfer_top_level_folder(
+            "upload",
+            "derivatives",
+            overwrite_existing_files=overwrite_existing_files,
             dry_run=dry_run,
-            init_log=False,
         )
 
-        if init_log:
-            ds_logger.close_log_filehandler()
+    @check_configs_set
+    def download_rawdata(
+        self, overwrite_existing_files: bool = False, dry_run: bool = False
+    ):
+        self._transfer_top_level_folder(
+            "download",
+            "rawdata",
+            overwrite_existing_files=overwrite_existing_files,
+            dry_run=dry_run,
+        )
 
     @check_configs_set
-    def upload_entire_project(self) -> None:
+    def download_derivatives(
+        self, overwrite_existing_files: bool = False, dry_run: bool = False
+    ):
+        self._transfer_top_level_folder(
+            "download",
+            "derivatives",
+            overwrite_existing_files=overwrite_existing_files,
+            dry_run=dry_run,
+        )
+
+    @check_configs_set
+    def upload_entire_project(
+        self,
+        overwrite_existing_files: bool = False,
+        dry_run: bool = False,
+    ) -> None:
         """
         Upload the entire project (from 'local' to 'central'),
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
         self._start_log("transfer-entire-project", local_vars=locals())
-        self._transfer_entire_project("upload")
+        self._transfer_entire_project(
+            "upload", overwrite_existing_files, dry_run
+        )
         ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def download_entire_project(self) -> None:
+    def download_entire_project(
+        self,
+        overwrite_existing_files: bool = False,
+        dry_run: bool = False,
+    ) -> None:
         """
         Download the entire project (from 'central' to 'local'),
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
         """
         self._start_log("transfer-entire-project", local_vars=locals())
-        self._transfer_entire_project("download")
+        self._transfer_entire_project(
+            "download", overwrite_existing_files, dry_run
+        )
         ds_logger.close_log_filehandler()
 
     @check_configs_set
     def upload_specific_folder_or_file(
-        self, filepath: Union[str, Path], dry_run: bool = False
+        self,
+        filepath: Union[str, Path],
+        overwrite_existing_files: bool = False,
+        dry_run: bool = False,
     ) -> None:
         """
         Upload a specific file or folder. If transferring
@@ -535,13 +506,18 @@ class DataShuttle:
         """
         self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
-        self._transfer_specific_file_or_folder("upload", filepath, dry_run)
+        self._transfer_specific_file_or_folder(
+            "upload", filepath, overwrite_existing_files, dry_run
+        )
 
         ds_logger.close_log_filehandler()
 
     @check_configs_set
     def download_specific_folder_or_file(
-        self, filepath: Union[str, Path], dry_run: bool = False
+        self,
+        filepath: Union[str, Path],
+        overwrite_existing_files: bool = False,
+        dry_run: bool = False,
     ) -> None:
         """
         Download a specific file or folder. If transferring
@@ -565,12 +541,46 @@ class DataShuttle:
             "download-specific-folder-or-file", local_vars=locals()
         )
 
-        self._transfer_specific_file_or_folder("download", filepath, dry_run)
+        self._transfer_specific_file_or_folder(
+            "download", filepath, overwrite_existing_files, dry_run
+        )
 
         ds_logger.close_log_filehandler()
 
+    def _transfer_top_level_folder(
+        self,
+        upload_or_download: Literal["upload", "download"],
+        top_level_folder: TopLevelFolder,
+        overwrite_existing_files: bool = False,
+        dry_run: bool = False,
+        init_log: bool = True,
+    ):
+        if init_log:
+            self._start_log(
+                f"{upload_or_download}-{top_level_folder}", local_vars=locals()
+            )
+
+        transfer_func = (
+            self.upload_custom
+            if upload_or_download == "upload"
+            else self.download_custom
+        )
+
+        transfer_func(
+            top_level_folder,
+            "all",
+            "all",
+            "all",
+            overwrite_existing_files=overwrite_existing_files,
+            dry_run=dry_run,
+            init_log=False,
+        )
+
+        if init_log:
+            ds_logger.close_log_filehandler()
+
     def _transfer_specific_file_or_folder(
-        self, upload_or_download, filepath, dry_run
+        self, upload_or_download, filepath, overwrite_existing_files, dry_run
     ):
         """"""
         if isinstance(filepath, str):
@@ -599,7 +609,9 @@ class DataShuttle:
             upload_or_download,
             top_level_folder,
             include_list,
-            self.cfg.make_rclone_transfer_options(dry_run),
+            self.cfg.make_rclone_transfer_options(
+                overwrite_existing_files, dry_run
+            ),
         )
 
         utils.log(output.stderr.decode("utf-8"))
@@ -673,9 +685,6 @@ class DataShuttle:
         connection_method: str,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
-        overwrite_existing_files: bool = False,
-        transfer_verbosity: str = "v",
-        show_transfer_progress: bool = False,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -717,24 +726,6 @@ class DataShuttle:
         central_host_username :
             username for which to log in to central host.
             e.g. "jziminski"
-
-        overwrite_existing_files :
-            If True, when copying data (upload or download) files
-            will be overwritten if the timestamp of the copied
-            version is later than the target folder version
-            of the file i.e. edits made to a file in the source
-            machine will be copied to the target machine. If False,
-            a file will be copied if it does not exist on the target
-            folder, otherwise it will never be copied, even if
-            the source version of the file has a later timestamp.
-
-        transfer_verbosity :
-            "v" will tell you about each file that is transferred and
-            significant events, "vv" will be very verbose and inform
-            on all events.
-
-        show_transfer_progress :
-            If true, the real-time progress of file transfers will be printed.
         """
         self._start_log(
             "make-config-file",
@@ -758,9 +749,6 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
-                "overwrite_existing_files": overwrite_existing_files,
-                "transfer_verbosity": transfer_verbosity,
-                "show_transfer_progress": show_transfer_progress,
             },
         )
 
@@ -1062,7 +1050,10 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     def _transfer_entire_project(
-        self, direction: Literal["upload", "download"]
+        self,
+        upload_or_download: Literal["upload", "download"],
+        overwrite_existing_files: bool,
+        dry_run: bool,
     ) -> None:
         """
         Transfer (i.e. upload or download) the entire project (i.e.
@@ -1071,18 +1062,20 @@ class DataShuttle:
         Parameters
         ----------
 
-        direction : direction to transfer the data, either "upload" (from
+        upload_or_download : direction to transfer the data, either "upload" (from
                     local to central) or "download" (from central to local).
         """
-        transfer_all_func = (
-            self._upload_top_level_folder
-            if direction == "upload"
-            else self._download_top_level_folder
-        )
-
         for top_level_folder in canonical_folders.get_top_level_folders():
+
             utils.log_and_message(f"Transferring `{top_level_folder}`")
-            transfer_all_func(top_level_folder, init_log=False)
+
+            self._transfer_top_level_folder(
+                upload_or_download,
+                top_level_folder,
+                overwrite_existing_files=overwrite_existing_files,
+                dry_run=dry_run,
+                init_log=False,
+            )
 
     def _start_log(
         self,
