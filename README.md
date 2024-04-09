@@ -9,6 +9,6 @@ Learn how to Install and Get Started with **datashuttle** on our website.
 We're keen to hear your experiences with **datashuttle**, please don't hestiate to raise an issue 
 or drop into our [Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle)  with any questions, comments or feedback.
 
-:::{warning}
+```warning}
 test
-:::
+```
