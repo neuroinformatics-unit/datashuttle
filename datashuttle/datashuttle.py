@@ -322,15 +322,24 @@ class DataShuttle:
             automatically added. "@*@" can be used as a wildcard.
             "all" will search for all sub-folders in the
             datatype folder to upload.
+
         ses_names :
             a session name / list of session names, similar to
             sub_names but requiring a "ses-" prefix.
+
+        datatype :
+            see create_folders()
+
+        overwrite_existing_files :
+            If `False`, files on central will never be overwritten
+            by files transferred from local. If `True`, central files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
         dry_run :
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
-        datatype :
-            see create_folders()
 
         init_log :
             (Optional). Whether handle logging. This should
@@ -368,15 +377,44 @@ class DataShuttle:
     ) -> None:
         """
         Download data from the central project folder to the
-        local project folder. In the case that a file / folder
-        exists on the central and local, the local will
-        not be overwritten even if the central file is an
-        older version.
+        local project folder.
 
-        This function is identical to upload_custom() but with the direction
-        of data transfer reversed. Please see upload_custom() for arguments.
-        "all" arguments will search the central
-        project for sub / ses to download.
+        Parameters
+        ----------
+
+        top_level_folder :
+            The top-level folder (e.g. `rawdata`) to transfer files
+            and folders within.
+
+        sub_names :
+            a subject name / list of subject names. These must
+            be prefixed with "sub-", or the prefix will be
+            automatically added. "@*@" can be used as a wildcard.
+            "all" will search for all sub-folders in the
+            datatype folder to upload.
+
+        ses_names :
+            a session name / list of session names, similar to
+            sub_names but requiring a "ses-" prefix.
+
+        datatype :
+            see create_folders()
+
+        overwrite_existing_files :
+            If `False`, files on local will never be overwritten
+            by files transferred from central. If `True`, local files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
+
+        init_log :
+            (Optional). Whether handle logging. This should
+            always be True, unless logger is handled elsewhere
+            (e.g. in a calling function).
         """
         if init_log:
             self._start_log("download-custom", local_vars=locals())
@@ -405,6 +443,23 @@ class DataShuttle:
     def upload_rawdata(
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
+        """
+        Upload files and in the `rawdata` top level folder.
+
+        Parameters
+        ----------
+
+        overwrite_existing_files :
+            If `False`, files on central will never be overwritten
+            by files transferred from local. If `True`, central files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
+        """
         self._transfer_top_level_folder(
             "upload",
             "rawdata",
@@ -416,6 +471,23 @@ class DataShuttle:
     def upload_derivatives(
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
+        """
+        Upload files and in the `derivatives` top level folder.
+
+        Parameters
+        ----------
+
+        overwrite_existing_files :
+            If `False`, files on central will never be overwritten
+            by files transferred from local. If `True`, central files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
+        """
         self._transfer_top_level_folder(
             "upload",
             "derivatives",
@@ -427,6 +499,23 @@ class DataShuttle:
     def download_rawdata(
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
+        """
+        Download files and in the `rawdata` top level folder.
+
+        Parameters
+        ----------
+
+        overwrite_existing_files :
+            If `False`, files on local will never be overwritten
+            by files transferred from central. If `True`, local files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
+        """
         self._transfer_top_level_folder(
             "download",
             "rawdata",
@@ -438,6 +527,23 @@ class DataShuttle:
     def download_derivatives(
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
+        """
+        Download files and in the `derivatives` top level folder.
+
+        Parameters
+        ----------
+
+        overwrite_existing_files :
+            If `False`, files on local will never be overwritten
+            by files transferred from central. If `True`, local files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
+        """
         self._transfer_top_level_folder(
             "download",
             "derivatives",
@@ -455,6 +561,20 @@ class DataShuttle:
         Upload the entire project (from 'local' to 'central'),
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
+
+        Parameters
+        ----------
+
+        overwrite_existing_files :
+            If `False`, files on central will never be overwritten
+            by files transferred from local. If `True`, central files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
         """
         self._start_log("transfer-entire-project", local_vars=locals())
         self._transfer_entire_project(
@@ -472,6 +592,20 @@ class DataShuttle:
         Download the entire project (from 'central' to 'local'),
         i.e. including every top level folder (e.g. 'rawdata',
         'derivatives', 'code', 'analysis').
+
+        Parameters
+        ----------
+
+        overwrite_existing_files :
+            If `False`, files on local will never be overwritten
+            by files transferred from central. If `True`, local files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
+        dry_run :
+            perform a dry-run of upload. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
         """
         self._start_log("transfer-entire-project", local_vars=locals())
         self._transfer_entire_project(
@@ -499,6 +633,13 @@ class DataShuttle:
 
         filepath :
             a string containing the full filepath.
+
+        overwrite_existing_files :
+            If `False`, files on central will never be overwritten
+            by files transferred from local. If `True`, central files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
         dry_run :
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
@@ -532,6 +673,13 @@ class DataShuttle:
 
         filepath :
             a string containing the full filepath.
+
+        overwrite_existing_files :
+            If `False`, files on local will never be overwritten
+            by files transferred from central. If `True`, local files
+            will be overwritten if there is any difference (date, size)
+            between central and local files.
+
         dry_run :
             perform a dry-run of upload. This will output as if file
             transfer was taking place, but no files will be moved. Useful
@@ -555,6 +703,10 @@ class DataShuttle:
         dry_run: bool = False,
         init_log: bool = True,
     ):
+        """
+        Core function to upload / download files within a
+        particular top-level-folder. e.g. `upload_rawdata().`
+        """
         if init_log:
             self._start_log(
                 f"{upload_or_download}-{top_level_folder}", local_vars=locals()
@@ -582,7 +734,9 @@ class DataShuttle:
     def _transfer_specific_file_or_folder(
         self, upload_or_download, filepath, overwrite_existing_files, dry_run
     ):
-        """"""
+        """
+        Core function for upload/download_specific_folder_or_file().
+        """
         if isinstance(filepath, str):
             filepath = Path(filepath)
 
