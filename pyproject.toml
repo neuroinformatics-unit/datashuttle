@@ -19,7 +19,7 @@ dependencies = [
     "fancylog",
     "simplejson",
     "pyperclip",
-    "textual",
+    "textual==0.54.0",
     "show-in-file-manager",
     "gitpython",
 ]
