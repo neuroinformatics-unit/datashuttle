@@ -1,4 +1,4 @@
-# **datashuttle** 
+# **datashuttle**
 
 **datashuttle** is a tool to automate creation, validation and transfer of neuroscience project folders.
 
