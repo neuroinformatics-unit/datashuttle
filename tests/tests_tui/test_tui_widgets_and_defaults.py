@@ -5,6 +5,7 @@ import pytest
 import test_utils
 from tui_base import TuiBase
 
+from datashuttle import DataShuttle
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
@@ -1225,3 +1226,62 @@ class TestTuiWidgets(TuiBase):
             )
 
             await pilot.pause()
+
+    @pytest.mark.asyncio
+    async def test_overwrite_existing_files(self, setup_project_paths):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test() as pilot:
+
+            # Navigate to the existing project and click onto the
+            # configs tab.
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            # default is off
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, on_value=False
+            )
+
+            # now turn on and check
+            await self.change_checkbox(
+                pilot, "#configs_overwrite_files_checkbox"
+            )
+
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, on_value=True
+            )
+
+            # reload project and check settings persist
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, on_value=True
+            )
+
+    def check_overwrite_existing_files_configs(
+        self, pilot, project_name, on_value
+    ):
+        """"""
+        assert (
+            pilot.app.screen.query_one(
+                "#configs_overwrite_files_checkbox"
+            ).value
+            is on_value
+        )
+        assert (
+            pilot.app.screen.interface.tui_settings["overwrite_existing_files"]
+            is on_value
+        )
+
+        project = DataShuttle(project_name)
+        persistent_settings = project._load_persistent_settings()
+        assert (
+            persistent_settings["tui"]["overwrite_existing_files"] is on_value
+        )
