@@ -372,23 +372,23 @@ class Interface:
         cfg_to_load.convert_str_and_pathlib_paths(cfg_to_load, "path_to_str")
         return cfg_to_load
 
-    def get_next_sub_number(
+    def get_next_sub(
         self, top_level_folder: TopLevelFolder
     ) -> InterfaceOutput:
         try:
-            next_sub = self.project.get_next_sub_number(
+            next_sub = self.project.get_next_sub(
                 top_level_folder, return_with_prefix=True, local_only=True
             )
             return True, next_sub
         except BaseException as e:
             return False, str(e)
 
-    def get_next_ses_number(
+    def get_next_ses(
         self, top_level_folder: TopLevelFolder, sub: str
     ) -> InterfaceOutput:
 
         try:
-            next_ses = self.project.get_next_ses_number(
+            next_ses = self.project.get_next_ses(
                 top_level_folder, sub, return_with_prefix=True, local_only=True
             )
             return True, next_ses

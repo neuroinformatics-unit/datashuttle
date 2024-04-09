@@ -72,14 +72,14 @@ class TestFormatting(BaseTest):
         )
 
         with pytest.warns(UserWarning) as w:
-            project.get_next_sub_number(top_level_folder)
+            project.get_next_sub(top_level_folder)
         assert (
             str(w[0].message) == "A subject number has been skipped, "
             "currently used subject numbers are: [1, 2, 4]"
         )
 
         with pytest.warns(UserWarning) as w:
-            project.get_next_ses_number(top_level_folder, "sub-02")
+            project.get_next_ses(top_level_folder, "sub-02")
         assert (
             str(w[0].message)
             == "A subject number has been skipped, currently "

@@ -844,7 +844,7 @@ class DataShuttle:
         return getters.get_existing_project_paths()
 
     @check_configs_set
-    def get_next_sub_number(
+    def get_next_sub(
         self,
         top_level_folder: TopLevelFolder,
         return_with_prefix: bool = True,
@@ -874,7 +874,7 @@ class DataShuttle:
         )
 
     @check_configs_set
-    def get_next_ses_number(
+    def get_next_ses(
         self,
         top_level_folder: TopLevelFolder,
         sub: str,

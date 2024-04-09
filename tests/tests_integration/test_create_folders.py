@@ -283,9 +283,7 @@ class TestMakeFolders(BaseTest):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("return_with_prefix", [True, False])
-    def test_get_next_sub_number(
-        self, project, return_with_prefix, top_level_folder
-    ):
+    def test_get_next_sub(self, project, return_with_prefix, top_level_folder):
         """
         Test that the next subject number is suggested correctly.
         This takes the union of subjects available in the local and
@@ -297,9 +295,7 @@ class TestMakeFolders(BaseTest):
             project, top_level_folder, ["001", "002", "003"]
         )
 
-        new_num = project.get_next_sub_number(
-            top_level_folder, return_with_prefix
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
 
         assert new_num == "sub-004" if return_with_prefix else "004"
 
@@ -308,38 +304,32 @@ class TestMakeFolders(BaseTest):
 
         shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
-        new_num = project.get_next_sub_number(
-            top_level_folder, return_with_prefix
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Add large-sub num folders to local and check all are detected.
         project.create_folders(top_level_folder, ["004", "005"])
 
-        new_num = project.get_next_sub_number(
-            top_level_folder, return_with_prefix
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-006" if return_with_prefix else "006"
 
         # check `local_path` option
         os.makedirs(project.cfg["central_path"] / top_level_folder / "sub-006")
-        new_num = project.get_next_sub_number(
+        new_num = project.get_next_sub(
             top_level_folder, return_with_prefix, local_only=False
         )
         assert new_num == "sub-007" if return_with_prefix else "007"
 
-        new_num = project.get_next_sub_number(
+        new_num = project.get_next_sub(
             top_level_folder, return_with_prefix, local_only=True
         )
         assert new_num == "sub-006" if return_with_prefix else "006"
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("return_with_prefix", [True, False])
-    def test_get_next_ses_number(
-        self, project, return_with_prefix, top_level_folder
-    ):
+    def test_get_next_ses(self, project, return_with_prefix, top_level_folder):
         """
-        Almost identical to test_get_next_sub_number() but with calls
+        Almost identical to test_get_next_sub() but with calls
         for searching sessions. This could be combined with
         above but reduces readability, so leave with some duplication.
 
@@ -353,12 +343,10 @@ class TestMakeFolders(BaseTest):
         )
 
         # Test the next sub and ses number are correct
-        new_num = project.get_next_sub_number(
-            top_level_folder, return_with_prefix
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-10" if return_with_prefix else "10"
 
-        new_num = project.get_next_ses_number(
+        new_num = project.get_next_ses(
             top_level_folder, sub, return_with_prefix
         )
         assert new_num == "ses-004" if return_with_prefix else "004"
@@ -369,12 +357,10 @@ class TestMakeFolders(BaseTest):
 
         shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
-        new_num = project.get_next_sub_number(
-            top_level_folder, return_with_prefix
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-10" if return_with_prefix else "10"
 
-        new_num = project.get_next_ses_number(
+        new_num = project.get_next_ses(
             top_level_folder, sub, return_with_prefix
         )
         assert new_num == "ses-004" if return_with_prefix else "004"
@@ -383,7 +369,7 @@ class TestMakeFolders(BaseTest):
         # the next session is updated accordingly.
         project.create_folders(top_level_folder, sub, ["004", "005"])
 
-        new_num = project.get_next_ses_number(
+        new_num = project.get_next_ses(
             top_level_folder, sub, return_with_prefix
         )
         assert new_num == "ses-006" if return_with_prefix else "006"
@@ -392,12 +378,12 @@ class TestMakeFolders(BaseTest):
         os.makedirs(
             project.cfg["central_path"] / top_level_folder / sub / "ses-006"
         )
-        new_num = project.get_next_ses_number(
+        new_num = project.get_next_ses(
             top_level_folder, sub, return_with_prefix, local_only=False
         )
         assert new_num == "ses-007" if return_with_prefix else "007"
 
-        new_num = project.get_next_ses_number(
+        new_num = project.get_next_ses(
             top_level_folder, sub, return_with_prefix, local_only=True
         )
         assert new_num == "ses-006" if return_with_prefix else "006"
