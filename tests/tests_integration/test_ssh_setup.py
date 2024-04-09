@@ -55,7 +55,7 @@ class TestSSH:
         """
         orig_builtin = ssh_test_utils.setup_mock_input(input_)
 
-        project.setup_ssh_connection_to_central_server()
+        project.setup_ssh_connection()
 
         ssh_test_utils.restore_mock_input(orig_builtin)
 

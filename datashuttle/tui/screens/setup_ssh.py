@@ -20,7 +20,7 @@ from textual.widgets import (
 class SetupSshScreen(ModalScreen):
     """
     This dialog windows handles the TUI equivalent of API's
-    setup_connection_to_central_server(). This asks to
+    setup_ssh_connection(). This asks to
     confirm the central hostkey, and takes password to setup
     SSH key pair.
 

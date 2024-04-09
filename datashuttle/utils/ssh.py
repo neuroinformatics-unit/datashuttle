@@ -176,7 +176,7 @@ def connect_client_with_logging(
     except Exception:
         utils.log_and_raise_error(
             f"Could not connect to server. Ensure that \n"
-            f"1) You have run setup_ssh_connection_to_central_server() \n"
+            f"1) You have run setup_ssh_connection() \n"
             f"2) You are on VPN network if required. \n"
             f"3) The central_host_id: {cfg['central_host_id']} is"
             f" correct.\n"

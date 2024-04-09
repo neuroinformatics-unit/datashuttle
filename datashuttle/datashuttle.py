@@ -76,7 +76,7 @@ class DataShuttle:
     cfgs.make_and_get_logging_path().
 
     For transferring data between a central data storage
-    with SSH, use setup setup_ssh_connection_to_central_server().
+    with SSH, use setup setup_ssh_connection().
     This will allow you to check the server key, add host key to
     profile if accepted, and setup ssh key pair.
 
@@ -588,7 +588,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @requires_ssh_configs
-    def setup_ssh_connection_to_central_server(self) -> None:
+    def setup_ssh_connection(self) -> None:
         """
         Setup a connection to the central server using SSH.
         Assumes the central_host_id and central_host_username

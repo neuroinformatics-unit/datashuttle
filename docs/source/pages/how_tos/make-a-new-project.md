@@ -232,7 +232,7 @@ project.make_config_file(
 Next, a one-time command to set up the SSH connection must be run:
 
 ```{code-block} python
-project.setup_ssh_connection_to_central_server()
+project.setup_ssh_connection()
 ```
 
 Running `setup-ssh-connection-to-central-server` will require verification

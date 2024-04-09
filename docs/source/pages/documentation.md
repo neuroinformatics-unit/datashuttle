@@ -373,7 +373,7 @@ Next, a one-time command to setup the SSH connection must be run:
 
 :::{tab-item} Python API
 ```{code-block} python
-project.setup_ssh_connection_to_central_server()
+project.setup_ssh_connection()
 ```
 :::
 

@@ -51,7 +51,7 @@ If changing `SSH` configs, the connection may need to be
 [reconfigured](new-project-ssh) with:
 
 ```python
-project.setup_ssh_connection_to_central_server()
+project.setup_ssh_connection()
 ```
 
 :::
