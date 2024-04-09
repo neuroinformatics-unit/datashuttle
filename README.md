@@ -1,7 +1,4 @@
-
-<p style="text-align:center"> datashuttle </p>
-
-![datashuttle-overview-light](https://github.com/neuroinformatics-unit/datashuttle/assets/55797454/fd96f383-738f-46e8-92c0-686deba5c57a#gh-dark-light-only)
+# **datashuttle** 
 
 **datashuttle** is a tool to automate creation, validation and transfer of neuroscience project folders.
 
@@ -17,3 +14,5 @@ or drop into our [Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/str
 > [!WARNING]
 > **datashuttle** is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please don't hesitate
 > to get conctact if you experience any bugs or unexpected behaviour.
+
+![datashuttle-overview-light](https://github.com/neuroinformatics-unit/datashuttle/assets/55797454/fd96f383-738f-46e8-92c0-686deba5c57a#gh-dark-light-only)
