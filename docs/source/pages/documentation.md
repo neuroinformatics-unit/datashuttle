@@ -498,7 +498,7 @@ For example, the call:
 
 :::{tab-item} Python API
 ```{code-block} python
-project.upload(
+project.upload_custom(
 	sub_names="001@TO@003",
 	ses_names=["005_date-@*@", "006_date-@*@"],
 	datatype="behav"
@@ -634,7 +634,7 @@ the below command transfers only the first 25 subjects:
 
 :::{tab-item} Python API
 ```{code-block} python
-project.upload(
+project.upload_custom(
 	sub_names="001@TO@025",
 	ses_names="all",
 	datatype="all",
@@ -698,7 +698,7 @@ everything that comes after the `date` key:
 
 :::{tab-item} Python API
 ```{code-block} python
-project.upload(
+project.upload_custom(
 	sub_names=["001", "002"],
 	ses_names="005_condition-test_date-@*@",
 	datatype="behav",
@@ -851,7 +851,7 @@ Given our example *local* project folder above:
 
 :::{tab-item} Python API
 ```{code-block} console
-project.upload("all", "all", "all_non_datatype")
+project.upload_custom("all", "all", "all_non_datatype")
 ```
 :::
 
@@ -895,7 +895,7 @@ For `sub-002`, no other files are transferred because there is no non-*datatype*
 
 :::{tab-item} Python API
 ```{code-block} console
-project.upload("sub-001", "all", "all")
+project.upload_custom("sub-001", "all", "all")
 ```
 :::
 

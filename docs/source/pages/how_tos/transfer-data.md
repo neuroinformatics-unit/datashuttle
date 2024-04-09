@@ -240,11 +240,11 @@ and press `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-The `upload()` and `download()` methods can be used for custom
+The `upload_custom()` and `download_custom()` methods can be used for custom
 data transfers. For example, to perform a custom upload:
 
 ```python
-project.upload(
+project.upload_custom(
     top_level_folder="rawdata",
     sub_names="all_sub",
     ses_names="ses-001_@*@",

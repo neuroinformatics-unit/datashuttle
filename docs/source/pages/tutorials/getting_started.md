@@ -686,14 +686,14 @@ of files will now be available in the _local path_ folder.
 :::{tab-item} Python API
 :sync: python
 
-We can use the `download()` method (the download equivalent method of
-the `upload()`).
+We can use the `download_custom()` method (the download equivalent method of
+the `upload_custom()`).
 
 We will download only the behavioural data from the first
 session, using a few shortcuts available for custom transfers
 
 ```python
-project.download(
+project.download_custom(
     top_level_folder="rawdata",
     sub_names="all",
     ses_names="ses-001_@*@",

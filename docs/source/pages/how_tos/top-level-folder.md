@@ -53,7 +53,7 @@ project on the local machine you are using.
 When making folders, `create_folders` will only create folders in the
 working top-level folder.
 
-Transferring folders (e.g. with `upload()` or `download()`) will
+Transferring folders (e.g. with `upload_custom()` or `download_custom()`) will
 only transfer folders in the working top-level folder
 (unless `upload_entire_project()` or `download_entire_project()` is used).
 

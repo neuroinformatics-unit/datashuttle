@@ -283,14 +283,14 @@ class Interface:
         """
         try:
             if upload:
-                self.project.upload(
+                self.project.upload_custom(
                     selected_top_level_folder,
                     sub_names=sub_names,
                     ses_names=ses_names,
                     datatype=datatype,
                 )
             else:
-                self.project.download(
+                self.project.download_custom(
                     selected_top_level_folder,
                     sub_names=sub_names,
                     ses_names=ses_names,

@@ -456,7 +456,7 @@ def handle_upload_or_download(
         elif specific_top_level_folder == "derivatives":
             transfer_function = project.download_derivatives
         else:
-            transfer_function = project.download
+            transfer_function = project.download_custom
     else:
         central_path = project.cfg["central_path"]
 
@@ -467,7 +467,7 @@ def handle_upload_or_download(
         elif specific_top_level_folder == "derivatives":
             transfer_function = project.upload_derivatives
         else:
-            transfer_function = project.upload
+            transfer_function = project.upload_custom
 
     return transfer_function, central_path
 

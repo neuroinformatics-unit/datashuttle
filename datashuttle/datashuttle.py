@@ -292,7 +292,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def upload(
+    def upload_custom(
         self,
         top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
@@ -375,7 +375,7 @@ class DataShuttle:
             ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def download(
+    def download_custom(
         self,
         top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
@@ -391,8 +391,8 @@ class DataShuttle:
         not be overwritten even if the central file is an
         older version.
 
-        This function is identical to upload() but with the direction
-        of data transfer reversed. Please see upload() for arguments.
+        This function is identical to upload_custom() but with the direction
+        of data transfer reversed. Please see upload_custom() for arguments.
         "all" arguments will search the central
         project for sub / ses to download.
         """
@@ -444,12 +444,12 @@ class DataShuttle:
         Convenience function to upload all data.
 
         Alias for:
-            project.upload("all", "all", "all")
+            project.upload_custom("all", "all", "all")
         """
         if init_log:
             self._start_log(f"upload-{top_level_folder}", local_vars=locals())
 
-        self.upload(
+        self.upload_custom(
             top_level_folder,
             "all",
             "all",
@@ -470,14 +470,14 @@ class DataShuttle:
         """
         Convenience function to download all data.
 
-        Alias for : project.download("all", "all", "all")
+        Alias for : project.download_custom("all", "all", "all")
         """
         if init_log:
             self._start_log(
                 f"download-{top_level_folder}", local_vars=locals()
             )
 
-        self.download(
+        self.download_custom(
             top_level_folder,
             "all",
             "all",
@@ -1030,7 +1030,7 @@ class DataShuttle:
     def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to create_folders() or upload()
+        for example as when passed to create_folders() or upload_custom()
         or download()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
