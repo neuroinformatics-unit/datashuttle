@@ -92,7 +92,8 @@ class TransferStatusTree(CustomDirectoryTree):
         Updates the transfer diffs used to style the DirectoryTree.
         """
         self.transfer_diffs = get_local_and_central_file_differences(
-            self.interface.get_configs(), top_level_folders_to_check=["all"]
+            self.interface.get_configs(),
+            top_level_folders_to_check=["rawdata", "derivatives"],
         )
 
     # Overridden Methods
