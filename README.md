@@ -1,6 +1,5 @@
-# <center> **datashuttle** </center>
 
-<p style="align=center"> <b>datashuttle</b> </p>
+<p style="text-align:center"> datashuttle </p>
 
 ![datashuttle-overview-light](https://github.com/neuroinformatics-unit/datashuttle/assets/55797454/fd96f383-738f-46e8-92c0-686deba5c57a#gh-dark-light-only)
 
