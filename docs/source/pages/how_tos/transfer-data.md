@@ -33,7 +33,7 @@ There are three main methods to transfer data in **datashuttle**. These
 allow transfer between:
 
 1) The entire project (all files in both `rawdata` and `derivatives`)
-2) A specific top-level-folder (e.g. all files in `rawdata`)
+2) Only the `rawdata` or `derivatives` folder.
 3) A custom subset of subjects / sessions / datatypes.
 
 Below we will explore each method in turn, as well as consider
@@ -110,7 +110,7 @@ project.download_entire_project()
 ::::
 
 (transfer-top-level-folder)=
-## Transfer the top-level folder
+## Transfer only `rawdata` or `derivatives`
 
 This mode acts almost identically to
 [transferring the entire project](transfer-entire-project)
@@ -151,16 +151,16 @@ and press `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-The `upload_all()` or `download_all()` methods can be used with the argument `top_level_folder` to specify
-the top-level folder to transfer within.
+The `upload_rawdata(), `upload_derivatives()` or for downloading,  `download_rawdata()`, `download_derivatives()`
+to specify the top-level folder to transfer.
 
 In the next example, we will upload `rawdata` downloading `derivatives`.
 
 
 ```python
-project.upload_all("rawdata")
+project.upload_rawdata()
 
-project.download_all("derivatives")
+project.download_derivatives()
 ```
 
 :::

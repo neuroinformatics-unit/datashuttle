@@ -538,7 +538,7 @@ and all files will be uploaded from the local version of the project to central 
 Navigating to the `central_path` in your systems file browser, the newly transferred data
 will have appeared, simulating transfer to a separate data storage machine.
 
-Other methods (`upload_all()` and `upload()`) provide refined
+Other methods (e.g. `upload_rawdata()` and `upload_custom()`) provide refined
 data transfers (and every `upload` method has an equivalent `download` method).
 For more information  see the
 [How to Transfer Data](how-to-transfer-data) page
