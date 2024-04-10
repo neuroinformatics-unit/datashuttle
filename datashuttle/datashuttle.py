@@ -851,7 +851,7 @@ class DataShuttle:
         local_only: bool = False,
     ) -> str:
         """
-        Convenience function for get_next_sub_or_ses_number
+        Convenience function for get_next_sub_or_ses
         to find the next subject number.
 
         Parameters
@@ -864,7 +864,7 @@ class DataShuttle:
             If `True, only get names from `local_path`, otherwise from
             `local_path` and `central_path`.
         """
-        return getters.get_next_sub_or_ses_number(
+        return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
             sub=None,
@@ -882,7 +882,7 @@ class DataShuttle:
         local_only: bool = False,
     ) -> str:
         """
-        Convenience function for get_next_sub_or_ses_number
+        Convenience function for get_next_sub_or_ses
         to find the next session number.
 
         Parameters
@@ -901,7 +901,7 @@ class DataShuttle:
             If `True, only get names from `local_path`, otherwise from
             `local_path` and `central_path`.
         """
-        return getters.get_next_sub_or_ses_number(
+        return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
             sub=sub,

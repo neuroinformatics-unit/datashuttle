@@ -25,7 +25,7 @@ from datashuttle.utils.custom_exceptions import (
 )
 
 
-def get_next_sub_or_ses_number(
+def get_next_sub_or_ses(
     cfg: Configs,
     top_level_folder,
     sub: Optional[str],
@@ -124,7 +124,7 @@ def get_max_sub_or_ses_num_and_value_length(
     all_folders : List[str]
         A list of BIDS-style formatted folder names.
 
-    see `get_next_sub_or_ses_number()` for other arguments.
+    see `get_next_sub_or_ses()` for other arguments.
 
     Returns
     -------
