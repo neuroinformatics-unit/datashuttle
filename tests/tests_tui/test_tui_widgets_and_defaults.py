@@ -1252,7 +1252,7 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#transfer_tab_overwrite_select"
             )
             await self.move_select_to_position(
-                pilot, "#transfer_tab_overwrite_select", position=0
+                pilot, "#transfer_tab_overwrite_select", position=5
             )
             self.check_overwrite_existing_files_configs(
                 pilot, project_name, value="Always"
@@ -1269,7 +1269,7 @@ class TestTuiWidgets(TuiBase):
 
             # now  check "If Source Newer"
             await self.move_select_to_position(
-                pilot, "#transfer_tab_overwrite_select", position=1
+                pilot, "#transfer_tab_overwrite_select", position=6
             )
             self.check_overwrite_existing_files_configs(
                 pilot, project_name, value="If Source Newer"

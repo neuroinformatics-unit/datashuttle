@@ -147,7 +147,7 @@ class TestTuiTransfer(TuiBase):
             )
             await pilot.pause()
 
-            await self.check_persisent_settings(
+            await self.check_persistent_settings(
                 pilot,
             )
 
