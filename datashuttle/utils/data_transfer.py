@@ -40,6 +40,12 @@ class TransferData:
         List of datatypes to transfer, for the sessions / subjects
         specified. Can include datatype-level tranfser keywords.
 
+    overwrite_existing_files :
+        If `False`, files on target will never be overwritten
+        by files transferred from  source. If `True`, local files
+        will be overwritten if there is any difference (date, size)
+        between central and local files.
+
     dry_run : bool,
         If `True`, transfer will not actually occur but will be logged
         as if it did (to see what would happen for a transfer).
