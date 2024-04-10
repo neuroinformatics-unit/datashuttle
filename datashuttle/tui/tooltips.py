@@ -150,7 +150,7 @@ def get_tooltip(id: str) -> str:
             "Upload (local to central) or \n Download (central to local)."
         )
 
-    elif id == "#overwrite_existing_files_select":
+    elif id == "#transfer_tab_overwrite_select":
         tooltip = (
             "Determine whether source file will overwrite destination.\n\n"
             "'never': destination file will never be overwritten.\n\n"
@@ -161,7 +161,7 @@ def get_tooltip(id: str) -> str:
         )
 
     # Dry Run
-    elif id == "#dry_run_checkbox":
+    elif id == "#transfer_tab_dry_run_checkbox":
         tooltip = (
             "Perform a dry-run to test what will happenen during transfer.\n\n"
             "Logs will be written, but no data will actually be transferred."

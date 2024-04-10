@@ -1249,10 +1249,10 @@ class TestTuiWidgets(TuiBase):
 
             # now  check "Always"
             await self.scroll_to_click_pause(
-                pilot, "#overwrite_existing_files_select"
+                pilot, "#transfer_tab_overwrite_select"
             )
             await self.move_select_to_position(
-                pilot, "#overwrite_existing_files_select", position=0
+                pilot, "#transfer_tab_overwrite_select", position=0
             )
             self.check_overwrite_existing_files_configs(
                 pilot, project_name, value="Always"
@@ -1269,7 +1269,7 @@ class TestTuiWidgets(TuiBase):
 
             # now  check "If Source Newer"
             await self.move_select_to_position(
-                pilot, "#overwrite_existing_files_select", position=1
+                pilot, "#transfer_tab_overwrite_select", position=1
             )
             self.check_overwrite_existing_files_configs(
                 pilot, project_name, value="If Source Newer"
@@ -1306,7 +1306,7 @@ class TestTuiWidgets(TuiBase):
             # default is off
             self.check_dry_run(pilot, project_name, value=False)
 
-            await self.change_checkbox(pilot, "#dry_run_checkbox")
+            await self.change_checkbox(pilot, "#transfer_tab_dry_run_checkbox")
 
             self.check_dry_run(pilot, project_name, value=True)
 
@@ -1324,7 +1324,7 @@ class TestTuiWidgets(TuiBase):
     # combine.
 
     def check_dry_run(self, pilot, project_name, value):
-        assert pilot.app.screen.query_one("#dry_run_checkbox").value == value
+        assert pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox").value == value
 
         assert pilot.app.screen.interface.tui_settings["dry_run"] is value
 
@@ -1338,7 +1338,7 @@ class TestTuiWidgets(TuiBase):
         """"""
         assert (
             pilot.app.screen.query_one(
-                "#overwrite_existing_files_select"
+                "#transfer_tab_overwrite_select"
             ).value
             == value
         )

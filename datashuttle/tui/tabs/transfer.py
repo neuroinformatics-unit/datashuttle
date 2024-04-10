@@ -167,7 +167,7 @@ class TransferTab(TreeAndInputTab):
             ),
             Vertical(
                 Horizontal(
-                    Label("Overwrite:", id="overwrite_label"),
+                    Label("Overwrite:", id="transfer_tab_overwrite_label"),
                     Select(
                         (
                             (name, name)
@@ -179,16 +179,15 @@ class TransferTab(TreeAndInputTab):
                         .title()
                         .replace("_", " "),
                         allow_blank=False,
-                        id="overwrite_existing_files_select",
+                        id="transfer_tab_overwrite_select",
                     ),
-                    id="overwrite_settings_container",
                 ),
                 # needs to be in horizontal or formats with large space for some rason.
                 Horizontal(
                     Checkbox(
                         "Dry Run",
                         value=self.interface.tui_settings["dry_run"],
-                        id="dry_run_checkbox",
+                        id="transfer_tab_dry_run_checkbox",
                     )
                 ),
             ),
@@ -208,8 +207,8 @@ class TransferTab(TreeAndInputTab):
             "#transfer_all_checkbox",
             "#transfer_all_datatype_checkbox",
             "#transfer_all_non_datatype_checkbox",
-            "#overwrite_existing_files_select",
-            "#dry_run_checkbox",
+            "#transfer_tab_overwrite_select",
+            "#transfer_tab_dry_run_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -225,7 +224,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_select_changed(self, event: Select.Changed) -> None:
-        if event.select.id == "overwrite_existing_files_select":
+        if event.select.id == "transfer_tab_overwrite_select":
             assert event.select.value in ["Never", "Always", "If Source Newer"]
             format_select = event.select.value.lower().replace(" ", "_")
             self.interface.update_tui_settings(
@@ -235,7 +234,7 @@ class TransferTab(TreeAndInputTab):
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
         if (
-            event.checkbox.id == "dry_run_checkbox"
+            event.checkbox.id == "transfer_tab_dry_run_checkbox"
         ):  # TODO: UPDATE NAMES TO INC. TAB! ALSO UPDATE TOOLTIPS
             self.interface.update_tui_settings(
                 event.checkbox.value,

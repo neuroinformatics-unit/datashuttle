@@ -101,16 +101,16 @@ TabScreen > TabbedContent {
     margin: 1 0 0 0;
 }
 
-#overwrite_existing_files_select {
+#transfer_tab_overwrite_select {
     width: 25;
     margin: 2 0 0 0;
 }
 
-#overwrite_label {
+#transfer_tab_overwrite_label {
     margin: 3 0 0 1;
 }
 
-#dry_run_checkbox {
+#transfer_tab_dry_run_checkbox {
     margin: 1 0 0 0;
 }
 

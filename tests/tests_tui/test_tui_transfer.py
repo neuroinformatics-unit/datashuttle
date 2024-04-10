@@ -75,15 +75,15 @@ class TestTuiTransfer(TuiBase):
 
         if position is not None:
             await self.move_select_to_position(
-                pilot, "#overwrite_existing_files_select", position=position
+                pilot, "#transfer_tab_overwrite_select", position=position
             )
 
-    async def set_dry_run_checkbox(self, pilot, dry_run_setting):
+    async def set_transfer_tab_dry_run_checkbox(self, pilot, dry_run_setting):
         if (
-            pilot.app.screen.query_one("#dry_run_checkbox")
+            pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox")
             is not dry_run_setting
         ):
-            await self.change_checkbox(pilot, "#dry_run_checkbox")
+            await self.change_checkbox(pilot, "#transfer_tab_dry_run_checkbox")
 
     async def set_and_check_persistent_settings(
         self, pilot, overwrite_setting, dry_run_setting
@@ -93,7 +93,7 @@ class TestTuiTransfer(TuiBase):
         to datashuttle methods by checking the logs.
         """
         await self.set_overwrite_checkbox(pilot, overwrite_setting)
-        await self.set_dry_run_checkbox(pilot, dry_run_setting)
+        await self.set_transfer_tab_dry_run_checkbox(pilot, dry_run_setting)
 
         logging_path = pilot.app.screen.interface.project.get_logging_path()
 
