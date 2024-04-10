@@ -344,8 +344,8 @@ If the folder names will break with the specification, an error will be
 raised and the folders will not be created.
 ```
 
-Two useful methods to automate folder creation are `get_next_sub_number()` and
-`get_next_ses_number()`. These can be used to automatically get the next subject
+Two useful methods to automate folder creation are `get_next_sub()` and
+`get_next_ses()`. These can be used to automatically get the next subject
 and session names in a project.
 
 For example, to get the next subject
@@ -353,8 +353,8 @@ in this project (`sub-002`) and the next session for that subject (in this case,
 as it is the first session for `sub-002`, it will be `ses-001`) we can run
 
 ```python
-next_sub = project.get_next_sub_number("rawdata", local_only=True)                # returns "sub-001"
-next_ses = project.get_next_ses_number("rawdata", sub=next_sub, local_only=True)  # returns "ses-001"
+next_sub = project.get_next_sub("rawdata", local_only=True)                # returns "sub-001"
+next_ses = project.get_next_ses("rawdata", sub=next_sub, local_only=True)  # returns "ses-001"
 
 project.create_folders(
     "rawdata",

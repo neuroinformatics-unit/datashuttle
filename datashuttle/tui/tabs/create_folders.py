@@ -276,9 +276,7 @@ class CreateFoldersTab(TreeAndInputTab):
         ]["create_tab"]
 
         if prefix == "sub":
-            success, output = self.interface.get_next_sub_number(
-                top_level_folder
-            )
+            success, output = self.interface.get_next_sub(top_level_folder)
             if not success:
                 self.mainwindow.show_modal_error_dialog(output)
                 return
@@ -306,7 +304,7 @@ class CreateFoldersTab(TreeAndInputTab):
             else:
                 sub = sub_names[0]
 
-            success, output = self.interface.get_next_ses_number(
+            success, output = self.interface.get_next_ses(
                 top_level_folder, sub
             )
             if not success:
