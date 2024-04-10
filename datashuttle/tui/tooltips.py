@@ -150,14 +150,21 @@ def get_tooltip(id: str) -> str:
             "Upload (local to central) or \n Download (central to local)."
         )
 
-    # Overwrite Existing Files
-    elif id == "#configs_overwrite_files_checkbox":
+    elif id == "#overwrite_existing_files_select":
         tooltip = (
-            "If on, more recent file versions will overwrite existing, "
-            "older versions of the file.\n\n"
-            "If off, a file on the target local (e.g. central during upload) "
-            "will never be overwritten by a file on the source location "
-            "(e.g. local during upload), even if the file is newer."
+            "Determine whether source file will overwrite destination.\n\n"
+            "'never': destination file will never be overwritten.\n\n"
+            "'always': destination file will always be overwritten if "
+            "source and destination differ in size or datetime.\n\n"
+            "'if source newer': destination will only be overwritten "
+            "if the source file is newer."
+        )
+
+    # Dry Run
+    elif id == "#dry_run_checkbox":
+        tooltip = (
+            "Perform a dry-run to test what will happenen during transfer.\n\n"
+            "Logs will be written, but no data will actually be transferred."
         )
 
     # custom subject input

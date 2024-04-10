@@ -208,6 +208,8 @@ class TransferTab(TreeAndInputTab):
             "#transfer_all_checkbox",
             "#transfer_all_datatype_checkbox",
             "#transfer_all_non_datatype_checkbox",
+            "#overwrite_existing_files_select",
+            "#dry_run_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
