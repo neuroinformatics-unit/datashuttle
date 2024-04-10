@@ -239,10 +239,6 @@ class Interface:
                     if upload
                     else self.project.download_derivatives
                 )
-            else:
-                raise ValueError(
-                    "`selected_top_level_folder` must be 'rawdata' or 'derivatives'."
-                )
 
             transfer_func()
 
