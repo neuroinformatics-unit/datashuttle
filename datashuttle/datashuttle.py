@@ -1436,9 +1436,18 @@ class DataShuttle:
         and the new keys need adding.
         If changing keys within the top level (e.g. a dict entry in
         "tui") this method will need to be extended.
+
+        Added keys:
+            v0.4.0: tui "overwrite_existing_files" and "dry_run"
         """
         if "name_templates" not in settings:
             settings.update(canonical_configs.get_name_templates_defaults())
 
+        canonical_tui_configs = canonical_configs.get_tui_config_defaults()
+
         if "tui" not in settings:
-            settings.update(canonical_configs.get_tui_config_defaults())
+            settings.update(canonical_tui_configs)
+
+        for key in ["overwrite_existing_files", "dry_run"]:
+            if key not in settings["tui"]:
+                settings["tui"][key] = canonical_tui_configs["tui"][key]
