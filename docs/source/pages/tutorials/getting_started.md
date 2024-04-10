@@ -492,7 +492,7 @@ The `Overwrite Existing Files` setting is very important.
 It takes on the options **never**, **always** or **if source newer**.
 
 See the [transfer options](transfer-options) section for full details on
-these options.
+this and other transfer settings.
 ```
 
 ::::{tab-set}
