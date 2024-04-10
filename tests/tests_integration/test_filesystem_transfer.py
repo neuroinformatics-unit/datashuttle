@@ -13,15 +13,19 @@ from datashuttle.configs.canonical_tags import tags
 
 class TestFileTransfer(BaseTest):
 
-    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
+    @pytest.mark.parametrize(
+        "top_level_folder", canonical_folders.get_top_level_folders()
+    )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_top_level_folder_func", [True, False])
+    @pytest.mark.parametrize(
+        "transfer_method", ["entire_project", "top_level_folder", "custom"]
+    )
     def test_transfer_empty_folder_structure(
         self,
         project,
         top_level_folder,
         upload_or_download,
-        use_top_level_folder_func,
+        transfer_method,
     ):
         """
         First make a project (folders only) locally.
@@ -38,17 +42,13 @@ class TestFileTransfer(BaseTest):
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(
-            project,
-            upload_or_download,
-            specific_top_level_folder=(
-                top_level_folder if use_top_level_folder_func else False
-            ),
+            project, upload_or_download, transfer_method, top_level_folder
         )
 
-        if use_top_level_folder_func:
-            transfer_function()
-        else:
+        if transfer_method == "custom":
             transfer_function(top_level_folder, "all", "all", "all")
+        else:
+            transfer_function()
 
         test_utils.check_folder_tree_is_correct(
             os.path.join(base_path_to_check, top_level_folder),
@@ -65,17 +65,17 @@ class TestFileTransfer(BaseTest):
         ).is_dir()
 
     @pytest.mark.parametrize(
-        "top_level_folder_to_transfer",
+        "top_level_folder",
         canonical_folders.get_top_level_folders(),
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_top_level_folder_func", [True, False])
+    @pytest.mark.parametrize("transfer_method", ["top_level_folder", "custom"])
     def test_transfer_across_top_level_folders(
         self,
         project,
-        top_level_folder_to_transfer,
+        top_level_folder,
         upload_or_download,
-        use_top_level_folder_func,
+        transfer_method,
     ):
         """
         For each possible top level folder (e.g. rawdata, derivatives)
@@ -99,28 +99,18 @@ class TestFileTransfer(BaseTest):
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(
-            project,
-            upload_or_download,
-            specific_top_level_folder=(
-                top_level_folder_to_transfer
-                if use_top_level_folder_func
-                else False
-            ),
+            project, upload_or_download, transfer_method, top_level_folder
         )
 
-        if use_top_level_folder_func:
-            transfer_function()
+        if transfer_method == "custom":
+            transfer_function(top_level_folder, "all", "all", "all")
         else:
-            transfer_function(
-                top_level_folder_to_transfer, "all", "all", "all"
-            )
+            transfer_function()
 
-        full_base_path_to_check = (
-            base_path_to_check / top_level_folder_to_transfer
-        )
+        full_base_path_to_check = base_path_to_check / top_level_folder
 
         test_utils.check_working_top_level_folder_only_exists(
-            top_level_folder_to_transfer,
+            top_level_folder,
             full_base_path_to_check,
             subs,
             sessions,
@@ -135,12 +125,11 @@ class TestFileTransfer(BaseTest):
             test_utils.make_and_check_local_project_folders(
                 project, top_level_folder, subs, sessions, "all"
             )
-
         (
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(
-            project, upload_or_download, transfer_entire_project=True
+            project, upload_or_download, transfer_method="entire_project"
         )
 
         transfer_function()
@@ -169,7 +158,7 @@ class TestFileTransfer(BaseTest):
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_transfer_empty_folder_specific_dataal_data(
+    def test_transfer_empty_folder_specific_data(
         self, project, upload_or_download, datatype_to_transfer
     ):
         """
@@ -185,7 +174,9 @@ class TestFileTransfer(BaseTest):
         (
             transfer_function,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method="custom"
+        )
 
         transfer_function("rawdata", subs, sessions, datatype_to_transfer)
 
@@ -229,7 +220,9 @@ class TestFileTransfer(BaseTest):
         (
             transfer_function,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method="custom"
+        )
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         transfer_function(
@@ -272,7 +265,9 @@ class TestFileTransfer(BaseTest):
         (
             transfer_function,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method="custom"
+        )
 
         subs_to_upload = [subs[i] for i in sub_idx_to_upload]
         ses_to_upload = [sessions[i] for i in ses_idx_to_upload]
@@ -310,7 +305,9 @@ class TestFileTransfer(BaseTest):
         (
             transfer_function,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method="custom"
+        )
 
         transfer_function("rawdata", subs, "all", "all")
 
@@ -355,7 +352,9 @@ class TestFileTransfer(BaseTest):
         (
             transfer_function,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method="custom"
+        )
 
         transfer_function(
             "rawdata",
@@ -448,28 +447,26 @@ class TestFileTransfer(BaseTest):
         "overwrite_existing_files", ["never", "always", "if_source_newer"]
     )
     @pytest.mark.parametrize(
-        "direction", ["earlier_to_later", "later_to_earlier"]
-    )
-    @pytest.mark.parametrize(
-        "transfer_method", ["entire_project", "custom", "top_level"]
+        "transfer_method", ["entire_project", "custom", "top_level_folder"]
     )
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
-    def test_overwrite_same_size_different_times(
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_overwrite_same_size_earlier_to_later(
         self,
         project,
         overwrite_existing_files,
         transfer_method,
-        direction,
         top_level_folder,
+        upload_or_download,
     ):
         """
         Main test to check every parameterization for overwrite settings.
         It is such an important setting it is tested for all top level folder,
-        transfer method.
+        transfer method, even though it makes for quite a confusing function.
 
         Check that the `overwrite_existing_files` setting performs as
-        expected when transferring two files that are the same size
-        but different dates:
+        expected when transferring two files of the same size, the
+        one that is older onto the one that is newer.
 
         "never" : files will never be overwritten
         "always" : files will be overwritten wherever there is a date difference
@@ -477,88 +474,97 @@ class TestFileTransfer(BaseTest):
         "if_source_newer" : only overwrite when the source file is
                             newer than the target (only in `later_to_earlier`
                             parameter)
+
+        Two files are written with 'earlier' and 'later' times. The
+        exact location of these files is abstracted as will change
+        depending on uploading or downloading. Transfer the 'earlier'
+        onto the 'later' - it should be transferred only in the
+        'always' case.
         """
-        local_file_path, central_file_path = self.setup_overwrite_file_tests(
-            top_level_folder, project
+        path_earlier, path_later = self.setup_overwrite_file_tests(
+            upload_or_download, top_level_folder, project
         )
 
-        # Write a local file and transfer
-        test_utils.write_file(local_file_path, contents="file earlier")
-        time.sleep(1)
-        test_utils.write_file(central_file_path, contents="file laterxx")
+        assert os.path.getsize(path_earlier) == os.path.getsize(path_later)
 
-        assert os.path.getsize(local_file_path) == os.path.getsize(
-            central_file_path
-        )
-        assert os.path.getmtime(local_file_path) < os.path.getmtime(
-            central_file_path
+        transfer_func = test_utils.get_transfer_func(
+            project, upload_or_download, transfer_method, top_level_folder
         )
 
-        if direction == "earlier_to_later":
+        if transfer_method == "custom":
+            transfer_func(
+                top_level_folder,
+                "all",
+                "all",
+                "all",
+                overwrite_existing_files=overwrite_existing_files,
+            )
+        else:
+            transfer_func(overwrite_existing_files=overwrite_existing_files)
 
-            if transfer_method == "entire_project":
-                project.upload_entire_project(
-                    overwrite_existing_files=overwrite_existing_files
-                )
-            elif transfer_method == "top_level":
-                func = (
-                    project.upload_rawdata
-                    if top_level_folder == "rawdata"
-                    else project.upload_derivatives
-                )
-                func(overwrite_existing_files=overwrite_existing_files)
-            else:
-                project.upload_custom(
-                    top_level_folder,
-                    "all",
-                    "all",
-                    "all",
-                    overwrite_existing_files=overwrite_existing_files,
-                )
+        if overwrite_existing_files in ["never", "if_source_newer"]:
+            # The newer file is not transferred
+            assert test_utils.read_file(path_later) == ["file laterxx"]
+        elif overwrite_existing_files == "always":
+            # The newer file is transferred
+            assert test_utils.read_file(path_later) == ["file earlier"]
 
-            if overwrite_existing_files in ["never", "if_source_newer"]:
-                # the older file is not transferred
-                assert test_utils.read_file(central_file_path) == [
-                    "file laterxx"
-                ]
-            elif overwrite_existing_files == "always":
-                # folder file is transferred as different
-                assert test_utils.read_file(central_file_path) == [
-                    "file earlier"
-                ]
+    @pytest.mark.parametrize(
+        "overwrite_existing_files", ["never", "always", "if_source_newer"]
+    )
+    @pytest.mark.parametrize(
+        "transfer_method", ["entire_project", "custom", "top_level_folder"]
+    )
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_overwrite_same_size_later_to_earlier(
+        self,
+        project,
+        overwrite_existing_files,
+        transfer_method,
+        top_level_folder,
+        upload_or_download,
+    ):
+        """
+        This functions is extremely similar to
+        `test_overwrite_same_size_later_to_earlier()` but it is much
+        easier to understand individually when they are split.
 
-        elif direction == "later_to_earlier":
+        Again test overwrite setting for every possible combination,
+        but this time swap the transfer function direction such that
+        the later file is transferred onto the earlier file. This
+        should transfer both in the 'if_source_newer' and 'always' case.
+        """
+        path_earlier, path_later = self.setup_overwrite_file_tests(
+            upload_or_download, top_level_folder, project
+        )
 
-            if transfer_method == "entire_project":
-                project.download_entire_project(
-                    overwrite_existing_files=overwrite_existing_files
-                )
-            elif transfer_method == "top_level":
-                func = (
-                    project.download_rawdata
-                    if top_level_folder == "rawdata"
-                    else project.download_derivatives
-                )
-                func(overwrite_existing_files=overwrite_existing_files)
-            else:
-                project.download_custom(
-                    top_level_folder,
-                    "all",
-                    "all",
-                    "all",
-                    overwrite_existing_files=overwrite_existing_files,
-                )
+        assert os.path.getsize(path_earlier) == os.path.getsize(path_later)
 
-            if overwrite_existing_files == "never":
-                # The newer file is not transferred
-                assert test_utils.read_file(local_file_path) == [
-                    "file earlier"
-                ]
-            elif overwrite_existing_files in ["always", "if_source_newer"]:
-                # The newer file is transferred
-                assert test_utils.read_file(local_file_path) == [
-                    "file laterxx"
-                ]
+        swapped_direction = (
+            "download" if upload_or_download == "upload" else "upload"
+        )
+        transfer_func = test_utils.get_transfer_func(
+            project, swapped_direction, transfer_method, top_level_folder
+        )
+
+        if transfer_method == "custom":
+            transfer_func(
+                top_level_folder,
+                "all",
+                "all",
+                "all",
+                overwrite_existing_files=overwrite_existing_files,
+            )
+        else:
+            transfer_func(overwrite_existing_files=overwrite_existing_files)
+
+        if overwrite_existing_files == "never":
+            # The newer file is not transferred
+            assert test_utils.read_file(path_earlier) == ["file earlier"]
+        elif overwrite_existing_files in ["if_source_newer", "always"]:
+            # The newer file is transferred
+            assert test_utils.read_file(path_earlier) == ["file laterxx"]
 
     @pytest.mark.parametrize(
         "overwrite_existing_files", ["never", "always", "if_source_newer"]
@@ -571,8 +577,8 @@ class TestFileTransfer(BaseTest):
         not transfer even if the older file is larger. This is the expected
         behaviour from rclone, this is confidence check on understanding.
         """
-        local_file_path, central_file_path = self.setup_overwrite_file_tests(
-            "rawdata", project
+        local_file_path, central_file_path = (
+            self.get_paths_to_a_local_and_central_file(project, "rawdata")
         )
 
         # Write a local file and transfer
@@ -600,8 +606,7 @@ class TestFileTransfer(BaseTest):
         elif overwrite_existing_files == "always":
             assert test_utils.read_file(central_file_path) == ["file earlier"]
 
-    def setup_overwrite_file_tests(self, top_level_folder, project):
-        """"""
+    def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
         path_to_test_file = (
             Path(top_level_folder)
             / "sub-001"
@@ -612,7 +617,66 @@ class TestFileTransfer(BaseTest):
 
         local_file_path = project.cfg["local_path"] / path_to_test_file
         central_file_path = project.cfg["central_path"] / path_to_test_file
+
         return local_file_path, central_file_path
+
+    def setup_overwrite_file_tests(
+        self, upload_or_download, top_level_folder, project
+    ):
+        """"""
+        local_file_path, central_file_path = (
+            self.get_paths_to_a_local_and_central_file(
+                project, top_level_folder
+            )
+        )
+
+        # Write a local file and transfer
+        if upload_or_download == "upload":
+            path_earlier = local_file_path
+            path_later = central_file_path
+        else:
+            path_earlier = central_file_path
+            path_later = local_file_path
+
+        test_utils.write_file(path_earlier, contents="file earlier")
+        time.sleep(1)
+        test_utils.write_file(path_later, contents="file laterxx")
+
+        assert os.path.getmtime(path_earlier) < os.path.getmtime(path_later)
+
+        return path_earlier, path_later
+
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
+    @pytest.mark.parametrize(
+        "transfer_method", ["entire_project", "top_level_folder", "custom"]
+    )
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    def test_dry_run(
+        self, project, top_level_folder, transfer_method, upload_or_download
+    ):
+        """
+        Just do a quick functional test on dry-run that indeed nothing
+        is transferred across all top-level-folder / upload-download
+        methods.
+        """
+        local_file_path, _ = self.get_paths_to_a_local_and_central_file(
+            project, "rawdata"
+        )
+
+        test_utils.write_file(local_file_path, contents="test contents")
+
+        project.upload_rawdata(dry_run=True)
+
+        transfer_func = test_utils.get_transfer_func(
+            project, upload_or_download, transfer_method, top_level_folder
+        )
+
+        if transfer_method == "custom":
+            transfer_func(top_level_folder, "all", "all", "all", dry_run=True)
+        else:
+            transfer_func(dry_run=True)
+
+        assert len(list(project.cfg["central_path"].glob("*"))) == 0
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
