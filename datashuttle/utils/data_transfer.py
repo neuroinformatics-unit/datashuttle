@@ -42,9 +42,9 @@ class TransferData:
 
     overwrite_existing_files :
         If `False`, files on target will never be overwritten
-        by files transferred from  source. If `True`, local files
+        by files transferred from  source. If `True`, target files
         will be overwritten if there is any difference (date, size)
-        between central and local files.
+        between source and target files.
 
     dry_run : bool,
         If `True`, transfer will not actually occur but will be logged
