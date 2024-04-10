@@ -51,30 +51,25 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
-            await self.check_overwrite_existing_files(pilot)
+            await self.check_persistent_settings(pilot)
 
             await pilot.pause()
 
-    async def check_overwrite_existing_files(self, pilot):
+    async def check_persistent_settings(self, pilot):
         """
         Run transfer with each overwrite setting and check it is propagated
         to datashuttle methods.
         """
-        await self.check_set_overwrite_and_run_transfer(pilot, "never")
+        await self.set_and_check_persistent_settings(pilot, "never", True)
 
-        await self.check_set_overwrite_and_run_transfer(pilot, "always")
+        await self.set_and_check_persistent_settings(pilot, "always", False)
 
-        await self.check_set_overwrite_and_run_transfer(
-            pilot, "if_source_newer"
+        await self.set_and_check_persistent_settings(
+            pilot, "if_source_newer", True
         )
 
-    async def check_set_overwrite_and_run_transfer(
-        self, pilot, overwrite_setting
-    ):
-        """
-        Run transfer with an overwrite setting and check it is propagated
-        to datashuttle methods by checking the logs.
-        """
+    async def set_overwrite_checkbox(self, pilot, overwrite_setting):
+        """"""
         all_positions = {"never": None, "always": 5, "if_source_newer": 6}
         position = all_positions[overwrite_setting]
 
@@ -82,6 +77,24 @@ class TestTuiTransfer(TuiBase):
             await self.move_select_to_position(
                 pilot, "#overwrite_existing_files_select", position=position
             )
+
+    async def set_dry_run_checkbox(self, pilot, dry_run_setting):
+        if (
+            pilot.app.screen.query_one("#dry_run_checkbox")
+            is not dry_run_setting
+        ):
+            await self.change_checkbox(pilot, "#dry_run_checkbox")
+
+    async def set_and_check_persistent_settings(
+        self, pilot, overwrite_setting, dry_run_setting
+    ):
+        """
+        Run transfer with an overwrite setting and check it is propagated
+        to datashuttle methods by checking the logs.
+        """
+        await self.set_overwrite_checkbox(pilot, overwrite_setting)
+        await self.set_dry_run_checkbox(pilot, dry_run_setting)
+
         logging_path = pilot.app.screen.interface.project.get_logging_path()
 
         test_utils.delete_log_files(logging_path)
@@ -90,8 +103,8 @@ class TestTuiTransfer(TuiBase):
         await self.close_messagebox(pilot)
 
         log = test_utils.read_log_file(logging_path)
-
         assert f"overwrite_existing_files': '{overwrite_setting}'" in log
+        assert f"dry_run': {dry_run_setting}" in log
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -134,7 +147,7 @@ class TestTuiTransfer(TuiBase):
             )
             await pilot.pause()
 
-            await self.check_overwrite_existing_files(
+            await self.check_persisent_settings(
                 pilot,
             )
 
@@ -207,7 +220,7 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
-            await self.check_overwrite_existing_files(
+            await self.check_persistent_settings(
                 pilot,
             )
 
