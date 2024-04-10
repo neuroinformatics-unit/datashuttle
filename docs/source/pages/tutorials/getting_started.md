@@ -1,4 +1,5 @@
 (tutorial-getting-started)=
+
 # Getting Started
 
 ## Introduction
@@ -373,7 +374,7 @@ the central storage, set this to `False`.
 ::::
 
 This was a quick overview of the creating folders—see [How to use Name Templates](how-to-use-name-templates)
-and [How to use Create Folder Tags](how-to-create-folders2) for more detail on validation and convenience tags.
+and [How to use Create Folder Tags](how-to-create-folders) for more detail on validation and convenience tags.
 
 ## Exploring folders
 
