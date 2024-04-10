@@ -1229,6 +1229,7 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_overwrite_existing_files(self, setup_project_paths):
+        """ """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -1282,6 +1283,54 @@ class TestTuiWidgets(TuiBase):
             self.check_overwrite_existing_files_configs(
                 pilot, project_name, value="If Source Newer"
             )
+
+    @pytest.mark.asyncio
+    async def test_dry_run(self, setup_project_paths):
+        """
+        Test the dry run setting. This is very similar in structure
+        to `test_overwrite_existing_files()`, merge if more persistent
+        settings added.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+
+            # Navigate to the existing project and click onto the
+            # configs tab.
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            # default is off
+            self.check_dry_run(pilot, project_name, value=False)
+
+            await self.change_checkbox(pilot, "#dry_run_checkbox")
+
+            self.check_dry_run(pilot, project_name, value=True)
+
+            # reload project screen to check persistence of settings.
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
+
+            self.check_dry_run(pilot, project_name, value=True)
+
+    # Persistent settings checkers --------------------------------------------
+    # These are painfully similar methods, but just different enough to
+    # warrant separation. But if more persistent settings are added,
+    # combine.
+
+    def check_dry_run(self, pilot, project_name, value):
+        assert pilot.app.screen.query_one("#dry_run_checkbox").value == value
+
+        assert pilot.app.screen.interface.tui_settings["dry_run"] is value
+
+        project = DataShuttle(project_name)
+        persistent_settings = project._load_persistent_settings()
+        assert persistent_settings["tui"]["dry_run"] is value
 
     def check_overwrite_existing_files_configs(
         self, pilot, project_name, value
