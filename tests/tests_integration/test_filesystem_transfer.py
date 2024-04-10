@@ -65,7 +65,7 @@ class TestFileTransfer(BaseTest):
         ).is_dir()
 
     @pytest.mark.parametrize(
-        "top_level_folder",
+        "top_level_folder_to_transfer",
         canonical_folders.get_top_level_folders(),
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -73,7 +73,7 @@ class TestFileTransfer(BaseTest):
     def test_transfer_across_top_level_folders(
         self,
         project,
-        top_level_folder,
+        top_level_folder_to_transfer,  # Do not change this name, see doc
         upload_or_download,
         transfer_method,
     ):
@@ -83,6 +83,10 @@ class TestFileTransfer(BaseTest):
         then transfer using upload / download and
         upload_rawdata() / download_rawdata() that only the working top-level folder
         is transferred.
+
+        Do not change the name of variable `top_level_folder_to_transfer`.
+        It is very tempting to change it to `top_level_folder`. In this test
+        they are not the same thing!
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
@@ -99,18 +103,25 @@ class TestFileTransfer(BaseTest):
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(
-            project, upload_or_download, transfer_method, top_level_folder
+            project,
+            upload_or_download,
+            transfer_method,
+            top_level_folder_to_transfer,
         )
 
         if transfer_method == "custom":
-            transfer_function(top_level_folder, "all", "all", "all")
+            transfer_function(
+                top_level_folder_to_transfer, "all", "all", "all"
+            )
         else:
             transfer_function()
 
-        full_base_path_to_check = base_path_to_check / top_level_folder
+        full_base_path_to_check = (
+            base_path_to_check / top_level_folder_to_transfer
+        )
 
         test_utils.check_working_top_level_folder_only_exists(
-            top_level_folder,
+            top_level_folder_to_transfer,
             full_base_path_to_check,
             subs,
             sessions,
