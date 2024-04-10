@@ -1324,7 +1324,10 @@ class TestTuiWidgets(TuiBase):
     # combine.
 
     def check_dry_run(self, pilot, project_name, value):
-        assert pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox").value == value
+        assert (
+            pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox").value
+            == value
+        )
 
         assert pilot.app.screen.interface.tui_settings["dry_run"] is value
 
@@ -1337,9 +1340,7 @@ class TestTuiWidgets(TuiBase):
     ):
         """"""
         assert (
-            pilot.app.screen.query_one(
-                "#transfer_tab_overwrite_select"
-            ).value
+            pilot.app.screen.query_one("#transfer_tab_overwrite_select").value
             == value
         )
 
