@@ -151,7 +151,7 @@ and press `Transfer` to begin.
 :::{tab-item} Python API
 :sync: python
 
-The `upload_rawdata(), `upload_derivatives()` or for downloading,  `download_rawdata()`, `download_derivatives()`
+The `upload_rawdata()`, `upload_derivatives()` or for downloading,  `download_rawdata()`, `download_derivatives()`
 to specify the top-level folder to transfer.
 
 In the next example, we will upload `rawdata` downloading `derivatives`.
