@@ -77,11 +77,6 @@ numpydoc_class_members_toctree = False  # stops stubs warning
 #toc_object_entries_show_parents = "all"
 html_show_sourcelink = False
 
-#html_sidebars = {  this is not working...
-#  "index": [],
-#  "**": [],
-#}
-
 # Ignore links that do not work with github actions link checking
 # https://github.com/neuroinformatics-unit/actions/pull/24#issue-1978966182
 linkcheck_anchors_ignore_for_url = [
@@ -124,6 +119,10 @@ html_css_files = [
 ]
 
 html_favicon = "_static/logo_light.png"
+
+html_sidebars = {
+  "**": []
+}
 
 # Customize the theme
 html_theme_options = {
