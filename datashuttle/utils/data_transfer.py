@@ -45,10 +45,11 @@ class TransferData:
         specified. Can include datatype-level tranfser keywords.
 
     overwrite_existing_files : OverwriteExistingFiles
-        If `False`, files on target will never be overwritten
-        by files transferred from  source. If `True`, target files
-        will be overwritten if there is any difference (date, size)
-        between source and target files.
+        If "never" files on target will never be overwritten by source.
+        If "always" files on target will be overwritten by source if
+        there is any difference in date or size.
+        If "if_source_newer" files on target will only be overwritten
+        by files on source with newer creation / modification datetime.
 
     dry_run : bool,
         If `True`, transfer will not actually occur but will be logged

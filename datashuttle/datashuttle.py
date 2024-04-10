@@ -341,7 +341,7 @@ class DataShuttle:
             between central and local files.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
 
@@ -405,13 +405,14 @@ class DataShuttle:
             see create_folders()
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
 
@@ -456,13 +457,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -486,13 +488,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -516,13 +519,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -546,13 +550,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -578,13 +583,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -609,13 +615,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -647,13 +654,14 @@ class DataShuttle:
             a string containing the full filepath.
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -687,13 +695,14 @@ class DataShuttle:
             a string containing the full filepath.
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
