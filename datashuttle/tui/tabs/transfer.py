@@ -15,6 +15,7 @@ from rich.text import Text
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import (
     Button,
+    Checkbox,
     Label,
     RadioButton,
     RadioSet,
@@ -155,14 +156,16 @@ class TransferTab(TreeAndInputTab):
             id="transfer_params_container",
         )
         yield Horizontal(
-            Button("Transfer", id="transfer_transfer_button"),
             Vertical(
+                Button("Transfer", id="transfer_transfer_button"),
                 Horizontal(
                     Label("Upload", id="transfer_switch_upload_label"),
                     Switch(id="transfer_switch"),
                     Label("Download", id="transfer_switch_download_label"),
                     id="transfer_switch_container",
                 ),
+            ),
+            Vertical(
                 Horizontal(
                     Label("Overwrite:", id="overwrite_label"),
                     Select(
@@ -180,7 +183,8 @@ class TransferTab(TreeAndInputTab):
                     ),
                     id="overwrite_settings_container",
                 ),
-                id="overwrite_settings_container2",
+                # needs to be in horizontal or formats with large space for some rason.
+                Horizontal(Checkbox("Dry Run", id="dry_run_checkbox")),
             ),
             id="transfer_tab_transfer_settings_container",
         )

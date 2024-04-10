@@ -95,24 +95,28 @@ TabScreen > TabbedContent {
 
 #transfer_switch_container {
     align-vertical: middle;
-    margin: 0 0 0 6;
+    margin: 0 0 0 1
 }
-
 #transfer_switch_container > Label{
     margin: 1 0 0 0;
 }
 
 #overwrite_existing_files_select {
     width: 25;
+    margin: 2 0 0 0;
 }
 
 #overwrite_label {
-    margin: 1 0 0 2;
+    margin: 3 0 0 1;
+}
+
+#dry_run_checkbox {
+    margin: 1 0 0 0;
 }
 
 #transfer_transfer_button {
     width: 25;
-    margin: 3 2 0 0;
+    margin: 2 0 0 0;
 }
 TransferStatusTree {
     padding: 1 2 3 2;
