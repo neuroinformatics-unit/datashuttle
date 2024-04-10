@@ -1243,18 +1243,36 @@ class TestTuiWidgets(TuiBase):
 
             # default is off
             self.check_overwrite_existing_files_configs(
-                pilot, project_name, on_value=False
+                pilot, project_name, value="Never"
             )
 
-            # now turn on and check
-            await self.change_checkbox(
-                pilot, "#configs_overwrite_files_checkbox"
+            # now  check "Always"
+            await self.scroll_to_click_pause(
+                pilot, "#overwrite_existing_files_select"
             )
+            await self.move_select_to_position(
+                pilot, "#overwrite_existing_files_select", position=0
+            )
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, value="Always"
+            )
+            # reload project screen to check persistence of settings.
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+            await self.switch_tab(pilot, "transfer")
 
             self.check_overwrite_existing_files_configs(
-                pilot, project_name, on_value=True
+                pilot, project_name, value="Always"
             )
 
+            # now  check "If Source Newer"
+            await self.move_select_to_position(
+                pilot, "#overwrite_existing_files_select", position=1
+            )
+            self.check_overwrite_existing_files_configs(
+                pilot, project_name, value="If Source Newer"
+            )
             # reload project and check settings persist
             await self.exit_to_main_menu_and_reeneter_project_manager(
                 pilot, project_name
@@ -1262,26 +1280,35 @@ class TestTuiWidgets(TuiBase):
             await self.switch_tab(pilot, "transfer")
 
             self.check_overwrite_existing_files_configs(
-                pilot, project_name, on_value=True
+                pilot, project_name, value="If Source Newer"
             )
 
     def check_overwrite_existing_files_configs(
-        self, pilot, project_name, on_value
+        self, pilot, project_name, value
     ):
         """"""
         assert (
             pilot.app.screen.query_one(
-                "#configs_overwrite_files_checkbox"
+                "#overwrite_existing_files_select"
             ).value
-            is on_value
+            == value
         )
+
+        format_keys = {
+            "Never": "never",
+            "Always": "always",
+            "If Source Newer": "if_source_newer",
+        }
+        format_val = format_keys[value]
+
         assert (
             pilot.app.screen.interface.tui_settings["overwrite_existing_files"]
-            is on_value
+            == format_val
         )
 
         project = DataShuttle(project_name)
         persistent_settings = project._load_persistent_settings()
         assert (
-            persistent_settings["tui"]["overwrite_existing_files"] is on_value
+            persistent_settings["tui"]["overwrite_existing_files"]
+            == format_val
         )

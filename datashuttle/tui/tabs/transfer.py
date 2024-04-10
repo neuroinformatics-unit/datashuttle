@@ -12,13 +12,13 @@ if TYPE_CHECKING:
     from datashuttle.tui.interface import Interface
 
 from rich.text import Text
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import (
     Button,
-    Checkbox,
     Label,
     RadioButton,
     RadioSet,
+    Select,
     Switch,
 )
 
@@ -155,32 +155,54 @@ class TransferTab(TreeAndInputTab):
             id="transfer_params_container",
         )
         yield Horizontal(
-            Horizontal(
-                Label("Upload", id="transfer_switch_upload_label"),
-                Switch(id="transfer_switch"),
-                Label("Download", id="transfer_switch_download_label"),
-                id="transfer_switch_container",
-            ),
-            Checkbox(
-                "Overwrite Existing Files",
-                value=self.interface.tui_settings["overwrite_existing_files"],
-                id="configs_overwrite_files_checkbox",
+            Button("Transfer", id="transfer_transfer_button"),
+            Vertical(
+                Horizontal(
+                    Label("Upload", id="transfer_switch_upload_label"),
+                    Switch(id="transfer_switch"),
+                    Label("Download", id="transfer_switch_download_label"),
+                    id="transfer_switch_container",
+                ),
+                Horizontal(
+                    Label("Overwrite:", id="overwrite_label"),
+                    Select(
+                        (
+                            (name, name)
+                            for name in ["Never", "Always", "If Source Newer"]
+                        ),
+                        value=self.interface.tui_settings[
+                            "overwrite_existing_files"
+                        ]
+                        .title()
+                        .replace("_", " "),
+                        allow_blank=False,
+                        id="overwrite_existing_files_select",
+                    ),
+                    id="overwrite_settings_container",
+                ),
+                id="overwrite_settings_container2",
             ),
             id="transfer_tab_transfer_settings_container",
         )
-        yield Horizontal(
-            Button("Transfer", id="transfer_transfer_button"), id="test4"
-        )
-        yield Horizontal()
+
         if self.show_legend:
             yield Label("⭕ Legend", id="transfer_legend")
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        if event.select.id == "overwrite_existing_files_select":
+            assert event.select.value in ["Never", "Always", "If Source Newer"]
+            format_select = event.select.value.lower().replace(" ", "_")
+            self.interface.update_tui_settings(
+                format_select,
+                "overwrite_existing_files",
+            )
 
     def on_mount(self) -> None:
 
         for id in [
             "#transfer_directorytree",
             "#transfer_switch_container",
-            "#configs_overwrite_files_checkbox",
+            #  "#configs_overwrite_files_checkbox",
             "#transfer_subject_input",
             "#transfer_session_input",
             "#transfer_all_checkbox",
@@ -255,21 +277,6 @@ class TransferTab(TreeAndInputTab):
 
             self.mainwindow.push_screen(
                 FinishTransferScreen(message), self.transfer_data
-            )
-
-    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """"""
-        if event.checkbox.id == "configs_overwrite_files_checkbox":
-
-            # This is covered in tests but is so crucial is checked here.
-            assert (
-                self.interface.tui_settings["overwrite_existing_files"]
-                is not event.checkbox.value
-            ), f"{self.interface.tui_settings['overwrite_existing_files']}-{event.checkbox.value}"
-
-            self.interface.update_tui_settings(
-                event.checkbox.value,
-                "overwrite_existing_files",
             )
 
     def on_custom_directory_tree_directory_tree_special_key_press(

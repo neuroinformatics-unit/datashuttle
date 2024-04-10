@@ -235,6 +235,16 @@ class Configs(UserDict):
         However, now we fix the previously configurable arguments
         `show_transfer_progress` and `dry_run` here.
         """
+        allowed_overwrite = ["never", "always", "if_source_newer"]
+
+        if overwrite_existing_files not in allowed_overwrite:
+            utils.log_and_raise_error(
+                f"`overwrite_existing_files` not "
+                f"recognised, must be one of: "
+                f"{allowed_overwrite}",
+                ValueError,
+            )
+
         return {
             "overwrite_existing_files": overwrite_existing_files,
             "show_transfer_progress": True,

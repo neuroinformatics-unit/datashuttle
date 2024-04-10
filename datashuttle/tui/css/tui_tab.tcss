@@ -94,19 +94,25 @@ TabScreen > TabbedContent {
 }
 
 #transfer_switch_container {
-    width: auto;
-    height: auto;
     align-vertical: middle;
-    margin: 1 0 0 2;
+    margin: 0 0 0 8;
 }
 
 #transfer_switch_container > Label{
     margin: 1 0 0 0;
 }
 
-#transfer_button_container {
-    align-horizontal: right;
-    height: auto;
+#overwrite_existing_files_select {
+    width: 25;
+}
+
+#overwrite_label {
+    margin: 1 0 0 2;
+}
+
+#transfer_transfer_button {
+    width: 22;
+    margin: 4 5 0 0;
 }
 
 TransferStatusTree {
@@ -128,24 +134,11 @@ Tooltip {
 Tooltip:light {
     outline: solid $panel-darken-3;
 }
+
 /* Light mode */
 
 #transfer_params_container:light {
     border: solid black;
-}
-
-#transfer_transfer_button {
-    width: 25;
-}
-#configs_overwrite_files_checkbox {
-    margin: 1 0 1 10;
-}
-#transfer_tab_transfer_settings_container{
-    height: auto;
-}
-#test4 {
-    height: auto;
-    padding: 0 0 10 0;
 }
 
 /* Logging Tab ------------------------------------------------------------- */
