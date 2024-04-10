@@ -74,11 +74,7 @@ class TestTransferChecks(BaseTest):
 
         results = get_local_and_central_file_differences(
             project.cfg,
-            top_level_folders_to_check=(
-                ["all"]
-                if len(top_level_folders) == 2
-                else [top_level_folders[0]]
-            ),
+            top_level_folders_to_check=(top_level_folders),
         )
 
         # Check the results are sorted into cases correctly.

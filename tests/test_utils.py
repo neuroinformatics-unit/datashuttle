@@ -434,7 +434,7 @@ def get_top_level_folder_path(
 def handle_upload_or_download(
     project,
     upload_or_download,
-    use_all_alias=False,
+    specific_top_level_folder=False,
     transfer_entire_project=False,
     swap_last_folder_only=False,
 ):
@@ -451,19 +451,23 @@ def handle_upload_or_download(
 
         if transfer_entire_project:
             transfer_function = project.download_entire_project
-        elif use_all_alias:
-            transfer_function = project.download_all
+        elif specific_top_level_folder == "rawdata":
+            transfer_function = project.download_rawdata
+        elif specific_top_level_folder == "derivatives":
+            transfer_function = project.download_derivatives
         else:
-            transfer_function = project.download
+            transfer_function = project.download_custom
     else:
         central_path = project.cfg["central_path"]
 
         if transfer_entire_project:
             transfer_function = project.upload_entire_project
-        elif use_all_alias:
-            transfer_function = project.upload_all
+        elif specific_top_level_folder == "rawdata":
+            transfer_function = project.upload_rawdata
+        elif specific_top_level_folder == "derivatives":
+            transfer_function = project.upload_derivatives
         else:
-            transfer_function = project.upload
+            transfer_function = project.upload_custom
 
     return transfer_function, central_path
 

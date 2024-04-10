@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import List, Tuple
+from typing import TYPE_CHECKING, List, Tuple
+
+if TYPE_CHECKING:
+    from datashuttle.utils.custom_types import TopLevelFolder
 
 from datashuttle.utils.folder_class import Folder
 
@@ -87,7 +90,7 @@ def canonical_reserved_keywords() -> List[str]:
     return get_non_sub_names() + get_non_ses_names()
 
 
-def get_top_level_folders() -> List[str]:
+def get_top_level_folders() -> List[TopLevelFolder]:
     return ["rawdata", "derivatives"]
 
 

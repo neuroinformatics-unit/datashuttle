@@ -538,7 +538,7 @@ and all files will be uploaded from the local version of the project to central 
 Navigating to the `central_path` in your systems file browser, the newly transferred data
 will have appeared, simulating transfer to a separate data storage machine.
 
-Other methods (`upload_all()` and `upload()`) provide refined
+Other methods (e.g. `upload_rawdata()` and `upload_custom()`) provide refined
 data transfers (and every `upload` method has an equivalent `download` method).
 For more information  see the
 [How to Transfer Data](how-to-transfer-data) page
@@ -686,14 +686,14 @@ of files will now be available in the _local path_ folder.
 :::{tab-item} Python API
 :sync: python
 
-We can use the `download()` method (the download equivalent method of
-the `upload()`).
+We can use the `download_custom()` method (the download equivalent method of
+the `upload_custom()`).
 
 We will download only the behavioural data from the first
 session, using a few shortcuts available for custom transfers
 
 ```python
-project.download(
+project.download_custom(
     top_level_folder="rawdata",
     sub_names="all",
     ses_names="ses-001_@*@",

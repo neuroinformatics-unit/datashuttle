@@ -292,7 +292,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
-    def upload(
+    def upload_custom(
         self,
         top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
@@ -375,7 +375,7 @@ class DataShuttle:
             ds_logger.close_log_filehandler()
 
     @check_configs_set
-    def download(
+    def download_custom(
         self,
         top_level_folder: TopLevelFolder,
         sub_names: Union[str, list],
@@ -391,8 +391,8 @@ class DataShuttle:
         not be overwritten even if the central file is an
         older version.
 
-        This function is identical to upload() but with the direction
-        of data transfer reversed. Please see upload() for arguments.
+        This function is identical to upload_custom() but with the direction
+        of data transfer reversed. Please see upload_custom() for arguments.
         "all" arguments will search the central
         project for sub / ses to download.
         """
@@ -413,8 +413,28 @@ class DataShuttle:
         if init_log:
             ds_logger.close_log_filehandler()
 
+    # Specific top-level folder
+    # ----------------------------------------------------------------------------------
+    # A set of convenience functions are provided to abstract
+    # away the 'top_level_folder' concept.
+
     @check_configs_set
-    def upload_all(
+    def upload_rawdata(self, dry_run: bool = False):
+        self._upload_top_level_folder("rawdata", dry_run=dry_run)
+
+    @check_configs_set
+    def upload_derivatives(self, dry_run: bool = False):
+        self._upload_top_level_folder("derivatives", dry_run=dry_run)
+
+    @check_configs_set
+    def download_rawdata(self, dry_run: bool = False):
+        self._download_top_level_folder("rawdata", dry_run=dry_run)
+
+    @check_configs_set
+    def download_derivatives(self, dry_run: bool = False):
+        self._download_top_level_folder("derivatives", dry_run=dry_run)
+
+    def _upload_top_level_folder(
         self,
         top_level_folder: TopLevelFolder,
         dry_run: bool = False,
@@ -424,12 +444,12 @@ class DataShuttle:
         Convenience function to upload all data.
 
         Alias for:
-            project.upload("all", "all", "all")
+            project.upload_custom("all", "all", "all")
         """
         if init_log:
-            self._start_log("upload-all", local_vars=locals())
+            self._start_log(f"upload-{top_level_folder}", local_vars=locals())
 
-        self.upload(
+        self.upload_custom(
             top_level_folder,
             "all",
             "all",
@@ -441,8 +461,7 @@ class DataShuttle:
         if init_log:
             ds_logger.close_log_filehandler()
 
-    @check_configs_set
-    def download_all(
+    def _download_top_level_folder(
         self,
         top_level_folder: TopLevelFolder,
         dry_run: bool = False,
@@ -451,12 +470,14 @@ class DataShuttle:
         """
         Convenience function to download all data.
 
-        Alias for : project.download("all", "all", "all")
+        Alias for : project.download_custom("all", "all", "all")
         """
         if init_log:
-            self._start_log("download-all", local_vars=locals())
+            self._start_log(
+                f"download-{top_level_folder}", local_vars=locals()
+            )
 
-        self.download(
+        self.download_custom(
             top_level_folder,
             "all",
             "all",
@@ -1009,7 +1030,7 @@ class DataShuttle:
     def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
         """
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to create_folders() or upload()
+        for example as when passed to create_folders() or upload_custom()
         or download()
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
@@ -1047,11 +1068,6 @@ class DataShuttle:
         Transfer (i.e. upload or download) the entire project (i.e.
         every 'top level folder' (e.g. 'rawdata', 'derivatives').
 
-        This function leverages the upload_all or download_all
-        methods while switching the top level folder as defined in
-        self.cfg that these methods use to determine the top-level
-        folder to transfer.
-
         Parameters
         ----------
 
@@ -1059,7 +1075,9 @@ class DataShuttle:
                     local to central) or "download" (from central to local).
         """
         transfer_all_func = (
-            self.upload_all if direction == "upload" else self.download_all
+            self._upload_top_level_folder
+            if direction == "upload"
+            else self._download_top_level_folder
         )
 
         for top_level_folder in canonical_folders.get_top_level_folders():

@@ -224,11 +224,24 @@ class Interface:
             from central to remote.
 
         """
+        assert selected_top_level_folder in ["rawdata", "derivatives"]
+
         try:
-            if upload:
-                self.project.upload_all(selected_top_level_folder)
-            else:
-                self.project.download_all(selected_top_level_folder)
+            if selected_top_level_folder == "rawdata":
+                transfer_func = (
+                    self.project.upload_rawdata
+                    if upload
+                    else self.project.download_rawdata
+                )
+            elif selected_top_level_folder == "derivatives":
+                transfer_func = (
+                    self.project.upload_derivatives
+                    if upload
+                    else self.project.download_derivatives
+                )
+
+            transfer_func()
+
             return True, None
 
         except BaseException as e:
@@ -266,14 +279,14 @@ class Interface:
         """
         try:
             if upload:
-                self.project.upload(
+                self.project.upload_custom(
                     selected_top_level_folder,
                     sub_names=sub_names,
                     ses_names=ses_names,
                     datatype=datatype,
                 )
             else:
-                self.project.download(
+                self.project.download_custom(
                     selected_top_level_folder,
                     sub_names=sub_names,
                     ses_names=ses_names,

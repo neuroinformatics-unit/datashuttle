@@ -14,13 +14,13 @@ class TestFileTransfer(BaseTest):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_all_alias", [True, False])
+    @pytest.mark.parametrize("use_top_level_folder_func", [True, False])
     def test_transfer_empty_folder_structure(
         self,
         project,
         top_level_folder,
         upload_or_download,
-        use_all_alias,
+        use_top_level_folder_func,
     ):
         """
         First make a project (folders only) locally.
@@ -37,11 +37,15 @@ class TestFileTransfer(BaseTest):
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(
-            project, upload_or_download, use_all_alias=use_all_alias
+            project,
+            upload_or_download,
+            specific_top_level_folder=(
+                top_level_folder if use_top_level_folder_func else False
+            ),
         )
 
-        if use_all_alias:
-            transfer_function(top_level_folder)
+        if use_top_level_folder_func:
+            transfer_function()
         else:
             transfer_function(top_level_folder, "all", "all", "all")
 
@@ -54,7 +58,7 @@ class TestFileTransfer(BaseTest):
 
     def test_empty_folder_is_not_transferred(self, project):
         project.create_folders("rawdata", "sub-001")
-        project.upload_all("rawdata")
+        project.upload_rawdata()
         assert not (
             project.cfg["central_path"] / "rawdata" / "sub-001"
         ).is_dir()
@@ -64,19 +68,19 @@ class TestFileTransfer(BaseTest):
         canonical_folders.get_top_level_folders(),
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_all_alias", [True, False])
+    @pytest.mark.parametrize("use_top_level_folder_func", [True, False])
     def test_transfer_across_top_level_folders(
         self,
         project,
         top_level_folder_to_transfer,
         upload_or_download,
-        use_all_alias,
+        use_top_level_folder_func,
     ):
         """
         For each possible top level folder (e.g. rawdata, derivatives)
         (parametrized) create a folder tree in every top-level folder,
         then transfer using upload / download and
-        upload_all / download_all that only the working top-level folder
+        upload_rawdata() / download_rawdata() that only the working top-level folder
         is transferred.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -94,11 +98,17 @@ class TestFileTransfer(BaseTest):
             transfer_function,
             base_path_to_check,
         ) = test_utils.handle_upload_or_download(
-            project, upload_or_download, use_all_alias=use_all_alias
+            project,
+            upload_or_download,
+            specific_top_level_folder=(
+                top_level_folder_to_transfer
+                if use_top_level_folder_func
+                else False
+            ),
         )
 
-        if use_all_alias:
-            transfer_function(top_level_folder_to_transfer)
+        if use_top_level_folder_func:
+            transfer_function()
         else:
             transfer_function(
                 top_level_folder_to_transfer, "all", "all", "all"
@@ -420,7 +430,7 @@ class TestFileTransfer(BaseTest):
         )
 
         test_utils.clear_capsys(capsys)
-        project.upload_all("rawdata", dry_run=dry_run)
+        project.upload_rawdata(dry_run=dry_run)
 
         log = capsys.readouterr().out
 
@@ -450,7 +460,7 @@ class TestFileTransfer(BaseTest):
         project.update_config_file(transfer_verbosity=transfer_verbosity)
 
         test_utils.clear_capsys(capsys)
-        project.upload_all("rawdata")
+        project.upload_rawdata()
 
         log = capsys.readouterr().out
 
@@ -501,7 +511,13 @@ class TestFileTransfer(BaseTest):
         if overwrite_existing_files:
             project.update_config_file(overwrite_existing_files=True)
 
-        project.upload_all(top_level_folder)
+        upload_func = (
+            project.upload_rawdata
+            if top_level_folder == "rawdata"
+            else project.upload_derivatives
+        )
+
+        upload_func()
 
         # Update the file and transfer and transfer again
         test_utils.write_file(
@@ -510,7 +526,7 @@ class TestFileTransfer(BaseTest):
 
         assert time_written < os.path.getatime(local_test_file_path)
 
-        project.upload_all(top_level_folder)
+        upload_func()
 
         central_contents = test_utils.read_file(central_test_file_path)
 

@@ -3,7 +3,6 @@ from pathlib import Path
 from subprocess import CompletedProcess
 from typing import Dict, List, Literal
 
-from datashuttle.configs import canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
 from datashuttle.utils.custom_types import TopLevelFolder
@@ -207,7 +206,7 @@ def transfer_data(
 
 def get_local_and_central_file_differences(
     cfg: Configs,
-    top_level_folders_to_check: List[str],
+    top_level_folders_to_check: List[TopLevelFolder],
 ) -> Dict:
     """
     Convert the output of rclone's check (with `--combine`) flag
@@ -221,7 +220,7 @@ def get_local_and_central_file_differences(
     ----------
 
     top_level_folders_to_check :
-        Either 'all' for all top-level folder or list of top-level folders.
+        List of top-level folders to check.
 
     Returns
     -------
@@ -243,15 +242,7 @@ def get_local_and_central_file_differences(
     parsed_output: Dict[str, List]
     parsed_output = {val: [] for val in convert_symbols.values()}
 
-    if "all" in top_level_folders_to_check:
-        assert (
-            len(top_level_folders_to_check) == 1
-        ), "If using `all` can be only list entry."
-        permitted_top_level_folders = canonical_folders.get_top_level_folders()
-    else:
-        permitted_top_level_folders = top_level_folders_to_check
-
-    for top_level_folder in permitted_top_level_folders:
+    for top_level_folder in top_level_folders_to_check:
 
         rclone_output = perform_rclone_check(cfg, top_level_folder)  # type: ignore
         split_rclone_output = rclone_output.split("\n")
