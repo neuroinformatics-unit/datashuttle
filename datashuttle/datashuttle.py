@@ -412,7 +412,7 @@ class DataShuttle:
             to check which files will be moved on data transfer.
 
         init_log :
-            (Optional). Whether handle logging. This should
+            (Optional). Whether to handle logging. This should
             always be True, unless logger is handled elsewhere
             (e.g. in a calling function).
         """
