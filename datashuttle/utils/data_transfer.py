@@ -4,7 +4,11 @@ from typing import List, Literal, Optional, Union
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import folders, formatting, rclone, utils
-from datashuttle.utils.custom_types import Prefix, TopLevelFolder
+from datashuttle.utils.custom_types import (
+    OverwriteExistingFiles,
+    Prefix,
+    TopLevelFolder,
+)
 
 
 class TransferData:
@@ -40,7 +44,7 @@ class TransferData:
         List of datatypes to transfer, for the sessions / subjects
         specified. Can include datatype-level tranfser keywords.
 
-    overwrite_existing_files :
+    overwrite_existing_files : OverwriteExistingFiles
         If `False`, files on target will never be overwritten
         by files transferred from  source. If `True`, target files
         will be overwritten if there is any difference (date, size)
@@ -62,7 +66,7 @@ class TransferData:
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
-        overwrite_existing_files: bool,
+        overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
         log: bool,
     ):

@@ -590,3 +590,23 @@ def check_working_top_level_folder_only_exists(
 
     for folder in unused_folders:
         assert not (base_path_to_check.parent / folder).is_dir()
+
+
+def read_log_file(logging_path):
+    log_filepath = list(glob.glob(str(logging_path / "*.log")))
+
+    assert len(log_filepath) == 1, (
+        f"there should only be one log " f"in log output path {logging_path}"
+    )
+    log_filepath = log_filepath[0]
+
+    with open(log_filepath, "r") as file:
+        log = file.read()
+
+    return log
+
+
+def delete_log_files(logging_path):
+    ds_logger.close_log_filehandler()
+    for log in glob.glob((str(logging_path / "*.log"))):
+        os.remove(log)

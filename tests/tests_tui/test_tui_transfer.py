@@ -51,6 +51,51 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+            await self.check_overwrite_existing_files(
+                pilot, upload_or_download
+            )
+
+            await pilot.pause()
+
+    async def check_overwrite_existing_files(self, pilot, upload_or_download):
+        """
+        Run transfer with each overwrite setting and check it is propagated
+        to datashuttle methods.
+        """
+        await self.check_set_overwrite_and_run_transfer(pilot, "never")
+
+        await self.check_set_overwrite_and_run_transfer(pilot, "always")
+
+        await self.check_set_overwrite_and_run_transfer(
+            pilot, "if_source_newer"
+        )
+
+    async def check_set_overwrite_and_run_transfer(
+        self, pilot, overwrite_setting
+    ):
+        """
+        Run transfer with an overwrite setting and check it is propagated
+        to datashuttle methods by checking the logs.
+        """
+        all_positions = {"never": None, "always": 0, "if_source_newer": 1}
+        position = all_positions[overwrite_setting]
+
+        if position is not None:
+            await self.move_select_to_position(
+                pilot, "#overwrite_existing_files_select", position=position
+            )
+
+        logging_path = pilot.app.screen.interface.project.get_logging_path()
+
+        test_utils.delete_log_files(logging_path)
+        await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
+        await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
+        await self.close_messagebox(pilot)
+
+        log = test_utils.read_log_file(logging_path)
+
+        assert f"overwrite_existing_files': '{overwrite_setting}'" in log
+
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.asyncio()
@@ -90,6 +135,12 @@ class TestTuiTransfer(TuiBase):
                 subs,
                 sessions,
             )
+            await pilot.pause()
+
+            await self.check_overwrite_existing_files(
+                pilot, upload_or_download
+            )
+
             await pilot.pause()
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
@@ -159,6 +210,12 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+            await self.check_overwrite_existing_files(
+                pilot, upload_or_download
+            )
+
+            await pilot.pause()
+
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):
@@ -179,6 +236,7 @@ class TestTuiTransfer(TuiBase):
 
         await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
         await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
+        await self.close_messagebox(pilot)
 
     def setup_project_for_data_transfer(
         self,

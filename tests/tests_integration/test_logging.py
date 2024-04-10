@@ -8,7 +8,6 @@ import test_utils
 
 from datashuttle import DataShuttle
 from datashuttle.configs.canonical_tags import tags
-from datashuttle.utils import ds_logger
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
     NeuroBlueprintError,
@@ -49,7 +48,7 @@ class TestLogging:
             tmp_path, clean_project_name
         )
 
-        self.delete_log_files(project.cfg.logging_path)
+        test_utils.delete_log_files(project.cfg.logging_path)
 
         test_utils.set_datashuttle_loggers(disable=False)
 
@@ -61,25 +60,6 @@ class TestLogging:
     # ----------------------------------------------------------------------------------------------------------
     # Test Public API Logging
     # ----------------------------------------------------------------------------------------------------------
-
-    def read_log_file(self, logging_path):
-        log_filepath = list(glob.glob(str(logging_path / "*.log")))
-
-        assert len(log_filepath) == 1, (
-            f"there should only be one log "
-            f"in log output path {logging_path}"
-        )
-        log_filepath = log_filepath[0]
-
-        with open(log_filepath, "r") as file:
-            log = file.read()
-
-        return log
-
-    def delete_log_files(self, logging_path):
-        ds_logger.close_log_filehandler()
-        for log in glob.glob((str(logging_path / "*.log"))):
-            os.remove(log)
 
     def test_log_filename(self, project):
         """
@@ -107,7 +87,7 @@ class TestLogging:
             "local_filesystem",
         )
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command make-config-file" in log
         assert "\nVariablesState:\nlocals: {'local_path':" in log
@@ -121,7 +101,7 @@ class TestLogging:
     def test_logs_update_config_file(self, project):
         project.update_config_file(central_host_id="test_id")
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Starting logging for command update-config-file" in log
         assert (
@@ -138,7 +118,7 @@ class TestLogging:
 
         project.create_folders("rawdata", subs, ses, datatype="all")
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "Formatting Names..." in log
 
@@ -216,7 +196,7 @@ class TestLogging:
                 "rawdata" if use_top_level_folder_func else False
             ),
         )
-        self.delete_log_files(project.cfg.logging_path)
+        test_utils.delete_log_files(project.cfg.logging_path)
 
         (
             transfer_function()
@@ -224,7 +204,7 @@ class TestLogging:
             else transfer_function("rawdata", "all", "all", "all")
         )
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         if use_top_level_folder_func:
             assert (
@@ -265,7 +245,7 @@ class TestLogging:
             project,
             upload_or_download,
         )
-        self.delete_log_files(project.cfg.logging_path)
+        test_utils.delete_log_files(project.cfg.logging_path)
 
         if upload_or_download == "upload":
             project.upload_specific_folder_or_file(
@@ -276,7 +256,7 @@ class TestLogging:
                 f"{project.cfg['central_path']}/rawdata/sub-001/ses-001"
             )
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert (
             f"Starting logging for command {upload_or_download}-specific-folder-or-file"
@@ -364,7 +344,7 @@ class TestLogging:
                 connection_method="ssh", central_host_username=None
             )
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert (
             "'central_host_username' are required if 'connection_method' is 'ssh'"
@@ -378,13 +358,13 @@ class TestLogging:
     def test_logs_bad_create_folders_error(self, project):
         """"""
         project.create_folders("rawdata", "sub-001", datatype="all")
-        self.delete_log_files(project.cfg.logging_path)
+        test_utils.delete_log_files(project.cfg.logging_path)
 
         with pytest.raises(NeuroBlueprintError):
             project.create_folders(
                 "rawdata", "sub-001_datetime-123213T123122", datatype="all"
             )
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert (
             "A sub already exists with the same "
@@ -402,23 +382,23 @@ class TestLogging:
         for sub in ["sub-1", "sub-002_date-2023"]:
             os.makedirs(project.cfg["local_path"] / "rawdata" / sub)
 
-        self.delete_log_files(project.cfg.logging_path)
+        test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check a validation error is logged.
         with pytest.raises(BaseException) as e:
             project.validate_project("rawdata", error_or_warn="error")
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
         assert "ERROR" in log
         assert str(e.value) in log
 
-        self.delete_log_files(project.cfg.logging_path)
+        test_utils.delete_log_files(project.cfg.logging_path)
 
         # Check that validation warnings are logged.
         with pytest.warns(UserWarning) as w:
             project.validate_project("rawdata", error_or_warn="warn")
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "WARNING" in log
 
@@ -432,12 +412,12 @@ class TestLogging:
         to file. Warnings are not tested.
         """
         project.create_folders("rawdata", "sub-001")
-        self.delete_log_files(project.cfg.logging_path)  #
+        test_utils.delete_log_files(project.cfg.logging_path)  #
 
         with pytest.raises(BaseException) as e:
             project.create_folders("rawdata", "sub-001_id-a")
 
-        log = self.read_log_file(project.cfg.logging_path)
+        log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "ERROR" in log
         assert str(e.value) in log

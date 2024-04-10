@@ -18,7 +18,11 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from datashuttle.utils.custom_types import Prefix, TopLevelFolder
+    from datashuttle.utils.custom_types import (
+        OverwriteExistingFiles,
+        Prefix,
+        TopLevelFolder,
+    )
 
 import paramiko
 import yaml
@@ -298,7 +302,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -371,7 +375,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -441,7 +445,9 @@ class DataShuttle:
 
     @check_configs_set
     def upload_rawdata(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Upload files in the `rawdata` top level folder.
@@ -469,7 +475,9 @@ class DataShuttle:
 
     @check_configs_set
     def upload_derivatives(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Upload files in the `derivatives` top level folder.
@@ -497,7 +505,9 @@ class DataShuttle:
 
     @check_configs_set
     def download_rawdata(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Download files in the `rawdata` top level folder.
@@ -525,7 +535,9 @@ class DataShuttle:
 
     @check_configs_set
     def download_derivatives(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Download files in the `derivatives` top level folder.
@@ -554,7 +566,7 @@ class DataShuttle:
     @check_configs_set
     def upload_entire_project(
         self,
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -585,7 +597,7 @@ class DataShuttle:
     @check_configs_set
     def download_entire_project(
         self,
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -617,7 +629,7 @@ class DataShuttle:
     def upload_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -657,7 +669,7 @@ class DataShuttle:
     def download_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -699,7 +711,7 @@ class DataShuttle:
         self,
         upload_or_download: Literal["upload", "download"],
         top_level_folder: TopLevelFolder,
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
     ):
@@ -1206,7 +1218,7 @@ class DataShuttle:
     def _transfer_entire_project(
         self,
         upload_or_download: Literal["upload", "download"],
-        overwrite_existing_files: bool,
+        overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
     ) -> None:
         """

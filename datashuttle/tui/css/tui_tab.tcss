@@ -95,7 +95,7 @@ TabScreen > TabbedContent {
 
 #transfer_switch_container {
     align-vertical: middle;
-    margin: 0 0 0 8;
+    margin: 0 0 0 6;
 }
 
 #transfer_switch_container > Label{
@@ -111,10 +111,9 @@ TabScreen > TabbedContent {
 }
 
 #transfer_transfer_button {
-    width: 22;
-    margin: 4 5 0 0;
+    width: 25;
+    margin: 3 2 0 0;
 }
-
 TransferStatusTree {
     padding: 1 2 3 2;
 }
