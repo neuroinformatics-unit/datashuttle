@@ -676,12 +676,12 @@ and click `Transfer`.
 ```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-switch-dark.png
    :align: center
    :class: only-dark
-   :width: 400px
+   :width: 580px
 ```
 ```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-switch-light.png
    :align: center
    :class: only-light
-   :width: 400px
+   :width: 580px
 ```
 <br>
 
