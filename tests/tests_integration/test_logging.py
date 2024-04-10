@@ -167,9 +167,11 @@ class TestLogging:
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    @pytest.mark.parametrize("use_top_level_folder_func", [True, False])
+    @pytest.mark.parametrize(
+        "transfer_method", ["entire_project", "top_level_folder", "custom"]
+    )
     def test_logs_upload_and_download(
-        self, project, upload_or_download, use_top_level_folder_func
+        self, project, upload_or_download, transfer_method
     ):
         """
         Set transfer verbosity and progress settings so
@@ -192,21 +194,24 @@ class TestLogging:
         ) = test_utils.handle_upload_or_download(
             project,
             upload_or_download,
-            specific_top_level_folder=(
-                "rawdata" if use_top_level_folder_func else False
-            ),
+            transfer_method,
+            top_level_folder="rawdata",
         )
         test_utils.delete_log_files(project.cfg.logging_path)
 
-        (
+        if transfer_method == "custom":
+            transfer_function("rawdata", "all", "all", "all")
+        else:
             transfer_function()
-            if use_top_level_folder_func
-            else transfer_function("rawdata", "all", "all", "all")
-        )
 
         log = test_utils.read_log_file(project.cfg.logging_path)
 
-        if use_top_level_folder_func:
+        if transfer_method == "entire_project":
+            assert (
+                f"Starting logging for command {upload_or_download}-entire-project"
+                in log
+            )
+        elif transfer_method == "top_level_folder":
             assert (
                 f"Starting logging for command {upload_or_download}-rawdata"
                 in log
@@ -216,14 +221,10 @@ class TestLogging:
 
         # 'remote' here is rclone terminology
         assert "Creating backend with remote" in log
-
         assert "Using config file from" in log
-        #   assert "Local file system at" in log
         assert "--include" in log
         assert "sub-11/ses-123/anat/**" in log
         assert "/central/test_project/rawdata" in log
-
-    #      assert "Waiting for checks to finish" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_folder_or_file(
@@ -242,8 +243,7 @@ class TestLogging:
         )
 
         test_utils.handle_upload_or_download(
-            project,
-            upload_or_download,
+            project, upload_or_download, transfer_method=None
         )
         test_utils.delete_log_files(project.cfg.logging_path)
 

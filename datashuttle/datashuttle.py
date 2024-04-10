@@ -594,7 +594,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("transfer-entire-project", local_vars=locals())
+        self._start_log("upload-entire-project", local_vars=locals())
         self._transfer_entire_project(
             "upload", overwrite_existing_files, dry_run
         )
@@ -626,7 +626,7 @@ class DataShuttle:
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("transfer-entire-project", local_vars=locals())
+        self._start_log("download-entire-project", local_vars=locals())
         self._transfer_entire_project(
             "download", overwrite_existing_files, dry_run
         )
