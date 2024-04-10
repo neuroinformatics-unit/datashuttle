@@ -22,7 +22,7 @@ class TestTuiTransfer(TuiBase):
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -108,7 +108,7 @@ class TestTuiTransfer(TuiBase):
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         app = TuiApp()
-        async with app.run_test(size=(500, 500)) as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -157,7 +157,7 @@ class TestTuiTransfer(TuiBase):
         ses_to_transfer = "ses-003"
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name

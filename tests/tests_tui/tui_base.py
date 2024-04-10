@@ -12,6 +12,19 @@ class TuiBase:
     Contains fixtuers and helper functions for TUI tests.
     """
 
+    def tui_size(self):
+        """
+        If the TUI screen in the test environment is not
+        large enough, often the error
+        `textual.pilot.OutOfBounds: Target offset is
+         outside of currently-visible screen region.`
+        is encountered.
+
+        The solution is to ensure the screen is large enough
+        in the test environment.
+        """
+        return (500, 500)
+
     @pytest_asyncio.fixture(scope="function")
     async def empty_project_paths(self, tmp_path_factory, monkeypatch):
         """

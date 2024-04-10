@@ -31,7 +31,7 @@ class TestTuiWidgets(TuiBase):
         Test all widgets display as expected on the New Project configs page.
         """
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Select a new project, check NewProjectScreen is displayed correctly.
             await self.scroll_to_click_pause(
@@ -254,7 +254,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Navigate to the existing project and click onto the
             # configs tab.
@@ -291,7 +291,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -383,7 +383,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
@@ -505,7 +505,7 @@ class TestTuiWidgets(TuiBase):
         ses_regexp = "ses-00\d_????"
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
@@ -663,7 +663,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
@@ -730,7 +730,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Open project, check top level folder are correct
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
@@ -929,7 +929,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -1044,7 +1044,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Navigate to the existing project and click onto the
             # configs tab.
@@ -1232,7 +1232,7 @@ class TestTuiWidgets(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Navigate to the existing project and click onto the
             # configs tab.

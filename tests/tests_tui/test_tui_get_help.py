@@ -14,7 +14,7 @@ class TestTuiSettings(TuiBase):
     async def test_light_dark_mode(self, empty_project_paths):
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_get_help_button"

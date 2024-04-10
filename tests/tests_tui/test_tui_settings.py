@@ -17,7 +17,7 @@ class TestTuiSettings(TuiBase):
         across all projects not related to a specific project.
         """
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_settings_button"
@@ -55,7 +55,7 @@ class TestTuiSettings(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # First check the show transfer tree styling is off
             # in the project manager tab and legend does not exist.

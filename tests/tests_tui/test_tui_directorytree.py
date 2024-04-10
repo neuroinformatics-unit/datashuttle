@@ -28,7 +28,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Open the create tab and first fill the subject
             # and session inputs with -001.
@@ -123,7 +123,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=True
             )
@@ -163,7 +163,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Set up the 'create tab' with loaded nodes
             await self.setup_existing_project_create_tab_filled_sub_and_ses(

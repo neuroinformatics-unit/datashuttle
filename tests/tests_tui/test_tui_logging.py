@@ -18,7 +18,7 @@ class TestTuiLogging(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Update configs and create folders to make some logs
             project = DataShuttle(project_name)
