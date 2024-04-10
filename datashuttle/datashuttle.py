@@ -444,7 +444,7 @@ class DataShuttle:
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
         """
-        Upload files and in the `rawdata` top level folder.
+        Upload files in the `rawdata` top level folder.
 
         Parameters
         ----------
@@ -472,7 +472,7 @@ class DataShuttle:
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
         """
-        Upload files and in the `derivatives` top level folder.
+        Upload files in the `derivatives` top level folder.
 
         Parameters
         ----------
@@ -500,7 +500,7 @@ class DataShuttle:
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
         """
-        Download files and in the `rawdata` top level folder.
+        Download files in the `rawdata` top level folder.
 
         Parameters
         ----------
@@ -528,7 +528,7 @@ class DataShuttle:
         self, overwrite_existing_files: bool = False, dry_run: bool = False
     ):
         """
-        Download files and in the `derivatives` top level folder.
+        Download files in the `derivatives` top level folder.
 
         Parameters
         ----------
