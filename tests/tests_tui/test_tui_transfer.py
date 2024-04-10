@@ -51,13 +51,11 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
-    #            await self.check_overwrite_existing_files(
-    #               pilot, upload_or_download
-    #          )
+            await self.check_overwrite_existing_files(pilot)
 
-    #         await pilot.pause()
+            await pilot.pause()
 
-    async def check_overwrite_existing_files(self, pilot, upload_or_download):
+    async def check_overwrite_existing_files(self, pilot):
         """
         Run transfer with each overwrite setting and check it is propagated
         to datashuttle methods.
@@ -77,14 +75,13 @@ class TestTuiTransfer(TuiBase):
         Run transfer with an overwrite setting and check it is propagated
         to datashuttle methods by checking the logs.
         """
-        all_positions = {"never": None, "always": 0, "if_source_newer": 1}
+        all_positions = {"never": None, "always": 5, "if_source_newer": 6}
         position = all_positions[overwrite_setting]
 
         if position is not None:
             await self.move_select_to_position(
                 pilot, "#overwrite_existing_files_select", position=position
             )
-
         logging_path = pilot.app.screen.interface.project.get_logging_path()
 
         test_utils.delete_log_files(logging_path)
@@ -137,11 +134,11 @@ class TestTuiTransfer(TuiBase):
             )
             await pilot.pause()
 
-    #        await self.check_overwrite_existing_files(
-    #           pilot, upload_or_download
-    #      )
+            await self.check_overwrite_existing_files(
+                pilot,
+            )
 
-    #     await pilot.pause()
+            await pilot.pause()
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
@@ -210,11 +207,11 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
-    #           await self.check_overwrite_existing_files(
-    #              pilot, upload_or_download
-    #         )
+            await self.check_overwrite_existing_files(
+                pilot,
+            )
 
-    #        await pilot.pause()
+            await pilot.pause()
 
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
