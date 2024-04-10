@@ -268,6 +268,8 @@ class TestTuiTransfer(TuiBase):
         (
             _,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method=None
+        )
 
         return base_path_to_check
