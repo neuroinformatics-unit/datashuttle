@@ -129,9 +129,6 @@ project.make_config_file(
 )
 ```
 
-Now the project is set up! See the later section for
-[optional arguments that control data transfers](make-project-extra-arguments).
-
 :::
 ::::
 
@@ -235,7 +232,7 @@ Next, a one-time command to set up the SSH connection must be run:
 project.setup_ssh_connection()
 ```
 
-Running `setup-ssh-connection-to-central-server` will require verification
+Running `setup_ssh_connection()` will require verification
 that the SSH server connected to is correct (pressing `y` to proceed).
 
 Finally, your password to the central server will be requested (you will
@@ -243,35 +240,3 @@ only need to do this once).
 
 :::
 ::::
-
-(make-project-extra-arguments)=
-## Extra arguments (Python API)
-
-A number of settings that control the behaviour of transfers
-can be set with the `make_config_file()` method.
-
-These configs are not relevant for the graphical interface, with the exception of
-`overwrite_existing_folders` which set directly on the
-graphical interface's `Transfer` screen.
-
-(overwrite-existing-files-config)=
-overwrite_existing_files
-: Determines whether folders and files are overwritten
-during transfer. By default, Datashuttle does not overwrite any existing
-folder during data transfer. <br><br>
- *e.g.* if the file `sub-001_ses-001_measure-trajectories.csv` exists on
-the central project, it will never be over-written during upload
-from the local to central project, even if the local version is newer. <br><br>
-To change this behaviour, the configuration `overwrite_existing_files` can be set to `True`.
-If **overwrite_existing_files** is `True`, files in which the  timestamp of the
-target directory will be overwritten if their
-timestamp is  older than the corresponding file in the source directory.
-
-transfer_verbosity
-: Set to `"vv"` for additional detail on the
-transfer operation.  Set to `"v"` to only see each file that is transferred
-as well as significant events that occur during transfer.
-
-
-show_transfer_progress
-: When `True`, real-time transfer statistics will be reported and logged.

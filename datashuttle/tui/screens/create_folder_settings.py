@@ -197,7 +197,6 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
         elif event.button.id == "create_settings_bypass_validation_button":
             self.interface.update_tui_settings(False, "bypass_validation")
-            # self.interface.project.set_bypass_validation(on=False)
 
     def make_name_templates_from_widgets(self) -> Dict:
         return {

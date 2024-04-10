@@ -42,7 +42,6 @@ class TestTuiConfigs(TuiBase):
             "local_path": (tmp_path / "local" / project_name).as_posix(),
             # not used in TUI, set to `make_config_file` defaults.
             "central_path": (tmp_path / "central" / project_name).as_posix(),
-            "show_transfer_progress": False,
         }
 
         if kwargs_set == 1:

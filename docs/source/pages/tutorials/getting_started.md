@@ -544,13 +544,12 @@ For more information  see the
 [How to Transfer Data](how-to-transfer-data) page
 as well as the next tutorial section for customisable transfers.
 
-Note that the `overwrite_existing_files` config controls whether
-transferred data will overwrite data on the target machine. This config
-can be set initially  with `make_config_file` or updated with with
-`update_config_file`
+Note that all transfer methods have an `overwrite_existing_files` argument
+(default `False`) that controls whether transferred data will overwrite
+data on the target machine. For example:
 
 ```python
-project.update_config_file(
+project.upload_entire_project(
   overwrite_existing_files=True,
 )
 ```
@@ -568,7 +567,8 @@ is already a file on central storage with the same name
 in the same folder—the file will not be uploaded.
 
 If `Overwrite Existing Files` is on, then any existing files
-will be overwritten by newer versions of the file during transfer.
+will be overwritten if the versions on local and central are different
+(e.g. size, modification datetime).
 ```
 
 With the data safely on our central storage,
@@ -662,10 +662,6 @@ Then, select only the `behav` datatype from the datatype checkboxes.
 
 Finally, we can select `Download` from the upload / download switch,
 and click `Transfer`.
-
-Note that the `Overwrite Existing Files` setting affects both upload
-and downloads—any local versions of a file will be overwritten
-by newer versions downloaded from central storage when it is turned on.
 
 ```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-switch-dark.png
    :align: center

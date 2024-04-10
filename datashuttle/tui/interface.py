@@ -68,9 +68,7 @@ class Interface:
             Name of the project to set up.
 
         cfg_kwargs : Dict
-            The configurations to set the new project to. Note that
-            some settings (e.g. `transfer_verbosity`) are not relevant
-            for TUI and so method defaults will be used.
+            The configurations to set the new project to.
         """
         try:
             project = DataShuttle(project_name, print_startup_message=False)
@@ -199,9 +197,16 @@ class Interface:
         """
         try:
             if upload:
-                self.project.upload_entire_project()
+                transfer_func = self.project.upload_entire_project
             else:
-                self.project.download_entire_project()
+                transfer_func = self.project.download_entire_project
+
+            transfer_func(
+                overwrite_existing_files=self.tui_settings[
+                    "overwrite_existing_files"
+                ]
+            )
+
             return True, None
 
         except BaseException as e:
@@ -240,7 +245,11 @@ class Interface:
                     else self.project.download_derivatives
                 )
 
-            transfer_func()
+            transfer_func(
+                overwrite_existing_files=self.tui_settings[
+                    "overwrite_existing_files"
+                ]
+            )
 
             return True, None
 
@@ -279,19 +288,20 @@ class Interface:
         """
         try:
             if upload:
-                self.project.upload_custom(
-                    selected_top_level_folder,
-                    sub_names=sub_names,
-                    ses_names=ses_names,
-                    datatype=datatype,
-                )
+                transfer_func = self.project.upload_custom
             else:
-                self.project.download_custom(
-                    selected_top_level_folder,
-                    sub_names=sub_names,
-                    ses_names=ses_names,
-                    datatype=datatype,
-                )
+                transfer_func = self.project.download_custom
+
+            transfer_func(
+                selected_top_level_folder,
+                sub_names=sub_names,
+                ses_names=ses_names,
+                datatype=datatype,
+                overwrite_existing_files=self.tui_settings[
+                    "overwrite_existing_files"
+                ],
+            )
+
             return True, None
 
         except BaseException as e:
@@ -405,13 +415,6 @@ class Interface:
                 top_level_folder, sub, return_with_prefix=True, local_only=True
             )
             return True, next_ses
-        except BaseException as e:
-            return False, str(e)
-
-    def update_overwrite_existing_files(self, value: bool) -> InterfaceOutput:
-        try:
-            self.project.update_config_file(overwrite_existing_files=value)
-            return True, None
         except BaseException as e:
             return False, str(e)
 

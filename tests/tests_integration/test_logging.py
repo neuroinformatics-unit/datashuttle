@@ -206,9 +206,6 @@ class TestLogging:
             "all",
         )
 
-        project.update_config_file(show_transfer_progress=False)
-        project.update_config_file(transfer_verbosity="vv")
-
         (
             transfer_function,
             base_path_to_check,
@@ -234,25 +231,19 @@ class TestLogging:
                 f"Starting logging for command {upload_or_download}-rawdata"
                 in log
             )
-            assert (
-                "VariablesState:\nlocals: {'top_level_folder': 'rawdata', 'dry_run': False"
-                in log
-            )
         else:
-            assert (
-                "VariablesState:\nlocals: {'top_level_folder': 'rawdata', 'sub_names': 'all', 'ses_names': 'all"
-                in log
-            )
+            assert f"{upload_or_download}-custom" in log
 
         # 'remote' here is rclone terminology
         assert "Creating backend with remote" in log
 
         assert "Using config file from" in log
-        assert "Local file system at" in log
+        #   assert "Local file system at" in log
         assert "--include" in log
         assert "sub-11/ses-123/anat/**" in log
         assert "/central/test_project/rawdata" in log
-        assert "Waiting for checks to finish" in log
+
+    #      assert "Waiting for checks to finish" in log
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_logs_upload_and_download_folder_or_file(
@@ -269,9 +260,6 @@ class TestLogging:
             sessions=["ses-001"],
             datatype="all",
         )
-
-        project.update_config_file(show_transfer_progress=False)
-        project.update_config_file(transfer_verbosity="vv")
 
         test_utils.handle_upload_or_download(
             project,
@@ -295,8 +283,7 @@ class TestLogging:
             in log
         )
         assert "sub-001/ses-001" in log
-        assert "Using config file from" in log
-        assert "Waiting for checks to finish" in log
+        assert "Elapsed time" in log
 
     # ----------------------------------------------------------------------------------
     # Test temporary logging path

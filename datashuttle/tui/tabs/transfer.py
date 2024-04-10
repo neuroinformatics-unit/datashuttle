@@ -163,7 +163,7 @@ class TransferTab(TreeAndInputTab):
             ),
             Checkbox(
                 "Overwrite Existing Files",
-                value=self.interface.project.cfg["overwrite_existing_files"],
+                value=self.interface.tui_settings["overwrite_existing_files"],
                 id="configs_overwrite_files_checkbox",
             ),
             id="transfer_tab_transfer_settings_container",
@@ -261,11 +261,16 @@ class TransferTab(TreeAndInputTab):
         """"""
         if event.checkbox.id == "configs_overwrite_files_checkbox":
 
-            success, message = self.interface.update_overwrite_existing_files(
-                event.checkbox.value
+            # This is covered in tests but is so crucial is checked here.
+            assert (
+                self.interface.tui_settings["overwrite_existing_files"]
+                is not event.checkbox.value
+            ), f"{self.interface.tui_settings['overwrite_existing_files']}-{event.checkbox.value}"
+
+            self.interface.update_tui_settings(
+                event.checkbox.value,
+                "overwrite_existing_files",
             )
-            if not success:
-                self.mainwindow.show_modal_error_dialog(message)
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress

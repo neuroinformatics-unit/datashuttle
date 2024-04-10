@@ -311,8 +311,7 @@ def handle_rclone_arguments(
     rclone_options: Dict, include_list: List[str]
 ) -> str:
     """
-    Construct the extra arguments to pass to RClone based on the
-    current configs.
+    Construct the extra arguments to pass to RClone,
     """
     extra_arguments_list = []
 

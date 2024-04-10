@@ -264,7 +264,6 @@ class TestConfigs(BaseTest):
             "connection_method",
             "central_host_id",
             "central_host_username",
-            "transfer_verbosity",
         ]
 
         for key in keys_to_not_update:
