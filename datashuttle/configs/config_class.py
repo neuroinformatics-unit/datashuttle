@@ -231,8 +231,8 @@ class Configs(UserDict):
     ) -> Dict:
         """
         This function originally collected the relevant arguments
-        from configs. Now, all are passed via command line. However,
-        now we fix the previously configurable arguments
+        from configs. Now, all are passed via function arguments
+        However, now we fix the previously configurable arguments
         `show_transfer_progress` and `dry_run` here.
         """
         return {
