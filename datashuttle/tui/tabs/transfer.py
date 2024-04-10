@@ -184,7 +184,13 @@ class TransferTab(TreeAndInputTab):
                     id="overwrite_settings_container",
                 ),
                 # needs to be in horizontal or formats with large space for some rason.
-                Horizontal(Checkbox("Dry Run", id="dry_run_checkbox")),
+                Horizontal(
+                    Checkbox(
+                        "Dry Run",
+                        value=self.interface.tui_settings["dry_run"],
+                        id="dry_run_checkbox",
+                    )
+                ),
             ),
             id="transfer_tab_transfer_settings_container",
         )
@@ -192,21 +198,11 @@ class TransferTab(TreeAndInputTab):
         if self.show_legend:
             yield Label("⭕ Legend", id="transfer_legend")
 
-    def on_select_changed(self, event: Select.Changed) -> None:
-        if event.select.id == "overwrite_existing_files_select":
-            assert event.select.value in ["Never", "Always", "If Source Newer"]
-            format_select = event.select.value.lower().replace(" ", "_")
-            self.interface.update_tui_settings(
-                format_select,
-                "overwrite_existing_files",
-            )
-
     def on_mount(self) -> None:
 
         for id in [
             "#transfer_directorytree",
             "#transfer_switch_container",
-            #  "#configs_overwrite_files_checkbox",
             "#transfer_subject_input",
             "#transfer_session_input",
             "#transfer_all_checkbox",
@@ -224,6 +220,24 @@ class TransferTab(TreeAndInputTab):
                 ("Local Only\n", "green3"),
                 # ("Central Only\n", "italic dodger_blue3"),
                 ("Error\n", "bright_red"),
+            )
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        if event.select.id == "overwrite_existing_files_select":
+            assert event.select.value in ["Never", "Always", "If Source Newer"]
+            format_select = event.select.value.lower().replace(" ", "_")
+            self.interface.update_tui_settings(
+                format_select,
+                "overwrite_existing_files",
+            )
+
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        if (
+            event.checkbox.id == "dry_run_checkbox"
+        ):  # TODO: UPDATE NAMES TO INC. TAB! ALSO UPDATE TOOLTIPS
+            self.interface.update_tui_settings(
+                event.checkbox.value,
+                "dry_run",
             )
 
     # Manage Widgets
