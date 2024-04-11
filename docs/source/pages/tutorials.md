@@ -14,3 +14,11 @@ Walk-through starting a new experiment with **datashuttle**.
 
 :::
 ::::
+
+```{toctree}
+:maxdepth: 2
+:caption: tutorials
+:hidden:
+
+tutorials/getting_started
+```

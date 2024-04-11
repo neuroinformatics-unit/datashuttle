@@ -128,19 +128,25 @@ def setup_ssh_key(
     log : log if True, logger must already be initialised.
     """
     if not sys.stdin.isatty():
-        utils.log_and_raise_error(
-            "Attempting to run outside of a TTY terminal. "
-            "This may happen if attempting to run in an IDE console. "
-            "`getpass` (used for ssh password input) cannot run. "
-            "Try using Python from the operating system "
-            "terminal to run this function.",
-            RuntimeError,
+        proceed = input(
+            "\nWARNING!\nThe next step is to enter a password, but it is not possible\n"
+            "to hide your password while entering it in the current terminal.\n"
+            "This can occur if running the command in an IDE.\n\n"
+            "Press 'y' to proceed to password entry. "
+            "The characters will not be hidden!\n"
+            "Alternatively, run ssh setup after starting Python in your "
+            "system terminal \nrather than through an IDE: "
         )
-
-    password = getpass.getpass(
-        "Please enter password to your central host to add the public key. "
-        "You will not have to enter your password again."
-    )
+        if proceed != "y":
+            return
+        password = input(
+            "Please enter your password. Characters will not be hidden: "
+        )
+    else:
+        password = getpass.getpass(
+            "Please enter password to your central host to add the public key. "
+            "You will not have to enter your password again."
+        )
 
     add_public_key_to_central_authorized_keys(cfg, password)
 
