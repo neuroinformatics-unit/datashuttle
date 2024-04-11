@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c02300dd"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e78f113"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
@@ -47,6 +47,8 @@
     <link rel="icon" href="../../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to Install" href="install.html" />
+    <link rel="prev" title="How to Choose a Terminal" href="choose-a-terminal.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -127,7 +129,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">Datashuttle v0.3.0</p>
+    <p class="title logo__title">datashuttle v0.4.0</p>
   
 </a></div>
     
@@ -148,7 +150,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -258,8 +260,6 @@ document.write(`
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
@@ -280,7 +280,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -378,6 +378,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../how_tos.html" class="nav-link">How To</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">How to...</li>
   </ul>
 </nav>
@@ -397,97 +400,98 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="how-to-create-folders">
 <span id="id1"></span><h1>How to Create Folders<a class="headerlink" href="#how-to-create-folders" title="Permalink to this heading">#</a></h1>
-<p><strong>datashuttle</strong> creates project folders
-according to the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a>
-specification.</p>
-<p>Before jumping into the folder-creation process, we’ll quickly
-review the key features of the
-<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/specification.html">specification</a>)
-that are created folders must conform to.</p>
-<p>In <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> for each
-subject and session there are datatype folders in which acquired
-data is saved:</p>
+<p><strong>datashuttle</strong> automates project folder creation and validation
+according to the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a>.</p>
+<p>Before starting with folder creation, we’ll briefly introduce the
+<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/specification.html">NeuroBlueprint specification</a>.</p>
+<p>An example <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a> project:</p>
 <a class="only-dark reference internal image-reference" href="../../_images/NeuroBlueprint_project_tree_dark.png"><img alt="../../_images/NeuroBlueprint_project_tree_dark.png" class="only-dark align-center" src="../../_images/NeuroBlueprint_project_tree_dark.png" style="width: 650px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/NeuroBlueprint_project_tree_light.png"><img alt="../../_images/NeuroBlueprint_project_tree_light.png" class="only-light align-center" src="../../_images/NeuroBlueprint_project_tree_light.png" style="width: 650px;" /></a>
 <br>
-<p>The subject and session folder names must begin with <code class="docutils literal notranslate"><span class="pre">sub-</span></code> and <code class="docutils literal notranslate"><span class="pre">ses-</span></code>
-respectively—other key-value pairs are optional. All acquired data must go
-in a datatype folder with a
-<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/specification.html">standard name</a>.</p>
-<p>No strong requirements are made on filenames of acquired data, but it is recommended
-to include the subject and session number if possible.</p>
-<p>Now the specification has been introduced, let’s dive in to folder creation!</p>
+<p>Some key features:</p>
+<ul class="simple">
+<li><p>The <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> top-level-folder contains acquired data. Following acquisition
+this data is never edited.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> top-level folder contains all processing and analysis outputs. There are
+no fixed requirements on its organisation.</p></li>
+<li><p>Subject and session folders are formatted as key-value pairs.</p></li>
+<li><p>Only the <code class="docutils literal notranslate"><span class="pre">sub-</span></code> and <code class="docutils literal notranslate"><span class="pre">ses-</span></code> key-value pairs are required (additional pairs are optional).</p></li>
+<li><p>Each session contains datatype folders, in which acquired data is stored.</p></li>
+</ul>
+<p>Now, let’s get started with folder creation!</p>
 <section id="creating-project-folders">
 <h2>Creating project folders<a class="headerlink" href="#creating-project-folders" title="Permalink to this heading">#</a></h2>
-<p>In the below example, folders will be created in the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> folder,
-within the <code class="docutils literal notranslate"><span class="pre">my_first_project</span></code> project folder.</p>
-<p>The project folder is located at the <strong>local path</strong>
+<p>The project-name folder is located at the <strong>local path</strong>
 specified when <a class="reference internal" href="make-a-new-project.html#make-a-new-project"><span class="std std-ref">setting up the project</span></a>.</p>
+<p>We will now create subject, session and
+datatype folders within a <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> top-level folder.</p>
 <p>We will create datatype folders <code class="docutils literal notranslate"><span class="pre">behav</span></code> and <code class="docutils literal notranslate"><span class="pre">funcimg</span></code>
-within a <code class="docutils literal notranslate"><span class="pre">ses-001_&lt;todays_date&gt;</span></code> for both <code class="docutils literal notranslate"><span class="pre">sub-001</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-002</span></code>.</p>
+within a <code class="docutils literal notranslate"><span class="pre">ses-001_&lt;todays_date&gt;</span></code> for both a <code class="docutils literal notranslate"><span class="pre">sub-001</span></code> and <code class="docutils literal notranslate"><span class="pre">sub-002</span></code>.</p>
 <p>The below example uses the <code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code> convenience tag to automate
-creation of today’s date. See the section below for more
-information on
-<a class="reference internal" href="#create-folders-convenience-tags"><span class="std std-ref">convenience tags</span></a>.</p>
+creation of today’s date. See the
+<a class="reference internal" href="#create-folders-convenience-tags"><span class="std std-ref">convenience tags</span></a>.
+section for more information on these tags.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="gui" for="sd-tab-item-0">
 Graphical Interface</label><div class="sd-tab-content docutils">
+<p>Folders are created in the <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab on the <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Manager</span></code> page.</p>
 <a class="only-dark reference internal image-reference" href="../../_images/how-to-create-folders-example-dark.png"><img alt="../../_images/how-to-create-folders-example-dark.png" class="only-dark align-center" src="../../_images/how-to-create-folders-example-dark.png" style="width: 900px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/how-to-create-folders-example-light.png"><img alt="../../_images/how-to-create-folders-example-light.png" class="only-light align-center" src="../../_images/how-to-create-folders-example-light.png" style="width: 900px;" /></a>
 <br>
-<p>Folders are created in the <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab on the <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Manager</span></code> page.</p>
-<p>We can fill in the subject and session names and select datatype
-folders to create.</p>
-<p>Note that the <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> prefix is not actually required and will
-be automatically added.</p>
-<h3 class="rubric" id="create-tab-shortcuts"><code class="docutils literal notranslate"><span class="pre">Create</span></code> tab shortcuts</h3>
+<p>We can enter the subject and session names into the input boxes,
+and select datatype folders to create. Clicking <code class="docutils literal notranslate"><span class="pre">Create</span> <span class="pre">Folders</span></code>
+will create the folders within the project.</p>
+<p>A number of useful shortcuts to streamline this process are described below.</p>
+<h3 class="rubric" id="create-shortcuts"><code class="docutils literal notranslate"><span class="pre">Create</span></code> shortcuts</h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab has a lot of useful shortcuts.</p>
-<p>First, <strong>double-clicking the subject or session input boxes</strong> will suggest
+<p>First, <strong>double-clicking subject or session input boxes</strong> will suggest
 the next subject or session to create, based on the local project.
 If a <a class="reference internal" href="use-name-templates.html#how-to-use-name-templates"><span class="std std-ref">Name Template</span></a> is set, the
 suggested name  will also include the template.</p>
-<p>Holding <code class="docutils literal notranslate"><span class="pre">CTRL</span></code> while clicking will add the <code class="docutils literal notranslate"><span class="pre">sub-</span></code>
+<p>Holding <code class="docutils literal notranslate"><span class="pre">CTRL</span></code> while clicking will enter the <code class="docutils literal notranslate"><span class="pre">sub-</span></code>
 or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> prefix only.</p>
 <p>Next, the <strong>Directory Tree</strong> has a number of useful shortcuts. These are
-activated by hovering the mouse and pressing one of the below combination
-of keys (you may need to click the <code class="docutils literal notranslate"><span class="pre">Directory</span> <span class="pre">Tree</span></code>) first:</p>
+activated by hovering the mouse of a file or folder and pressing
+one of the below key combinations
+(you may need to click the <code class="docutils literal notranslate"><span class="pre">Directory</span> <span class="pre">Tree</span></code> first):</p>
 <dl class="simple myst">
 <dt>Fill an input</dt><dd><p><code class="docutils literal notranslate"><span class="pre">CTRL+F</span></code> will fill the subject or session input with the name
 of the folder (prefixed with <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code>) that is hovered over.</p>
 </dd>
 <dt>Append to an input</dt><dd><p><code class="docutils literal notranslate"><span class="pre">CTRL+A</span></code> is similar to ‘fill’ above, but will instead append the name
-to those already in the input. This allows creation of lists.</p>
+to those already in the input. This allows creation of multiple
+subjects or sessions at once.</p>
 </dd>
-<dt>Open folder in system filebrowser</dt><dd><p><code class="docutils literal notranslate"><span class="pre">CTRL+O</span></code> will open (any) folder in the system filebrowser.</p>
+<dt>Open folder in system filebrowser</dt><dd><p><code class="docutils literal notranslate"><span class="pre">CTRL+O</span></code> will open a folder in the system filebrowser.</p>
 </dd>
 <dt>Copy the full filepath.</dt><dd><p><code class="docutils literal notranslate"><span class="pre">CTRL+Q</span></code> will copy the entire filepath of the file or
-folder that is hovered over.</p>
+folder.</p>
 </dd>
 </dl>
-<h3 class="rubric" id="create-tab-settings"><code class="docutils literal notranslate"><span class="pre">Create</span></code> tab Settings</h3>
-<p>Clicking the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> button on the <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab will give access
-allow setting the top-level folder, and bypass validation.</p>
+<h3 class="rubric" id="create-settings"><code class="docutils literal notranslate"><span class="pre">Create</span></code> Settings</h3>
+<p>Click the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> button on the <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab to set
+the top-level folder, and bypass validation.</p>
 <a class="only-dark reference internal image-reference" href="../../_images/how-to-create-folders-settings-dark.png"><img alt="../../_images/how-to-create-folders-settings-dark.png" class="only-dark align-center" src="../../_images/how-to-create-folders-settings-dark.png" style="width: 500px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/how-to-create-folders-settings-light.png"><img alt="../../_images/how-to-create-folders-settings-light.png" class="only-light align-center" src="../../_images/how-to-create-folders-settings-light.png" style="width: 500px;" /></a>
 <br>
 <dl class="simple myst">
-<dt>Top-level folder</dt><dd><p>This dropdown box will set whether folderes are created in the
-<code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> top-level folder</p>
+<dt>Top level folder</dt><dd><p>This dropdown box will set whether folders are created in the
+<code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> top-level folder.</p>
 </dd>
-<dt>Bypass validation</dt><dd><p>If on, this setting will allow folder creation even if the names
-are not valid (e.g. break with
+<dt>Bypass validation</dt><dd><p>This setting will allow folder creation even if the names
+are not valid (i.e. they break with
 <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a>).</p>
 </dd>
 </dl>
-<p>This screen is also used to set validation against
+<p>This screen is also used to validate and autofill with
 <a class="reference internal" href="use-name-templates.html#how-to-use-name-templates"><span class="std std-ref">Name Templates</span></a>.</p>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="python" for="sd-tab-item-1">
 Python API</label><div class="sd-tab-content docutils">
-<p>Creating folders can be done with the <code class="docutils literal notranslate"><span class="pre">create_folders()</span></code> method in the Python API.
-We simply need to provide the subject, session and datatypes to create:</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">create_folders()</span></code> method is used for folder creation.</p>
+<p>We simply need to provide the subject, session and datatypes to create:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datashuttle</span> <span class="kn">import</span> <span class="n">DataShuttle</span>
 
 <span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_first_project&quot;</span><span class="p">)</span>
@@ -500,36 +504,28 @@ We simply need to provide the subject, session and datatypes to create:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>We provides <strong>datashuttle</strong> with a list of subject, session and
-datatype folders to create.</p>
-<p>Note that the <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> prefix is not actually required and will
-be automatically added.</p>
 <p>The method outputs <code class="docutils literal notranslate"><span class="pre">created_folders</span></code>, which contains a list of all
-<code class="docutils literal notranslate"><span class="pre">Path</span></code>s to all created datatype folders.</p>
+<code class="docutils literal notranslate"><span class="pre">Path</span></code>s to all created datatype folders. See the below section for
+details on the <code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code> and other convenience tags.</p>
+<p>By default, an error will be raised if the folder names break
+with <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">Neuroblueprint</a>
+and folders will not be created.
+The <code class="docutils literal notranslate"><span class="pre">bypass_validation</span></code> argument can be used to bypass this feature.</p>
 </div>
-</div>
-<div class="note admonition">
-<p class="admonition-title">Folder Validation</p>
-<p>The names of the folders to be created are validated on the fly against
-<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/">NeuroBlueprint</a>.
-If the folder names will break with the specification, an error will
-be raised and the folders will not be created.</p>
-<p>Validation can be extended by defining custom templates for subject
-or session names—if folders don’t match the template an error will be raised.
-See <a class="reference internal" href="use-name-templates.html#how-to-use-name-templates"><span class="std std-ref">How to use Name Templates</span></a> for more information.</p>
 </div>
 </section>
 <section id="convenience-tags">
 <span id="create-folders-convenience-tags"></span><h2>Convenience Tags<a class="headerlink" href="#convenience-tags" title="Permalink to this heading">#</a></h2>
 <p>There are four convenience tags that can be used in subject or session
-names when creating folders. They automate the inclusion of:</p>
+names when creating folders.</p>
+<p>They automate the inclusion of:</p>
 <dl class="simple myst">
 <dt>Today’s Date</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code> tag will include today’s date in the format <code class="docutils literal notranslate"><span class="pre">YYYYMMDD</span></code>. <br />
 <em>e.g.</em> If today’s date is 16th May 2024, the name <code class="docutils literal notranslate"><span class="pre">&quot;ses-001_&#64;DATE&#64;&quot;</span></code> will
 create the folder <code class="docutils literal notranslate"><span class="pre">ses-001_date-20241605</span></code>.</p>
 </dd>
 <dt>Current Time</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;TIME&#64;</span></code> tag will include the current time in the format <code class="docutils literal notranslate"><span class="pre">HHMMSS</span></code>. <br />
-<em>e.g.</em> If the current time is <code class="docutils literal notranslate"><span class="pre">15:10:05</span></code> (i.e. 10 minutes and 5 seconds past 3 pm.),
+<em>e.g.</em> If the current time is <code class="docutils literal notranslate"><span class="pre">15:10:05</span></code> (i.e. 10 minutes and 5 seconds past 3 p.m.),
 the name <code class="docutils literal notranslate"><span class="pre">&quot;ses-001_&#64;TIME&#64;&quot;</span></code> will create the folder <code class="docutils literal notranslate"><span class="pre">ses-001_time-151005</span></code>.</p>
 </dd>
 <dt>Current Datetime</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;DATETIME&#64;</span></code> tag will add the

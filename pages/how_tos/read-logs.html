@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c02300dd"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e78f113"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
@@ -47,6 +47,8 @@
     <link rel="icon" href="../../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to Update Configs" href="update-configs.html" />
+    <link rel="prev" title="How to Transfer Data" href="transfer-data.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -127,7 +129,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">Datashuttle v0.3.0</p>
+    <p class="title logo__title">datashuttle v0.4.0</p>
   
 </a></div>
     
@@ -148,7 +150,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -258,8 +260,6 @@ document.write(`
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
@@ -280,7 +280,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -378,6 +378,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../how_tos.html" class="nav-link">How To</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">How to Read the Logs</li>
   </ul>
 </nav>
@@ -397,12 +400,11 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="how-to-read-the-logs">
 <span id="id1"></span><h1>How to Read the Logs<a class="headerlink" href="#how-to-read-the-logs" title="Permalink to this heading">#</a></h1>
-<p>When commands that create folders, change project configs
-or transfer data are run, <strong>datashuttle</strong> stored detailed
-logs of these actions.</p>
+<p><strong>datashuttle</strong> stores detailed logs when commands that
+create folders, change project configs or perform data transfers are run.</p>
 <p>These logs can be accessed and read directly in the
-Graphical Interface, or located on your filesysetm
-and opened in your favourite text file reader.</p>
+graphical interface, or located on your filesysetm
+and opened in your favourite text editor.</p>
 <p>Logs are stored as <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_8601">ISO8601</a>-prefixed
 filenames that includes the relevant <strong>datashuttle</strong> method performed.</p>
 <section id="find-and-read-the-logs">
@@ -423,17 +425,18 @@ all logs for the project.</p>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="python" for="sd-tab-item-1">
 Python API</label><div class="sd-tab-content docutils">
-<p>The path where logs are stored can be accessed by running the
-<code class="docutils literal notranslate"><span class="pre">get_logging_path()</span></code> method:</p>
+<p>The path where logs are stored can be accessed by running
+<code class="docutils literal notranslate"><span class="pre">get_logging_path()</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">logs_path</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">get_logging_path</span><span class="p">()</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">logs_path</span><span class="p">)</span>
+<span class="c1"># Path(&#39;C:/Users/Joe/data/local/my_first_project/.datashuttle/logs&#39;)</span>
 </pre></div>
 </div>
 <p>You can then navigate to this path in your system filebrowser
-and open the logs in your favourite text editor.</p>
-<a class="only-dark reference internal image-reference" href="../../_images/how-to-logs-filesbrowser-dark.png"><img alt="../../_images/how-to-logs-filesbrowser-dark.png" class="only-dark align-center" src="../../_images/how-to-logs-filesbrowser-dark.png" style="width: 400px;" /></a>
-<a class="only-light reference internal image-reference" href="../../_images/how-to-logs-filesbrowser-light.png"><img alt="../../_images/how-to-logs-filesbrowser-light.png" class="only-light align-center" src="../../_images/how-to-logs-filesbrowser-light.png" style="width: 400px;" /></a>
+and open the logs.</p>
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-logs-filesbrowser-dark.png"><img alt="../../_images/how-to-logs-filesbrowser-dark.png" class="only-dark align-center" src="../../_images/how-to-logs-filesbrowser-dark.png" style="width: 500px;" /></a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-logs-filesbrowser-light.png"><img alt="../../_images/how-to-logs-filesbrowser-light.png" class="only-light align-center" src="../../_images/how-to-logs-filesbrowser-light.png" style="width: 500px;" /></a>
 <br>
 </div>
 </div>

@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c02300dd"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e78f113"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
@@ -47,6 +47,8 @@
     <link rel="icon" href="../../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to Read the Logs" href="read-logs.html" />
+    <link rel="prev" title="How to Make a New Project" href="make-a-new-project.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -127,7 +129,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">Datashuttle v0.3.0</p>
+    <p class="title logo__title">datashuttle v0.4.0</p>
   
 </a></div>
     
@@ -148,7 +150,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -258,8 +260,6 @@ document.write(`
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
@@ -280,7 +280,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -378,6 +378,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../how_tos.html" class="nav-link">How To</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">How to Transfer Data</li>
   </ul>
 </nav>
@@ -397,50 +400,45 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="how-to-transfer-data">
 <span id="id1"></span><h1>How to Transfer Data<a class="headerlink" href="#how-to-transfer-data" title="Permalink to this heading">#</a></h1>
-<p>Transferring data between the local project and the project located
-on central storage is a key feature of <strong>datashuttle</strong>. It allows:</p>
+<p><strong>datashuttle</strong> facilitates convenient transfer of data between
+local and central storage machines.</p>
+<p>This includes:</p>
 <ul class="simple">
-<li><p>Transfer of data from an acquisition machine to the central project.</p></li>
-<li><p>Convenient integration of data collected from multiple acquisition.</p></li>
-<li><p>Pulling subsets of data from central storage to analysis machines.</p></li>
+<li><p>‘Uploading’ data from an acquisition machine to central data storage.</p></li>
+<li><p>‘Downloading’ subsets of data from central storage to analysis machines.</p></li>
 </ul>
 <a class="only-light reference internal image-reference" href="../../_images/datashuttle-overview-light.png"><img alt="../../_images/datashuttle-overview-light.png" class="only-light align-center" src="../../_images/datashuttle-overview-light.png" style="width: 600px;" /></a>
 <a class="only-dark reference internal image-reference" href="../../_images/datashuttle-overview-dark.png"><img alt="../../_images/datashuttle-overview-dark.png" class="only-dark align-center" src="../../_images/datashuttle-overview-dark.png" style="width: 600px;" /></a>
 <div class="note admonition">
 <p class="admonition-title">Transfer Direction</p>
-<p>In <strong>datashuttle</strong>, the term <em>upload</em> refers to transfer
-from the local machine to central storage.
-<em>Download</em> refers to transfer from central storage to
-a local machine.</p>
+<p>In <strong>datashuttle</strong>, the <em>upload</em> refers to transfer
+from a local to the central machine.
+<em>Download</em> refers to transfer from the central machine to a local machine.</p>
 </div>
-<p>There are three main methods to transfer data in <strong>datashuttle</strong>. These
-allow transfer between:</p>
+<p>There are three main methods to transfer data. These
+allow transfer across:</p>
 <ol class="arabic simple">
-<li><p>The entire project (all files in both <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>)</p></li>
-<li><p>A specific top-level-folder (e.g. all files in <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>)</p></li>
-<li><p>A custom subset of subjects / sessions / datatypes.</p></li>
+<li><p>the <strong>entire project</strong> (all files in both <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>)</p></li>
+<li><p>only the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> <strong>top level folder</strong>.</p></li>
+<li><p>a <strong>custom</strong> subset of subjects / sessions / datatypes.</p></li>
 </ol>
-<p>Below we will explore each method in turn, as well as consider
-<a class="reference internal" href="#configuring-transfer"><span class="std std-ref">configuring transfer</span></a> including the important
-<strong>overwrite existing files</strong> option.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>The
-<a class="reference internal" href="make-a-new-project.html#overwrite-existing-files-config"><span class="std std-ref"><code class="docutils literal notranslate"><span class="pre">Overwrite</span> <span class="pre">Existing</span> <span class="pre">Files</span></code></span></a>
-setting is very important.</p>
-<p>By default it is turned off and a transfer will never overwrite a
-file that already exists, even if the source version is newer.</p>
+<p>The <strong>overwrite existing files</strong> setting is very important.
+It takes on the options <strong>never</strong>, <strong>always</strong> or <strong>if source newer</strong>.</p>
+<p>See the <a class="reference internal" href="#id2"><span class="std std-ref">transfer options</span></a> section for full details on
+this and other transfer settings.</p>
 </div>
 <section id="transfer-the-entire-project">
 <span id="transfer-entire-project"></span><h2>Transfer the entire project<a class="headerlink" href="#transfer-the-entire-project" title="Permalink to this heading">#</a></h2>
-<p>The first option is to transfer the entire project,
-that is all files in the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>
+<p>The first option is to transfer the entire project—all
+files in the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>
 <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/specification.html#basic-principles">top-level-folders</a>.</p>
 <p>This includes all files inside or outside a subject, session
 or datatype folder.</p>
 <p>This mode is useful for data acquisition when <strong>overwrite existing files</strong>
-is off. Any new files (i.e. newly acquired data) will be transferred,
-to central storage, while any existing files will be ignored.</p>
+is set to <strong>never</strong>. Any new files (i.e. newly acquired data) will be transferred
+to central storage while existing files will be ignored.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="gui" for="sd-tab-item-0">
@@ -448,34 +446,30 @@ Graphical Interface</label><div class="sd-tab-content docutils">
 <a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-all-dark.png"><img alt="../../_images/how-to-transfer-all-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-all-dark.png" style="width: 900px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-all-light.png"><img alt="../../_images/how-to-transfer-all-light.png" class="only-light align-center" src="../../_images/how-to-transfer-all-light.png" style="width: 900px;" /></a>
 <br>
-<p>To transfer the entire project navitgate to the <code class="docutils literal notranslate"><span class="pre">Transfer</span> <span class="pre">tab.</span> <span class="pre">The</span> </code>All` button indicates to transfer the entire project.</p>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">/</span> <span class="pre">Download</span></code> switch to control transfer direction,
-and press <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
+<p>To transfer the entire project navitgate to the <code class="docutils literal notranslate"><span class="pre">Transfer</span> <span class="pre">tab</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">All</span></code> button is selected to transfer the entire project.</p>
+<p>Click <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="python" for="sd-tab-item-1">
 Python API</label><div class="sd-tab-content docutils">
-<p>The command to upload the entire project is</p>
+<p>The method to upload the entire project is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_entire_project</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>while the command to download the entire project is</p>
+<p>while the method to download the entire project is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">download_entire_project</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 </div>
 </section>
-<section id="transfer-the-top-level-folder">
-<span id="transfer-top-level-folder"></span><h2>Transfer the top-level folder<a class="headerlink" href="#transfer-the-top-level-folder" title="Permalink to this heading">#</a></h2>
-<p>This mode acts almost identically to
+<section id="transfer-only-rawdata-or-derivatives">
+<span id="transfer-top-level-folder"></span><h2>Transfer only <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code><a class="headerlink" href="#transfer-only-rawdata-or-derivatives" title="Permalink to this heading">#</a></h2>
+<p>This acts almost identically to
 <a class="reference internal" href="#transfer-entire-project"><span class="std std-ref">transferring the entire project</span></a>
-however it will only transfer files within a
-particular top-level folder (<code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>).</p>
-<p>This mode is also useful for quickly uploading new files
-during data acquisition (<code class="docutils literal notranslate"><span class="pre">rawdata</span></code>) or analysis (<code class="docutils literal notranslate"><span class="pre">derivatves</span></code>), when
-<strong>overwrite existing files</strong> is off—any newly acquired or generated files
-will be transfer, ignoring any previously existing files.</p>
+but will only transfer files within a
+single top-level folder (<code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>).</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="gui" for="sd-tab-item-2">
@@ -483,20 +477,19 @@ Graphical Interface</label><div class="sd-tab-content docutils">
 <a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-toplevel-dark.png"><img alt="../../_images/how-to-transfer-toplevel-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-toplevel-dark.png" style="width: 900px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-toplevel-light.png"><img alt="../../_images/how-to-transfer-toplevel-light.png" class="only-light align-center" src="../../_images/how-to-transfer-toplevel-light.png" style="width: 900px;" /></a>
 <br>
-<p>Selecting the <code class="docutils literal notranslate"><span class="pre">Top-Level</span></code> button on the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab will
+<p>Selecting the <code class="docutils literal notranslate"><span class="pre">Top</span> <span class="pre">Level</span></code> button on the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab will
 allow selection of <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> to transfer.</p>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">/</span> <span class="pre">Download</span></code> switch to control transfer direction,
-and press <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
+<p>Click <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="python" for="sd-tab-item-3">
 Python API</label><div class="sd-tab-content docutils">
-<p>The <code class="docutils literal notranslate"><span class="pre">upload_all()</span></code> or <code class="docutils literal notranslate"><span class="pre">download_all()</span></code> methods can be used with the argument <code class="docutils literal notranslate"><span class="pre">top_level_folder</span></code> to specify
-the top-level folder to transfer within.</p>
-<p>In the next example, we will upload <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> downloading <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_all</span><span class="p">(</span><span class="s2">&quot;rawdata&quot;</span><span class="p">)</span>
+<p>The <code class="docutils literal notranslate"><span class="pre">upload_rawdata()</span></code>, <code class="docutils literal notranslate"><span class="pre">upload_derivatives()</span></code> and <code class="docutils literal notranslate"><span class="pre">download_rawdata()</span></code>, <code class="docutils literal notranslate"><span class="pre">download_derivatives()</span></code>
+methods target transfer to a particular top-level folder.</p>
+<p>The below example will upload <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> then download <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_rawdata</span><span class="p">()</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">download_all</span><span class="p">(</span><span class="s2">&quot;derivatives&quot;</span><span class="p">)</span>
+<span class="n">project</span><span class="o">.</span><span class="n">download_derivatives</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -504,49 +497,38 @@ the top-level folder to transfer within.</p>
 </section>
 <section id="custom-transfers">
 <span id="making-custom-transfers"></span><h2>Custom transfers<a class="headerlink" href="#custom-transfers" title="Permalink to this heading">#</a></h2>
-<p>Custom transfers permit full customisation of the files inside
-or outside of subject, session and datatype folders.</p>
-<p>Custom transfers are particularly useful during data analysis, in
-which a subset of data can be downloaded from central storage.
-For example, you want to only transfer behavioural data from
-test sessions—custom transfers allow you to do this with ease.</p>
-<p>See below for how to run custom transfers, as well as
-certain keywords and convenience tags to fully customise data transfer.</p>
-<p>For example, <code class="docutils literal notranslate"><span class="pre">all_sub</span></code> in the below examples tells datashuttle
-to consider only files and folders  within subject folders for transfer.
-Files or folders within <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> that are not <code class="docutils literal notranslate"><span class="pre">sub-</span></code>
-folders will not be transferred.</p>
-<p>See below for full details on custom transfer keywords and
-convenience tags.</p>
+<p>Custom transfers permit full customisation of data transfer.</p>
+<p>Custom transfers can transfer select subsets of data.
+For example, you may only want download behavioural data from
+test sessions for a particular data analysis.</p>
 <div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="gui" for="sd-tab-item-4">
 Graphical Interface</label><div class="sd-tab-content docutils">
+<p>Select <code class="docutils literal notranslate"><span class="pre">Custom</span></code> on the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab to open the custom transfer settings.</p>
 <a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-custom-dark.png"><img alt="../../_images/how-to-transfer-custom-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-custom-dark.png" style="width: 900px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-custom-light.png"><img alt="../../_images/how-to-transfer-custom-light.png" class="only-light align-center" src="../../_images/how-to-transfer-custom-light.png" style="width: 900px;" /></a>
 <br>
-<p>Select <code class="docutils literal notranslate"><span class="pre">Custom</span></code> on the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab to select custom transfers.</p>
 <p>The top-level folder can be set by the first dropdown menu.</p>
 <p>Next, subject and session keywords can be added to customise
-files to transfer. In this example, data from all <em>subject</em>
-folders, all first session behavioral data will be transferred.</p>
+files to transfer. In this example, the first behavioural session for
+all subjects will be transferred.</p>
 <p>Subject and sessions can be added to the input boxes automatically
 by hovering over <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> folders on the <code class="docutils literal notranslate"><span class="pre">DirectoryTree</span></code>.
 Pressing <code class="docutils literal notranslate"><span class="pre">CTRL+F</span></code> will ‘fill’ the input with the foldername,
 while <code class="docutils literal notranslate"><span class="pre">CTRL+A</span></code> will ‘append’ the foldername, creating a list of
 subjects or sessions to transfer.</p>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">Upload</span> <span class="pre">/</span> <span class="pre">Download</span></code> switch to control transfer direction,
-and press <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
 <a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-datatypes-dark.png"><img alt="../../_images/how-to-transfer-datatypes-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-datatypes-dark.png" style="width: 400px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-datatypes-light.png"><img alt="../../_images/how-to-transfer-datatypes-light.png" class="only-light align-center" src="../../_images/how-to-transfer-datatypes-light.png" style="width: 400px;" /></a>
 <br>
+<p>Finally, click <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
 </div>
 <input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
 </input><label class="sd-tab-label" data-sync-id="python" for="sd-tab-item-5">
 Python API</label><div class="sd-tab-content docutils">
-<p>The <code class="docutils literal notranslate"><span class="pre">upload()</span></code> and <code class="docutils literal notranslate"><span class="pre">download()</span></code> methods can be used for custom
+<p>The <code class="docutils literal notranslate"><span class="pre">upload_custom()</span></code> and <code class="docutils literal notranslate"><span class="pre">download_custom()</span></code> methods can be used for custom
 data transfers. For example, to perform a custom upload:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_custom</span><span class="p">(</span>
     <span class="n">top_level_folder</span><span class="o">=</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
     <span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;all_sub&quot;</span><span class="p">,</span>
     <span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;ses-001_@*@&quot;</span><span class="p">,</span>
@@ -554,55 +536,62 @@ data transfers. For example, to perform a custom upload:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>In this example, data from all <em>subject</em>
-folders, all first session behavioral data will be uploaded.</p>
+<p>In this example, the first behavioural session for
+all subjects will be transferred.</p>
 </div>
 </div>
 <section id="custom-transfer-keywords">
 <h3>Custom transfer keywords<a class="headerlink" href="#custom-transfer-keywords" title="Permalink to this heading">#</a></h3>
 <p>Custom transfer keywords determine how files and folders
 outside of subject, session and datatype folders are handled.</p>
-<p>Ideally, all data will be stored in datatype folders. However, this
+<p>Ideally, all data will be stored in datatype folders—however this
 is not always feasible.</p>
-<p>In this case, custom transfer keywords allows flexible handling of
+<p>In such cases custom transfer keywords allows flexible handling of
 the transfer of non <code class="docutils literal notranslate"><span class="pre">sub-</span></code>, <code class="docutils literal notranslate"><span class="pre">ses-</span></code> prefixed or datatype folders at the
 subject, session and datatype level.</p>
+<p>Note that the <a class="reference internal" href="#dry-run-argument"><span class="std std-ref">dry run argument</span></a> can be used
+to perform a dry-run transfer to check transfers proceed as expected.</p>
 <dl class="simple myst">
-<dt>Subject level</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> - All subject (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">sub-</span></code>) folders and non-subject files within the
-top-level folder will be transferred.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all_sub</span></code> - Subject  <u>folders</u> only and them will be transferred.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> - All files and folders that are not prefixed with <code class="docutils literal notranslate"><span class="pre">sub-</span></code>,
-within the top-level folder, will be transferred.
-Any folders prefixed with <code class="docutils literal notranslate"><span class="pre">sub-</span></code> at this level will not be transferred.</p></li>
+<dt>Subject level</dt><dd><p>For files and folders within top-level folders:</p>
+</dd>
+<dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> - All files and non-subject folders will be transferred.
+All subject (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">sub-</span></code>)  folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_sub</span></code> - All subject folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> - All files and non-subject folders will be transferred.
+Subject folders will not be transferred.</p></li>
 </ul>
 </dd>
-<dt>Session Level</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All session and non-session files and folders within a subject level folder
-(e.g. <code class="docutils literal notranslate"><span class="pre">sub-001</span></code>) will be transferred.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all_ses</span></code> : Session* <u>folders</u> only (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">ses-</span></code>) and everything within
-them will be transferred.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> : All files and folders that are not prefixed with <code class="docutils literal notranslate"><span class="pre">ses-</span></code>, within a subject folder,
-will be transferred. Any folders prefixed with <code class="docutils literal notranslate"><span class="pre">ses-</span></code> will not be transferred.</p></li>
+<dt>Session Level</dt><dd><p>For sessions within subjects considered for transfer:</p>
+</dd>
+<dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All files and non-session folders will be transferred.
+All session (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">ses-</span></code>) folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_ses</span></code> : All session folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> : All files and non-session folders will be transferred.
+Session folders will not be transferred.</p></li>
 </ul>
 </dd>
-<dt>Datatype Level:</dt><dd><ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All datatype folders at the subject or session folder level will be transferred,
-as well as all files and folders within selected session folders.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all_datatype</span></code> : All datatype folders (e.g. <code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">funcimg</span></code>, <code class="docutils literal notranslate"><span class="pre">anat</span></code>) within a session folder will be
-transferred. Non-<em>datatype</em> folders at the session level will not be transferred</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">all_non_datatype</span></code> : Non-datatype folders within session folders only will be transferred</p></li>
+<dt>Datatype Level:</dt><dd><p>For datatype folders (e.g. <code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">funcimg</span></code>, <code class="docutils literal notranslate"><span class="pre">anat</span></code>)
+within sessions considered for transfer:</p>
+</dd>
+<dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All files, datatype folders and non-datatype folders will be transferred.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_datatype</span></code> : All datatype folders will be transferred.
+Files and non-datatype folders will not be transferred.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_non_datatype</span></code> : Files and non-datatype folders will be transferred.
+Datatype folders will not be transferred.</p></li>
 </ul>
 </dd>
 </dl>
 </section>
-<section id="convenience-tags">
-<h3>Convenience Tags<a class="headerlink" href="#convenience-tags" title="Permalink to this heading">#</a></h3>
+<section id="custom-transfer-convenience-tags">
+<h3>Custom transfer convenience tags<a class="headerlink" href="#custom-transfer-convenience-tags" title="Permalink to this heading">#</a></h3>
 <p>These tags can be included in subject or session names to
 allow further customisation of data transfer.</p>
 <dl class="simple myst" id="transfer-the-wildcard-tag">
 <dt>Wildcard</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;*&#64;</span></code> tag can be used to match any portion of a subject or session name.
-<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">ses-001_date-&#64;*&#64;</span></code> will transfer all first sessions, matching all possibles date.</p>
+<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">ses-001_date-&#64;*&#64;</span></code> will transfer all first sessions matching all possibles date.</p>
 </dd>
 <dt>Transfer a range</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;TO&#64;</span></code> tag can be used to target a range of subjects for transfer.
 <em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-001&#64;TO&#64;025</span></code> will transfer the 1st to up to and including the 25th subject.</p>
@@ -610,10 +599,39 @@ allow further customisation of data transfer.</p>
 </dl>
 </section>
 </section>
-<section id="configuring-data-transfer">
-<span id="configuring-transfer"></span><h2>Configuring data transfer<a class="headerlink" href="#configuring-data-transfer" title="Permalink to this heading">#</a></h2>
-<p>!! overview</p>
-<p>!! link to configs</p>
+<section id="transfer-options">
+<h2>Transfer Options<a class="headerlink" href="#transfer-options" title="Permalink to this heading">#</a></h2>
+<dl class="simple myst" id="id2">
+<dt>overwrite existing files</dt><dd><p>By default this option is set to <strong>never</strong>—a transfer will never overwrite a
+file that already exists, even if the source and destination modification datetimes
+or sizes are different.</p>
+</dd>
+<dd><p>If <em>always</em>*, when there are differences in datetime or size
+between the source and destination file the destination file will be overwritten.
+This includes when the source file is older or smaller than the destination.</p>
+</dd>
+<dd><p>Finally, <strong>if source newer</strong> ensures data is only overwritten
+when the
+<a class="reference external" href="https://rclone.org/docs/#u-update">source file has a more recent modification time</a>
+than the destination.
+If modification datetimes are equal, the destination will be overwritten if the
+sizes or checksums are different.</p>
+</dd>
+<dd><p>Under the hood, transfers are made with calls to
+<a class="reference external" href="https://rclone.org/">Rclone</a>. Using <strong>never</strong>
+calls
+<a class="reference external" href="https://rclone.org/commands/rclone_copy/">Rclone’s copy</a>
+function with the flag <code class="docutils literal notranslate"><span class="pre">--ignore_existing</span></code>. Using
+<strong>always</strong> copies without this flag and (using Rclone’s default overwrite behaviour.)
+Using <strong>if source newer</strong> calls copy with the <code class="docutils literal notranslate"><span class="pre">--update</span></code> flag.</p>
+</dd>
+</dl>
+<dl class="simple myst" id="dry-run-argument">
+<dt>dry run</dt><dd><p>Performs a dry-run transfer in which no data is transferred but logs
+are saved as if a transfer had taken place.
+This is a useful way to test if a transfer will run as expected.</p>
+</dd>
+</dl>
 </section>
 </section>
 
@@ -640,13 +658,13 @@ allow further customisation of data transfer.</p>
   <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-the-entire-project">Transfer the entire project</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-the-top-level-folder">Transfer the top-level folder</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-only-rawdata-or-derivatives">Transfer only <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transfers">Custom transfers</a><ul class="visible nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transfer-keywords">Custom transfer keywords</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#convenience-tags">Convenience Tags</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transfer-convenience-tags">Custom transfer convenience tags</a></li>
 </ul>
 </li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#configuring-data-transfer">Configuring data transfer</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-options">Transfer Options</a></li>
 </ul>
   </nav></div>
 

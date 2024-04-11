@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c02300dd"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e78f113"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
@@ -47,6 +47,8 @@
     <link rel="icon" href="../../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to Transfer Data" href="transfer-data.html" />
+    <link rel="prev" title="How to Install" href="install.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -127,7 +129,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">Datashuttle v0.3.0</p>
+    <p class="title logo__title">datashuttle v0.4.0</p>
   
 </a></div>
     
@@ -148,7 +150,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -258,8 +260,6 @@ document.write(`
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
@@ -280,7 +280,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -378,6 +378,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../how_tos.html" class="nav-link">How To</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">How to Make...</li>
   </ul>
 </nav>
@@ -397,7 +400,7 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="how-to-make-a-new-project">
 <span id="make-a-new-project"></span><h1>How to Make a New Project<a class="headerlink" href="#how-to-make-a-new-project" title="Permalink to this heading">#</a></h1>
-<p>This guide will cover all we need to know for setting up a new project
+<p>This guide will cover all you need to know for setting up a new project
 in <strong>datashuttle</strong>.</p>
 <p>First, make sure you have
 <a class="reference internal" href="install.html#how-to-install"><span class="std std-ref">installed and launched <strong>datashuttle</strong></span></a>.</p>
@@ -405,8 +408,8 @@ in <strong>datashuttle</strong>.</p>
 <ol class="arabic simple">
 <li><p><strong>project name</strong>: The name of the project (must be the same for all
 local machines tied to a project).</p></li>
-<li><p><strong>local path</strong>: location of the project our local machine, where we will save acquired data.</p></li>
-<li><p><strong>central path</strong>: location of the central data storage, where we will upload the acquired data.</p></li>
+<li><p><strong>local path</strong>: location of the project our local machine.</p></li>
+<li><p><strong>central path</strong>: location of the project on the central data storage machine.</p></li>
 </ol>
 <a class="only-dark reference internal image-reference" href="../../_images/datashuttle-overview-dark.png"><img alt="../../_images/datashuttle-overview-dark.png" class="only-dark align-center" src="../../_images/datashuttle-overview-dark.png" style="width: 500px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/datashuttle-overview-light.png"><img alt="../../_images/datashuttle-overview-light.png" class="only-light align-center" src="../../_images/datashuttle-overview-light.png" style="width: 500px;" /></a>
@@ -420,9 +423,10 @@ or via
 or IT department.</p>
 <section id="when-central-storage-is-a-mounted-drive">
 <span id="new-project-mounted-drive"></span><h2>When central storage is a mounted drive<a class="headerlink" href="#when-central-storage-is-a-mounted-drive" title="Permalink to this heading">#</a></h2>
-<p>When the central storage machine is mounted as a mounted drive, we
-simply need to set the <strong>central path</strong> as the path to
-the central project as it appears on your local machine’s filesystem.</p>
+<p>In this case, the central storage machine is mounted as a drive
+on the local machine.</p>
+<p>We simply need to set the <strong>central path</strong> as the path to
+the central project as it appears on the local machine’s filesystem.</p>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>Local Filesystem Example<div class="sd-summary-down docutils">
@@ -434,47 +438,48 @@ the central project as it appears on your local machine’s filesystem.</p>
 your machine at <code class="docutils literal notranslate"><span class="pre">X:\username</span></code>. You want your project folder to
 be located at <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects</span></code>.</p>
 <p class="sd-card-text">In this case, you can set the <strong>central_path</strong> to <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects</span></code>
-and with <strong>connection_method</strong> to <code class="docutils literal notranslate"><span class="pre">local_filesystem</span></code>.</p>
-<p class="sd-card-text">You may pass the local or central path without the <strong>project name</strong>,
-it will be automatically included. The project folder will be located
-at <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects\my_project_name</span></code>.</p>
+and with <strong>connection_method</strong> to <strong>local filesystem</strong>.</p>
+<p class="sd-card-text">The project folder will be located
+at <code class="docutils literal notranslate"><span class="pre">X:\username\my_projects\my_project_name</span></code>.
+You may pass the local or central path without the <strong>project name</strong>,
+(it will be automatically included).</p>
 </div>
-</details><p>In addition, we need to tell <strong>datashuttle</strong> the project name and
-local path where we want to put our project and hold data on
-our local machine.</p>
-<div class="sd-tab-set docutils">
+</details><div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="gui" for="sd-tab-item-0">
 Graphical Interface</label><div class="sd-tab-content docutils">
-<p>From the launch page, click <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">New</span> <span class="pre">Project</span></code> and you will
-be taken to the page where project details must be entered</p>
+<p>First, click the <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">New</span> <span class="pre">Project</span></code> button from the launch page.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Make</span> <span class="pre">New</span> <span class="pre">Project</span></code> screen will be displayed:</p>
 <a class="only-dark reference internal image-reference" href="../../_images/tutorial-1-make-screen-dark.png"><img alt="../../_images/tutorial-1-make-screen-dark.png" class="only-dark align-center" src="../../_images/tutorial-1-make-screen-dark.png" style="width: 900px;" /></a>
 <a class="only-light reference internal image-reference" href="../../_images/tutorial-1-make-screen-light.png"><img alt="../../_images/tutorial-1-make-screen-light.png" class="only-light align-center" src="../../_images/tutorial-1-make-screen-light.png" style="width: 900px;" /></a>
 <br>
 <p id="general-tui-datashuttle-setup">Setting up <strong>datashuttle</strong> is as simple as entering the <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">name</span></code>,
-<code class="docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Path</span></code> and <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> into the relevant input boxes. The paths
-do not need to end in the project name - this will be automatically added.</p>
-<p>You can paste a path into the input boxes with <code class="docutils literal notranslate"><span class="pre">CTRL+V</span></code>, copy the  input path
-with <code class="docutils literal notranslate"><span class="pre">CTRL+Q</span></code> or open the path in your systems filebrowser with <code class="docutils literal notranslate"><span class="pre">CTRL+O</span></code>.</p>
-<p>Use the <code class="docutils literal notranslate"><span class="pre">Select</span></code> feature to navigate to the local and central paths
-on your local filesystem.</p>
+<code class="docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Path</span></code> and <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> into the relevant input boxes.</p>
+<p>The paths do not need to end in the project name—it will be automatically added.
+You can paste a path into the input boxes with <code class="docutils literal notranslate"><span class="pre">CTRL+V</span> <span class="pre">or</span> <span class="pre">use</span> </code>Select`
+to navigate to paths on your local filesystem.</p>
 <p>By default, the <code class="docutils literal notranslate"><span class="pre">Connection</span> <span class="pre">Method</span></code> is set to <code class="docutils literal notranslate"><span class="pre">Local</span> <span class="pre">Filesystem</span></code>,  so
 this does not need to be changed.</p>
 <p>Once all information is input, click <code class="docutils literal notranslate"><span class="pre">Save</span></code> to set up the project.
 You can then navigate to the <code class="docutils literal notranslate"><span class="pre">Project</span> <span class="pre">Manager</span></code> screen by clicking the
 <code class="docutils literal notranslate"><span class="pre">Go</span> <span class="pre">To</span> <span class="pre">Project</span> <span class="pre">Screen</span></code> that appears.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The contents of the input boxes can be copied with
+with <code class="docutils literal notranslate"><span class="pre">CTRL+Q</span></code>, or opened in the system filebrowser with <code class="docutils literal notranslate"><span class="pre">CTRL+O</span></code>.</p>
+</div>
 </div>
 <input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
 </input><label class="sd-tab-label" data-sync-id="python" for="sd-tab-item-1">
 Python API</label><div class="sd-tab-content docutils">
-<p>We will first import and initialise the <code class="docutils literal notranslate"><span class="pre">DataShuttle</span></code> class with our
-<code class="docutils literal notranslate"><span class="pre">project_name</span></code>.</p>
+<p>We will first import the <code class="docutils literal notranslate"><span class="pre">DataShuttle</span></code> class and initialise
+it with the <code class="docutils literal notranslate"><span class="pre">project_name</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datashuttle</span> <span class="kn">import</span> <span class="n">DataShuttle</span>
 
 <span class="n">project</span> <span class="o">=</span> <span class="n">DataShuttle</span><span class="p">(</span><span class="s2">&quot;my_first_project&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Next, we can use the <code class="docutils literal notranslate"><span class="pre">make_config_file()</span></code> method to set up a new
+<p>Next, the <code class="docutils literal notranslate"><span class="pre">make_config_file()</span></code> method can be used to set up a new
 project with the desired <strong>local path</strong>, <strong>central path</strong> and
 <strong>connection method</strong>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">make_config_file</span><span class="p">(</span>
@@ -484,8 +489,6 @@ project with the desired <strong>local path</strong>, <strong>central path</stro
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Now the project is set up! See the later section for
-<a class="reference internal" href="#make-project-extra-arguments"><span class="std std-ref">optional arguments that control data transfers</span></a>.</p>
 </div>
 </div>
 </section>
@@ -494,13 +497,13 @@ project with the desired <strong>local path</strong>, <strong>central path</stro
 <p>Another common method of connecting to a central storage machine is via
 <a class="reference external" href="https://www.ssh.com/academy/ssh/protocol">SSH</a>.</p>
 <p>To set up SSH connection
-we need to give <strong>datashuttle</strong> the address of the machine to connect to,
-and now the <strong>central path</strong> will be relative to the machine
-we are connecting to.</p>
-<p><strong>central_host_id:</strong> This is the address of the server you want to connect to.</p>
-<p><strong>central_host_username:</strong> This is your profile name on the server you want to
-connect to.</p>
-<p><strong>central path</strong>: This is the path to the project <em>on the server</em>.</p>
+we need to provide:</p>
+<ol class="arabic simple">
+<li><p><strong>central_host_id:</strong> This is the address of the server you want to connect to.</p></li>
+<li><p><strong>central_host_username:</strong> This is your profile username on the server you want to
+connect to.</p></li>
+<li><p><strong>central path</strong>: This is the path to the project <em>on the server</em>.</p></li>
+</ol>
 <details class="sd-sphinx-override sd-dropdown sd-card sd-mb-3">
 <summary class="sd-summary-title sd-card-header sd-bg-info sd-bg-text-info">
 <span class="sd-summary-icon"><svg version="1.1" width="1.0em" height="1.0em" class="sd-octicon sd-octicon-info" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM0 8a8 8 0 1116 0A8 8 0 010 8zm6.5-.25A.75.75 0 017.25 7h1a.75.75 0 01.75.75v2.75h.25a.75.75 0 010 1.5h-2a.75.75 0 010-1.5h.25v-2h-.25a.75.75 0 01-.75-.75zM8 6a1 1 0 100-2 1 1 0 000 2z"></path></svg></span>SSH Example<div class="sd-summary-down docutils">
@@ -511,14 +514,15 @@ connect to.</p>
 <p class="sd-card-text">Let’s say the central project was stored on a remote server with
 address <code class="docutils literal notranslate"><span class="pre">ssh.swc.ucl.ac.uk</span></code>, and your account username on the server
 is <code class="docutils literal notranslate"><span class="pre">myusername</span></code>.</p>
-<p class="sd-card-text">Finally, we want to store the project at the location (on the server)
+<p class="sd-card-text">We want to store the project at the location (on the server)
 <code class="docutils literal notranslate"><span class="pre">/ceph/my_lab/my_name/my_projects/project_name/</span></code>.</p>
-<p class="sd-card-text">Then the input to <strong>datashuttle</strong> would be</p>
+<p class="sd-card-text">Then the settings would be:</p>
 <p class="sd-card-text"><strong>central host id</strong>: <code class="docutils literal notranslate"><span class="pre">ssh.swc.ucl.ac.uk</span></code></p>
 <p class="sd-card-text"><strong>central host username</strong>: <code class="docutils literal notranslate"><span class="pre">myusername</span></code></p>
 <p class="sd-card-text"><strong>central path</strong>: <code class="docutils literal notranslate"><span class="pre">/ceph/my_lab/my_name/my_projects/project_name/</span></code></p>
 <p class="sd-card-text">You may pass the <strong>local path</strong> and <strong>central path</strong> without
 the <strong>project name</strong>, it will be automatically included.</p>
+<p class="sd-card-text">Note that Linux-based shortcuts (e.g. <code class="docutils literal notranslate"><span class="pre">~</span></code> for home directory) are not permitted.</p>
 </div>
 </details><div class="sd-tab-set docutils">
 <input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
@@ -533,16 +537,14 @@ can be input exactly the
 <p>Next, input the <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Host</span> <span class="pre">ID</span></code>, <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Host</span> <span class="pre">Username</span></code> and
 <code class="docutils literal notranslate"><span class="pre">Central</span> <span class="pre">Path</span></code> as described above.</p>
 <p>Clicking <code class="docutils literal notranslate"><span class="pre">Save</span></code> will save these project configs. A button
-<code class="docutils literal notranslate"><span class="pre">Setup</span> <span class="pre">SSH</span> <span class="pre">Connection</span></code> will appear. Click this to
-confirm the server and enter your password to the server
-(you will only need to do this once)
-``</p>
+<code class="docutils literal notranslate"><span class="pre">Setup</span> <span class="pre">SSH</span> <span class="pre">Connection</span></code> will appear. Click to
+confirm the server ID and enter your password
+(you will only need to do this once).</p>
 </div>
 <input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
 </input><label class="sd-tab-label" data-sync-id="python" for="sd-tab-item-3">
 Python API</label><div class="sd-tab-content docutils">
-<p>In Datashuttle, the
-<code class="docutils literal notranslate"><span class="pre">connection_method</span></code> configuration must be set to <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code>
+<p>The <code class="docutils literal notranslate"><span class="pre">connection_method</span></code> configuration must be set to <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code>
 to use the SSH protocol for data transfers.</p>
 <p>Enter the <code class="docutils literal notranslate"><span class="pre">central_path</span></code>, <code class="docutils literal notranslate"><span class="pre">central_host_id</span></code> and
 <code class="docutils literal notranslate"><span class="pre">central_host_username</span></code> as  described above.</p>
@@ -556,42 +558,15 @@ to use the SSH protocol for data transfers.</p>
 </pre></div>
 </div>
 <p>Next, a one-time command to set up the SSH connection must be run:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">setup_ssh_connection_to_central_server</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">setup_ssh_connection</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>Running <code class="docutils literal notranslate"><span class="pre">setup-ssh-connection-to-central-server</span></code> will require verification
+<p>Running <code class="docutils literal notranslate"><span class="pre">setup_ssh_connection()</span></code> will require verification
 that the SSH server connected to is correct (pressing <code class="docutils literal notranslate"><span class="pre">y</span></code> to proceed).</p>
 <p>Finally, your password to the central server will be requested (you will
 only need to do this once).</p>
 </div>
 </div>
-</section>
-<section id="extra-arguments-python-api">
-<span id="make-project-extra-arguments"></span><h2>Extra arguments (Python API)<a class="headerlink" href="#extra-arguments-python-api" title="Permalink to this heading">#</a></h2>
-<p>A number of settings that control the behaviour of transfers
-can be set with the <code class="docutils literal notranslate"><span class="pre">make_config_file()</span></code> method.</p>
-<p>These configs are not relevant for the graphical interface, with the exception of
-<code class="docutils literal notranslate"><span class="pre">overwrite_existing_folders</span></code> which set directly on the
-graphical interface’s <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> screen.</p>
-<dl class="simple myst" id="overwrite-existing-files-config">
-<dt>overwrite_existing_files</dt><dd><p>Determines whether folders and files are overwritten
-during transfer. By default, Datashuttle does not overwrite any existing
-folder during data transfer. <br><br>
-<em>e.g.</em> if the file <code class="docutils literal notranslate"><span class="pre">sub-001_ses-001_measure-trajectories.csv</span></code> exists on
-the central project, it will never be over-written during upload
-from the local to central project, even if the local version is newer. <br><br>
-To change this behaviour, the configuration <code class="docutils literal notranslate"><span class="pre">overwrite_existing_files</span></code> can be set to <code class="docutils literal notranslate"><span class="pre">True</span></code>.
-If <strong>overwrite_existing_files</strong> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, files in which the  timestamp of the
-target directory will be overwritten if their
-timestamp is  older than the corresponding file in the source directory.</p>
-</dd>
-<dt>transfer_verbosity</dt><dd><p>Set to <code class="docutils literal notranslate"><span class="pre">&quot;vv&quot;</span></code> for additional detail on the
-transfer operation.  Set to <code class="docutils literal notranslate"><span class="pre">&quot;v&quot;</span></code> to only see each file that is transferred
-as well as significant events that occur during transfer.</p>
-</dd>
-<dt>show_transfer_progress</dt><dd><p>When <code class="docutils literal notranslate"><span class="pre">True</span></code>, real-time transfer statistics will be reported and logged.</p>
-</dd>
-</dl>
 </section>
 </section>
 
@@ -619,7 +594,6 @@ as well as significant events that occur during transfer.</p>
     <ul class="visible nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#when-central-storage-is-a-mounted-drive">When central storage is a mounted drive</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#connecting-to-central-storage-via-ssh">Connecting to central storage via SSH</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#extra-arguments-python-api">Extra arguments (Python API)</a></li>
 </ul>
   </nav></div>
 

@@ -36,7 +36,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c02300dd"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e78f113"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
@@ -126,7 +126,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">Datashuttle v0.3.0</p>
+    <p class="title logo__title">datashuttle v0.4.0</p>
   
 </a></div>
     
@@ -414,7 +414,11 @@ document.write(`
 <span class="p">)</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">datashuttle.utils.custom_types</span> <span class="kn">import</span> <span class="n">Prefix</span><span class="p">,</span> <span class="n">TopLevelFolder</span>
+    <span class="kn">from</span> <span class="nn">datashuttle.utils.custom_types</span> <span class="kn">import</span> <span class="p">(</span>
+        <span class="n">OverwriteExistingFiles</span><span class="p">,</span>
+        <span class="n">Prefix</span><span class="p">,</span>
+        <span class="n">TopLevelFolder</span><span class="p">,</span>
+    <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">paramiko</span>
 <span class="kn">import</span> <span class="nn">yaml</span>
@@ -472,7 +476,7 @@ document.write(`
 <span class="sd">    cfgs.make_and_get_logging_path().</span>
 
 <span class="sd">    For transferring data between a central data storage</span>
-<span class="sd">    with SSH, use setup setup_ssh_connection_to_central_server().</span>
+<span class="sd">    with SSH, use setup setup_ssh_connection().</span>
 <span class="sd">    This will allow you to check the server key, add host key to</span>
 <span class="sd">    profile if accepted, and setup ssh key pair.</span>
 
@@ -687,13 +691,14 @@ document.write(`
     <span class="c1"># Public File Transfer</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.upload"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">upload</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_custom"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_custom">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_custom</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">datatype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -717,44 +722,32 @@ document.write(`
 <span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
 <span class="sd">            &quot;all&quot; will search for all sub-folders in the</span>
 <span class="sd">            datatype folder to upload.</span>
+
 <span class="sd">        ses_names :</span>
 <span class="sd">            a session name / list of session names, similar to</span>
 <span class="sd">            sub_names but requiring a &quot;ses-&quot; prefix.</span>
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of upload. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+
 <span class="sd">        datatype :</span>
 <span class="sd">            see create_folders()</span>
 
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If `False`, files on central will never be overwritten</span>
+<span class="sd">            by files transferred from local. If `True`, central files</span>
+<span class="sd">            will be overwritten if there is any difference (date, size)</span>
+<span class="sd">            between central and local files.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
+
 <span class="sd">        init_log :</span>
-<span class="sd">            (Optional). Whether handle logging. This should</span>
+<span class="sd">            (Optional). Whether to handle logging. This should</span>
 <span class="sd">            always be True, unless logger is handled elsewhere</span>
 <span class="sd">            (e.g. in a calling function).</span>
-
-<span class="sd">        Notes</span>
-<span class="sd">        -----</span>
-
-<span class="sd">        The configs &quot;overwrite_existing_files&quot;, &quot;transfer_verbosity&quot;</span>
-<span class="sd">        and &quot;show_transfer_progress&quot; pertain to data-transfer settings.</span>
-<span class="sd">        See make_config_file() for more information.</span>
-
-<span class="sd">        sub_names or ses_names may contain certain formatting tags:</span>
-
-<span class="sd">        @*@: wildcard search for subject names. e.g. ses-001_date-@*@</span>
-<span class="sd">             will transfer all session 001 collected on all dates.</span>
-<span class="sd">        @TO@: used to transfer a range of sub/ses.</span>
-<span class="sd">              Number must be either side of the tag</span>
-<span class="sd">              e.g. sub-001@TO@003 will generate</span>
-<span class="sd">              [&quot;sub-001&quot;, &quot;sub-002&quot;, &quot;sub-003&quot;]</span>
-<span class="sd">        @DATE@, @TIME@ @DATETIME@: will add date-&lt;value&gt;, time-&lt;value&gt; or</span>
-<span class="sd">              date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name</span>
-<span class="sd">              is permitted.</span>
-<span class="sd">              e.g. sub-001_@DATE@ will generate sub-001_date-20220101</span>
-<span class="sd">              (on the 1st january, 2022).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-custom&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="n">TransferData</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
@@ -763,6 +756,7 @@ document.write(`
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
             <span class="n">datatype</span><span class="p">,</span>
+            <span class="n">overwrite_existing_files</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -770,30 +764,61 @@ document.write(`
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.download"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">download</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.download_custom"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_custom">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_custom</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
         <span class="n">sub_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">ses_names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span>
         <span class="n">datatype</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download data from the central project folder to the</span>
-<span class="sd">        local project folder. In the case that a file / folder</span>
-<span class="sd">        exists on the central and local, the local will</span>
-<span class="sd">        not be overwritten even if the central file is an</span>
-<span class="sd">        older version.</span>
+<span class="sd">        local project folder.</span>
 
-<span class="sd">        This function is identical to upload() but with the direction</span>
-<span class="sd">        of data transfer reversed. Please see upload() for arguments.</span>
-<span class="sd">        &quot;all&quot; arguments will search the central</span>
-<span class="sd">        project for sub / ses to download.</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        top_level_folder :</span>
+<span class="sd">            The top-level folder (e.g. `rawdata`) to transfer files</span>
+<span class="sd">            and folders within.</span>
+
+<span class="sd">        sub_names :</span>
+<span class="sd">            a subject name / list of subject names. These must</span>
+<span class="sd">            be prefixed with &quot;sub-&quot;, or the prefix will be</span>
+<span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
+<span class="sd">            &quot;all&quot; will search for all sub-folders in the</span>
+<span class="sd">            datatype folder to upload.</span>
+
+<span class="sd">        ses_names :</span>
+<span class="sd">            a session name / list of session names, similar to</span>
+<span class="sd">            sub_names but requiring a &quot;ses-&quot; prefix.</span>
+
+<span class="sd">        datatype :</span>
+<span class="sd">            see create_folders()</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
+
+<span class="sd">        init_log :</span>
+<span class="sd">            (Optional). Whether to handle logging. This should</span>
+<span class="sd">            always be True, unless logger is handled elsewhere</span>
+<span class="sd">            (e.g. in a calling function).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-custom&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
         <span class="n">TransferData</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
@@ -802,6 +827,7 @@ document.write(`
             <span class="n">sub_names</span><span class="p">,</span>
             <span class="n">ses_names</span><span class="p">,</span>
             <span class="n">datatype</span><span class="p">,</span>
+            <span class="n">overwrite_existing_files</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
@@ -809,86 +835,205 @@ document.write(`
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.upload_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_all">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">upload_all</span><span class="p">(</span>
+    <span class="c1"># Specific top-level folder</span>
+    <span class="c1"># ----------------------------------------------------------------------------------</span>
+    <span class="c1"># A set of convenience functions are provided to abstract</span>
+    <span class="c1"># away the &#39;top_level_folder&#39; concept.</span>
+
+<div class="viewcode-block" id="DataShuttle.upload_rawdata"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_rawdata">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_rawdata</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convenience function to upload all data.</span>
+<span class="sd">        Upload files in the `rawdata` top level folder.</span>
 
-<span class="sd">        Alias for:</span>
-<span class="sd">            project.upload(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">upload</span><span class="p">(</span>
-            <span class="n">top_level_folder</span><span class="p">,</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+            <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
+            <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
-            <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
-        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
-
-<div class="viewcode-block" id="DataShuttle.download_all"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_all">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">download_all</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.upload_derivatives"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_derivatives">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">upload_derivatives</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convenience function to download all data.</span>
+<span class="sd">        Upload files in the `derivatives` top level folder.</span>
 
-<span class="sd">        Alias for : project.download(&quot;all&quot;, &quot;all&quot;, &quot;all&quot;)</span>
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-all&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">download</span><span class="p">(</span>
-            <span class="n">top_level_folder</span><span class="p">,</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+            <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;derivatives&quot;</span><span class="p">,</span>
+            <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
             <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
-            <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
-        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
-            <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+<div class="viewcode-block" id="DataShuttle.download_rawdata"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_rawdata">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_rawdata</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download files in the `rawdata` top level folder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
+            <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="DataShuttle.download_derivatives"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_derivatives">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">download_derivatives</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Download files in the `derivatives` top level folder.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+            <span class="s2">&quot;download&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;derivatives&quot;</span><span class="p">,</span>
+            <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="DataShuttle.upload_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_entire_project">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">upload_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">upload_entire_project</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload the entire project (from &#39;local&#39; to &#39;central&#39;),</span>
 <span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
 <span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;transfer-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
+            <span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
+        <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.download_entire_project"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_entire_project">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">download_entire_project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">download_entire_project</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download the entire project (from &#39;central&#39; to &#39;local&#39;),</span>
 <span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
 <span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
+<span class="sd">        dry_run :</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
+<span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;transfer-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
+            <span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
+        <span class="p">)</span>
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.upload_specific_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.upload_specific_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
     <span class="k">def</span> <span class="nf">upload_specific_folder_or_file</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Upload a specific file or folder. If transferring</span>
@@ -903,20 +1048,33 @@ document.write(`
 
 <span class="sd">        filepath :</span>
 <span class="sd">            a string containing the full filepath.</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
 <span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of upload. This will output as if file</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
+            <span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
+        <span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="DataShuttle.download_specific_folder_or_file"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.download_specific_folder_or_file">[docs]</a>    <span class="nd">@check_configs_set</span>
     <span class="k">def</span> <span class="nf">download_specific_folder_or_file</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">filepath</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Download a specific file or folder. If transferring</span>
@@ -931,8 +1089,16 @@ document.write(`
 
 <span class="sd">        filepath :</span>
 <span class="sd">            a string containing the full filepath.</span>
+
+<span class="sd">        overwrite_existing_files :</span>
+<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
+<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
+
 <span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of upload. This will output as if file</span>
+<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
 <span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
 <span class="sd">            to check which files will be moved on data transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -940,14 +1106,54 @@ document.write(`
             <span class="s2">&quot;download-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span><span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">dry_run</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_specific_file_or_folder</span><span class="p">(</span>
+            <span class="s2">&quot;download&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
+        <span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">_transfer_specific_file_or_folder</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">upload_or_download</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">dry_run</span>
+    <span class="k">def</span> <span class="nf">_transfer_top_level_folder</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">upload_or_download</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="s2">&quot;download&quot;</span><span class="p">],</span>
+        <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Core function to upload / download files within a</span>
+<span class="sd">        particular top-level-folder. e.g. `upload_rawdata().`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">upload_or_download</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
+            <span class="p">)</span>
+
+        <span class="n">transfer_func</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">upload_custom</span>
+            <span class="k">if</span> <span class="n">upload_or_download</span> <span class="o">==</span> <span class="s2">&quot;upload&quot;</span>
+            <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_custom</span>
+        <span class="p">)</span>
+
+        <span class="n">transfer_func</span><span class="p">(</span>
+            <span class="n">top_level_folder</span><span class="p">,</span>
+            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;all&quot;</span><span class="p">,</span>
+            <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
+            <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
+            <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
+            <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_transfer_specific_file_or_folder</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">upload_or_download</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Core function for upload/download_specific_folder_or_file().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
@@ -974,7 +1180,9 @@ document.write(`
             <span class="n">upload_or_download</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="n">include_list</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">make_rclone_transfer_options</span><span class="p">(</span><span class="n">dry_run</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">make_rclone_transfer_options</span><span class="p">(</span>
+                <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
+            <span class="p">),</span>
         <span class="p">)</span>
 
         <span class="n">utils</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
@@ -983,8 +1191,8 @@ document.write(`
     <span class="c1"># SSH</span>
     <span class="c1"># -------------------------------------------------------------------------</span>
 
-<div class="viewcode-block" id="DataShuttle.setup_ssh_connection_to_central_server"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection_to_central_server">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
-    <span class="k">def</span> <span class="nf">setup_ssh_connection_to_central_server</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="DataShuttle.setup_ssh_connection"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.setup_ssh_connection">[docs]</a>    <span class="nd">@requires_ssh_configs</span>
+    <span class="k">def</span> <span class="nf">setup_ssh_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Setup a connection to the central server using SSH.</span>
 <span class="sd">        Assumes the central_host_id and central_host_username</span>
@@ -1048,9 +1256,6 @@ document.write(`
         <span class="n">connection_method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">central_host_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">central_host_username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">transfer_verbosity</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;v&quot;</span><span class="p">,</span>
-        <span class="n">show_transfer_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialise the configurations for datashuttle to use on the</span>
@@ -1092,24 +1297,6 @@ document.write(`
 <span class="sd">        central_host_username :</span>
 <span class="sd">            username for which to log in to central host.</span>
 <span class="sd">            e.g. &quot;jziminski&quot;</span>
-
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If True, when copying data (upload or download) files</span>
-<span class="sd">            will be overwritten if the timestamp of the copied</span>
-<span class="sd">            version is later than the target folder version</span>
-<span class="sd">            of the file i.e. edits made to a file in the source</span>
-<span class="sd">            machine will be copied to the target machine. If False,</span>
-<span class="sd">            a file will be copied if it does not exist on the target</span>
-<span class="sd">            folder, otherwise it will never be copied, even if</span>
-<span class="sd">            the source version of the file has a later timestamp.</span>
-
-<span class="sd">        transfer_verbosity :</span>
-<span class="sd">            &quot;v&quot; will tell you about each file that is transferred and</span>
-<span class="sd">            significant events, &quot;vv&quot; will be very verbose and inform</span>
-<span class="sd">            on all events.</span>
-
-<span class="sd">        show_transfer_progress :</span>
-<span class="sd">            If true, the real-time progress of file transfers will be printed.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;make-config-file&quot;</span><span class="p">,</span>
@@ -1133,9 +1320,6 @@ document.write(`
                 <span class="s2">&quot;connection_method&quot;</span><span class="p">:</span> <span class="n">connection_method</span><span class="p">,</span>
                 <span class="s2">&quot;central_host_id&quot;</span><span class="p">:</span> <span class="n">central_host_id</span><span class="p">,</span>
                 <span class="s2">&quot;central_host_username&quot;</span><span class="p">:</span> <span class="n">central_host_username</span><span class="p">,</span>
-                <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">:</span> <span class="n">overwrite_existing_files</span><span class="p">,</span>
-                <span class="s2">&quot;transfer_verbosity&quot;</span><span class="p">:</span> <span class="n">transfer_verbosity</span><span class="p">,</span>
-                <span class="s2">&quot;show_transfer_progress&quot;</span><span class="p">:</span> <span class="n">show_transfer_progress</span><span class="p">,</span>
             <span class="p">},</span>
         <span class="p">)</span>
 
@@ -1239,15 +1423,15 @@ document.write(`
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">getters</span><span class="o">.</span><span class="n">get_existing_project_paths</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_next_sub_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_sub_number">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">get_next_sub_number</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.get_next_sub"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_sub">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">get_next_sub</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
         <span class="n">return_with_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">local_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convenience function for get_next_sub_or_ses_number</span>
+<span class="sd">        Convenience function for get_next_sub_or_ses</span>
 <span class="sd">        to find the next subject number.</span>
 
 <span class="sd">        Parameters</span>
@@ -1260,7 +1444,7 @@ document.write(`
 <span class="sd">            If `True, only get names from `local_path`, otherwise from</span>
 <span class="sd">            `local_path` and `central_path`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">getters</span><span class="o">.</span><span class="n">get_next_sub_or_ses_number</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">getters</span><span class="o">.</span><span class="n">get_next_sub_or_ses</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="n">sub</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -1269,8 +1453,8 @@ document.write(`
             <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;sub-*&quot;</span><span class="p">,</span>
         <span class="p">)</span></div>
 
-<div class="viewcode-block" id="DataShuttle.get_next_ses_number"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_ses_number">[docs]</a>    <span class="nd">@check_configs_set</span>
-    <span class="k">def</span> <span class="nf">get_next_ses_number</span><span class="p">(</span>
+<div class="viewcode-block" id="DataShuttle.get_next_ses"><a class="viewcode-back" href="../../pages/api_index.html#datashuttle.datashuttle.DataShuttle.get_next_ses">[docs]</a>    <span class="nd">@check_configs_set</span>
+    <span class="k">def</span> <span class="nf">get_next_ses</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
         <span class="n">sub</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -1278,7 +1462,7 @@ document.write(`
         <span class="n">local_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convenience function for get_next_sub_or_ses_number</span>
+<span class="sd">        Convenience function for get_next_sub_or_ses</span>
 <span class="sd">        to find the next session number.</span>
 
 <span class="sd">        Parameters</span>
@@ -1297,7 +1481,7 @@ document.write(`
 <span class="sd">            If `True, only get names from `local_path`, otherwise from</span>
 <span class="sd">            `local_path` and `central_path`.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">getters</span><span class="o">.</span><span class="n">get_next_sub_or_ses_number</span><span class="p">(</span>
+        <span class="k">return</span> <span class="n">getters</span><span class="o">.</span><span class="n">get_next_sub_or_ses</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span>
@@ -1405,7 +1589,7 @@ document.write(`
     <span class="k">def</span> <span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Prefix</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
-<span class="sd">        for example as when passed to create_folders() or upload()</span>
+<span class="sd">        for example as when passed to create_folders() or upload_custom()</span>
 <span class="sd">        or download()</span>
 
 <span class="sd">        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.</span>
@@ -1437,30 +1621,32 @@ document.write(`
     <span class="c1"># -------------------------------------------------------------------------</span>
 
     <span class="k">def</span> <span class="nf">_transfer_entire_project</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="s2">&quot;download&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">upload_or_download</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;upload&quot;</span><span class="p">,</span> <span class="s2">&quot;download&quot;</span><span class="p">],</span>
+        <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span><span class="p">,</span>
+        <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Transfer (i.e. upload or download) the entire project (i.e.</span>
 <span class="sd">        every &#39;top level folder&#39; (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
 
-<span class="sd">        This function leverages the upload_all or download_all</span>
-<span class="sd">        methods while switching the top level folder as defined in</span>
-<span class="sd">        self.cfg that these methods use to determine the top-level</span>
-<span class="sd">        folder to transfer.</span>
-
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 
-<span class="sd">        direction : direction to transfer the data, either &quot;upload&quot; (from</span>
+<span class="sd">        upload_or_download : direction to transfer the data, either &quot;upload&quot; (from</span>
 <span class="sd">                    local to central) or &quot;download&quot; (from central to local).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">transfer_all_func</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">upload_all</span> <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;upload&quot;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_all</span>
-        <span class="p">)</span>
-
         <span class="k">for</span> <span class="n">top_level_folder</span> <span class="ow">in</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folders</span><span class="p">():</span>
+
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transferring `</span><span class="si">{</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
-            <span class="n">transfer_all_func</span><span class="p">(</span><span class="n">top_level_folder</span><span class="p">,</span> <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
+                <span class="n">upload_or_download</span><span class="p">,</span>
+                <span class="n">top_level_folder</span><span class="p">,</span>
+                <span class="n">overwrite_existing_files</span><span class="o">=</span><span class="n">overwrite_existing_files</span><span class="p">,</span>
+                <span class="n">dry_run</span><span class="o">=</span><span class="n">dry_run</span><span class="p">,</span>
+                <span class="n">init_log</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_start_log</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
@@ -1641,17 +1827,26 @@ document.write(`
 
     <span class="k">def</span> <span class="nf">_update_settings_with_new_canonical_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform a check on the top-level keys within persistent settings.</span>
+<span class="sd">        Perform a check on the keys within persistent settings.</span>
 <span class="sd">        If they do not exist, persistent settings is from older version</span>
 <span class="sd">        and the new keys need adding.</span>
 <span class="sd">        If changing keys within the top level (e.g. a dict entry in</span>
 <span class="sd">        &quot;tui&quot;) this method will need to be extended.</span>
+
+<span class="sd">        Added keys:</span>
+<span class="sd">            v0.4.0: tui &quot;overwrite_existing_files&quot; and &quot;dry_run&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="s2">&quot;name_templates&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_name_templates_defaults</span><span class="p">())</span>
 
+        <span class="n">canonical_tui_configs</span> <span class="o">=</span> <span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_tui_config_defaults</span><span class="p">()</span>
+
         <span class="k">if</span> <span class="s2">&quot;tui&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
-            <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_tui_config_defaults</span><span class="p">())</span></div>
+            <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">canonical_tui_configs</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">,</span> <span class="s2">&quot;dry_run&quot;</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">]:</span>
+                <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">canonical_tui_configs</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span></div>
 </pre></div>
 
                 </article>

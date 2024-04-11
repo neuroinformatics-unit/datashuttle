@@ -37,7 +37,7 @@
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8d27b9dea8ad943066ae" />
   <script src="../../_static/vendor/fontawesome/6.5.1/js/all.min.js?digest=8d27b9dea8ad943066ae"></script>
 
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=c02300dd"></script>
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=4e78f113"></script>
     <script src="../../_static/doctools.js?v=888ff710"></script>
     <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
     <script src="../../_static/design-tabs.js?v=36754332"></script>
@@ -47,6 +47,8 @@
     <link rel="icon" href="../../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="How to Make a New Project" href="make-a-new-project.html" />
+    <link rel="prev" title="How to Create Folders" href="create-folders.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   </head>
@@ -127,7 +129,7 @@
     <script>document.write(`<img src="../../_static/logo_dark.png" class="logo__image only-dark" alt=""/>`);</script>
   
   
-    <p class="title logo__title">Datashuttle v0.3.0</p>
+    <p class="title logo__title">datashuttle v0.4.0</p>
   
 </a></div>
     
@@ -148,7 +150,7 @@
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -258,8 +260,6 @@ document.write(`
       
       
       
-        
-      
       <div class="bd-sidebar-primary bd-sidebar hide-on-wide">
         
 
@@ -280,7 +280,7 @@ document.write(`
                     </li>
                 
 
-                    <li class="nav-item">
+                    <li class="nav-item current active">
                       <a class="nav-link nav-internal" href="../how_tos.html">
                         How To
                       </a>
@@ -378,6 +378,9 @@ document.write(`
         <i class="fa-solid fa-home"></i>
       </a>
     </li>
+    
+    <li class="breadcrumb-item"><a href="../how_tos.html" class="nav-link">How To</a></li>
+    
     <li class="breadcrumb-item active" aria-current="page">How to Install</li>
   </ul>
 </nav>
@@ -397,9 +400,17 @@ document.write(`
                   
   <section class="tex2jax_ignore mathjax_ignore" id="how-to-install">
 <span id="id1"></span><h1>How to Install<a class="headerlink" href="#how-to-install" title="Permalink to this heading">#</a></h1>
-<p><strong>datashuttle</strong> requires Python and a number of other dependencies to run.</p>
-<p>The easiest way to install <strong>datashuttle</strong> is through <a class="reference external" href="https://docs.conda.io/en/latest/">conda</a>,
-but installation via <code class="docutils literal notranslate"><span class="pre">pip</span></code> and for developers is also supported.</p>
+<p><strong>datashuttle</strong> requires
+<a class="reference external" href="https://www.python.org/">Python</a>
+to run.</p>
+<p>The easiest way to install <strong>datashuttle</strong> is through the Python package manager
+<a class="reference external" href="https://docs.conda.io/en/latest/">conda</a>. However,
+installation via <code class="docutils literal notranslate"><span class="pre">pip</span></code> is also supported.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><strong>datashuttle</strong> is currently in the <a class="reference external" href="https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta">beta</a> release phase. Please
+get in contact if you experience any bugs or unexpected behaviour.</p>
+</div>
 <section id="installation-instructions">
 <h2>Installation instructions<a class="headerlink" href="#installation-instructions" title="Permalink to this heading">#</a></h2>
 <div class="sd-tab-set docutils">
@@ -408,14 +419,14 @@ but installation via <code class="docutils literal notranslate"><span class="pre
 Conda</label><div class="sd-tab-content docutils">
 <p>If you do not already have <code class="docutils literal notranslate"><span class="pre">conda</span></code> on your system, first
 <a class="reference external" href="https://docs.anaconda.com/free/miniconda/miniconda-install/">download and install conda</a>.</p>
-<p>If you are on Windows, the easiest way to use <code class="docutils literal notranslate"><span class="pre">conda</span></code> is through the <a class="reference external" href="https://docs.anaconda.com/free/anaconda/getting-started/index.html">Anaconda Prompt</a></p>
+<p>If you are on Windows, the easiest way to use <code class="docutils literal notranslate"><span class="pre">conda</span></code> is through the <a class="reference external" href="https://docs.anaconda.com/free/anaconda/getting-started/index.html">Anaconda Prompt</a>.</p>
 <p>Next, create and activate an environment.  You can call your environment whatever you like,
-we’ve used <code class="docutils literal notranslate"><span class="pre">datashuttle-env</span></code>.</p>
+we’ve used <code class="docutils literal notranslate"><span class="pre">datashuttle-env</span></code>:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>datashuttle-env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.10
 conda<span class="w"> </span>activate<span class="w"> </span>datashuttle-env
 </pre></div>
 </div>
-<p>then install <strong>datashuttle</strong> and all dependencies with</p>
+<p>Next, install <strong>datashuttle</strong> and all dependencies with:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>datashuttle
 </pre></div>
 </div>
@@ -426,7 +437,7 @@ Pip</label><div class="sd-tab-content docutils">
 <p><strong>datashuttle</strong> depends on <a class="reference external" href="https://rclone.org/">RClone</a>, which is not available through <code class="docutils literal notranslate"><span class="pre">pip</span></code>.
 <a class="reference external" href="https://rclone.org/downloads/">Rclone must be installed separately</a>.</p>
 <p>Once Rclone is installed, <strong>datashuttle</strong> and all other dependencies can be
-installed in a <code class="docutils literal notranslate"><span class="pre">pipenv</span></code> or <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> environment with</p>
+installed in a <code class="docutils literal notranslate"><span class="pre">pipenv</span></code> or <code class="docutils literal notranslate"><span class="pre">virtualenv</span></code> environment with:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>datashuttle
 </pre></div>
 </div>
@@ -448,7 +459,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 <section id="check-the-installation">
 <h2>Check the installation<a class="headerlink" href="#check-the-installation" title="Permalink to this heading">#</a></h2>
 <p>To check <strong>datashuttle</strong> has successfully installed, launch the
-graphical interface with</p>
+graphical interface with:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>datashuttle<span class="w"> </span>launch
 </pre></div>
 </div>
