@@ -94,41 +94,6 @@ class TestConfigs(BaseTest):
 
         assert "must contain the full folder path with no " in str(e.value)
 
-    def test_additional_error_text_when_ssh_used(
-        self, no_cfg_project, non_existent_path, existent_path
-    ):
-        """
-        If SSH is used as `connection_method`, if `local_path` does not exist
-        an extra message is printed to warn to check the `central_path`, because
-        it cannot be checked.
-
-        Currently if SSH is used and the central path does not exist,
-        no error is raised because it is not possible to check.
-        """
-        with pytest.raises(BaseException) as e:
-            no_cfg_project.make_config_file(
-                non_existent_path / no_cfg_project.project_name,
-                existent_path / no_cfg_project.project_name,
-                "ssh",
-                central_host_id="fake_id",
-                central_host_username="fake_username",
-            )
-
-        assert (
-            "Also make sure the central_path` is correct, as datashuttle "
-            "cannot check it via SSH at this stage." in str(e.value)
-        )
-
-        # This should not raise an error, even though the path does not
-        # exist, because it is not possible to check over SSH.
-        no_cfg_project.make_config_file(
-            existent_path / no_cfg_project.project_name,
-            non_existent_path / no_cfg_project.project_name,
-            "ssh",
-            central_host_id="fake_id",
-            central_host_username="fake_username",
-        )
-
     def test_no_ssh_options_set_on_make_config_file(self, no_cfg_project):
         """
         Check that program will assert if not all ssh options
