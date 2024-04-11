@@ -354,7 +354,7 @@ class TestTuiConfigs(TuiBase):
                 pilot, "#mainwindow_new_project_button"
             )
 
-            await self.fill_input(pilot, "#configs_name_input", "a")
+            await self.fill_input(pilot, "#configs_name_input", "a@@")
             await self.fill_input(pilot, "#configs_local_path_input", "a")
             await self.fill_input(pilot, "#configs_central_path_input", "b")
             await self.scroll_to_click_pause(
@@ -362,10 +362,10 @@ class TestTuiConfigs(TuiBase):
             )
 
             assert (
-                "The central_path: b that the project folder will reside in does not yet exist"
-                in pilot.app.screen.query_one(
+                pilot.app.screen.query_one(
                     "#messagebox_message_label"
                 ).renderable._text[0]
+                == "The project name must contain alphanumeric characters only."
             )
             await pilot.pause()
 

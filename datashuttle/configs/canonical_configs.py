@@ -110,8 +110,6 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     for path_type in ["local_path", "central_path"]:
         raise_on_bad_path_syntax(config_dict[path_type].as_posix(), path_type)
 
-    check_folder_above_project_name_exists(config_dict)
-
     # Check SSH settings
     if config_dict["connection_method"] == "ssh" and (
         not config_dict["central_host_id"]
@@ -160,49 +158,6 @@ def raise_on_bad_path_syntax(
                 "with no dot syntax.",
                 ConfigError,
             )
-
-
-def check_folder_above_project_name_exists(config_dict: Configs) -> None:
-    """
-    Throw an error if the path above the project root does not exist.
-    This validation is necessary (rather than simply
-    creating the passed folders) to ensure the `local_path` or
-    `central_path` are not accidentally set to a wrong
-    location.
-
-    If the `connection_method` is "ssh" it is not possible to check the central
-    path at this stage.
-    """
-
-    def base_error_message(path_name: str) -> str:
-        return (
-            f"The {path_name}: {config_dict[path_name].parent} "
-            f"that the project folder will reside in does not yet "
-            f"exist. Please ensure the path shown in this "
-            f"message exists before continuing."
-        )
-
-    if not (config_dict["local_path"].parent.is_dir()):
-        if config_dict["connection_method"] == "ssh":
-            extra_warning = (
-                "Also make sure the central_path` is correct, as datashuttle "
-                "cannot check it via SSH at this stage."
-            )
-        else:
-            extra_warning = ""
-
-        utils.log_and_raise_error(
-            f"{base_error_message('local_path')} {extra_warning}",
-            FileNotFoundError,
-        )
-
-    if (
-        config_dict["connection_method"] == "local_filesystem"
-        and not config_dict["central_path"].parent.is_dir()
-    ):
-        utils.log_and_raise_error(
-            base_error_message("central_path"), FileNotFoundError
-        )
 
 
 def check_config_types(config_dict: Configs) -> None:
