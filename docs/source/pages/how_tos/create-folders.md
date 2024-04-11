@@ -1,13 +1,18 @@
 (how-to-create-folders)=
 # How to Create Folders
 
-**datashuttle** automates project folder creation and validation
-according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/).
+**datashuttle** creates project folders
+according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
+specification.
 
-Before starting with folder creation, we'll briefly introduce the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html).
+Before jumping into the folder-creation process, we'll quickly
+review the key features of the
+[specification](https://neuroblueprint.neuroinformatics.dev/specification.html))
+that are created folders must conform to.
 
-An example [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) project:
+In [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) for each
+subject and session there are datatype folders in which acquired
+data is saved:
 
 ```{image} /_static/NeuroBlueprint_project_tree_dark.png
    :align: center
@@ -21,38 +26,33 @@ An example [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) projec
 ```
 <br>
 
-Some key features:
 
-* The `rawdata` top-level-folder contains acquired data. Following acquisition
-this data is never edited.
+The subject and session folder names must begin with `sub-` and `ses-`
+respectively—other key-value pairs are optional. All acquired data must go
+in a datatype folder with a
+[standard name](https://neuroblueprint.neuroinformatics.dev/specification.html).
 
-* The `derivatives` top-level folder contains all processing and analysis outputs. There are
-no fixed requirements on its organisation.
+No strong requirements are made on filenames of acquired data, but it is recommended
+to include the subject and session number if possible.
 
-* Subject and session folders are formatted as key-value pairs.
+Now the specification has been introduced, let's dive in to folder creation!
 
-* Only the `sub-` and `ses-` key-value pairs are required (additional pairs are optional).
-
-* Each session contains datatype folders, in which acquired data is stored.
-
-Now, let's get started with folder creation!
 
 ## Creating project folders
 
-The project-name folder is located at the **local path**
+In the below example, folders will be created in the `rawdata` folder,
+within the `my_first_project` project folder.
+
+The project folder is located at the **local path**
 specified when [setting up the project](make-a-new-project).
 
-We will now create subject, session and
-datatype folders within a `rawdata` top-level folder.
-
-
 We will create datatype folders `behav` and `funcimg`
-within a `ses-001_<todays_date>` for both a `sub-001` and `sub-002`.
+within a `ses-001_<todays_date>` for both `sub-001` and `sub-002`.
 
 The below example uses the `@DATE@` convenience tag to automate
-creation of today's date. See the
+creation of today's date. See the section below for more
+information on
 [convenience tags](create-folders-convenience-tags).
-section for more information on these tags.
 
 
 ::::{tab-set}
@@ -60,7 +60,6 @@ section for more information on these tags.
 :::{tab-item} Graphical Interface
 :sync: gui
 
-Folders are created in the `Create` tab on the `Project Manager` page.
 
 ```{image} /_static/screenshots/how-to-create-folders-example-dark.png
    :align: center
@@ -75,28 +74,29 @@ Folders are created in the `Create` tab on the `Project Manager` page.
 <br>
 
 
-We can enter the subject and session names into the input boxes,
-and select datatype folders to create. Clicking `Create Folders`
-will create the folders within the project.
+Folders are created in the `Create` tab on the `Project Manager` page.
 
-A number of useful shortcuts to streamline this process are described below.
+We can fill in the subject and session names and select datatype
+folders to create.
 
-### `Create` shortcuts
+Note that the `sub-` or `ses-` prefix is not actually required and will
+be automatically added.
+
+### `Create` tab shortcuts
 
 The `Create` tab has a lot of useful shortcuts.
 
-First, **double-clicking subject or session input boxes** will suggest
+First, **double-clicking the subject or session input boxes** will suggest
 the next subject or session to create, based on the local project.
 If a [Name Template](how-to-use-name-templates) is set, the
 suggested name  will also include the template.
 
-Holding `CTRL` while clicking will enter the `sub-`
+Holding `CTRL` while clicking will add the `sub-`
 or `ses-` prefix only.
 
 Next, the **Directory Tree** has a number of useful shortcuts. These are
-activated by hovering the mouse of a file or folder and pressing
-one of the below key combinations
-(you may need to click the `Directory Tree` first):
+activated by hovering the mouse and pressing one of the below combination
+of keys (you may need to click the `Directory Tree`) first:
 
 Fill an input
 : `CTRL+F` will fill the subject or session input with the name
@@ -104,21 +104,20 @@ of the folder (prefixed with `sub-` or `ses-`) that is hovered over.
 
 Append to an input
 : `CTRL+A` is similar to 'fill' above, but will instead append the name
-to those already in the input. This allows creation of multiple
-subjects or sessions at once.
+to those already in the input. This allows creation of lists.
 
 Open folder in system filebrowser
-: `CTRL+O` will open a folder in the system filebrowser.
+: `CTRL+O` will open (any) folder in the system filebrowser.
 
 Copy the full filepath.
 : `CTRL+Q` will copy the entire filepath of the file or
-folder.
+folder that is hovered over.
 
 
-### `Create` Settings
+### `Create` tab Settings
 
-Click the `Settings` button on the `Create` tab to set
-the top-level folder, and bypass validation.
+Clicking the `Settings` button on the `Create` tab will give access
+allow setting the top-level folder, and bypass validation.
 
 ```{image} /_static/screenshots/how-to-create-folders-settings-dark.png
    :align: center
@@ -132,16 +131,16 @@ the top-level folder, and bypass validation.
 ```
 <br>
 
-Top level folder
-: This dropdown box will set whether folders are created in the
-`rawdata` or `derivatives` top-level folder.
+Top-level folder
+: This dropdown box will set whether folderes are created in the
+`rawdata` or `derivatives` top-level folder
 
 Bypass validation
-: This setting will allow folder creation even if the names
-are not valid (i.e. they break with
+: If on, this setting will allow folder creation even if the names
+are not valid (e.g. break with
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)).
 
-This screen is also used to validate and autofill with
+This screen is also used to set validation against
 [Name Templates](how-to-use-name-templates).
 
 :::
@@ -149,8 +148,7 @@ This screen is also used to validate and autofill with
 :::{tab-item} Python API
 :sync: python
 
-The `create_folders()` method is used for folder creation.
-
+Creating folders can be done with the `create_folders()` method in the Python API.
 We simply need to provide the subject, session and datatypes to create:
 
 ```python
@@ -166,26 +164,36 @@ created_folders = project.create_folders(
 )
 ```
 
+We provides **datashuttle** with a list of subject, session and
+datatype folders to create.
+
+Note that the `sub-` or `ses-` prefix is not actually required and will
+be automatically added.
+
 The method outputs `created_folders`, which contains a list of all
-`Path`s to all created datatype folders. See the below section for
-details on the `@DATE@` and other convenience tags.
-
-By default, an error will be raised if the folder names break
-with [Neuroblueprint](https://neuroblueprint.neuroinformatics.dev/)
-and folders will not be created.
-The `bypass_validation` argument can be used to bypass this feature.
-
+`Path`s to all created datatype folders.
 :::
 ::::
 
+:::{admonition} Folder Validation
+:class: note
+
+The names of the folders to be created are validated on the fly against
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/).
+If the folder names will break with the specification, an error will
+be raised and the folders will not be created.
+
+Validation can be extended by defining custom templates for subject
+or session names—if folders don't match the template an error will be raised.
+See [How to use Name Templates](how-to-use-name-templates) for more information.
+
+:::
 
 (create-folders-convenience-tags)=
 ## Convenience Tags
 
 There are four convenience tags that can be used in subject or session
-names when creating folders.
-
-They automate the inclusion of:
+names when creating folders. They automate the inclusion of:
 
 Today's Date
 : The `@DATE@` tag will include today's date in the format `YYYYMMDD`. \
@@ -194,7 +202,7 @@ create the folder `ses-001_date-20241605`.
 
 Current Time
 : The `@TIME@` tag will include the current time in the format `HHMMSS`. \
-    *e.g.* If the current time is `15:10:05` (i.e. 10 minutes and 5 seconds past 3 p.m.),
+    *e.g.* If the current time is `15:10:05` (i.e. 10 minutes and 5 seconds past 3 pm.),
 the name `"ses-001_@TIME@"` will create the folder `ses-001_time-151005`.
 
 Current Datetime

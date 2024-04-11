@@ -4,12 +4,27 @@
 
 **datashuttle**'s graphical interface can run in almost any terminal—but
 native Windows and macOS terminals may display with rendering errors.
-See below for recommended terminals for these operating systems.
 
 If you are using Linux, the native terminal will work without issue.
 
 
 ::::{tab-set}
+
+:::{tab-item} Bad Rendering
+
+```{image} /_static/screenshots/how-to-choose-a-terminal-bad-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-choose-a-terminal-bad-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
+:::
 
 :::{tab-item} Good Rendering
 
@@ -28,22 +43,6 @@ If you are using Linux, the native terminal will work without issue.
 
 :::
 
-:::{tab-item} Bad Rendering
-
-```{image} /_static/screenshots/how-to-choose-a-terminal-bad-dark.png
-   :align: center
-   :class: only-dark
-   :width: 900px
-```
-```{image} /_static/screenshots/how-to-choose-a-terminal-bad-light.png
-   :align: center
-   :class: only-light
-   :width: 900px
-```
-<br>
-
-:::
-
 ::::
 
 ## Choosing a terminal for Windows or macOS
@@ -53,8 +52,8 @@ If you are using Linux, the native terminal will work without issue.
 :::{tab-item} Windows
 
 For Windows, we recommend using
-[Terminal](https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&hl=en-gb&gl=GB)—Window's
-own high-powered terminal available for free on the
+[Terminal](https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&hl=en-gb&gl=GB),
+Window's own high-powered terminal available for free from the
 Microsoft Store.
 
 **datashuttle** will run in Command Prompt (`cmd.exe`), Powershell (`ps.exe`)
@@ -65,7 +64,7 @@ but may display with rendering errors.
 
 :::{tab-item} macOS
 
-On macOS we recommend using next-generation terminal emulators such
+On macOS, we recommend using next-generation terminal emulators such
 as [Warp](https://warp.dev/)
 or [Wezterm](https://wezfurlong.org/wezterm/index.html).
 Both come with easy-to-use installers.

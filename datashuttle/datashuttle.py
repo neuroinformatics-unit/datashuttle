@@ -1431,7 +1431,7 @@ class DataShuttle:
 
     def _update_settings_with_new_canonical_keys(self, settings: Dict):
         """
-        Perform a check on the keys within persistent settings.
+        Perform a check on the top-level keys within persistent settings.
         If they do not exist, persistent settings is from older version
         and the new keys need adding.
         If changing keys within the top level (e.g. a dict entry in

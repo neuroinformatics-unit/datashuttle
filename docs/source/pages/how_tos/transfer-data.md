@@ -1,12 +1,12 @@
 (how-to-transfer-data)=
 # How to Transfer Data
 
-**datashuttle** facilitates convenient transfer of data between
-local and central storage machines.
+Transferring data between the local project and the project located
+on central storage is a key feature of **datashuttle**. It allows:
 
-This includes:
-- 'Uploading' data from an acquisition machine to central data storage.
-- 'Downloading' subsets of data from central storage to analysis machines.
+- Transfer of data from an acquisition machine to the central project.
+- Convenient integration of data collected from multiple acquisition.
+- Pulling subsets of data from central storage to analysis machines.
 
 ```{image} /_static/datashuttle-overview-light.png
 :align: center
@@ -23,21 +23,22 @@ This includes:
 :class: note
 
 
-In **datashuttle**, the *upload* refers to transfer
-from a local to the central machine.
-*Download* refers to transfer from the central machine to a local machine.
+In **datashuttle**, the term *upload* refers to transfer
+from the local machine to central storage.
+*Download* refers to transfer from central storage to
+a local machine.
 :::
 
-There are three main methods to transfer data. These
-allow transfer across:
+There are three main methods to transfer data in **datashuttle**. These
+allow transfer between:
 
-1) the **entire project** (all files in both `rawdata` and `derivatives`)
-2) only the `rawdata` or `derivatives` **top level folder**.
-3) a **custom** subset of subjects / sessions / datatypes.
+1) The entire project (all files in both `rawdata` and `derivatives`)
+2) Only the `rawdata` or `derivatives` folder.
+3) A custom subset of subjects / sessions / datatypes.
 
 
 ```{warning}
-The **overwrite existing files** setting is very important.
+The `Overwrite Existing Files` setting is very important.
 It takes on the options **never**, **always** or **if source newer**.
 
 See the [transfer options](transfer-options) section for full details on
@@ -48,16 +49,16 @@ this and other transfer settings.
 (transfer-entire-project)=
 ## Transfer the entire project
 
-The first option is to transfer the entire project—all
-files in the `rawdata` and `derivatives`
+The first option is to transfer the entire project,
+that is all files in the `rawdata` and `derivatives`
 [top-level-folders](https://neuroblueprint.neuroinformatics.dev/specification.html#basic-principles).
 
 This includes all files inside or outside a subject, session
 or datatype folder.
 
 This mode is useful for data acquisition when **overwrite existing files**
-is set to **never**. Any new files (i.e. newly acquired data) will be transferred
-to central storage while existing files will be ignored.
+is off. Any new files (i.e. newly acquired data) will be transferred,
+to central storage, while any existing files will be ignored.
 
 ::::{tab-set}
 
@@ -76,23 +77,24 @@ to central storage while existing files will be ignored.
 ```
 <br>
 
-To transfer the entire project navitgate to the `Transfer tab`. The
-`All` button is selected to transfer the entire project.
+To transfer the entire project navitgate to the `Transfer tab. The
+`All` button indicates to transfer the entire project.
 
-Click `Transfer` to begin.
+Use the `Upload / Download` switch to control transfer direction,
+and press `Transfer` to begin.
 
 :::
 
 :::{tab-item} Python API
 :sync: python
 
-The method to upload the entire project is:
+The command to upload the entire project is
 
 ```python
 project.upload_entire_project()
 ```
 
-while the method to download the entire project is:
+while the command to download the entire project is
 
 ```python
 project.download_entire_project()
@@ -105,10 +107,15 @@ project.download_entire_project()
 (transfer-top-level-folder)=
 ## Transfer only `rawdata` or `derivatives`
 
-This acts almost identically to
+This mode acts almost identically to
 [transferring the entire project](transfer-entire-project)
-but will only transfer files within a
-single top-level folder (`rawdata` or `derivatives`).
+however it will only transfer files within a
+particular top-level folder (`rawdata` or `derivatives`).
+
+This mode is also useful for quickly uploading new files
+during data acquisition (`rawdata`) or analysis (`derivatves`), when
+**overwrite existing files** is off—any newly acquired or generated files
+will be transfer, ignoring any previously existing files.
 
 ::::{tab-set}
 
@@ -128,20 +135,21 @@ single top-level folder (`rawdata` or `derivatives`).
 ```
 <br>
 
-Selecting the `Top Level` button on the `Transfer` tab will
+Selecting the `Top-Level` button on the `Transfer` tab will
 allow selection of `rawdata` or `derivatives` to transfer.
 
-Click `Transfer` to begin.
+Use the `Upload / Download` switch to control transfer direction,
+and press `Transfer` to begin.
 
 :::
 
 :::{tab-item} Python API
 :sync: python
 
-The `upload_rawdata()`, `upload_derivatives()` and `download_rawdata()`, `download_derivatives()`
-methods target transfer to a particular top-level folder.
+The `upload_rawdata()`, `upload_derivatives()` or for downloading,  `download_rawdata()`, `download_derivatives()`
+to specify the top-level folder to transfer.
 
-The below example will upload `rawdata` then download `derivatives`.
+In the next example, we will upload `rawdata` downloading `derivatives`.
 
 
 ```python
@@ -157,18 +165,29 @@ project.download_derivatives()
 
 ## Custom transfers
 
-Custom transfers permit full customisation of data transfer.
+Custom transfers permit full customisation of the files inside
+or outside of subject, session and datatype folders.
 
-Custom transfers can transfer select subsets of data.
-For example, you may only want download behavioural data from
-test sessions for a particular data analysis.
+Custom transfers are particularly useful during data analysis, in
+which a subset of data can be downloaded from central storage.
+For example, you want to only transfer behavioural data from
+test sessions—custom transfers allow you to do this with ease.
+
+See below for how to run custom transfers, as well as
+certain keywords and convenience tags to fully customise data transfer.
+
+For example, `all_sub` in the below examples tells datashuttle
+to consider only files and folders  within subject folders for transfer.
+Files or folders within `rawdata` that are not `sub-`
+folders will not be transferred.
+
+See below for full details on custom transfer keywords and
+convenience tags.
 
 ::::{tab-set}
 
 :::{tab-item} Graphical Interface
 :sync: gui
-
-Select `Custom` on the `Transfer` tab to open the custom transfer settings.
 
 ```{image} /_static/screenshots/how-to-transfer-custom-dark.png
    :align: center
@@ -182,17 +201,22 @@ Select `Custom` on the `Transfer` tab to open the custom transfer settings.
 ```
 <br>
 
+Select `Custom` on the `Transfer` tab to select custom transfers.
+
 The top-level folder can be set by the first dropdown menu.
 
 Next, subject and session keywords can be added to customise
-files to transfer. In this example, the first behavioural session for
-all subjects will be transferred.
+files to transfer. In this example, data from all *subject*
+folders, all first session behavioral data will be transferred.
 
 Subject and sessions can be added to the input boxes automatically
 by hovering over `sub-` or `ses-` folders on the `DirectoryTree`.
 Pressing `CTRL+F` will 'fill' the input with the foldername,
 while `CTRL+A` will 'append' the foldername, creating a list of
 subjects or sessions to transfer.
+
+Use the `Upload / Download` switch to control transfer direction,
+and press `Transfer` to begin.
 
 ```{image} /_static/screenshots/how-to-transfer-datatypes-dark.png
    :align: center
@@ -205,8 +229,6 @@ subjects or sessions to transfer.
    :width: 400px
 ```
 <br>
-
-Finally, click `Transfer` to begin.
 
 :::
 
@@ -225,8 +247,8 @@ project.upload_custom(
 )
 ```
 
-In this example, the first behavioural session for
-all subjects will be transferred.
+In this example, data from all *subject*
+folders, all first session behavioral data will be uploaded.
 
 :::
 ::::
@@ -236,48 +258,39 @@ all subjects will be transferred.
 Custom transfer keywords determine how files and folders
 outside of subject, session and datatype folders are handled.
 
-Ideally, all data will be stored in datatype folders—however this
+Ideally, all data will be stored in datatype folders. However, this
 is not always feasible.
 
-In such cases custom transfer keywords allows flexible handling of
+In this case, custom transfer keywords allows flexible handling of
 the transfer of non `sub-`, `ses-` prefixed or datatype folders at the
 subject, session and datatype level.
 
-Note that the [dry run argument](dry-run-argument) can be used
-to perform a dry-run transfer to check transfers proceed as expected.
 
 Subject level
-
-: For files and folders within top-level folders:
-
-:   * `all` - All files and non-subject folders will be transferred.
-All subject (i.e. prefixed with `sub-`)  folders will be considered for transfer.
-    * `all_sub` - All subject folders will be considered for transfer.
-    * `all_non_sub` - All files and non-subject folders will be transferred.
-Subject folders will not be transferred.
+:   * `all` - All subject (i.e. prefixed with `sub-`) folders and non-subject files within the
+top-level folder will be transferred.
+    * `all_sub` - Subject  <u>folders</u> only and them will be transferred.
+    * `all_non_sub` - All files and folders that are not prefixed with `sub-`,
+within the top-level folder, will be transferred.
+Any folders prefixed with `sub-` at this level will not be transferred.
 
 Session Level
-
-: For sessions within subjects considered for transfer:
-
-:   * `all` : All files and non-session folders will be transferred.
-All session (i.e. prefixed with `ses-`) folders will be considered for transfer.
-    * `all_ses` : All session folders will be considered for transfer.
-    * `all_non_ses` : All files and non-session folders will be transferred.
-Session folders will not be transferred.
+:   * `all` : All session and non-session files and folders within a subject level folder
+(e.g. `sub-001`) will be transferred.
+    * `all_ses` : Session* <u>folders</u> only (i.e. prefixed with `ses-`) and everything within
+them will be transferred.
+    * `all_non_ses` : All files and folders that are not prefixed with `ses-`, within a subject folder,
+will be transferred. Any folders prefixed with `ses-` will not be transferred.
 
 Datatype Level:
+:   * `all` : All datatype folders at the subject or session folder level will be transferred,
+as well as all files and folders within selected session folders.
+    * `all_datatype` : All datatype folders (e.g. `behav`, `ephys`, `funcimg`, `anat`) within a session folder will be
+transferred. Non-*datatype* folders at the session level will not be transferred
+    * `all_non_datatype` : Non-datatype folders within session folders only will be transferred
 
-: For datatype folders (e.g. `behav`, `ephys`, `funcimg`, `anat`)
-within sessions considered for transfer:
 
-:   * `all` : All files, datatype folders and non-datatype folders will be transferred.
-    * `all_datatype` : All datatype folders will be transferred.
-Files and non-datatype folders will not be transferred.
-    * `all_non_datatype` : Files and non-datatype folders will be transferred.
-Datatype folders will not be transferred.
-
-### Custom transfer convenience tags
+### Convenience Tags
 
 These tags can be included in subject or session names to
 allow further customisation of data transfer.
@@ -285,7 +298,7 @@ allow further customisation of data transfer.
 (transfer-the-wildcard-tag)=
 Wildcard
 : The `@*@` tag can be used to match any portion of a subject or session name.
-*e.g.* `ses-001_date-@*@` will transfer all first sessions matching all possibles date.
+*e.g.* `ses-001_date-@*@` will transfer all first sessions, matching all possibles date.
 
 Transfer a range
 : The `@TO@` tag can be used to target a range of subjects for transfer.
@@ -298,28 +311,27 @@ Transfer a range
 overwrite existing files
 : By default this option is set to **never**—a transfer will never overwrite a
 file that already exists, even if the source and destination modification datetimes
-or sizes are different.
-
-: If *always**, when there are differences in datetime or size
+or sizes are different. <br><br>
+For example, if we try to upload the first session's behavioural data—and there
+is already a file on central storage with the same name
+in the same folder—the file will not be uploaded.<br><br>
+If set to **always**, when there are differences in datetime or size
 between the source and destination file the destination file will be overwritten.
-This includes when the source file is older or smaller than the destination.
-
-: Finally, **if source newer** ensures data is only overwritten
+This includes when the source file is older or smaller than the destination.<br><br>
+Finally, **if_source_newer** ensures data is only overwritten
 when the
 [source file has a more recent modification time](https://rclone.org/docs/#u-update)
 than the destination.
 If modification datetimes are equal, the destination will be overwritten if the
-sizes or checksums are different.
-
-: Under the hood, transfers are made with calls to
+sizes or checksums are different.<br><br>
+Under the hood, transfers are made with calls to
 [Rclone](https://rclone.org/). Using **never**
 calls
 [Rclone's copy](https://rclone.org/commands/rclone_copy/)
 function with the flag `--ignore_existing`. Using
 **always** copies without this flag and (using Rclone's default overwrite behaviour.)
-Using **if source newer** calls copy with the `--update` flag.
+Using **if_file_newer** calls copy with the `--update` flag.
 
-(dry-run-argument)=
 dry run
 : Performs a dry-run transfer in which no data is transferred but logs
 are saved as if a transfer had taken place.

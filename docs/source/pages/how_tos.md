@@ -1,5 +1,4 @@
 :html_theme.sidebar_secondary.remove:
-
 (how-tos)=
 # How To
 
@@ -71,19 +70,3 @@ A handy feature for template subject and session names.
 :::
 
 ::::
-
-```{toctree}
-:maxdepth: 2
-:caption: how to
-:hidden:
-
-how_tos/choose-a-terminal
-how_tos/create-folders
-how_tos/install
-how_tos/make-a-new-project
-how_tos/transfer-data
-how_tos/read-logs
-how_tos/update-configs
-how_tos/use-name-templates
-
-```

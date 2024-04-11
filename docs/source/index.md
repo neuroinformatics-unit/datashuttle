@@ -3,7 +3,7 @@
 {.center}
 # **datashuttle**
 
-<p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation, validation and transfer.</p>
+<p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation and transfer.</p>
 
 ```{image} _static/datashuttle-overview-light.png
 :alt: My Logo
@@ -40,18 +40,17 @@ Short guides on specific actions.
 :link: pages/api_index
 :link-type: doc
 
-Full Python reference.
+Full Python API reference.
 :::
 ::::
 
-**datashuttle** creates and validates projects standardised to the
+Datashuttle creates and validates projects standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
 specification.
 
 Dive right into **datashuttle** with our
-[Getting Started Tutorial](tutorial-getting-started)
-or targeted [How-To Guides](how-tos).  \
-It can be used through a graphical interface or Python API.
+[Getting Started Tutorial]((tutorial-getting-started)=)
+or targeted [How-To Guides](how-tos).
 
 Don't hesitate to get in contact through our
 [GitHub Issues](https://github.com/neuroinformatics-unit/datashuttle/issues)

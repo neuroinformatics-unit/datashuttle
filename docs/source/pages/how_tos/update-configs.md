@@ -1,7 +1,7 @@
 
 # How to Update Configs
 
-The project configs can be updated at any time following the initial setup.
+Once a project has been created, the configs can be updated at any time.
 
 ::::{tab-set}
 
@@ -20,14 +20,15 @@ The project configs can be updated at any time following the initial setup.
 ```
 <br>
 
-Clicking the `Configs` tab on the `Project Manager` page will display
+On the `Project Manager` page, clicking the `Configs` tab will display
 the current configs.
 
 Changing any config and clicking `Save` will  update the project
 configs on the local machine.
 
-If SSH configs are changed the connection may need to be
-[setup again](new-project-ssh).
+If `SSH` configs are [reconfigured](new-project-ssh),
+the connection to the server will need
+to be reset with `Setup SSH Connection`.
 
 :::
 
@@ -46,8 +47,8 @@ project.update_config_file(
 )
 ```
 
-If SSH configs are changed the connection may need to be
-[setup again](new-project-ssh) with:
+If changing `SSH` configs, the connection may need to be
+[reconfigured](new-project-ssh) with:
 
 ```python
 project.setup_ssh_connection()
