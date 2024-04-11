@@ -483,12 +483,6 @@ In this walkthrough we set the central storage on our
 local machine for convenience. Typically,  this would be an external
 central storage machine connected as a mounted drive or through SSH.
 
-See the [transfer options](transfer-options)
-section of the
-[How To Transfer](how-to-transfer-data)
-page for details on transfer options, including the important
-**overwrite existing files** setting.
-
 ```{warning}
 The **overwrite existing files** setting is very important.
 It takes on the options **never**, **always** or **if source newer**.
