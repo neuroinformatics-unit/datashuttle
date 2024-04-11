@@ -6,6 +6,11 @@
 The easiest way to install **datashuttle** is through [conda](https://docs.conda.io/en/latest/),
 but installation via `pip` and for developers is also supported.
 
+:::{warning}
+**datashuttle** is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
+get in contact if you experience any bugs or unexpected behaviour.
+:::
+
 ## Installation instructions
 
 ::::{tab-set}

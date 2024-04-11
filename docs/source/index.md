@@ -50,7 +50,8 @@ specification.
 
 Dive right into **datashuttle** with our
 [Getting Started Tutorial](tutorial-getting-started)
-or targeted [How-To Guides](how-tos).
+or targeted [How-To Guides](how-tos).  \
+It can be used through a graphical interface or Python API.
 
 Don't hesitate to get in contact through our
 [GitHub Issues](https://github.com/neuroinformatics-unit/datashuttle/issues)

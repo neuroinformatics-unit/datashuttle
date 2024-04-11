@@ -2,13 +2,11 @@
 
 # Getting Started
 
-## Introduction
-
 This tutorial will give a full introduction to starting
 a neuroscience project with **datashuttle**.
 
-We will get an overview of  **datashuttle**'s key features by creating
-and transferring a 'mock' experiment, standardised to the
+We will highlight  **datashuttle**'s key features by creating
+a 'mock' experiment, standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) style.
 
 
@@ -24,14 +22,15 @@ and transferring a 'mock' experiment, standardised to the
 ```
 <br>
 
-We will create standardised folders then upload mock 'acquired' data (empty text files)
-to a central data storage, as you would do in a real data acquisition session.
-Then we will download a subset of data (e.g. test sessions only) from the central
-storage, as you would do during analysis.
+We will upload data to a central data storage machine,
+as you would do at the end of a real acquisition session.
+
+Finally we will download data from the central
+storage to a local machine, as you would do during analysis.
 
 ## Installing **datashuttle**
 
-The first step is to install **datashuttle**, by following the instructions
+The first step is to install **datashuttle** by following the instructions
 on the [How to Install](how-to-install) page.
 
 
@@ -40,8 +39,8 @@ on the [How to Install](how-to-install) page.
 :::{tab-item} Graphical Interface
 :sync: gui
 
-Once **datashuttle** is installed,  typing `datashuttle launch` will
-launch the application in your terminal
+Entering `datashuttle launch` after installation
+will launch the application in your terminal:
 
 ```{image} /_static/screenshots/tutorial-1-landing-screen-dark.png
    :align: center
@@ -59,7 +58,7 @@ launch the application in your terminal
 :sync: python
 
 We can check **datashuttle** has installed correctly by
-by importing it into Python without error
+by importing it into Python without error:
 
 ```python
 from datashuttle import DataShuttle
@@ -73,25 +72,26 @@ from datashuttle import DataShuttle
 The first thing to do when using **datashuttle** on a new machine is
 to set up your project.
 
-We need to tell **datashuttle** the:
+We need to set the:
 
 1) project name
-2) location of the project our local machine, where we will save acquired data
-3) location of the central data storage, where we will upload the acquired data
+2) location of the project our local machine (where the acquired data will be saved).
+3) location of the project on the central data storage (where we will upload the acquired data).
 
-**datashuttle** supports central data storage either mounted as a drive
-on the local machine or through an SHH connection.
-See [How to Make a New Project](make-a-new-project) for detailed instructions for
-connecting a mounted drive or SSH connection.
+**datashuttle** supports connecting to the central storage machine
+either as a mounted drive or through SHH. \
+See [How to Make a New Project](make-a-new-project)
+for detailed instructions for
+connecting a mounted drive or by using SSH.
 
 In this walkthrough, we will set our central storage as a
-folder on our machine for simplicity.
+folder on our local machine for simplicity.
 
 ::::{tab-set}
 :::{tab-item} Graphical Interface
 :sync: gui
 
-Now we will set up a new project. Click `Make New Project` and you
+Click `Make New Project` and you
 will be taken to the project setup page.
 
 ```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
@@ -106,8 +106,8 @@ will be taken to the project setup page.
 ```
 <br>
 
-We'll call our project `my_first_project`, and can type this into
-the first input box on the page.
+We'll call our project `my_first_project` and can type this into
+the first input box on the page:
 
 ```{image} /_static/screenshots/tutorial-1-make-project-name-dark.png
    :align: center
@@ -121,11 +121,12 @@ the first input box on the page.
 ```
 <br>
 
-Next we need to specify the _local path_, the location on our machine where
-we will save our acquired data. Choose any directory that is
-convenient, and then add `local` to the end of the filepath.
-The filepath can be typed into the input, copied in with `CTRL+V`
-or selected from a directory tree using the `Select` button.
+Next we need to specify the *local path*, the location on our machine where
+acquired data will be saved. Choose any directory that is
+convenient.
+
+In this example we will add the folder `"local"`
+to the end of the filepath for clarity:
 
 ```{image} /_static/screenshots/tutorial-1-make-local-path-dark.png
    :align: center
@@ -138,6 +139,9 @@ or selected from a directory tree using the `Select` button.
    :width: 400px
 ```
 <br>
+
+The filepath can be typed into the input, copied in with `CTRL+V`
+or selected from a directory tree using the `Select` button.
 
 Finally, we need to  select the _central path_. Usually this would be
 a path to a mounted central storage drive or relative to the server path
