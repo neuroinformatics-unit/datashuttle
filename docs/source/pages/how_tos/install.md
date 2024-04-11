@@ -1,10 +1,18 @@
 (how-to-install)=
 # How to Install
 
-**datashuttle** requires Python and a number of other dependencies to run.
+**datashuttle** requires
+[Python](https://www.python.org/)
+to run.
 
-The easiest way to install **datashuttle** is through [conda](https://docs.conda.io/en/latest/),
-but installation via `pip` and for developers is also supported.
+The easiest way to install **datashuttle** is through the Python package manager
+[conda](https://docs.conda.io/en/latest/). However,
+installation via `pip` is also supported.
+
+:::{warning}
+**datashuttle** is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
+get in contact if you experience any bugs or unexpected behaviour.
+:::
 
 ## Installation instructions
 
@@ -15,17 +23,17 @@ but installation via `pip` and for developers is also supported.
 If you do not already have `conda` on your system, first
 [download and install conda](https://docs.anaconda.com/free/miniconda/miniconda-install/).
 
-If you are on Windows, the easiest way to use `conda` is through the [Anaconda Prompt](https://docs.anaconda.com/free/anaconda/getting-started/index.html)
+If you are on Windows, the easiest way to use `conda` is through the [Anaconda Prompt](https://docs.anaconda.com/free/anaconda/getting-started/index.html).
 
 Next, create and activate an environment.  You can call your environment whatever you like,
-we've used `datashuttle-env`.
+we've used `datashuttle-env`:
 
 ```sh
 conda create -n datashuttle-env python=3.10
 conda activate datashuttle-env
 ```
 
-then install **datashuttle** and all dependencies with
+Next, install **datashuttle** and all dependencies with:
 
 ```sh
 conda install -c conda-forge datashuttle
@@ -39,7 +47,7 @@ conda install -c conda-forge datashuttle
 [Rclone must be installed separately](https://rclone.org/downloads/).
 
 Once Rclone is installed, **datashuttle** and all other dependencies can be
-installed in a `pipenv` or `virtualenv` environment with
+installed in a `pipenv` or `virtualenv` environment with:
 
 ```shell
 pip install datashuttle
@@ -65,7 +73,7 @@ This will install the package in editable mode, including all `dev` dependencies
 ## Check the installation
 
 To check **datashuttle** has successfully installed, launch the
-graphical interface with
+graphical interface with:
 
 ```shell
 datashuttle launch
