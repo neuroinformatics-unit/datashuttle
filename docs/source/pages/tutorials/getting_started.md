@@ -490,7 +490,7 @@ page for details on transfer options, including the important
 **overwrite existing files** setting.
 
 ```{warning}
-The `Overwrite Existing Files` setting is very important.
+The **overwrite existing files** setting is very important.
 It takes on the options **never**, **always** or **if source newer**.
 
 See the [transfer options](transfer-options) section for full details.
