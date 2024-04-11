@@ -18,7 +18,11 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from datashuttle.utils.custom_types import Prefix, TopLevelFolder
+    from datashuttle.utils.custom_types import (
+        OverwriteExistingFiles,
+        Prefix,
+        TopLevelFolder,
+    )
 
 import paramiko
 import yaml
@@ -298,7 +302,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -337,7 +341,7 @@ class DataShuttle:
             between central and local files.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
 
@@ -371,7 +375,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
@@ -401,13 +405,14 @@ class DataShuttle:
             see create_folders()
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
 
@@ -441,7 +446,9 @@ class DataShuttle:
 
     @check_configs_set
     def upload_rawdata(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Upload files in the `rawdata` top level folder.
@@ -450,13 +457,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -469,7 +477,9 @@ class DataShuttle:
 
     @check_configs_set
     def upload_derivatives(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Upload files in the `derivatives` top level folder.
@@ -478,13 +488,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -497,7 +508,9 @@ class DataShuttle:
 
     @check_configs_set
     def download_rawdata(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Download files in the `rawdata` top level folder.
@@ -506,13 +519,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -525,7 +539,9 @@ class DataShuttle:
 
     @check_configs_set
     def download_derivatives(
-        self, overwrite_existing_files: bool = False, dry_run: bool = False
+        self,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
+        dry_run: bool = False,
     ):
         """
         Download files in the `derivatives` top level folder.
@@ -534,13 +550,14 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -554,7 +571,7 @@ class DataShuttle:
     @check_configs_set
     def upload_entire_project(
         self,
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -566,17 +583,18 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("transfer-entire-project", local_vars=locals())
+        self._start_log("upload-entire-project", local_vars=locals())
         self._transfer_entire_project(
             "upload", overwrite_existing_files, dry_run
         )
@@ -585,7 +603,7 @@ class DataShuttle:
     @check_configs_set
     def download_entire_project(
         self,
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -597,17 +615,18 @@ class DataShuttle:
         ----------
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
-        self._start_log("transfer-entire-project", local_vars=locals())
+        self._start_log("download-entire-project", local_vars=locals())
         self._transfer_entire_project(
             "download", overwrite_existing_files, dry_run
         )
@@ -617,7 +636,7 @@ class DataShuttle:
     def upload_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -635,13 +654,14 @@ class DataShuttle:
             a string containing the full filepath.
 
         overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -657,7 +677,7 @@ class DataShuttle:
     def download_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
         """
@@ -675,13 +695,14 @@ class DataShuttle:
             a string containing the full filepath.
 
         overwrite_existing_files :
-            If `False`, files on local will never be overwritten
-            by files transferred from central. If `True`, local files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
         dry_run :
-            perform a dry-run of upload. This will output as if file
+            perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
             to check which files will be moved on data transfer.
         """
@@ -699,7 +720,7 @@ class DataShuttle:
         self,
         upload_or_download: Literal["upload", "download"],
         top_level_folder: TopLevelFolder,
-        overwrite_existing_files: bool = False,
+        overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
     ):
@@ -1206,7 +1227,7 @@ class DataShuttle:
     def _transfer_entire_project(
         self,
         upload_or_download: Literal["upload", "download"],
-        overwrite_existing_files: bool,
+        overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
     ) -> None:
         """
@@ -1415,9 +1436,18 @@ class DataShuttle:
         and the new keys need adding.
         If changing keys within the top level (e.g. a dict entry in
         "tui") this method will need to be extended.
+
+        Added keys:
+            v0.4.0: tui "overwrite_existing_files" and "dry_run"
         """
         if "name_templates" not in settings:
             settings.update(canonical_configs.get_name_templates_defaults())
 
+        canonical_tui_configs = canonical_configs.get_tui_config_defaults()
+
         if "tui" not in settings:
-            settings.update(canonical_configs.get_tui_config_defaults())
+            settings.update(canonical_tui_configs)
+
+        for key in ["overwrite_existing_files", "dry_run"]:
+            if key not in settings["tui"]:
+                settings["tui"][key] = canonical_tui_configs["tui"][key]

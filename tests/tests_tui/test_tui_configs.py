@@ -65,7 +65,7 @@ class TestTuiConfigs(TuiBase):
         Path(kwargs["central_path"]).parent.mkdir(parents=True)
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Select a new project, check NewProjectScreen is
             # displayed correctly.
@@ -170,7 +170,7 @@ class TestTuiConfigs(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Navigate to the existing project and click onto the
             # configs tab.
@@ -281,7 +281,7 @@ class TestTuiConfigs(TuiBase):
         self.monkeypatch_print(monkeypatch)
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Select the page and ConfigsContent for setting up new project
             await self.scroll_to_click_pause(
@@ -347,7 +347,7 @@ class TestTuiConfigs(TuiBase):
     async def test_bad_configs_screen_input(self, empty_project_paths):
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Select a new project, check NewProjectScreen is displayed correctly.
             await self.scroll_to_click_pause(

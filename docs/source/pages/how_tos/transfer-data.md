@@ -38,15 +38,11 @@ allow transfer between:
 
 
 ```{warning}
-All transfer methods take an `overwrite_existing_files`
-argument (default `False`).
+The `Overwrite Existing Files` setting is very important.
+It takes on the options **never**, **always** or **if source newer**.
 
-By default it is turned off and a transfer will never overwrite a
-file that already exists, even if the source version is newer.
-
-When on, target versions of the file will be overwritten if there
-is any difference between source and destination (e.g. file size,
-modification time).
+See the [transfer options](transfer-options) section for full details on
+this and other transfer settings.
 ```
 
 
@@ -307,3 +303,36 @@ Wildcard
 Transfer a range
 : The `@TO@` tag can be used to target a range of subjects for transfer.
 *e.g.* `sub-001@TO@025` will transfer the 1st to up to and including the 25th subject.
+
+## Transfer Options
+
+(transfer-options)=
+
+overwrite existing files
+: By default this option is set to **never**—a transfer will never overwrite a
+file that already exists, even if the source and destination modification datetimes
+or sizes are different. <br><br>
+For example, if we try to upload the first session's behavioural data—and there
+is already a file on central storage with the same name
+in the same folder—the file will not be uploaded.<br><br>
+If set to **always**, when there are differences in datetime or size
+between the source and destination file the destination file will be overwritten.
+This includes when the source file is older or smaller than the destination.<br><br>
+Finally, **if_source_newer** ensures data is only overwritten
+when the
+[source file has a more recent modification time](https://rclone.org/docs/#u-update)
+than the destination.
+If modification datetimes are equal, the destination will be overwritten if the
+sizes or checksums are different.<br><br>
+Under the hood, transfers are made with calls to
+[Rclone](https://rclone.org/). Using **never**
+calls
+[Rclone's copy](https://rclone.org/commands/rclone_copy/)
+function with the flag `--ignore_existing`. Using
+**always** copies without this flag and (using Rclone's default overwrite behaviour.)
+Using **if_file_newer** calls copy with the `--update` flag.
+
+dry run
+: Performs a dry-run transfer in which no data is transferred but logs
+are saved as if a transfer had taken place.
+This is a useful way to test if a transfer will run as expected.

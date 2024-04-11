@@ -22,7 +22,7 @@ class TestTuiTransfer(TuiBase):
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -51,6 +51,61 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+            await self.check_persistent_settings(pilot)
+
+            await pilot.pause()
+
+    async def check_persistent_settings(self, pilot):
+        """
+        Run transfer with each overwrite setting and check it is propagated
+        to datashuttle methods.
+        """
+        await self.set_and_check_persistent_settings(pilot, "never", True)
+
+        await self.set_and_check_persistent_settings(pilot, "always", False)
+
+        await self.set_and_check_persistent_settings(
+            pilot, "if_source_newer", True
+        )
+
+    async def set_overwrite_checkbox(self, pilot, overwrite_setting):
+        """"""
+        all_positions = {"never": None, "always": 5, "if_source_newer": 6}
+        position = all_positions[overwrite_setting]
+
+        if position is not None:
+            await self.move_select_to_position(
+                pilot, "#transfer_tab_overwrite_select", position=position
+            )
+
+    async def set_transfer_tab_dry_run_checkbox(self, pilot, dry_run_setting):
+        if (
+            pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox")
+            is not dry_run_setting
+        ):
+            await self.change_checkbox(pilot, "#transfer_tab_dry_run_checkbox")
+
+    async def set_and_check_persistent_settings(
+        self, pilot, overwrite_setting, dry_run_setting
+    ):
+        """
+        Run transfer with an overwrite setting and check it is propagated
+        to datashuttle methods by checking the logs.
+        """
+        await self.set_overwrite_checkbox(pilot, overwrite_setting)
+        await self.set_transfer_tab_dry_run_checkbox(pilot, dry_run_setting)
+
+        logging_path = pilot.app.screen.interface.project.get_logging_path()
+
+        test_utils.delete_log_files(logging_path)
+        await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
+        await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
+        await self.close_messagebox(pilot)
+
+        log = test_utils.read_log_file(logging_path)
+        assert f"overwrite_existing_files': '{overwrite_setting}'" in log
+        assert f"dry_run': {dry_run_setting}" in log
+
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.asyncio()
@@ -63,7 +118,7 @@ class TestTuiTransfer(TuiBase):
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -92,6 +147,12 @@ class TestTuiTransfer(TuiBase):
             )
             await pilot.pause()
 
+            await self.check_persistent_settings(
+                pilot,
+            )
+
+            await pilot.pause()
+
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     @pytest.mark.asyncio
@@ -106,7 +167,7 @@ class TestTuiTransfer(TuiBase):
         ses_to_transfer = "ses-003"
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -159,6 +220,12 @@ class TestTuiTransfer(TuiBase):
 
             await pilot.pause()
 
+            await self.check_persistent_settings(
+                pilot,
+            )
+
+            await pilot.pause()
+
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):
@@ -179,6 +246,7 @@ class TestTuiTransfer(TuiBase):
 
         await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
         await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
+        await self.close_messagebox(pilot)
 
     def setup_project_for_data_transfer(
         self,
@@ -200,6 +268,8 @@ class TestTuiTransfer(TuiBase):
         (
             _,
             base_path_to_check,
-        ) = test_utils.handle_upload_or_download(project, upload_or_download)
+        ) = test_utils.handle_upload_or_download(
+            project, upload_or_download, transfer_method=None
+        )
 
         return base_path_to_check

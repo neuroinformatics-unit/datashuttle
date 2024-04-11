@@ -5,7 +5,10 @@ from typing import TYPE_CHECKING, Dict, Optional, Union, cast
 if TYPE_CHECKING:
     from collections.abc import ItemsView, KeysView, ValuesView
 
-    from datashuttle.utils.custom_types import TopLevelFolder
+    from datashuttle.utils.custom_types import (
+        OverwriteExistingFiles,
+        TopLevelFolder,
+    )
 
 import copy
 from collections import UserDict
@@ -227,7 +230,7 @@ class Configs(UserDict):
         return f"central_{self.project_name}_{connection_method}"
 
     def make_rclone_transfer_options(
-        self, overwrite_existing_files: bool, dry_run: bool
+        self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
     ) -> Dict:
         """
         This function originally collected the relevant arguments
@@ -235,6 +238,16 @@ class Configs(UserDict):
         However, now we fix the previously configurable arguments
         `show_transfer_progress` and `dry_run` here.
         """
+        allowed_overwrite = ["never", "always", "if_source_newer"]
+
+        if overwrite_existing_files not in allowed_overwrite:
+            utils.log_and_raise_error(
+                f"`overwrite_existing_files` not "
+                f"recognised, must be one of: "
+                f"{allowed_overwrite}",
+                ValueError,
+            )
+
         return {
             "overwrite_existing_files": overwrite_existing_files,
             "show_transfer_progress": True,

@@ -204,7 +204,8 @@ class Interface:
             transfer_func(
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
-                ]
+                ],
+                dry_run=self.tui_settings["dry_run"],
             )
 
             return True, None
@@ -248,7 +249,8 @@ class Interface:
             transfer_func(
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
-                ]
+                ],
+                dry_run=self.tui_settings["dry_run"],
             )
 
             return True, None
@@ -300,6 +302,7 @@ class Interface:
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
                 ],
+                dry_run=self.tui_settings["dry_run"],
             )
 
             return True, None

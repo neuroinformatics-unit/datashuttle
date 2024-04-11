@@ -480,6 +480,21 @@ Typically,  this would be an external machine or server, connected through a mou
 drive or via SSH. In this walkthrough, we set the central storage on our
 local machine for convenience.
 
+For more detail on transfer options, including the **overwrite existing files**
+setting, see the
+[transfer options](transfer-options)
+section of the
+[How To Transfer](how-to-transfer-data)
+page.
+
+```{warning}
+The `Overwrite Existing Files` setting is very important.
+It takes on the options **never**, **always** or **if source newer**.
+
+See the [transfer options](transfer-options) section for full details on
+this and other transfer settings.
+```
+
 ::::{tab-set}
 :::{tab-item} Graphical Interface
 :sync: gui
@@ -544,32 +559,27 @@ For more information  see the
 [How to Transfer Data](how-to-transfer-data) page
 as well as the next tutorial section for customisable transfers.
 
-Note that all transfer methods have an `overwrite_existing_files` argument
-(default `False`) that controls whether transferred data will overwrite
-data on the target machine. For example:
+All transfer methods have an `overwrite_existing_files` and `dry_run`
+arguments to control transfer behaviour (see
+[transfer options](transfer-options) for more details.
+
+For example, the below example will overwrite any files on the central
+storage that are different to those on local (in terms of
+size and datetime):
 
 ```python
 project.upload_entire_project(
-  overwrite_existing_files=True,
+  overwrite_existing_files="always",
+  dry_run=True,
 )
 ```
 
+will perform a 'dry run' in which transfer logs are produced as if the
+transfer occurred, but no data is actually transferred. This ensures
+the results of the transfer are as expected.
+
 :::
 ::::
-
-```{warning}
-The `Overwrite Existing Files` setting is very important.
-By default it is turned off and a transfer will never overwrite a
-file that already exists, even if the source version is newer.
-
-For example, if we upload the first session's behavioural data—and there
-is already a file on central storage with the same name
-in the same folder—the file will not be uploaded.
-
-If `Overwrite Existing Files` is on, then any existing files
-will be overwritten if the versions on local and central are different
-(e.g. size, modification datetime).
-```
 
 With the data safely on our central storage,
 our experimental acquisition session is complete!
@@ -666,12 +676,12 @@ and click `Transfer`.
 ```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-switch-dark.png
    :align: center
    :class: only-dark
-   :width: 400px
+   :width: 580px
 ```
 ```{image} /_static/screenshots/tutorial-1-transfer-screen-custom-switch-light.png
    :align: center
    :class: only-light
-   :width: 400px
+   :width: 580px
 ```
 <br>
 

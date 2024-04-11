@@ -428,8 +428,8 @@ def get_top_level_folder_path(
 def handle_upload_or_download(
     project,
     upload_or_download,
-    specific_top_level_folder=False,
-    transfer_entire_project=False,
+    transfer_method,
+    top_level_folder=None,
     swap_last_folder_only=False,
 ):
     """
@@ -437,33 +437,55 @@ def handle_upload_or_download(
     files over SSH, to test download just swap the central
     and local server (so things are still transferred from
     local machine to central, but using the download function).
+
+    Also returns the transfer method, if 'transfer_method="top_level_folder"`
+    then the `top_level_folder` is used to determine the method,
+    otherwise it is not used.
     """
     if upload_or_download == "download":
         central_path = swap_local_and_central_paths(
             project, swap_last_folder_only
         )
-
-        if transfer_entire_project:
-            transfer_function = project.download_entire_project
-        elif specific_top_level_folder == "rawdata":
-            transfer_function = project.download_rawdata
-        elif specific_top_level_folder == "derivatives":
-            transfer_function = project.download_derivatives
-        else:
-            transfer_function = project.download_custom
     else:
         central_path = project.cfg["central_path"]
 
-        if transfer_entire_project:
+    transfer_function = get_transfer_func(
+        project, upload_or_download, transfer_method, top_level_folder
+    )
+
+    return transfer_function, central_path
+
+
+def get_transfer_func(
+    project, upload_or_download, transfer_method, top_level_folder=None
+):
+    """"""
+    if transfer_method == "top_level_folder":
+        assert top_level_folder is not None, "must pass top-level-folder"
+    assert top_level_folder in [None, "rawdata", "derivatives"]
+
+    if upload_or_download == "download":
+        if transfer_method == "entire_project":
+            transfer_function = project.download_entire_project
+        elif transfer_method == "top_level_folder":
+            if top_level_folder == "rawdata":
+                transfer_function = project.download_rawdata
+            else:
+                transfer_function = project.download_derivatives
+        else:
+            transfer_function = project.download_custom
+    else:
+        if transfer_method == "entire_project":
             transfer_function = project.upload_entire_project
-        elif specific_top_level_folder == "rawdata":
-            transfer_function = project.upload_rawdata
-        elif specific_top_level_folder == "derivatives":
-            transfer_function = project.upload_derivatives
+        elif transfer_method == "top_level_folder":
+            if top_level_folder == "rawdata":
+                transfer_function = project.upload_rawdata
+            else:
+                transfer_function = project.upload_derivatives
         else:
             transfer_function = project.upload_custom
 
-    return transfer_function, central_path
+    return transfer_function
 
 
 def swap_local_and_central_paths(project, swap_last_folder_only=False):
@@ -590,3 +612,23 @@ def check_working_top_level_folder_only_exists(
 
     for folder in unused_folders:
         assert not (base_path_to_check.parent / folder).is_dir()
+
+
+def read_log_file(logging_path):
+    log_filepath = list(glob.glob(str(logging_path / "*.log")))
+
+    assert len(log_filepath) == 1, (
+        f"there should only be one log " f"in log output path {logging_path}"
+    )
+    log_filepath = log_filepath[0]
+
+    with open(log_filepath, "r") as file:
+        log = file.read()
+
+    return log
+
+
+def delete_log_files(logging_path):
+    ds_logger.close_log_filehandler()
+    for log in glob.glob((str(logging_path / "*.log"))):
+        os.remove(log)

@@ -41,7 +41,7 @@ class TestTuiCreateFolders(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Set up the TUI on the 'create' tab, filling the
             # input with the subject and session folders to create.
@@ -94,7 +94,7 @@ class TestTuiCreateFolders(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -188,7 +188,7 @@ class TestTuiCreateFolders(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -271,7 +271,7 @@ class TestTuiCreateFolders(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -347,7 +347,7 @@ class TestTuiCreateFolders(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -479,7 +479,7 @@ class TestTuiCreateFolders(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=True
@@ -543,7 +543,7 @@ class TestTuiCreateFolders(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
-        async with app.run_test() as pilot:
+        async with app.run_test(size=self.tui_size()) as pilot:
 
             # Open the CreateFoldersSettingsScreen
             await self.setup_existing_project_create_tab_filled_sub_and_ses(

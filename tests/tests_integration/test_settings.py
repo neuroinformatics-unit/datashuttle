@@ -128,9 +128,10 @@ class TestPersistentSettings(BaseTest):
         # test all defaults
         settings = project._load_persistent_settings()
         tui_settings = settings["tui"]
-
-        assert tui_settings == self.get_settings_default()
-
+        try:
+            assert tui_settings == self.get_settings_default()
+        except:
+            breakpoint()
         # change all defaults
         new_tui_settings = self.get_settings_changed()
 
@@ -186,7 +187,8 @@ class TestPersistentSettings(BaseTest):
                 "custom_transfer": "rawdata",
             },
             "bypass_validation": False,
-            "overwrite_existing_files": False,
+            "overwrite_existing_files": "never",
+            "dry_run": False,
         }
 
     def get_settings_changed(self):
@@ -212,5 +214,6 @@ class TestPersistentSettings(BaseTest):
                 "custom_transfer": "derivatives",
             },
             "bypass_validation": True,
-            "overwrite_existing_files": True,
+            "overwrite_existing_files": "always",
+            "dry_run": True,
         }

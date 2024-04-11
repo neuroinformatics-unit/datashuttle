@@ -165,6 +165,9 @@ def transfer_data(
         If "upload", transfer from `local_path` to `central_path`.
         "download" proceeds in the opposite direction.
 
+    top_level_folder: Literal["rawdata", "derivatives"]
+        The top-level-folder to transfer files within.
+
     include_list : List[str]
         A list of filepaths to include in the transfer
 
@@ -317,8 +320,16 @@ def handle_rclone_arguments(
 
     extra_arguments_list += ["-" + rclone_options["transfer_verbosity"]]
 
-    if not rclone_options["overwrite_existing_files"]:
-        extra_arguments_list += [rclone_args("ignore_existing")]
+    overwrite = rclone_options["overwrite_existing_files"]
+
+    if overwrite == "never":
+        extra_arguments_list += [rclone_args("never_overwrite")]
+
+    elif overwrite == "always":
+        pass
+
+    elif overwrite == "if_source_newer":
+        extra_arguments_list += [rclone_args("if_source_newer_overwrite")]
 
     if rclone_options["show_transfer_progress"]:
         extra_arguments_list += [rclone_args("progress")]
@@ -337,7 +348,14 @@ def rclone_args(name: str) -> str:
     """
     Central function to hold rclone commands
     """
-    valid_names = ["dry_run", "copy", "ignore_existing", "progress", "check"]
+    valid_names = [
+        "dry_run",
+        "copy",
+        "never_overwrite",
+        "if_source_newer_overwrite",
+        "progress",
+        "check",
+    ]
     assert name in valid_names, f"`name` must be in: {valid_names}"
 
     if name == "dry_run":
@@ -346,8 +364,11 @@ def rclone_args(name: str) -> str:
     if name == "copy":
         arg = "copy"
 
-    if name == "ignore_existing":
+    if name == "never_overwrite":
         arg = "--ignore-existing"
+
+    if name == "if_source_newer_overwrite":
+        arg = "--update"
 
     if name == "progress":
         arg = "--progress"

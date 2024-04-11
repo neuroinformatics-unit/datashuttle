@@ -282,7 +282,8 @@ def get_tui_config_defaults() -> Dict:
                 "custom_transfer": "rawdata",
             },
             "bypass_validation": False,
-            "overwrite_existing_files": False,
+            "overwrite_existing_files": "never",
+            "dry_run": False,
         }
     }
     return settings

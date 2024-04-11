@@ -77,13 +77,7 @@ GetHelpScreen {
 #setup_ssh_screen_container {
     border: thick $panel-darken-3;
 }
-#setup_ssh_screen_label {
-    align: center middle;
-}
 #messagebox_buttons_horizontal {
-    align: center middle;
-}
-#setup_ssh_screen_label_container {
     align: center middle;
 }
 
