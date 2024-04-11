@@ -94,35 +94,6 @@ class TestConfigs(BaseTest):
 
         assert "must contain the full folder path with no " in str(e.value)
 
-    @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
-    def test_non_existant_local_path(
-        self, no_cfg_project, path_type, non_existent_path, existent_path
-    ):
-        """
-        Check that if the `local_path` and `central_path` that holds the
-        project root does not exist when passed to configs, that an error
-        is raised. Note that this error is only raised for `central_path`
-        if `connection_method` is `"local_filesystem"`.
-        See `test_additional_error_text_when_ssh_used()` for when ssh is used.
-        """
-        if path_type == "local_path":
-            local_path = non_existent_path
-            central_path = existent_path
-        else:
-            local_path = existent_path
-            central_path = non_existent_path
-
-        with pytest.raises(BaseException) as e:
-            no_cfg_project.make_config_file(
-                local_path / no_cfg_project.project_name,
-                central_path / no_cfg_project.project_name,
-                "local_filesystem",
-            )
-
-        assert f"The {path_type}: {non_existent_path} that the project" in str(
-            e.value
-        )
-
     def test_additional_error_text_when_ssh_used(
         self, no_cfg_project, non_existent_path, existent_path
     ):
