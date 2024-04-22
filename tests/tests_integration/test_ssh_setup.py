@@ -17,8 +17,8 @@ class TestSSH(BaseTest):
     @pytest.fixture(scope="function")
     def project(test, tmp_path, setup_ssh_container):
         """
-        Make a project as per usual, but now add
-        in test ssh configurations
+        Set up a project with configs for SSH into
+        the test Dockerfile image.
         """
         tmp_path = tmp_path / "test with space"
 
@@ -47,15 +47,10 @@ class TestSSH(BaseTest):
         self, capsys, project, input_
     ):
         """
-        Use the main function to test this. Test the sub-function
-        when accepting, because this main function will also
-        call setup ssh key pairs which we don't want to do yet
-
-        This should only accept for "y" so try some random strings
-        including "n" and check they all do not make the connection.
+        Test that host not accepted if input is not "y".
         """
         orig_builtin = copy.deepcopy(builtins.input)
-        builtins.input = lambda _: "y"  # type: ignore
+        builtins.input = lambda _: input_  # type: ignore
 
         project.setup_ssh_connection()
 
@@ -90,8 +85,8 @@ class TestSSH(BaseTest):
 
     def test_generate_and_write_ssh_key(self, project):
         """
-        Check ssh key for passwordless connection is written
-        to file
+        Check ssh key for passwordless connection
+        is written to file.
         """
         path_to_save = project.cfg["local_path"] / "test"
         ssh.generate_and_write_ssh_key(path_to_save)
