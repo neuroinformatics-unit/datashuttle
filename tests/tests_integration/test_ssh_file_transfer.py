@@ -9,7 +9,7 @@ import paramiko
 import pytest
 import ssh_test_utils
 import test_utils
-from file_conflicts_pathtable import get_pathtable
+from base import BaseTest
 
 from datashuttle.utils import ssh
 
@@ -41,7 +41,6 @@ PARAM_DATATYPE = [
     ["funcimg"],
     ["anat", "behav", "all_non_datatype"],
 ]
-
 
 class TestFileTransfer:
     @pytest.fixture(
