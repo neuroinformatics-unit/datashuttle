@@ -3,7 +3,6 @@ import ssh_test_utils
 import test_utils
 from base import BaseTest
 
-# from pytest import ssh_config
 from datashuttle.utils import ssh
 
 TEST_SSH = ssh_test_utils.get_test_ssh()
@@ -11,6 +10,7 @@ TEST_SSH = ssh_test_utils.get_test_ssh()
 
 @pytest.mark.skipif("not TEST_SSH", reason="TEST_SSH is false")
 class TestSSH(BaseTest):
+
     @pytest.fixture(scope="function")
     def project(test, tmp_path, setup_ssh_container):
         """
@@ -20,6 +20,7 @@ class TestSSH(BaseTest):
         tmp_path = tmp_path / "test with space"
 
         test_project_name = "test_ssh"
+
         project = test_utils.setup_project_fixture(tmp_path, test_project_name)
 
         # ssh_test_utils.setup_project_and_container_for_ssh(project)
@@ -79,7 +80,9 @@ class TestSSH(BaseTest):
         with open(project.cfg.hostkeys_path, "r") as file:
             hostkey = file.readlines()[0]
 
-        assert f"{project.cfg['central_host_id']} ssh-ed25519 " in hostkey
+        assert (
+            f"[{project.cfg['central_host_id']}]:3306 ssh-ed25519 " in hostkey
+        )
 
     def test_generate_and_write_ssh_key(self, project):
         """
