@@ -19,8 +19,8 @@ class BaseTest:
     @pytest.fixture(scope="function")
     def no_cfg_project(test):
         """
-        Fixture that creates an empty project. Ignore the warning
-        that no configs are setup yet.
+        Fixture that creates an empty project. Ignore the
+        warning that no configs are set up yet.
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
@@ -70,8 +70,8 @@ class BaseTest:
     def clean_project_name(self):
         """
         Create an empty project, but ensure no
-        configs already exists, and delete created configs
-        after test.
+        configs already exists, and delete created
+        configs after test.
         """
         project_name = TEST_PROJECT_NAME
         test_utils.delete_project_if_it_exists(project_name)
