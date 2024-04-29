@@ -149,7 +149,7 @@ class DataShuttle:
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
         log: bool = True,
-    ) -> List[Path]:
+    ) -> Dict[str, Path]:
         """
         Create a subject / session folder tree in the project
         folder. The passed subject / session names are

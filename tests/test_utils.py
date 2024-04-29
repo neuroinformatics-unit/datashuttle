@@ -262,12 +262,26 @@ def check_folder_tree_is_correct(
 
                 if folder_used[key]:
                     check_and_cd_folder(datatype_path)
-                    if created_folder_list:
-                        assert Path(datatype_path) in created_folder_list
+
+                    # Check the created path is found only in the expected
+                    # dict entry.
+                    if created_folder_list[key]:
+                        for (
+                            datatype_name,
+                            all_datatype_paths,
+                        ) in created_folder_list.items():
+                            if datatype_name == key:
+                                assert (
+                                    Path(datatype_path) in all_datatype_paths
+                                )
+                            else:
+                                assert (
+                                    Path(datatype_path)
+                                    not in all_datatype_paths
+                                )
                 else:
                     assert not os.path.isdir(datatype_path)
-                    if created_folder_list:
-                        assert Path(datatype_path) not in created_folder_list
+                    assert key not in created_folder_list
 
 
 def check_and_cd_folder(path_):
