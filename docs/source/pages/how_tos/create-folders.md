@@ -166,8 +166,8 @@ created_folders = project.create_folders(
 )
 ```
 
-The method outputs `created_folders`, which contains a list of all
-`Path`s to all created datatype folders. See the below section for
+The method outputs `created_folders`, which contains the
+`Path`s to created datatype folders. See the below section for
 details on the `@DATE@` and other convenience tags.
 
 By default, an error will be raised if the folder names break

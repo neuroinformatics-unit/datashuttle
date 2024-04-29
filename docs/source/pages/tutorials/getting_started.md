@@ -450,7 +450,7 @@ folder_path_list = project.create_folders(
 
 )
 
-print([path_ for path_ in folder_path_list if path_.name == "behav"])
+print([path_ for path_ in folder_path_list["behav"]])
 # ["C:\Users\Joe\data\local\my_first_project\sub-001\ses-001_16052024\behav"]
 ```
 
