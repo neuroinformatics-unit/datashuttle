@@ -235,6 +235,9 @@ def check_folder_tree_is_correct(
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
+    if created_folder_list is None:
+        created_folder_list = {}
+
     for sub in subs:
         path_to_sub_folder = join(base_folder, sub)
         check_and_cd_folder(path_to_sub_folder)
@@ -265,20 +268,16 @@ def check_folder_tree_is_correct(
 
                     # Check the created path is found only in the expected
                     # dict entry.
-                    if created_folder_list[key]:
-                        for (
-                            datatype_name,
-                            all_datatype_paths,
-                        ) in created_folder_list.items():
-                            if datatype_name == key:
-                                assert (
-                                    Path(datatype_path) in all_datatype_paths
-                                )
-                            else:
-                                assert (
-                                    Path(datatype_path)
-                                    not in all_datatype_paths
-                                )
+                    for (
+                        datatype_name,
+                        all_datatype_paths,
+                    ) in created_folder_list.items():
+                        if datatype_name == key:
+                            assert Path(datatype_path) in all_datatype_paths
+                        else:
+                            assert (
+                                Path(datatype_path) not in all_datatype_paths
+                            )
                 else:
                     assert not os.path.isdir(datatype_path)
                     assert key not in created_folder_list
@@ -358,7 +357,7 @@ def make_and_check_local_project_folders(
 
 
 def make_local_folders_with_files_in(
-    project, top_level_folder, subs, sessions=None, datatype="all"
+    project, top_level_folder, subs, sessions=None, datatype=""
 ):
     project.create_folders(top_level_folder, subs, sessions, datatype)
     for root, dirs, _ in os.walk(project.cfg["local_path"]):

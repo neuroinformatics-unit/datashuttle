@@ -223,6 +223,13 @@ class DataShuttle:
 
         self._check_top_level_folder(top_level_folder)
 
+        if ses_names is None and datatype != "":
+            datatype = ""
+            utils.log_and_message(
+                "`datatype` passed without `ses_names`, no datatype "
+                "folders will be created."
+            )
+
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
 
