@@ -16,7 +16,7 @@ dependencies = [
     "PyYAML",
     "requests",
     "rich",
-    "fancylog",
+    "fancylog>=0.4.1",
     "simplejson",
     "pyperclip",
     "textual",
