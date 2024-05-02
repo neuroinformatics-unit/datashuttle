@@ -25,7 +25,6 @@ def log(message: str) -> None:
     """
     if ds_logger.logging_is_active():
         logger = ds_logger.get_logger()
-        breakpoint()
         logger.debug(message)
 
 
@@ -49,6 +48,14 @@ def log_and_raise_error(message: str, exception: Any) -> None:
     raise_error(message, exception)
 
 
+def warn(message: str, log: bool) -> None:
+    """ """
+    if log and ds_logger.logging_is_active():
+        logger = ds_logger.get_logger()
+        logger.warning(message)
+    warnings.warn(message)
+
+
 def raise_error(message: str, exception) -> None:
     """
     Centralized way to raise an error. The logger is closed
@@ -57,14 +64,6 @@ def raise_error(message: str, exception) -> None:
     """
     ds_logger.close_log_filehandler()
     raise exception(message)
-
-
-def warn(message: str, log: bool) -> None:
-    """ """
-    if log and ds_logger.logging_is_active():
-        logger = ds_logger.get_logger()
-        logger.warning(message)
-    warnings.warn(message)
 
 
 def print_message_to_user(

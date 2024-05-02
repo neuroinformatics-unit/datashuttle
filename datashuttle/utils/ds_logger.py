@@ -26,7 +26,11 @@ def get_logger():
 
 
 def logging_is_active():
-    return get_logger_name() in logging.root.manager.loggerDict
+    logger_exists = get_logger_name() in logging.root.manager.loggerDict
+    if logger_exists:
+        if get_logger().handlers != []:
+            return True
+    return False
 
 
 def start(
@@ -109,6 +113,7 @@ def close_log_filehandler() -> None:
     Remove handlers from all loggers.
     """
     logger = get_logger()
+    logger.debug("Finished logging.")
     handlers = logger.handlers[:]
     for handler in handlers:
         logger.removeHandler(handler)
