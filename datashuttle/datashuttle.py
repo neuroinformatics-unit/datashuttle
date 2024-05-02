@@ -213,6 +213,7 @@ class DataShuttle:
                              ["ephys", "behav"])
         """
         self._start_log("create-folders", local_vars=locals())
+        self._check_top_level_folder(top_level_folder)
 
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])
@@ -353,6 +354,8 @@ class DataShuttle:
         if init_log:
             self._start_log("upload-custom", local_vars=locals())
 
+        self._check_top_level_folder(top_level_folder)
+
         TransferData(
             self.cfg,
             "upload",
@@ -423,6 +426,8 @@ class DataShuttle:
         """
         if init_log:
             self._start_log("download-custom", local_vars=locals())
+
+        self._check_top_level_folder(top_level_folder)
 
         TransferData(
             self.cfg,
@@ -1451,3 +1456,16 @@ class DataShuttle:
         for key in ["overwrite_existing_files", "dry_run"]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]
+
+    def _check_top_level_folder(self, top_level_folder):
+        """
+        Raise an error if ``top_level_folder`` not correct.
+        """
+        canonical_top_level_folders = canonical_folders.get_top_level_folders()
+
+        if top_level_folder not in canonical_top_level_folders:
+            utils.log_and_raise_error(
+                f"`top_level_folder` must be one of "
+                f"{canonical_top_level_folders}",
+                ValueError,
+            )
