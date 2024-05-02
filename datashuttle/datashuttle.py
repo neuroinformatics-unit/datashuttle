@@ -1459,7 +1459,7 @@ class DataShuttle:
 
     def _check_top_level_folder(self, top_level_folder):
         """
-Raise an error if ``top_level_folder`` not correct.
+        Raise an error if ``top_level_folder`` not correct.
         """
         canonical_top_level_folders = canonical_folders.get_top_level_folders()
 
