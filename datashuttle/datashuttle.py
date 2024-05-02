@@ -148,6 +148,7 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
+        log: bool = True,
     ) -> List[Path]:
         """
         Create a subject / session folder tree in the project
@@ -160,30 +161,35 @@ class DataShuttle:
         Parameters
         ----------
 
-        sub_names :
+        top_level_folder : TopLevelFolder
+                Whether to make the folders in `rawdata` or
+                `derivatives`.
+
+        sub_names : Union[str, List[str]]
                 subject name / list of subject names to make
                 within the top-level project folder
                 (if not already, these will be prefixed with
                 "sub-")
-        ses_names :
+
+        ses_names : Optional[Union[str, List[str]]]
                 (Optional). session name / list of session names.
                 (if not already, these will be prefixed with
                 "ses-"). If no session is provided, no session-level
                 folders are made.
-        datatype :
+
+        datatype : Union[str, List[str]]
                 The datatype to make in the sub / ses folders.
                 (e.g. "ephys", "behav", "anat"). If "all"
                 is selected, all datatypes permitted in
                 NeuroBlueprint will be created. If "" is passed
                 no datatype will be created.
 
-        top_level_folder :
-                Whether to make the folders in `rawdata` or
-                `derivatives`.
-
-        bypass_validation :
+        bypass_validation : bool
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
+
+        log : bool
+            If `True`, details of folder creation will be logged.
 
         Notes
         -----
@@ -212,7 +218,9 @@ class DataShuttle:
                              ["ses-001", "ses-002"],
                              ["ephys", "behav"])
         """
-        self._start_log("create-folders", local_vars=locals())
+        if log:
+            self._start_log("create-folders", local_vars=locals())
+
         self._check_top_level_folder(top_level_folder)
 
         utils.log("\nFormatting Names...")
@@ -244,12 +252,14 @@ class DataShuttle:
             log=True,
         )
 
-        utils.print_message_to_user(
-            f"Finished making folders. \nFor log of all created "
-            f"folders, please see {self.cfg.logging_path}"
-        )
+        utils.print_message_to_user("Finished making folders.")
 
-        ds_logger.close_log_filehandler()
+        if log:
+            utils.print_message_to_user(
+                f"For log of all created folders, "
+                f"please see {self.cfg.logging_path}"
+            )
+            ds_logger.close_log_filehandler()
 
         return created_paths
 
