@@ -9,7 +9,6 @@ during or after a contribution. See the [Contributing Guide](contributing.md) fo
 We are in general very keen to hear feedback on what works and doesn't work
 in **datashuttle** and
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
-
 Please get in contact with any thoughts on how these tools can be
 improved by opening a
 [GitHub Issue](https://github.com/neuroinformatics-unit/datashuttle/issues)
@@ -17,7 +16,7 @@ or at our
 [Zulip Chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle).
 
 To see what we have planned in future for **datashuttle**, visit
-our [Roadmap](roadmap.md).
+our [Principles and Roadmap](principles-and-roadmap.md).
 
 
 ```{toctree}
