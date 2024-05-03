@@ -61,20 +61,20 @@ pip install datashuttle
 [Rclone](https://rclone.org/)
 is not
 available through `pip`, you can
-install `Rclone` with `Conda`:
+install `Rclone` with `Conda`
 
 ```sh
 conda install -c conda-forge rclone
 ```
 
-or using the [standalone RClone install](https://rclone.org/downloads/).
+or using the [RClone's standalone installer](https://rclone.org/downloads/).
 
 Next, clone the **datashuttle**
 [GitHub repository](https://github.com/neuroinformatics-unit/datashuttle/)
 to get the latest development version.
 
 To install **datashuttle** and its developer dependencies,
-run the follow commoand from inside the repository:
+run the follow command from inside the repository:
 
 ```sh
 pip install -e .[dev]  # works on most shells
