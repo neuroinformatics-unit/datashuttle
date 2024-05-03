@@ -5,9 +5,9 @@ authors = [
     {name = "Adam Tyson", email = "code@adamltyson.com"},
     {name = "Niko Sirmpilatze", email = "niko.sirbiladze@gmail.com"},
 ]
-description = "DataShuttle automates the creation and management of standardised neuroscience project folders."
+description = "DataShuttle automates the creation, validation and transfer of neuroscience project folders."
 readme = "README.md"
-requires-python = ">=3.8.0"
+requires-python = ">=3.9.0"
 dynamic = ["version"]
 license = {text = "BSD-3-Clause"}
 
@@ -25,13 +25,13 @@ dependencies = [
 ]
 
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 4 - Beta",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Operating System :: OS Independent",
     "License :: OSI Approved :: BSD License",
 ]
@@ -90,7 +90,7 @@ exclude = ["tests*", "docs*"]
 addopts = "--cov=datashuttle"
 
 [tool.black]
-target-version = ['py38', 'py39', 'py310', 'py311']
+target-version = ['py39', 'py310', 'py311', 'py312']
 skip-string-normalization = false
 line-length = 79
 
