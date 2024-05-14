@@ -10,7 +10,7 @@ and [opening a pull request](pull-requests).
 
 The core development team will support you in contributing code, irrespective of your experience!
 
-### Creating a development environment
+## Creating a development environment
 
 To install **datashuttle** along with all packages necessary
 for development, see the 'Developers' tab on the
@@ -43,7 +43,7 @@ pre-commit install
 ```
 
 
-### Pull requests
+## Pull requests
 
 In all cases, please submit code to the main repository via a pull request. The developers recommend, and adhere,
 to the following conventions:
@@ -72,7 +72,7 @@ with both the design and implementation of tests so please don't
 let this stop you opening a PR. We take a similar approach to
 [documenting new features](#contributing-documentation), discussed further below.
 
-### Formatting and pre-commit hooks
+## Formatting and pre-commit hooks
 
 Running `pre-commit install` will set up [pre-commit hooks](https://pre-commit.com/) to ensure a consistent formatting style. Currently, these include:
 * [ruff](https://github.com/astral-sh/ruff) does a number of jobs, including code linting and auto-formatting.
