@@ -5,8 +5,8 @@
 If you're unsure about any part of the contributing process and have any questions, please
 get in touch through our [Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle).
 Otherwise, please dive right in to contributing by
-[creating a developlemt environment](creating-a-development-environment)
-and [opening a pull request](pull-requests).
+[creating a developlemt environment](#creating-a-development-environment)
+and [opening a pull request](#pull-requests).
 
 The core development team will support you in contributing code, irrespective of your experience!
 
@@ -116,7 +116,7 @@ skip pre-commit checks, and ask for help in your PR.
 For docstrings, we adhere to the [numpydoc](https://numpydoc.readthedocs.io/en/latest/format.html) style.
 Make sure to provide docstrings for all public functions, classes, and methods.
 
-## To improve the documentation
+## Contributing documentation
 
 It is very important the documentation for **datashuttle** is clear
 accurate and concise. A key principle of **datashuttle** is it should

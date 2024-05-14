@@ -1,5 +1,3 @@
-(make-a-new-project)=
-
 # How to Make a New Project
 
 This guide will cover all you need to know for setting up a new project
