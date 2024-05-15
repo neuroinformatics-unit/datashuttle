@@ -165,4 +165,4 @@ To edit a page, please:
 - Create a pull request outlining the changes made
 
 If you aren't sure where the changes should be made, please
-[get in touch!](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle).
+[get in touch!](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle)
