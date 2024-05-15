@@ -5,7 +5,7 @@ In this document we lay out our vision for
 and **datashuttle** through three guiding principles.
 
 For additional detail, please refer to our blog posts motivating
-[NeuroBlueprint](https://neuroinformatics.dev/blog/neuroblueprint.html)
+[**NeuroBlueprint**](https://neuroinformatics.dev/blog/neuroblueprint.html)
 and
 [**datashuttle**](https://neuroinformatics.dev/blog/datashuttle.html).
 
@@ -27,7 +27,7 @@ The guiding principle is that some standardisation is better than no standardisa
 
 **NeuroBlueprint** is not intended a rival or replacement for more established
 specifications, but rather as a stepping stone towards full standardisation.
-We aim to align as closely as possible to theBIDS specification and in future
+We aim to align as closely as possible to the BIDS specification and in future
 to provide conversion to NWB through **datashuttle**.
 
 ## Strive to be lightweight
@@ -42,7 +42,7 @@ system in which the raw data for different datatypes (ephys, behaviour)
 can be automatically discovered in any given project.
 
 In future versions it will be necessary to standardise additional features
-to allow more automation of more sophisticated analysis (e.g. sync pulse metadata).
+(e.g. sync pulse metadata) to allow automation of more sophisticated analyses.
 New standards will always be goal-orientated and customisable, only required
 to achieve a particular research goal. It is anticipated that as these 'rules'
 are accumulated, projects will progressively approach full BIDS standardization.

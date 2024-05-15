@@ -4,7 +4,7 @@ Here we present the roadmap for
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
 and **datashuttle**. The roadmap is responsive to the requirements
 of the community and we encourage people to get in
-contact to outline their needs and priorities!
+contact to outline their needs and priorities.
 
 The aim of the first version of **NeuroBlueprint** (v0.2) and **datashuttle** (v0.4)
 is to provide a lightweight, standardised framework enabling automatic discovery
