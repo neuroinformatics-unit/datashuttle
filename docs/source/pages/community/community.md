@@ -21,7 +21,6 @@ our [Guiding Principles](guiding-principles.md) and [Roadmap](roadmap.md).
 
 ```{toctree}
 :maxdepth: 2
-:caption: index
 :hidden:
 
 contributing
