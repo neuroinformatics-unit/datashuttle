@@ -16,7 +16,7 @@ For detailed instructions on installing **datashuttle** along with
 all necessary packages for development, refer to the 'Developers' tab on the
 [How to install **datashuttle**](how-to-install) page.
 
-Briefly, after installing Rclone, the **datashuttle** repository can be cloned
+Briefly, after installing Rclone, the **datashuttle** repository can be cloned:
 
 ```sh
 git clone git@github.com:neuroinformatics-unit/datashuttle.git
@@ -74,7 +74,7 @@ don't let this discourage you from opening a PR. We take a similar approach to
 ## Formatting and pre-commit hooks
 
 Running `pre-commit install` will set up [pre-commit hooks](https://pre-commit.com/) to ensure a consistent formatting style. Currently, these include:
-* [ruff](https://github.com/astral-sh/ruff), which does a number of jobs, including code linting and auto-formatting.
+* [ruff](https://github.com/astral-sh/ruff), which does a number of jobs including code linting and auto-formatting.
 * [mypy](https://mypy.readthedocs.io/en/stable/index.html), a static type checker.
 * [check-manifest](https://github.com/mgedmin/check-manifest), to ensure that the right files are included in the pip package.
 * [codespell](https://github.com/codespell-project/codespell), to check for common misspellings.
@@ -117,7 +117,7 @@ Make sure to provide docstrings for all public functions, classes, and methods.
 
 ## Contributing documentation
 
-It is very important that the documentation for **datashuttle** is clear
+It is very important that the documentation for **datashuttle** is clear,
 accurate and concise. A key principle of **datashuttle** is it should
 make data acquisition simple and easy—therefore it should be
 well-documented.
@@ -126,6 +126,30 @@ For these reasons every part of all software must be documented as
 thoroughly as possible, and all new features must be fully documented. If you
 notice any areas where the documentation can be improved, please don't hesitate
 to make a contribution.
+
+
+
+### Working with the documentation
+
+The documentation is found in the `docs/source` folder, where the structure mirrors the rendered website.
+
+Dependencies for building the documentation locally can be found at `docs/requirements.txt`.
+To install these, change directory to the `docs` folder in your terminal and type:
+
+```
+pip install -r requirements.txt
+```
+
+The command to build the documentation is then:
+
+```
+sphinx-build source build
+```
+
+The documentation will be built and output to the `build` folder. To
+read the built documentation in a browser, navigate to the `build`
+folder and open the `index.html` file.
+
 
 ### Editing the documentation
 
@@ -137,6 +161,7 @@ To edit a page, please:
 
 - Fork the repository
 - Make edits to the relevant pages
+- Build the pages as above to inspect your changes
 - Create a pull request outlining the changes made
 
 If you aren't sure where the changes should be made, please
