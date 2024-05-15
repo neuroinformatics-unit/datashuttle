@@ -1,20 +1,20 @@
 # Roadmap
 
-Here we lay out the roadmap for
+Here we present the roadmap for
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
-and **datashuttle**. The roadmap is largely determined by needs
-of the community and we strongly encourage people to get in
+and **datashuttle**. The roadmap is responsive to the requirements
+of the community and we encourage people to get in
 contact to outline their needs and priorities!
 
 The aim of the first version of **NeuroBlueprint** (v0.2) and **datashuttle** (v0.4)
-are to provide a lightweight, standardised framework such that raw data
-and derivatives of different data types (e.g. behaviour, electrophysiology)
-can be automatically found.
+is to provide a lightweight, standardised framework enabling automatic discovery
+of raw data and derivatives for different data types (e.g., behavior, electrophysiology).
 
-The next aim will be to support more advanced multimodal analysis, requiring
-metadata (e.g. sync pulses). The next version will focus on recommending
-a general metadata standard based on those already used in the community,
-and specifying specific metadata keys for the aim of automating multimodal analysis.
+The next aim will be to support automated multimodal analysis, which will
+require metadata (e.g. sync pulses information) standardisation.
+The next versions will focus on recommending a general metadata standard
+based on those already used in the community, and requiring a small number
+of metadata keys to enabled multimodal analysis.
 
 Aiming for integration with existing standards, we plan to develop
 automated methods for converting raw data files stored in a NeuroBlueprint
