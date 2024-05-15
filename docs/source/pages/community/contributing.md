@@ -13,7 +13,7 @@ The core development team will support you in contributing code, regardless of y
 ## Creating a development environment
 
 For detailed instructions on installing **datashuttle** along with
-all necessary packages for development, refer to the 'Developers' tab on the
+all necessary packages for development, refer to the `Developers` tab on the
 [How to install **datashuttle**](how-to-install) page.
 
 Briefly, after installing Rclone, the **datashuttle** repository can be cloned:
