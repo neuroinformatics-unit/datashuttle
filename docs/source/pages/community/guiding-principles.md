@@ -46,8 +46,7 @@ can be automatically discovered in any given project.
 In future versions it will be necessary to standardise additional features
 (e.g. sync pulse metadata) to allow automation of more sophisticated analyses.
 New standards will always be goal-orientated and customisable, only required
-to achieve a particular research goal. It is anticipated that as these 'rules'
-are accumulated, projects will progressively approach full BIDS standardization.
+to achieve a particular research goal.
 
 The role of **datashuttle** will be to enforce these rules in a flexible manner.
 
