@@ -38,7 +38,7 @@ as it develops such that it ends up duplicating BIDS in scope.
 
 In the initial versions (**datashuttle** v0.4, **NeuroBlueprint** v0.2),
 the goal is to have a simple organisational
-system in which the raw data for different datatypes (ephys, behaviour)
+system in which the raw data for different datatypes (e.g. ephys, behaviour)
 can be automatically discovered in any given project.
 
 In future versions it will be necessary to standardise additional features
