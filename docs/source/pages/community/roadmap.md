@@ -2,9 +2,6 @@
 
 The roadmap for **datashuttle**
 contains our development plans for the package.
-It is aligned with the [NeuroBLueprint](roadmap.md)
-and our
-[guiding principles](guiding-principles.md).
 
 The roadmap is responsive to the requirements
 of the community and we encourage people to get in
@@ -20,7 +17,7 @@ NeuroBlueprint version and facilitate conversion to NWB and customisation.
 
 **Q4 2024**
 
-Standardised metadata support
+Standardised metadata support.
 
 **Q2 2025**
 
@@ -28,4 +25,4 @@ Export of NeuroBlueprint projects to [Neurodata Without Borders](https://www.nwb
 
 **Q4 2025**
 
-Support for customising data structure (e.g. specific mandatory elements or new file types)
+Support for customising data structure (e.g. specific mandatory elements or new file types).
