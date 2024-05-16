@@ -101,7 +101,7 @@ information on what the issue is and how to fix it. For example, `ruff` might
 output something like:
 
 ```sh
-movement/io/load_poses.py:551:80: E501 Line too long (90 > 79)
+datashuttle.py:551:80: E501 Line too long (90 > 79)
 ```
 
 This pinpoints the problem to a single line of code and a specific [ruff rule](https://docs.astral.sh/ruff/rules/) violation.
