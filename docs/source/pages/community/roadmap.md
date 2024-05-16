@@ -2,9 +2,6 @@
 
 The roadmap for **datashuttle**
 contains our development plans for the package.
-It is aligned with the [NeuroBLueprint](roadmap.md)
-and our
-[guiding principles](guiding-principles.md).
 
 The roadmap is responsive to the requirements
 of the community and we encourage people to get in
