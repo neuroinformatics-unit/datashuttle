@@ -18,8 +18,10 @@ and **datashuttle** are:
 [BIDS](https://bids.neuroimaging.io/)
 and
 [NWB](https://www.nwb.org/)
-are the gold-standard for standardising systems neuroscience projects.
-Alignment with these specifications should always be the ultimate goal for any project.
+are the most comprehensive community standards for systems neuroscience projects.
+Adhering to these specifications ensures complete standardisation e.g. in metadata
+and file formats. Though extremely valuable, full compliance with these standards
+can be time-consuming and technically difficult.
 
 **NeuroBlueprint**'s role is to provide a lightweight standard that can be used to get
 started, especially during the early phase of a project when things may be very busy.
@@ -38,7 +40,7 @@ as it develops such that it ends up duplicating BIDS in scope.
 
 In the initial versions (**datashuttle** v0.4, **NeuroBlueprint** v0.2),
 the goal is to have a simple organisational
-system in which the raw data for different datatypes (ephys, behaviour)
+system in which the raw data for different datatypes (e.g. ephys, behaviour)
 can be automatically discovered in any given project.
 
 In future versions it will be necessary to standardise additional features
