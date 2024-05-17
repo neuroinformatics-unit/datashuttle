@@ -29,7 +29,7 @@ Next, create and activate an environment.  You can call your environment whateve
 we've used `datashuttle-env`:
 
 ```sh
-conda create -n datashuttle-env python=3.10
+conda create -n datashuttle-env
 conda activate datashuttle-env
 ```
 
@@ -57,11 +57,10 @@ pip install datashuttle
 
 :::{tab-item} Developers
 
-`pip` must be used to install all developer tools. As
+`pip` must be used to install developer dependencies.
+As
 [Rclone](https://rclone.org/)
-is not
-available through `pip`, you can
-install `Rclone` with `Conda`
+is not available through `pip`, you can install `Rclone` with `Conda`
 
 ```sh
 conda install -c conda-forge rclone
