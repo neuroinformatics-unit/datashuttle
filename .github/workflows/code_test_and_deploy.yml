@@ -38,12 +38,12 @@ jobs:
           auto-update-conda: true
           channels: conda-forge
           activate-environment: "true"
-      - name: Install Conda Install
+      - name: Install datashuttle with conda
         run: |
           conda activate true
           conda install -c conda-forge datashuttle
           conda uninstall datashuttle --force
-      - name: Install local datashuttle
+      - name: Install local datashuttle for testing
         run: |
           python -m pip install --upgrade pip
           pip install .[dev]
