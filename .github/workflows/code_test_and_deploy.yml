@@ -23,10 +23,9 @@ jobs:
       run:
         shell: bash -l {0}
 
-    # This duplicates `test_conda_install` stratergy.
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, macos-14, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest, macos-14, macos-13]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
