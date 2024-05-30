@@ -25,6 +25,7 @@ jobs:
 
     strategy:
       matrix:
+        # macos-14 is M1, macos-13 is intel
         os: [windows-latest, ubuntu-latest, macos-14, macos-13]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
