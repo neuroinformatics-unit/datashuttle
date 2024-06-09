@@ -62,4 +62,4 @@ Typically, new versions will include new
 sets of standardisation rules,
 which users may choose to adopt or not. **datashuttle** will
 enforce these in a flexible way, with efforts being
-made to minimize changes to its API as much as possible.
+made to minimise changes to its API as much as possible.
