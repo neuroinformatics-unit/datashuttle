@@ -36,7 +36,7 @@ def create_folder_trees(
     ses_names: Union[str, list],
     datatype: Union[List[str], str],
     log: bool = True,
-) -> Dict[str, Path]:
+) -> Dict[str, List[Path]]:
     """
     Entry method to make a full folder tree. It will
     iterate through all passed subjects, then sessions, then

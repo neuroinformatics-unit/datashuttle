@@ -149,7 +149,7 @@ class DataShuttle:
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
         log: bool = True,
-    ) -> Dict[str, Path]:
+    ) -> Dict[str, List[Path]]:
         """
         Create a subject / session folder tree in the project
         folder. The passed subject / session names are
@@ -188,8 +188,20 @@ class DataShuttle:
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
 
+<<<<<<< HEAD
         log : bool
             If `True`, details of folder creation will be logged.
+=======
+        Returns
+        -------
+        created_paths :
+            A dictionary of the full filepaths made during folder creation,
+            where the keys are the type of folder made and the values are a
+            list of created folder paths (Path objects). If datatype were
+            created, the dict keys will separate created folders by datatype
+            name. Similarly, if only subject or session level folders were
+            created, these are separated by "sub" and "ses" keys.
+>>>>>>> 612b276 (Add 'Returns' section to 'create_folders()', fix incorrect type hints.)
 
         Notes
         -----
