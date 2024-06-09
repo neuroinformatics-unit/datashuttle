@@ -252,9 +252,6 @@ class TestMakeFolders(BaseTest):
         assert all([re.search(datetime_regexp, name) for name in ses_names])
         assert all([tags("time") not in name for name in ses_names])
 
-    def test_error_raised_with_skipped_session_input(self, project):
-        pass
-
     # ----------------------------------------------------------------------------------------------------------
     # Test Make Folders in Different Top Level Folders
     # ----------------------------------------------------------------------------------------------------------
