@@ -220,7 +220,7 @@ def get_all_folders_used(value=True):
 
 
 def check_folder_tree_is_correct(
-    base_folder, subs, sessions, folder_used, created_folder_list=None
+    base_folder, subs, sessions, folder_used, created_folder_dict=None
 ):
     """
     Automated test that folders are made based
@@ -235,8 +235,8 @@ def check_folder_tree_is_correct(
     rely on project settings itself,
     as this doesn't explicitly test this.
     """
-    if created_folder_list is None:
-        created_folder_list = {}
+    if created_folder_dict is None:
+        created_folder_dict = {}
 
     for sub in subs:
         path_to_sub_folder = join(base_folder, sub)
@@ -271,7 +271,7 @@ def check_folder_tree_is_correct(
                     for (
                         datatype_name,
                         all_datatype_paths,
-                    ) in created_folder_list.items():
+                    ) in created_folder_dict.items():
                         if datatype_name == key:
                             assert Path(datatype_path) in all_datatype_paths
                         else:
@@ -280,7 +280,7 @@ def check_folder_tree_is_correct(
                             )
                 else:
                     assert not os.path.isdir(datatype_path)
-                    assert key not in created_folder_list
+                    assert key not in created_folder_dict
 
 
 def check_and_cd_folder(path_):
