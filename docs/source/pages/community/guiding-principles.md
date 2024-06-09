@@ -61,5 +61,5 @@ compatibility occurring infrequently and only aimed at enhancing alignment with 
 Typically, new versions will include new
 sets of standardisation rules,
 which users may choose to adopt or not. **datashuttle** will
-enforce these in a flexible way, with efforts will be
+enforce these in a flexible way, with efforts being
 made to minimize changes to its API as much as possible.
