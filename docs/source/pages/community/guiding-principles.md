@@ -27,7 +27,7 @@ can be time-consuming and technically difficult.
 started, especially during the early phase of a project when things may be very busy.
 The guiding principle is that some standardisation is better than no standardisation.
 
-**NeuroBlueprint** is not intended a rival or replacement for more established
+**NeuroBlueprint** is not intended as a rival or replacement for more established
 specifications, but rather as a stepping stone towards full standardisation.
 We aim to align as closely as possible to the BIDS specification and in future
 to provide conversion to NWB through **datashuttle**.
