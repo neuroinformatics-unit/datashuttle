@@ -42,9 +42,10 @@ jobs:
         run: |
           conda activate true
           conda install -c conda-forge datashuttle
-          conda uninstall datashuttle --force
       - name: Install local datashuttle for testing
         run: |
+          # --force will only uninstall datashuttle not dependencies
+          conda uninstall datashuttle --force
           python -m pip install --upgrade pip
           pip install .[dev]
       - name: Test
