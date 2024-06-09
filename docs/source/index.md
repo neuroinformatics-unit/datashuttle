@@ -66,6 +66,6 @@ or
 
 pages/tutorials
 pages/how_tos
-pages/community/community
+pages/community/index.md
 pages/api_index
 ```
