@@ -27,9 +27,8 @@ def get_logger():
 
 def logging_is_active():
     logger_exists = get_logger_name() in logging.root.manager.loggerDict
-    if logger_exists:
-        if get_logger().handlers != []:
-            return True
+    if logger_exists and get_logger().handlers != []:
+        return True
     return False
 
 
