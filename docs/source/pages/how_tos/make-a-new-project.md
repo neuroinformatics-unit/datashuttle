@@ -1,3 +1,4 @@
+(make-a-new-project_target)=
 # How to Make a New Project
 
 This guide will cover all you need to know for setting up a new project
