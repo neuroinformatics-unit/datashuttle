@@ -103,7 +103,7 @@ def create_folder_trees(
                     log=log,
                 )
             else:
-                all_paths["ses"].append(sub_path)
+                all_paths["ses"].append(ses_path)
 
     return all_paths
 
