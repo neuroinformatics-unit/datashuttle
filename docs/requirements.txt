@@ -11,7 +11,7 @@ requests
 rich
 setuptools_scm
 simplejson
-sphinx<7.2
+sphinx
 sphinx-argparse
 sphinx-design
 sphinx_autodoc_typehints
