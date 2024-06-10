@@ -121,7 +121,10 @@ html_css_files = [
 html_favicon = "_static/logo_light.png"
 
 html_sidebars = {
-  "**": []
+    "pages/how_tos/*": [],
+    "pages/tutorials/*": [],
+    "pages/tutorials": [],
+    "pages/how_tos": [],
 }
 
 # Customize the theme
