@@ -25,7 +25,8 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, macos-14, ubuntu-latest]
+        # macos-14 is M1, macos-13 is intel
+        os: [windows-latest, ubuntu-latest, macos-14, macos-13]
         python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
@@ -36,13 +37,15 @@ jobs:
           python-version: ${{ matrix.python-version }}
           auto-update-conda: true
           channels: conda-forge
-          activate-environment: "true"
-      - name: Install RClone
+          activate-environment: "datashuttle-test"
+      - name: Install datashuttle with conda
         run: |
-          conda activate true
-          conda install -c conda-forge rclone
-      - name: Install dependencies
+          conda activate datashuttle-test
+          conda install -c conda-forge datashuttle
+      - name: Install local datashuttle for testing
         run: |
+          # --force will only uninstall datashuttle not dependencies
+          conda uninstall datashuttle --force
           python -m pip install --upgrade pip
           pip install .[dev]
       - name: Test
