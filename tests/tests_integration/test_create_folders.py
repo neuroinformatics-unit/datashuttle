@@ -95,7 +95,7 @@ class TestMakeFolders(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
 
-        created_folder_list = project.create_folders(
+        created_folder_dict = project.create_folders(
             "rawdata", subs, sessions, datatypes_to_make
         )
 
@@ -110,7 +110,7 @@ class TestMakeFolders(BaseTest):
                 "funcimg": funcimg,
                 "anat": anat,
             },
-            created_folder_list=created_folder_list,
+            created_folder_dict=created_folder_dict,
         )
 
     def test_custom_folder_names(self, project, monkeypatch):
