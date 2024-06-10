@@ -149,7 +149,7 @@ class DataShuttle:
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
         log: bool = True,
-    ) -> List[Path]:
+    ) -> Dict[str, List[Path]]:
         """
         Create a subject / session folder tree in the project
         folder. The passed subject / session names are
@@ -191,6 +191,16 @@ class DataShuttle:
         log : bool
             If `True`, details of folder creation will be logged.
 
+        Returns
+        -------
+        created_paths :
+            A dictionary of the full filepaths made during folder creation,
+            where the keys are the type of folder made and the values are a
+            list of created folder paths (Path objects). If datatype were
+            created, the dict keys will separate created folders by datatype
+            name. Similarly, if only subject or session level folders were
+            created, these are separated by "sub" and "ses" keys.
+
         Notes
         -----
 
@@ -222,6 +232,13 @@ class DataShuttle:
             self._start_log("create-folders", local_vars=locals())
 
         self._check_top_level_folder(top_level_folder)
+
+        if ses_names is None and datatype != "":
+            datatype = ""
+            utils.log_and_message(
+                "`datatype` passed without `ses_names`, no datatype "
+                "folders will be created."
+            )
 
         utils.log("\nFormatting Names...")
         ds_logger.log_names(["sub_names", "ses_names"], [sub_names, ses_names])

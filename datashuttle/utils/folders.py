@@ -36,7 +36,7 @@ def create_folder_trees(
     ses_names: Union[str, list],
     datatype: Union[List[str], str],
     log: bool = True,
-) -> List[Path]:
+) -> Dict[str, List[Path]]:
     """
     Entry method to make a full folder tree. It will
     iterate through all passed subjects, then sessions, then
@@ -64,7 +64,12 @@ def create_folder_trees(
         if is_invalid:
             utils.log_and_raise_error(message, NeuroBlueprintError)
 
-    all_paths = []
+        all_paths: Dict = {}
+    else:
+        all_paths = {
+            "sub": [],
+            "ses": [],
+        }
 
     for sub in sub_names:
         sub_path = cfg.build_project_path(
@@ -76,7 +81,7 @@ def create_folder_trees(
         create_folders(sub_path, log)
 
         if not any(ses_names):
-            all_paths.append(sub_path)
+            all_paths["sub"].append(sub_path)
             continue
 
         for ses in ses_names:
@@ -89,12 +94,16 @@ def create_folder_trees(
             create_folders(ses_path, log)
 
             if datatype_passed:
-                datatype_paths = make_datatype_folders(
-                    cfg, datatype, ses_path, "ses", log=log
+                make_datatype_folders(
+                    cfg,
+                    datatype,
+                    ses_path,
+                    "ses",
+                    save_paths=all_paths,
+                    log=log,
                 )
-                all_paths.extend(datatype_paths)
             else:
-                all_paths.append(ses_path)
+                all_paths["ses"].append(ses_path)
 
     return all_paths
 
@@ -104,8 +113,9 @@ def make_datatype_folders(
     datatype: Union[list, str],
     sub_or_ses_level_path: Path,
     level: str,
+    save_paths: Dict,
     log: bool = True,
-) -> List[Path]:
+):
     """
     Make datatype folder (e.g. behav) at the sub or ses
     level. Checks folder_class.Folders attributes,
@@ -113,6 +123,8 @@ def make_datatype_folders(
 
     Parameters
     ----------
+    cfg : ConfigsClass
+
     datatype : datatype (e.g. "behav", "all") to use. Use
         empty string ("") for none.
 
@@ -123,21 +135,28 @@ def make_datatype_folders(
     level : The folder level that the
         folder will be made at, "sub" or "ses"
 
+    save_paths : A dictionary, which will be filled
+        with created paths split by datatype name.
+
     log : whether to log on or not (if True, logging must
         already be initialised).
     """
     datatype_items = cfg.get_datatype_as_dict_items(datatype)
 
-    all_datatype_paths = []
-
     for datatype_key, datatype_folder in datatype_items:  # type: ignore
         if datatype_folder.level == level:
-            datatype_path = sub_or_ses_level_path / datatype_folder.name
+
+            datatype_name = datatype_folder.name
+
+            datatype_path = sub_or_ses_level_path / datatype_name
 
             create_folders(datatype_path, log)
-            all_datatype_paths.append(datatype_path)
 
-    return all_datatype_paths
+            # Use the custom datatype names for the output.
+            if datatype_name in save_paths:
+                save_paths[datatype_name].append(datatype_path)
+            else:
+                save_paths[datatype_name] = [datatype_path]
 
 
 # Create Folders Helpers --------------------------------------------------------

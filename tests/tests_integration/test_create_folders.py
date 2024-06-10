@@ -95,7 +95,7 @@ class TestMakeFolders(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
 
-        created_folder_list = project.create_folders(
+        created_folder_dict = project.create_folders(
             "rawdata", subs, sessions, datatypes_to_make
         )
 
@@ -110,7 +110,7 @@ class TestMakeFolders(BaseTest):
                 "funcimg": funcimg,
                 "anat": anat,
             },
-            created_folder_list=created_folder_list,
+            created_folder_dict=created_folder_dict,
         )
 
     def test_custom_folder_names(self, project, monkeypatch):
@@ -251,6 +251,33 @@ class TestMakeFolders(BaseTest):
 
         assert all([re.search(datetime_regexp, name) for name in ses_names])
         assert all([tags("time") not in name for name in ses_names])
+
+    def test_created_paths_dict_sub_or_ses_only(self, project):
+        """
+        Test that the `created_folders` dictionary returned by
+        `create_folders` correctly splits paths when only
+        subject or session is passed. The `datatype` case is
+        tested in `test_utils.check_folder_tree_is_correct()`.
+        """
+        created_path_sub = project.create_folders("rawdata", "sub-001")
+
+        assert len(created_path_sub) == 2
+        assert created_path_sub["ses"] == []
+        assert (
+            created_path_sub["sub"][0]
+            == project.get_local_path() / "rawdata" / "sub-001"
+        )
+
+        created_path_ses = project.create_folders(
+            "rawdata", "sub-002", "ses-001"
+        )
+
+        assert len(created_path_ses) == 2
+        assert created_path_ses["sub"] == []
+        assert (
+            created_path_ses["ses"][0]
+            == project.get_local_path() / "rawdata" / "sub-002" / "ses-001"
+        )
 
     # ----------------------------------------------------------------------------------------------------------
     # Test Make Folders in Different Top Level Folders
