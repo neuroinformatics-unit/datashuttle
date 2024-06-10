@@ -29,7 +29,7 @@ Next, create and activate an environment.  You can call your environment whateve
 we've used `datashuttle-env`:
 
 ```sh
-conda create -n datashuttle-env python=3.10
+conda create -n datashuttle-env
 conda activate datashuttle-env
 ```
 
@@ -56,16 +56,33 @@ pip install datashuttle
 :::
 
 :::{tab-item} Developers
-To get the latest development version, clone the
+
+`pip` must be used to install developer dependencies.
+As
+[Rclone](https://rclone.org/)
+is not available through `pip`, you can install `Rclone` with `Conda`
+
+```sh
+conda install -c conda-forge rclone
+```
+
+or using the [RClone's standalone installer](https://rclone.org/downloads/).
+
+Next, clone the **datashuttle**
 [GitHub repository](https://github.com/neuroinformatics-unit/datashuttle/)
-and then run from inside the repository
+to get the latest development version.
+
+To install **datashuttle** and its developer dependencies,
+run the follow command from inside the repository:
 
 ```sh
 pip install -e .[dev]  # works on most shells
 pip install -e '.[dev]'  # works on zsh (the default shell on macOS)
 ```
 
-This will install the package in editable mode, including all `dev` dependencies.
+This will install an 'editable' version of **datashuttle**, meaning
+any changes you make to the cloned code will be immediately
+reflected in the installed package.
 :::
 
 ::::

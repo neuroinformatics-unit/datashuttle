@@ -80,7 +80,7 @@ We need to set the:
 
 **datashuttle** supports connecting to the central storage machine
 either as a mounted drive or through SHH. \
-See [How to Make a New Project](make-a-new-project)
+See [How to Make a New Project](make-a-new-project_target)
 for detailed instructions for
 connecting a mounted drive or by using SSH.
 
@@ -442,7 +442,7 @@ Finally, hover the mouse over the `Directory Tree` and press `CTRL+R` to refresh
 These can be used in acquisition scripts to save data to these folders:
 
 ```python
-folder_path_list = project.create_folders(
+folder_path_dict = project.create_folders(
     top_level_folder="rawdata",
     sub_names=["sub-001"],
     ses_names=["ses-001_@DATE@"],
@@ -450,7 +450,7 @@ folder_path_list = project.create_folders(
 
 )
 
-print([path_ for path_ in folder_path_list if path_.name == "behav"])
+print([path_ for path_ in folder_path_dict["behav"]])
 # ["C:\Users\Joe\data\local\my_first_project\sub-001\ses-001_16052024\behav"]
 ```
 
@@ -577,7 +577,7 @@ from your **local path**.
 We will next download data from the **central path** to our now-empty local project.
 
 In practice when setting up **datashuttle** on a new machine, you would
-again [Make a new project](make-a-new-project).
+again [make a new project](make-a-new-project_target).
 ```
 
 We will look at a small subset of possible
