@@ -188,10 +188,9 @@ class DataShuttle:
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
 
-<<<<<<< HEAD
         log : bool
             If `True`, details of folder creation will be logged.
-=======
+
         Returns
         -------
         created_paths :
@@ -201,7 +200,6 @@ class DataShuttle:
             created, the dict keys will separate created folders by datatype
             name. Similarly, if only subject or session level folders were
             created, these are separated by "sub" and "ses" keys.
->>>>>>> 612b276 (Add 'Returns' section to 'create_folders()', fix incorrect type hints.)
 
         Notes
         -----
