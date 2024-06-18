@@ -44,7 +44,6 @@ extensions = [
     "nbsphinx",
     "sphinx_autodoc_typehints",
     "sphinx_design",
-    "sphinxarg.ext",
 ]
 
 # Configure the myst parser to enable cool markdown features

@@ -12,6 +12,5 @@ rich
 setuptools_scm
 simplejson
 sphinx
-sphinx-argparse
 sphinx-design
 sphinx_autodoc_typehints
