@@ -5,8 +5,10 @@ from typing import (
     TYPE_CHECKING,
     Dict,
     List,
+    Literal,
     Optional,
     Tuple,
+    Union,
 )
 
 if TYPE_CHECKING:
@@ -145,6 +147,10 @@ def get_max_sub_or_ses_num_and_value_length(
     the max_existing_num will be 2 and num_value_digits 4.
 
     """
+    assert isinstance(
+        default_num_value_digits, int
+    ), "`default_num_value_digits` must be int`"
+
     if len(all_folders) == 0:
 
         max_existing_num = 0
@@ -154,11 +160,9 @@ def get_max_sub_or_ses_num_and_value_length(
             num_value_digits = get_num_value_digits_from_regexp(
                 prefix, name_template_regexp
             )
+            if num_value_digits is False:
+                num_value_digits = default_num_value_digits
         else:
-            assert isinstance(
-                default_num_value_digits, int
-            ), "`default_num_value_digits` must be int`"
-
             num_value_digits = default_num_value_digits
 
     else:
@@ -225,7 +229,7 @@ def get_num_value_digits_from_project(
 
 def get_num_value_digits_from_regexp(
     prefix: Prefix, name_template_regexp: str
-) -> int:
+) -> Union[Literal[False], int]:
     """
     Given a name template regexp, find the number of values for the
     sub or ses key. These will be fixed with "\d" (digit) or ".?" (wildcard).
