@@ -225,3 +225,31 @@ class TestValidationUnit:
             f"A {prefix} already exists with the same {prefix} id as {prefix}-3. "
             f"The existing folder is {prefix}-3_s-a." in message
         )
+
+    def test_tags_autoreplace_in_regexp(self):
+        """
+        Check the validation function `replace_tags_in_regexp()`
+        correctly replaces tags in a regexp with their regexp equivalent.
+
+        Test date, time and datetime with some random regexp that
+        implicitly check a few other cases (e.g. underscore filling around
+        the tag).
+        """
+        date_regexp = r"sub-\d\d@DATE@_some-tag"
+        fixed_date_regexp = validation.replace_tags_in_regexp(date_regexp)
+        assert fixed_date_regexp == r"sub-\d\d_date-\d\d\d\d\d\d\d\d_some-tag"
+
+        time_regexp = r"ses-\d\d\d\d@TIME@_some-.?.?tag"
+        fixed_time_regexp = validation.replace_tags_in_regexp(time_regexp)
+        assert (
+            fixed_time_regexp == r"ses-\d\d\d\d_time-\d\d\d\d\d\d_some-.?.?tag"
+        )
+
+        datetime_regexp = r"ses-.?.?.?@DATETIME@some-.?.?tag"
+        fixed_datetime_regexp = validation.replace_tags_in_regexp(
+            datetime_regexp
+        )
+        assert (
+            fixed_datetime_regexp
+            == r"ses-.?.?.?_datetime-\d\d\d\d\d\d\d\dT\d\d\d\d\d\d_some-.?.?tag"
+        )

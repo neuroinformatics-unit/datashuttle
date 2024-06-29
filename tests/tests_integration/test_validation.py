@@ -647,3 +647,57 @@ class TestValidation(BaseTest):
             "the same ses id as ses-003_id-random. "
             "The existing folder is ses-003." in str(w[1].message)
         )
+
+    def test_tags_in_name_templates_pass_validation(self, project):
+        """
+        It is useful to allow tags in the `name_templates` as it means
+        auto-completion in the TUI can use tags for automatic name
+        generation. Because all subject and session names are
+        fully formatted (e.g. @DATE@ converted to actual dates)
+        prior to validation, the regexp must also have @DATE@
+        and other tags with their regexp equivalent. Check
+        this behaviour here.
+        """
+        name_templates = {
+            "on": True,
+            "sub": "sub-\d\d_@DATE@",
+            "ses": "ses-\d\d\d@DATETIME@",
+        }
+
+        project.set_name_templates(name_templates)
+
+        # Standard behaviour, should not raise
+        project.create_folders(
+            "rawdata",
+            "sub-01_date-20240101",
+            "ses-001_datetime-20240101T142323",
+        )
+        # added tags, should not raise
+        project.create_folders("rawdata", "sub-02@DATE@", "ses-001_@DATETIME@")
+
+        # break the name template validation, for sub, should raise
+        with pytest.raises(NeuroBlueprintError):
+            project.create_folders("rawdata", "sub-03_date_202401")
+
+        # break the name template validation, for ses, should raise
+        with pytest.raises(NeuroBlueprintError):
+            project.create_folders(
+                "rawdata", "sub-03_date_20240101", "ses-001_date-202401"
+            )
+
+        # Do a quick test for tim
+        name_templates["sub"] = "sub-\d\d_@TIME@"
+        project.set_name_templates(name_templates)
+
+        # use time tag, should not raise
+        project.create_folders(
+            "rawdata",
+            "sub-03@TIME@",
+        )
+
+        with pytest.raises(NeuroBlueprintError):
+            # use misspelled time tag, should raise
+            project.create_folders(
+                "rawdata",
+                "sub-03_mime_010101",
+            )
