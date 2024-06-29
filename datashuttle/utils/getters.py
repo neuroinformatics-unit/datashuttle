@@ -147,11 +147,11 @@ def get_max_sub_or_ses_num_and_value_length(
     the max_existing_num will be 2 and num_value_digits 4.
 
     """
-    assert isinstance(
-        default_num_value_digits, int
-    ), "`default_num_value_digits` must be int`"
-
     if len(all_folders) == 0:
+
+        assert isinstance(
+            default_num_value_digits, int
+        ), "`default_num_value_digits` must be int`"
 
         max_existing_num = 0
 
