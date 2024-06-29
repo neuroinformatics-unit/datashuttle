@@ -423,6 +423,52 @@ class TestMakeFolders(BaseTest):
         )
         assert new_num == "ses-006" if return_with_prefix else "006"
 
+    def test_get_next_sub_and_ses_name_template(self, project):
+        """
+        In the case where a name template exists, these getters should use the
+        number of digits on the template (even if these are different
+        within the project!).
+        """
+        project.create_folders("rawdata", "sub-001", "ses-001")
+
+        name_templates = {
+            "on": True,
+            "sub": r"sub-\d.?.?.?\d_key-value",  # 5 digits
+            "ses": r"ses-\d_@DATE@",  # 2 digits
+        }
+        project.set_name_templates(name_templates)
+
+        new_num = project.get_next_sub(
+            "rawdata", return_with_prefix=False, local_only=True
+        )
+        assert new_num == "00002"
+
+        new_num = project.get_next_ses(
+            "rawdata", "sub-001", return_with_prefix=False, local_only=True
+        )
+        assert new_num == "2"
+
+        # Quick test on two cases that should not use name template.
+        # Test sub only as underlying code is the same. If name templates
+        # is off, use the num_digits from the project, same if the sub
+        # key value takes a length-unspecific wildcard (should never really happen).
+        name_templates["on"] = False
+        project.set_name_templates(name_templates)
+
+        new_num = project.get_next_sub(
+            "rawdata", return_with_prefix=False, local_only=True
+        )
+        assert new_num == "002"
+
+        name_templates["on"] = True
+        name_templates["sub"] = "sub-.*"
+        project.set_name_templates(name_templates)
+
+        new_num = project.get_next_sub(
+            "rawdata", return_with_prefix=False, local_only=True
+        )
+        assert new_num == "002"
+
     # ----------------------------------------------------------------------------------
     # Test Helpers
     # ----------------------------------------------------------------------------------
