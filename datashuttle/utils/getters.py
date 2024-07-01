@@ -5,8 +5,10 @@ from typing import (
     TYPE_CHECKING,
     Dict,
     List,
+    Literal,
     Optional,
     Tuple,
+    Union,
 )
 
 if TYPE_CHECKING:
@@ -33,6 +35,7 @@ def get_next_sub_or_ses(
     local_only: bool = False,
     return_with_prefix: bool = True,
     default_num_value_digits: int = 3,
+    name_template_regexp: Optional[str] = None,
 ) -> str:
     """
     Suggest the next available subject or session number. This function will
@@ -93,7 +96,10 @@ def get_next_sub_or_ses(
         max_existing_num,
         num_value_digits,
     ) = get_max_sub_or_ses_num_and_value_length(
-        all_folders, prefix, default_num_value_digits
+        all_folders,
+        prefix,
+        default_num_value_digits,
+        name_template_regexp,
     )
 
     # calculate next sub number
@@ -110,6 +116,7 @@ def get_max_sub_or_ses_num_and_value_length(
     all_folders: List[str],
     prefix: Prefix,
     default_num_value_digits: Optional[int] = None,
+    name_template_regexp: Optional[str] = None,
 ) -> Tuple[int, int]:
     """
     Given a list of BIDS-style folder names, find the maximum subject or
@@ -141,12 +148,23 @@ def get_max_sub_or_ses_num_and_value_length(
 
     """
     if len(all_folders) == 0:
-        max_existing_num = 0
+
         assert isinstance(
             default_num_value_digits, int
         ), "`default_num_value_digits` must be int`"
 
-        num_value_digits = default_num_value_digits
+        max_existing_num = 0
+
+        # Try and get the num digits from a name template, otherwise use default.
+        if name_template_regexp is not None:
+            num_value_digits = get_num_value_digits_from_regexp(
+                prefix, name_template_regexp
+            )
+            if num_value_digits is False:
+                num_value_digits = default_num_value_digits
+        else:
+            num_value_digits = default_num_value_digits
+
     else:
         all_values_str = utils.get_values_from_bids_formatted_name(
             all_folders,
@@ -155,16 +173,22 @@ def get_max_sub_or_ses_num_and_value_length(
         )
 
         # First get the length of bids-key value across the project
-        # (e.g. sub-003 has three values).
-        all_num_value_digits = [len(value) for value in all_values_str]
-
-        if len(set(all_num_value_digits)) != 1:
-            utils.log_and_raise_error(
-                f"The number of value digits for the {prefix} level are not "
-                f"consistent. Cannot suggest a {prefix} number.",
-                NeuroBlueprintError,
+        # or name template if it exists (e.g. sub-003 has three values).
+        # If a name template exists but the length can't be determined from it,
+        # default back to the project.
+        if name_template_regexp is not None:
+            num_value_digits = get_num_value_digits_from_regexp(
+                prefix, name_template_regexp
             )
-        num_value_digits = all_num_value_digits[0]
+
+            if num_value_digits is False:
+                num_value_digits = get_num_value_digits_from_project(
+                    all_values_str, prefix
+                )
+        else:
+            num_value_digits = get_num_value_digits_from_project(
+                all_values_str, prefix
+            )
 
         # Then get the latest existing sub or ses number in the project.
         all_value_nums = sorted(
@@ -180,6 +204,56 @@ def get_max_sub_or_ses_num_and_value_length(
         max_existing_num = max(all_value_nums)
 
     return max_existing_num, num_value_digits
+
+
+def get_num_value_digits_from_project(
+    all_values_str: List[str], prefix: Prefix
+) -> int:
+    """
+    Find the number of digits for the sub or ses key within the project.
+    `all_values_str` is a list of all the sub or ses values from within
+    the project.
+    """
+    all_num_value_digits = [len(value) for value in all_values_str]
+
+    if len(set(all_num_value_digits)) != 1:
+        utils.log_and_raise_error(
+            f"The number of value digits for the {prefix} level are not "
+            f"consistent. Cannot suggest a {prefix} number.",
+            NeuroBlueprintError,
+        )
+    num_value_digits = all_num_value_digits[0]
+
+    return num_value_digits
+
+
+def get_num_value_digits_from_regexp(
+    prefix: Prefix, name_template_regexp: str
+) -> Union[Literal[False], int]:
+    """
+    Given a name template regexp, find the number of values for the
+    sub or ses key. These will be fixed with "\d" (digit) or ".?" (wildcard).
+    If there is length-unspecific wildcard (.*) in the sub key, then skip.
+    In practice, there should never really be a .* in the sub or ses
+    key of a name template, but handle it just in case.
+    """
+    all_values_str = utils.get_values_from_bids_formatted_name(
+        [name_template_regexp], prefix, return_as_int=False
+    )[0]
+
+    if "*" in all_values_str:
+        return False
+    else:
+        num_digits = len(
+            [char for char in all_values_str if char in ["d", "?"]]
+        )
+
+        if num_digits == 0:
+            # breaks assumption there is some usable regexp here,
+            # better to use project instead.
+            return False
+
+        return num_digits
 
 
 def get_existing_project_paths() -> List[Path]:

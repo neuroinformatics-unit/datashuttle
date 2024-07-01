@@ -1080,6 +1080,11 @@ class DataShuttle:
             If `True, only get names from `local_path`, otherwise from
             `local_path` and `central_path`.
         """
+        name_template = self.get_name_templates()
+        name_template_regexp = (
+            name_template["sub"] if name_template["on"] else None
+        )
+
         return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
@@ -1087,6 +1092,7 @@ class DataShuttle:
             local_only=local_only,
             return_with_prefix=return_with_prefix,
             search_str="sub-*",
+            name_template_regexp=name_template_regexp,
         )
 
     @check_configs_set
@@ -1117,6 +1123,11 @@ class DataShuttle:
             If `True, only get names from `local_path`, otherwise from
             `local_path` and `central_path`.
         """
+        name_template = self.get_name_templates()
+        name_template_regexp = (
+            name_template["ses"] if name_template["on"] else None
+        )
+
         return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
@@ -1124,6 +1135,7 @@ class DataShuttle:
             local_only=local_only,
             return_with_prefix=return_with_prefix,
             search_str="ses-*",
+            name_template_regexp=name_template_regexp,
         )
 
     # Name Templates
