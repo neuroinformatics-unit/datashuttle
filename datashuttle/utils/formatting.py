@@ -237,13 +237,28 @@ def update_names_with_datetime(names: List[str]) -> None:
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
     date = str(datetime.datetime.now().date().strftime("%Y%m%d"))
-    date_with_key = f"date-{date}"
+    date_with_key = format_date(date)
 
     time_ = datetime.datetime.now().time().strftime("%H%M%S")
-    time_with_key = f"time-{time_}"
+    time_with_key = format_time(time_)
 
-    datetime_with_key = f"datetime-{date}T{time_}"
+    datetime_with_key = format_datetime(date, time_)
 
+    replace_date_time_tags_in_name(
+        names, datetime_with_key, date_with_key, time_with_key
+    )
+
+
+def replace_date_time_tags_in_name(
+    names: List[str],
+    datetime_with_key: str,
+    date_with_key: str,
+    time_with_key: str,
+):
+    """
+    For all names in the list, do the replacement of tags
+    with their final values.
+    """
     for i, name in enumerate(names):
         # datetime conditional must come first.
         if tags("datetime") in name:
@@ -259,6 +274,18 @@ def update_names_with_datetime(names: List[str]) -> None:
         elif tags("time") in name:
             name = add_underscore_before_after_if_not_there(name, tags("time"))
             names[i] = name.replace(tags("time"), time_with_key)
+
+
+def format_date(date: str) -> str:
+    return f"date-{date}"
+
+
+def format_time(time_: str) -> str:
+    return f"time-{time_}"
+
+
+def format_datetime(date: str, time_: str) -> str:
+    return f"datetime-{date}T{time_}"
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:

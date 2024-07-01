@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from itertools import chain
 
 from datashuttle.configs import canonical_folders
-from datashuttle.utils import getters, utils
+from datashuttle.utils import formatting, getters, utils
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -102,6 +102,8 @@ def names_dont_match_templates(
     if regexp is None:
         return False, f"No template set for prefix: {prefix}"
 
+    regexp = replace_tags_in_regexp(regexp)
+
     bad_names = []
     for name in names_list:
         if not re.fullmatch(regexp, name):
@@ -117,6 +119,29 @@ def names_dont_match_templates(
         )
 
     return False, ""
+
+
+def replace_tags_in_regexp(regexp: str) -> str:
+    """
+    Before validation, all tags in the names are converted to
+    their final values (e.g. @DATE@ -> _date-<date>). We also want to
+    allow template to be formatted like `sub-\d\d_@DATE@` as it
+    is convenient for auto-completion in the TUI.
+
+    Therefore we must replace the tags in the regexp with their
+    actual regexp equivalent before comparison.
+    Note `replace_date_time_tags_in_name()` operates in place on a list.
+    """
+    regexp_list = [regexp]
+    date_regexp = "\d\d\d\d\d\d\d\d"
+    time_regexp = "\d\d\d\d\d\d"
+    formatting.replace_date_time_tags_in_name(
+        regexp_list,
+        datetime_with_key=formatting.format_datetime(date_regexp, time_regexp),
+        date_with_key=formatting.format_date(date_regexp),
+        time_with_key=formatting.format_time(time_regexp),
+    )
+    return regexp_list[0]
 
 
 def get_names_format(bad_names):
