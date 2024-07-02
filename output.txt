@@ -1,2 +1,4 @@
+pages/how_tos/choose-a-terminal.md:61: [redirected with Found] https://docs.anaconda.com/free/anaconda/getting-started/index.html to https://docs.anaconda.com/anaconda/getting-started/index.html
+pages/how_tos/install.md:24: [redirected with Found] https://docs.anaconda.com/free/miniconda/miniconda-install/ to https://docs.anaconda.com/miniconda/miniconda-install/
 pages/how_tos/choose-a-terminal.md:56: [redirected with Found] https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&amp;hl=en-gb&amp;gl=GB to https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&amp%3Bhl=en-gb&amp%3Bgl=GB&hl=en-us&gl=US
 pages/how_tos/choose-a-terminal.md:69: [redirected permanently] https://warp.dev/ to https://www.warp.dev/

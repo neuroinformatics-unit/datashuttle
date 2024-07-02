@@ -23,6 +23,8 @@ as a regexp where `\d` stands for 'any digit`:
 
 If this is defined as a Name Template, any name that
 does not take this form will result in a validation error.
+Name templates can include [convenience tags](create-folders-convenience-tags).
+(`@DATE@`, `@TIME@` or `@DATETIME@`.)
 
 ## Set up Name Templates
 ::::{tab-set}
