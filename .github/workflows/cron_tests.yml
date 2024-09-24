@@ -2,8 +2,9 @@ name: Test on Cron
 
 on:
   schedule:
-    # Runs at 12:00 AM every day
-    - cron: '0 0 * * *'
+    # Runs at 12:00 AM every Monday
+    - cron: '0 0 * * 1'
+  pull_request:
 
 jobs:
   linting:
