@@ -57,6 +57,8 @@ from datashuttle.utils.decorators import (  # noqa
 # Project Manager Class
 # -----------------------------------------------------------------------------
 
+1 / 0
+
 
 class DataShuttle:
     """
