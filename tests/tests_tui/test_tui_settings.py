@@ -77,7 +77,7 @@ class TestTuiSettings(TuiBase):
             with pytest.raises(BaseException) as e:
                 transfer_tab.query_one("#transfer_legend")
 
-            assert "No nodes match <DOMQuery query" in str(e)
+            assert "No nodes match" in str(e)
             await pilot.pause()
 
             # Go to the settings page and turn on transfer tree styling.
