@@ -49,21 +49,3 @@ jobs:
           pip install .[dev]
       - name: Test
         run: pytest
-
-  create_issue:
-    name: Create GitHub issue if any test fails
-    runs-on: ubuntu-latest
-    needs: [test]  # This ensures it waits for all matrix jobs to complete
-    if: ${{ failure() }}  # Only run this job if any previous jobs fail
-    steps:
-      - name: Create GitHub issue
-        run: |
-          curl -X POST \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            -d '{
-              "title": "CI Test Failure",
-              "body": "One or more matrix jobs have failed. Please check the logs for details.",
-              "labels": ["bug"]
-            }' \
-            https://api.github.com/repos/${{ github.repository }}/issues
