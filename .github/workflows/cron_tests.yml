@@ -1,0 +1,64 @@
+name: Test on Cron
+
+on:
+  schedule:
+    # Runs at 12:00 AM every day
+    - cron: '0 0 * * *'
+
+jobs:
+  linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: neuroinformatics-unit/actions/lint@v2
+
+  test:
+    needs: [linting]
+    name: ${{ matrix.os }} py${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: true
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    strategy:
+      matrix:
+        # macos-14 is M1, macos-13 is intel
+        os: [windows-latest, ubuntu-latest, macos-14, macos-13]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: true
+          channels: conda-forge
+          activate-environment: "datashuttle-test"
+      - name: Install datashuttle with conda
+        run: |
+          conda activate datashuttle-test
+          conda install -c conda-forge datashuttle
+      - name: Install local datashuttle for testing
+        run: |
+          # --force will only uninstall datashuttle not dependencies
+          conda uninstall datashuttle --force
+          python -m pip install --upgrade pip
+          pip install .[dev]
+      - name: Test
+        run: pytest
+
+      # Create an issue if tests fail
+      - name: Create GitHub issue if tests fail
+        if: failure()  # Only run if the tests fail
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "title": "CI Test Failure",
+              "body": "The CI tests have failed. Please check the logs for details.",
+              "labels": ["bug"]
+            }' \
+            https://api.github.com/repos/${{ github.repository }}/issues
