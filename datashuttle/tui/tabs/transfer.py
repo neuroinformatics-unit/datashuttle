@@ -287,7 +287,7 @@ class TransferTab(TreeAndInputTab):
         2) show 'Transferring...' 3) transfer data 4) tear down 'transferring'
         screen 5) show confirmation screen. This is not simple if we want to
         manage the actual transfer in this screen, which makes a lot of
-        sense as all options are held here The alternative is to pass all settings
+        sense as all options are held here. The alternative is to pass all settings
         to a `Transferring` modal dialog which seems even more convoluted. So,
         `FinishTransferScreen` calls back to `self.transfer_data`. If 'OK' was
         selected, the message is changed to 'Transferring'. Then, `self.transfer_data`
