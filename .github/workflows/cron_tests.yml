@@ -3,8 +3,8 @@ name: Test on Cron
 on:
   schedule:
     # Runs at 12:00 AM every Monday
+    # by default only on main + not on forks.
     - cron: '0 0 * * 1'
-  pull_request:
 
 jobs:
   linting:
