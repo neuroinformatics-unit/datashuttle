@@ -1,3 +1,5 @@
+# This runs a weekly cron job running all tests. Unfortunately
+#
 name: Test on Cron
 
 on:
@@ -16,7 +18,6 @@ jobs:
     needs: [linting]
     name: ${{ matrix.os }} py${{ matrix.python-version }}
     runs-on: ${{ matrix.os }}
-    continue-on-error: true
 
     defaults:
       run:
