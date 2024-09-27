@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Callable, Optional
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -72,9 +72,10 @@ class FinishTransferScreen(ModalScreen):
     taking user input ('OK' or 'Cancel').
     """
 
-    def __init__(self, message: str) -> None:
+    def __init__(self, message: str, transfer_func: Callable) -> None:
         super().__init__()
 
+        self.transfer_func = transfer_func
         self.message = message
 
     def compose(self) -> ComposeResult:
@@ -90,15 +91,15 @@ class FinishTransferScreen(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "confirm_ok_button":
-            # Update the display to 'transferring' before TUI freezes
-            # during data transfer.
+            # Update the display to 'transferring' before
+            # TUI freezes during data transfer.
             self.query_one("#confirm_button_container").visible = False
             self.query_one("#confirm_message_label").update("Transferring...")
             self.query_one("#confirm_message_label").call_after_refresh(
-                lambda: self.dismiss(True)
+                lambda: self.transfer_func(True)
             )
         else:
-            self.dismiss(False)
+            self.transfer_func(False)
 
 
 class SelectDirectoryTreeScreen(ModalScreen):

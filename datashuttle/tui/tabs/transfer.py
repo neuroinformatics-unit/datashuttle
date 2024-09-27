@@ -85,6 +85,7 @@ class TransferTab(TreeAndInputTab):
         self.show_legend = self.mainwindow.load_global_settings()[
             "show_transfer_tree_status"
         ]
+        self.finish_transfer_screen: Optional[FinishTransferScreen] = None
 
     # Setup
     # ----------------------------------------------------------------------------------
@@ -277,8 +278,22 @@ class TransferTab(TreeAndInputTab):
         to confirm that the user wishes to transfer their data
         (in the direction selected). If "Yes" is selected,
         `self.transfer_data` (see below) is run.
-        """
 
+        Notes
+        -----
+        The way that Textualize works makes it difficult (impossible?)
+        to render a screen but keep the main loop with another screen.
+        What we want to do is 1) select 'OK' to start transfer
+        2) show 'Transferring...' 3) transfer data 4) tear down 'transferring'
+        screen 5) show confirmation screen. This is not simple if we want to
+        manage the actual transfer in this screen, which makes a lot of
+        sense as all options are held here. The alternative is to pass all settings
+        to a `Transferring` modal dialog which seems even more convoluted. So,
+        `FinishTransferScreen` calls back to `self.transfer_data`. If 'OK' was
+        selected, the message is changed to 'Transferring'. Then, `self.transfer_data`
+        handles data transfer, teardown of the `FinishTransferScreen`
+        and display of the confirmation screen.
+        """
         if event.button.id == "transfer_transfer_button":
             if not self.query_one("#transfer_switch").value:
                 direction = "upload"
@@ -294,9 +309,15 @@ class TransferTab(TreeAndInputTab):
                 " central filesystem.\n\nAre you sure you wish to proceed?\n",
             )
 
-            self.mainwindow.push_screen(
-                FinishTransferScreen(message), self.transfer_data
+            # This is very convoluted. See docstring for details.
+            assert (
+                self.finish_transfer_screen is None
+            ), "`finish_transfer_screen` should de cleaned up in `transfer_data`."
+
+            self.finish_transfer_screen = FinishTransferScreen(
+                message, self.transfer_data
             )
+            self.mainwindow.push_screen(self.finish_transfer_screen)
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
@@ -337,6 +358,12 @@ class TransferTab(TreeAndInputTab):
             transfer by clicking "Yes".
 
         """
+        # Teardown the screen first, whatever `transfer_bool` is.
+        # It will not be updated until the transfer is complete.
+        assert self.finish_transfer_screen is not None
+        self.finish_transfer_screen.dismiss()
+        self.finish_transfer_screen = None
+
         if transfer_bool:
             upload = not self.query_one("#transfer_switch").value
 
