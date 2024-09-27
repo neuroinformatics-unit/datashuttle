@@ -34,8 +34,7 @@ jobs:
         # the weekly cron job.
         os: [windows-latest, ubuntu-latest, macos-14, macos-13]
         # Test all Python versions for cron job, and only first/last for other triggers
-        python-version: ${{ toJSON(fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12"]' || '["3.9", "3.12"]')) }}
-        fail-fast: false
+        python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12"]' || '["3.9", "3.12"]') }}
 
     steps:
       - uses: actions/checkout@v4
