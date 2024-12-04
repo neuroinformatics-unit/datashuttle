@@ -23,7 +23,7 @@ class TuiBase:
         The solution is to ensure the screen is large enough
         in the test environment.
         """
-        return None  # (500, 500)
+        return (800, 600)
 
     @pytest_asyncio.fixture(scope="function")
     async def empty_project_paths(self, tmp_path_factory, monkeypatch):
