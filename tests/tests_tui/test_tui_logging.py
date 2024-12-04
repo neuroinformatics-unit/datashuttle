@@ -75,7 +75,7 @@ class TestTuiLogging(TuiBase):
                 "create-folders"
                 in logging_tab.query_one(
                     "#logging_most_recent_label"
-                ).renderable._text[0]
+                ).renderable
             )
 
             # Check log screen shows on button click
