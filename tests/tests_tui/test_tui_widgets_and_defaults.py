@@ -49,11 +49,15 @@ class TestTuiWidgets(TuiBase):
             # New Project Labels --------------------------------------------------
 
             assert (
-                configs_content.query_one("#configs_banner_label").renderable
+                configs_content.query_one(
+                    "#configs_banner_label"
+                ).renderable._text[0]
                 == "Make A New Project"
             )
             assert (
-                configs_content.query_one("#configs_info_label").renderable
+                configs_content.query_one(
+                    "#configs_info_label"
+                ).renderable._text[0]
                 == "Set your configurations for a new project. For more details on "
                 "each section,\nsee the Datashuttle documentation. Once configs "
                 "are set, you will be able\nto use the 'Create' and 'Transfer' tabs."
@@ -62,7 +66,9 @@ class TestTuiWidgets(TuiBase):
             # Project Name --------------------------------------------------------
 
             assert (
-                configs_content.query_one("#configs_name_label").renderable
+                configs_content.query_one(
+                    "#configs_name_label"
+                ).renderable._text[0]
                 == "Project Name"
             )
             assert configs_content.query_one("#configs_name_input").value == ""
@@ -76,7 +82,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one(
                     "#configs_local_path_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Local Path"
             )
             assert (
@@ -104,7 +110,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one(
                     "#configs_connect_method_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Connection Method"
             )
             assert (
@@ -119,7 +125,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one(
                     "#configs_central_path_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Central Path"
             )
             assert (
@@ -171,7 +177,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one(
                     "#configs_central_host_id_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Central Host ID"
             )
             assert (
@@ -192,7 +198,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one(
                     "#configs_central_host_username_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Central Host Username"
             )
             assert (
@@ -294,7 +300,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Subject(s)"
             )
             assert (
@@ -307,7 +313,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Session(s)"
             )
             assert (
@@ -320,7 +326,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_datatype_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Datatype(s)"
             )
 
@@ -391,7 +397,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_toplevel_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Top level folder:"
             )
             assert (
@@ -447,7 +453,7 @@ class TestTuiWidgets(TuiBase):
                 " A 'Template' can be set check subject or session names"
                 in pilot.app.screen.query_one(
                     "#template_message_label"
-                ).renderable
+                ).renderable._text[0]
             )
 
             assert (
@@ -1069,7 +1075,9 @@ class TestTuiWidgets(TuiBase):
 
             # All data label
             assert (
-                pilot.app.screen.query_one("#transfer_all_label").renderable
+                pilot.app.screen.query_one(
+                    "#transfer_all_label"
+                ).renderable._text[0]
                 == "All data from: \n\n - Rawdata \n - "
                 "Derivatives \n\nwill be transferred."
             )
@@ -1078,7 +1086,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_switch_upload_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Upload"
             )
             assert (
@@ -1087,7 +1095,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_switch_download_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Download"
             )
             assert (
@@ -1103,7 +1111,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_toplevel_label_top"
-                ).renderable
+                ).renderable._text[0]
                 == "Select top-level folder to transfer."
             )
             assert (
@@ -1117,7 +1125,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_custom_label_top"
-                ).renderable
+                ).renderable._text[0]
                 == "Select top-level folder to transfer."
             )
             assert (
@@ -1128,7 +1136,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_subject_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Subject(s)"
             )
             assert (
@@ -1141,7 +1149,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_session_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Session(s)"
             )
             assert (
@@ -1154,7 +1162,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_datatype_label"
-                ).renderable
+                ).renderable._text[0]
                 == "Datatype(s)"
             )
 
