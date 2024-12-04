@@ -5,7 +5,7 @@
 according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/).
 
 Before starting with folder creation, we'll briefly introduce the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html).
+[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html).
 
 An example [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) project:
 

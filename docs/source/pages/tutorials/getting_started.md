@@ -246,7 +246,7 @@ We will create standardised project folders using the `Create` tab.
 Following the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
 style we will  call the first subject `sub-001`. Additional key-value pairs
 could be included if desired (see the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html)
+[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html)
 for details).
 
 In the session name we will include today's date as an extra key-value pair.
@@ -319,7 +319,7 @@ We will create project folders with the `create_folders()` method.
 Following the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/)
 style we will  call the first subject `sub-001`. Additional key-value pairs
 could be included if desired (see the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html)
+[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html)
 for details).
 
 In the session name we will include today's date as an extra key-value pair.
@@ -341,7 +341,7 @@ Navigate to the `local_path` in your system filebrowser to see the created folde
 
 ```{note}
 The names of the folders to be created are validated on the fly against
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/specification.html).
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/specification.html).
 An error will be raised if names break with the specification and
 the folders will not be created.
 ```
@@ -511,7 +511,7 @@ see a `Directory Tree` displaying the local version of the project:
 
 The first page on the `Transfer` tab allows us to upload the entire project,
 both the `rawdata` and `derivatives`—see the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html)
+[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html)
 for details.
 
 We only have acquired data in the `rawdata` folder.
@@ -533,7 +533,7 @@ Next, we will use `Custom` transfers to move only a subset of the dataset.
 `upload_entire_project()` is a high level method that uploads all files
 in the project.
 This includes both the `rawdata` and `derivatives` top-level folders—see the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/specification.html)
+[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html)
 for details.
 
 As we only have a `rawdata` folder we can simply run:
