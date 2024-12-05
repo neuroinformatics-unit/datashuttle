@@ -291,7 +291,7 @@ class TestTuiCreateFolders(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#messagebox_message_label"
-                ).renderable._text[0]
+                ).renderable
                 == "Invalid character in subject or session value: abc"
             )
             await self.close_messagebox(pilot)
@@ -391,9 +391,9 @@ class TestTuiCreateFolders(TuiBase):
 
             pilot.app.screen.query_one(
                 "#messagebox_message_label"
-            ).renderable._text[
-                0
-            ] = "The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+            ).renderable = (
+                "The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+            )
             await self.close_messagebox(pilot)
 
             # Now make the correct folders respecting the name templates

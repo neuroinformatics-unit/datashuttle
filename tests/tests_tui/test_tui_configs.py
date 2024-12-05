@@ -97,7 +97,7 @@ class TestTuiConfigs(TuiBase):
                 assert (
                     pilot.app.screen.query_one(
                         "#messagebox_message_label"
-                    ).renderable._text[0]
+                    ).renderable
                     == "A datashuttle project has now been created.\n\n Next, "
                     "setup the SSH connection. Once complete, navigate to "
                     "the 'Main Menu' and proceed to the project page, "
@@ -115,7 +115,7 @@ class TestTuiConfigs(TuiBase):
                 assert (
                     pilot.app.screen.query_one(
                         "#messagebox_message_label"
-                    ).renderable._text[0]
+                    ).renderable
                     == "A datashuttle project has now been created.\n\n "
                     "Next proceed to the project page, where you will "
                     "be able to create and transfer project folders."
@@ -232,7 +232,7 @@ class TestTuiConfigs(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#messagebox_message_label"
-                ).renderable._text[0]
+                ).renderable
                 == "Configs saved."
             )
             await self.close_messagebox(pilot)
@@ -364,7 +364,7 @@ class TestTuiConfigs(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#messagebox_message_label"
-                ).renderable._text[0]
+                ).renderable
                 == "The project name must contain alphanumeric characters only."
             )
             await pilot.pause()
