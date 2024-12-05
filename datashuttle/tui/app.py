@@ -58,10 +58,7 @@ class TuiApp(App):
         self.set_dark_mode(self.load_global_settings()["dark_mode"])
 
     def set_dark_mode(self, dark_mode: bool) -> None:
-        if dark_mode:
-            self.theme = "textual-dark"
-        else:
-            self.theme = "textual-light"
+        self.theme = "textual-dark" if dark_mode else "textual-light"
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
