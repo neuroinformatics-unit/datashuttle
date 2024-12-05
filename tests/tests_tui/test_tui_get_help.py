@@ -11,7 +11,7 @@ class TestTuiSettings(TuiBase):
     """
 
     @pytest.mark.asyncio
-    async def test_light_dark_mode(self, empty_project_paths):
+    async def test_get_help(self, empty_project_paths):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
@@ -21,10 +21,10 @@ class TestTuiSettings(TuiBase):
             )
 
             assert (
-                "For help getting started, check out the Documentation"
+                "For help getting started, check out the"
                 in pilot.app.screen.query_one(
                     "#get_help_label"
-                ).renderable._text[0]
+                ).renderable.strip()
             )
 
             await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
