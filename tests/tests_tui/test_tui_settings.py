@@ -10,7 +10,7 @@ class TestTuiSettings(TuiBase):
     """
 
     @pytest.mark.asyncio
-    async def test_light_dark_mode(self, empty_project_paths):
+    async def test_light_dark_mode(self):
         """
         Check the light / dark mode switch which is stored
         in the global tui settings. Global refers to set
@@ -24,13 +24,13 @@ class TestTuiSettings(TuiBase):
             )
 
             # Check default is dark mode, switch to light mode
-            assert pilot.app.dark is True
+            assert pilot.app.theme == "textual-dark"
             assert pilot.app.load_global_settings()["dark_mode"] is True
 
             await self.scroll_to_click_pause(
                 pilot, "#settings_screen_light_mode_radiobutton"
             )
-            assert pilot.app.dark is False
+            assert pilot.app.theme == "textual-light"
             assert pilot.app.load_global_settings()["dark_mode"] is False
 
             # Switch back to dark mode
@@ -38,7 +38,7 @@ class TestTuiSettings(TuiBase):
                 pilot, "#settings_screen_dark_mode_radiobutton"
             )
 
-            assert pilot.app.dark is True
+            assert pilot.app.theme == "textual-dark"
             assert pilot.app.load_global_settings()["dark_mode"] is True
 
             await pilot.pause()

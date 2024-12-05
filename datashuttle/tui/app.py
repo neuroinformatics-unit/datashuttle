@@ -55,7 +55,10 @@ class TuiApp(App):
         )
 
     def on_mount(self) -> None:
-        self.dark = self.load_global_settings()["dark_mode"]
+        self.set_dark_mode(self.load_global_settings()["dark_mode"])
+
+    def set_dark_mode(self, dark_mode: bool) -> None:
+        self.theme = "textual-dark" if dark_mode else "textual-light"
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """

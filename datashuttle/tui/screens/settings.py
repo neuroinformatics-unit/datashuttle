@@ -66,9 +66,10 @@ class SettingsScreen(ModalScreen):
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         label = str(event.pressed.label)
         assert label in ["Light Mode", "Dark Mode"]
-        dark_mode = label == "Dark Mode"
 
-        self.mainwindow.dark = dark_mode
+        dark_mode = label == "Dark Mode"
+        self.mainwindow.set_dark_mode(dark_mode)
+
         self.global_settings["dark_mode"] = dark_mode
         self.mainwindow.save_global_settings(self.global_settings)
 
