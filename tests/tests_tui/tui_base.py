@@ -182,6 +182,7 @@ class TuiBase:
         Perform general TUI checks during the navigation.
         """
         await pilot.click("#mainwindow_existing_project_button")
+        await pilot.pause()
 
         assert isinstance(pilot.app.screen, ProjectSelectorScreen)
         assert len(pilot.app.screen.project_names) == 1

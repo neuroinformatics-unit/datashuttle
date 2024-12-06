@@ -389,9 +389,9 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_create_folders_button"
             )
 
-            pilot.app.screen.query_one(
+            assert pilot.app.screen.query_one(
                 "#messagebox_message_label"
-            ).renderable = (
+            ).renderable == (
                 "The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
             await self.close_messagebox(pilot)
