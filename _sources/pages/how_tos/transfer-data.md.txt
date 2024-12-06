@@ -50,7 +50,7 @@ this and other transfer settings.
 
 The first option is to transfer the entire project—all
 files in the `rawdata` and `derivatives`
-[top-level-folders](https://neuroblueprint.neuroinformatics.dev/specification.html#basic-principles).
+[top-level-folders](https://neuroblueprint.neuroinformatics.dev/latest/specification.html#basic-principles).
 
 This includes all files inside or outside a subject, session
 or datatype folder.
