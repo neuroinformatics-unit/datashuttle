@@ -992,9 +992,9 @@ class DataShuttle:
             local_vars=locals(),
         )
 
-        for option, value in kwargs.items():
-            if option in self.cfg.keys_str_on_file_but_path_in_class:
-                kwargs[option] = Path(value)
+        #     for option, value in kwargs.items():
+        #         if option in self.cfg.keys_str_on_file_but_path_in_class:
+        #             kwargs[option] = Path(value)
 
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
@@ -1143,6 +1143,10 @@ class DataShuttle:
             search_str="ses-*",
             name_template_regexp=name_template_regexp,
         )
+
+    @check_configs_set
+    def is_local_project(self):  # TODO: document!
+        return self.cfg.is_local_project()
 
     # Name Templates
     # -------------------------------------------------------------------------
