@@ -1098,12 +1098,16 @@ class DataShuttle:
 
         local_only : bool
             If `True, only get names from `local_path`, otherwise from
-            `local_path` and `central_path`.
+            `local_path` and `central_path`. If in local-project mode,
+            this flag is ignored.
         """
         name_template = self.get_name_templates()
         name_template_regexp = (
             name_template["sub"] if name_template["on"] else None
         )
+
+        if self.is_local_project():
+            local_only = True
 
         return getters.get_next_sub_or_ses(
             self.cfg,
@@ -1141,12 +1145,16 @@ class DataShuttle:
 
         local_only : bool
             If `True, only get names from `local_path`, otherwise from
-            `local_path` and `central_path`.
+            `local_path` and `central_path`. If in local-project mode,
+            this flag is ignored.
         """
         name_template = self.get_name_templates()
         name_template_regexp = (
             name_template["ses"] if name_template["on"] else None
         )
+
+        if self.is_local_project():
+            local_only = True
 
         return getters.get_next_sub_or_ses(
             self.cfg,
@@ -1238,7 +1246,8 @@ class DataShuttle:
 
         local_only : bool
             If `True`, only the local project is validated. Otherwise, both
-            local and central projects are validated.
+            local and central projects are validated. If in local-project mode,
+            this flag is ignored.
         """
         self._start_log(
             "validate-project",
@@ -1246,6 +1255,9 @@ class DataShuttle:
         )
 
         name_templates = self.get_name_templates()
+
+        if self.is_local_project():
+            local_only = True
 
         validation.validate_project(
             self.cfg,
