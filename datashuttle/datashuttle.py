@@ -50,6 +50,7 @@ from datashuttle.utils.custom_exceptions import (
 from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
+    check_is_not_local_project,
     requires_ssh_configs,
 )
 
@@ -324,6 +325,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @check_configs_set
+    @check_is_not_local_project
     def upload_custom(
         self,
         top_level_folder: TopLevelFolder,
@@ -399,6 +401,7 @@ class DataShuttle:
             ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_is_not_local_project
     def download_custom(
         self,
         top_level_folder: TopLevelFolder,
@@ -477,6 +480,7 @@ class DataShuttle:
     # away the 'top_level_folder' concept.
 
     @check_configs_set
+    @check_is_not_local_project
     def upload_rawdata(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -508,6 +512,7 @@ class DataShuttle:
         )
 
     @check_configs_set
+    @check_is_not_local_project
     def upload_derivatives(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -539,6 +544,7 @@ class DataShuttle:
         )
 
     @check_configs_set
+    @check_is_not_local_project
     def download_rawdata(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -570,6 +576,7 @@ class DataShuttle:
         )
 
     @check_configs_set
+    @check_is_not_local_project
     def download_derivatives(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -601,6 +608,7 @@ class DataShuttle:
         )
 
     @check_configs_set
+    @check_is_not_local_project
     def upload_entire_project(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -633,6 +641,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_is_not_local_project
     def download_entire_project(
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
@@ -665,6 +674,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_is_not_local_project
     def upload_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
@@ -706,6 +716,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @check_configs_set
+    @check_is_not_local_project
     def download_specific_folder_or_file(
         self,
         filepath: Union[str, Path],
@@ -828,6 +839,7 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     @requires_ssh_configs
+    @check_is_not_local_project
     def setup_ssh_connection(self) -> None:
         """
         Setup a connection to the central server using SSH.
@@ -859,6 +871,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     @requires_ssh_configs
+    @check_is_not_local_project
     def write_public_key(self, filepath: str) -> None:
         """
         By default, the SSH private key only is stored, in
@@ -1024,6 +1037,7 @@ class DataShuttle:
         return self.cfg["local_path"]
 
     @check_configs_set
+    @check_is_not_local_project
     def get_central_path(self) -> Path:
         """
         Get the project central path.
