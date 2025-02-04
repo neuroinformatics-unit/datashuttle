@@ -71,6 +71,9 @@ class Configs(UserDict):
         """"""
         for path_type in ["local_path", "central_path"]:
 
+            if path_type == "central_path" and self[path_type] is None:
+                continue
+
             # important to check for "." path name as these
             # disappear when paths are concatenated.
             canonical_configs.raise_on_bad_path_syntax(
@@ -129,6 +132,7 @@ class Configs(UserDict):
     # Utils
     # -------------------------------------------------------------------------
 
+    # TODO: all of this should move to canonical configs!!!
     def convert_str_and_pathlib_paths(
         self, config_dict: Union["Configs", dict], direction: str
     ) -> None:
@@ -144,6 +148,9 @@ class Configs(UserDict):
         """
         for path_key in self.keys_str_on_file_but_path_in_class:
             value = config_dict[path_key]
+
+            if path_key == "central_path" and value is None:
+                continue
 
             if value:
                 if direction == "str_to_path":
@@ -301,3 +308,14 @@ class Configs(UserDict):
             )
 
         return items
+
+    def is_local_project(self):
+        """ """
+        # TODO: fix, check and get bool in the canonical configs!
+        key_params_are_none = [
+            self[key] is None for key in ["central_path", "connection_method"]
+        ]
+
+        canonical_configs.raise_on_bad_local_only_project_configs(self)
+
+        return all(key_params_are_none)
