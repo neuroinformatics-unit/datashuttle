@@ -18,13 +18,13 @@ from typing import (
     Literal,
     Optional,
     Union,
-    get_args,
-    get_origin,
 )
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
 from pathlib import Path
+
+import typeguard
 
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
@@ -103,14 +103,16 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             ConfigError,
         )
 
-    if config_dict["connection_method"] not in ["ssh", "local_filesystem"]:
-        utils.log_and_raise_error(
-            "'connection method' must be 'ssh' or 'local_filesystem'.",
-            ConfigError,
-        )
+    raise_on_bad_path_syntax(
+        config_dict["local_path"].as_posix(), "local_path"
+    )
 
-    for path_type in ["local_path", "central_path"]:
-        raise_on_bad_path_syntax(config_dict[path_type].as_posix(), path_type)
+    if (
+        config_dict["central_path"] is not None
+    ):  # is local project checked above
+        raise_on_bad_path_syntax(
+            config_dict["central_path"].as_posix(), "central_path"
+        )
 
     # Check SSH settings
     if config_dict["connection_method"] == "ssh" and (
@@ -147,7 +149,7 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
     if any(key_params_are_none):
         if not all(key_params_are_none):
             raise ValueError(
-                "Either both `central_path` and `connection_method` must both be set,"
+                "Either both `central_path` and `connection_method` must be set, "
                 "or must both be `None` (for local-project mode)."
             )
 
@@ -197,26 +199,13 @@ def check_config_types(config_dict: Configs) -> None:
     two cases explicitly.
     """
     required_types = get_canonical_configs()
-    fail = False
 
     for key in config_dict.keys():
+
         expected_type = required_types[key]
-
-        if get_origin(expected_type) is Literal:
-            if config_dict[key] not in get_args(expected_type):
-                utils.log_and_raise_error(
-                    f"'{config_dict[key]}' not in {get_args(expected_type)}",
-                    ConfigError,
-                )
-
-        elif len(get_args(required_types[key])) == 0:
-            if not isinstance(config_dict[key], expected_type):
-                fail = True
-        else:
-            if not isinstance(config_dict[key], get_args(expected_type)):
-                fail = True
-
-        if fail:
+        try:
+            typeguard.check_type(config_dict[key], expected_type)
+        except typeguard.TypeCheckError:
             utils.log_and_raise_error(
                 f"The type of the value at '{key}' is incorrect, "
                 f"it must be {expected_type}. "
