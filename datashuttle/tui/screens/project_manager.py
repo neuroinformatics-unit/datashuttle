@@ -17,6 +17,7 @@ from textual.widgets import (
 )
 
 from datashuttle.tui.configs import ConfigsContent
+from datashuttle.tui.screens import modal_dialogs
 from datashuttle.tui.tabs import create_folders, logging, transfer
 
 
@@ -57,12 +58,19 @@ class ProjectManagerScreen(Screen):
             yield create_folders.CreateFoldersTab(
                 self.mainwindow, self.interface
             )
-            yield transfer.TransferTab(
-                "Transfer",
-                self.mainwindow,
-                self.interface,
-                id="tabscreen_transfer_tab",
-            )
+
+            if self.interface.project.is_local_project():
+                # No transferring for a local project, placeholder tav
+                yield TabPane(
+                    "Transfer", disabled=True, id="placeholder_tranfser_tab"
+                )
+            else:
+                yield transfer.TransferTab(
+                    "Transfer",
+                    self.mainwindow,
+                    self.interface,
+                    id="tabscreen_transfer_tab",
+                )
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield ConfigsContent(
                     self, self.interface, id="tabscreen_configs_content"
@@ -119,10 +127,36 @@ class ProjectManagerScreen(Screen):
         When the config file are refreshed, the local path may have changed.
         In this case the directorytree will be displaying the wrong root,
         so update it here.
+
+        TODO: DOC THIS!
         """
         self.query_one("#tabscreen_create_tab").update_directorytree_root(
             self.interface.get_configs()["local_path"]
         )
-        self.query_one("#tabscreen_transfer_tab").update_directorytree_root(
-            self.interface.get_configs()["local_path"]
+
+        # project changed from local to full
+        old_project_type = (
+            "local" if any(self.query("#placeholder_tranfser_tab")) else "full"
         )
+        project_type = (
+            "local" if self.interface.project.is_local_project() else "full"
+        )
+
+        if old_project_type == project_type:
+
+            if project_type == "full":
+                self.query_one(
+                    "#tabscreen_transfer_tab"
+                ).update_directorytree_root(
+                    self.interface.get_configs()["local_path"]
+                )
+                return
+        else:
+            self.mainwindow.push_screen(
+                modal_dialogs.MessageBox(
+                    f"The project type was changed from {old_project_type} to {project_type}.\n"
+                    f"Reloading the Project Manager screen is required.",
+                    border_color="grey",
+                ),
+                self.dismiss(),
+            )
