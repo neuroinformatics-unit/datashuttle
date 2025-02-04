@@ -47,3 +47,23 @@ def check_configs_set(func):
             return func(*args, **kwargs)
 
     return wrapper
+
+
+def check_is_not_local_project(func):
+    """
+    TODO
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if args[0].is_local_project():
+            log_and_raise_error(
+                "This function cannot be used for a local-project. "
+                "Set connection configurations using `update_config_file` "
+                "to use this functionality.",
+                ConfigError,
+            )
+        else:
+            return func(*args, **kwargs)
+
+    return wrapper
