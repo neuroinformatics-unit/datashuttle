@@ -37,8 +37,8 @@ def get_canonical_configs() -> dict:
     """
     canonical_configs = {
         "local_path": Union[str, Path],
-        "central_path": Union[str, Path],
-        "connection_method": Literal["ssh", "local_filesystem"],
+        "central_path": Optional[Union[str, Path]],
+        "connection_method": Optional[Literal["ssh", "local_filesystem"]],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
     }
@@ -94,6 +94,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     check_config_types(config_dict)
 
+    raise_on_bad_local_only_project_configs(config_dict)
+
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
             f"New config keys are in the wrong order. The"
@@ -135,6 +137,21 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
 
+def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
+    """ """
+    key_params_are_none = [
+        config_dict[key] is None
+        for key in ["central_path", "connection_method"]
+    ]
+
+    if any(key_params_are_none):
+        if not all(key_params_are_none):
+            raise ValueError(
+                "Either both `central_path` and `connection_method` must both be set,"
+                "or must both be `None` (for local-project mode)."
+            )
+
+
 def raise_on_bad_path_syntax(
     path_name: str,
     path_type: str,
@@ -164,6 +181,10 @@ def check_config_types(config_dict: Configs) -> None:
     """
     Check the type of passed configs matched canonical types.
     This is a sub-function of check_dict_values_raise_on_fail()
+
+    TODO
+    ----
+    Use a proper validator!
 
     Notes
     ------
