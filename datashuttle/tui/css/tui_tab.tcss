@@ -124,7 +124,7 @@ TransferStatusTree {
 
 #transfer_legend {
     layer: top;
-    dock: left;
+    dock: bottom;
     align-vertical: bottom;
     background: $primary-background-darken-1;
     width: auto;

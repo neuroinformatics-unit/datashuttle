@@ -183,7 +183,7 @@ class TransferTab(TreeAndInputTab):
                         id="transfer_tab_overwrite_select",
                     ),
                 ),
-                # needs to be in horizontal or formats with large space for some rason.
+                # needs to be in horizontal or formats with large space for some reason.
                 Horizontal(
                     Checkbox(
                         "Dry Run",
