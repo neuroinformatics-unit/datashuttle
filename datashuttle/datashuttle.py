@@ -888,8 +888,8 @@ class DataShuttle:
     def make_config_file(
         self,
         local_path: str,
-        central_path: str,
-        connection_method: str,
+        central_path: str | None = None,
+        connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
     ) -> None:
@@ -998,6 +998,12 @@ class DataShuttle:
 
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
+
+        # TODO: test carefully, this SHOULD catch bad input converting from local to full project.
+        # TODO: those functions should move to canonical configs!! below
+        new_cfg.convert_str_and_pathlib_paths(
+            new_cfg, "str_to_path"
+        )  # TODO: this is super weird
         new_cfg.setup_after_load()  # Will raise on error
 
         self.cfg = new_cfg
