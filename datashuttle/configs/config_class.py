@@ -70,7 +70,6 @@ class Configs(UserDict):
     def ensure_local_and_central_path_end_in_project_name(self):
         """"""
         for path_type in ["local_path", "central_path"]:
-
             if path_type == "central_path" and self[path_type] is None:
                 continue
 
@@ -316,6 +315,6 @@ class Configs(UserDict):
         """
         canonical_configs.raise_on_bad_local_only_project_configs(self)
 
-        params_are_none = canonical_configs.local_only_configs_are_none(config_dict)
+        params_are_none = canonical_configs.local_only_configs_are_none(self)
 
         return all(params_are_none)

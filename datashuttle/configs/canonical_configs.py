@@ -107,9 +107,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         config_dict["local_path"].as_posix(), "local_path"
     )
 
-    if (
-        config_dict["central_path"] is not None
-    ):
+    if config_dict["central_path"] is not None:
         raise_on_bad_path_syntax(
             config_dict["central_path"].as_posix(), "central_path"
         )
