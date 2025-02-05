@@ -412,7 +412,7 @@ def check_project_configs(
     Paths are stored as pathlib in the cfg but str in the .yaml
     """
     for arg_name, value in kwargs[0].items():
-        if arg_name in project.cfg.keys_str_on_file_but_path_in_class:
+        if arg_name in canonical_configs.keys_str_on_file_but_path_in_class:
             assert type(project.cfg[arg_name]) in [
                 pathlib.PosixPath,
                 pathlib.WindowsPath,

@@ -1005,19 +1005,9 @@ class DataShuttle:
             local_vars=locals(),
         )
 
-        #     for option, value in kwargs.items():
-        #         if option in self.cfg.keys_str_on_file_but_path_in_class:
-        #             kwargs[option] = Path(value)
-
         new_cfg = copy.deepcopy(self.cfg)
         new_cfg.update(**kwargs)
-
-        # TODO: test carefully, this SHOULD catch bad input converting from local to full project.
-        # TODO: those functions should move to canonical configs!! below
-        new_cfg.convert_str_and_pathlib_paths(
-            new_cfg, "str_to_path"
-        )  # TODO: this is super weird
-        new_cfg.setup_after_load()  # Will raise on error
+        new_cfg.setup_after_load()  # will raise on error
 
         self.cfg = new_cfg
         self._set_attributes_after_config_load()
@@ -1432,7 +1422,7 @@ class DataShuttle:
         which allows well formatted printing.
         """
         copy_dict = copy.deepcopy(self.cfg.data)
-        self.cfg.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
+        load_configs.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         return json.dumps(copy_dict, indent=4)
 
     def _make_project_metadata_if_does_not_exist(self) -> None:

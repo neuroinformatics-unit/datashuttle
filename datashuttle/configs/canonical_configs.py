@@ -54,6 +54,18 @@ def get_datatypes() -> List[str]:
     return ["ephys", "behav", "funcimg", "anat"]
 
 
+def keys_str_on_file_but_path_in_class() -> list[str]:
+    """
+    All configs which are paths are converted to pathlib.Path
+    objects on load. This list indicates which config entries
+    are to be converted to Path.
+    """
+    return [
+        "local_path",
+        "central_path",
+    ]
+
+
 # -----------------------------------------------------------------------------
 # Check Configs
 # -----------------------------------------------------------------------------
