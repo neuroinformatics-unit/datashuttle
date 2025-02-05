@@ -10,6 +10,7 @@ TEST_PROJECT_NAME = "test_project"
 
 
 class BaseTest:
+
     @pytest.fixture(scope="function")
     def no_cfg_project(test):
         """

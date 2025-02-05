@@ -13,6 +13,7 @@ from datashuttle.configs.canonical_tags import tags
 
 
 class TestMakeFolders(BaseTest):
+
     def test_generate_folders_default_ses(self, project):
         """
         Make a subject folders with full tree. Don't specify
