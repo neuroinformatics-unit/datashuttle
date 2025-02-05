@@ -148,9 +148,10 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
 
     if any(key_params_are_none):
         if not all(key_params_are_none):
-            raise ValueError(
+            utils.log_and_raise_error(
                 "Either both `central_path` and `connection_method` must be set, "
-                "or must both be `None` (for local-project mode)."
+                "or must both be `None` (for local-project mode).",
+                ConfigError
             )
 
 
