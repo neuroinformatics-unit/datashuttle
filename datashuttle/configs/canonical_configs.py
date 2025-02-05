@@ -109,7 +109,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     if (
         config_dict["central_path"] is not None
-    ):  # is local project checked above
+    ):
         raise_on_bad_path_syntax(
             config_dict["central_path"].as_posix(), "central_path"
         )
@@ -140,19 +140,27 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
 
 def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
-    """ """
-    key_params_are_none = [
-        config_dict[key] is None
-        for key in ["central_path", "connection_method"]
-    ]
+    """
+    There is no circumstance where one of `central_path` and `connection_method`
+    should be set and not the other. Either both are set ('full' project) or
+    neither are ('local only' project). Check this assumption here.
+    """
+    params_are_none = local_only_configs_are_none(config_dict)
 
-    if any(key_params_are_none):
-        if not all(key_params_are_none):
+    if any(params_are_none):
+        if not all(params_are_none):
             utils.log_and_raise_error(
                 "Either both `central_path` and `connection_method` must be set, "
                 "or must both be `None` (for local-project mode).",
                 ConfigError,
             )
+
+
+def local_only_configs_are_none(config_dict: Configs) -> list[bool]:
+    return [
+        config_dict[key] is None
+        for key in ["central_path", "connection_method"]
+    ]
 
 
 def raise_on_bad_path_syntax(
@@ -182,22 +190,7 @@ def raise_on_bad_path_syntax(
 
 def check_config_types(config_dict: Configs) -> None:
     """
-    Check the type of passed configs matched canonical types.
-    This is a sub-function of check_dict_values_raise_on_fail()
-
-    TODO
-    ----
-    Use a proper validator!
-
-    Notes
-    ------
-
-    This is a little awkward as testing types against
-    Union is not neat. To do this you can use
-    isinstance(type, get_args(Union[types])).
-    But get_args() will be empty if there is only
-    one type in union. So we need to test the
-    two cases explicitly.
+    Check the type of passed configs matches the canonical types.
     """
     required_types = get_canonical_configs()
 

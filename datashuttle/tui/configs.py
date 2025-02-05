@@ -225,6 +225,12 @@ class ConfigsContent(Container):
         """
         Update the displayed SSH widgets when the `connection_method`
         radiobuttons are changed.
+
+        When SSH is set, ssh config-setters are shown. Otherwise, these
+        are hidden.
+
+        When mode is `No connection`, the `central_path` is cleared and
+        disabled.
         """
         label = str(event.pressed.label)
         assert label in [
@@ -234,7 +240,6 @@ class ConfigsContent(Container):
         ], "Unexpected label."
 
         if label == "No connection (local only)":
-
             self.query_one("#configs_central_path_input").value = ""
             self.query_one("#configs_central_path_input").disabled = True
             display_ssh = False
@@ -537,16 +542,19 @@ class ConfigsContent(Container):
         )
 
         # Connection Method
+        # Make a dict of radiobutton: is on bool to easily find
+        # how to set radiobuttons and associated configs
+        # fmt: off
         what_radiobuton_is_on = {
-            "configs_ssh_radiobutton": cfg_to_load["connection_method"]
-            == "ssh",
-            "configs_local_filesystem_radiobutton": cfg_to_load[
-                "connection_method"
-            ]
-            == "local_filesystem",
-            "configs_local_only_radiobutton": cfg_to_load["connection_method"]
-            is None,
+            "configs_ssh_radiobutton":
+                cfg_to_load["connection_method"] == "ssh",
+            "configs_local_filesystem_radiobutton":
+                cfg_to_load["connection_method"] == "local_filesystem",
+            "configs_local_only_radiobutton":
+                cfg_to_load["connection_method"] is None,
         }
+        # fmt: on
+
         for id, value in what_radiobuton_is_on.items():
             self.query_one(f"#{id}").value = value
 
