@@ -11,12 +11,12 @@ from pathlib import Path
 import showinfm
 import yaml
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import (
     Button,
     Label,
 )
-from textual.binding import Binding
 
 from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens import (
@@ -29,7 +29,7 @@ from datashuttle.tui.screens import (
 )
 
 
-class TuiApp(App):
+class TuiApp(App, inherit_bindings=False):  # type: ignore
     """
     The main app page for the DataShuttle TUI.
 
@@ -42,7 +42,6 @@ class TuiApp(App):
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
     ENABLE_COMMAND_PALETTE = False
 
-    App.BINDINGS = []
     BINDINGS = [
         Binding("ctrl+c", "app.quit", "Exit app", priority=True),
     ]
