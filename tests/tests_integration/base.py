@@ -28,15 +28,17 @@ class BaseTest:
     @pytest.fixture(scope="function")
     def project(self, tmp_path, request):
         """
-        Setup a project with default configs to use
-        for testing.
+        Set up a project with default configs to use for testing.
 
-        TODO:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Document, and think hard where it is necessary to test full vs. local and where it is pointless!
-        ATM there are many pointless tests!
+        This fixture uses indirect parameterization to test both 'full'
+        and 'local-only' (no `central_path` or `connection_method`). The
+        decorator:
 
-        # Note this fixture is a duplicate of project()
-        in test_filesystem_transfer.py fixture
+        `@pytest.mark.parametrize("project", ["local", "full"], indirect=True)`
+
+        will call this function twice, with "local" or "full" in the request.param
+        field (below, if not passed the default is set to "full"). Depending
+        on the parameter, set up a project in full or local-only mode.
         """
         tmp_path = tmp_path / "test with space"
 

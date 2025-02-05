@@ -130,7 +130,11 @@ def delete_project_if_it_exists(project_name):
 
 
 def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
-    """"""
+    """
+    Set up a project, either in full mode or local-only mode. This is
+    very similar to the `BaseTest` fixture but is designed for
+    use in other fixtures that require additional boilerplate e.g. logging.
+    """
     if project_type == "full":
         project = setup_project_default_configs(
             test_project_name,
@@ -147,6 +151,7 @@ def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
         )
 
     cwd = os.getcwd()
+
     return project, cwd
 
 

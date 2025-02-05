@@ -4,8 +4,7 @@ from tui_base import TuiBase
 from datashuttle.tui.app import TuiApp
 
 
-class TestLocalOnlyProject(TuiBase):
-    """ """
+class TestTuiLocalOnlyProject(TuiBase):
 
     @pytest.mark.asyncio
     async def test_local_only_make_project(
