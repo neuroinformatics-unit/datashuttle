@@ -32,7 +32,7 @@ class BaseTest:
         for testing.
 
         TODO:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        Document, and think hard where it is necssary to test full vs. local and where it is pointless!
+        Document, and think hard where it is necessary to test full vs. local and where it is pointless!
         ATM there are many pointless tests!
 
         # Note this fixture is a duplicate of project()
