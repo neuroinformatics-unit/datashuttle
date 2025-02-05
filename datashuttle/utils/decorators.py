@@ -51,7 +51,11 @@ def check_configs_set(func):
 
 def check_is_not_local_project(func):
     """
-    TODO
+    Decorator to check that the project is not
+    a local project. If it is, raise.
+
+    This decorator should be placed above methods which
+    require `central_path` and `connection_method` to be set.
     """
 
     @wraps(func)

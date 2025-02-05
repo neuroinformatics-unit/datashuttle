@@ -1167,7 +1167,11 @@ class DataShuttle:
         )
 
     @check_configs_set
-    def is_local_project(self):  # TODO: document!
+    def is_local_project(self) -> bool:
+        """
+        A project is 'local-only' if it has no `central_path` and `connection_method`.
+        It can be used to make folders and validate, but not for transfer.
+        """
         return self.cfg.is_local_project()
 
     # Name Templates

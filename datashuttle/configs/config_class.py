@@ -310,12 +310,12 @@ class Configs(UserDict):
         return items
 
     def is_local_project(self):
-        """ """
-        # TODO: fix, check and get bool in the canonical configs!
-        key_params_are_none = [
-            self[key] is None for key in ["central_path", "connection_method"]
-        ]
-
+        """
+        A project is 'local-only' if it has no `central_path` and `connection_method`.
+        It can be used to make folders and validate, but not for transfer.
+        """
         canonical_configs.raise_on_bad_local_only_project_configs(self)
 
-        return all(key_params_are_none)
+        params_are_none = canonical_configs.local_only_configs_are_none(config_dict)
+
+        return all(params_are_none)
