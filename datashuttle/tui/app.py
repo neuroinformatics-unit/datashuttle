@@ -16,6 +16,7 @@ from textual.widgets import (
     Button,
     Label,
 )
+from textual.binding import Binding
 
 from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens import (
@@ -40,6 +41,11 @@ class TuiApp(App):
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
     ENABLE_COMMAND_PALETTE = False
+
+    App.BINDINGS = []
+    BINDINGS = [
+        Binding("ctrl+c", "app.quit", "Exit app", priority=True),
+    ]
 
     def compose(self) -> ComposeResult:
         yield Container(
