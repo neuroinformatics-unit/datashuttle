@@ -129,14 +129,18 @@ def delete_project_if_it_exists(project_name):
         shutil.rmtree(config_path)
 
 
-def setup_project_fixture(tmp_path, test_project_name):
+def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
     """"""
-    project = setup_project_default_configs(
-        test_project_name,
-        tmp_path,
-        local_path=make_test_path(tmp_path, "local", test_project_name),
-        central_path=make_test_path(tmp_path, "central", test_project_name),
-    )
+    if project_type == "full":
+        project = setup_project_default_configs(
+            test_project_name,
+            tmp_path,
+            local_path=make_test_path(tmp_path, "local", test_project_name),
+            central_path=make_test_path(tmp_path, "central", test_project_name),
+        )
+    elif project_type == "local":
+        project = DataShuttle(test_project_name)
+        project.make_config_file(local_path=make_test_path(tmp_path, "local", test_project_name))
 
     cwd = os.getcwd()
     return project, cwd
