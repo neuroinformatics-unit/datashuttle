@@ -31,7 +31,9 @@ class ProjectManagerScreen(Screen):
     method to create new project folders.
 
     The 'Transfer' tab, which handles data upload and download between
-    local / central.
+    local / central. When in 'local-only' mode, this is replaced
+    by a placeholder tab (as the central path is required for
+    transfer-tab setup) and disable it.
 
     The 'Configs' tab displays the current project's configurations
     and allows configs to be reset. This is an instantiation of the
@@ -60,7 +62,7 @@ class ProjectManagerScreen(Screen):
             )
 
             if self.interface.project.is_local_project():
-                # No transferring for a local project, placeholder tav
+                # No transferring for a local project, placeholder tab
                 yield TabPane(
                     "Transfer", disabled=True, id="placeholder_tranfser_tab"
                 )
@@ -124,11 +126,14 @@ class ProjectManagerScreen(Screen):
 
     def on_configs_content_configs_saved(self) -> None:
         """
-        When the config file are refreshed, the local path may have changed.
-        In this case the directorytree will be displaying the wrong root,
-        so update it here.
+        When configs are saved, we may switch between a 'full' project
+        and a 'local only' project (no `central_path` or `connection_method` set).
+        In such a case we need to refresh the ProjectManager screen to add / remove
+        the transfer tab.
 
-        TODO: DOC THIS!
+        Otherwise, if switching between the same mode, when the config file are refreshed,
+        the local path may have changed. The directorytree for creating folders is always
+        updated. The transfer directory tree is only updated if we are not in 'local only' mode.
         """
         self.query_one("#tabscreen_create_tab").update_directorytree_root(
             self.interface.get_configs()["local_path"]
