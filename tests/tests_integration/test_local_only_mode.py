@@ -2,6 +2,7 @@ import os.path
 import shutil
 
 import pytest
+from Demos.win32ts_logoff_disconnected import sessions
 from base import BaseTest
 
 from datashuttle.utils import formatting, validation
@@ -17,6 +18,8 @@ class TestLocalOnlyMode(BaseTest):
     @pytest.fixture(scope="function")
     def local_project(self, tmp_path):
         """
+        Use a local-only project as a fixture. This project
+        as only the local path set, all connection-related configs are `None`.
         """
         tmp_path = tmp_path / "test_local"
 
@@ -29,6 +32,8 @@ class TestLocalOnlyMode(BaseTest):
 
     def test_bad_setup(self, tmp_path):
         """
+        Test setup without providing both central_path and connection
+        method (distinguishing a full vs local-only project)
         """
         local_path = tmp_path / "test_local"  # TODO
 
@@ -45,6 +50,8 @@ class TestLocalOnlyMode(BaseTest):
 
     def test_full_to_local_project(self, project):
         """
+        Make a full project a local-only project, and check the transfer
+        functionality is now restricted.
         """
         project.update_config_file(central_path=None, connection_method=None)
 
@@ -59,6 +66,9 @@ class TestLocalOnlyMode(BaseTest):
 
     def test_local_to_full_project(self, local_project):
         """
+        Change a project from local-only to a normal project by updating
+        the relevant configs. Smoke test that general functionality is maintained
+        and that transfers work correctly.
         """
         central_path = local_project.cfg["local_path"].parent / "central"
 
@@ -73,14 +83,27 @@ class TestLocalOnlyMode(BaseTest):
 
         assert (central_path / TEST_PROJECT_NAME / "rawdata" / "sub-001" / "ses-001" / "ephys" / "test_file").is_file()
 
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
+    def test_get_next_sub_and_ses(self, project, top_level_folder):
+        """
+        Make a project with subject and session > 1 in both local
+        and central projects. Then, delete the local and run get next sub / ses
+        explicitly requesting to also check central path. However, we are
+        in local-only mode so this request is ignored.
+        """
+        test_utils.make_local_folders_with_files_in(
+            project, top_level_folder, subs=["001", "002", "003"], sessions=["01", "02"]
+        )
 
-    # test setup and make configs with bad configs
+        project.upload_entire_project()
 
-    # test full to restricted
+        shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
-    # test restricted to full
+        project.update_config_file(central_path=None, connection_method=None)
 
-    # test create and validate
+        next_sub = project.get_next_sub(top_level_folder, local_only=True)
 
-    # test get next sub
+        next_ses = project.get_next_ses(top_level_folder, local_only=True, sub="001")
 
+        assert next_sub == "sub-001"
+        assert next_ses == "ses-001"
