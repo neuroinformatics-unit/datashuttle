@@ -429,9 +429,7 @@ class TestTuiConfigs(TuiBase):
             == kwargs["central_path"]
         )
 
-    async def set_configs_content_widgets(
-        self, pilot, configs_content, kwargs  ## TODO: unused, removed!
-    ):
+    async def set_configs_content_widgets(self, pilot, kwargs):
         """
         Given a dict of options that can be set on the configs TUI
         in kwargs, set all configs widgets according to kwargs.

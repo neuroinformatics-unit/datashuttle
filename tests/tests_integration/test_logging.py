@@ -37,7 +37,7 @@ class TestLogging:
         """
         assert ds_logger.get_logger_name() == "datashuttle"
 
-    def test_start_logging(self, tmp_path, teardown_logger):
+    def test_start_logging(self, tmp_path):
         """
         Test that the central `start` logging function
         starts the named logger with the expected handlers.
@@ -70,7 +70,7 @@ class TestLogging:
         assert len(logger.handlers) == 0
         assert ds_logger.logging_is_active() is False
 
-    def test_logging_an_error(self, project, teardown_logger):  # TODO: REMOVE!
+    def test_logging_an_error(self, project):
         """
         Check that errors are caught and logged properly.
         """
@@ -109,7 +109,7 @@ class TestLogging:
     @pytest.fixture(scope="function")
     def project(self, tmp_path, clean_project_name, request):
         """
-        Setup a project with default configs to use
+        Set `up a project with default configs to use
         for testing. This fixture is distinct
         from the base.py fixture as requires
         additional logging setup / teardown.

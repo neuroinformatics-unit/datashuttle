@@ -10,10 +10,10 @@ from datashuttle.utils.custom_exceptions import (
     ConfigError,
 )
 
-TEST_PROJECT_NAME = "test_project"  # TODO: centralise
+TEST_PROJECT_NAME = "test_project"
 
 
-class TestLocalOnlyMode(BaseTest):
+class TestLocalOnlyProject(BaseTest):
 
     @pytest.fixture(scope="function")
     def local_project(self, tmp_path):
@@ -35,7 +35,7 @@ class TestLocalOnlyMode(BaseTest):
         Test setup without providing both central_path and connection
         method (distinguishing a full vs local-only project)
         """
-        local_path = tmp_path / "test_local"  # TODO
+        local_path = tmp_path / "test_local"
 
         project = DataShuttle(TEST_PROJECT_NAME)
 
