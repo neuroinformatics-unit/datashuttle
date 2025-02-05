@@ -136,11 +136,15 @@ def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
             test_project_name,
             tmp_path,
             local_path=make_test_path(tmp_path, "local", test_project_name),
-            central_path=make_test_path(tmp_path, "central", test_project_name),
+            central_path=make_test_path(
+                tmp_path, "central", test_project_name
+            ),
         )
     elif project_type == "local":
         project = DataShuttle(test_project_name)
-        project.make_config_file(local_path=make_test_path(tmp_path, "local", test_project_name))
+        project.make_config_file(
+            local_path=make_test_path(tmp_path, "local", test_project_name)
+        )
 
     cwd = os.getcwd()
     return project, cwd

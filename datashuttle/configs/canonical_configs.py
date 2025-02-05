@@ -151,7 +151,7 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
             utils.log_and_raise_error(
                 "Either both `central_path` and `connection_method` must be set, "
                 "or must both be `None` (for local-project mode).",
-                ConfigError
+                ConfigError,
             )
 
 
