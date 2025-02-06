@@ -37,7 +37,7 @@ class TestLogging:
         """
         assert ds_logger.get_logger_name() == "datashuttle"
 
-    def test_start_logging(self, tmp_path):
+    def test_start_logging(self, tmp_path, teardown_logger):
         """
         Test that the central `start` logging function
         starts the named logger with the expected handlers.
@@ -70,7 +70,7 @@ class TestLogging:
         assert len(logger.handlers) == 0
         assert ds_logger.logging_is_active() is False
 
-    def test_logging_an_error(self, project):
+    def test_logging_an_error(self, project, teardown_logger):
         """
         Check that errors are caught and logged properly.
         """
