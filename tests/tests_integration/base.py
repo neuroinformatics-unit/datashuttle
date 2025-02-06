@@ -51,6 +51,7 @@ class BaseTest:
                 local_path=tmp_path / TEST_PROJECT_NAME,
             )
         elif project_type == "local":
+            test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
             project = DataShuttle(TEST_PROJECT_NAME)
             project.make_config_file(local_path=tmp_path / TEST_PROJECT_NAME)
 
