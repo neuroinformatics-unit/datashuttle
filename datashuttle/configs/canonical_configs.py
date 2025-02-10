@@ -24,6 +24,7 @@ from typing import (
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
+import copy
 from pathlib import Path
 
 from datashuttle.utils import folders, utils
@@ -44,14 +45,6 @@ def get_canonical_configs() -> dict:
     }
 
     return canonical_configs
-
-
-def get_datatypes() -> List[str]:
-    """
-    Canonical list of datatype flags based on
-    NeuroBlueprint.
-    """
-    return ["ephys", "behav", "funcimg", "anat"]
 
 
 # -----------------------------------------------------------------------------
@@ -209,27 +202,24 @@ def check_config_types(config_dict: Configs) -> None:
 # -----------------------------------------------------------------------------
 
 
+# TODO: don't forget backward compatibility!
 def get_tui_config_defaults() -> Dict:
     """
     Get the default settings for the datatype checkboxes
-    in the TUI. By default, they are all checked.
+    in the TUI.
+
+    Two sets are maintained (one for creating,
+    one for transfer) which have different defaults.
+    By default, all broad datatype checkboxes are displayed,
+    and narrow are turned off.
     """
     settings = {
         "tui": {
-            "create_checkboxes_on": {
-                "behav": True,
-                "ephys": True,
-                "funcimg": True,
-                "anat": True,
-            },
+            "create_checkboxes_on": {},
             "transfer_checkboxes_on": {
-                "behav": False,
-                "ephys": False,
-                "funcimg": False,
-                "anat": False,
-                "all": True,
-                "all_datatype": False,
-                "all_non_datatype": False,
+                "all": {"on": True, "displayed": True},
+                "all_datatype": {"on": False, "displayed": True},
+                "all_non_datatype": {"on": False, "displayed": True},
             },
             "top_level_folder_select": {
                 "create_tab": "rawdata",
@@ -241,6 +231,32 @@ def get_tui_config_defaults() -> Dict:
             "dry_run": False,
         }
     }
+
+    narrow_datatypes = get_narrow_datatypes()
+
+    # Fill all datatype options
+    for broad_key in get_broad_datatypes():
+
+        settings["tui"]["create_checkboxes_on"][broad_key] = {  # type: ignore
+            "on": True,
+            "displayed": True,
+        }
+        settings["tui"]["transfer_checkboxes_on"][broad_key] = {  # type: ignore
+            "on": False,
+            "displayed": True,
+        }
+
+        if broad_key in narrow_datatypes:
+            for narrow_key in narrow_datatypes[broad_key]:
+                settings["tui"]["create_checkboxes_on"][narrow_key] = {  # type: ignore
+                    "on": False,
+                    "displayed": False,
+                }
+                settings["tui"]["transfer_checkboxes_on"][narrow_key] = {  # type: ignore
+                    "on": False,
+                    "displayed": False,
+                }
+
     return settings
 
 
@@ -263,3 +279,91 @@ def get_persistent_settings_defaults() -> Dict:
     settings.update(get_name_templates_defaults())
 
     return settings
+
+
+def get_datatypes() -> List[str]:
+    """
+    Canonical list of datatype flags based on NeuroBlueprint.
+
+    This must be kept up to date with the datatypes in the NeuroBLueprint specification.
+    """
+    all_datatypes = []
+
+    broad_datatypes = get_broad_datatypes()
+    narrow_datatypes = get_narrow_datatypes()
+
+    for datatype in broad_datatypes:
+        if datatype in narrow_datatypes:
+            all_datatypes += narrow_datatypes[datatype]
+
+    all_datatypes += broad_datatypes
+
+    return all_datatypes
+
+
+def get_broad_datatypes():
+    return ["ephys", "behav", "funcimg", "anat"]
+
+
+def get_narrow_datatypes():
+    return {
+        "ephys": ["ecephys", "icephys"],
+        "funcimg": ["cscope", "f2pe", "fmri", "fusi"],
+        "anat": [
+            "2pe",
+            "bf",
+            "cars",
+            "conf",
+            "dic",
+            "df",
+            "fluo",
+            "mpe",
+            "nlo",
+            "oct",
+            "pc",
+            "pli",
+            "sem",
+            "spim",
+            "sr",
+            "tem",
+            "uct",
+            "mri",
+        ],
+    }
+
+
+def in_place_update_settings_for_narrow_datatype(settings: dict):
+    """
+    In versions < v0.6.0, only 'broad' datatypes were implemented
+    and available in the TUI. Since, 'narrow' datatypes are introduced
+    and datatype tui can be set to be both on / off but also
+    displayed / not displayed.
+
+    This function converts the old format to the new format so that
+    all broad datatype settings (on / off) are maintained in
+    then new version.
+    """
+    canonical_tui_configs = get_tui_config_defaults()
+
+    new_create_checkbox_configs = copy.deepcopy(
+        canonical_tui_configs["tui"]["create_checkboxes_on"]
+    )
+    new_transfer_checkbox_configs = copy.deepcopy(
+        canonical_tui_configs["tui"]["transfer_checkboxes_on"]
+    )
+
+    for key in ["behav", "ephys", "funcimg", "anat"]:
+        new_create_checkbox_configs[key]["on"] = settings["tui"][
+            "create_checkboxes_on"
+        ][key]
+        new_transfer_checkbox_configs[key]["on"] = settings["tui"][
+            "transfer_checkboxes_on"
+        ][key]
+
+    for key in ["all", "all_datatype", "all_non_datatype"]:
+        new_transfer_checkbox_configs[key]["on"] = settings["tui"][
+            "transfer_checkboxes_on"
+        ][key]
+
+    settings["tui"]["create_checkboxes_on"] = new_create_checkbox_configs
+    settings["tui"]["transfer_checkboxes_on"] = new_transfer_checkbox_configs
