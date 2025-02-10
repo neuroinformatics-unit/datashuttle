@@ -138,7 +138,11 @@ def setup_ssh_key(
             "system terminal \nrather than through an IDE: "
         )
         if proceed != "y":
+            utils.print_message_to_user(
+                "Quitting SSH setup as 'y' not pressed."
+            )
             return
+
         password = input(
             "Please enter your password. Characters will not be hidden: "
         )
