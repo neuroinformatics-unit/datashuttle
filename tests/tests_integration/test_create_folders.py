@@ -8,7 +8,7 @@ import pytest
 import test_utils
 from base import BaseTest
 
-from datashuttle.configs import canonical_folders
+from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
 
@@ -49,7 +49,9 @@ class TestCreateFolders(BaseTest):
 
         sessions = ["ses-00001", "50432"]
 
-        project.create_folders("rawdata", subs, sessions, "all")
+        project.create_folders(
+            "rawdata", subs, sessions, self.broad_datatypes()
+        )
 
         base_folder = test_utils.get_top_level_folder_path(project)
 
@@ -78,7 +80,9 @@ class TestCreateFolders(BaseTest):
     @pytest.mark.parametrize("funcimg", [True, False])
     @pytest.mark.parametrize("anat", [True, False])
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
-    def test_every_datatype_passed(self, project, behav, ephys, funcimg, anat):
+    def test_every_broad_datatype_passed(
+        self, project, behav, ephys, funcimg, anat
+    ):
         """
         Check every combination of data type used and ensure only the
         correct ones are made.
@@ -102,18 +106,16 @@ class TestCreateFolders(BaseTest):
         created_folder_dict = project.create_folders(
             "rawdata", subs, sessions, datatypes_to_make
         )
-
+        folders_used = test_utils.get_all_broad_folders_used()
+        folders_used.update(
+            {"behav": behav, "ephys": ephys, "funcimg": funcimg, "anat": anat}
+        )
         # Check folder tree is not made but all others are
         test_utils.check_folder_tree_is_correct(
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=subs,
             sessions=sessions,
-            folder_used={
-                "behav": behav,
-                "ephys": ephys,
-                "funcimg": funcimg,
-                "anat": anat,
-            },
+            folder_used=folders_used,
             created_folder_dict=created_folder_dict,
         )
 
@@ -141,7 +143,7 @@ class TestCreateFolders(BaseTest):
         sub = "sub-001"
         ses = "ses-001"
 
-        project.create_folders("rawdata", sub, ses, "all")
+        project.create_folders("rawdata", sub, ses, self.broad_datatypes())
 
         # Check the correct folder names were made
         base_folder = test_utils.get_top_level_folder_path(project)
@@ -160,7 +162,6 @@ class TestCreateFolders(BaseTest):
         test_utils.check_and_cd_folder(
             join(base_folder, sub, ses, "change_funcimg")
         )
-
         test_utils.check_and_cd_folder(
             join(base_folder, sub, ses, "change_anat")
         )
@@ -168,7 +169,6 @@ class TestCreateFolders(BaseTest):
     @pytest.mark.parametrize(
         "files_to_test",
         [
-            ["all"],
             ["ephys", "behav"],
             ["ephys", "behav", "anat"],
             ["ephys", "behav", "anat", "funcimg"],
@@ -203,12 +203,7 @@ class TestCreateFolders(BaseTest):
             exclude=ses,
         )
 
-        if files_to_test == ["all"]:
-            assert ses_file_names == sorted(
-                ["ephys", "behav", "funcimg", "anat"]
-            )
-        else:
-            assert ses_file_names == sorted(files_to_test)
+        assert ses_file_names == sorted(files_to_test)
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_date_flags_in_session(self, project):
@@ -304,7 +299,9 @@ class TestCreateFolders(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-003"]
 
-        project.create_folders(top_level_folder, subs, sessions, "all")
+        project.create_folders(
+            top_level_folder, subs, sessions, self.broad_datatypes()
+        )
 
         # Check folder tree is made in the desired top level folder
         test_utils.check_working_top_level_folder_only_exists(
@@ -312,6 +309,7 @@ class TestCreateFolders(BaseTest):
             project.cfg["local_path"] / top_level_folder,
             subs,
             sessions,
+            folders_used=test_utils.get_all_broad_folders_used(),
         )
 
     # ----------------------------------------------------------------------------------------------------------
@@ -489,3 +487,6 @@ class TestCreateFolders(BaseTest):
         date = date.replace("-", "")
         time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
         return date, time_
+
+    def broad_datatypes(self):
+        return canonical_configs.get_broad_datatypes()
