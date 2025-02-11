@@ -242,9 +242,15 @@ class ConfigsContent(Container):
         if label == "No connection (local only)":
             self.query_one("#configs_central_path_input").value = ""
             self.query_one("#configs_central_path_input").disabled = True
+            self.query_one("#configs_central_path_select_button").disabled = (
+                True
+            )
             display_ssh = False
         else:
             self.query_one("#configs_central_path_input").disabled = False
+            self.query_one("#configs_central_path_select_button").disabled = (
+                False
+            )
             display_ssh = True if label == "SSH" else False
 
         self.switch_ssh_widgets_display(display_ssh)

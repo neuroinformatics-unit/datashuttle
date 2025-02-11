@@ -24,7 +24,7 @@ Choose the best terminal to run the graphical interface.
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Make a Local Project
-:link: how_tos/quick-create-and-validate
+:link: how_tos/make-a-local-project
 :link-type: doc
 
 Quick setup for project validation and folder creation.
@@ -33,7 +33,7 @@ Quick setup for project validation and folder creation.
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Make a Full Project
-:link: how_tos/make-a-new-project
+:link: how_tos/make-a-full-project
 :link-type: doc
 
 Set up a full project for data transfer.
@@ -90,8 +90,8 @@ A handy feature for template subject and session names.
 how_tos/choose-a-terminal
 how_tos/create-folders
 how_tos/install
-how_tos/quick-create-and-validate
-how_tos/make-a-new-project
+how_tos/make-a-local-project
+how_tos/make-a-full-project
 how_tos/transfer-data
 how_tos/read-logs
 how_tos/update-configs
