@@ -12,7 +12,7 @@ from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
 
-class TestMakeFolders(BaseTest):
+class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_generate_folders_default_ses(self, project):
@@ -32,7 +32,7 @@ class TestMakeFolders(BaseTest):
             base_folder=test_utils.get_top_level_folder_path(project),
             subs=["sub-00011", "sub-00002", "sub-30303"],
             sessions=[],
-            folder_used=test_utils.get_all_folders_used(),
+            folder_used=test_utils.get_all_broad_folders_used(),
         )
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
