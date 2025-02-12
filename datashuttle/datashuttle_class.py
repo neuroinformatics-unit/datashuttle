@@ -313,7 +313,7 @@ class DataShuttle:
                 format_sub,
                 format_ses,
                 local_only=True,
-                error_or_warn="error",
+                display_mode="error",
                 log=log,
                 name_templates=name_templates,
             )
@@ -1218,7 +1218,7 @@ class DataShuttle:
     def validate_project(
         self,
         top_level_folder: TopLevelFolder,
-        error_or_warn: Literal["error", "warn"],
+        display_mode: Literal["error", "warn"],
         local_only: bool = False,
     ) -> None:
         """
@@ -1235,7 +1235,7 @@ class DataShuttle:
         Parameters
         ----------
 
-        error_or_warn : Literal["error", "warn"]
+        display_mode : Literal["error", "warn"]
             If "error", an exception is raised if validation fails. Otherwise,
             warnings are shown.
 
@@ -1258,7 +1258,7 @@ class DataShuttle:
             self.cfg,
             top_level_folder,
             local_only=local_only,
-            error_or_warn=error_or_warn,
+            display_mode=display_mode,
             name_templates=name_templates,
         )
 
