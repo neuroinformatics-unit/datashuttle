@@ -205,6 +205,7 @@ def search_project_for_sub_or_ses_names(
     sub: Optional[str],
     search_str: str,
     local_only: bool,
+    return_full_path: bool = False,
 ) -> Dict:
     """
     If sub is None, the top-level level folder will be
@@ -226,6 +227,7 @@ def search_project_for_sub_or_ses_names(
         sub=sub,
         search_str=search_str,
         verbose=False,
+        return_full_path=return_full_path,
     )
 
     central_foldernames: List
@@ -240,6 +242,7 @@ def search_project_for_sub_or_ses_names(
             sub,
             search_str=search_str,
             verbose=False,
+            return_full_path=return_full_path,
         )
     return {"local": local_foldernames, "central": central_foldernames}
 
@@ -434,6 +437,7 @@ def search_sub_or_ses_level(
     ses: Optional[str] = None,
     search_str: str = "*",
     verbose: bool = True,
+    return_full_path: bool = False,
 ) -> Tuple[List[str], List[str]]:
     """
     Search project folder at the subject or session level.
@@ -482,6 +486,7 @@ def search_sub_or_ses_level(
         local_or_central,
         search_str,
         verbose,
+        return_full_path,
     )
 
     return all_folder_names, all_filenames
@@ -493,6 +498,7 @@ def search_for_folders(
     local_or_central: str,
     search_prefix: str,
     verbose: bool = True,
+    return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
     """
     Wrapper to determine the method used to search for search
@@ -513,6 +519,7 @@ def search_for_folders(
             search_prefix,
             cfg,
             verbose,
+            return_full_path,
         )
     else:
         if not search_path.exists():
@@ -523,13 +530,13 @@ def search_for_folders(
             return [], []
 
         all_folder_names, all_filenames = search_filesystem_path_for_folders(
-            search_path / search_prefix
+            search_path / search_prefix, return_full_path
         )
     return all_folder_names, all_filenames
 
 
 def search_filesystem_path_for_folders(
-    search_path_with_prefix: Path,
+    search_path_with_prefix: Path, return_full_path: bool = False
 ) -> Tuple[List[str], List[str]]:
     """
     Use glob to search the full search path (including prefix) with glob.
@@ -538,9 +545,16 @@ def search_filesystem_path_for_folders(
     all_folder_names = []
     all_filenames = []
     for file_or_folder in glob.glob(search_path_with_prefix.as_posix()):
+
+        file_or_folder = Path(file_or_folder)
+
         if os.path.isdir(file_or_folder):
-            all_folder_names.append(os.path.basename(file_or_folder))
+            all_folder_names.append(
+                file_or_folder if return_full_path else file_or_folder.name
+            )
         else:
-            all_filenames.append(os.path.basename(file_or_folder))
+            all_filenames.append(
+                file_or_folder if return_full_path else file_or_folder.name
+            )
 
     return all_folder_names, all_filenames
