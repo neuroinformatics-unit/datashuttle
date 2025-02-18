@@ -64,7 +64,7 @@ class ProjectManagerScreen(Screen):
             if self.interface.project.is_local_project():
                 # No transferring for a local project, placeholder tab
                 yield TabPane(
-                    "Transfer", disabled=True, id="placeholder_tranfser_tab"
+                    "Transfer", disabled=True, id="placeholder_transfer_tab"
                 )
             else:
                 yield transfer.TransferTab(
@@ -141,7 +141,7 @@ class ProjectManagerScreen(Screen):
 
         # project changed from local to full
         old_project_type = (
-            "local" if any(self.query("#placeholder_tranfser_tab")) else "full"
+            "local" if any(self.query("#placeholder_transfer_tab")) else "full"
         )
         project_type = (
             "local" if self.interface.project.is_local_project() else "full"

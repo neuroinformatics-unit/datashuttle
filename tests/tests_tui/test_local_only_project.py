@@ -39,7 +39,7 @@ class TestTuiLocalOnlyProject(TuiBase):
                 "central_host_username": None,
             }
             assert pilot.app.screen.query_one(
-                "#placeholder_tranfser_tab"
+                "#placeholder_transfer_tab"
             ).disabled
 
             await pilot.pause()
@@ -170,7 +170,7 @@ class TestTuiLocalOnlyProject(TuiBase):
                 pilot, project_name
             )
             assert pilot.app.screen.query_one(
-                "#placeholder_tranfser_tab"
+                "#placeholder_transfer_tab"
             ).disabled
 
             assert pilot.app.screen.interface.project.cfg == {
