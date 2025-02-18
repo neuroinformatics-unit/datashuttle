@@ -215,7 +215,6 @@ def check_config_types(config_dict: Configs) -> None:
 # -----------------------------------------------------------------------------
 
 
-# TODO: don't forget backward compatibility!
 def get_tui_config_defaults() -> Dict:
     """
     Get the default settings for the datatype checkboxes
@@ -295,7 +294,7 @@ def get_datatypes() -> List[str]:
     """
     Canonical list of datatype flags based on NeuroBlueprint.
 
-    This must be kept up to date with the datatypes in the NeuroBLueprint specification.
+    This must be kept up to date with the datatypes in the NeuroBlueprint specification.
     """
     return get_broad_datatypes() + quick_get_narrow_datatypes()
 

@@ -1,4 +1,3 @@
-# 1) make one of every datatype and check its made
 import os
 
 import pytest
@@ -8,10 +7,18 @@ from base import BaseTest
 from datashuttle.configs import canonical_configs
 
 
-class TestDatatypesCreateFolders(BaseTest):
+class TestDatatypes(BaseTest):
+    """
+    Tests for creating folders and transfer (very similar to other tests)
+    however which test the creation and transfer of narrow datatypes.
+    Other tests used broad datatypes.
+    """
 
     def test_create_narrow_datatypes(self, project):
-        """ """
+        """
+        Create all narrow datatype folders and check
+        they are created as expected.
+        """
         # Make folder tree including all narrow datatypes
         subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
@@ -34,6 +41,10 @@ class TestDatatypesCreateFolders(BaseTest):
         )
 
     def get_narrow_only_datatypes_used(self, used=True):
+        """
+        This is similar to test_utils.get_all_broad_folders_used
+        but for narrow datatypes.
+        """
         return {
             key: used for key in canonical_configs.quick_get_narrow_datatypes()
         } | {key: False for key in canonical_configs.get_broad_datatypes()}
@@ -44,15 +55,18 @@ class TestDatatypesCreateFolders(BaseTest):
         project,
         upload_or_download,
     ):
-        """ """
+        """
+        Create a project with narrow datatypes and check these
+        folders are transferred as expected.
+        """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
+        # Unfortunately on Windows we are encountering 'The command line is too long'
+        # and so cannot test against all datatypes here.
         some_narrow_datatypes = canonical_configs.quick_get_narrow_datatypes()[
             :10
         ]
 
-        # Unfortunately on Windows we are encountering 'The command line is too long'
-        # and so cannot test against all datatypes here.
         datatypes_used = self.get_narrow_only_datatypes_used(used=False)
         for key in some_narrow_datatypes:
             datatypes_used[key] = True

@@ -227,7 +227,13 @@ def get_test_config_arguments_dict(
 
 def get_all_broad_folders_used(value=True):
     """
-    TODO DOC
+    The `folders_used` construct tells the tests which
+    folders were used (e.g. created or transferred) and
+    which are not. This means the expected datatypes
+    can be checked.
+
+    When we want to get the broad folders used, we set all
+    broad datatypes to `True` and all narrow datatype names to `False`.
     """
     broad_datatypes = {
         name: value for name in canonical_configs.get_broad_datatypes()
