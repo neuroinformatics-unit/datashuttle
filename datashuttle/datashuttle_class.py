@@ -1221,6 +1221,7 @@ class DataShuttle:
         top_level_folder: TopLevelFolder,
         display_mode: DisplayMode,
         local_only: bool = False,
+        strict_mode: bool = False,
     ) -> None:
         """
         Perform validation on the project. This checks the subject
@@ -1255,6 +1256,7 @@ class DataShuttle:
             local_only=local_only,
             display_mode=display_mode,
             name_templates=name_templates,
+            strict_mode=strict_mode,
         )
 
         ds_logger.close_log_filehandler()
