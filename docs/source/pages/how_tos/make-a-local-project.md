@@ -2,7 +2,7 @@
 
 **datashuttle** can be used to create and validate
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) projects,
-as well as transfer data. If you want to quickly create or validate a project folders,
+as well as transfer data. If you want to quickly create or validate a project's folders,
 but not transfer data, you can make a local-only project and immediately get started.
 
 ::::{tab-set}
