@@ -28,11 +28,6 @@ are now disabled).
 ```
 <br>
 
-When navigating to the project make, it will be possible to [Create Folders](how-to-create-folders)
-but the [Transfer](how-to-transfer-data) functionality will be disabled.
-
-Currently, validation is not available through the graphical interface.
-
 :::
 
 :::{tab-item} Python API
