@@ -1222,7 +1222,7 @@ class DataShuttle:
         display_mode: DisplayMode,
         local_only: bool = False,
         strict_mode: bool = False,
-    ) -> None:
+    ) -> List[str]:
         """
         Perform validation on the project. This checks the subject
         and session level folders to ensure there are no NeuroBlueprint
@@ -1250,7 +1250,7 @@ class DataShuttle:
         if self.is_local_project():
             local_only = True
 
-        validation.validate_project(
+        error_messages = validation.validate_project(
             self.cfg,
             top_level_folder,
             local_only=local_only,
@@ -1260,6 +1260,8 @@ class DataShuttle:
         )
 
         ds_logger.close_log_filehandler()
+
+        return error_messages
 
     @staticmethod
     def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
