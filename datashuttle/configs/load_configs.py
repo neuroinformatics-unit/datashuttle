@@ -78,9 +78,6 @@ def convert_str_and_pathlib_paths(
     for path_key in canonical_configs.keys_str_on_file_but_path_in_class():
         value = config_dict[path_key]
 
-        if path_key == "central_path" and value is None:
-            continue
-
         if value:
             if direction == "str_to_path":
                 config_dict[path_key] = Path(value)
