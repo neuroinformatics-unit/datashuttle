@@ -180,10 +180,10 @@ class DataShuttle:
 
         datatype : Union[str, List[str]]
                 The datatype to make in the sub / ses folders.
-                (e.g. "ephys", "behav", "anat"). If "all"
-                is selected, all datatypes permitted in
-                NeuroBlueprint will be created. If "" is passed
-                no datatype will be created.
+                (e.g. "ephys", "behav", "anat"). If "" is
+                passed no datatype will be created. Broad or
+                Narrow canonical NeuroBlueprint datatypes are
+                accepted.
 
         bypass_validation : bool
             If `True`, folders will be created even if they are not
@@ -222,7 +222,7 @@ class DataShuttle:
 
         Examples
         --------
-        project.create_folders("rawdata", "sub-001", datatype="all")
+        project.create_folders("rawdata", "sub-001", datatype="behav")
 
         project.create_folders("rawdata",
                              "sub-002@TO@005",
@@ -362,7 +362,8 @@ class DataShuttle:
             sub_names but requiring a "ses-" prefix.
 
         datatype :
-            see create_folders()
+            The (broad or narrow) NeuroBlueprint datatypes to transfer.
+            If "all", any broad or narrow datatype folder will be transferred.
 
         overwrite_existing_files :
             If `False`, files on central will never be overwritten
