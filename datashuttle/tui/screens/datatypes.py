@@ -27,6 +27,37 @@ from textual.widgets.selection_list import Selection
 # Select Displayed Datatypes Screen
 # --------------------------------------------------------------------------------------
 
+tooltips = {
+    "ephys": "electrophysiology",
+    "behav": "behaviour",
+    "funcimg": "functional imaging",
+    "anat": "anatomy",
+    "ecephys": "extracellular electrophysiology",
+    "icephys": "intracellular electrophysiology",
+    "cscope": "head-mounted widefield macroscope",
+    "f2pe": "functional 2-photon excitation imaging",
+    "fmri": "functional magnetic resonance imaging",
+    "fusi": "functional ultra-sound imaging",
+    "2pe": "2-photon excitation microscopy",
+    "bf": "bright-field microscopy",
+    "cars": "coherent anti-Stokes Raman spectroscopy",
+    "conf": "confocal microscopy",
+    "dic": "differential interference contrast microscopy",
+    "df": "dark-field microscopy",
+    "fluo": "fluorescence microscopy",
+    "mpe": "multi-photon excitation microscopy",
+    "nlo": "nonlinear optical microscopy",
+    "oct": "optical coherence tomography",
+    "pc": "phase-contrast microscopy",
+    "pli": "polarized-light microscopy",
+    "sem": "scanning electron microscopy",
+    "spim": "selective plane illumination microscopy",
+    "sr": "super-resolution microscopy",
+    "tem": "transmission electron microscopy",
+    "uct": "micro-CT",
+    "mri": "magnetic resonance imaging",
+}
+
 
 class DisplayedDatatypesScreen(ModalScreen):
     """
@@ -71,7 +102,12 @@ class DisplayedDatatypesScreen(ModalScreen):
         the persistent settings and display.
         """
         selections = [
-            Selection(datatype, idx, setting["displayed"])
+            Selection(
+                datatype,
+                idx,
+                setting["displayed"],
+                id=f"#{self.get_checkbox_name(datatype)}",
+            )
             for idx, (datatype, setting) in enumerate(
                 self.datatype_config.items()
             )
@@ -96,6 +132,14 @@ class DisplayedDatatypesScreen(ModalScreen):
             ),
             id="display_datatypes_screen_container",
         )
+
+    # TODO: this doesn't work, ask on textualize
+    # def on_mount(self) -> None:
+    #     """
+    #     """
+    #     for datatype in self.datatype_config.keys():
+    #         checkbox = self.query_one("#displayed_datatypes_selection_list").get_option(f"#{self.get_checkbox_name(datatype)}")
+    #         checkbox.tooltip = tooltips[datatype]
 
     def on_button_pressed(self, event):
         """
@@ -125,6 +169,10 @@ class DisplayedDatatypesScreen(ModalScreen):
 
         if not is_checked:
             self.datatype_config[datatype_name]["on"] = False
+
+    # TODO
+    def get_checkbox_name(self, datatype):
+        return f"{self.create_or_transfer}_{datatype}_checkbox"
 
 
 # --------------------------------------------------------------------------------------
@@ -205,6 +253,14 @@ class DatatypeCheckboxes(Static):
         self.interface.save_tui_settings(
             self.datatype_config, self.settings_key
         )
+
+    def on_mount(self) -> None:
+        """ """
+        for datatype in self.datatype_config.keys():
+            if self.datatype_config[datatype]["displayed"]:
+                self.query_one(
+                    f"#{self.get_checkbox_name(datatype)}"
+                ).tooltip = tooltips[datatype]
 
     def selected_datatypes(self) -> List[str]:
         """
