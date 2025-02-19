@@ -81,3 +81,5 @@ with rendering errors.
 
 Once you've chosen a terminal, get started with
 **datashuttle** with our [Getting Started Tutorial](tutorial-getting-started).
+
+To quit **datashuttle** in the terminal, press `CTRL+C`.
