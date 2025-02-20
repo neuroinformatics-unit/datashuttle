@@ -139,6 +139,12 @@ class DisplayedDatatypesScreen(ModalScreen):
             id="display_datatypes_screen_container",
         )
 
+    def on_mount(self):
+        pass
+
+    #    self.query_one("#display_datatypes_screen_container").action_scroll_up()
+    # assert False, f"{dir(self.query_one('#displayed_datatypes_selection_list'))}"
+
     def on_button_pressed(self, event):
         """
         When 'Save' is pressed, the configs copied on this class
@@ -162,6 +168,7 @@ class DisplayedDatatypesScreen(ModalScreen):
         the 'displayed' status and save to disk.
         """
         datatype_name = event.selection.prompt.plain
+        datatype_name = datatype_name.split(" ")[0]
         is_checked = not event.selection.initial_state
         self.datatype_config[datatype_name]["displayed"] = is_checked
 
