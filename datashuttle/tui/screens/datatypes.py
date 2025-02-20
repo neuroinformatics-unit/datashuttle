@@ -28,6 +28,7 @@ from textual.widgets.selection_list import Selection
 # --------------------------------------------------------------------------------------
 
 tooltips = {
+    # datatypes
     "ephys": "electrophysiology",
     "behav": "behaviour",
     "funcimg": "functional imaging",
@@ -56,6 +57,10 @@ tooltips = {
     "tem": "transmission electron microscopy",
     "uct": "micro-CT",
     "mri": "magnetic resonance imaging",
+    # transfer special keys
+    "all": "transfer everything in the session folder",
+    "all_datatype": "transfer datatype folders only",
+    "all_non_datatype": "transfer non-datatype folders only",
 }
 
 
@@ -101,17 +106,18 @@ class DisplayedDatatypesScreen(ModalScreen):
         Collect the datatypes names and status from
         the persistent settings and display.
         """
-        selections = [
-            Selection(
-                datatype,
+        selections = []
+        for idx, (datatype, setting) in enumerate(
+            self.datatype_config.items()
+        ):
+            selection = Selection(
+                f"{datatype} ({tooltips[datatype]})",
                 idx,
                 setting["displayed"],
-                id=f"#{self.get_checkbox_name(datatype)}",
+                id=f"#{get_checkbox_name(self.create_or_transfer, datatype)}",
             )
-            for idx, (datatype, setting) in enumerate(
-                self.datatype_config.items()
-            )
-        ]
+            selections.append(selection)
+
         yield Container(
             Vertical(
                 Label(
@@ -132,14 +138,6 @@ class DisplayedDatatypesScreen(ModalScreen):
             ),
             id="display_datatypes_screen_container",
         )
-
-    # TODO: this doesn't work, ask on textualize
-    # def on_mount(self) -> None:
-    #     """
-    #     """
-    #     for datatype in self.datatype_config.keys():
-    #         checkbox = self.query_one("#displayed_datatypes_selection_list").get_option(f"#{self.get_checkbox_name(datatype)}")
-    #         checkbox.tooltip = tooltips[datatype]
 
     def on_button_pressed(self, event):
         """
@@ -169,10 +167,6 @@ class DisplayedDatatypesScreen(ModalScreen):
 
         if not is_checked:
             self.datatype_config[datatype_name]["on"] = False
-
-    # TODO
-    def get_checkbox_name(self, datatype):
-        return f"{self.create_or_transfer}_{datatype}_checkbox"
 
 
 # --------------------------------------------------------------------------------------
@@ -229,12 +223,12 @@ class DatatypeCheckboxes(Static):
         ]
 
     def compose(self) -> ComposeResult:
-        for datatype_name, datatype_setting in self.datatype_config.items():
-            if datatype_setting["displayed"]:
+        for datatype, setting in self.datatype_config.items():
+            if setting["displayed"]:
                 yield Checkbox(
-                    datatype_name.replace("_", " "),
-                    id=self.get_checkbox_name(datatype_name),
-                    value=datatype_setting["on"],
+                    datatype.replace("_", " "),
+                    id=get_checkbox_name(self.create_or_transfer, datatype),
+                    value=setting["on"],
                 )
 
     @on(Checkbox.Changed)
@@ -247,7 +241,7 @@ class DatatypeCheckboxes(Static):
         for datatype in self.datatype_config.keys():
             if self.datatype_config[datatype]["displayed"]:
                 self.datatype_config[datatype]["on"] = self.query_one(
-                    f"#{self.get_checkbox_name(datatype)}"
+                    f"#{get_checkbox_name(self.create_or_transfer, datatype)}"
                 ).value
 
         self.interface.save_tui_settings(
@@ -259,7 +253,7 @@ class DatatypeCheckboxes(Static):
         for datatype in self.datatype_config.keys():
             if self.datatype_config[datatype]["displayed"]:
                 self.query_one(
-                    f"#{self.get_checkbox_name(datatype)}"
+                    f"#{get_checkbox_name(self.create_or_transfer, datatype)}"
                 ).tooltip = tooltips[datatype]
 
     def selected_datatypes(self) -> List[str]:
@@ -274,12 +268,15 @@ class DatatypeCheckboxes(Static):
         ]
         return selected_datatypes
 
-    def get_checkbox_name(self, datatype):
-        return f"{self.create_or_transfer}_{datatype}_checkbox"
-
 
 # Helpers
 # --------------------------------------------------------------------------------------
+
+
+def get_checkbox_name(
+    create_or_transfer: Literal["create", "transfer"], datatype
+):
+    return f"{create_or_transfer}_{datatype}_checkbox"
 
 
 def get_tui_settings_key_name(
