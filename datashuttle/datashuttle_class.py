@@ -34,6 +34,7 @@ from datashuttle.configs import (
     load_configs,
 )
 from datashuttle.configs.config_class import Configs
+from datashuttle.datashuttle_functions import format_top_level_folder
 from datashuttle.utils import (
     ds_logger,
     folders,
@@ -1218,7 +1219,7 @@ class DataShuttle:
     @check_configs_set
     def validate_project(
         self,
-        top_level_folder: TopLevelFolder,
+        top_level_folder: Optional[TopLevelFolder],
         display_mode: DisplayMode,
         local_only: bool = False,
         strict_mode: bool = False,
@@ -1230,6 +1231,10 @@ class DataShuttle:
 
         Parameters
         ----------
+
+        top_level_folder : TopLevelFolder | None
+            Folder to check, either "rawdata" or "derivatives". If ``None``,
+            will check both folders.
 
         display_mode : DisplayMode
             The validation issues are displayed as ``"error"`` (raise error)
@@ -1258,9 +1263,13 @@ class DataShuttle:
         if self.is_local_project():
             local_only = True
 
+        top_level_folder_to_validate = format_top_level_folder(
+            top_level_folder
+        )
+
         error_messages = validation.validate_project(
             self.cfg,
-            top_level_folder,
+            top_level_folder_to_validate,
             local_only=local_only,
             display_mode=display_mode,
             name_templates=name_templates,

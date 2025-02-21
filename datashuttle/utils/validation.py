@@ -87,9 +87,10 @@ def get_template_error(name, regexp, path_):
     )
 
 
-def get_missing_top_level_folder_error(path_):
+# TODO: TYPE HINTS!
+def get_missing_top_level_folder_error(path_, local_or_central):
     return handle_path(
-        "The local project must contain a 'rawdata' or 'derivatives' folder.",
+        f"TOP_LEVEL_FOLDER: The {local_or_central} project must contain a 'rawdata' or 'derivatives' folder.",
         path_,
     )
 
@@ -137,21 +138,12 @@ def validate_list_of_names(
     prefix: Prefix
         Whether these are subject (sub) or session (ses) level names
 
-    display_mode: DisplayMode
-        If an invalid case is found, whether to raise error or warning
+    name_templates: Optional[Dict]
+        A `name_template` dictionary to validate against. See `set_name_templates()`.
 
-    check_duplicates : bool
+    check_value_lengths : bool
         If `True`, check that the prefix-<value> value lengths
         are consistent across the passed list.
-
-    log: bool
-        If `True`, output will also be logged to "datashuttle" logger.
-
-    Notes
-    ------
-    Each subfunction called in this function loops over the entire
-    list of names. This is done in this way so each subfunction
-    is modular. However for large projects this may become slow.
     """
     if len(path_or_name_list) == 0:
         return []
@@ -200,7 +192,9 @@ def prefix_is_duplicate_or_has_bad_values(
     name: str, prefix: Prefix, path_: Path | None
 ) -> List[str]:
     """
-    TODO
+    Check that the prefix (sub- or ses-) is found only
+    once in the name and that its value can be converted
+    to integer.
     """
     value = re.findall(f"{prefix}(.*?)(?=_|$)", name)
 
@@ -223,12 +217,9 @@ def new_name_duplicates_existing(
     prefix: Prefix,
 ) -> List[str]:
     """
-    Check that a subject or session does not already exist
-    that shares a sub / ses id with the new_name.
-
-    When creating new subject or session files, if the
-    sub or ses id already exists, the full subject or session
-    name should match exactly.
+    Check that a subject or session value does not duplicate
+    an existing value. The only case this is allowed is
+    when the names match exactly.
 
     For example, if "sub-001" exists, we can pass
     "sub-001" as a valid subject name (for example, when making sessions).
@@ -269,9 +260,6 @@ def names_dont_match_templates(
     """
     Test a list of subject or session names against
     the respective `name_templates`, a regexp template.
-
-    If checking `name_templates` is on, an invalid result will be given if the
-    name does not re.fullmatch the regexp.
     """
     if name_templates is None:
         return []
@@ -293,7 +281,11 @@ def names_dont_match_templates(
 
 
 def get_path_and_name(path_or_name: Path | str) -> Tuple[Optional[Path], str]:
-    """ """
+    """
+    Convenience function to get the folder name
+    from something that is either a Path (pointing
+    to the folder) or a str of the folder name itself.
+    """
     if isinstance(path_or_name, Path):
         return path_or_name, path_or_name.name
     else:
@@ -307,13 +299,14 @@ def replace_tags_in_regexp(regexp: str) -> str:
     allow template to be formatted like `sub-\d\d_@DATE@` as it
     is convenient for auto-completion in the TUI.
 
-    Therefore we must replace the tags in the regexp with their
+    Therefore, we must replace the tags in the regexp with their
     actual regexp equivalent before comparison.
     Note `replace_date_time_tags_in_name()` operates in place on a list.
     """
     regexp_list = [regexp]
     date_regexp = "\d\d\d\d\d\d\d\d"
     time_regexp = "\d\d\d\d\d\d"
+
     formatting.replace_date_time_tags_in_name(
         regexp_list,
         datetime_with_key=formatting.format_datetime(date_regexp, time_regexp),
@@ -328,10 +321,7 @@ def name_begins_with_bad_key(
 ) -> List[str]:
     """
     Check that a list of NeuroBlueprint names begin
-    with the required subject or session.
-
-    Returns `True` if an invalid name was found, along
-     with a message detailing the error.
+    with the required prefix (sub- or ses-).
     """
     if name[:4] != f"{prefix}-":
         return [get_name_error(name, prefix, path_)]
@@ -346,9 +336,6 @@ def names_include_special_characters(
     Check that a list of NeuroBlueprint formatted
     names do not contain special characters (i.e. characters
     that are not integers, letters, dash or underscore).
-
-    Returns `True` if an invalid name was found, along
-    with a message detailing the error.
     """
     if name_has_special_character(name):
         return [get_special_char_error(name, path_)]
@@ -368,9 +355,6 @@ def dashes_and_underscore_alternate_incorrectly(
     have the "-" and "-" ordered correctly. Names should be
     key-value pairs separated by underscores e.g.
     sub-001_ses-001.
-
-    Returns `True` if an invalid name was found, along
-    with a message detailing the error.
     """
     discrim = {"-": 1, "_": -1}
 
@@ -399,12 +383,8 @@ def value_lengths_are_inconsistent(
     """
     Given a list of NeuroBlueprint-formatted subject or session
     names, determine if there are inconsistent value lengths for
-    the sub or ses key.
-
-    Returns `True` if an invalid name was found, along
-    with a message detailing the error.
+    the sub or ses key. e.g. ["sub-01", "sub-001"] is an error.
     """
-    # TODO: this is all getting insane...
     names_list = [
         path_or_name if isinstance(path_or_name, str) else path_or_name.name
         for path_or_name in path_or_names_list
@@ -432,7 +412,9 @@ def datetime_are_iso_format(
     name: str,
     path_: Path | None,
 ) -> List[str]:
-    """ """
+    """
+    Check formatting for date-, time-, or datetime- tags.
+    """
     formats = {
         "datetime": "%Y%m%dT%H%M%S",
         "time": "%H%M%S",
@@ -464,51 +446,12 @@ def datetime_are_iso_format(
     return error_message
 
 
-def duplicated_prefix_values(
-    path_or_names_list: List[Path] | List[str], prefix: Prefix
-) -> List[str]:
-    """
-    Check a list of subject or session names for duplicate
-    ids (e.g. not allowing ["sub-001", "sub-001_@DATE@"])
-
-    This is a quick function however it will raise if two
-    exact duplicates are in the list (e.g. ["sub-001", "sub-001"]).
-    This may happen (e.g. if the same subject is on local and
-    central). See `new_name_duplicates_existing()` for a
-    function that permits exact matches.
-
-    Returns `True` if an invalid name was found, along
-    with a message detailing the error.
-    """
-    names_list: List[str]
-    if isinstance(path_or_names_list[0], Path):
-        names_list = [path_.name for path_ in path_or_names_list]  # type: ignore
-    else:
-        names_list = path_or_names_list  # type: ignore
-
-    int_values = utils.get_values_from_bids_formatted_name(
-        names_list, prefix, return_as_int=True
-    )
-
-    has_duplicate_ids = not utils.all_unique(int_values)
-
-    error_message = []
-    if (
-        has_duplicate_ids
-    ):  # TODO: this is an edge case that is only relevant for a passed list of names. Maybe we can remove this...
-        error_message.append(
-            f"{prefix} names must all have unique integer ids"
-            f" after the {prefix} prefix."
-        )
-    return error_message
-
-
 def raise_display_mode(
     message: str, display_mode: DisplayMode, log: bool
 ) -> None:
     """
-    Given an error message, raise an error or warning, and log or
-    do not log, depending on the passed arguments.
+    Show a message by raising an error, displaying warning, or printing.
+    Optionally log with the current datashuttle logger.
     """
     if display_mode == "error":
         utils.log_and_raise_error(message, NeuroBlueprintError)
@@ -534,7 +477,7 @@ def raise_display_mode(
 
 def validate_project(
     cfg: Configs,
-    top_level_folder: TopLevelFolder,
+    top_level_folder_list: List[TopLevelFolder],
     local_only: bool = False,
     display_mode: DisplayMode = "error",
     log: bool = True,
@@ -544,22 +487,14 @@ def validate_project(
     """
     Validate all subject and session folders within a project.
 
-    A list of all subjects and sessions per-subject is retrieved from
-    the project. We want to check all names at a certain level (e.g.
-    all subject filenames contain the same number of "sub-" value digits).
-    For duplicate checks, exact duplicates are allowed (for example
-    subjects will be duplicated across `local_path` and `central_path`)
-    but subject / sessions that share the same value but are otherwise
-    different are not allowed.
-
     Parameters
     -----------
 
     cfg : Configs
         datashuttle Configs class.
 
-    top_level_folder:  TopLevelFolder
-        The top level folder to validate.
+    top_level_folder_list:  List[TopLevelFolder]
+        The top level folders to validate.
 
     local_only : bool
         If `True`, only project folders in the `local_path` will
@@ -588,43 +523,49 @@ def validate_project(
     # Check basic things about the project (e.g. contains a top-level folder)
     error_messages += check_high_level_project_structure(cfg, local_only)
 
-    if strict_mode:
-        error_messages += check_strict_mode(cfg, top_level_folder, local_only)
+    for top_level_folder in top_level_folder_list:
 
-    # Get a list of paths to every sub- or ses- folder
-    folder_paths = getters.get_all_sub_and_ses_paths(
-        cfg,
-        top_level_folder,
-        local_only,
-    )
+        if strict_mode:
+            error_messages += check_strict_mode(
+                cfg, top_level_folder, local_only
+            )
 
-    # Check subject folders are valid
-    error_messages += validate_list_of_names(
-        folder_paths["sub"],
-        prefix="sub",
-        name_templates=name_templates,
-    )
-
-    # Sessions a little more complicated. We need to check
-    # for session duplicates separately for each subject.
-    # However, we need to check inconsistent ses-<value> lengths
-    # across the entire project.
-
-    # Check all names as well as duplicates per-subject
-    for ses_paths in folder_paths["ses"].values():
-
-        error_messages += validate_list_of_names(
-            ses_paths,
-            "ses",
-            check_value_lengths=False,
-            name_templates=name_templates,  # TODO: why did tests miss this!?!?
+        # Get a list of paths to every sub- or ses- folder
+        folder_paths = getters.get_all_sub_and_ses_paths(
+            cfg,
+            top_level_folder,
+            local_only,
         )
 
-    # Next, check inconsistent value lengths across the entire project
-    all_ses_paths = list(chain(*folder_paths["ses"].values()))
+        # Check subject folders are valid
+        error_messages += validate_list_of_names(
+            folder_paths["sub"],
+            prefix="sub",
+            name_templates=name_templates,
+        )
 
-    stripped_ses_paths = strip_uncheckable_names(all_ses_paths, "ses")
-    error_messages += value_lengths_are_inconsistent(stripped_ses_paths, "ses")
+        # Sessions a little more complicated. We need to check
+        # for session duplicates separately for each subject.
+        # However, we need to check inconsistent ses-<value> lengths
+        # across the entire project.
+
+        # Check all names as well as duplicates per-subject
+        for ses_paths in folder_paths["ses"].values():
+
+            error_messages += validate_list_of_names(
+                ses_paths,
+                "ses",
+                check_value_lengths=False,
+                name_templates=name_templates,
+            )
+
+        # Next, check inconsistent value lengths across the entire project
+        all_ses_paths = list(chain(*folder_paths["ses"].values()))
+
+        stripped_ses_paths = strip_uncheckable_names(all_ses_paths, "ses")
+        error_messages += value_lengths_are_inconsistent(
+            stripped_ses_paths, "ses"
+        )
 
     # Display the collected errors using the selected method
     for message in error_messages:
@@ -682,6 +623,8 @@ def validate_names_against_project(
     log : bool
         If `True`, errors or warnings are logged to "datashuttle" logger.
 
+    name_templates: Optional[Dict]
+        A `name_template` dictionary to validate against. See `set_name_templates()`.
     """
     error_messages = []
 
@@ -780,39 +723,50 @@ def validate_names_against_project(
         raise_display_mode(message, display_mode, log)
 
 
-# TODO: FIXUP!
 def check_high_level_project_structure(
     cfg: Configs, local_only: bool
 ) -> List[str]:
     """
-    DOC
+    Perform basic validation checks on the project structure,
+    that the project folder name is valid, and that the
+    project folder contains either a "rawdata" or "derivatives"
+    folder.
     """
-    # TODO: it should be impossible to have non-valid name but check anyways
-    # actually this will raise correctly for the quick valid.ate TEst!
+    # To avoid circular imports
+    from datashuttle.utils.folders import search_for_folders
+
     error_messages = []
-    error_messages += names_include_special_characters(
-        cfg["local_path"].name, cfg["local_path"]
-    )
+
+    # Check the project name
+    if any(names_include_special_characters(cfg["local_path"].name, None)):
+        error_messages += [
+            f"PROJECT_NAME: The local project name folder {cfg['local_path'].name} "
+            f"contains non-alphanumeric characters. Path: {cfg['local_path']}"
+        ]
 
     if cfg["central_path"]:
-        error_messages += names_include_special_characters(
-            cfg["central_path"].name, cfg["central_path"]
-        )
+        if any(
+            names_include_special_characters(cfg["central_path"].name, None)
+        ):
+            error_messages += [
+                f"PROJECT_NAME: The central project name folder {cfg['central_path'].name} "
+                f"contains non-alphanumeric characters. Path: {cfg['central_path']}"
+            ]
 
+    # Check the local project folder contains rawdata or derivatives
     if (
         not (cfg["local_path"] / "rawdata").is_dir()
         and not (cfg["local_path"] / "derivatives").is_dir()
     ):
-        message = get_missing_top_level_folder_error(cfg["local_path"])
+        message = get_missing_top_level_folder_error(
+            cfg["local_path"], "local"
+        )
         error_messages.append(message)
 
     if local_only:
         return error_messages
 
-    # TODO: temporary workaround for circular imports
-    from datashuttle.utils.folders import search_for_folders
-
-    # TODO: must test this with SSH!
+    # Check the central project folder contains rawdata for derivatives
     all_folder_names, all_filenames = search_for_folders(
         cfg,
         cfg["central_path"],
@@ -825,7 +779,9 @@ def check_high_level_project_structure(
     if ("rawdata" not in all_folder_names) and (
         "derivatives" not in all_folder_names
     ):
-        message = get_missing_top_level_folder_error(cfg["central_path"])
+        message = get_missing_top_level_folder_error(
+            cfg["central_path"], "central"
+        )
         error_messages.append(message)
 
     return error_messages
@@ -834,13 +790,24 @@ def check_high_level_project_structure(
 def check_strict_mode(
     cfg: Configs, top_level_folder: TopLevelFolder, local_only: bool
 ) -> List[str]:
-    """ """
+    """
+    `strict_mode` does not allow any non-NeuroBlueprint folder to exist
+    in the project outside the datatype folder. NeuroBlueprint folders
+    are top-level folder or folder with sub-, ses- or datatype.
+
+    The reason for `strict_mode` is that NeuroBlueprint does allow other
+    folders to be in the project, but their existence means we cannot check
+    prefix typos and other issues (e.g. if subs-extra is a folder, or "rat1",
+    how do we know if it is intended to be a subject folder and validate it,
+    or just an auxiliary folder.
+    """
+    # For circular imports
+    from datashuttle.utils import folders
+
     if not local_only:
         raise ValueError(
             "`strict_mode` is currently only available for `local_only=True`."
         )
-    # TODO: temporary workaround for circular imports
-    from datashuttle.utils import folders
 
     error_messages = []
 
@@ -855,6 +822,8 @@ def check_strict_mode(
 
     for sub_level_path in sub_level_folder_paths["local"]:
 
+        # Check all folders found in a top-level folder are
+        # sub- prefixed folders.
         sub_level_name = sub_level_path.name
 
         if sub_level_name[:4] != "sub-":
@@ -873,6 +842,8 @@ def check_strict_mode(
 
         for ses_level_path in ses_level_folder_paths["local"]:
 
+            # For each sub- prefixed folder, check that all folders within
+            # the subject folder are ses- prefixed folders.
             ses_level_name = ses_level_path.name
 
             if ses_level_name[:4] != "ses-":
@@ -896,6 +867,8 @@ def check_strict_mode(
             canonical_datatypes = canonical_configs.get_datatypes()
             for datatype_level_path in search_results:
 
+                # For each ses- prefixed folder, check that
+                # only valid datatypes are included within it.
                 datatype_level_name = datatype_level_path.name
 
                 if datatype_level_name not in canonical_datatypes:
@@ -925,7 +898,14 @@ def strip_uncheckable_names(
     path_or_names_list: List[Path] | List[str],
     prefix: Prefix,
 ) -> List[Path] | List[str]:
-    """ """
+    """
+    Convenience function to remove any name in which
+    the `prefix` value (sub or ses typically) cannot be
+    converted into an integer. This is necessary as some
+    validation steps (e.g. checking duplicate names) requires
+    conversion to `int` and will fail for this reason if these
+    bad names are not removed.
+    """
     new_list = []
 
     for path_or_name in path_or_names_list:
@@ -952,16 +932,12 @@ def strip_uncheckable_names(
 # -----------------------------------------------------------------------------
 
 
-# TODO: move and refactor this...
-def datatypes_are_invalid(
+def check_datatypes_are_valid(
     datatype: Union[List[str], str], allow_all: bool = False
-) -> Tuple[bool, str]:
+) -> str | None:
     """
     Check a datatype of list of datatypes is a valid
     NeuroBlueprint datatype.
-
-    Returns `True` if an invalid name was found, along
-    with a message detailing the error.
     """
     datatype_folders = canonical_folders.get_datatype_folders()
 
@@ -984,19 +960,6 @@ def datatypes_are_invalid(
             f" {list(datatype_folders.keys())}{or_all}. "
             f"No folders were made."
         )
-        return True, message
+        return message
 
-    return False, ""
-
-
-# TODO: check all docstrings, tidy up existing
-# TODO: tidy up some functions
-
-# TODO: check_high_level_project_structure
-# TODO: check broad vs. narrow
-# TODO: tidy up check_high_level_project_structure
-
-# 1) get all datatype folders
-# 2) perform the validation checks
-
-# do docs
+    return None
