@@ -97,13 +97,9 @@ A handy feature for template subject and session names.
 how_tos/choose-a-terminal
 how_tos/create-folders
 how_tos/install
-<<<<<<< HEAD
 how_tos/make-a-local-project
 how_tos/make-a-full-project
-=======
 how_tos/quick-validate-project
-how_tos/make-a-new-project
->>>>>>> 0502149 (Start working on docs.)
 how_tos/transfer-data
 how_tos/read-logs
 how_tos/update-configs
