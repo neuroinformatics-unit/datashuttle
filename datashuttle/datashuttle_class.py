@@ -19,6 +19,7 @@ from typing import (
 
 if TYPE_CHECKING:
     from datashuttle.utils.custom_types import (
+        DisplayMode,
         OverwriteExistingFiles,
         Prefix,
         TopLevelFolder,
@@ -33,6 +34,7 @@ from datashuttle.configs import (
     load_configs,
 )
 from datashuttle.configs.config_class import Configs
+from datashuttle.datashuttle_functions import format_top_level_folder
 from datashuttle.utils import (
     ds_logger,
     folders,
@@ -313,7 +315,7 @@ class DataShuttle:
                 format_sub,
                 format_ses,
                 local_only=True,
-                error_or_warn="error",
+                display_mode="error",
                 log=log,
                 name_templates=name_templates,
             )
@@ -1217,32 +1219,39 @@ class DataShuttle:
     @check_configs_set
     def validate_project(
         self,
-        top_level_folder: TopLevelFolder,
-        error_or_warn: Literal["error", "warn"],
+        top_level_folder: Optional[TopLevelFolder],
+        display_mode: DisplayMode,
         local_only: bool = False,
-    ) -> None:
+        strict_mode: bool = False,
+    ) -> List[str]:
         """
         Perform validation on the project. This checks the subject
-        and session level folders to ensure that:
-            - the digit lengths are consistent (e.g. 'sub-001'
-              with 'sub-02' is not allowed)
-            - 'sub-' or 'ses-' is the first key of the sub / ses names
-            - names online include integers, letters, dash or underscore
-            - names are checked against name templates (if set)
-            - no duplicate names exist across the project
-              (e.g. 'sub-001' and 'sub-001_date-1010120').
+        and session level folders to ensure there are no NeuroBlueprint
+        formatting issues.
 
         Parameters
         ----------
 
-        error_or_warn : Literal["error", "warn"]
-            If "error", an exception is raised if validation fails. Otherwise,
-            warnings are shown.
+        top_level_folder : TopLevelFolder | None
+            Folder to check, either "rawdata" or "derivatives". If ``None``,
+            will check both folders.
+
+        display_mode : DisplayMode
+            The validation issues are displayed as ``"error"`` (raise error)
+            ``"warn"`` (show warning) or ``"print"``
 
         local_only : bool
-            If `True`, only the local project is validated. Otherwise, both
+            If ``True``, only the local project is validated. Otherwise, both
             local and central projects are validated. If in local-project mode,
             this flag is ignored.
+
+        strict_mode: bool
+            If `True`, only allow NeuroBlueprint-formatted folders to exist in
+            the project. By default, non-NeuroBlueprint folders (e.g. a folder
+            called 'my_stuff' in the 'rawdata') are allowed, and only folders
+            starting with sub- or ses- prefix are checked. In `Strict Mode`,
+            any folder not prefixed with sub-, ses- or a valid datatype will
+            raise a validation issue.
         """
         self._start_log(
             "validate-project",
@@ -1254,15 +1263,22 @@ class DataShuttle:
         if self.is_local_project():
             local_only = True
 
-        validation.validate_project(
+        top_level_folder_to_validate = format_top_level_folder(
+            top_level_folder
+        )
+
+        error_messages = validation.validate_project(
             self.cfg,
-            top_level_folder,
+            top_level_folder_to_validate,
             local_only=local_only,
-            error_or_warn=error_or_warn,
+            display_mode=display_mode,
             name_templates=name_templates,
+            strict_mode=strict_mode,
         )
 
         ds_logger.close_log_filehandler()
+
+        return error_messages
 
     @staticmethod
     def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
