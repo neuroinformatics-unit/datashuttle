@@ -162,6 +162,7 @@ class TestTuiLocalOnlyProject(TuiBase):
                     "#messagebox_message_label"
                 ).renderable
             )
+
             await self.close_messagebox(pilot)
 
             # Go back to the transfer screen and check the configs are

@@ -163,5 +163,12 @@ class ProjectManagerScreen(Screen):
                     f"Reloading the Project Manager screen is required.",
                     border_color="grey",
                 ),
-                self.dismiss(),
+                self.wrap_dismiss,
             )
+
+    def wrap_dismiss(self, _):
+        """
+        Need to wrap dismiss as cannot include it directly
+        in push_screen callback, or even wrapped in lambda.
+        """
+        self.dismiss()
