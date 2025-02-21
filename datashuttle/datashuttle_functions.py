@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
-    from datashuttle.utils.custom_types import DisplayMode, TopLevelFolder
+    from datashuttle.utils.custom_types import (
+        DisplayMode,
+        TopLevelFolder,
+    )
+
 from pathlib import Path
 from typing import (
     Optional,
@@ -20,10 +24,10 @@ from datashuttle.utils import (
 
 def quick_validate_project(
     project_path: str | Path,
-    top_level_folder: Optional[TopLevelFolder] = None,
+    top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
     name_templates: Optional[Dict] = None,
-):
+) -> List[str]:
     """
     Perform validation on the project. This checks the subject
     and session level folders to ensure there are not
@@ -57,25 +61,8 @@ def quick_validate_project(
         raise FileNotFoundError(
             f"Cannot perform validation. No file or folder found at `project_path`: {project_path}"
         )
-    if (
-        not (project_path / "rawdata").is_dir()
-        or not (project_path / "derivatives").is_dir()
-    ):
-        raise FileNotFoundError(
-            "`project_path` must contain a 'rawdata' or 'derivatives' folder."
-        )
 
-    # Format the top-level folders into a list
-    rawdata_and_derivatives = ["rawdata", "derivatives"]
-
-    if top_level_folder is None:
-        top_level_folders_to_validate = rawdata_and_derivatives
-    else:
-        if top_level_folder not in rawdata_and_derivatives:
-            raise ValueError(
-                f"`top_level_folder must be one of: {rawdata_and_derivatives}"
-            )
-        top_level_folders_to_validate = [top_level_folder]
+    top_level_folders_to_validate = format_top_level_folder(top_level_folder)
 
     # Create some mock configs for the validation call,
     # then for each top-level folder, run the validation
@@ -90,11 +77,34 @@ def quick_validate_project(
         input_dict=placeholder_configs,
     )
 
-    for folder in top_level_folders_to_validate:
-        validation.validate_project(
-            cfg=cfg,
-            top_level_folder=folder,  # type: ignore
-            local_only=True,
-            display_mode=display_mode,
-            name_templates=name_templates,
-        )
+    error_messages = []
+
+    error_messages += validation.validate_project(
+        cfg=cfg,
+        top_level_folder_list=top_level_folders_to_validate,
+        local_only=True,
+        display_mode=display_mode,
+        name_templates=name_templates,
+    )
+
+    return error_messages
+
+
+def format_top_level_folder(
+    top_level_folder: TopLevelFolder | None,
+) -> List[TopLevelFolder]:
+    """ """
+    rawdata_and_derivatives: List[TopLevelFolder] = ["rawdata", "derivatives"]
+
+    formatted_top_level_folders: List[TopLevelFolder]
+
+    if top_level_folder is None:
+        formatted_top_level_folders = rawdata_and_derivatives
+    else:
+        if top_level_folder not in rawdata_and_derivatives:
+            raise ValueError(
+                f"`top_level_folder must be one of: {rawdata_and_derivatives}"
+            )
+        formatted_top_level_folders = [top_level_folder]
+
+    return formatted_top_level_folders

@@ -63,11 +63,11 @@ def create_folder_trees(
         )
 
     if datatype_passed:
-        is_invalid, message = validation.datatypes_are_invalid(
-            datatype, allow_all=False
+        error_message = validation.check_datatypes_are_valid(
+            datatype, allow_all=True
         )
-        if is_invalid:
-            utils.log_and_raise_error(message, NeuroBlueprintError)
+        if error_message:
+            utils.log_and_raise_error(error_message, NeuroBlueprintError)
 
         all_paths: Dict = {}
     else:

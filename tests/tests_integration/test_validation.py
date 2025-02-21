@@ -12,10 +12,6 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 # Inconsistent sub or ses value lengths
 # -----------------------------------------------------------------------------
 
-# TODO: extend back tests to include some of the sub / ses names etc.
-# name templates on sub, is this checked?
-# add tests for inconsistent val lengths, FOR BOTH
-
 
 class TestValidation(BaseTest):
 
@@ -834,7 +830,7 @@ class TestValidation(BaseTest):
 
         _, kwargs = spy_validate_func.call_args_list[0]
         assert kwargs["display_mode"] == "print"
-        assert kwargs["top_level_folder"] == "derivatives"
+        assert kwargs["top_level_folder_list"] == ["derivatives"]
         assert kwargs["name_templates"] == {"on": False}
 
     def test_quick_validation_top_level_folder(self, project):
@@ -853,7 +849,7 @@ class TestValidation(BaseTest):
         )
 
     # ----------------------------------------------------------------------------------
-    # Test Strict Validation
+    # Test Strict Validation and High-Level Checks
     # ----------------------------------------------------------------------------------
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
@@ -915,4 +911,58 @@ class TestValidation(BaseTest):
         assert (
             str(e.value)
             == "`strict_mode` is currently only available for `local_only=True`."
+        )
+
+    @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
+    def test_check_high_level_project_structure(
+        self, project, top_level_folder
+    ):
+        """
+        Check that local and central project names are properly formatted
+        and that
+        """
+        with pytest.warns(UserWarning) as w:
+            project.validate_project(
+                top_level_folder, "warn", local_only=False
+            )
+
+        assert len(w) == 2
+        assert "TOP_LEVEL_FOLDER: The local project" in str(w[0].message)
+        assert "TOP_LEVEL_FOLDER: The central project" in str(w[1].message)
+
+        project.create_folders("rawdata", "sub-001")
+        with pytest.warns(UserWarning) as w:
+            project.validate_project(
+                top_level_folder, "warn", local_only=False
+            )
+
+        assert len(w) == 1
+        assert "TOP_LEVEL_FOLDER: The central project" in str(w[0].message)
+
+        # Should be fine now that both folders have rawdata or derivatives
+        os.makedirs(project.get_central_path() / "derivatives")
+        project.validate_project(top_level_folder, "error", local_only=False)
+
+        # Make a bad project name and check its caught
+        project.cfg["local_path"] = (
+            project.cfg["local_path"].parent / "bad@project@name@"
+        )
+        project.cfg["central_path"] = (
+            project.cfg["central_path"].parent / "bad@project@name@"
+        )
+
+        (project.cfg["local_path"] / "rawdata").mkdir(parents=True)
+        (project.cfg["central_path"] / "rawdata").mkdir(parents=True)
+
+        with pytest.warns(UserWarning) as w:
+            project.validate_project("rawdata", "warn")
+
+        assert len(w) == 2
+        assert (
+            "PROJECT_NAME: The local project name folder bad@project@name@"
+            in str(w[0].message)
+        )
+        assert (
+            "PROJECT_NAME: The central project name folder bad@project@name@"
+            in str(w[1].message)
         )
