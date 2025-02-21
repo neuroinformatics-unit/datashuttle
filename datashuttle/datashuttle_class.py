@@ -1224,25 +1224,20 @@ class DataShuttle:
     ) -> None:
         """
         Perform validation on the project. This checks the subject
-        and session level folders to ensure there are not
-        NeuroBlueprint formatting issues.
+        and session level folders to ensure there are no NeuroBlueprint
+        formatting issues.
 
         Parameters
         ----------
 
         display_mode : DisplayMode
             The validation issues are displayed as ``"error"`` (raise error)
-            ``"warn"`` (show warning) or ``"print"``.
+            ``"warn"`` (show warning) or ``"print"``
 
         local_only : bool
-<<<<<<< HEAD
-            If `True`, only the local project is validated. Otherwise, both
+            If ``True``, only the local project is validated. Otherwise, both
             local and central projects are validated. If in local-project mode,
             this flag is ignored.
-=======
-            If ``True``, only the local project is validated. Otherwise, both
-            local and central projects are validated.
->>>>>>> 1db23e3 (Tidy up the main function.)
         """
         self._start_log(
             "validate-project",
