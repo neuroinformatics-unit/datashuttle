@@ -568,8 +568,11 @@ def validate_project(
         )
 
     # Display the collected errors using the selected method
-    for message in error_messages:
-        raise_display_mode(message, display_mode, log)
+    if any(error_messages):
+        for message in error_messages:
+            raise_display_mode(message, display_mode, log)
+    else:
+        utils.print_message_to_user("No validation issues detected.")
 
     return error_messages
 

@@ -1253,6 +1253,11 @@ class DataShuttle:
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
         """
+        utils.print_message_to_user(
+            f"Logs of the validation will be stored in: "
+            f"{self.cfg.make_and_get_logging_path()}.\n\nValidation results:"
+        )
+
         self._start_log(
             "validate-project",
             local_vars=locals(),
