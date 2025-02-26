@@ -1255,7 +1255,7 @@ class DataShuttle:
         """
         utils.print_message_to_user(
             f"Logs of the validation will be stored in: "
-            f"{self.cfg.make_and_get_logging_path()}.\n\nValidation results:"
+            f"{self.cfg.make_and_get_logging_path()}\n\nValidation results:"
         )
 
         self._start_log(

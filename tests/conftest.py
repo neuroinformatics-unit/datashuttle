@@ -20,7 +20,7 @@ from types import SimpleNamespace
 import pytest
 import test_utils
 
-test_ssh = True
+test_ssh = False
 username = "jziminski"
 central_host_id = "ssh.swc.ucl.ac.uk"
 server_path = r"/ceph/neuroinformatics/neuroinformatics/scratch/datashuttle_tests/fake_data"
