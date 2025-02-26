@@ -242,7 +242,7 @@ class Configs(UserDict):
 
     def make_and_get_logging_path(
         self,
-    ) -> Path:  # TODO: this function is really weird
+    ) -> Path:
         """
         Build (and create if does not exist) the path where
         logs are stored.

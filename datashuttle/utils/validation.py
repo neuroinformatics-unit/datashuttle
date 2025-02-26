@@ -1,7 +1,16 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING, Dict, List, Optional, Tuple, Union, overload
+from typing import (
+    TYPE_CHECKING,
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+    overload,
+)
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
@@ -24,59 +33,59 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 # -----------------------------------------------------------------------------
 
 
-def get_missing_prefix_error(name, prefix, path_):
+def get_missing_prefix_error(name: str, prefix, path_: Path | None) -> str:
     return handle_path(
         f"MISSING_PREFIX: The prefix {prefix} was not found in the name: {name}",
         path_,
     )
 
 
-def get_bad_value_error(name, prefix, path_):
+def get_bad_value_error(name: str, prefix, path_: Path | None) -> str:
     return handle_path(
         f"BAD_VALUE: The value for prefix {prefix} in name {name} is not an integer.",
         path_,
     )
 
 
-def get_duplicate_prefix_error(name, prefix, path_):
+def get_duplicate_prefix_error(name: str, prefix, path_: Path | None) -> str:
     return handle_path(
         f"DUPLICATE_PREFIX: The name: {name} of contains more than one instance of the prefix {prefix}.",
         path_,
     )
 
 
-def get_name_error(name, prefix, path_):
+def get_name_error(name: str, prefix: Prefix, path_: Path | None) -> str:
     return handle_path(
         f"BAD_NAME: The name: {name} of type: {prefix} is not valid.", path_
     )
 
 
-def get_special_char_error(name, path_):
+def get_special_char_error(name: str, path_: Path | None) -> str:
     return handle_path(
         f"SPECIAL_CHAR: The name: {name}, contains characters which are not alphanumeric, dash or underscore.",
         path_,
     )
 
 
-def get_name_format_error(name, path_):
+def get_name_format_error(name: str, path_: Path | None) -> str:
     return handle_path(
         f"NAME_FORMAT: The name {name} does not consist of key-value pairs separated by underscores.",
         path_,
     )
 
 
-def get_value_length_error(prefix):
+def get_value_length_error(prefix: Prefix) -> str:
     return f"VALUE_LENGTH: Inconsistent value lengths for the prefix: {prefix} were found in the project."
 
 
-def get_datetime_error(key, name, strfmt, path_):
+def get_datetime_error(key, name: str, strfmt: str, path_: Path | None) -> str:
     return handle_path(
         f"DATETIME: Name {name} contains an invalid {key}. It should be ISO format: {strfmt}.",
         path_,
     )
 
 
-def get_template_error(name, regexp, path_):
+def get_template_error(name: str, regexp: str, path_: Path | None) -> str:
     """
     The missing full-stop at the end is intentional, to avoid
     confusion when reading the regexp.
@@ -88,27 +97,31 @@ def get_template_error(name, regexp, path_):
 
 
 # TODO: TYPE HINTS!
-def get_missing_top_level_folder_error(path_, local_or_central):
+def get_missing_top_level_folder_error(
+    path_: Path | None, local_or_central: Literal["local", "central"]
+) -> str:
     return handle_path(
         f"TOP_LEVEL_FOLDER: The {local_or_central} project must contain a 'rawdata' or 'derivatives' folder.",
         path_,
     )
 
 
-def get_duplicate_name_error(new_name, exist_name, exist_path):
+def get_duplicate_name_error(
+    new_name: str, exist_name: str, exist_path: Path | None
+) -> str:
     return handle_path(
         f"DUPLICATE_NAME: The prefix for {new_name} duplicates the name: {exist_name}.",
         exist_path,
     )
 
 
-def get_datatype_error(datatype_name, path_):
+def get_datatype_error(datatype_name: str, path_: Path | None) -> str:
     return handle_path(
         f"DATATYPE: {datatype_name} is not a valid datatype name.", path_
     )
 
 
-def handle_path(message, path_):
+def handle_path(message: str, path_: Path | None) -> str:
     if path_:
         message += f" Path: {path_.as_posix()}"
     return message
@@ -830,7 +843,7 @@ def check_strict_mode(
         sub_level_name = sub_level_path.name
 
         if sub_level_name[:4] != "sub-":
-            message = get_name_error(sub_level_name, "sub-", sub_level_path)
+            message = get_name_error(sub_level_name, "sub", sub_level_path)
             error_messages.append(message)
             continue
 
@@ -850,9 +863,7 @@ def check_strict_mode(
             ses_level_name = ses_level_path.name
 
             if ses_level_name[:4] != "ses-":
-                message = get_name_error(
-                    ses_level_name, "ses-", ses_level_path
-                )
+                message = get_name_error(ses_level_name, "ses", ses_level_path)
                 error_messages.append(message)
 
             base_folder = cfg.get_base_folder("local", top_level_folder)
