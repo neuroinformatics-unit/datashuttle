@@ -165,27 +165,27 @@ class DataShuttle:
         ----------
 
         top_level_folder : TopLevelFolder
-                Whether to make the folders in `rawdata` or
-                `derivatives`.
+            Whether to make the folders in `rawdata` or
+            `derivatives`.
 
         sub_names : Union[str, List[str]]
-                subject name / list of subject names to make
-                within the top-level project folder
-                (if not already, these will be prefixed with
-                "sub-")
+            subject name / list of subject names to make
+            within the top-level project folder
+            (if not already, these will be prefixed with
+            "sub-")
 
         ses_names : Optional[Union[str, List[str]]]
-                (Optional). session name / list of session names.
-                (if not already, these will be prefixed with
-                "ses-"). If no session is provided, no session-level
-                folders are made.
+            (Optional). session name / list of session names.
+            (if not already, these will be prefixed with
+            "ses-"). If no session is provided, no session-level
+            folders are made.
 
         datatype : Union[str, List[str]]
-                The datatype to make in the sub / ses folders.
-                (e.g. "ephys", "behav", "anat"). If "" is
-                passed no datatype will be created. Broad or
-                Narrow canonical NeuroBlueprint datatypes are
-                accepted.
+            The datatype to make in the sub / ses folders.
+            (e.g. "ephys", "behav", "anat"). If "" is
+            passed no datatype will be created. Broad or
+            Narrow canonical NeuroBlueprint datatypes are
+            accepted.
 
         bypass_validation : bool
             If `True`, folders will be created even if they are not
@@ -209,27 +209,22 @@ class DataShuttle:
 
         sub_names or ses_names may contain formatting tags
 
-            @TO@ :
-                used to make a range of subjects / sessions.
-                Boundaries of the range must be either side of the tag
-                e.g. sub-001@TO@003 will generate
-                 ["sub-001", "sub-002", "sub-003"]
+        @TO@
+            used to make a range of subjects / sessions.
+            Boundaries of the range must be either side of the tag
+            e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
 
-            @DATE@, @TIME@ @DATETIME@ :
-                will add date-<value>, time-<value> or
-                date-<value>_time-<value> keys respectively. Only one per-name
-                is permitted.
-                e.g. sub-001_@DATE@ will generate sub-001_date-20220101
-                (on the 1st january, 2022).
+        @DATE@, @TIME@ @DATETIME@
+            will add date-<value>, time-<value> or
+            date-<value>_time-<value> keys respectively. Only one per-name
+            is permitted.
+            e.g. sub-001_@DATE@ will generate sub-001_date-20220101 (on the 1st january, 2022).
 
         Examples
         --------
         project.create_folders("rawdata", "sub-001", datatype="behav")
 
-        project.create_folders("rawdata",
-                             "sub-002@TO@005",
-                             ["ses-001", "ses-002"],
-                             ["ephys", "behav"])
+        project.create_folders("rawdata", "sub-002@TO@005", ["ses-001", "ses-002"], ["ephys", "behav"])
         """
         if log:
             self._start_log("create-folders", local_vars=locals())
