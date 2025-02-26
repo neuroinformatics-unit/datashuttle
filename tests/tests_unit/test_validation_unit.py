@@ -167,7 +167,11 @@ class TestValidationUnit:
         Ensure a list of sub / ses names that contain duplicate sub / ses
         ids (e.g. ["sub-001", "sub-001_@DATE@"]) leads to an error.
         """
-        names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-001_@DATE@"]
+        names = [
+            f"{prefix}-001",
+            f"{prefix}-002",
+            f"{prefix}-001_date-20250220",
+        ]
 
         with pytest.raises(BaseException) as e:
             formatting.check_and_format_names(names, prefix)

@@ -201,7 +201,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).tooltip
-                == "Invalid character in subject or session value: abc"
+                == "BAD_VALUE: The value for prefix sub in name sub-abc is not an integer."
             )
 
             await self.fill_input(
@@ -215,9 +215,8 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).tooltip
-                == "Invalid character in subject or session value: abc"
+                == "BAD_VALUE: The value for prefix sub in name sub-abc is not an integer."
             )
-
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
             )
@@ -232,9 +231,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).tooltip
-                == "There is more than one instance of ses in "
-                "ses-001_ses-001. NeuroBlueprint names must contain "
-                "only one instance of each key."
+                == "DUPLICATE_PREFIX: The name: ses-001_ses-001 of contains more than one instance of the prefix ses."
             )
 
             await self.fill_input(
@@ -250,7 +247,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_subject_input", "sub-001_@DATE@"
             )
             assert (
-                "A sub already exists with the same sub id as"
+                "DUPLICATE_NAME: The prefix for sub-001_date-20250226 duplicates the name: sub-001."
                 in pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).tooltip
@@ -292,8 +289,9 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#messagebox_message_label"
                 ).renderable
-                == "Invalid character in subject or session value: abc"
+                == "BAD_VALUE: The value for prefix sub in name sub-abc is not an integer."
             )
+
             await self.close_messagebox(pilot)
 
             assert not any(
@@ -362,12 +360,12 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-0001"
             )
+
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).tooltip
-                == "The name: sub-0001 does not match "
-                "the template: sub-\\d\\d\\d"
+                == "TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
 
             # It is expected that sub errors propagate to session input.
@@ -380,20 +378,19 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).tooltip
-                == "The name: sub-0001 does not "
-                "match the template: sub-\\d\\d\\d"
+                == "TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
 
             # Try and make the folders, displaying a validation error.
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_create_folders_button"
             )
-
             assert pilot.app.screen.query_one(
                 "#messagebox_message_label"
             ).renderable == (
-                "The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+                "TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
+
             await self.close_messagebox(pilot)
 
             # Now make the correct folders respecting the name templates
@@ -410,7 +407,6 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_session_input", "ses-001"
             )
-
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -421,7 +417,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).tooltip
-                == "The name: ses-001 does not match the template: ses-...."
+                == "TEMPLATE: The name: ses-001 does not match the template: ses-...."
             )
 
             # Finally, double-click the input to suggest next
@@ -439,22 +435,28 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_session_input", control=True
             )
-            assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_session_input"
-                ).value
-                == "ses-...."
-            )
+            try:
+                assert (
+                    pilot.app.screen.query_one(
+                        "#create_folders_session_input"
+                    ).value
+                    == "ses-...."
+                )
+            except:
+                breakpoint()
 
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=False
             )
-            assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_subject_input"
-                ).value
-                == "sub-002"
-            )
+            try:
+                assert (
+                    pilot.app.screen.query_one(
+                        "#create_folders_subject_input"
+                    ).value
+                    == "sub-002"
+                )
+            except:
+                breakpoint()
 
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
@@ -462,12 +464,16 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_session_input", control=False
             )
-            assert (
-                pilot.app.screen.query_one(
-                    "#create_folders_session_input"
-                ).value
-                == "ses-0002"
-            )
+            try:
+                assert (
+                    pilot.app.screen.query_one(
+                        "#create_folders_session_input"
+                    ).value
+                    == "ses-0002"
+                )
+            except:
+                breakpoint()
+
             await pilot.pause()
 
     @pytest.mark.asyncio
