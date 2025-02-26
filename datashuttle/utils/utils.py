@@ -129,23 +129,28 @@ def get_values_from_bids_formatted_name(
     Find the values associated with a key from a list of all
     BIDS-formatted file / folder names. This is typically used to
     find sub / ses values.
+
+    Notes
+    -----
+    This function does not raise through datashuttle because we
+    don't want to turn off logging, as some times these exceptions
+    are caught and skipped.
     """
     all_values = []
     for name in all_names:
 
         if key not in name:
-            log_and_raise_error(
+            raise NeuroBlueprintError(
                 f"The key {key} is not found in {name}", KeyError
             )
 
         value = get_value_from_key_regexp(name, key)
 
         if len(value) > 1:
-            log_and_raise_error(
+            raise NeuroBlueprintError(
                 f"There is more than one instance of {key} in {name}. "
                 f"NeuroBlueprint names must contain only one instance of "
                 f"each key.",
-                NeuroBlueprintError,
             )
 
         if return_as_int:
@@ -165,9 +170,8 @@ def sub_or_ses_value_to_int(value: str) -> int:
     try:
         int_value = int(value)
     except ValueError:
-        log_and_raise_error(
+        raise NeuroBlueprintError(
             f"Invalid character in subject or session value: {value}",
-            NeuroBlueprintError,
         )
     return int_value
 

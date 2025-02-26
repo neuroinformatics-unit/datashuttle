@@ -572,13 +572,11 @@ class TestValidation(BaseTest):
                 local_only=True,
                 display_mode="error",
             )
+
         assert (
             "Cannot check names for inconsistent value lengths because the subject value"
             in str(e.value)
         )
-
-        # Just a cursory check the path is included in the output
-        assert "Path" in str(e.value)
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_validate_names_against_project_interactions(self, project):

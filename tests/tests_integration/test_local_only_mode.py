@@ -98,6 +98,9 @@ class TestLocalOnlyProject(BaseTest):
         project.update_config_file(
             central_path=central_path, connection_method="local_filesystem"
         )
+        (project.cfg["central_path"] / "rawdata").mkdir(
+            parents=True
+        )  # to pass validation
 
         paths_ = project.create_folders(
             "rawdata", "sub-001", "ses-001", "ephys"
