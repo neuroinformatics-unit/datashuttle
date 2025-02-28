@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>How to use Name Templates &#8212; datashuttle</title>
+    <title>How to Quickly Validate an Existing Project &#8212; datashuttle</title>
   
   
   
@@ -45,13 +45,13 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/how_tos/use-name-templates';</script>
-    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/how_tos/use-name-templates.html" />
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/how_tos/quick-validate-project';</script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/how_tos/quick-validate-project.html" />
     <link rel="icon" href="../../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Community" href="../community/index.html" />
-    <link rel="prev" title="How to Update Configs" href="update-configs.html" />
+    <link rel="next" title="How to Transfer Data" href="transfer-data.html" />
+    <link rel="prev" title="How to Make a Full Project" href="make-a-full-project.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -236,10 +236,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -381,7 +377,7 @@
     
     <li class="breadcrumb-item"><a href="../how_tos.html" class="nav-link">How To</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to use Name Templates</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to Quickly Validate an Existing Project</span></li>
   </ul>
 </nav>
 </div>
@@ -398,91 +394,36 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="how-to-use-name-templates">
-<span id="id1"></span><h1>How to use Name Templates<a class="headerlink" href="#how-to-use-name-templates" title="Link to this heading">#</a></h1>
-<p>Validation in <strong>datashuttle</strong> is by default restricted to the
-NeuroBlueprint specification. Any subject or session names
-that are not formatted correctly (e.g. not starting with
-“sub-” or “ses-” will be flagged.</p>
-<p>However, it is also possible to add custom templates to validate against
-by defining template names using ‘regular expressions’.</p>
-<p>For example, say you wanted your subjects to be in the form
-<code class="docutils literal notranslate"><span class="pre">sub-XXX_id-XXXXXX</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> is a digit (i.e. subject number with
-a 6-digit id.</p>
-<p>We can define this
-as a regexp where <code class="docutils literal notranslate"><span class="pre">\d</span></code> stands for ‘any digit`:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;sub-\d\d\d_id-\d\d\d\d\d\d&quot;</span>
-</pre></div>
+  <section class="tex2jax_ignore mathjax_ignore" id="how-to-quickly-validate-an-existing-project">
+<span id="quick-validate-projects"></span><h1>How to Quickly Validate an Existing Project<a class="headerlink" href="#how-to-quickly-validate-an-existing-project" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Currently validation is only available through the Python API.</p>
 </div>
-<p>If this is defined as a Name Template, any name that
-does not take this form will result in a validation error.
-Name templates can include <a class="reference internal" href="create-folders.html#create-folders-convenience-tags"><span class="std std-ref">convenience tags</span></a>.
-(<code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;TIME&#64;</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;DATETIME&#64;</span></code>.)</p>
-<section id="set-up-name-templates">
-<h2>Set up Name Templates<a class="headerlink" href="#set-up-name-templates" title="Link to this heading">#</a></h2>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-0">
-Graphical Interface</label><div class="sd-tab-content docutils">
-<a class="only-dark reference internal image-reference" href="../../_images/how-to-name-templates-dark.png"><img alt="../../_images/how-to-name-templates-dark.png" class="only-dark align-center" src="../../_images/how-to-name-templates-dark.png" style="width: 900px;" />
-</a>
-<a class="only-light reference internal image-reference" href="../../_images/how-to-name-templates-light.png"><img alt="../../_images/how-to-name-templates-light.png" class="only-light align-center" src="../../_images/how-to-name-templates-light.png" style="width: 900px;" />
-</a>
-<br>
-<p>Click the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> button in the <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab. Scroll down to the
-<code class="docutils literal notranslate"><span class="pre">Template</span> <span class="pre">Validation</span></code> section.</p>
-<p>Clicking the checkbox will turn on <code class="docutils literal notranslate"><span class="pre">Template</span> <span class="pre">Validation</span></code> and these
-can be set for subject and session independent. If the input is left empty,
-no name template will be applied.</p>
-<p>Fill in the subject or session name template—any changes
-will be automatically saved. These settings will persist across
-<strong>datashuttle</strong> sessions.</p>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
-Python API</label><div class="sd-tab-content docutils">
-<p>The <code class="docutils literal notranslate"><span class="pre">set_name_templates()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_name_templates()</span></code> can be used
-to set and get current name template settings.</p>
-<p><code class="docutils literal notranslate"><span class="pre">set_name_templates</span></code> takes as input the <code class="docutils literal notranslate"><span class="pre">name_template</span></code> dictionary,
-which is formatted as below:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-<span class="n">name_templates</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;on&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-\d\d\d_id-\d\d\d\d\d\d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ses&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">}</span>
+<p>The function <a class="reference internal" href="../api_index.html#datashuttle.quick_validate_project" title="datashuttle.quick_validate_project"><code class="xref myst py py-func docutils literal notranslate"><span class="pre">datashuttle.quick_validate_project</span></code></a> can be used to quickly validate a project fully conforms
+to the<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/index.html">NeuroBlueprint</a> standard. This does not require setting up
+a full <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> project, only the filepath to the project.</p>
+<p>For example, if you have an existing project
+at <code class="docutils literal notranslate"><span class="pre">/mydrive/path/to/project/project_name</span></code>
+you can validate with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle</span><span class="w"> </span><span class="kn">import</span> <span class="n">quick_validate_project</span>
 
-
-<span class="n">project</span><span class="o">.</span><span class="n">set_name_templates</span><span class="p">(</span>
-    <span class="n">name_templates</span>
+<span class="n">quick_validate_project</span><span class="p">(</span>
+    <span class="n">project_path</span><span class="o">=</span><span class="s2">&quot;/mydrive/path/to/project/project_name&quot;</span><span class="p">,</span>
+    <span class="n">display_mode</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 </pre></div>
 </div>
-<p>In the above example, validation with name templates is
-turned on <code class="docutils literal notranslate"><span class="pre">&quot;on:</span> <span class="pre">True</span></code>. A template is set for the subject name,
-but no template is set for the session name.</p>
-</div>
-</div>
-</section>
-<section id="name-template-placeholders">
-<h2>Name Template placeholders<a class="headerlink" href="#name-template-placeholders" title="Link to this heading">#</a></h2>
-<p>Placeholders (based on [regular expressions]) can be used to
-fill templates with yet-unknown values.</p>
-<p>Any regular expression available in  Python is permitted,
-but below we summarise the most useful:</p>
-<dl class="simple myst">
-<dt>Wildcard Single Digit:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">\d</span></code> can act as a placeholder for a digit. <br />
-<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-\d\d\d</span></code> will allow any <code class="docutils literal notranslate"><span class="pre">sub-</span></code> prefix followed by three digits.</p>
-</dd>
-<dt>Wildcard Single Character:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">.?</span></code> can act as a placeholder for any character <br />
-<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-\d\d\d_id-.?.?.?.?</span></code> will allow the <code class="docutils literal notranslate"><span class="pre">id-</span></code> to be made up for any 4-character id.</p>
-</dd>
-<dt>Wildcard Range:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">.*</span></code> can act as a placeholder for an unknown range. <br />
-<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-\d\d\d_id-.*</span></code> will allow the <code class="docutils literal notranslate"><span class="pre">id-</span></code> to be made up of any length combination of any characters.</p>
-</dd>
-</dl>
-</section>
+<p>In this case, <code class="docutils literal notranslate"><span class="pre">display_mode=error</span></code> will result in an error
+on the first encountered validation issue. Otherwise <code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> will show
+a python warning for all detected issues, while <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code>
+will print directly to console.</p>
+<p>By default, both <code class="docutils literal notranslate"><span class="pre">&quot;rawdata&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;derivatives&quot;</span></code> folders will
+be checked (assuming they exist). Otherwise, one can be specified
+with the a <code class="docutils literal notranslate"><span class="pre">top_level_folder</span></code> argument.</p>
+<p>See <a class="reference internal" href="../api_index.html#datashuttle.quick_validate_project" title="datashuttle.quick_validate_project"><code class="xref myst py py-func docutils literal notranslate"><span class="pre">datashuttle.quick_validate_project</span></code></a>  for a full list
+of arguments.</p>
 </section>
 
 
@@ -495,25 +436,6 @@ but below we summarise the most useful:</p>
             </div>
             
             
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-name-templates">Set up Name Templates</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#name-template-placeholders">Name Template placeholders</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>

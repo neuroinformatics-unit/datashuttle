@@ -6,9 +6,8 @@
 
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
-    <title>How to use Name Templates &#8212; datashuttle</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>datashuttle.datashuttle_functions &#8212; datashuttle</title>
   
   
   
@@ -45,13 +44,11 @@
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/how_tos/use-name-templates';</script>
-    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/how_tos/use-name-templates.html" />
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/datashuttle/datashuttle_functions';</script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/_modules/datashuttle/datashuttle_functions.html" />
     <link rel="icon" href="../../_static/logo_light.png"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Community" href="../community/index.html" />
-    <link rel="prev" title="How to Update Configs" href="update-configs.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -139,28 +136,28 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials.html">
+  <a class="nav-link nav-internal" href="../../pages/tutorials.html">
     Tutorials
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../how_tos.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pages/how_tos.html">
     How To
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../community/index.html">
+  <a class="nav-link nav-internal" href="../../pages/community/index.html">
     Community
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api_index.html">
+  <a class="nav-link nav-internal" href="../../pages/api_index.html">
     API Reference
   </a>
 </li>
@@ -236,10 +233,6 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
-      <span class="fa-solid fa-outdent"></span>
-    </button>
-  
 </div>
 
     </header>
@@ -249,6 +242,8 @@
     <div class="bd-container__inner bd-page-width">
       
       
+      
+        
       
       <dialog id="pst-primary-sidebar-modal"></dialog>
       <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
@@ -267,28 +262,28 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials.html">
+  <a class="nav-link nav-internal" href="../../pages/tutorials.html">
     Tutorials
   </a>
 </li>
 
 
-<li class="nav-item current active">
-  <a class="nav-link nav-internal" href="../how_tos.html">
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pages/how_tos.html">
     How To
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../community/index.html">
+  <a class="nav-link nav-internal" href="../../pages/community/index.html">
     Community
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../api_index.html">
+  <a class="nav-link nav-internal" href="../../pages/api_index.html">
     API Reference
   </a>
 </li>
@@ -379,9 +374,9 @@
       </a>
     </li>
     
-    <li class="breadcrumb-item"><a href="../how_tos.html" class="nav-link">How To</a></li>
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">How to use Name Templates</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">datashuttle.datashuttle_functions</span></li>
   </ul>
 </nav>
 </div>
@@ -398,93 +393,111 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="tex2jax_ignore mathjax_ignore" id="how-to-use-name-templates">
-<span id="id1"></span><h1>How to use Name Templates<a class="headerlink" href="#how-to-use-name-templates" title="Link to this heading">#</a></h1>
-<p>Validation in <strong>datashuttle</strong> is by default restricted to the
-NeuroBlueprint specification. Any subject or session names
-that are not formatted correctly (e.g. not starting with
-“sub-” or “ses-” will be flagged.</p>
-<p>However, it is also possible to add custom templates to validate against
-by defining template names using ‘regular expressions’.</p>
-<p>For example, say you wanted your subjects to be in the form
-<code class="docutils literal notranslate"><span class="pre">sub-XXX_id-XXXXXX</span></code> where <code class="docutils literal notranslate"><span class="pre">X</span></code> is a digit (i.e. subject number with
-a 6-digit id.</p>
-<p>We can define this
-as a regexp where <code class="docutils literal notranslate"><span class="pre">\d</span></code> stands for ‘any digit`:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;sub-\d\d\d_id-\d\d\d\d\d\d&quot;</span>
-</pre></div>
-</div>
-<p>If this is defined as a Name Template, any name that
-does not take this form will result in a validation error.
-Name templates can include <a class="reference internal" href="create-folders.html#create-folders-convenience-tags"><span class="std std-ref">convenience tags</span></a>.
-(<code class="docutils literal notranslate"><span class="pre">&#64;DATE&#64;</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;TIME&#64;</span></code> or <code class="docutils literal notranslate"><span class="pre">&#64;DATETIME&#64;</span></code>.)</p>
-<section id="set-up-name-templates">
-<h2>Set up Name Templates<a class="headerlink" href="#set-up-name-templates" title="Link to this heading">#</a></h2>
-<div class="sd-tab-set docutils">
-<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-0">
-Graphical Interface</label><div class="sd-tab-content docutils">
-<a class="only-dark reference internal image-reference" href="../../_images/how-to-name-templates-dark.png"><img alt="../../_images/how-to-name-templates-dark.png" class="only-dark align-center" src="../../_images/how-to-name-templates-dark.png" style="width: 900px;" />
-</a>
-<a class="only-light reference internal image-reference" href="../../_images/how-to-name-templates-light.png"><img alt="../../_images/how-to-name-templates-light.png" class="only-light align-center" src="../../_images/how-to-name-templates-light.png" style="width: 900px;" />
-</a>
-<br>
-<p>Click the <code class="docutils literal notranslate"><span class="pre">Settings</span></code> button in the <code class="docutils literal notranslate"><span class="pre">Create</span></code> tab. Scroll down to the
-<code class="docutils literal notranslate"><span class="pre">Template</span> <span class="pre">Validation</span></code> section.</p>
-<p>Clicking the checkbox will turn on <code class="docutils literal notranslate"><span class="pre">Template</span> <span class="pre">Validation</span></code> and these
-can be set for subject and session independent. If the input is left empty,
-no name template will be applied.</p>
-<p>Fill in the subject or session name template—any changes
-will be automatically saved. These settings will persist across
-<strong>datashuttle</strong> sessions.</p>
-</div>
-<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
-<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
-Python API</label><div class="sd-tab-content docutils">
-<p>The <code class="docutils literal notranslate"><span class="pre">set_name_templates()</span></code> and <code class="docutils literal notranslate"><span class="pre">get_name_templates()</span></code> can be used
-to set and get current name template settings.</p>
-<p><code class="docutils literal notranslate"><span class="pre">set_name_templates</span></code> takes as input the <code class="docutils literal notranslate"><span class="pre">name_template</span></code> dictionary,
-which is formatted as below:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>
-<span class="n">name_templates</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;on&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="s2">&quot;sub&quot;</span><span class="p">:</span> <span class="s2">&quot;sub-\d\d\d_id-\d\d\d\d\d\d&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;ses&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">}</span>
+  <h1>Source code for datashuttle.datashuttle_functions</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span>
 
-<span class="n">project</span><span class="o">.</span><span class="n">set_name_templates</span><span class="p">(</span>
-    <span class="n">name_templates</span>
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils.custom_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">DisplayMode</span><span class="p">,</span> <span class="n">TopLevelFolder</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Optional</span><span class="p">,</span>
 <span class="p">)</span>
 
-</pre></div>
-</div>
-<p>In the above example, validation with name templates is
-turned on <code class="docutils literal notranslate"><span class="pre">&quot;on:</span> <span class="pre">True</span></code>. A template is set for the subject name,
-but no template is set for the session name.</p>
-</div>
-</div>
-</section>
-<section id="name-template-placeholders">
-<h2>Name Template placeholders<a class="headerlink" href="#name-template-placeholders" title="Link to this heading">#</a></h2>
-<p>Placeholders (based on [regular expressions]) can be used to
-fill templates with yet-unknown values.</p>
-<p>Any regular expression available in  Python is permitted,
-but below we summarise the most useful:</p>
-<dl class="simple myst">
-<dt>Wildcard Single Digit:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">\d</span></code> can act as a placeholder for a digit. <br />
-<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-\d\d\d</span></code> will allow any <code class="docutils literal notranslate"><span class="pre">sub-</span></code> prefix followed by three digits.</p>
-</dd>
-<dt>Wildcard Single Character:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">.?</span></code> can act as a placeholder for any character <br />
-<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-\d\d\d_id-.?.?.?.?</span></code> will allow the <code class="docutils literal notranslate"><span class="pre">id-</span></code> to be made up for any 4-character id.</p>
-</dd>
-<dt>Wildcard Range:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">.*</span></code> can act as a placeholder for an unknown range. <br />
-<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-\d\d\d_id-.*</span></code> will allow the <code class="docutils literal notranslate"><span class="pre">id-</span></code> to be made up of any length combination of any characters.</p>
-</dd>
-</dl>
-</section>
-</section>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.configs</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">canonical_configs</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.configs.config_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">validation</span><span class="p">,</span>
+<span class="p">)</span>
 
+
+<div class="viewcode-block" id="quick_validate_project">
+<a class="viewcode-back" href="../../pages/api_index.html#datashuttle.quick_validate_project">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">quick_validate_project</span><span class="p">(</span>
+    <span class="n">project_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TopLevelFolder</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">display_mode</span><span class="p">:</span> <span class="n">DisplayMode</span> <span class="o">=</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span>
+    <span class="n">name_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform validation on the project. This checks the subject</span>
+<span class="sd">    and session level folders to ensure there are not</span>
+<span class="sd">    NeuroBlueprint formatting issues.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+
+<span class="sd">    project_path</span>
+<span class="sd">        Path to the project to validate. Must include the project</span>
+<span class="sd">        name, and hold a &quot;rawdata&quot; or &quot;derivatives&quot; folder.</span>
+
+<span class="sd">    top_level_folder : TopLevelFolder</span>
+<span class="sd">        The top-level folder (&quot;rawdata&quot; or &quot;derivatives&quot; to</span>
+<span class="sd">        perform validation. If `None`, both are checked.</span>
+
+<span class="sd">    display_mode : DisplayMode</span>
+<span class="sd">        The validation issues are displayed as ``&quot;error&quot;`` (raise error)</span>
+<span class="sd">        ``&quot;warn&quot;`` (show warning) or ``&quot;print&quot;``.</span>
+
+<span class="sd">    name_templates : Dict</span>
+<span class="sd">        A dictionary of templates for subject and session name</span>
+<span class="sd">        to validate against. See ``DataShuttle.set_name_templates()``</span>
+<span class="sd">        for details.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">project_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span>
+
+    <span class="c1"># Check that the project file exists and contains</span>
+    <span class="c1"># at least one top-level folder</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">project_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;No file or folder found at `project_path`: </span><span class="si">{</span><span class="n">project_path</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span>
+        <span class="ow">not</span> <span class="p">(</span><span class="n">project_path</span> <span class="o">/</span> <span class="s2">&quot;rawdata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+        <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">project_path</span> <span class="o">/</span> <span class="s2">&quot;derivatives&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
+    <span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+            <span class="s2">&quot;`project_path` must contain a &#39;rawdata&#39; or &#39;derivatives&#39; folder.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Format the top-level folders into a list</span>
+    <span class="n">rawdata_and_derivatives</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span> <span class="s2">&quot;derivatives&quot;</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">top_level_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">top_level_folders_to_validate</span> <span class="o">=</span> <span class="n">rawdata_and_derivatives</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">top_level_folder</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rawdata_and_derivatives</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`top_level_folder must be one of: </span><span class="si">{</span><span class="n">rawdata_and_derivatives</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">top_level_folders_to_validate</span> <span class="o">=</span> <span class="p">[</span><span class="n">top_level_folder</span><span class="p">]</span>
+
+    <span class="c1"># Create some mock configs for the validation call,</span>
+    <span class="c1"># then for each top-level folder, run the validation</span>
+    <span class="n">placeholder_configs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_canonical_configs</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="n">placeholder_configs</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">project_path</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+    <span class="n">cfg</span> <span class="o">=</span> <span class="n">Configs</span><span class="p">(</span>
+        <span class="n">project_name</span><span class="o">=</span><span class="n">project_path</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">file_path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+        <span class="n">input_dict</span><span class="o">=</span><span class="n">placeholder_configs</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">top_level_folders_to_validate</span><span class="p">:</span>
+        <span class="n">validation</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+            <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="n">top_level_folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
+            <span class="n">local_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">display_mode</span><span class="o">=</span><span class="n">display_mode</span><span class="p">,</span>
+            <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+</pre></div>
 
                 </article>
               
@@ -495,25 +508,6 @@ but below we summarise the most useful:</p>
             </div>
             
             
-              
-                <dialog id="pst-secondary-sidebar-modal"></dialog>
-                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
-
-
-  <div class="sidebar-secondary-item">
-<div
-    id="pst-page-navigation-heading-2"
-    class="page-toc tocsection onthispage">
-    <i class="fa-solid fa-list"></i> On this page
-  </div>
-  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
-    <ul class="visible nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#set-up-name-templates">Set up Name Templates</a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#name-template-placeholders">Name Template placeholders</a></li>
-</ul>
-  </nav></div>
-
-</div></div>
               
             
           </div>
