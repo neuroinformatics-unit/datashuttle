@@ -10,8 +10,9 @@ from typing import (
 )
 
 if TYPE_CHECKING:
-    from textual.validation import Validator
     from textual import events
+    from textual.validation import Validator
+
     from datashuttle.tui.app import App
     from datashuttle.tui.interface import Interface
 
