@@ -131,7 +131,10 @@ class TestTuiCreateDirectoryTree(TuiBase):
             await self.reload_tree_nodes(
                 pilot, "#create_folders_directorytree", 4
             )
-            pyperclip.copy("STARTING VAL")
+            try:
+               pyperclip.copy("STARTING VAL")
+            except pyperclip.PyperclipException:
+                pass
 
             await self.hover_and_press_tree(
                 pilot,
