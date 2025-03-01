@@ -132,7 +132,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
                 pilot, "#create_folders_directorytree", 4
             )
             try:
-               pyperclip.copy("STARTING VAL")
+                pyperclip.copy("STARTING VAL")
             except pyperclip.PyperclipException:
                 pass
 

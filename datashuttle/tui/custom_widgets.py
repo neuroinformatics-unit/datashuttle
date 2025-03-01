@@ -18,40 +18,44 @@ if TYPE_CHECKING:
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, List 
 
 import pyperclip
 from rich.style import Style
 from rich.text import Text
-from textual import events  
+from textual import events
 from textual._segment_tools import line_pad
 from textual.message import Message
 from textual.strip import Strip
 from textual.widgets import (
+    Button,
     DirectoryTree,
     Input,
+    Label,
+    ModalDialog,
     Select,
     TabPane,
-    ModalDialog,
-    Label,
-    Button,
 )
+
 from datashuttle.configs import canonical_folders
 
 # --------------------------------------------------------------------------------------
 # ClickableInput
 # --------------------------------------------------------------------------------------
 
+
 class ClipboardErrorDialog(ModalDialog):
     """Dialog box shown when clipboard copy fails."""
 
     def compose(self):
-        yield Label("Clipboard copy failed: Headless mode detected. Copy manually.")
+        yield Label(
+            "Clipboard copy failed: Headless mode detected. Copy manually."
+        )
         yield Button("OK", id="ok")
 
     def on_button_pressed(self, _: Button.Pressed) -> None:
         self.dismiss()
-        
+
+
 class ClickableInput(Input):
     """
     An input widget which emits a `ClickableInput.Clicked`
@@ -92,10 +96,13 @@ class ClickableInput(Input):
             try:
                 pyperclip.copy(self.value)
             except pyperclip.PyperclipException:
-                self.mainwindow.mount(ClipboardErrorDialog())  # Show the error dialog
+                self.mainwindow.mount(
+                    ClipboardErrorDialog()
+                )  # Show the error dialog
 
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))
+
 
 # --------------------------------------------------------------------------------------
 # CustomDirectoryTree
