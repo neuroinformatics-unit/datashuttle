@@ -868,10 +868,31 @@ class DataShuttle:
 
         if verified:
             ssh.setup_ssh_key(self.cfg, log=True)
+            #449
+            confirmed_path = input(
+                f"Confirm the full central path (default: {self.cfg['central_path']}): "
+            ) or self.cfg["central_path"]
+            self.cfg["central_path"] = confirmed_path
+            if not self._check_write_permissions(confirmed_path):
+                raise PermissionError(f"Cannot write to the central path: {confirmed_path}")
+            
             self._setup_rclone_central_ssh_config(log=True)
 
         ds_logger.close_log_filehandler()
 
+    def _check_write_permissions(self, path) -> bool:
+        """
+        Check if the user has write permissions on the central path.
+        """
+        try:
+            # Use SSH to check write permissions on the remote server
+            command = f"touch {path}/test_write_permission.txt && rm {path}/test_write_permission.txt"
+            result = ssh.run_ssh_command(self.cfg, command, log=False)
+            return result.returncode == 0
+        except Exception as e:
+            print(f"Write permission check failed: {e}")
+            return False
+        
     @requires_ssh_configs
     @check_is_not_local_project
     def write_public_key(self, filepath: str) -> None:
