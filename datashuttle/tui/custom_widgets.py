@@ -11,7 +11,7 @@ from typing import (
 
 if TYPE_CHECKING:
     from textual.validation import Validator
-
+    from textual import events
     from datashuttle.tui.app import App
     from datashuttle.tui.interface import Interface
 
@@ -21,7 +21,6 @@ from pathlib import Path
 import pyperclip
 from rich.style import Style
 from rich.text import Text
-from textual import events
 from textual._segment_tools import line_pad
 from textual.message import Message
 from textual.strip import Strip
