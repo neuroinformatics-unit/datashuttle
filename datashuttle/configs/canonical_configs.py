@@ -99,6 +99,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     check_config_types(config_dict)
 
+    check_datatype_selection(config_dict) #466
+
     raise_on_bad_local_only_project_configs(config_dict)
 
     if list(config_dict.keys()) != list(canonical_dict.keys()):
@@ -141,6 +143,29 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             RuntimeError,
         )
 
+def check_datatype_selection(config_dict: Configs) -> None: #466
+    """
+    Ensure that narrow datatypes are not mixed with broad datatypes in the config.
+    """
+    selected_datatypes = config_dict.get('datatypes', [])
+    
+    # Check if a narrow datatype is selected
+    for datatype in selected_datatypes:
+        if datatype in get_narrow_datatypes():
+            broad_type = None
+            for broad, narrow_list in get_narrow_datatypes().items():
+                if datatype in narrow_list:
+                    broad_type = broad
+                    break
+
+            if broad_type:
+                # Ensure no broad datatypes are also selected
+                for other_datatype in selected_datatypes:
+                    if other_datatype in get_broad_datatypes():
+                        utils.log_and_raise_error(
+                            f"Cannot mix broad datatype '{other_datatype}' with narrow datatype '{datatype}'.",
+                            ConfigError,
+                        )
 
 def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
     """
