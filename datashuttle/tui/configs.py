@@ -424,10 +424,15 @@ class ConfigsContent(Container):
         project_name = self.interface.project.cfg.project_name
         # Add validation before proceeding
         if not project_name.strip():
-            self.notify("Project name cannot be empty. Please enter a valid name.", severity="error")
-            print("Project creation blocked due to empty name!")  # Debugging print
+            self.notify(
+                "Project name cannot be empty. Please enter a valid name.",
+                severity="error",
+            )
+            print(
+                "Project creation blocked due to empty name!"
+            )  # Debugging print
             return
-        
+
         for key, value in cfg_kwargs.items():
             saved_val = self.interface.get_configs()[key]
             if key in ["central_path", "local_path"]:
@@ -453,11 +458,15 @@ class ConfigsContent(Container):
         project_name = self.query_one("#configs_name_input").value
         # Add validation before proceeding
         if not project_name.strip():
-            self.notify("Project name cannot be empty. Please enter a valid name.", severity="error")
-            print("Project creation blocked due to empty name!")  # Debugging print
+            self.notify(
+                "Project name cannot be empty. Please enter a valid name.",
+                severity="error",
+            )
+            print(
+                "Project creation blocked due to empty name!"
+            )  # Debugging print
             return
-        
-        
+
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
         interface = Interface()
