@@ -885,12 +885,12 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
+    # 449
     def _check_write_permissions(self, path) -> bool:
         """
         Check if the user has write permissions on the central path.
         """
         try:
-            # Use SSH to check write permissions on the remote server
             command = f"touch {path}/test_write_permission.txt && rm {path}/test_write_permission.txt"
             result = ssh.run_ssh_command(self.cfg, command, log=False)
             return result.returncode == 0

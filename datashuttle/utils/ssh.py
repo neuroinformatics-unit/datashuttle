@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -320,3 +321,47 @@ def get_list_of_folder_names_over_sftp(
             utils.log_and_message(f"No file found at {search_path.as_posix()}")
 
     return all_folder_names, all_filenames
+
+
+# 449
+@dataclass
+class SSHCommandResult:
+    stdout: str
+    stderr: str
+    returncode: int
+
+
+def run_ssh_command(
+    cfg: Configs,
+    command: str,
+    password: Optional[str] = None,
+    log: bool = True,
+) -> SSHCommandResult:
+    """
+    Run a command on the remote server over SSH and return a result object.
+    """
+    client = paramiko.SSHClient()
+    try:
+        connect_client_with_logging(
+            client, cfg, password, message_on_sucessful_connection=log
+        )
+        stdin, stdout, stderr = client.exec_command(command)
+        stdout_output = stdout.read().decode("utf-8").strip()
+        stderr_output = stderr.read().decode("utf-8").strip()
+        return_code = stdout.channel.recv_exit_status()
+
+        if log:
+            utils.log(f"Command executed: {command}")
+            utils.log(f"STDOUT: {stdout_output}")
+            utils.log(f"STDERR: {stderr_output}")
+            utils.log(f"Return code: {return_code}")
+
+        return SSHCommandResult(stdout_output, stderr_output, return_code)
+    except Exception as e:
+        if log:
+            utils.log_and_raise_error(
+                f"Failed to execute command over SSH: {str(e)}", Exception
+            )
+        raise
+    finally:
+        client.close()

@@ -100,6 +100,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     check_config_types(config_dict)
 
     check_datatype_selection(config_dict)  # 466
+    check_datatype_selection(config_dict)  # 466
 
     raise_on_bad_local_only_project_configs(config_dict)
 
@@ -148,8 +149,7 @@ def check_datatype_selection(config_dict: Configs) -> None:  # 466
     """
     Ensure that narrow datatypes are not mixed with broad datatypes in the config.
     """
-    selected_datatypes = config_dict.get("datatypes", [])
-
+    selected_datatypes: List[str] = config_dict.get("datatypes", [])
     # Check if a narrow datatype is selected
     for datatype in selected_datatypes:
         if datatype in get_narrow_datatypes():
