@@ -32,25 +32,12 @@ from textual.widgets import (
     Input,
     Select,
     TabPane,
-    ModalDialog,
-    Label,
-    Button,
 )
 from datashuttle.configs import canonical_folders
 
 # --------------------------------------------------------------------------------------
 # ClickableInput
 # --------------------------------------------------------------------------------------
-
-class ClipboardErrorDialog(ModalDialog):
-    """Dialog box shown when clipboard copy fails."""
-
-    def compose(self):
-        yield Label("Clipboard copy failed: Headless mode detected. Copy manually.")
-        yield Button("OK", id="ok")
-
-    def on_button_pressed(self, _: Button.Pressed) -> None:
-        self.dismiss()
         
 class ClickableInput(Input):
     """
@@ -92,8 +79,9 @@ class ClickableInput(Input):
             try:
                 pyperclip.copy(self.value)
             except pyperclip.PyperclipException:
-                self.mainwindow.mount(ClipboardErrorDialog())  # Show the error dialog
-
+                self.mainwindow.show_modal_error_dialog(
+                    "Clipboard copy failed, likely due to operating in headless mode (e.g. on a high-performance computer)."
+               )
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))
 
