@@ -34,6 +34,7 @@ from textual.widgets import (
 
 from datashuttle.configs import canonical_folders
 
+
 # --------------------------------------------------------------------------------------
 # ClickableInput
 # --------------------------------------------------------------------------------------
@@ -79,7 +80,7 @@ class ClickableInput(Input):
             except pyperclip.PyperclipException:
                 self.mainwindow.show_modal_error_dialog(
                     "Clipboard copy failed, likely due to operating in headless mode (e.g. on a high-performance computer)."
-               )
+                )
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))
 
