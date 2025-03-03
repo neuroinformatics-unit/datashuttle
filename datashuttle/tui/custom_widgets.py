@@ -18,12 +18,10 @@ if TYPE_CHECKING:
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, List 
 
 import pyperclip
 from rich.style import Style
 from rich.text import Text
-from textual import events  
 from textual._segment_tools import line_pad
 from textual.message import Message
 from textual.strip import Strip
@@ -33,12 +31,12 @@ from textual.widgets import (
     Select,
     TabPane,
 )
+
 from datashuttle.configs import canonical_folders
 
 # --------------------------------------------------------------------------------------
 # ClickableInput
 # --------------------------------------------------------------------------------------
-        
 class ClickableInput(Input):
     """
     An input widget which emits a `ClickableInput.Clicked`
@@ -84,6 +82,7 @@ class ClickableInput(Input):
                )
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))
+
 
 # --------------------------------------------------------------------------------------
 # CustomDirectoryTree
