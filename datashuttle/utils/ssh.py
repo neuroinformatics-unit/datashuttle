@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -366,6 +365,7 @@ def run_ssh_command(
         raise
     finally:
         client.close()
+
 
 # 449
 def check_write_permissions(cfg: Configs, path: str, log: bool = True) -> bool:

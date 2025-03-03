@@ -869,7 +869,9 @@ class DataShuttle:
         if verified:
             ssh.setup_ssh_key(self.cfg, log=True)
             # Directly use the central path removed input
-            if not self._check_write_permissions(self.cfg["central_path"]): # 449
+            if not self._check_write_permissions(
+                self.cfg["central_path"]
+            ):  # 449
                 raise PermissionError(
                     f"Cannot write to the central path: {self.cfg['central_path']}"
                 )
@@ -877,13 +879,11 @@ class DataShuttle:
 
         ds_logger.close_log_filehandler()
 
-
-    def _check_write_permissions(self, path) -> bool: # 449
-            """
-            Check if the user has write permissions on the central path.
-            """
-            return ssh.check_write_permissions(self.cfg, path, log=False)
-
+    def _check_write_permissions(self, path) -> bool:  # 449
+        """
+        Check if the user has write permissions on the central path.
+        """
+        return ssh.check_write_permissions(self.cfg, path, log=False)
 
     @requires_ssh_configs
     @check_is_not_local_project
