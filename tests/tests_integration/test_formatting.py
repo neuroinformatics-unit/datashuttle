@@ -28,12 +28,12 @@ class TestFormatting(BaseTest):
         """
         with pytest.raises(NeuroBlueprintError) as e:
             formatting.check_and_format_names(
-                ["1", "2", "3", "3", "4"], prefix
+                ["1", "2", "3", "3_id-hello", "4"], prefix
             )
 
         assert (
-            f"{prefix} names must all have unique integer "
-            f"ids after the {prefix} prefix." == str(e.value)
+            f"DUPLICATE_NAME: The prefix for {prefix}-3 duplicates the name: {prefix}-3_id-hello."
+            == str(e.value)
         )
 
     def test_format_names_prefix(self):
