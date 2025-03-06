@@ -888,11 +888,11 @@ class TestValidation(BaseTest):
             )
 
         assert (
-            "BAD_NAME: The name: bad_sub_name of type: sub- is not valid"
+            "BAD_NAME: The name: bad_sub_name of type: sub is not valid"
             in str(w[0].message)
         )
         assert (
-            "BAD_NAME: The name: bad_sesname of type: ses- is not valid."
+            "BAD_NAME: The name: bad_sesname of type: ses is not valid."
             in str(w[1].message)
         )
         assert (

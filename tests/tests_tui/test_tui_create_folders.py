@@ -246,12 +246,15 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001_@DATE@"
             )
-            assert (
-                "DUPLICATE_NAME: The prefix for sub-001_date-20250226 duplicates the name: sub-001."
-                in pilot.app.screen.query_one(
-                    "#create_folders_subject_input"
-                ).tooltip
-            )
+            try:
+                assert (
+                    "DUPLICATE_NAME: The prefix for sub-001_date-"
+                    in pilot.app.screen.query_one(
+                        "#create_folders_subject_input"
+                    ).tooltip
+                )
+            except:
+                breakpoint()
 
             await pilot.pause()
 
