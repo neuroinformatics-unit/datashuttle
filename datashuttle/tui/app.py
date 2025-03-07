@@ -204,6 +204,12 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         with open(settings_path, "w") as file:
             yaml.dump(global_settings, file, sort_keys=False)
 
+    def copy_to_clipboard(self, value):
+        try:
+            pyperclip.copy(value)
+        except PyperclipException:
+            print("Clipboard copy failed, likely due to operating in headless mode")
+
 
 def main():
     TuiApp().run()

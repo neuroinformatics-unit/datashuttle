@@ -150,6 +150,40 @@ class TestTuiCreateDirectoryTree(TuiBase):
             )
 
             await pilot.pause()
+            
+    @pytest.mark.asyncio
+    async def test_failed_pyperclip_copy(self, setup_project_paths, monkeypatch):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+
+            # Set up a project and navigate to the directory tree
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            await self.reload_tree_nodes(pilot, "#create_folders_directorytree", 4)
+
+            # Monkeypatch the pyperclip copy function
+            def mock_copy(_):
+                raise PyperclipException("Mock function error raised.")
+
+            monkeypatch.setattr(pyperclip, "copy", mock_copy)
+
+            # Trigger a copy on the TUI such that the mocked copy error is raised
+            await self.hover_and_press_tree(
+                pilot,
+                "#create_folders_directorytree",
+                hover_line=2,
+                press_string="ctrl+q",
+            )
+
+            # Check that the error message is displayed.
+            assert "Clipboard copy failed, likely due to operating in headless mode" in pilot.app.screen.query_one(
+                "#messagebox_message_label"
+            ).renderable
+
 
     @pytest.mark.asyncio
     async def test_create_folders_directorytree_open_filesystem(

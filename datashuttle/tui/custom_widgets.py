@@ -78,11 +78,7 @@ class ClickableInput(Input):
             try:
                 pyperclip.copy(self.value)
             except pyperclip.PyperclipException:
-                self.mainwindow.show_modal_error_dialog(
-                    "Clipboard copy failed, likely due to operating in headless mode (e.g. on a high-performance computer)."
-                )
-        elif event.key == "ctrl+o":
-            self.mainwindow.handle_open_filesystem_browser(Path(self.value))
+                self.mainwindow.copy_to_clipboard(self.value)
 
 
 # --------------------------------------------------------------------------------------
@@ -124,7 +120,12 @@ class CustomDirectoryTree(DirectoryTree):
         """
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
-            pyperclip.copy(path_.as_posix())
+            path_str = path_.as_posix()
+            
+            try:
+                pyperclip.copy(path_str)
+            except pyperclip.PyperclipException:
+                self.mainwindow.copy_to_clipboard(path_str)
 
         elif event.key == "ctrl+o":
             path_ = self.get_node_at_line(self.hover_line).data.path
