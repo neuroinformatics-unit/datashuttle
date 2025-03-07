@@ -121,7 +121,7 @@ class CustomDirectoryTree(DirectoryTree):
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
             path_str = path_.as_posix()
-            
+
             try:
                 pyperclip.copy(path_str)
             except pyperclip.PyperclipException:
