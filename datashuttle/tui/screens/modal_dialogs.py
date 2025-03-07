@@ -170,6 +170,8 @@ class SelectDirectoryTreeScreen(ModalScreen):
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
+        self.available_drives = self.get_drives()
+
         if path_ is None:
             path_ = Path().home()
         self.path_ = path_
@@ -204,7 +206,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             CustomDirectoryTree(
                 self.mainwindow,
                 self.path_,
-                id="select_directory_tree_directory_tree",
+                id="select_directory_tree",
             ),
             Button("Cancel", id="cancel_button"),
             id="select_directory_tree_container",
