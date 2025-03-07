@@ -78,11 +78,12 @@ class ClickableInput(Input):
             try:
                 pyperclip.copy(self.value)
             except pyperclip.PyperclipException:
-                self.mainwindow.copy_to_clipboard(self.value)  # Using MainWindow method safely
+                self.mainwindow.copy_to_clipboard(
+                    self.value
+                )  # Using MainWindow method safely
 
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))
-
 
 
 # --------------------------------------------------------------------------------------
