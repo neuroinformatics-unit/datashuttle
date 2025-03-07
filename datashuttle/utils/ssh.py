@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import paramiko.ssh_exception
+
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
 
@@ -45,6 +47,33 @@ def connect_client_core(
     )
 
 
+def is_windows(client: paramiko.SSHClient) -> bool:
+    try:
+        stdin, stdout, stderr = client.exec_command("ver")
+        output = stdout.read().decode().strip().lower()
+        if "windows" in output:
+            return True
+
+        stdin, stdout, stderr = client.exec_command(
+            "powershell -Command echo 'powershell'"
+        )
+        output = stdout.read().decode().strip().lower()
+        if "powershell" in output:
+            return True
+
+        return False
+    except Exception:
+        return False
+
+
+def is_windows_user_admin(client: paramiko.SSHClient) -> bool:
+    stdin, stdout, stderr = client.exec_command("whoami /groups")
+    output = stdout.read().decode()
+    if "BUILTIN\\Administrators" in output:
+        return True
+    return False
+
+
 def add_public_key_to_central_authorized_keys(
     cfg: Configs, password: str, log=True
 ) -> None:
@@ -61,15 +90,37 @@ def add_public_key_to_central_authorized_keys(
             connect_client_with_logging(client, cfg, password=password)
         else:
             connect_client_core(client, cfg, password=password)
+        if is_windows(client):
+            if is_windows_user_admin(client):
+                client.exec_command("mkdir C:\\ProgramData\\ssh")
+                client.exec_command(
+                    # double >> for concatenate
+                    f"echo {key.get_name()} {key.get_base64()}"
+                    f">> C:\\ProgramData\\ssh\\administrators_authorized_keys"
+                )
+            else:
+                client.exec_command("mkdir %USERPROFILE%\\.ssh")
+                client.exec_command(
+                    # double >> for concatenate
+                    f"echo {key.get_name()} {key.get_base64()}"
+                    f">> %USERPROFILE%\\.ssh\\authorized_keys"
+                )
+                client.exec_command(
+                    "icacls %USERPROFILE%\\.ssh /inheritance:r /grant %USERNAME%:(OI)(CI)F"
+                )
+                client.exec_command(
+                    "icacls %USERPROFILE%\.ssh\\authorized_keys /inheritance:r /grant %USERNAME%:(F)"
+                )
 
-        client.exec_command("mkdir -p ~/.ssh/")
-        client.exec_command(
-            # double >> for concatenate
-            f'echo "{key.get_name()} {key.get_base64()}" '
-            f">> ~/.ssh/authorized_keys"
-        )
-        client.exec_command("chmod 644 ~/.ssh/authorized_keys")
-        client.exec_command("chmod 700 ~/.ssh/")
+        else:
+            client.exec_command("mkdir -p ~/.ssh")
+            client.exec_command(
+                # double >> for concatenate
+                f'echo "{key.get_name()} {key.get_base64()}" '
+                f">> ~/.ssh/authorized_keys"
+            )
+            client.exec_command("chmod 644 ~/.ssh/authorized_keys")
+            client.exec_command("chmod 700 ~/.ssh/")
 
 
 def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
