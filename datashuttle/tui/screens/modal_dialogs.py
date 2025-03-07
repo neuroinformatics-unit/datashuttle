@@ -9,11 +9,13 @@ if TYPE_CHECKING:
 
     from datashuttle.tui.app import App
 
+import os
+import platform
 from pathlib import Path
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Input, Label, Static
+from textual.widgets import Button, Input, Label, Select, Static
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -124,10 +126,16 @@ class SelectDirectoryTreeScreen(ModalScreen):
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
+        self.available_drives = self.get_drives()
+
         if path_ is None:
             path_ = Path().home()
         self.path_ = path_
 
+        if platform.system() == "Windows":
+            self.selected_drive = self.path_.drive + "\\"
+        else:
+            self.selected_drive = "/"
         self.prev_click_time = 0
 
     def compose(self) -> ComposeResult:
@@ -139,13 +147,47 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
         yield Container(
             Static(label_message, id="select_directory_tree_screen_label"),
+            Select(  # Dropdown for drives
+                [(drive, drive) for drive in self.available_drives],
+                value=self.selected_drive,
+                id="drive_select",
+            ),
             CustomDirectoryTree(
                 self.mainwindow,
                 self.path_,
-                id="select_directory_tree_directory_tree",
+                id="select_directory_tree",
             ),
             Button("Cancel", id="cancel_button"),
             id="select_directory_tree_container",
+        )
+
+    @staticmethod
+    def get_drives():
+        """Returns a list of available drives without using psutil."""
+        if platform.system() == "Windows":
+            drives = []
+            with os.popen("wmic logicaldisk get name") as f:
+                lines = f.readlines()[1:]
+                for line in lines:
+                    drive = line.strip()
+                    if drive:
+                        drives.append(drive + "\\")
+            return drives
+        return ["/"]  # Unix-based systems have a single root "/"
+
+    def on_drive_selected(self, event: Select.Changed) -> None:
+        """Updates the directory tree when the drive is changed."""
+        self.selected_drive = event.value
+        self.path_ = Path(self.selected_drive)
+        self.refresh_directory_tree()
+
+    def refresh_directory_tree(self):
+        """Rebuilds the directory tree UI."""
+        self.query_one("#select_directory_tree").remove()
+        self.mount(
+            CustomDirectoryTree(
+                self.mainwindow, str(self.path_), id="select_directory_tree"
+            )
         )
 
     @require_double_click
