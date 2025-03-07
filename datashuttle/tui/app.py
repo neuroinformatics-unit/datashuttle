@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 
 from pathlib import Path
 
+import pyperclip
 import showinfm
 import yaml
 from textual.app import App, ComposeResult
