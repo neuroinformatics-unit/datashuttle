@@ -208,7 +208,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     def copy_to_clipboard(self, value):
         try:
             pyperclip.copy(value)
-        except PyperclipException:
+        except pyperclip.PyperclipException:
             print(
                 "Clipboard copy failed, likely due to operating in headless mode"
             )

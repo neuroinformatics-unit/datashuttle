@@ -171,7 +171,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
 
             # Monkeypatch the pyperclip copy function
             def mock_copy(_):
-                raise PyperclipException("Mock function error raised.")
+                raise pyperclip.PyperclipException("Mock function error raised.")
 
             monkeypatch.setattr(pyperclip, "copy", mock_copy)
 
