@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     import paramiko
 
     from datashuttle.configs.config_class import Configs
-    from datashuttle.tui.app import App
     from datashuttle.utils.custom_types import InterfaceOutput, TopLevelFolder
 
 from datashuttle import DataShuttle
@@ -33,7 +32,7 @@ class Interface:
 
     def __init__(self) -> None:
 
-        self.project: App
+        self.project: DataShuttle
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
 
