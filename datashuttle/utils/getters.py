@@ -328,7 +328,9 @@ def get_all_sub_and_ses_names(
     if local_only:
         all_sub_folder_names = sub_folder_names["local"]
     else:
-        all_sub_folder_names = sub_folder_names["local"] + sub_folder_names["central"]
+        all_sub_folder_names = (
+            sub_folder_names["local"] + sub_folder_names["central"]
+        )
 
     structured_info = []
     all_ses_folder_names = {}
@@ -341,19 +343,28 @@ def get_all_sub_and_ses_names(
         if local_only:
             all_ses_folder_names[sub] = ses_folder_names["local"]
         else:
-            all_ses_folder_names[sub] = ses_folder_names["local"] + ses_folder_names["central"]
+            all_ses_folder_names[sub] = (
+                ses_folder_names["local"] + ses_folder_names["central"]
+            )
 
-        session_paths = [Path(cfg.local_path) / sub / ses for ses in all_ses_folder_names[sub]]
+        session_paths = [
+            Path(cfg.local_path) / sub / ses
+            for ses in all_ses_folder_names[sub]
+        ]
 
-        structured_info.append({
-            "subject": sub,
-            "session_paths": session_paths
-        })
+        structured_info.append(
+            {"subject": sub, "session_paths": session_paths}
+        )
 
     return structured_info
 
 
-def find_folders(cfg: Configs, top_level_folder: TopLevelFolder, subject_name: str, session_filter: str = "all_ses"):
+def find_folders(
+    cfg: Configs,
+    top_level_folder: TopLevelFolder,
+    subject_name: str,
+    session_filter: str = "all_ses",
+):
     """
     Find session paths for a given subject.
 
@@ -364,13 +375,19 @@ def find_folders(cfg: Configs, top_level_folder: TopLevelFolder, subject_name: s
     Returns:
         List[Path]: List of session paths for the given subject.
     """
-    project_info = get_all_sub_and_ses_names(cfg, top_level_folder, local_only=True)
+    project_info = get_all_sub_and_ses_names(
+        cfg, top_level_folder, local_only=True
+    )
 
     for sub_info in project_info:
         if sub_info["subject"] == subject_name:
             if session_filter == "all_ses":
                 return sub_info["session_paths"]
             else:
-                return [path for path in sub_info["session_paths"] if path.name == session_filter]
+                return [
+                    path
+                    for path in sub_info["session_paths"]
+                    if path.name == session_filter
+                ]
 
     return []
