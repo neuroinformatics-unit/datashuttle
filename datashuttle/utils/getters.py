@@ -13,6 +13,7 @@ from typing import (
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from typing import Any, Dict, List
 
     from datashuttle.configs.config_class import Configs
     from datashuttle.utils.custom_types import Prefix, TopLevelFolder
@@ -295,7 +296,7 @@ def get_all_sub_and_ses_names(
     cfg: Configs,
     top_level_folder: TopLevelFolder,
     local_only: bool,
-) -> Dict:
+) -> List[Dict[str, Any]]:
     """
     Get a list of every subject and session name in the
     local and central project folders. Local and central names are combined
@@ -306,13 +307,19 @@ def get_all_sub_and_ses_names(
 
     Parameters
     ----------
-
     cfg : Configs
         datashuttle Configs
 
     local_only : bool
         If `True, only get names from `local_path`, otherwise from
         `local_path` and `central_path`.
+
+    Returns
+    -------
+    List[Dict[str, Any]]
+        A list of dictionaries, each containing:
+        - "subject": Subject name (e.g., "sub-001")
+        - "session_paths": List of full paths to each session folder
     """
     sub_folder_names = folders.search_project_for_sub_or_ses_names(
         cfg, top_level_folder, None, "sub-*", local_only
@@ -321,11 +328,11 @@ def get_all_sub_and_ses_names(
     if local_only:
         all_sub_folder_names = sub_folder_names["local"]
     else:
-        all_sub_folder_names = (
-            sub_folder_names["local"] + sub_folder_names["central"]
-        )
+        all_sub_folder_names = sub_folder_names["local"] + sub_folder_names["central"]
 
+    structured_info = []
     all_ses_folder_names = {}
+
     for sub in all_sub_folder_names:
         ses_folder_names = folders.search_project_for_sub_or_ses_names(
             cfg, top_level_folder, sub, "ses-*", local_only
@@ -334,8 +341,36 @@ def get_all_sub_and_ses_names(
         if local_only:
             all_ses_folder_names[sub] = ses_folder_names["local"]
         else:
-            all_ses_folder_names[sub] = (
-                ses_folder_names["local"] + ses_folder_names["central"]
-            )
+            all_ses_folder_names[sub] = ses_folder_names["local"] + ses_folder_names["central"]
 
-    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
+        session_paths = [Path(cfg.local_path) / sub / ses for ses in all_ses_folder_names[sub]]
+
+        structured_info.append({
+            "subject": sub,
+            "session_paths": session_paths
+        })
+
+    return structured_info
+
+
+def find_folders(cfg: Configs, top_level_folder: TopLevelFolder, subject_name: str, session_filter: str = "all_ses"):
+    """
+    Find session paths for a given subject.
+
+    Args:
+        subject_name (str): Subject name (e.g., "sub-001").
+        session_filter (str): Filter for sessions (default is "all_ses").
+
+    Returns:
+        List[Path]: List of session paths for the given subject.
+    """
+    project_info = get_all_sub_and_ses_names(cfg, top_level_folder, local_only=True)
+
+    for sub_info in project_info:
+        if sub_info["subject"] == subject_name:
+            if session_filter == "all_ses":
+                return sub_info["session_paths"]
+            else:
+                return [path for path in sub_info["session_paths"] if path.name == session_filter]
+
+    return []
