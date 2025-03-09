@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -10,7 +11,6 @@ from typing import (
     Tuple,
     Union,
 )
-from pathlib import Path
 
 if TYPE_CHECKING:
     from typing import Any, Dict, List
