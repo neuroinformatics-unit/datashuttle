@@ -75,12 +75,8 @@ class ClickableInput(Input):
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "ctrl+q":
-            try:
-                pyperclip.copy(self.value)
-            except pyperclip.PyperclipException:
                 self.mainwindow.copy_to_clipboard(
-                    self.value
-                )  # Using MainWindow method safely
+                    self.value) 
 
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))
@@ -126,11 +122,7 @@ class CustomDirectoryTree(DirectoryTree):
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
             path_str = path_.as_posix()
-
-            try:
-                pyperclip.copy(path_str)
-            except pyperclip.PyperclipException:
-                self.mainwindow.copy_to_clipboard(path_str)
+            self.mainwindow.copy_to_clipboard(path_str)
 
         elif event.key == "ctrl+o":
             path_ = self.get_node_at_line(self.hover_line).data.path
