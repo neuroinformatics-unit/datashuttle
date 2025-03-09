@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 from dataclasses import dataclass
 from pathlib import Path
 
-import pyperclip
 from rich.style import Style
 from rich.text import Text
 from textual._segment_tools import line_pad
@@ -75,8 +74,7 @@ class ClickableInput(Input):
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "ctrl+q":
-                self.mainwindow.copy_to_clipboard(
-                    self.value) 
+            self.mainwindow.copy_to_clipboard(self.value)
 
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))

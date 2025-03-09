@@ -207,13 +207,15 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
     def copy_to_clipboard(self, value):
         """
-        Centralized function to copy to clipboard. 
+        Centralized function to copy to clipboard.
         This may fail under some circumstances (e.g., in headless mode on an HPC).
         """
         try:
             pyperclip.copy(value)
         except pyperclip.PyperclipException:
-            self.show_modal_error_dialog("Clipboard copy failed, likely due to operating in headless mode.")
+            self.show_modal_error_dialog(
+                "Clipboard copy failed, likely due to operating in headless mode."
+            )
 
 
 def main():
