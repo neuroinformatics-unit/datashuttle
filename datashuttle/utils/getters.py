@@ -347,9 +347,11 @@ def get_all_sub_and_ses_names(
                 ses_folder_names["local"] + ses_folder_names["central"]
             )
 
-        session_paths = [str(
-            Path(cfg.local_path) / sub / ses
-            for ses in all_ses_folder_names[sub])
+        session_paths = [
+            str(
+                Path(cfg.local_path) / sub / ses
+                for ses in all_ses_folder_names[sub]
+            )
         ]
 
         structured_info.append(
