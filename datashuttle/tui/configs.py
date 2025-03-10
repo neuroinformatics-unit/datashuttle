@@ -58,6 +58,8 @@ class ConfigsContent(Container):
         self.parent_class = parent_class
         self.interface = interface
         self.config_ssh_widgets: List[Any] = []
+        # Add a flag to track changes in any input widgets
+        self.has_unsaved_changes = False
 
     def compose(self) -> ComposeResult:
         """
@@ -126,7 +128,9 @@ class ConfigsContent(Container):
                 id="configs_central_path_button_input_container",
             ),
             Horizontal(
-                Button("Save", id="configs_save_configs_button"),
+                Button(
+                    "Save", id="configs_save_configs_button", disabled=True
+                ),  # Disabled by default
                 Button(
                     "Setup SSH Connection",
                     id="configs_setup_ssh_connection_button",
@@ -182,6 +186,11 @@ class ConfigsContent(Container):
         """
         # Setup display widget defaults
         self.query_one("#configs_go_to_project_screen_button").visible = False
+
+        # Save button starts disabled
+        self.query_one("#configs_save_configs_button").disabled = True
+        self.has_unsaved_changes = False
+
         if self.interface:
             self.fill_widgets_with_project_configs()
         else:
@@ -232,6 +241,7 @@ class ConfigsContent(Container):
         When mode is `No connection`, the `central_path` is cleared and
         disabled.
         """
+
         label = str(event.pressed.label)
         assert label in [
             "SSH",
@@ -491,6 +501,10 @@ class ConfigsContent(Container):
                     border_color="green",
                 ),
             )
+
+            # Reset changes state after successful project creation
+            self.has_unsaved_changes = False
+            self.query_one("#configs_save_configs_button").disabled = True
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
@@ -520,6 +534,10 @@ class ConfigsContent(Container):
                 ),
                 lambda unused: self.post_message(self.ConfigsSaved()),
             )
+
+            # Reset changes state after successful save
+            self.has_unsaved_changes = False
+            self.query_one("#configs_save_configs_button").disabled = True
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
@@ -585,6 +603,10 @@ class ConfigsContent(Container):
             else cfg_to_load["central_host_username"]
         )
         input.value = value
+
+        # Reset changes state after loading existing configs
+        self.has_unsaved_changes = False
+        self.query_one("#configs_save_configs_button").disabled = True
 
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
