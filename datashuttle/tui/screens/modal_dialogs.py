@@ -1,19 +1,22 @@
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, Callable, Optional
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from textual.app import ComposeResult
+    from textual.worker import Worker
 
     from datashuttle.tui.app import App
+    from datashuttle.utils.custom_types import InterfaceOutput
 
 from pathlib import Path
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Input, Label, Static
+from textual.widgets import Button, Input, Label, LoadingIndicator, Static
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -72,7 +75,11 @@ class FinishTransferScreen(ModalScreen):
     taking user input ('OK' or 'Cancel').
     """
 
-    def __init__(self, message: str, transfer_func: Callable) -> None:
+    def __init__(
+        self,
+        message: str,
+        transfer_func: Callable[[], Worker[InterfaceOutput]],
+    ) -> None:
         super().__init__()
 
         self.transfer_func = transfer_func
@@ -91,15 +98,42 @@ class FinishTransferScreen(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "confirm_ok_button":
-            # Update the display to 'transferring' before
-            # TUI freezes during data transfer.
-            self.query_one("#confirm_button_container").visible = False
+            self.query_one("#confirm_button_container").remove()
+
+            self.handle_transfer_and_update_ui(True)  # Start the data transfer
+
             self.query_one("#confirm_message_label").update("Transferring...")
-            self.query_one("#confirm_message_label").call_after_refresh(
-                lambda: self.transfer_func(True)
-            )
+            loading_indicator = LoadingIndicator(id="loading_indicator")
+            self.query_one("#confirm_top_container").mount(loading_indicator)
         else:
-            self.transfer_func(False)
+            self.handle_transfer_and_update_ui(False)
+
+    def handle_transfer_and_update_ui(self, transfer_bool: bool) -> None:
+        """Runs the data transfer worker and updates the UI on completion"""
+
+        async def _handle_transfer_and_update_ui(transfer_bool: bool) -> None:
+            if not transfer_bool:
+                self.dismiss()
+            else:
+                data_transfer_worker = self.transfer_func()
+                await data_transfer_worker.wait()
+                success, output = data_transfer_worker.result
+                self.dismiss()
+
+                if success:
+                    self.app.push_screen(
+                        MessageBox(
+                            "Transfer finished."
+                            "\n\n"
+                            "Check the most recent logs to "
+                            "ensure transfer completed successfully.",
+                            border_color="grey",
+                        )
+                    )
+                else:
+                    self.app.show_modal_error_dialog(output)
+
+        asyncio.create_task(_handle_transfer_and_update_ui(transfer_bool))
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
