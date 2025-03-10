@@ -48,12 +48,18 @@ def connect_client_core(
 
 
 def is_windows(client: paramiko.SSHClient) -> bool:
+    """
+    Checks the target machine for a Windows OS using two approaches
+        1. execute "ver" : outputs "Microsoft Windows <specific_version>"
+        2. check for the presence of powershell
+    """
     try:
         stdin, stdout, stderr = client.exec_command("ver")
         output = stdout.read().decode().strip().lower()
         if "windows" in output:
             return True
 
+        # rechecking in case the previous check fails for some reason
         stdin, stdout, stderr = client.exec_command(
             "powershell -Command echo 'powershell'"
         )
@@ -105,11 +111,13 @@ def add_public_key_to_central_authorized_keys(
                     f"echo {key.get_name()} {key.get_base64()}"
                     f">> %USERPROFILE%\\.ssh\\authorized_keys"
                 )
+                # setup permissions for .ssh directory
                 client.exec_command(
                     "icacls %USERPROFILE%\\.ssh /inheritance:r /grant %USERNAME%:(OI)(CI)F"
                 )
+                # setup permissions for authorized_keys file
                 client.exec_command(
-                    "icacls %USERPROFILE%\.ssh\\authorized_keys /inheritance:r /grant %USERNAME%:(F)"
+                    "icacls %USERPROFILE%\\.ssh\\authorized_keys /inheritance:r /grant %USERNAME%:(F)"
                 )
 
         else:
