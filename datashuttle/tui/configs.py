@@ -207,9 +207,6 @@ class ConfigsContent(Container):
             id = "#configs_name_input"
             self.query_one(id).tooltip = get_tooltip(id)
 
-            # Register event handler for project name input
-            self.query_one(id).changed_callback = self.on_input_changed
-
             # Assumes 'local_filesystem' is default if no project set.
             assert (
                 self.query_one("#configs_local_filesystem_radiobutton").value
@@ -233,23 +230,6 @@ class ConfigsContent(Container):
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
-        # Register change handlers for input fields
-        for input_id in [
-            "#configs_local_path_input",
-            "#configs_central_path_input",
-            "#configs_central_host_id_input",
-            "#configs_central_host_username_input",
-        ]:
-            self.query_one(input_id).changed_callback = self.on_input_changed
-
-    def on_input_changed(self, widget: ClickableInput) -> None:
-        """
-        Handler for input changes to enable the save button
-        when widgets are modified.
-        """
-        self.has_unsaved_changes = True
-        self.query_one("#configs_save_configs_button").disabled = False
-
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """
         Update the displayed SSH widgets when the `connection_method`
@@ -261,9 +241,6 @@ class ConfigsContent(Container):
         When mode is `No connection`, the `central_path` is cleared and
         disabled.
         """
-        # Mark changes so save button is enabled
-        self.has_unsaved_changes = True
-        self.query_one("#configs_save_configs_button").disabled = False
 
         label = str(event.pressed.label)
         assert label in [
@@ -371,10 +348,6 @@ class ConfigsContent(Container):
             else:
                 self.setup_configs_for_an_existing_project()
 
-            # After saving, disable the save button again
-            self.has_unsaved_changes = False
-            self.query_one("#configs_save_configs_button").disabled = True
-
         elif event.button.id == "configs_setup_ssh_connection_button":
             self.setup_ssh_connection()
 
@@ -428,10 +401,6 @@ class ConfigsContent(Container):
             self.query_one("#configs_central_path_input").value = (
                 path_.as_posix()
             )
-
-        # Enable the save button since we've changed a path
-        self.has_unsaved_changes = True
-        self.query_one("#configs_save_configs_button").disabled = False
 
     def setup_ssh_connection(self) -> None:
         """
