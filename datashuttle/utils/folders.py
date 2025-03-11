@@ -547,7 +547,10 @@ def search_filesystem_path_for_folders(
     all_folder_names = []
     all_filenames = []
 
-    for file_or_folder_str in glob.glob(search_path_with_prefix.as_posix()):
+    all_files_and_folders = list(glob.glob(search_path_with_prefix.as_posix()))
+    sorter_files_and_folders = sorted(all_files_and_folders)
+
+    for file_or_folder_str in sorter_files_and_folders:
 
         file_or_folder = Path(file_or_folder_str)
 
