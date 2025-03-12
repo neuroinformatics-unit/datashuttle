@@ -96,7 +96,6 @@ def get_template_error(name: str, regexp: str, path_: Path | None) -> str:
     )
 
 
-# TODO: TYPE HINTS!
 def get_missing_top_level_folder_error(
     path_: Path | None, local_or_central: Literal["local", "central"]
 ) -> str:
@@ -163,6 +162,7 @@ def validate_list_of_names(
 
     error_messages = []
 
+    # First, just validate each name individually
     for path_or_name in path_or_name_list:
 
         path_, name = get_path_and_name(path_or_name)
@@ -180,7 +180,11 @@ def validate_list_of_names(
             name, path_, prefix, name_templates
         )
 
-    # both of these are O(n^2)
+    # Next, check interactions between names (e.g. duplicates,
+    # inconsistent value lengths).  To do this we must strip names
+    # in which the ids (e.g. sub-001) is invalid).
+    # Note this called functions again loop over the list (O(n^2)) so
+    # this is not very efficient but these lists should never be that long.
     stripped_path_or_names_list = strip_uncheckable_names(
         path_or_name_list, prefix
     )

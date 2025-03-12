@@ -41,7 +41,7 @@ def quick_validate_project(
         name, and hold a "rawdata" or "derivatives" folder.
 
     top_level_folder : TopLevelFolder
-        The top-level folder ("rawdata" or "derivatives" to
+        The top-level folder ("rawdata" or "derivatives") to
         perform validation. If `None`, both are checked.
 
     display_mode : DisplayMode
@@ -62,7 +62,7 @@ def quick_validate_project(
             f"Cannot perform validation. No file or folder found at `project_path`: {project_path}"
         )
 
-    top_level_folders_to_validate = format_top_level_folder(top_level_folder)
+    top_level_folders_to_validate = _format_top_level_folder(top_level_folder)
 
     # Create some mock configs for the validation call,
     # then for each top-level folder, run the validation
@@ -88,10 +88,14 @@ def quick_validate_project(
     return error_messages
 
 
-def format_top_level_folder(
+def _format_top_level_folder(
     top_level_folder: TopLevelFolder | None,
 ) -> List[TopLevelFolder]:
-    """ """
+    """
+    Take a `top_level_folder` ("rawdata" or "derivatives" str) and
+    convert to list, if `None`, convert it to a list
+    of both possible top-level folders.
+    """
     rawdata_and_derivatives: List[TopLevelFolder] = ["rawdata", "derivatives"]
 
     formatted_top_level_folders: List[TopLevelFolder]

@@ -34,7 +34,7 @@ from datashuttle.configs import (
     load_configs,
 )
 from datashuttle.configs.config_class import Configs
-from datashuttle.datashuttle_functions import format_top_level_folder
+from datashuttle.datashuttle_functions import _format_top_level_folder
 from datashuttle.utils import (
     ds_logger,
     folders,
@@ -344,7 +344,7 @@ class DataShuttle:
         ----------
 
         top_level_folder :
-            The top-level folder (e.g. `rawdata`) to transfer files
+            The top-level folder (e.g. `"rawdata"`, `"derivatives"`) to transfer files
             and folders within.
 
         sub_names :
@@ -1263,7 +1263,7 @@ class DataShuttle:
         if self.is_local_project():
             local_only = True
 
-        top_level_folder_to_validate = format_top_level_folder(
+        top_level_folder_to_validate = _format_top_level_folder(
             top_level_folder
         )
 

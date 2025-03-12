@@ -29,7 +29,7 @@ from datashuttle.utils.custom_exceptions import (
 
 def get_next_sub_or_ses(
     cfg: Configs,
-    top_level_folder,
+    top_level_folder: TopLevelFolder,
     sub: Optional[str],
     search_str: str,
     local_only: bool = False,
@@ -52,6 +52,9 @@ def get_next_sub_or_ses(
     ----------
     cfg : Configs
         datashuttle configs class
+
+    top_level_folder: TopLevelFolder
+        The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
 
     sub : Optional[str]
         subject name to search within if searching for sessions, otherwise None
@@ -310,11 +313,14 @@ def get_all_sub_and_ses_paths(
     cfg : Configs
         datashuttle Configs
 
+    top_level_folder: TopLevelFolder
+        The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
+
     local_only : bool
         If `True, only get names from `local_path`, otherwise from
         `local_path` and `central_path`.
     """
-    sub_folder_names = folders.search_project_for_sub_or_ses_names(
+    sub_folder_paths = folders.search_project_for_sub_or_ses_names(
         cfg,
         top_level_folder,
         None,
@@ -324,18 +330,18 @@ def get_all_sub_and_ses_paths(
     )
 
     if local_only:
-        all_sub_folder_names = sub_folder_names["local"]
+        all_sub_folder_paths = sub_folder_paths["local"]
     else:
-        all_sub_folder_names = (
-            sub_folder_names["local"] + sub_folder_names["central"]
+        all_sub_folder_paths = (
+            sub_folder_paths["local"] + sub_folder_paths["central"]
         )
 
-    all_ses_folder_names = {}
-    for sub_path in all_sub_folder_names:
+    all_ses_folder_paths = {}
+    for sub_path in all_sub_folder_paths:
 
         sub = sub_path.name
 
-        ses_folder_names = folders.search_project_for_sub_or_ses_names(
+        ses_folder_paths = folders.search_project_for_sub_or_ses_names(
             cfg,
             top_level_folder,
             sub,
@@ -345,10 +351,10 @@ def get_all_sub_and_ses_paths(
         )
 
         if local_only:
-            all_ses_folder_names[sub] = ses_folder_names["local"]
+            all_ses_folder_paths[sub] = ses_folder_paths["local"]
         else:
-            all_ses_folder_names[sub] = (
-                ses_folder_names["local"] + ses_folder_names["central"]
+            all_ses_folder_paths[sub] = (
+                ses_folder_paths["local"] + ses_folder_paths["central"]
             )
 
-    return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
+    return {"sub": all_sub_folder_paths, "ses": all_ses_folder_paths}

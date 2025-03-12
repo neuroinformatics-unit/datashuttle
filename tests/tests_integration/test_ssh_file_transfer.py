@@ -126,10 +126,10 @@ class TestFileTransfer:
         [
             ["all"],
             ["all_sub"],
-            #         ["all_non_sub"],
-            #         ["sub-001"],
-            #         ["sub-003_date-20231901"],
-            #         ["sub-002", "all_non_sub"],
+            ["all_non_sub"],
+            ["sub-001"],
+            ["sub-003_date-20231901"],
+            ["sub-002", "all_non_sub"],
         ],
     )
     @pytest.mark.parametrize(
@@ -137,10 +137,10 @@ class TestFileTransfer:
         [
             ["all"],
             ["all_non_ses"],
-            #       ["all_ses"],
-            #       ["ses-001"],
-            #       ["ses-002_random-key"],
-            #       ["all_non_ses", "ses-001"],
+            ["all_ses"],
+            ["ses-001"],
+            ["ses-002_random-key"],
+            ["all_non_ses", "ses-001"],
         ],
     )
     @pytest.mark.parametrize(
@@ -148,12 +148,12 @@ class TestFileTransfer:
         [
             ["all"],
             ["all_non_datatype"],
-            #        ["all_datatype"],
-            #        ["behav"],
-            #        ["ephys"],
-            #        ["anat"],
-            #       ["funcimg"],
-            #        ["anat", "behav", "all_non_datatype"],
+            ["all_datatype"],
+            ["behav"],
+            ["ephys"],
+            ["anat"],
+            ["funcimg"],
+            ["anat", "behav", "all_non_datatype"],
         ],
     )
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])

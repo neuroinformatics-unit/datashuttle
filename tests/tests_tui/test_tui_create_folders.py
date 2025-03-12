@@ -435,28 +435,22 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_session_input", control=True
             )
-            try:
-                assert (
-                    pilot.app.screen.query_one(
-                        "#create_folders_session_input"
-                    ).value
-                    == "ses-...."
-                )
-            except:
-                breakpoint()
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-...."
+            )
 
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=False
             )
-            try:
-                assert (
-                    pilot.app.screen.query_one(
-                        "#create_folders_subject_input"
-                    ).value
-                    == "sub-002"
-                )
-            except:
-                breakpoint()
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_subject_input"
+                ).value
+                == "sub-002"
+            )
 
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
@@ -464,16 +458,12 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_session_input", control=False
             )
-            try:
-                assert (
-                    pilot.app.screen.query_one(
-                        "#create_folders_session_input"
-                    ).value
-                    == "ses-0002"
-                )
-            except:
-                breakpoint()
-
+            assert (
+                pilot.app.screen.query_one(
+                    "#create_folders_session_input"
+                ).value
+                == "ses-0002"
+            )
             await pilot.pause()
 
     @pytest.mark.asyncio
