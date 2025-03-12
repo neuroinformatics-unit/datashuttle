@@ -24,6 +24,7 @@ from rich.text import Text
 from textual._segment_tools import line_pad
 from textual.message import Message
 from textual.strip import Strip
+from textual.widget import Widget
 from textual.widgets import (
     DirectoryTree,
     Input,
@@ -65,6 +66,8 @@ class ClickableInput(Input):
         )
 
         self.mainwindow = mainwindow
+        self.styles.min_width = "100%"  # TODO: REMOVE LATER
+        # self.styles.border = ("dashed", "yellow")
 
     def _on_click(self, event: events.Click) -> None:
         self.post_message(self.Clicked(self, event.ctrl))
@@ -474,3 +477,22 @@ class TopLevelFolderSelect(Select):
             self.interface.save_tui_settings(
                 top_level_folder, "top_level_folder_select", self.settings_key
             )
+
+
+class CustomSpinner(Widget):
+    def __init__(self, id):
+        super().__init__()
+        self.frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+        self.current_frame = 0
+        self.id = id
+
+    def on_mount(self) -> None:
+        # Update frame every 0.1 seconds
+        self.set_interval(0.1, self.next_frame)
+
+    def next_frame(self) -> None:
+        self.current_frame = (self.current_frame + 1) % len(self.frames)
+        self.refresh()
+
+    def render(self) -> Text:
+        return Text(self.frames[self.current_frame], style="bold")

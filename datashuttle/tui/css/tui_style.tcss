@@ -164,3 +164,9 @@ DatatypeCheckboxes {
     width: auto;
     padding: 0 0 1 0;
 }
+
+/* Spinner ---------------------------------------------------------------------------------*/
+
+CustomSpinner {
+    color: #00FF00;
+}
