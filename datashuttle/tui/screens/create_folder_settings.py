@@ -100,7 +100,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
                     self.interface,
                     id="create_folders_settings_toplevel_select",
                 ),
-                id="toplevel_folder_select_container",  
+                id="toplevel_folder_select_container",
             ),
             Container(
                 Checkbox(
@@ -157,6 +157,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_toplevel_select",
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
+            "#suggest_next_sub_ses_remote",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
