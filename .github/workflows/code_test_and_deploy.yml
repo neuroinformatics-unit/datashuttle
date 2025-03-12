@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - 'v**'
+      - 'v*'
   pull_request:
   schedule:
     # Weekly cron job at 12:00 AM UTC on Mondays.
