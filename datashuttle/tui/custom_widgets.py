@@ -66,8 +66,6 @@ class ClickableInput(Input):
         )
 
         self.mainwindow = mainwindow
-        self.styles.min_width = "100%"  # TODO: REMOVE LATER
-        # self.styles.border = ("dashed", "yellow")
 
     def _on_click(self, event: events.Click) -> None:
         self.post_message(self.Clicked(self, event.ctrl))
