@@ -35,6 +35,13 @@ TabScreen > TabbedContent {
     margin: 0 0 1 0
 }
 
+#input_suggestion_spinner {
+    width: auto;
+    height: 1;
+    position: absolute;
+    dock: right;
+}
+
 #template_settings_validation_on_checkbox.-on > .toggle--button{
     color: $success;
 }
