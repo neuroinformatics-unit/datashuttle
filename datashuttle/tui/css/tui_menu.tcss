@@ -352,7 +352,7 @@ CreateFoldersSettingsScreen {
 
 /* Confirmation Screen --------------------------------------------------------------------- */
 
-FinishTransferScreen {
+ConfirmAndAwaitTransferPopup {
     align: center middle;
 }
 

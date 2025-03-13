@@ -69,10 +69,13 @@ class MessageBox(ModalScreen):
         self.dismiss(True)
 
 
-class FinishTransferScreen(ModalScreen):
+class ConfirmAndAwaitTransferPopup(ModalScreen):
     """
-    A screen for rendering confirmation messages
-    taking user input ('OK' or 'Cancel').
+    A popup screen for confirming, awaiting and finishing a Transfer.
+
+    When users select Transfer, this screen pops up to a) allow users to confirm transfer b) display
+    a `LoadingIndicator` while the transfer runs in a separate worker c) indicate the transfer is finished.
+    It is much easier to handle this on a single screen, rather than open / close screens at each stage.
     """
 
     def __init__(
@@ -100,40 +103,37 @@ class FinishTransferScreen(ModalScreen):
         if event.button.id == "confirm_ok_button":
             self.query_one("#confirm_button_container").remove()
 
-            self.handle_transfer_and_update_ui(True)  # Start the data transfer
+            # Start the data transfer
+            asyncio.create_task(
+                self.handle_transfer_and_update_ui_when_complete()
+            )
 
             self.query_one("#confirm_message_label").update("Transferring...")
             loading_indicator = LoadingIndicator(id="loading_indicator")
             self.query_one("#confirm_top_container").mount(loading_indicator)
         else:
-            self.handle_transfer_and_update_ui(False)
+            self.dismiss()
 
-    def handle_transfer_and_update_ui(self, transfer_bool: bool) -> None:
+    async def handle_transfer_and_update_ui_when_complete(self) -> None:
         """Runs the data transfer worker and updates the UI on completion"""
 
-        async def _handle_transfer_and_update_ui(transfer_bool: bool) -> None:
-            if not transfer_bool:
-                self.dismiss()
-            else:
-                data_transfer_worker = self.transfer_func()
-                await data_transfer_worker.wait()
-                success, output = data_transfer_worker.result
-                self.dismiss()
+        data_transfer_worker = self.transfer_func()
+        await data_transfer_worker.wait()
+        success, output = data_transfer_worker.result
+        self.dismiss()
 
-                if success:
-                    self.app.push_screen(
-                        MessageBox(
-                            "Transfer finished."
-                            "\n\n"
-                            "Check the most recent logs to "
-                            "ensure transfer completed successfully.",
-                            border_color="grey",
-                        )
-                    )
-                else:
-                    self.app.show_modal_error_dialog(output)
-
-        asyncio.create_task(_handle_transfer_and_update_ui(transfer_bool))
+        if success:
+            self.app.push_screen(
+                MessageBox(
+                    "Transfer finished."
+                    "\n\n"
+                    "Check the most recent logs to "
+                    "ensure transfer completed successfully.",
+                    border_color="grey",
+                )
+            )
+        else:
+            self.app.show_modal_error_dialog(output)
 
 
 class SelectDirectoryTreeScreen(ModalScreen):

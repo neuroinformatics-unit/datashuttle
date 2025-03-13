@@ -36,7 +36,7 @@ from datashuttle.tui.screens.datatypes import (
     DisplayedDatatypesScreen,
 )
 from datashuttle.tui.screens.modal_dialogs import (
-    FinishTransferScreen,
+    ConfirmAndAwaitTransferPopup,
 )
 from datashuttle.tui.tabs.transfer_status_tree import TransferStatusTree
 from datashuttle.tui.tooltips import get_tooltip
@@ -294,20 +294,7 @@ class TransferTab(TreeAndInputTab):
         (in the direction selected). If "Yes" is selected,
         `self.transfer_data` (see below) is run.
 
-        Notes
-        -----
-        The way that Textualize works makes it difficult (impossible?)
-        to render a screen but keep the main loop with another screen.
-        What we want to do is 1) select 'OK' to start transfer
-        2) show 'Transferring...' 3) transfer data 4) tear down 'transferring'
-        screen 5) show confirmation screen. This is not simple if we want to
-        manage the actual transfer in this screen, which makes a lot of
-        sense as all options are held here. The alternative is to pass all settings
-        to a `Transferring` modal dialog which seems even more convoluted. So,
-        `FinishTransferScreen` calls back to `self.transfer_data`. If 'OK' was
-        selected, the message is changed to 'Transferring'. Then, `self.transfer_data`
-        handles data transfer, teardown of the `FinishTransferScreen`
-        and display of the confirmation screen.
+        And `ConfirmAndAwaitTransferPopup` handles the UI updates.
         """
         if event.button.id == "transfer_transfer_button":
             if not self.query_one("#transfer_switch").value:
@@ -324,8 +311,7 @@ class TransferTab(TreeAndInputTab):
                 " central filesystem.\n\nAre you sure you wish to proceed?\n",
             )
 
-            # This is very convoluted. See docstring for details.
-            finish_transfer_screen = FinishTransferScreen(
+            finish_transfer_screen = ConfirmAndAwaitTransferPopup(
                 message, self.transfer_data
             )
             self.mainwindow.push_screen(finish_transfer_screen)
@@ -370,9 +356,19 @@ class TransferTab(TreeAndInputTab):
     # Transfer
     # ----------------------------------------------------------------------------------
 
-    @work(exclusive=True, thread=True)
+    @work(exclusive=False, thread=True)
     def transfer_data(self) -> Worker[InterfaceOutput]:
-        """A threaded worker to transfer data"""
+        """
+        A threaded worker to transfer data
+
+        This function transfers data based on the config provided by the radio buttons
+        such as a) the data to be transferred (all / top-level-folders / custom) b) the
+        direction of transfer c) overwrite rules, etc.
+
+        This function is passed to `ConfirmAndAwaitTransferPopup` which calls it to handle
+        data transfer in a worker thread. The UI updates during and after transfer are
+        handled by `ConfirmAndAwaitTransferPopup`.
+        """
         upload = not self.query_one("#transfer_switch").value
 
         if self.query_one("#transfer_all_radiobutton").value:
@@ -408,4 +404,5 @@ class TransferTab(TreeAndInputTab):
             )
 
         self.app.call_from_thread(self.reload_directorytree)
+
         return success, output
