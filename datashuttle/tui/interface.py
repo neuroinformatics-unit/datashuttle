@@ -400,23 +400,28 @@ class Interface:
         return cfg_to_load
 
     def get_next_sub(
-        self, top_level_folder: TopLevelFolder
+        self, top_level_folder: TopLevelFolder, local_only: bool
     ) -> InterfaceOutput:
         try:
             next_sub = self.project.get_next_sub(
-                top_level_folder, return_with_prefix=True, local_only=True
+                top_level_folder,
+                return_with_prefix=True,
+                local_only=local_only,
             )
             return True, next_sub
         except BaseException as e:
             return False, str(e)
 
     def get_next_ses(
-        self, top_level_folder: TopLevelFolder, sub: str
+        self, top_level_folder: TopLevelFolder, sub: str, local_only: bool
     ) -> InterfaceOutput:
 
         try:
             next_ses = self.project.get_next_ses(
-                top_level_folder, sub, return_with_prefix=True, local_only=True
+                top_level_folder,
+                sub,
+                return_with_prefix=True,
+                local_only=local_only,
             )
             return True, next_ses
         except BaseException as e:
