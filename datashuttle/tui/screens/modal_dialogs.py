@@ -155,7 +155,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             CustomDirectoryTree(
                 self.mainwindow,
                 self.path_,
-                id="select_directory_tree",
+                id="select_directory_tree_directory_tree",
             ),
             Button("Cancel", id="cancel_button"),
             id="select_directory_tree_container",
@@ -177,18 +177,28 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     def on_drive_selected(self, event: Select.Changed) -> None:
         """Updates the directory tree when the drive is changed."""
+        print(f"Drive selected: {event.value}")  # Debug message
+
         self.selected_drive = event.value
         self.path_ = Path(self.selected_drive)
         self.refresh_directory_tree()
 
     def refresh_directory_tree(self):
-        """Rebuilds the directory tree UI."""
-        self.query_one("#select_directory_tree").remove()
-        self.mount(
-            CustomDirectoryTree(
-                self.mainwindow, str(self.path_), id="select_directory_tree"
-            )
+        """Rebuilds the directory tree UI when a new drive is selected."""
+        container = self.query_one(
+            "#select_directory_tree_container"
+        )  # Get the container
+        old_tree = self.query_one("#select_directory_tree_directory_tree")
+
+        if old_tree:
+            container.remove(old_tree)  # Remove the old directory tree
+
+        new_tree = CustomDirectoryTree(
+            self.mainwindow,
+            self.path_,
+            id="select_directory_tree_directory_tree",
         )
+        container.mount(new_tree)  # Mount the new directory tree
 
     @require_double_click
     def on_directory_tree_directory_selected(self, node) -> None:
