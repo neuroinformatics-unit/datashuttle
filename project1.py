@@ -1,10 +1,12 @@
+import asyncio
+
 from textual.app import App
 from textual.containers import Container
-from textual.widgets import Button, Label, Select, Log, ProgressBar
-import asyncio
+from textual.widgets import Button, Label, Log, ProgressBar, Select
 
 # Define required folders for validation
 REQUIRED_FOLDERS = ["data", "scripts", "docs"]
+
 
 class SimpleTUI(App):
     def compose(self):
@@ -12,7 +14,11 @@ class SimpleTUI(App):
         yield Container(
             Label("Select Project Directory:"),
             Select(
-                options=[("Project A", "A"), ("Project B", "B"), ("Project C", "C")],
+                options=[
+                    ("Project A", "A"),
+                    ("Project B", "B"),
+                    ("Project C", "C"),
+                ],
                 id="folder_select",
             ),
             Button("Validate Structure", id="validate_button"),
@@ -51,6 +57,7 @@ class SimpleTUI(App):
             log_window.write(f"Transferred {i}%")
             await asyncio.sleep(0.5)
         log_window.write("File transfer complete!")
+
 
 if __name__ == "__main__":
     app = SimpleTUI()
