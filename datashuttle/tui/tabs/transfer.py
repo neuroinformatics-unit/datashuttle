@@ -356,7 +356,7 @@ class TransferTab(TreeAndInputTab):
     # Transfer
     # ----------------------------------------------------------------------------------
 
-    @work(exclusive=False, thread=True)
+    @work(exclusive=True, thread=True)
     def transfer_data(self) -> Worker[InterfaceOutput]:
         """
         A threaded worker to transfer data
