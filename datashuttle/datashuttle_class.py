@@ -1079,19 +1079,21 @@ class DataShuttle:
         local_only: bool = False,
     ) -> str:
         """
-        Convenience function for get_next_sub_or_ses
+        Convenience function for `get_next_sub_or_ses`
         to find the next subject number.
 
         Parameters
         ----------
+        top_level_folder : TopLevelFolder
+            The top-level folder structure where subject data is organized.
 
-        return_with_prefix : bool
-            If `True`, return with the "sub-" prefix.
+        return_with_prefix : bool, optional
+            If `True`, return the subject with the "sub-" prefix. Defaults to `True`.
 
-        local_only : bool
-            If `True, only get names from `local_path`, otherwise from
-            `local_path` and `central_path`. If in local-project mode,
-            this flag is ignored.
+        local_only : bool, optional
+            If `True`, only get names from `local_path`; otherwise,
+            retrieve names from both `local_path` and `central_path`.
+            If in local-project mode, this flag is ignored. Defaults to `False`.
         """
         name_template = self.get_name_templates()
         name_template_regexp = (
