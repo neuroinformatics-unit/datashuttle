@@ -34,6 +34,7 @@ from datashuttle.configs import (
     load_configs,
 )
 from datashuttle.configs.config_class import Configs
+from datashuttle.datashuttle_functions import _format_top_level_folder
 from datashuttle.utils import (
     ds_logger,
     folders,
@@ -164,27 +165,27 @@ class DataShuttle:
         ----------
 
         top_level_folder : TopLevelFolder
-                Whether to make the folders in `rawdata` or
-                `derivatives`.
+            Whether to make the folders in `rawdata` or
+            `derivatives`.
 
         sub_names : Union[str, List[str]]
-                subject name / list of subject names to make
-                within the top-level project folder
-                (if not already, these will be prefixed with
-                "sub-")
+            subject name / list of subject names to make
+            within the top-level project folder
+            (if not already, these will be prefixed with
+            "sub-")
 
         ses_names : Optional[Union[str, List[str]]]
-                (Optional). session name / list of session names.
-                (if not already, these will be prefixed with
-                "ses-"). If no session is provided, no session-level
-                folders are made.
+            (Optional). session name / list of session names.
+            (if not already, these will be prefixed with
+            "ses-"). If no session is provided, no session-level
+            folders are made.
 
         datatype : Union[str, List[str]]
-                The datatype to make in the sub / ses folders.
-                (e.g. "ephys", "behav", "anat"). If "" is
-                passed no datatype will be created. Broad or
-                Narrow canonical NeuroBlueprint datatypes are
-                accepted.
+            The datatype to make in the sub / ses folders.
+            (e.g. "ephys", "behav", "anat"). If "" is
+            passed no datatype will be created. Broad or
+            Narrow canonical NeuroBlueprint datatypes are
+            accepted.
 
         bypass_validation : bool
             If `True`, folders will be created even if they are not
@@ -208,27 +209,22 @@ class DataShuttle:
 
         sub_names or ses_names may contain formatting tags
 
-            @TO@ :
-                used to make a range of subjects / sessions.
-                Boundaries of the range must be either side of the tag
-                e.g. sub-001@TO@003 will generate
-                 ["sub-001", "sub-002", "sub-003"]
+        @TO@
+            used to make a range of subjects / sessions.
+            Boundaries of the range must be either side of the tag
+            e.g. sub-001@TO@003 will generate ["sub-001", "sub-002", "sub-003"]
 
-            @DATE@, @TIME@ @DATETIME@ :
-                will add date-<value>, time-<value> or
-                date-<value>_time-<value> keys respectively. Only one per-name
-                is permitted.
-                e.g. sub-001_@DATE@ will generate sub-001_date-20220101
-                (on the 1st january, 2022).
+        @DATE@, @TIME@ @DATETIME@
+            will add date-<value>, time-<value> or
+            date-<value>_time-<value> keys respectively. Only one per-name
+            is permitted.
+            e.g. sub-001_@DATE@ will generate sub-001_date-20220101 (on the 1st january, 2022).
 
         Examples
         --------
         project.create_folders("rawdata", "sub-001", datatype="behav")
 
-        project.create_folders("rawdata",
-                             "sub-002@TO@005",
-                             ["ses-001", "ses-002"],
-                             ["ephys", "behav"])
+        project.create_folders("rawdata", "sub-002@TO@005", ["ses-001", "ses-002"], ["ephys", "behav"])
         """
         if log:
             self._start_log("create-folders", local_vars=locals())
@@ -348,7 +344,7 @@ class DataShuttle:
         ----------
 
         top_level_folder :
-            The top-level folder (e.g. `rawdata`) to transfer files
+            The top-level folder (e.g. `"rawdata"`, `"derivatives"`) to transfer files
             and folders within.
 
         sub_names :
@@ -1218,10 +1214,11 @@ class DataShuttle:
     @check_configs_set
     def validate_project(
         self,
-        top_level_folder: TopLevelFolder,
+        top_level_folder: Optional[TopLevelFolder],
         display_mode: DisplayMode,
         local_only: bool = False,
-    ) -> None:
+        strict_mode: bool = False,
+    ) -> List[str]:
         """
         Perform validation on the project. This checks the subject
         and session level folders to ensure there are no NeuroBlueprint
@@ -1229,6 +1226,10 @@ class DataShuttle:
 
         Parameters
         ----------
+
+        top_level_folder : TopLevelFolder | None
+            Folder to check, either "rawdata" or "derivatives". If ``None``,
+            will check both folders.
 
         display_mode : DisplayMode
             The validation issues are displayed as ``"error"`` (raise error)
@@ -1238,7 +1239,20 @@ class DataShuttle:
             If ``True``, only the local project is validated. Otherwise, both
             local and central projects are validated. If in local-project mode,
             this flag is ignored.
+
+        strict_mode: bool
+            If `True`, only allow NeuroBlueprint-formatted folders to exist in
+            the project. By default, non-NeuroBlueprint folders (e.g. a folder
+            called 'my_stuff' in the 'rawdata') are allowed, and only folders
+            starting with sub- or ses- prefix are checked. In `Strict Mode`,
+            any folder not prefixed with sub-, ses- or a valid datatype will
+            raise a validation issue.
         """
+        utils.print_message_to_user(
+            f"Logs of the validation will be stored in: "
+            f"{self.cfg.make_and_get_logging_path()}\n\nValidation results:"
+        )
+
         self._start_log(
             "validate-project",
             local_vars=locals(),
@@ -1249,15 +1263,22 @@ class DataShuttle:
         if self.is_local_project():
             local_only = True
 
-        validation.validate_project(
+        top_level_folder_to_validate = _format_top_level_folder(
+            top_level_folder
+        )
+
+        error_messages = validation.validate_project(
             self.cfg,
-            top_level_folder,
+            top_level_folder_to_validate,
             local_only=local_only,
             display_mode=display_mode,
             name_templates=name_templates,
+            strict_mode=strict_mode,
         )
 
         ds_logger.close_log_filehandler()
+
+        return error_messages
 
     @staticmethod
     def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:

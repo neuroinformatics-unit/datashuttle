@@ -75,15 +75,13 @@ class TestLogging:
         """
         Check that errors are caught and logged properly.
         """
-        try:
+        with pytest.raises(NeuroBlueprintError):
             project.create_folders("rawdata", "sob-001")
-        except:
-            pass
 
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert "ERROR" in log
-        assert "Problem with name:" in log
+        assert "BAD_VALUE:" in log
 
     # -------------------------------------------------------------------------
     # Functional Tests
@@ -451,9 +449,8 @@ class TestLogging:
         log = test_utils.read_log_file(project.cfg.logging_path)
 
         assert (
-            "A sub already exists with the same "
-            "sub id as sub-001_datetime-123213T123122. "
-            "The existing folder is sub-001" in log
+            "DUPLICATE_NAME: The prefix for sub-001_datetime-123213T123122 duplicates the name: sub-001"
+            in log
         )
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)

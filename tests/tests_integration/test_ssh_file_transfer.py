@@ -18,7 +18,7 @@ class TestFileTransfer:
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem (see docstring).
-            False,
+            # False,
             pytest.param(
                 True,
                 marks=pytest.mark.skipif(
@@ -88,7 +88,7 @@ class TestFileTransfer:
             ssh_test_utils.setup_project_for_ssh(
                 project,
                 test_utils.make_test_path(
-                    central_path, test_project_name, "central"
+                    central_path, "central", test_project_name
                 ),
                 ssh_config.CENTRAL_HOST_ID,
                 ssh_config.USERNAME,

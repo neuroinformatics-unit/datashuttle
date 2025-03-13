@@ -248,9 +248,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        if (
-            event.checkbox.id == "transfer_tab_dry_run_checkbox"
-        ):  # TODO: UPDATE NAMES TO INC. TAB! ALSO UPDATE TOOLTIPS
+        if event.checkbox.id == "transfer_tab_dry_run_checkbox":
             self.interface.save_tui_settings(
                 event.checkbox.value,
                 "dry_run",

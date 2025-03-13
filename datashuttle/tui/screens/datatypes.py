@@ -122,7 +122,7 @@ class DisplayedDatatypesScreen(ModalScreen):
             Vertical(
                 Label(
                     "Select datatype checkboxes to display:",
-                    id="display_datatypes_toplevel_label",  # TODO: CHANGE NAME
+                    id="display_datatypes_toplevel_label",
                 ),
                 SelectionList[int](
                     *selections, id="displayed_datatypes_selection_list"
