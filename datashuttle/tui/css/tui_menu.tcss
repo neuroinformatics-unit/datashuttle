@@ -352,7 +352,7 @@ CreateFoldersSettingsScreen {
 
 /* Confirmation Screen --------------------------------------------------------------------- */
 
-FinishTransferScreen {
+ConfirmAndAwaitTransferPopup {
     align: center middle;
 }
 
@@ -385,6 +385,14 @@ FinishTransferScreen {
 
 #confirm_button_container > Button {
     height: 3;
+    content-align: center middle;
+}
+
+#loading_indicator {
+    align: center middle;
+    padding: 0;
+    height: 3;
+    margin: 1 0 0 0;
     content-align: center middle;
 }
 

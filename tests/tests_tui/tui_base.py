@@ -245,8 +245,7 @@ class TuiBase:
 
     async def close_messagebox(self, pilot):
         """
-        Close a messageobox, for some reason clicking the 'OK'
-        button does not work.
+        Close the modal_dialogs.Messagebox
         """
         pilot.app.screen.on_button_pressed()
         await pilot.pause()
