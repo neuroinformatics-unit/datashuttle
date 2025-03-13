@@ -100,9 +100,9 @@ class TestTuiTransfer(TuiBase):
 
         test_utils.delete_log_files(logging_path)
         await self.perform_transfer(pilot)
- #       await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
- #       await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
- #       await self.close_messagebox(pilot)
+        #       await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
+        #       await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
+        #       await self.close_messagebox(pilot)
 
         log = test_utils.read_log_file(logging_path)
         assert f"overwrite_existing_files': '{overwrite_setting}'" in log
@@ -254,7 +254,9 @@ class TestTuiTransfer(TuiBase):
 
         await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
 
-        await pilot.pause(10)  # this is too long / arbitrary, need to find a way to await specific transfer worker
+        await pilot.pause(
+            10
+        )  # this is too long / arbitrary, need to find a way to await specific transfer worker
 
         await self.close_messagebox(pilot)
 
