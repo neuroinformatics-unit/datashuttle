@@ -9,6 +9,7 @@ from typing import (
     Optional,
     Tuple,
     Union,
+    cast,
 )
 
 if TYPE_CHECKING:
@@ -339,3 +340,86 @@ def get_all_sub_and_ses_names(
             )
 
     return {"sub": all_sub_folder_names, "ses": all_ses_folder_names}
+
+
+def get_all_sub_and_ses(
+    self,
+    top_level_folder: str,
+    local_only: bool = False,
+) -> List[Dict[str, Union[str, List[Path]]]]:
+    """
+    Get all subjects and their session paths in the project.
+
+    Returns
+    -------
+    List[Dict]
+        Each dictionary contains:
+        - "subject": subject name (e.g., "sub-001")
+        - "session_paths": list of full Path objects to sessions.
+    """
+    project_info = []
+    sub_ses_names = get_all_sub_and_ses_names(
+        self.cfg, cast(TopLevelFolder, top_level_folder), local_only
+    )
+
+    for sub in sub_ses_names["sub"]:
+        session_paths = []
+
+        if local_only:
+            base_path = self.cfg.get_local_path() / top_level_folder / sub
+        else:
+            base_path = self.cfg.get_project_path() / top_level_folder / sub
+
+        for ses in sub_ses_names["ses"].get(sub, []):
+            ses_path = base_path / ses
+            if ses_path.exists():
+                session_paths.append(ses_path)
+
+        project_info.append({"subject": sub, "session_paths": session_paths})
+
+    return project_info
+
+
+def find_folders(
+    self,
+    top_level_folder: str,
+    subject: str,
+    session_scope: Union[str, List[str]],
+    folder_pattern: str,
+    local_only: bool = False,
+) -> List[Path]:
+    """
+    Find folders matching a pattern under a subject and session(s).
+
+    Returns
+    -------
+    List[Path]
+        List of Path objects to matching folders.
+    """
+    matches = []
+
+    top_folder_literal = cast(TopLevelFolder, top_level_folder)
+
+    if session_scope == "all_ses":
+        ses_names = get_all_sub_and_ses_names(
+            self.cfg, top_folder_literal, local_only
+        )["ses"].get(subject, [])
+    else:
+        ses_names = session_scope
+
+    search_paths = []
+    if local_only:
+        search_paths.append(self.cfg.get_local_path())
+    else:
+        search_paths.extend(
+            [self.cfg.get_local_path(), self.cfg.get_central_path()]
+        )
+
+    for base_path in search_paths:
+        base_path = base_path / top_level_folder / subject
+        for ses in ses_names:
+            ses_path = base_path / ses
+            if ses_path.exists():
+                matches.extend(list(ses_path.glob(folder_pattern)))
+
+    return matches
