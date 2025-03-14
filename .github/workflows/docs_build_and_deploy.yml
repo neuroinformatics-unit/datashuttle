@@ -2,9 +2,8 @@ name: Build Sphinx docs and deploy to GitHub Pages
 
 # Generate the documentation on all merges to main, all pull requests, or by
 # manual workflow dispatch. The build job can be used as a CI check that the
-# docs still build successfully. The deploy job only runs when a tag is
-# pushed and actually moves the generated html to the gh-pages branch
-# (which triggers a GitHub pages deployment).
+# docs still build successfully. The deploy job only runs when a tag is pushed
+# (so, when a new release is made).
 on:
   push:
     branches:
@@ -15,20 +14,172 @@ on:
   workflow_dispatch:
 
 jobs:
-  build_sphinx_docs:
-    name: Build Sphinx Docs
+  linting:
+    # scheduled workflows should not run on forks
+    if: (${{ github.event_name == 'schedule' }} && ${{ github.repository_owner == 'neuroinformatics-unit' }} && ${{ github.ref == 'refs/heads/main' }}) || (${{ github.event_name != 'schedule' }})
     runs-on: ubuntu-latest
     steps:
-      - uses: neuroinformatics-unit/actions/build_sphinx_docs@v2
+      - uses: neuroinformatics-unit/actions/lint@v2
+
+  build_sphinx_docs:
+    name: Build Sphinx Docs
+    needs: linting
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    # Need the tags so that setuptools-scm can form a valid version number
+    - name: Fetch git tags
+      run: git fetch origin 'refs/tags/*:refs/tags/*'
+
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Upgrade pip
+      shell: bash
+      run: |
+        # install pip=>20.1 to use "pip cache dir"
+        python3 -m pip install --upgrade pip
+
+    - name: Get pip cache dir
+      shell: bash
+      id: pip-cache
+      run: echo "dir=$(pip cache dir)" >> $GITHUB_OUTPUT
+
+    - name: Cache dependencies
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pip-cache.outputs.dir }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      shell: bash
+      run: python3 -m pip install -r ./docs/requirements.txt
+
+    - name: Check links
+      shell: bash
+      run: |
+          sphinx-build docs/source docs/build -b linkcheck
+
+    # needs to have sphinx.ext.githubpages in conf.py extensions list
+    - name: Building documentation
+      shell: bash
+      run: |
+          sphinx-build docs/source docs/build -b html --keep-going
+
+    - name: Upload the content for deployment
+      uses: actions/upload-artifact@v4
+      with:
+        name: docs-${{ github.sha }}
+        path: ./docs/build/
 
   deploy_sphinx_docs:
     name: Deploy Sphinx Docs
     needs: build_sphinx_docs
     permissions:
       contents: write
-    if: github.event_name == 'push' && github.ref_type == 'tag'
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: neuroinformatics-unit/actions/deploy_sphinx_docs@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Fetch the built docs from the "build_sphinx_docs" job
+      - name: Download HTML documentation artifact
+        uses: actions/download-artifact@v4
         with:
-          secret_input: ${{ secrets.GITHUB_TOKEN }}
+          name: docs-${{ github.sha }}
+          path: docs/build
+
+      - name: Checkout the gh-pages branch in a separate folder
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          # Checkout to this folder instead of the current one
+          path: deploy
+          # Download the entire history
+          fetch-depth: 0
+
+      - name: Push the built HTML to gh-pages
+        run: |
+          # Detect if this is a release or from the main branch
+          echo "Event name: ${{ github.event_name }}"
+          echo "Ref type: ${{ github.ref_type }}"
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref_type }}" = "tag" ]; then
+              # Get the tag name without the "refs/tags/" part
+              version="${GITHUB_REF#refs/*/}"
+          else
+              version=dev
+          fi
+          echo "Deploying version: $version"
+          # Make the new commit message. Needs to happen before cd into deploy
+          # to get the right commit hash.
+          message="Deploy $version from $(git rev-parse --short HEAD)"
+          cd deploy
+          # Need to have this file so that Github doesn't try to run Jekyll
+          touch .nojekyll
+          # Delete all the files and replace with our new  set
+          echo -e "\nRemoving old files from previous builds of ${version}:"
+          rm -rvf ${version}
+          echo -e "\nCopying HTML files to ${version}:"
+          cp -Rvf ../docs/build ${version}/
+
+          if [[ "${version}" != "dev" ]]; then
+            # Updated switcher.json file
+            SWITCHER_CONTENT=$(curl https://github.com/neuroinformatics-unit/datashuttle/tree/main/docs/source/_static/switcher.json)
+            BASE_URL="$(jq -r '.[1].url|split("/")[0:3]|join("/")' <<< $SWITCHER_CONTENT)"
+            NEW_URL="${BASE_URL}/latest/"
+            # Extract the current latest version entry
+            FIRST_ENTRY=$(jq '.[0]' <<< "${SWITCHER_CONTENT}")
+            CURRENT_LATEST_VERSION=$(echo $(jq '.[1].version' <<< "${SWITCHER_CONTENT}") | tr -d '"')
+
+            # Remove the "name" field from the current latest entry
+            UPDATED_CURRENT_LATEST_ENTRY=$(jq --arg url "${BASE_URL}/${CURRENT_LATEST_VERSION}" '.[1] | .url = $url | del(.name)' <<< "$SWITCHER_CONTENT")
+
+            # Create the new version entry with the "latest" tag
+            NEW_ENTRY=$(jq -n --arg version "${version}" --arg url "$NEW_URL" --arg name "$version (latest)" \
+            '{name: $name, version: $version, url: $url}')
+
+            # Combine the entries in the desired order
+            UPDATED_SWITCHER_CONTENT=$(jq --argjson first_entry "$FIRST_ENTRY" --argjson new_entry "$NEW_ENTRY" --argjson updated_current_latest "$UPDATED_CURRENT_LATEST_ENTRY" '[$first_entry, $new_entry, $updated_current_latest] + .[2:]' <<< "$SWITCHER_CONTENT")
+
+            SWITCHER_FILE="${version}/_static/switcher.json"
+            # Write the updated content back to switcher.json
+            echo "$UPDATED_SWITCHER_CONTENT" > "$SWITCHER_FILE"
+
+            echo "${version}/_static/switcher.json has been updated successfully."
+          fi
+
+          # If this is a new release, update the link from /latest to it
+          if [[ "${version}" != "dev" ]]; then
+              echo -e "\nSetup link from ${version} to 'latest'."
+              rm -f latest
+              ln -sf ${version} latest
+          fi
+          # Stage the commit
+          git add -A .
+          echo -e "\nChanges to be applied:"
+          git status
+          # Configure git to be the GitHub Actions account
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
+          # If this is a dev build and the last commit was from a dev build
+          # (detect if "dev" was in the previous commit message), reuse the
+          # same commit
+          if [[ "${version}" == "dev" && `git log -1 --format='%s'` == *"dev"* ]]; then
+              echo -e "\nAmending last commit:"
+              git commit --amend --reset-author -m "$message"
+          else
+              echo -e "\nMaking a new commit:"
+              git commit -m "$message"
+          fi
+          # Make the push quiet just in case there is anything that could leak
+          # sensitive information.
+          echo -e "\nPushing changes to gh-pages."
+          git push -fq origin gh-pages 2>&1 >/dev/null
+          echo -e "\nFinished uploading generated files."
