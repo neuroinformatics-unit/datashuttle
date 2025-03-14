@@ -13,6 +13,7 @@ import os
 import platform
 from pathlib import Path
 
+import win32api
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Label, Select, Static
@@ -150,7 +151,8 @@ class SelectDirectoryTreeScreen(ModalScreen):
             Select(  # Dropdown for drives
                 [(drive, drive) for drive in self.available_drives],
                 value=self.selected_drive,
-                id="drive_select",
+                allow_blank=False,
+                id="select_directory_tree_drive_select",
             ),
             CustomDirectoryTree(
                 self.mainwindow,
@@ -163,42 +165,30 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     @staticmethod
     def get_drives():
-        """Returns a list of available drives without using psutil."""
         if platform.system() == "Windows":
-            drives = []
-            with os.popen("wmic logicaldisk get name") as f:
-                lines = f.readlines()[1:]
-                for line in lines:
-                    drive = line.strip()
-                    if drive:
-                        drives.append(drive + "\\")
+            drives = win32api.GetLogicalDriveStrings()
+            drives = drives.split("\000")[
+                :-1
+            ]  # Splitting based on null terminator
             return drives
-        return ["/"]  # Unix-based systems have a single root "/"
 
-    def on_drive_selected(self, event: Select.Changed) -> None:
+        elif platform.system() in ["Linux", "Darwin"]:  # Darwin is for macOS
+            # List all possible drive mount points (Linux/macOS)
+            drives = ["/mnt", "/media", "/"]  # Common mount points
+            mounted_drives = [d for d in drives if os.path.ismount(d)]
+            return mounted_drives
+
+        return ["/"]
+
+    def on_select_changed(self, event: Select.Changed) -> None:
         """Updates the directory tree when the drive is changed."""
         print(f"Drive selected: {event.value}")  # Debug message
 
         self.selected_drive = event.value
         self.path_ = Path(self.selected_drive)
-        self.refresh_directory_tree()
-
-    def refresh_directory_tree(self):
-        """Rebuilds the directory tree UI when a new drive is selected."""
-        container = self.query_one(
-            "#select_directory_tree_container"
-        )  # Get the container
-        old_tree = self.query_one("#select_directory_tree_directory_tree")
-
-        if old_tree:
-            container.remove(old_tree)  # Remove the old directory tree
-
-        new_tree = CustomDirectoryTree(
-            self.mainwindow,
-            self.path_,
-            id="select_directory_tree_directory_tree",
+        self.query_one("#select_directory_tree_directory_tree").path = (
+            self.path_
         )
-        container.mount(new_tree)  # Mount the new directory tree
 
     @require_double_click
     def on_directory_tree_directory_selected(self, node) -> None:
