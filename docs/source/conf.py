@@ -108,6 +108,12 @@ html_theme = "pydata_sphinx_theme"
 html_title = "datashuttle"
 
 
+# Redirect the webpage to another URL
+# Sphinx will create the appropriate CNAME file in the build directory
+# https://www.sphinx-doc.org/en/master/usage/extensions/githubpages.html
+html_baseurl = "https://datashuttle.neuroinformatics.dev/"
+
+
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
@@ -148,11 +154,18 @@ html_theme_options = {
             "type": "fontawesome",
         },
     ],
+    
+    "switcher": {
+    # Use raw.githubusercontent.com for direct JSON access
+    "json_url": "https://raw.githubusercontent.com/neuroinformatics-unit/datashuttle/main`/docs/source/_static/switcher.json",
+    "version_match": release,
+},
     "logo": {
         "text": f"datashuttle v{release}",
         "image_light": "_static/logo_light.png",
         "image_dark": "_static/logo_dark.png",
     },
+    "navbar_end": ["version-switcher","navbar-icon-links", "theme-switcher"],
     "footer_start": ["footer_start"],
     "footer_end": ["footer_end"],
     "show_prev_next": False,
