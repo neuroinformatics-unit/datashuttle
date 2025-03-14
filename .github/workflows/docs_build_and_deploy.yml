@@ -105,6 +105,7 @@ jobs:
           # Download the entire history
           fetch-depth: 0
 
+      #TODO: update the correct ul for the json file
       - name: Push the built HTML to gh-pages
         run: |
           # Detect if this is a release or from the main branch

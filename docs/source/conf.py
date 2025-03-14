@@ -155,6 +155,8 @@ html_theme_options = {
         },
     ],
     
+    
+    #TODO : Update the correct json_url according to the release
     "switcher": {
     # Use raw.githubusercontent.com for direct JSON access
     "json_url": "https://raw.githubusercontent.com/neuroinformatics-unit/datashuttle/main`/docs/source/_static/switcher.json",
