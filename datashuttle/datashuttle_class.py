@@ -1380,6 +1380,8 @@ class DataShuttle:
         else:
             path_to_save = self.cfg.logging_path
 
+        os.makedirs(path_to_save, exist_ok=True)
+
         ds_logger.start(path_to_save, command_name, variables, verbose)
 
     def _move_logs_from_temp_folder(self) -> None:
