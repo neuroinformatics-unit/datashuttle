@@ -53,6 +53,7 @@ class ProjectManagerScreen(Screen):
 
     def compose(self) -> ComposeResult:
         yield Header()
+        yield Button("Projects List", id="projects_list_button")
         yield Button("Main Menu", id="all_main_menu_buttons")
         with TabbedContent(
             id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
@@ -86,11 +87,13 @@ class ProjectManagerScreen(Screen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
-        Dismisses the TabScreen (and returns to the main menu) once
-        the 'Main Menu' button is pressed.
+        Dismisses the TabScreen and either returns to the main menu or goes directly
+        to the projects list depending on which button was pressed.
         """
         if event.button.id == "all_main_menu_buttons":
-            self.dismiss()
+            self.dismiss(False)  # False indicates return to main menu
+        elif event.button.id == "projects_list_button":
+            self.dismiss(True)  # True indicates go to projects list
 
     def on_tabbed_content_tab_activated(
         self, event: TabbedContent.TabActivated

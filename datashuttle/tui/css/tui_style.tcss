@@ -1,4 +1,3 @@
-
 /* Buttons -------------------------------------------------------------------------- */
 
 Button {
@@ -24,10 +23,14 @@ Button:light:hover {
 
 /* Main Menu Buttons --------------------------------------------------------------------- */
 
-#all_main_menu_buttons {
+#all_main_menu_buttons, #projects_list_button {
     dock: right;
     height: 3;
     layer: top;
+}
+
+#projects_list_button {
+    margin-right: 1;
 }
 
 /* Header --------------------------------------------------------------------------- */

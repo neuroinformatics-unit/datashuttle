@@ -97,7 +97,20 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             self.push_screen(
                 project_manager.ProjectManagerScreen(
                     self, interface, id="project_manager_screen"
-                )
+                ),
+                self.handle_project_manager_dismiss
+            )
+
+    def handle_project_manager_dismiss(self, go_to_projects_list: bool) -> None:
+        """
+        Handle dismissal from the project manager screen.
+        If go_to_projects_list is True, navigate directly to the projects list.
+        Otherwise, we're already back at the main menu.
+        """
+        if go_to_projects_list:
+            self.push_screen(
+                project_selector.ProjectSelectorScreen(self),
+                self.load_project_page,
             )
 
     def show_modal_error_dialog(self, message: str) -> None:
