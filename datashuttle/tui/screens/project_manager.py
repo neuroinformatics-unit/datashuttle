@@ -17,7 +17,7 @@ from textual.widgets import (
 )
 
 from datashuttle.tui.configs import ConfigsContent
-from datashuttle.tui.screens import modal_dialogs
+from datashuttle.tui.screens import modal_dialogs, project_selector
 from datashuttle.tui.tabs import create_folders, logging, transfer
 
 
@@ -92,6 +92,10 @@ class ProjectManagerScreen(Screen):
         """
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()
+        elif event.button.id == "projects-list":
+            self.app.push_screen(
+                project_selector.ProjectSelectorScreen(self.app)
+            )
 
     def on_tabbed_content_tab_activated(
         self, event: TabbedContent.TabActivated
