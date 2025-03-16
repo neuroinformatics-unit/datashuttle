@@ -54,6 +54,7 @@ class ProjectManagerScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
+        yield Button("Projects List", id="projects-list")
         with TabbedContent(
             id="tabscreen_tabbed_content", initial="tabscreen_create_tab"
         ):

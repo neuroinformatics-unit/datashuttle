@@ -30,6 +30,16 @@ Button:light:hover {
     layer: top;
 }
 
+
+/* Projects List Button --------------------------------------------------------------------- */
+
+#projects-list{
+    dock: right;
+    height: 3;
+    layer: top;
+    margin-right: 16;
+}
+
 /* Header --------------------------------------------------------------------------- */
 
 Header {
