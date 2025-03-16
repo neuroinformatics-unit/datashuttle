@@ -98,10 +98,12 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
                 project_manager.ProjectManagerScreen(
                     self, interface, id="project_manager_screen"
                 ),
-                self.handle_project_manager_dismiss
+                self.handle_project_manager_dismiss,
             )
 
-    def handle_project_manager_dismiss(self, go_to_projects_list: bool) -> None:
+    def handle_project_manager_dismiss(
+        self, go_to_projects_list: bool
+    ) -> None:
         """
         Handle dismissal from the project manager screen.
         If go_to_projects_list is True, navigate directly to the projects list.
