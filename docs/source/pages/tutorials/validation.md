@@ -110,12 +110,12 @@ folders across 'local' and 'central' before validation. This is useful check aga
 the 'local' and 'central' project.
 
 To perform this type of validation, connection configurations [must be set](make-a-full-project_target).
-The ``local_only`` argument must be set to ``False``:
+The ``include_central`` argument must be set to ``True``:
 
 ```python
 error_messages = project.validate_project(
     "rawdata",
     display_mode="warn",
-    local_only=False
+    include_central=True
 )
 ```

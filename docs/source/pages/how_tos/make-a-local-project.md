@@ -88,7 +88,7 @@ When in local-only mode, some functionality of **datashuttle** is lost.
 
 It will not be possible to:
 - transfer data, which requires passing configs related to a centrally-stored project.
-- Any method that exposes a ``local_only`` argument will always set this to ``True``.
+- Any method that exposes a ``include_central`` argument will always set this to ``False``.
 For example, validation will only ever be performed on the local project.
 
 See [](make-a-full-project_target) for more information on setting up for data transfer.
