@@ -1072,7 +1072,7 @@ class DataShuttle:
         self,
         top_level_folder: TopLevelFolder,
         return_with_prefix: bool = True,
-        local_only: bool = False,
+        include_central: bool = False,
     ) -> str:
         """
         Convenience function for get_next_sub_or_ses
@@ -1084,8 +1084,8 @@ class DataShuttle:
         return_with_prefix : bool
             If `True`, return with the "sub-" prefix.
 
-        local_only : bool
-            If `True, only get names from `local_path`, otherwise from
+        include_central : bool
+            If `False, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
         """
@@ -1095,13 +1095,13 @@ class DataShuttle:
         )
 
         if self.is_local_project():
-            local_only = True
+            include_central = False
 
         return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
             sub=None,
-            local_only=local_only,
+            local_only=not include_central,
             return_with_prefix=return_with_prefix,
             search_str="sub-*",
             name_template_regexp=name_template_regexp,
@@ -1113,7 +1113,7 @@ class DataShuttle:
         top_level_folder: TopLevelFolder,
         sub: str,
         return_with_prefix: bool = True,
-        local_only: bool = False,
+        include_central: bool = False,
     ) -> str:
         """
         Convenience function for get_next_sub_or_ses
@@ -1131,8 +1131,8 @@ class DataShuttle:
         return_with_prefix : bool
             If `True`, return with the "ses-" prefix.
 
-        local_only : bool
-            If `True, only get names from `local_path`, otherwise from
+        include_central : bool
+            If `False, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
         """
@@ -1142,13 +1142,13 @@ class DataShuttle:
         )
 
         if self.is_local_project():
-            local_only = True
+            include_central = False
 
         return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
             sub=sub,
-            local_only=local_only,
+            local_only=not include_central,
             return_with_prefix=return_with_prefix,
             search_str="ses-*",
             name_template_regexp=name_template_regexp,
@@ -1216,7 +1216,7 @@ class DataShuttle:
         self,
         top_level_folder: Optional[TopLevelFolder],
         display_mode: DisplayMode,
-        local_only: bool = False,
+        include_central: bool = False,
         strict_mode: bool = False,
     ) -> List[str]:
         """
@@ -1235,8 +1235,8 @@ class DataShuttle:
             The validation issues are displayed as ``"error"`` (raise error)
             ``"warn"`` (show warning) or ``"print"``
 
-        local_only : bool
-            If ``True``, only the local project is validated. Otherwise, both
+        include_central : bool
+            If ``False``, only the local project is validated. Otherwise, both
             local and central projects are validated. If in local-project mode,
             this flag is ignored.
 
@@ -1261,7 +1261,7 @@ class DataShuttle:
         name_templates = self.get_name_templates()
 
         if self.is_local_project():
-            local_only = True
+            include_central = False
 
         top_level_folder_to_validate = _format_top_level_folder(
             top_level_folder
@@ -1270,7 +1270,7 @@ class DataShuttle:
         error_messages = validation.validate_project(
             self.cfg,
             top_level_folder_to_validate,
-            local_only=local_only,
+            local_only=not include_central,
             display_mode=display_mode,
             name_templates=name_templates,
             strict_mode=strict_mode,
