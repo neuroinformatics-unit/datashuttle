@@ -47,13 +47,14 @@ class TestTuiValidate(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#validate_validate_button"
             )
+
             written_lines = [
                 ele.text
                 for ele in pilot.app.query_one("#validate_richlog").lines
             ]
 
-            assert len(written_lines) == 4
-            assert "TOP_LEVEL_FOLDER:" in written_lines[0]
+            assert len(written_lines) == 3
+            assert "BAD_VALUE:" in written_lines[0]
 
     @pytest.mark.asyncio
     async def test_validate_on_project_manager_kwargs(
@@ -78,7 +79,6 @@ class TestTuiValidate(TuiBase):
                 pilot, "#validate_validate_button"
             )
 
-            breakpoint()
             args_, kwargs_ = spy_validate.call_args_list[0]
 
             assert "local_path" in args_[0]
@@ -95,9 +95,23 @@ class TestTuiValidate(TuiBase):
             await self.move_select_to_position(
                 pilot, "#validate_top_level_folder_select", position=6
             )  # switch to both
+
             await self.change_checkbox(
                 pilot, "#validate_include_central_checkbox"
             )
+            await self.change_checkbox(pilot, "#validate_strict_mode_checkbox")
+
+            await self.scroll_to_click_pause(
+                pilot, "#validate_validate_button"
+            )
+
+            assert (
+                "`strict_mode` is currently only available"
+                in pilot.app.screen.message
+            )
+
+            await self.close_messagebox(pilot)
+
             await self.change_checkbox(pilot, "#validate_strict_mode_checkbox")
 
             await self.scroll_to_click_pause(
@@ -115,10 +129,7 @@ class TestTuiValidate(TuiBase):
                 "sub": None,
                 "ses": None,
             }
-            assert kwargs_["strict_mode"] is True
-
-            # TODO: AFTER REBASE INCLUDE AND CHECK STRICT MODE
-            # TODO: tooltips
+            assert kwargs_["strict_mode"] is False
 
             # Path widgets are not shown for Transfer tab
             for id in [
