@@ -181,13 +181,13 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    def validate_project(self, top_level_folder, local_only, strict_mode):
+    def validate_project(self, top_level_folder, include_central, strict_mode):
         """ """
         try:
             results = self.project.validate_project(
                 top_level_folder=top_level_folder,
                 display_mode="print",  # unused
-                local_only=local_only,
+                include_central=include_central,
                 strict_mode=strict_mode,
             )
             return True, results

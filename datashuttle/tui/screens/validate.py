@@ -136,7 +136,7 @@ class ValidateContent(Container):
 
                 success, output = self.interface.validate_project(
                     top_level_folder=top_level_folder,
-                    local_only=self.query_one(
+                    include_central=self.query_one(
                         "#validate_include_central_checkbox"
                     ).value,
                     strict_mode=strict_mode,

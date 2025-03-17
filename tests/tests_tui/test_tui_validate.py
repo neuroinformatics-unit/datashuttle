@@ -78,11 +78,12 @@ class TestTuiValidate(TuiBase):
                 pilot, "#validate_validate_button"
             )
 
+            breakpoint()
             args_, kwargs_ = spy_validate.call_args_list[0]
 
             assert "local_path" in args_[0]
             assert args_[1] == ["rawdata"]
-            assert kwargs_["local_only"] is False
+            assert kwargs_["include_central"] is False
             assert kwargs_["display_mode"] == "print"
             assert kwargs_["name_templates"] == {
                 "on": False,
@@ -107,7 +108,7 @@ class TestTuiValidate(TuiBase):
 
             assert "local_path" in args_[0]
             assert args_[1] == ["rawdata", "derivatives"]
-            assert kwargs_["local_only"] is True
+            assert kwargs_["include_central"] is True
             assert kwargs_["display_mode"] == "print"
             assert kwargs_["name_templates"] == {
                 "on": False,
