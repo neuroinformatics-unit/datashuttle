@@ -1,4 +1,5 @@
 import pytest
+import textual
 from tui_base import TuiBase
 
 from datashuttle.tui.app import TuiApp
@@ -53,8 +54,6 @@ class TestTuiValidate(TuiBase):
 
             assert len(written_lines) == 4
             assert "TOP_LEVEL_FOLDER:" in written_lines[0]
-
-            pilot.app.save_screenshot()
 
     @pytest.mark.asyncio
     async def test_validate_on_project_manager_kwargs(
@@ -118,12 +117,22 @@ class TestTuiValidate(TuiBase):
             assert kwargs_["strict_mode"] is True
 
             # TODO: AFTER REBASE INCLUDE AND CHECK STRICT MODE
-            # TODO: assert the widgets are hidden!
+            # TODO: tooltips
+
+            # Path widgets are not shown for Transfer tab
+            for id in [
+                "validate_path_label",
+                "validate_path_input",
+                "validate_select_button",
+                "validate_path_container",
+            ]:
+                with pytest.raises(textual.css.query.InvalidQueryFormat):
+                    pilot.app.query_one(id)
 
     @pytest.mark.asyncio
     async def test_validate_at_path_kwargs(self, setup_project_paths, mocker):
+        """ """
         # select is not tested, its not criticla and the widget is tested elsewhere.
-
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -152,4 +161,6 @@ class TestTuiValidate(TuiBase):
             assert kwargs_["top_level_folder"] == "rawdata"
             assert kwargs_["strict_mode"] is False
 
-            # TODO: assert the widgets are hidden!
+            with pytest.raises(textual.css.query.InvalidQueryFormat):
+                # should be removed because always local
+                pilot.app.query_one("validate_include_central_checkbox")

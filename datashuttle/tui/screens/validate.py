@@ -23,6 +23,7 @@ from datashuttle.datashuttle_functions import quick_validate_project
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class ValidateContent(Container):
@@ -82,6 +83,14 @@ class ValidateContent(Container):
 
     def on_mount(self) -> None:
         """ """
+        for id in [
+            "validate_path_input",
+            "validate_top_level_folder_select",
+            "validate_include_central_checkbox",
+            "validate_strict_mode_checkbox",
+        ]:
+            self.query_one(f"#{id}").tooltip = get_tooltip(id)
+
         if self.interface:
             for id in [
                 "validate_path_input",
@@ -90,6 +99,9 @@ class ValidateContent(Container):
                 "validate_path_label",
             ]:
                 self.query_one(f"#{id}").remove()
+
+            if self.interface.project.is_local_project():
+                self.query_one("#validate_include_central_checkbox").remove()
         else:
             self.query_one("#validate_include_central_checkbox").remove()
 
