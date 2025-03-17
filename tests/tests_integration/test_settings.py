@@ -95,7 +95,7 @@ class TestPersistentSettings(BaseTest):
                 "rawdata",
                 [bad_sub],
                 ses_names=None,
-                local_only=True,
+                include_central=False,
                 display_mode="error",
                 name_templates=reload_name_templates,
             )

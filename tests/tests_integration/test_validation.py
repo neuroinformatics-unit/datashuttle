@@ -480,7 +480,7 @@ class TestValidation(BaseTest):
         # bad validation within the names list.
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
-                project.cfg, "rawdata", ["sab-001"], local_only=True
+                project.cfg, "rawdata", ["sab-001"], include_central=False
             )
         assert (
             "MISSING_PREFIX: The prefix sub was not found in the name: sab-001"
@@ -494,7 +494,7 @@ class TestValidation(BaseTest):
         # Inconsistent value lengths
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
-                project.cfg, "rawdata", ["sub-0002"], local_only=True
+                project.cfg, "rawdata", ["sub-0002"], include_central=False
             )
         assert (
             "VALUE_LENGTH: Inconsistent value lengths for the prefix: sub"
@@ -507,7 +507,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 ["sub-004"],
                 ["ses-0002"],
-                local_only=True,
+                include_central=False,
             )
         assert (
             "VALUE_LENGTH: Inconsistent value lengths for the prefix: ses"
@@ -517,7 +517,10 @@ class TestValidation(BaseTest):
         # Duplicate names
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
-                project.cfg, "rawdata", ["sub-004_id-123"], local_only=True
+                project.cfg,
+                "rawdata",
+                ["sub-004_id-123"],
+                include_central=False,
             )
         assert (
             "DUPLICATE_NAME: The prefix for sub-004_id-123 duplicates the name: sub-004"
@@ -530,7 +533,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 ["sub-004"],
                 ["ses-001_date-121212"],
-                local_only=True,
+                include_central=False,
             )
         assert (
             "DUPLICATE_NAME: The prefix for ses-001_date-121212 duplicates the name: ses-001"
@@ -555,7 +558,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 ["sub-001"],
                 ["ses-03"],
-                local_only=True,
+                include_central=False,
             )
         assert (
             "Cannot check names for inconsistent value lengths because the session value"
@@ -569,7 +572,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 ["sub-003"],
-                local_only=True,
+                include_central=False,
                 display_mode="error",
             )
 
@@ -595,7 +598,7 @@ class TestValidation(BaseTest):
             project.cfg,
             "rawdata",
             sub_names,
-            local_only=True,
+            include_central=False,
             display_mode="error",
         )
 
@@ -607,7 +610,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 sub_names,
-                local_only=True,
+                include_central=False,
                 display_mode="error",
             )
         assert "DUPLICATE_NAME" in str(e.value)
@@ -620,7 +623,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 sub_names,
-                local_only=True,
+                include_central=False,
                 display_mode="warn",
             )
         # this warning arises from inconsistent value lengths within the
@@ -647,7 +650,7 @@ class TestValidation(BaseTest):
             project.cfg,
             "rawdata",
             sub_names,
-            local_only=True,
+            include_central=False,
             display_mode="error",
         )
 
@@ -656,7 +659,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 sub_names,
-                local_only=False,
+                include_central=False,
                 display_mode="error",
             )
         assert "DUPLICATE_NAME" in str(e.value)
@@ -681,7 +684,7 @@ class TestValidation(BaseTest):
             "rawdata",
             sub_names,
             ses_names,
-            local_only=False,
+            include_central=False,
             display_mode="error",
         )
 
@@ -695,7 +698,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 sub_names,
                 ses_names,
-                local_only=False,
+                include_central=False,
                 display_mode="warn",
             )
         assert "DUPLICATE_NAME" in str(w[0].message)
@@ -914,7 +917,7 @@ class TestValidation(BaseTest):
 
         assert (
             str(e.value)
-            == "`strict_mode` is currently only available for `local_only=True`."
+            == "`strict_mode` is currently only available for `include_central=False`."
         )
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
