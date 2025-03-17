@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from textual.screen import Screen
 from textual.widgets import Button, Header
 
-from datashuttle.tui.screens import validate
+from datashuttle.tui.shared import validate_content
 
 
 class ValidateScreen(Screen):
@@ -44,7 +44,7 @@ class ValidateScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
-        yield validate.ValidateContent(
+        yield validate_content.ValidateContent(
             self, interface=None, id="validate_from_path_content"
         )
 

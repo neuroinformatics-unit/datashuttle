@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 from textual.screen import Screen
 from textual.widgets import Button, Header
 
-from datashuttle.tui import configs
+from datashuttle.tui.shared import configs_content
 
 
 class NewProjectScreen(Screen):
@@ -44,7 +44,7 @@ class NewProjectScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
-        yield configs.ConfigsContent(
+        yield configs_content.ConfigsContent(
             self, interface=None, id="new_project_configs_content"
         )
 
