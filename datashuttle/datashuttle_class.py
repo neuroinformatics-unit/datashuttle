@@ -1248,9 +1248,10 @@ class DataShuttle:
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
         """
-        if not local_only and strict_mode:
+        if include_central and strict_mode:
             raise ValueError(
-                "`strict_mode` is currently only available for `local_only=True`."
+                "`strict_mode` is currently only available for `include_central=False`. "
+                "Please raise a GitHub issue if you would like to use this feature."
             )
 
         utils.print_message_to_user(
