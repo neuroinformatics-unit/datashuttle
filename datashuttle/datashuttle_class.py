@@ -1248,7 +1248,7 @@ class DataShuttle:
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
         """
-        if not local_only:
+        if not local_only and strict_mode:
             raise ValueError(
                 "`strict_mode` is currently only available for `local_only=True`."
             )

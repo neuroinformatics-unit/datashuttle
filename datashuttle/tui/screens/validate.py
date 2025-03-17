@@ -19,7 +19,7 @@ from textual.widgets import (
     Select,
 )
 
-from datashuttle import datashuttle_functions
+from datashuttle.datashuttle_functions import quick_validate_project
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs
@@ -118,7 +118,10 @@ class ValidateContent(Container):
                 "#validate_strict_mode_checkbox"
             ).value
 
+            #            assert False, f"strict mode: {strict_mode}"
+
             if self.interface:
+
                 success, output = self.interface.validate_project(
                     top_level_folder=top_level_folder,
                     local_only=self.query_one(
@@ -151,7 +154,7 @@ class ValidateContent(Container):
                     )
                     return
 
-                output = datashuttle_functions.quick_validate_project(
+                output = quick_validate_project(
                     path_,
                     top_level_folder=top_level_folder,
                     strict_mode=strict_mode,
