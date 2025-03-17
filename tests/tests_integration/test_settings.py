@@ -95,7 +95,7 @@ class TestPersistentSettings(BaseTest):
                 "rawdata",
                 [bad_sub],
                 ses_names=None,
-                local_only=True,
+                include_central=False,
                 display_mode="error",
                 name_templates=reload_name_templates,
             )
@@ -106,7 +106,7 @@ class TestPersistentSettings(BaseTest):
 
         # Test `validate_project()`
         with pytest.raises(NeuroBlueprintError) as e:
-            project.validate_project("rawdata", "error", local_only=True)
+            project.validate_project("rawdata", "error", include_central=False)
         shutil.rmtree(bad_sub_path)
 
         assert "sub-3_id-abC_random-helloworld" in str(e.value)
