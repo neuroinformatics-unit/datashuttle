@@ -26,6 +26,7 @@ def quick_validate_project(
     project_path: str | Path,
     top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
+    strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
 ) -> List[str]:
     """
@@ -83,6 +84,7 @@ def quick_validate_project(
         include_central=False,
         display_mode=display_mode,
         name_templates=name_templates,
+        strict_mode=strict_mode,
     )
 
     return error_messages
