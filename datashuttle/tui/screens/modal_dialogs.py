@@ -105,7 +105,8 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
             # Start the data transfer
             asyncio.create_task(
-                self.handle_transfer_and_update_ui_when_complete()
+                self.handle_transfer_and_update_ui_when_complete(),
+                name="data_transfer_async_task",
             )
 
             self.query_one("#confirm_message_label").update("Transferring...")

@@ -99,10 +99,7 @@ class TestTuiTransfer(TuiBase):
         logging_path = pilot.app.screen.interface.project.get_logging_path()
 
         test_utils.delete_log_files(logging_path)
-        await self.perform_transfer(pilot)
-        #       await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
-        #       await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
-        #       await self.close_messagebox(pilot)
+        await self.click_and_await_transfer(pilot)
 
         log = test_utils.read_log_file(logging_path)
         assert f"overwrite_existing_files': '{overwrite_setting}'" in log
@@ -246,17 +243,17 @@ class TestTuiTransfer(TuiBase):
         if upload_or_download == "download":
             await self.scroll_to_click_pause(pilot, "#transfer_switch")
 
-        await self.perform_transfer(pilot)  # TODO: REFACTOR!
+        await self.click_and_await_transfer(pilot)
 
-    async def perform_transfer(self, pilot):
+    async def click_and_await_transfer(self, pilot):
 
         await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
-
         await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
 
-        await pilot.pause(
-            10
-        )  # this is too long / arbitrary, need to find a way to await specific transfer worker
+        # get the transfer task
+        transfer_task = test_utils.get_task_by_name("data_transfer_async_task")
+        if transfer_task:
+            await transfer_task
 
         await self.close_messagebox(pilot)
 
