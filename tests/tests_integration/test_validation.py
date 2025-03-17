@@ -659,7 +659,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 sub_names,
-                include_central=False,
+                include_central=True,
                 display_mode="error",
             )
         assert "DUPLICATE_NAME" in str(e.value)
@@ -684,7 +684,7 @@ class TestValidation(BaseTest):
             "rawdata",
             sub_names,
             ses_names,
-            include_central=False,
+            include_central=True,
             display_mode="error",
         )
 
@@ -698,7 +698,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 sub_names,
                 ses_names,
-                include_central=False,
+                include_central=True,
                 display_mode="warn",
             )
         assert "DUPLICATE_NAME" in str(w[0].message)
