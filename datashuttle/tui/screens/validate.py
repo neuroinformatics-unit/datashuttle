@@ -21,8 +21,7 @@ from textual.widgets import (
 
 from datashuttle.datashuttle_functions import quick_validate_project
 from datashuttle.tui.custom_widgets import ClickableInput
-from datashuttle.tui.interface import Interface
-from datashuttle.tui.screens import modal_dialogs
+from datashuttle.tui.screens import modal_dialogs, validate_at_path
 from datashuttle.tui.tooltips import get_tooltip
 
 
@@ -30,7 +29,9 @@ class ValidateContent(Container):
 
     def __init__(
         self,
-        parent_class: Union[ProjectManagerScreen, ValidateScreen],
+        parent_class: Union[
+            ProjectManagerScreen, validate_at_path.ValidateScreen
+        ],
         interface: Optional[Interface],
         id: str,
     ) -> None:
