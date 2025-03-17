@@ -9,11 +9,14 @@ if TYPE_CHECKING:
 
     from datashuttle.tui.app import App
 
+import os
+import platform
 from pathlib import Path
 
+import win32api
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Input, Label, Static
+from textual.widgets import Button, Input, Label, Select, Static
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -124,10 +127,16 @@ class SelectDirectoryTreeScreen(ModalScreen):
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
+        self.available_drives = self.get_drives()
+
         if path_ is None:
             path_ = Path().home()
         self.path_ = path_
 
+        if platform.system() == "Windows":
+            self.selected_drive = self.path_.drive + "\\"
+        else:
+            self.selected_drive = "/"
         self.prev_click_time = 0
 
     def compose(self) -> ComposeResult:
@@ -139,6 +148,12 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
         yield Container(
             Static(label_message, id="select_directory_tree_screen_label"),
+            Select(  # Dropdown for drives
+                [(drive, drive) for drive in self.available_drives],
+                value=self.selected_drive,
+                allow_blank=False,
+                id="select_directory_tree_drive_select",
+            ),
             CustomDirectoryTree(
                 self.mainwindow,
                 self.path_,
@@ -146,6 +161,33 @@ class SelectDirectoryTreeScreen(ModalScreen):
             ),
             Button("Cancel", id="cancel_button"),
             id="select_directory_tree_container",
+        )
+
+    @staticmethod
+    def get_drives():
+        if platform.system() == "Windows":
+            drives = win32api.GetLogicalDriveStrings()
+            drives = drives.split("\000")[
+                :-1
+            ]  # Splitting based on null terminator
+            return drives
+
+        elif platform.system() in ["Linux", "Darwin"]:  # Darwin is for macOS
+            # List all possible drive mount points (Linux/macOS)
+            drives = ["/mnt", "/media", "/"]  # Common mount points
+            mounted_drives = [d for d in drives if os.path.ismount(d)]
+            return mounted_drives
+
+        return ["/"]
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        """Updates the directory tree when the drive is changed."""
+        print(f"Drive selected: {event.value}")  # Debug message
+
+        self.selected_drive = event.value
+        self.path_ = Path(self.selected_drive)
+        self.query_one("#select_directory_tree_directory_tree").path = (
+            self.path_
         )
 
     @require_double_click
