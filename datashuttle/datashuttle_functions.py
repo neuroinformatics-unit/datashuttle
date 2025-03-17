@@ -49,6 +49,14 @@ def quick_validate_project(
         The validation issues are displayed as ``"error"`` (raise error)
         ``"warn"`` (show warning) or ``"print"``.
 
+    strict_mode: bool
+        If `True`, only allow NeuroBlueprint-formatted folders to exist in
+        the project. By default, non-NeuroBlueprint folders (e.g. a folder
+        called 'my_stuff' in the 'rawdata') are allowed, and only folders
+        starting with sub- or ses- prefix are checked. In `Strict Mode`,
+        any folder not prefixed with sub-, ses- or a valid datatype will
+        raise a validation issue.
+
     name_templates : Dict
         A dictionary of templates for subject and session name
         to validate against. See ``DataShuttle.set_name_templates()``
