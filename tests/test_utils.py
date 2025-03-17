@@ -1,3 +1,4 @@
+import asyncio
 import copy
 import glob
 import logging
@@ -685,3 +686,12 @@ def delete_log_files(logging_path):
     ds_logger.close_log_filehandler()
     for log in glob.glob((str(logging_path / "*.log"))):
         os.remove(log)
+
+
+def get_task_by_name(name):
+    running_tasks = asyncio.all_tasks()
+    target_task = next(
+        (t for t in running_tasks if t.get_name() == name),
+        None,
+    )
+    return target_task
