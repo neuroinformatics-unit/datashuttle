@@ -245,18 +245,6 @@ class TestTuiTransfer(TuiBase):
 
         await self.click_and_await_transfer(pilot)
 
-    async def click_and_await_transfer(self, pilot):
-
-        await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
-        await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
-
-        # get the transfer task
-        transfer_task = test_utils.get_task_by_name("data_transfer_async_task")
-        if transfer_task:
-            await transfer_task
-
-        await self.close_messagebox(pilot)
-
     def setup_project_for_data_transfer(
         self,
         project,
