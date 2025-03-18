@@ -285,11 +285,12 @@ class CreateFoldersTab(TreeAndInputTab):
         will be suggested.
 
         Parameters
+        ----------
 
-        prefix : Prefix
+        prefix
             Whether to fill the subject or session Input
 
-        input_id : str
+        input_id
             The textual input name to update.
         """
         top_level_folder = self.interface.tui_settings[
@@ -367,7 +368,8 @@ class CreateFoldersTab(TreeAndInputTab):
         Parameters
         ----------
 
-        prefix : Prefix
+        prefix
+            Whether to run validation on the subject or session Input
         """
         sub_names = self.query_one(
             "#create_folders_subject_input"

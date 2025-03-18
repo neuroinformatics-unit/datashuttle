@@ -52,20 +52,22 @@ class TransferTab(TreeAndInputTab):
     Parameters
     ----------
 
-    title : str
+    title
+        The title of the tab
 
-    mainwindow : App
+    mainwindow
+        The main TUI app
 
-    interface : Interface
+    interface
         TUI-datashuttle interface object
 
-    id : str
+    id
         The textual widget id.
 
     Attributes
     ----------
 
-    show_legend : bool
+    show_legend
         Convenience attribute linked to a global setting exists that
         turns off / on styling of directorytree nodes based on transfer status. `
 

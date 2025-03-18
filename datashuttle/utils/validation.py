@@ -144,16 +144,16 @@ def validate_list_of_names(
     Parameters
     ----------
 
-    path_or_name_list : List[Path]
+    path_or_name_list
         A list of pathlib.Path to NeuroBlueprint-formatted folders to validate
 
-    prefix: Prefix
+    prefix
         Whether these are subject (sub) or session (ses) level names
 
-    name_templates: Optional[Dict]
+    name_templates
         A `name_template` dictionary to validate against. See `set_name_templates()`.
 
-    check_value_lengths : bool
+    check_value_lengths
         If `True`, check that the prefix-<value> value lengths
         are consistent across the passed list.
     """
@@ -507,27 +507,27 @@ def validate_project(
     Parameters
     -----------
 
-    cfg : Configs
+    cfg
         datashuttle Configs class.
 
-    top_level_folder_list:  List[TopLevelFolder]
+    top_level_folder_list
         The top level folders to validate.
 
-    include_central : bool
+    include_central
         If `False`, only project folders in the `local_path` will
         be validated. Otherwise, project folders in both the `local_path`
         and `central_path` will be validated.
 
-    display_mode : DisplayMode
+    display_mode
         Determine whether error or warning is raised.
 
-    log : bool
+    log
         If `True`, errors or warnings are logged to "datashuttle" logger.
 
-    name_templates: Optional[Dict]
+    name_templates
         A `name_template` dictionary to validate against. See `set_name_templates()`.
 
-    strict_mode: bool
+    strict_mode
         If `True`, only allow NeuroBlueprint-formatted folders to exist in
         the project. By default, non-NeuroBlueprint folders (e.g. a folder
         called 'my_stuff' in the 'rawdata') are allowed, and only folders
@@ -616,34 +616,34 @@ def validate_names_against_project(
     Parameters
     ----------
 
-    cfg : Configs
+    cfg
         datashuttle Configs class.
 
-    top_level_folder :  TopLevelFolder
+    top_level_folder
         The top level folder to validate
 
-    sub_names : List[str]
+    sub_names
         A list of subject-level names to validate against the
         subject names that exist in the project.
 
-    ses_names : List[str]
+    ses_names
         A list of session-level names to validate against the
         session names that exist in the project. Note that
         duplicate checks will only be performed for sessions within
         the passed `sub_names`.
 
-    include_central : bool
+    include_central
         If `True`, only project folders in the `local_path` will
         be validated against. Otherwise, project folders in both the
         `local_path` and `central_path` will be validated against.
 
-    display_mode : DisplayMode
+    display_mode
         Determine whether error or warning is raised.
 
-    log : bool
+    log
         If `True`, errors or warnings are logged to "datashuttle" logger.
 
-    name_templates: Optional[Dict]
+    name_templates
         A `name_template` dictionary to validate against. See `set_name_templates()`.
     """
     error_messages = []

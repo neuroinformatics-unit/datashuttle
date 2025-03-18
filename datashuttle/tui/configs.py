@@ -299,7 +299,7 @@ class ConfigsContent(Container):
         Parameters
         ----------
 
-        display_ssh : bool
+        display_ssh
             If `True`, display the SSH-related widgets.
         """
         for widget in self.config_ssh_widgets:
@@ -373,11 +373,11 @@ class ConfigsContent(Container):
         Parameters
         ----------
 
-        path_ : Union[Literal[False], Path]
+        path_
             The path returned from `SelectDirectoryTreeScreen`. If `False`,
             the screen exited with no directory selected.
 
-        local_or_central : str
+        local_or_central
             The Input to fill with the path.
         """
         if path_ is False:

@@ -40,15 +40,15 @@ def quick_validate_project(
         Path to the project to validate. Must include the project
         name, and hold a "rawdata" or "derivatives" folder.
 
-    top_level_folder : TopLevelFolder
+    top_level_folder
         The top-level folder ("rawdata" or "derivatives") to
         perform validation. If `None`, both are checked.
 
-    display_mode : DisplayMode
+    display_mode
         The validation issues are displayed as ``"error"`` (raise error)
         ``"warn"`` (show warning) or ``"print"``.
 
-    name_templates : Dict
+    name_templates
         A dictionary of templates for subject and session name
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.

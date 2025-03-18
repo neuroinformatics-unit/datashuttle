@@ -24,38 +24,39 @@ class TransferData:
     Parameters
     ----------
 
-    cfg : Configs,
+    cfg
         datashuttle configs UserDict.
 
-    upload_or_download : Literal["upload", "download"]
+    upload_or_download
         Direction to perform the transfer.
 
-    top_level_folder: TopLevelFolder
+    top_level_folder
+        The top-level folder structure where data is organized.
 
-    sub_names : Union[str, List[str]]
+    sub_names
         List of subject names or single subject to transfer. This
         can include transfer keywords (e.g. "all_non_sub").
 
-    ses_names : Union[str, List[str]]
+    ses_names
         List of sessions or single session to transfer, for each
         subject. May include session-level transfer keywords.
 
-    datatype : Union[str, List[str]]
+    datatype
         List of datatypes to transfer, for the sessions / subjects
         specified. Can include datatype-level tranfser keywords.
 
-    overwrite_existing_files : OverwriteExistingFiles
+    overwrite_existing_files
         If "never" files on target will never be overwritten by source.
         If "always" files on target will be overwritten by source if
         there is any difference in date or size.
         If "if_source_newer" files on target will only be overwritten
         by files on source with newer creation / modification datetime.
 
-    dry_run : bool,
+    dry_run
         If `True`, transfer will not actually occur but will be logged
         as if it did (to see what would happen for a transfer).
 
-    log : bool,
+    log
         if `True`, log and print the transfer output.
     """
 
@@ -123,7 +124,7 @@ class TransferData:
         Returns
         -------
 
-        include_list : List[str]
+        include_list
             A list of paths to pass to rclone's `--include` flag.
         """
         # Find sub names to transfer

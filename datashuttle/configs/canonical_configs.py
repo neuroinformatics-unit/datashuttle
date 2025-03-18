@@ -76,7 +76,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     Parameters
     ----------
 
-    config_dict : datashuttle config UserDict
+    config_dict
+        datashuttle config UserDict
     """
     canonical_dict = get_canonical_configs()
 

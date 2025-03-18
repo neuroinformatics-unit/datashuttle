@@ -316,13 +316,13 @@ class TreeAndInputTab(TabPane):
         Parameters
         ----------
 
-        sub_input_key : str
+        sub_input_key
             The textual widget id for the subject input (prefixed with #)
 
-        ses_input_key : str
+        ses_input_key
             The textual widget id for the session input (prefixed with #)
 
-        event : DirectoryTreeSpecialKeyPress
+        event
             A DirectoryTreeSpecialKeyPress event triggered from the
             CustomDirectoryTree.
         """
@@ -346,7 +346,7 @@ class TreeAndInputTab(TabPane):
         see `handle_directorytree_key_pressed` for `sub_input_key` and
         `ses_input_key`.
 
-        name : str
+        name
             The sub or ses name to append to the input.
         """
         if name.startswith("sub-"):
@@ -399,12 +399,12 @@ class TopLevelFolderSelect(Select):
     Parameters
     ----------
 
-    existing_only : bool
+    existing_only
         If `True`, only top level folders that actually exist in the
         project are displayed. Otherwise, all possible canonical
         top-level-folders are displayed.
 
-    id : str
+    id
         Textualize widget id
     """
 

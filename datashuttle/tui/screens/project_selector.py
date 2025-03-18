@@ -29,7 +29,7 @@ class ProjectSelectorScreen(Screen):
     Parameters
     ----------
 
-    mainwindow : TuiApp
+    mainwindow
         The main TUI app, functions on which are used to coordinate
         screen display.
 

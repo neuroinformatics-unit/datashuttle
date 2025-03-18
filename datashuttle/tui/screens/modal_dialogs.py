@@ -26,10 +26,10 @@ class MessageBox(ModalScreen):
     """
     A screen for rendering error messages.
 
-    message : str
+    message
         The message to display in the message box
 
-    border_color : str
+    border_color
         The color to pass to the `border` style on the widget. Note that the
         keywords 'red' 'grey' 'green' are overridden for custom style.
     """
@@ -147,10 +147,10 @@ class SelectDirectoryTreeScreen(ModalScreen):
     Parameters
     ----------
 
-    mainwindow : App
+    mainwindow
         Textual main app screen
 
-    path_ : Optional[Path]
+    path_
         Path to use as the DirectoryTree root,
         if `None` set to the system user home.
     """

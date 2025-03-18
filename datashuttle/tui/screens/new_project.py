@@ -31,7 +31,8 @@ class NewProjectScreen(Screen):
     Parameters
     ----------
 
-    mainwindow : TuiApp
+    mainwindow
+        The main TUI app
     """
 
     TITLE = "Make New Project"

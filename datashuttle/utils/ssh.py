@@ -117,15 +117,19 @@ def setup_ssh_key(
     Parameters
     -----------
 
-    ssh_key_path : path to the ssh private key
+    ssh_key_path
+        path to the ssh private key
 
-    hostkeys_path : path to the ssh host key, once the user
+    hostkeys_path
+        path to the ssh host key, once the user
         has confirmed the key ID this is saved so verification
         is not required each time.
 
-    cfg : datashuttle config UserDict
+    cfg
+        datashuttle config UserDict
 
-    log : log if True, logger must already be initialised.
+    log
+        log if True, logger must already be initialised.
     """
     if not sys.stdin.isatty():
         proceed = input(
@@ -253,14 +257,18 @@ def search_ssh_central_for_folders(
     Parameters
     -----------
 
-    search_path : path to search for folders in
+    search_path
+        path to search for folders in
 
-    search_prefix : search prefix for folder names e.g. "sub-*"
+    search_prefix
+        search prefix for folder names e.g. "sub-*"
 
-    cfg : see connect_client_with_logging()
+    cfg
+        see connect_client_with_logging()
 
-    verbose : If `True`, if a search folder cannot be found, a message
-              will be printed with the un-found path.
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
@@ -295,16 +303,20 @@ def get_list_of_folder_names_over_sftp(
     Parameters
     ----------
 
-    stfp : connected paramiko stfp object
+    stfp
+        connected paramiko stfp object
         (see search_ssh_central_for_folders())
 
-    search_path : path to search for folders in
+    search_path
+        path to search for folders in
 
-    search_prefix : prefix (can include wildcards)
+    search_prefix
+        prefix (can include wildcards)
         to search folder names.
 
-    verbose : If `True`, if a search folder cannot be found, a message
-          will be printed with the un-found path.
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
     """
     all_folder_names = []
     all_filenames = []
