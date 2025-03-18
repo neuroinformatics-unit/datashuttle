@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import platform
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
 if TYPE_CHECKING:
@@ -42,12 +43,17 @@ class ValidateContent(Container):
 
     def compose(self) -> ComposeResult:
 
+        if platform.system() == "Windows":
+            example_path = r"C:\path\to\project\project_name"
+        else:
+            example_path = "/mydrive/path/to/project/project_name"
+
         widgets = [
             Label("Path to project:", id="validate_path_label"),
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder="e.g. EXAMPLE_PATH",
+                    placeholder=f"e.g. {example_path}",
                     id="validate_path_input",
                 ),
                 Button("Select", id="validate_select_button"),
