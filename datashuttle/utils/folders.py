@@ -49,9 +49,11 @@ def create_folder_trees(
     Parameters
     ----------
 
-    sub_names, ses_names, datatype : see create_folders()
+    sub_names, ses_names, datatype
+        see create_folders()
 
-    log : whether to log or not. If True, logging must
+    log
+        whether to log or not. If True, logging must
         already be initialised.
     """
     datatype_passed = datatype not in [[""], ""]
@@ -128,22 +130,28 @@ def make_datatype_folders(
 
     Parameters
     ----------
-    cfg : ConfigsClass
+    cfg
+        datashuttle configs
 
-    datatype : datatype (e.g. "behav", "all") to use. Use
+    datatype
+        datatype (e.g. "behav", "all") to use. Use
         empty string ("") for none.
 
-    sub_or_ses_level_path : Full path to the subject
+    sub_or_ses_level_path
+        Full path to the subject
         or session folder where the new folder
         will be written.
 
-    level : The folder level that the
+    level
+        The folder level that the
         folder will be made at, "sub" or "ses"
 
-    save_paths : A dictionary, which will be filled
+    save_paths
+        A dictionary, which will be filled
         with created paths split by datatype name.
 
-    log : whether to log on or not (if True, logging must
+    log
+        whether to log on or not (if True, logging must
         already be initialised).
     """
     datatype_items = cfg.get_datatype_as_dict_items(datatype)
@@ -175,9 +183,11 @@ def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
     Parameters
     ----------
 
-    paths : Path or list of Paths to create
+    paths
+        Path or list of Paths to create
 
-    log : if True, log all made folders. This
+    log
+        if True, log all made folders. This
         requires the logger to already be initialised.
     """
     if isinstance(paths, Path):
@@ -383,19 +393,24 @@ def search_for_wildcards(
     Parameters
     ----------
 
-    project : initialised datashuttle project
+    project
+        initialised datashuttle project
 
-    base_folder : folder to search for wildcards in
+    base_folder
+        folder to search for wildcards in
 
-    local_or_central : "local" or "central" project path to
+    local_or_central
+        "local" or "central" project path to
         search in
 
-    all_names : list of subject or session names that
+    all_names
+        list of subject or session names that
         may or may not include the wildcard flag. If sub (below)
         is passed, it is assumed these are session names. Otherwise,
         it is assumed these are subject names.
 
-    sub : optional subject to search for sessions in. If not provided,
+    sub
+        optional subject to search for sessions in. If not provided,
         will search for subjects rather than sessions.
 
     """
@@ -448,26 +463,32 @@ def search_sub_or_ses_level(
     Parameters
     ----------
 
-    cfg : datashuttle project cfg. Currently, this is used
+    cfg
+        datashuttle project cfg. Currently, this is used
         as a holder for  ssh configs to avoid too many
         arguments, but this is not nice and breaks the
         general rule that these functions should operate
         project-agnostic.
 
-    local_or_central : search in local or central project
+    local_or_central
+        search in local or central project
 
-    sub : either a subject name (string) or None. If None, the search
+    sub
+        either a subject name (string) or None. If None, the search
         is performed at the top_level_folder level
 
-    ses : either a session name (string) or None, This must not
+    ses
+        either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)
         then the session folder is searched
 
-    str : glob-format search string to search at the
+    str
+        glob-format search string to search at the
         folder level.
 
-    verbose : If `True`, if a search folder cannot be found, a message
-              will be printed with the un-found path.
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -509,11 +530,18 @@ def search_for_folders(
     Parameters
     ----------
 
-    local_or_central : "local" or "central"
-    search_path : full filepath to search in
-    search_prefix : file / folder name to search (e.g. "sub-*")
-    verbose : If `True`, when a search folder cannot be found, a message
-          will be printed with the missing path.
+    local_or_central
+        "local" or "central"
+
+    search_path
+        full filepath to search in
+
+    search_prefix
+        file / folder name to search (e.g. "sub-*")
+
+    verbose
+        If `True`, when a search folder cannot be found, a message
+        will be printed with the missing path.
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
         all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(

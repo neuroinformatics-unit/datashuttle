@@ -50,29 +50,29 @@ def get_next_sub_or_ses(
 
     Parameters
     ----------
-    cfg : Configs
+    cfg
         datashuttle configs class
 
-    top_level_folder: TopLevelFolder
+    top_level_folder
         The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
 
-    sub : Optional[str]
+    sub
         subject name to search within if searching for sessions, otherwise None
         to search for subjects
 
-    search_str : str
+    search_str
         the string to search for within the top-level or subject-level
         folder ("sub-*") or ("ses-*") are suggested, respectively.
 
-    include_central : bool
+    include_central
         If `False, only get names from `local_path`, otherwise from
         `local_path` and `central_path`.
 
-    return_with_prefix : bool
+    return_with_prefix
         If `True`, the next sub or ses value will include the prefix
         e.g. "sub-001", otherwise the value alone will be returned (e.g. "001")
 
-    default_num_value_digits : int
+    default_num_value_digits
         If no sub or ses exist in the project, the starting number is 1.
         Because the number of digits for the project is not accessible,
         the desired value can be entered here. e.g. if 3 (the default),
@@ -80,7 +80,8 @@ def get_next_sub_or_ses(
 
     Returns
     -------
-    suggested_new_num : the new suggested sub / ses.
+    suggested_new_num
+        the new suggested sub / ses.
     """
     prefix: Prefix
 
@@ -131,7 +132,7 @@ def get_max_sub_or_ses_num_and_value_length(
     Parameters
     ----------
 
-    all_folders : List[str]
+    all_folders
         A list of BIDS-style formatted folder names.
 
     see `get_next_sub_or_ses()` for other arguments.
@@ -139,10 +140,10 @@ def get_max_sub_or_ses_num_and_value_length(
     Returns
     -------
 
-    max_existing_num : int
+    max_existing_num
         The largest number sub / ses value in the past list.
 
-    num_value_digits : int
+    num_value_digits
         The length of the value in all sub / ses values within the
         passed list. If these are not consistent, an error is raised.
 
@@ -310,13 +311,13 @@ def get_all_sub_and_ses_paths(
     Parameters
     ----------
 
-    cfg : Configs
+    cfg
         datashuttle Configs
 
-    top_level_folder: TopLevelFolder
+    top_level_folder
         The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
 
-    include_central : bool
+    include_central
         If `False, only get names from `local_path`, otherwise from
         `local_path` and `central_path`.
     """

@@ -189,18 +189,20 @@ class DatatypeCheckboxes(Static):
     Parameters
     ----------
 
-    settings_key : 'create' if datatype checkboxes for the create tab,
-                   'transfer' for the transfer tab. Transfer tab includes
-                   additional datatype options (e.g. "all").
+    settings_key
+        'create' if datatype checkboxes for the create tab,
+        'transfer' for the transfer tab. Transfer tab includes
+        additional datatype options (e.g. "all").
 
     Attributes
     ----------
 
-    datatype_config : a Dictionary containing datatype as key (e.g. "ephys", "behav")
-                      and values are `bool` indicating whether the checkbox is on / off.
-                      If 'transfer', then transfer datatype arguments (e.g. "all")
-                      are also included. This structure mirrors
-                      the `persistent_settings` dictionaries.
+    datatype_config
+        a Dictionary containing datatype as key (e.g. "ephys", "behav")
+        and values are `bool` indicating whether the checkbox is on / off.
+        If 'transfer', then transfer datatype arguments (e.g. "all")
+        are also included. This structure mirrors
+        the `persistent_settings` dictionaries.
 
     Notes
     -----

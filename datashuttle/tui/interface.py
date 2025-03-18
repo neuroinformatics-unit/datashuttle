@@ -43,7 +43,7 @@ class Interface:
         Parameters
         ----------
 
-        project_name : str
+        project_name
             The name of the datashuttle project to load.
             Must already exist.
         """
@@ -64,10 +64,10 @@ class Interface:
         Parameters
         ----------
 
-        project_name : str
+        project_name
             Name of the project to set up.
 
-        cfg_kwargs : Dict
+        cfg_kwargs
             The configurations to set the new project to.
         """
         try:
@@ -92,7 +92,7 @@ class Interface:
         Parameters
         ----------
 
-        cfg_kwargs : Dict
+        cfg_kwargs
             The configs and new values to update.
         """
         try:
@@ -114,13 +114,13 @@ class Interface:
         Parameters
         ----------
 
-        sub_names : List[str]
+        sub_names
             A list of un-formatted / unvalidated subject names to create.
 
-        ses_names : List[str]
+        ses_names
             A list of un-formatted / unvalidated session names to create.
 
-        datatype : List[str]
+        datatype
             A list of canonical datatype names to create.
         """
         top_level_folder = self.tui_settings["top_level_folder_select"][
@@ -154,10 +154,10 @@ class Interface:
         Parameters
         ----------
 
-        sub_names : List[str]
+        sub_names
             List of subject names to format.
 
-        ses_names : List[str]
+        ses_names
             List of session names to format.
         """
         top_level_folder = self.tui_settings["top_level_folder_select"][
@@ -191,7 +191,7 @@ class Interface:
         Parameters
         ----------
 
-        upload : bool
+        upload
             Upload from local to central if `True`, otherwise download
             from central to remote.
         """
@@ -222,10 +222,10 @@ class Interface:
         Parameters
         ----------
 
-        selected_top_level_folder : str
+        selected_top_level_folder
             The top level folder selected in the TUI for this transfer window.
 
-        upload : bool
+        upload
             Upload from local to central if `True`, otherwise download
             from central to remote.
 
@@ -272,19 +272,19 @@ class Interface:
         Parameters
         ----------
 
-        selected_top_level_folder : str
+        selected_top_level_folder
             The top level folder selected in the TUI for this transfer window.
 
-        sub_names : List[str]
+        sub_names
             Subject names or subject-level canonical transfer keys to transfer.
 
-        ses_names : List[str]
+        ses_names
             Session names or session-level canonical transfer keys to transfer.
 
-        datatype : List[str]
+        datatype
             Datatypes or datatype-level canonical transfer keys to transfer.
 
-        upload : bool
+        upload
             Upload from local to central if `True`, otherwise download
             from central to remote.
         """
@@ -360,14 +360,14 @@ class Interface:
         Parameters
         ----------
 
-        value : Any
+        value
             Value to set the `persistent_settings` tui field to
 
-        key_1 : str
+        key_1
             First key of the tui `persistent_settings` to update
             e.g. "top_level_folder_select"
 
-        key_2 : str
+        key_2
             Optionals second level of the dictionary to update.
             e.g. "create_tab"
         """

@@ -76,10 +76,12 @@ def log_names(list_of_headers: List[Any], list_of_names: List[Any]) -> None:
     Parameters
     ----------
 
-    list_of_headers : a list of titles that the names
-    will be printed under, e.g. "sub_names", "ses_names"
+    list_of_headers
+        a list of titles that the names
+        will be printed under, e.g. "sub_names", "ses_names"
 
-    list_of_names : list of names to print to log
+    list_of_names
+        list of names to print to log
     """
     for header, names in zip(list_of_headers, list_of_names):
         utils.log(f"{header}: {names}")

@@ -39,18 +39,18 @@ def check_and_format_names(
     Parameters
     ----------
 
-    names : Union[list, str]
+    names
         str or list containing sub or ses names (e.g. to create folders)
 
-    prefix : Prefix
+    prefix
         "sub" or "ses" - this defines the prefix checks.
 
-    name_templates : Dict
+    name_templates
         A dictionary of templates to validate subject and session name against.
         e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
         where the "sub" and "ses" may contain a regexp to validate against.
 
-    bypass_validation : Dict
+    bypass_validation
         If `True`, NeuroBlueprint validation will be performed
         on the passed names.
     """
@@ -89,9 +89,11 @@ def format_names(names: List, prefix: Prefix) -> List[str]:
 
     Parameters
     -----------
-    names: str or list containing sub or ses names (e.g. to make folders)
+    names
+        str or list containing sub or ses names (e.g. to make folders)
 
-    prefix: "sub" or "ses" - this defines the prefix checks.
+    prefix
+        "sub" or "ses" - this defines the prefix checks.
     """
     assert prefix in ["sub", "ses"], "`prefix` must be 'sub' or 'ses'."
 
@@ -198,13 +200,17 @@ def make_list_of_zero_padded_names_across_range(
     Parameters
     ----------
 
-    left_number : left (start) number from the range, e.g. "001"
+    left_number
+        left (start) number from the range, e.g. "001"
 
-    right_number : right (end) number from the range, e.g. "005"
+    right_number
+        right (end) number from the range, e.g. "005"
 
-    name_start_str : part of the name before the flag, usually "sub-"
+    name_start_str
+        part of the name before the flag, usually "sub-"
 
-    name_end_str : rest of the name after the flag, i.e. all other
+    name_end_str
+        rest of the name after the flag, i.e. all other
         key-value pairs.
     """
     max_leading_zeros = max(

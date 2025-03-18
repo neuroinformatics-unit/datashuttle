@@ -25,11 +25,14 @@ def attempt_load_configs(
 
     Parameters
     ----------
-    project_name : name of project
+    project_name
+        name of project
 
-    config_path : path to datashuttle config .yaml file
+    config_path
+        path to datashuttle config .yaml file
 
-    verbose : warnings and error messages will be printed.
+    verbose
+        warnings and error messages will be printed.
     """
     exists = config_path.is_file()
 
@@ -72,8 +75,11 @@ def convert_str_and_pathlib_paths(
     Parameters
     ----------
 
-    config_dict : DataShuttle.cfg dict of configs
-    direction : "path_to_str" or "str_to_path"
+    config_dict
+        DataShuttle.cfg dict of configs
+
+    direction
+        "path_to_str" or "str_to_path"
     """
     for path_key in canonical_configs.keys_str_on_file_but_path_in_class():
         value = config_dict[path_key]

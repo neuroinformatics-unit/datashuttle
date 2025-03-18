@@ -40,10 +40,10 @@ class Configs(UserDict):
     Parameters
     ----------
 
-    file_path :
+    file_path
         full filepath to save the config .yaml file to.
 
-    input_dict :
+    input_dict
         a dict of config key-value pairs to input dict.
         This must contain all canonical_config keys
     """
@@ -144,9 +144,11 @@ class Configs(UserDict):
         Parameters
         ----------
 
-        base: "local", "central" or "datashuttle"
+        base
+            "local", "central" or "datashuttle"
 
-        sub_folders: a list (or string for 1) of
+        sub_folders
+            a list (or string for 1) of
             folder names to be joined into a path.
             If file included, must be last entry (with ext).
         """
@@ -177,7 +179,8 @@ class Configs(UserDict):
         Parameters
         ----------
 
-        base : base path, "local", "central" or "datashuttle"
+        base
+            base path, "local", "central" or "datashuttle"
 
         """
         if base == "local":
