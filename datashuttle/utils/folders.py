@@ -130,6 +130,7 @@ def make_datatype_folders(
 
     Parameters
     ----------
+
     cfg
         datashuttle configs
 

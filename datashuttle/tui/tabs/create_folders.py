@@ -285,6 +285,7 @@ class CreateFoldersTab(TreeAndInputTab):
         will be suggested.
 
         Parameters
+        ----------
 
         prefix
             Whether to fill the subject or session Input

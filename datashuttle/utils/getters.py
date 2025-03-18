@@ -50,6 +50,7 @@ def get_next_sub_or_ses(
 
     Parameters
     ----------
+
     cfg
         datashuttle configs class
 

@@ -89,6 +89,7 @@ def format_names(names: List, prefix: Prefix) -> List[str]:
 
     Parameters
     -----------
+
     names
         str or list containing sub or ses names (e.g. to make folders)
 

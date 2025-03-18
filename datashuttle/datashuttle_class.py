@@ -1191,6 +1191,7 @@ class DataShuttle:
 
         Parameters
         ----------
+
         new_name_templates
             e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
             where "sub" or "ses" can be a regexp that subject and session

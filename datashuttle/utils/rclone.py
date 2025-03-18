@@ -15,6 +15,7 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
 
     Parameters
     ----------
+
     command
         Rclone command to be run
 
@@ -77,12 +78,12 @@ def setup_rclone_config_for_ssh(
     log: bool = True,
 ):
     """
-     RClone sets remote targets in a config file that are
-     used at transfer. For SSH, this must contain the central path,
-     username and ssh key. The relative path is supplied at transfer time.
+    RClone sets remote targets in a config file that are
+    used at transfer. For SSH, this must contain the central path,
+    username and ssh key. The relative path is supplied at transfer time.
 
-     Parameters
-     ----------
+    Parameters
+    ----------
 
     cfg
         datashuttle configs UserDict.
