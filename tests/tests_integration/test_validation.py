@@ -56,7 +56,7 @@ class TestValidation(BaseTest):
         os.makedirs(project.cfg["local_path"] / "rawdata" / bad_sub_name)
 
         self.check_inconsistent_sub_or_ses_value_length_warning(
-            project, include_central=False
+            project, local_only=True
         )
 
         # Now, have conflicting subject names,
@@ -112,7 +112,7 @@ class TestValidation(BaseTest):
             project.cfg["local_path"] / "rawdata" / "sub-002" / bad_ses_name
         )
         self.check_inconsistent_sub_or_ses_value_length_warning(
-            project, include_central=False
+            project, local_only=True
         )
 
         # Now, have conflicting session names (in different subject
@@ -150,19 +150,19 @@ class TestValidation(BaseTest):
             project.cfg["local_path"] / "rawdata" / "sub-03" / "ses-002"
         )
         self.check_inconsistent_sub_or_ses_value_length_warning(
-            project, include_central=False
+            project, local_only=True
         )
         self.check_inconsistent_sub_or_ses_value_length_warning(
-            project, warn_idx=1, include_central=False
+            project, warn_idx=1, local_only=True
         )
 
     def check_inconsistent_sub_or_ses_value_length_warning(
-        self, project, warn_idx=0, include_central=True
+        self, project, warn_idx=0, local_only=False
     ):
         """"""
         with pytest.warns(UserWarning) as w:
             project.validate_project(
-                "rawdata", display_mode="warn", include_central=include_central
+                "rawdata", display_mode="warn", local_only=local_only
             )
 
         assert "VALUE_LENGTH" in str(w[warn_idx].message)
@@ -281,7 +281,7 @@ class TestValidation(BaseTest):
         project.create_folders("rawdata", "sub-002", "ses-001_@DATE@")
 
         project.validate_project(
-            "rawdata", display_mode="error", include_central=False
+            "rawdata", display_mode="error", local_only=True
         )
 
         with pytest.raises(NeuroBlueprintError):
@@ -333,7 +333,7 @@ class TestValidation(BaseTest):
 
         # The bad sub name is not caught when testing locally only.
         project.validate_project(
-            "rawdata", display_mode="error", include_central=False
+            "rawdata", display_mode="error", local_only=True
         )
 
         project.create_folders("rawdata", "sub-001")
@@ -341,7 +341,7 @@ class TestValidation(BaseTest):
         # Now the bad sub is caught as we check against central also.
         with pytest.raises(NeuroBlueprintError) as e:
             project.validate_project(
-                "rawdata", display_mode="error", include_central=True
+                "rawdata", display_mode="error", local_only=False
             )
         assert "DUPLICATE_NAME" in str(e.value)
         assert "Path" in str(e.value)  # cursory check Path is returned
@@ -354,7 +354,7 @@ class TestValidation(BaseTest):
 
         with pytest.warns(UserWarning) as w:
             project.validate_project(
-                "rawdata", display_mode="warn", include_central=True
+                "rawdata", display_mode="warn", local_only=False
             )
         assert "DUPLICATE_NAME" in str(w[0].message)
         assert "DUPLICATE_NAME" in str(w[1].message)
@@ -374,7 +374,7 @@ class TestValidation(BaseTest):
 
         with pytest.warns(UserWarning) as w:
             project.validate_project(
-                "rawdata", display_mode="warn", include_central=True
+                "rawdata", display_mode="warn", local_only=False
             )
         assert (
             "VALUE_LENGTH: Inconsistent value lengths for the prefix: sub"
@@ -409,7 +409,7 @@ class TestValidation(BaseTest):
             )
 
         error_messages = project.validate_project(
-            "rawdata", "warn", include_central=False
+            "rawdata", "warn", local_only=True
         )
         concat_error = "".join(error_messages)
 
@@ -427,7 +427,7 @@ class TestValidation(BaseTest):
         )
 
         error_messages = project.validate_project(
-            "rawdata", "warn", include_central=False
+            "rawdata", "warn", local_only=True
         )
 
         sub_path = error_messages[0].split("Path: ")[-1]
@@ -480,7 +480,7 @@ class TestValidation(BaseTest):
         # bad validation within the names list.
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
-                project.cfg, "rawdata", ["sab-001"], include_central=False
+                project.cfg, "rawdata", ["sab-001"], local_only=True
             )
         assert (
             "MISSING_PREFIX: The prefix sub was not found in the name: sab-001"
@@ -494,7 +494,7 @@ class TestValidation(BaseTest):
         # Inconsistent value lengths
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
-                project.cfg, "rawdata", ["sub-0002"], include_central=False
+                project.cfg, "rawdata", ["sub-0002"], local_only=True
             )
         assert (
             "VALUE_LENGTH: Inconsistent value lengths for the prefix: sub"
@@ -507,7 +507,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 ["sub-004"],
                 ["ses-0002"],
-                include_central=False,
+                local_only=True,
             )
         assert (
             "VALUE_LENGTH: Inconsistent value lengths for the prefix: ses"
@@ -517,10 +517,7 @@ class TestValidation(BaseTest):
         # Duplicate names
         with pytest.raises(NeuroBlueprintError) as e:
             validation.validate_names_against_project(
-                project.cfg,
-                "rawdata",
-                ["sub-004_id-123"],
-                include_central=False,
+                project.cfg, "rawdata", ["sub-004_id-123"], local_only=True
             )
         assert (
             "DUPLICATE_NAME: The prefix for sub-004_id-123 duplicates the name: sub-004"
@@ -533,7 +530,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 ["sub-004"],
                 ["ses-001_date-121212"],
-                include_central=False,
+                local_only=True,
             )
         assert (
             "DUPLICATE_NAME: The prefix for ses-001_date-121212 duplicates the name: ses-001"
@@ -558,7 +555,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 ["sub-001"],
                 ["ses-03"],
-                include_central=False,
+                local_only=True,
             )
         assert (
             "Cannot check names for inconsistent value lengths because the session value"
@@ -572,7 +569,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 ["sub-003"],
-                include_central=False,
+                local_only=True,
                 display_mode="error",
             )
 
@@ -598,7 +595,7 @@ class TestValidation(BaseTest):
             project.cfg,
             "rawdata",
             sub_names,
-            include_central=False,
+            local_only=True,
             display_mode="error",
         )
 
@@ -610,7 +607,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 sub_names,
-                include_central=False,
+                local_only=True,
                 display_mode="error",
             )
         assert "DUPLICATE_NAME" in str(e.value)
@@ -623,7 +620,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 sub_names,
-                include_central=False,
+                local_only=True,
                 display_mode="warn",
             )
         # this warning arises from inconsistent value lengths within the
@@ -650,7 +647,7 @@ class TestValidation(BaseTest):
             project.cfg,
             "rawdata",
             sub_names,
-            include_central=False,
+            local_only=True,
             display_mode="error",
         )
 
@@ -659,7 +656,7 @@ class TestValidation(BaseTest):
                 project.cfg,
                 "rawdata",
                 sub_names,
-                include_central=True,
+                local_only=False,
                 display_mode="error",
             )
         assert "DUPLICATE_NAME" in str(e.value)
@@ -684,7 +681,7 @@ class TestValidation(BaseTest):
             "rawdata",
             sub_names,
             ses_names,
-            include_central=True,
+            local_only=False,
             display_mode="error",
         )
 
@@ -698,7 +695,7 @@ class TestValidation(BaseTest):
                 "rawdata",
                 sub_names,
                 ses_names,
-                include_central=True,
+                local_only=False,
                 display_mode="warn",
             )
         assert "DUPLICATE_NAME" in str(w[0].message)
@@ -774,14 +771,14 @@ class TestValidation(BaseTest):
             "rawdata", "sub-01_id-2b", "ses-01_id-1a", bypass_validation=True
         )
 
-        project.validate_project("rawdata", "error", include_central=False)
+        project.validate_project("rawdata", "error", local_only=True)
 
         project.create_folders(
             "rawdata", "sub-02_id-a1", "ses-02_id-aa", bypass_validation=True
         )
 
         with pytest.warns(UserWarning) as w:
-            project.validate_project("rawdata", "warn", include_central=False)
+            project.validate_project("rawdata", "warn", local_only=True)
 
         assert (
             "TEMPLATE: The name: sub-02_id-a1 does not match the template: sub-\\d\\d_id-\\d.?"
@@ -864,7 +861,7 @@ class TestValidation(BaseTest):
         )
 
         project.validate_project(
-            top_level_folder, "error", include_central=False, strict_mode=True
+            top_level_folder, "error", local_only=True, strict_mode=True
         )
 
         os.makedirs(
@@ -887,10 +884,7 @@ class TestValidation(BaseTest):
 
         with pytest.warns(UserWarning) as w:
             project.validate_project(
-                top_level_folder,
-                "warn",
-                include_central=False,
-                strict_mode=True,
+                top_level_folder, "warn", local_only=True, strict_mode=True
             )
 
         assert (
@@ -909,15 +903,12 @@ class TestValidation(BaseTest):
 
         with pytest.raises(ValueError) as e:
             project.validate_project(
-                top_level_folder,
-                "warn",
-                include_central=True,
-                strict_mode=True,
+                top_level_folder, "warn", local_only=False, strict_mode=True
             )
 
         assert (
             str(e.value)
-            == "`strict_mode` is currently only available for `include_central=False`."
+            == "`strict_mode` is currently only available for `local_only=True`."
         )
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
@@ -930,7 +921,7 @@ class TestValidation(BaseTest):
         """
         with pytest.warns(UserWarning) as w:
             project.validate_project(
-                top_level_folder, "warn", include_central=True
+                top_level_folder, "warn", local_only=False
             )
 
         assert len(w) == 2
@@ -940,7 +931,7 @@ class TestValidation(BaseTest):
         project.create_folders("rawdata", "sub-001")
         with pytest.warns(UserWarning) as w:
             project.validate_project(
-                top_level_folder, "warn", include_central=True
+                top_level_folder, "warn", local_only=False
             )
 
         assert len(w) == 1
@@ -948,9 +939,7 @@ class TestValidation(BaseTest):
 
         # Should be fine now that both folders have rawdata or derivatives
         os.makedirs(project.get_central_path() / "derivatives")
-        project.validate_project(
-            top_level_folder, "error", include_central=True
-        )
+        project.validate_project(top_level_folder, "error", local_only=False)
 
         # Make a bad project name and check its caught
         project.cfg["local_path"] = (
@@ -964,7 +953,7 @@ class TestValidation(BaseTest):
         (project.cfg["central_path"] / "rawdata").mkdir(parents=True)
 
         with pytest.warns(UserWarning) as w:
-            project.validate_project("rawdata", "warn", include_central=True)
+            project.validate_project("rawdata", "warn")
 
         assert len(w) == 2
         assert (

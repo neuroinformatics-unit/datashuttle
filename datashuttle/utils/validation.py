@@ -495,7 +495,7 @@ def raise_display_mode(
 def validate_project(
     cfg: Configs,
     top_level_folder_list: List[TopLevelFolder],
-    include_central: bool = False,
+    local_only: bool = False,
     display_mode: DisplayMode = "error",
     log: bool = True,
     name_templates: Optional[Dict] = None,
@@ -513,8 +513,8 @@ def validate_project(
     top_level_folder_list:  List[TopLevelFolder]
         The top level folders to validate.
 
-    include_central : bool
-        If `False`, only project folders in the `local_path` will
+    local_only : bool
+        If `True`, only project folders in the `local_path` will
         be validated. Otherwise, project folders in both the `local_path`
         and `central_path` will be validated.
 
@@ -538,20 +538,20 @@ def validate_project(
     error_messages = []
 
     # Check basic things about the project (e.g. contains a top-level folder)
-    error_messages += check_high_level_project_structure(cfg, include_central)
+    error_messages += check_high_level_project_structure(cfg, local_only)
 
     for top_level_folder in top_level_folder_list:
 
         if strict_mode:
             error_messages += check_strict_mode(
-                cfg, top_level_folder, include_central
+                cfg, top_level_folder, local_only
             )
 
         # Get a list of paths to every sub- or ses- folder
         folder_paths = getters.get_all_sub_and_ses_paths(
             cfg,
             top_level_folder,
-            include_central,
+            local_only,
         )
 
         # Check subject folders are valid
@@ -599,7 +599,7 @@ def validate_names_against_project(
     top_level_folder: TopLevelFolder,
     sub_names: List[str],
     ses_names: Optional[List[str]] = None,
-    include_central: bool = False,
+    local_only: bool = False,
     display_mode: DisplayMode = "error",
     log: bool = True,
     name_templates: Optional[Dict] = None,
@@ -632,7 +632,7 @@ def validate_names_against_project(
         duplicate checks will only be performed for sessions within
         the passed `sub_names`.
 
-    include_central : bool
+    local_only : bool
         If `True`, only project folders in the `local_path` will
         be validated against. Otherwise, project folders in both the
         `local_path` and `central_path` will be validated against.
@@ -658,7 +658,7 @@ def validate_names_against_project(
     # Next, get all of the subjects and sessions from
     # the project (local and possibly central)
     folder_paths = getters.get_all_sub_and_ses_paths(
-        cfg, top_level_folder, include_central
+        cfg, top_level_folder, local_only
     )
 
     if folder_paths["sub"]:
@@ -744,7 +744,7 @@ def validate_names_against_project(
 
 
 def check_high_level_project_structure(
-    cfg: Configs, include_central: bool
+    cfg: Configs, local_only: bool
 ) -> List[str]:
     """
     Perform basic validation checks on the project structure,
@@ -783,7 +783,7 @@ def check_high_level_project_structure(
         )
         error_messages.append(message)
 
-    if not include_central:
+    if local_only:
         return error_messages
 
     # Check the central project folder contains rawdata for derivatives
@@ -808,7 +808,7 @@ def check_high_level_project_structure(
 
 
 def check_strict_mode(
-    cfg: Configs, top_level_folder: TopLevelFolder, include_central: bool
+    cfg: Configs, top_level_folder: TopLevelFolder, local_only: bool
 ) -> List[str]:
     """
     `strict_mode` does not allow any non-NeuroBlueprint folder to exist
@@ -824,9 +824,9 @@ def check_strict_mode(
     # For circular imports
     from datashuttle.utils import folders
 
-    if include_central:
+    if not local_only:
         raise ValueError(
-            "`strict_mode` is currently only available for `include_central=False`."
+            "`strict_mode` is currently only available for `local_only=True`."
         )
 
     error_messages = []
@@ -836,7 +836,7 @@ def check_strict_mode(
         top_level_folder,
         None,
         "*",
-        include_central=False,
+        local_only=True,
         return_full_path=True,
     )
 
@@ -856,7 +856,7 @@ def check_strict_mode(
             top_level_folder,
             sub_level_name,
             "*",
-            include_central=False,
+            local_only=True,
             return_full_path=True,
         )
 

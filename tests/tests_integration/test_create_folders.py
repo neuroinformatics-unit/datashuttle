@@ -330,9 +330,7 @@ class TestCreateFolders(BaseTest):
             project, top_level_folder, ["001", "002", "003"]
         )
 
-        new_num = project.get_next_sub(
-            top_level_folder, return_with_prefix, include_central=True
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
 
         assert new_num == "sub-004" if return_with_prefix else "004"
 
@@ -345,28 +343,24 @@ class TestCreateFolders(BaseTest):
 
         shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
-        new_num = project.get_next_sub(
-            top_level_folder, return_with_prefix, include_central=True
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-004" if return_with_prefix else "004"
 
         # Add large-sub num folders to local and check all are detected.
         project.create_folders(top_level_folder, ["004", "005"])
 
-        new_num = project.get_next_sub(
-            top_level_folder, return_with_prefix, include_central=True
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-006" if return_with_prefix else "006"
 
         # check `local_path` option
         os.makedirs(project.cfg["central_path"] / top_level_folder / "sub-006")
         new_num = project.get_next_sub(
-            top_level_folder, return_with_prefix, include_central=True
+            top_level_folder, return_with_prefix, local_only=False
         )
         assert new_num == "sub-007" if return_with_prefix else "007"
 
         new_num = project.get_next_sub(
-            top_level_folder, return_with_prefix, include_central=False
+            top_level_folder, return_with_prefix, local_only=True
         )
         assert new_num == "sub-006" if return_with_prefix else "006"
 
@@ -388,13 +382,11 @@ class TestCreateFolders(BaseTest):
         )
 
         # Test the next sub and ses number are correct
-        new_num = project.get_next_sub(
-            top_level_folder, return_with_prefix, include_central=True
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-10" if return_with_prefix else "10"
 
         new_num = project.get_next_ses(
-            top_level_folder, sub, return_with_prefix, include_central=True
+            top_level_folder, sub, return_with_prefix
         )
         assert new_num == "ses-004" if return_with_prefix else "004"
 
@@ -408,13 +400,11 @@ class TestCreateFolders(BaseTest):
 
         shutil.rmtree(project.cfg["local_path"] / top_level_folder)
 
-        new_num = project.get_next_sub(
-            top_level_folder, return_with_prefix, include_central=True
-        )
+        new_num = project.get_next_sub(top_level_folder, return_with_prefix)
         assert new_num == "sub-10" if return_with_prefix else "10"
 
         new_num = project.get_next_ses(
-            top_level_folder, sub, return_with_prefix, include_central=True
+            top_level_folder, sub, return_with_prefix
         )
         assert new_num == "ses-004" if return_with_prefix else "004"
 
@@ -423,7 +413,7 @@ class TestCreateFolders(BaseTest):
         project.create_folders(top_level_folder, sub, ["004", "005"])
 
         new_num = project.get_next_ses(
-            top_level_folder, sub, return_with_prefix, include_central=True
+            top_level_folder, sub, return_with_prefix
         )
         assert new_num == "ses-006" if return_with_prefix else "006"
 
@@ -432,12 +422,12 @@ class TestCreateFolders(BaseTest):
             project.cfg["central_path"] / top_level_folder / sub / "ses-006"
         )
         new_num = project.get_next_ses(
-            top_level_folder, sub, return_with_prefix, include_central=True
+            top_level_folder, sub, return_with_prefix, local_only=False
         )
         assert new_num == "ses-007" if return_with_prefix else "007"
 
         new_num = project.get_next_ses(
-            top_level_folder, sub, return_with_prefix, include_central=False
+            top_level_folder, sub, return_with_prefix, local_only=True
         )
         assert new_num == "ses-006" if return_with_prefix else "006"
 
@@ -458,15 +448,12 @@ class TestCreateFolders(BaseTest):
         project.set_name_templates(name_templates)
 
         new_num = project.get_next_sub(
-            "rawdata", return_with_prefix=False, include_central=False
+            "rawdata", return_with_prefix=False, local_only=True
         )
         assert new_num == "00002"
 
         new_num = project.get_next_ses(
-            "rawdata",
-            "sub-001",
-            return_with_prefix=False,
-            include_central=False,
+            "rawdata", "sub-001", return_with_prefix=False, local_only=True
         )
         assert new_num == "2"
 
@@ -478,7 +465,7 @@ class TestCreateFolders(BaseTest):
         project.set_name_templates(name_templates)
 
         new_num = project.get_next_sub(
-            "rawdata", return_with_prefix=False, include_central=False
+            "rawdata", return_with_prefix=False, local_only=True
         )
         assert new_num == "002"
 
@@ -487,7 +474,7 @@ class TestCreateFolders(BaseTest):
         project.set_name_templates(name_templates)
 
         new_num = project.get_next_sub(
-            "rawdata", return_with_prefix=False, include_central=False
+            "rawdata", return_with_prefix=False, local_only=True
         )
         assert new_num == "002"
 

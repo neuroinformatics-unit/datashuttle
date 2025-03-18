@@ -403,9 +403,7 @@ class Interface:
     ) -> InterfaceOutput:
         try:
             next_sub = self.project.get_next_sub(
-                top_level_folder,
-                return_with_prefix=True,
-                include_central=False,
+                top_level_folder, return_with_prefix=True, local_only=True
             )
             return True, next_sub
         except BaseException as e:
@@ -417,10 +415,7 @@ class Interface:
 
         try:
             next_ses = self.project.get_next_ses(
-                top_level_folder,
-                sub,
-                return_with_prefix=True,
-                include_central=False,
+                top_level_folder, sub, return_with_prefix=True, local_only=True
             )
             return True, next_ses
         except BaseException as e:

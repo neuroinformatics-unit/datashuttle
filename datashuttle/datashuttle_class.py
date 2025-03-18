@@ -309,7 +309,7 @@ class DataShuttle:
                 top_level_folder,
                 format_sub,
                 format_ses,
-                include_central=False,
+                local_only=True,
                 display_mode="error",
                 log=log,
                 name_templates=name_templates,
@@ -1072,7 +1072,7 @@ class DataShuttle:
         self,
         top_level_folder: TopLevelFolder,
         return_with_prefix: bool = True,
-        include_central: bool = False,
+        local_only: bool = False,
     ) -> str:
         """
         Convenience function for get_next_sub_or_ses
@@ -1084,8 +1084,8 @@ class DataShuttle:
         return_with_prefix : bool
             If `True`, return with the "sub-" prefix.
 
-        include_central : bool
-            If `False, only get names from `local_path`, otherwise from
+        local_only : bool
+            If `True, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
         """
@@ -1095,13 +1095,13 @@ class DataShuttle:
         )
 
         if self.is_local_project():
-            include_central = False
+            local_only = True
 
         return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
             sub=None,
-            include_central=include_central,
+            local_only=local_only,
             return_with_prefix=return_with_prefix,
             search_str="sub-*",
             name_template_regexp=name_template_regexp,
@@ -1113,7 +1113,7 @@ class DataShuttle:
         top_level_folder: TopLevelFolder,
         sub: str,
         return_with_prefix: bool = True,
-        include_central: bool = False,
+        local_only: bool = False,
     ) -> str:
         """
         Convenience function for get_next_sub_or_ses
@@ -1131,8 +1131,8 @@ class DataShuttle:
         return_with_prefix : bool
             If `True`, return with the "ses-" prefix.
 
-        include_central : bool
-            If `False, only get names from `local_path`, otherwise from
+        local_only : bool
+            If `True, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
         """
@@ -1142,13 +1142,13 @@ class DataShuttle:
         )
 
         if self.is_local_project():
-            include_central = False
+            local_only = True
 
         return getters.get_next_sub_or_ses(
             self.cfg,
             top_level_folder,
             sub=sub,
-            include_central=include_central,
+            local_only=local_only,
             return_with_prefix=return_with_prefix,
             search_str="ses-*",
             name_template_regexp=name_template_regexp,
@@ -1216,7 +1216,7 @@ class DataShuttle:
         self,
         top_level_folder: Optional[TopLevelFolder],
         display_mode: DisplayMode,
-        include_central: bool = False,
+        local_only: bool = False,
         strict_mode: bool = False,
     ) -> List[str]:
         """
@@ -1235,8 +1235,8 @@ class DataShuttle:
             The validation issues are displayed as ``"error"`` (raise error)
             ``"warn"`` (show warning) or ``"print"``
 
-        include_central : bool
-            If ``False``, only the local project is validated. Otherwise, both
+        local_only : bool
+            If ``True``, only the local project is validated. Otherwise, both
             local and central projects are validated. If in local-project mode,
             this flag is ignored.
 
@@ -1261,7 +1261,7 @@ class DataShuttle:
         name_templates = self.get_name_templates()
 
         if self.is_local_project():
-            include_central = False
+            local_only = True
 
         top_level_folder_to_validate = _format_top_level_folder(
             top_level_folder
@@ -1270,7 +1270,7 @@ class DataShuttle:
         error_messages = validation.validate_project(
             self.cfg,
             top_level_folder_to_validate,
-            include_central=include_central,
+            local_only=local_only,
             display_mode=display_mode,
             name_templates=name_templates,
             strict_mode=strict_mode,

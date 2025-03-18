@@ -203,7 +203,7 @@ def search_project_for_sub_or_ses_names(
     top_level_folder: TopLevelFolder,
     sub: Optional[str],
     search_str: str,
-    include_central: bool,
+    local_only: bool,
     return_full_path: bool = False,
 ) -> Dict:
     """
@@ -231,7 +231,9 @@ def search_project_for_sub_or_ses_names(
 
     central_foldernames: List
 
-    if include_central:
+    if local_only:
+        central_foldernames = []
+    else:
         central_foldernames, _ = search_sub_or_ses_level(
             cfg,
             cfg.get_base_folder("central", top_level_folder),
@@ -241,9 +243,6 @@ def search_project_for_sub_or_ses_names(
             verbose=False,
             return_full_path=return_full_path,
         )
-    else:
-        central_foldernames = []
-
     return {"local": local_foldernames, "central": central_foldernames}
 
 
