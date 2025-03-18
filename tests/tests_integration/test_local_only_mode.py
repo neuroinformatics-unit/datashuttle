@@ -145,10 +145,12 @@ class TestLocalOnlyProject(BaseTest):
 
         project.update_config_file(central_path=None, connection_method=None)
 
-        next_sub = project.get_next_sub(top_level_folder, local_only=True)
+        next_sub = project.get_next_sub(
+            top_level_folder, include_central=False
+        )
 
         next_ses = project.get_next_ses(
-            top_level_folder, local_only=True, sub="001"
+            top_level_folder, sub="001", include_central=False
         )
 
         assert next_sub == "sub-001"

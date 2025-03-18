@@ -80,7 +80,7 @@ def quick_validate_project(
     error_messages = validation.validate_project(
         cfg=cfg,
         top_level_folder_list=top_level_folders_to_validate,
-        local_only=True,
+        include_central=False,
         display_mode=display_mode,
         name_templates=name_templates,
     )
