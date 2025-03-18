@@ -2,10 +2,8 @@
 
 # How to Quickly Validate an Existing Project
 
-# TODO: add image of TUI, use same path as in the API + outputs
-# Show the same outputs for the TUI in comments!
-
-Datashuttle provides the functionality to validate an existing NeuroBlueprint project.
+Datashuttle provides the functionality to validate an existing
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) project.
 All NeuroBlueprint issues will be flagged, including a filepath pointing to
 problematic folders.
 
@@ -24,12 +22,12 @@ This will open the screen below. To validate an existing project,
 enter the full filepath to the project folder in the top input box
 and click ``Validate``:
 
-```{image} /_static/screenshots/how-to-make-local-project-configs-dark.png
+```{image} /_static/screenshots/how-to-quick-validate-project-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-make-local-project-configs-light.png
+```{image} /_static/screenshots/how-to-quick-validate-project-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -37,9 +35,9 @@ and click ``Validate``:
 <br>
 
 Any validation errors detected in the project will be displayed in the logging box.
-See ``Strict Mode` below for key details on how the validation is performed.
+See ``Strict Mode`` below for key details on how the validation is performed.
 
-**Options**
+**Options:**
 
 Top level folder dropdown
 : The top-level folder to validate the folders within.
@@ -70,12 +68,12 @@ quick_validate_project(
 
 ```
 
-The function [](datashuttle.quick_validate_project) can be used to quickly validate a project fully conforms
-to the[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) standard. This does not require setting up
-a full ``datashuttle`` project, only the filepath to the project.
+In this case, display_mode=error will result in an error on the first encountered validation issue.
+Otherwise "warn" will show a python warning for all detected issues, while "print" will print directly to console.
 
-See [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) API documentation at the link, including
-the important parameter ``strict_mode`` which controls how validation is performed.
+See the [](datashuttle.quick_validate_project) API documentation at the link,
+for full details of parameters including the important argument ``strict_mode``
+that controls how validation is performed.
 
 :::
 

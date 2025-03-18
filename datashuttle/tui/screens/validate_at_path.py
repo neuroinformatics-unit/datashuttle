@@ -34,7 +34,7 @@ class ValidateScreen(Screen):
     mainwindow : TuiApp
     """
 
-    TITLE = "Make New Project"
+    TITLE = "Validate Project"
 
     def __init__(self, mainwindow: App) -> None:
         super(ValidateScreen, self).__init__()
