@@ -86,8 +86,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
-        suggest_next_sub_ses_local_only = self.interface.tui_settings[
-            "suggest_next_sub_ses_local_only"
+        suggest_next_sub_ses_remote = self.interface.tui_settings[
+            "suggest_next_sub_ses_remote"
         ]
 
         yield Container(
@@ -105,7 +105,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             Container(
                 Checkbox(
                     "Search Remote For Suggestions",
-                    value=not suggest_next_sub_ses_local_only,
+                    value=suggest_next_sub_ses_remote,
                     id="suggest_next_sub_ses_remote",
                 ),
                 Checkbox(
@@ -250,7 +250,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             )
         elif event.checkbox.id == "suggest_next_sub_ses_remote":
             self.interface.save_tui_settings(
-                not is_on, "suggest_next_sub_ses_local_only"
+                is_on, "suggest_next_sub_ses_remote"
             )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:

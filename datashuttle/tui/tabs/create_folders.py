@@ -157,10 +157,11 @@ class CreateFoldersTab(TreeAndInputTab):
 
         prefix: Prefix = "sub" if "subject" in input_id else "ses"
 
-        async def _on_clickable_input_clicked():
-            if event.ctrl:
-                self.fill_input_with_template(prefix, input_id)
-            else:
+        if event.ctrl:
+            self.fill_input_with_template(prefix, input_id)
+        else:
+
+            async def _on_clickable_input_clicked():
                 input_box = self.query_one(f"#{input_id}")
                 spinner = CustomSpinner(id="input_suggestion_spinner")
                 input_box.mount(spinner)
@@ -169,14 +170,14 @@ class CreateFoldersTab(TreeAndInputTab):
                     prefix,
                     input_id,
                     self.interface.get_tui_settings()[
-                        "suggest_next_sub_ses_local_only"
+                        "suggest_next_sub_ses_remote"
                     ],
                 )
                 await worker.wait()
                 spinner.remove()
                 input_box.disabled = False
 
-        asyncio.create_task(_on_clickable_input_clicked())
+            asyncio.create_task(_on_clickable_input_clicked())
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
@@ -293,7 +294,7 @@ class CreateFoldersTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
     @work(exclusive=False, thread=True)
     def fill_input_with_next_sub_or_ses_template(
-        self, prefix: Prefix, input_id: str, local_only: bool
+        self, prefix: Prefix, input_id: str, include_central: bool
     ) -> Worker:
         """
         This fills a sub / ses Input with a suggested name based on the
@@ -316,17 +317,14 @@ class CreateFoldersTab(TreeAndInputTab):
             "top_level_folder_select"
         ]["create_tab"]
 
-        def show_error_dialog(output: str) -> None:
-            self.mainwindow.call_from_thread(
-                self.mainwindow.show_modal_error_dialog, output
-            )
-
         if prefix == "sub":
             success, output = self.interface.get_next_sub(
-                top_level_folder, local_only=local_only
+                top_level_folder, include_central=include_central
             )
             if not success:
-                show_error_dialog(output)
+                self.mainwindow.show_modal_error_dialog_from_main_thread(
+                    output
+                )
                 return
             else:
                 next_val = output
@@ -336,14 +334,14 @@ class CreateFoldersTab(TreeAndInputTab):
             ).as_names_list()
 
             if len(sub_names) > 1:
-                show_error_dialog(
+                self.mainwindow.show_modal_error_dialog_from_main_thread(
                     "Can only suggest next session number when a "
                     "single subject is provided."
                 )
                 return
 
             if sub_names == [""]:
-                show_error_dialog(
+                self.mainwindow.show_modal_error_dialog_from_main_thread(
                     "Must input a subject number before suggesting "
                     "next session number."
                 )
@@ -353,10 +351,12 @@ class CreateFoldersTab(TreeAndInputTab):
                 sub = sub_names[0]
 
             success, output = self.interface.get_next_ses(
-                top_level_folder, sub, local_only=local_only
+                top_level_folder, sub, include_central=include_central
             )
             if not success:
-                show_error_dialog(output)
+                self.mainwindow.show_modal_error_dialog_from_main_thread(
+                    output
+                )
                 return
             else:
                 next_val = output
