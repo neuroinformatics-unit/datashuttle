@@ -257,8 +257,17 @@ class CreateFoldersTab(TreeAndInputTab):
             sub_path = (
                 self.interface.get_configs()["local_path"] / "rawdata" / sub
             )
-            if sub_path.exists():
-                existing_folders.append(str(sub_path))
+
+            # If session names are not provided, check only for subject folders
+            if ses_names is None:
+                if sub_path.exists():
+                    existing_folders.append(str(sub_path))
+            else:
+                # Check for session folders inside the existing subject folder
+                for ses in ses_names:
+                    ses_path = sub_path / ses
+                    if ses_path.exists():
+                        existing_folders.append(str(ses_path))
 
         if existing_folders:
             message = (
