@@ -62,11 +62,11 @@ class TestPersistentSettings(BaseTest):
         # Bad sub name
         with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", bad_sub)
+
         assert (
-            str(e.value) == "The name: "
-            "sub-3_id-abC_random-helloworld "
-            "does not match the template: "
-            "sub-\d_id-.?.?_random-.*"
+            str(e.value)
+            == "TEMPLATE: The name: sub-3_id-abC_random-helloworld "
+            "does not match the template: sub-\\d_id-.?.?_random-.*"
         )
 
         # Good sub name (should not raise)
@@ -77,10 +77,9 @@ class TestPersistentSettings(BaseTest):
             project.create_folders("rawdata", good_sub, bad_ses)
 
         assert (
-            str(e.value) == "The name: "
-            "ses-33_id-xyz_ranDUM-helloworld "
-            "does not match the template: "
-            "ses-\\d\\d_id-.?.?.?_random-.*"
+            str(e.value)
+            == "TEMPLATE: The name: ses-33_id-xyz_ranDUM-helloworld "
+            "does not match the template: ses-\\d\\d_id-.?.?.?_random-.*"
         )
 
         # Good ses name (should not raise)
@@ -96,7 +95,7 @@ class TestPersistentSettings(BaseTest):
                 "rawdata",
                 [bad_sub],
                 ses_names=None,
-                local_only=True,
+                include_central=False,
                 display_mode="error",
                 name_templates=reload_name_templates,
             )
@@ -107,7 +106,7 @@ class TestPersistentSettings(BaseTest):
 
         # Test `validate_project()`
         with pytest.raises(NeuroBlueprintError) as e:
-            project.validate_project("rawdata", "error", local_only=True)
+            project.validate_project("rawdata", "error", include_central=False)
         shutil.rmtree(bad_sub_path)
 
         assert "sub-3_id-abC_random-helloworld" in str(e.value)
@@ -162,8 +161,8 @@ class TestPersistentSettings(BaseTest):
             project.create_folders("rawdata", "sub-@@@")
 
         assert (
-            "The name: name: sub-@@@, contains characters which are not alphanumeric"
-            in str(e)
+            "BAD_VALUE: The value for prefix sub in name sub-@@@ is not an integer."
+            == str(e.value)
         )
 
     def get_settings_default(self):

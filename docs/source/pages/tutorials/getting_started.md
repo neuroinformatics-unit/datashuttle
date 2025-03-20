@@ -354,8 +354,8 @@ To get the next subject  in this project (`sub-002`) and the next
 session for that subject (`ses-001`) we can run:
 
 ```python
-next_sub = project.get_next_sub("rawdata", local_only=True)                # returns "sub-001"
-next_ses = project.get_next_ses("rawdata", sub=next_sub, local_only=True)  # returns "ses-001"
+next_sub = project.get_next_sub("rawdata")                # returns "sub-001"
+next_ses = project.get_next_ses("rawdata", sub=next_sub)  # returns "ses-001"
 
 project.create_folders(
     "rawdata",
@@ -365,9 +365,8 @@ project.create_folders(
 )
 ```
 
-The `local_only` argument restricts the search for the next subject and session
-to the local project folder only. Set this to `False` to consider subjects
-and sessions in  the central storage.
+These functions also take an `include_central` argument which extends the search for the next subject and session
+to the central project folder (`False` by default).
 
 :::
 ::::
