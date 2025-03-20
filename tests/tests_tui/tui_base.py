@@ -245,8 +245,7 @@ class TuiBase:
 
     async def close_messagebox(self, pilot):
         """
-        Close a messageobox, for some reason clicking the 'OK'
-        button does not work.
+        Close the modal_dialogs.Messagebox
         """
         pilot.app.screen.on_button_pressed()
         await pilot.pause()
@@ -260,3 +259,14 @@ class TuiBase:
         await pilot.click(id)
         await pilot.click(id, offset=(2, position))
         await pilot.pause()
+
+    async def click_and_await_transfer(self, pilot):
+        await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
+        await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
+
+        # get the transfer task
+        transfer_task = test_utils.get_task_by_name("data_transfer_async_task")
+        if transfer_task:
+            await transfer_task
+
+        await self.close_messagebox(pilot)
