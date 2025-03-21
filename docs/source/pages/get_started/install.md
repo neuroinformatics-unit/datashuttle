@@ -1,16 +1,16 @@
 (how-to-install)=
 # How to Install
 
-**datashuttle** requires
+``datashuttle`` requires
 [Python](https://www.python.org/)
 to run.
 
-The easiest way to install **datashuttle** is through the Python package manager
+The easiest way to install ``datashuttle`` is through the Python package manager
 [conda](https://docs.conda.io/en/latest/). However,
 installation via `pip` is also supported.
 
 :::{warning}
-**datashuttle** is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
+``datashuttle`` is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
 get in contact if you experience any bugs or unexpected behaviour.
 :::
 
@@ -33,7 +33,7 @@ conda create -n datashuttle-env
 conda activate datashuttle-env
 ```
 
-Next, install **datashuttle** and all dependencies with:
+Next, install ``datashuttle`` and all dependencies with:
 
 ```sh
 conda install -c conda-forge datashuttle
@@ -43,10 +43,10 @@ conda install -c conda-forge datashuttle
 
 :::{tab-item} Pip
 
-**datashuttle** depends on [RClone](https://rclone.org/), which is not available through `pip`.
+``datashuttle`` depends on [RClone](https://rclone.org/), which is not available through `pip`.
 [Rclone must be installed separately](https://rclone.org/downloads/).
 
-Once Rclone is installed, **datashuttle** and all other dependencies can be
+Once Rclone is installed, ``datashuttle`` and all other dependencies can be
 installed in a `pipenv` or `virtualenv` environment with:
 
 ```shell
@@ -68,11 +68,11 @@ conda install -c conda-forge rclone
 
 or using the [RClone's standalone installer](https://rclone.org/downloads/).
 
-Next, clone the **datashuttle**
+Next, clone the ``datashuttle``
 [GitHub repository](https://github.com/neuroinformatics-unit/datashuttle/)
 to get the latest development version.
 
-To install **datashuttle** and its developer dependencies,
+To install ``datashuttle`` and its developer dependencies,
 run the follow command from inside the repository:
 
 ```sh
@@ -80,7 +80,7 @@ pip install -e .[dev]  # works on most shells
 pip install -e '.[dev]'  # works on zsh (the default shell on macOS)
 ```
 
-This will install an 'editable' version of **datashuttle**, meaning
+This will install an 'editable' version of ``datashuttle``, meaning
 any changes you make to the cloned code will be immediately
 reflected in the installed package.
 :::
@@ -89,7 +89,7 @@ reflected in the installed package.
 
 ## Check the installation
 
-To check **datashuttle** has successfully installed, launch the
+To check ``datashuttle`` has successfully installed, launch the
 graphical interface with:
 
 ```shell

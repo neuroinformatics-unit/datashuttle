@@ -8,7 +8,7 @@ All NeuroBlueprint issues will be flagged, including a filepath pointing to
 problematic folders.
 
 Below, we explore how to quickly validate a NeuroBlueprint project without
-setting up a full project in **datashuttle**.
+setting up a full project in ``datashuttle``.
 
 ::::{tab-set}
 

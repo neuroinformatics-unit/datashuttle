@@ -1,7 +1,7 @@
 (how-to-transfer-data)=
 # How to Transfer Data
 
-**datashuttle** facilitates convenient transfer of data between
+``datashuttle`` facilitates convenient transfer of data between
 local and central storage machines.
 
 This includes:
@@ -23,7 +23,7 @@ This includes:
 :class: note
 
 
-In **datashuttle**, the *upload* refers to transfer
+In ``datashuttle``, the *upload* refers to transfer
 from a local to the central machine.
 *Download* refers to transfer from the central machine to a local machine.
 :::

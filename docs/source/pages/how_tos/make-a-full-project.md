@@ -2,12 +2,12 @@
 # How to Make a Full Project
 
 This guide will cover all you need to know for setting up a new project
-in **datashuttle**.
+in ``datashuttle``.
 
 First, make sure you have
-[installed and launched **datashuttle**](how-to-install).
+[installed and launched ``datashuttle``](how-to-install).
 
-Next, we set up **datashuttle** on a new machine we must tell it three things:
+Next, we set up ``datashuttle`` on a new machine we must tell it three things:
 
 1) **project name**: The name of the project (must be the same for all
 local machines tied to a project).
@@ -84,7 +84,7 @@ The `Make New Project` screen will be displayed:
 <br>
 
 (general-tui-datashuttle-setup)=
-Setting up **datashuttle** is as simple as entering the `Project name`,
+Setting up ``datashuttle`` is as simple as entering the `Project name`,
 `Local Path` and `Central Path` into the relevant input boxes.
 
 The paths do not need to end in the project name—it will be automatically added.

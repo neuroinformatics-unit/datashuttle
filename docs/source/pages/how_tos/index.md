@@ -8,83 +8,41 @@
 ::::{grid} 1 1 2 2
 :gutter: 4
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Install
-:link: how_tos/install
-:link-type: doc
-
-How to install **datashuttle**
-:::
-
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Choose a Terminal
-:link: how_tos/choose-a-terminal
-:link-type: doc
-
-Choose the best terminal to run the graphical interface.
-:::
-
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate Existing Project
-:link: how_tos/quick-validate-project
-:link-type: doc
-
-Quickly validate a NeuroBlueprint project
-
-:::
-
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Make a Local Project
-:link: how_tos/make-a-local-project
-:link-type: doc
-
-Quick setup for project validation and folder creation.
-
-:::
-
-
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Make a Full Project
-:link: how_tos/make-a-full-project
-:link-type: doc
-
-Set up a full project for data transfer.
-:::
-
-::::
-
-## Manage your project
-::::{grid} 1 1 2 2
-:gutter: 4
-
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Create Folders
-:link: how_tos/create-folders
+:link: create-folders
 :link-type: doc
 
-All you need to know about creating folders.
 :::
+
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Transfer Data
-:link: how_tos/transfer-data
+:link: transfer-data
 :link-type: doc
 
-The ultimate guide to data-transfer.
+Transfer data between a local acquisition
+and central storage machine
+
 :::
+
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Update Configs
-:link: how_tos/update-configs
+:link: update-configs
 :link-type: doc
 
-Changing an existing project's configurations.
 :::
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Read the Logs
-:link: how_tos/read-logs
+
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Read Logs
+:link: read-logs
 :link-type: doc
 
-How to access full logs of everything **datashuttle** does.
 :::
+
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Use Name Templates
-:link: how_tos/use-name-templates
+:link: use-name-templates
 :link-type: doc
 
-A handy feature for template subject and session names.
 :::
 
 ::::
@@ -94,15 +52,11 @@ A handy feature for template subject and session names.
 :caption: how to
 :hidden:
 
-how_tos/choose-a-terminal
-how_tos/create-folders
-how_tos/install
-how_tos/make-a-local-project
-how_tos/make-a-full-project
-how_tos/quick-validate-project
-how_tos/transfer-data
-how_tos/read-logs
-how_tos/update-configs
-how_tos/use-name-templates
+create-folders
+make-a-full-project
+transfer-data
+update-configs
+read-logs
+use-name-templates
 
 ```
