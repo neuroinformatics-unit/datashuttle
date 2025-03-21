@@ -1,6 +1,6 @@
 # Roadmap
 
-The roadmap for **datashuttle**
+The roadmap for ``datashuttle``
 contains our development plans for the package.
 The roadmap is responsive to the requirements
 of the community and we encourage people to get in

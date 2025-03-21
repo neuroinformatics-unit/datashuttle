@@ -2,7 +2,7 @@
 
 # Project Validation
 
-**datashuttle** can validate a project against the
+``datashuttle`` can validate a project against the
 [NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html).
 This will find and display a list of all formatting errors in the project.
 
@@ -84,7 +84,7 @@ For example, ``some_other_folder``:
 ```
 
 However, this means it is hard to validate all folder names, as it is not possible to determine whether
-these are mistkaes e.g. ``rat-001`` or auxiliary folders. By default, **datashuttle** will only look for
+these are mistkaes e.g. ``rat-001`` or auxiliary folders. By default, ``datashuttle`` will only look for
 ``sub-`` or ``ses-`` prefixed files to validate.
 
 In ``strict_mode``, non-NeuroBlueprint formatted folders are not allowed (except within datatype folders).

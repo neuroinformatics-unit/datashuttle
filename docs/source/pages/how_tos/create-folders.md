@@ -1,7 +1,7 @@
 (how-to-create-folders)=
 # How to Create Folders
 
-**datashuttle** automates project folder creation and validation
+``datashuttle`` automates project folder creation and validation
 according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/).
 
 Before starting with folder creation, we'll briefly introduce the
