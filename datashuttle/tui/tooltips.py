@@ -35,7 +35,9 @@ def get_tooltip(id: str) -> str:
 
     # AWS S3 radiobutton
     elif id == "#configs_aws_radiobutton":
-        tooltip = "Use AWS S3 when planning to connect with your AWS storage bucket."
+        tooltip = (
+            "Use AWS S3 when planning to connect with your AWS storage bucket."
+        )
 
     # Google Drive radiobutton
     elif id == "#configs_gdrive_radiobutton":
@@ -45,7 +47,7 @@ def get_tooltip(id: str) -> str:
     elif id == "#configs_local_only_radiobutton":
         tooltip = "No connection to a central project is made.\nTransfer functionality will not be available."
 
-     # AWS S3 Inputs
+    # AWS S3 Inputs
     elif id == "#configs_aws_bucket_name_input":
         tooltip = (
             "Name of your AWS S3 bucket where project data will be stored.\n\n"

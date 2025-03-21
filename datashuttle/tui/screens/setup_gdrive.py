@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
     from datashuttle.tui.interface import Interface
 
 from textual.containers import Container, Horizontal
@@ -41,7 +42,10 @@ class SetupGdriveScreen(ModalScreen):
                 ),
                 id="messagebox_message_container",
             ),
-            Input(placeholder="Google Drive Folder ID", id="setup_gdrive_folder_input"),
+            Input(
+                placeholder="Google Drive Folder ID",
+                id="setup_gdrive_folder_input",
+            ),
             Horizontal(
                 Button("OK", id="setup_gdrive_ok_button"),
                 Button("Cancel", id="setup_gdrive_cancel_button"),
@@ -101,13 +105,14 @@ class SetupGdriveScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
-
     def save_gdrive_folder_and_prompt_setup(self) -> None:
         """
         Once the Google Drive folder ID is accepted, confirm setup.
         No additional credentials are needed after this step.
         """
-        success, output = self.interface.save_gdrive_key_locally(self.folder_id)
+        success, output = self.interface.save_gdrive_key_locally(
+            self.folder_id
+        )
 
         if success:
             message = (
@@ -124,7 +129,6 @@ class SetupGdriveScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
-
     def use_folder_id_to_setup_gdrive_connection(self) -> None:
         """
         Use the OAuth folder_id to complete the Google Drive setup.
@@ -133,7 +137,9 @@ class SetupGdriveScreen(ModalScreen):
         """
         folder_id = self.query_one("#setup_gdrive_folder_id_input").value
 
-        success, output = self.interface.setup_gdrive_folder_and_rclone_config(folder_id)
+        success, output = self.interface.setup_gdrive_folder_and_rclone_config(
+            folder_id
+        )
 
         if success:
             message = (

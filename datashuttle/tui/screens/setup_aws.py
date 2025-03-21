@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
     from datashuttle.tui.interface import Interface
 
 from textual.containers import Container, Horizontal
@@ -105,7 +106,6 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
-
     def save_aws_bucket_and_prompt_region_input(self) -> None:
         """
         Once the AWS bucket is accepted, prompt the user for the region.
@@ -129,7 +129,6 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
-
     def use_aws_bucket_and_region_to_setup_aws_connection(self) -> None:
         """
         Use the AWS bucket name and region to complete the setup.
@@ -139,7 +138,9 @@ class SetupAwsScreen(ModalScreen):
         bucket_name = self.query_one("#setup_aws_bucket_name_input").value
         region = self.query_one("#setup_aws_region_input").value
 
-        success, output = self.interface.setup_aws_bucket_and_rclone_config(bucket_name, region)
+        success, output = self.interface.setup_aws_bucket_and_rclone_config(
+            bucket_name, region
+        )
 
         if success:
             message = (

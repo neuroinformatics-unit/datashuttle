@@ -2,15 +2,14 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
+import fnmatch
+
 from datashuttle.utils import utils
 
-import fnmatch
-import os
 
 def get_remote_gdrive_key(folder_id: str) -> Tuple[bool, str]:
     """
@@ -28,7 +27,10 @@ def get_remote_gdrive_key(folder_id: str) -> Tuple[bool, str]:
     except subprocess.CalledProcessError as e:
         return False, e.stderr.decode()
 
-def save_gdrive_key_locally(folder_id: str, remote_name: str, central_path: Path) -> None:
+
+def save_gdrive_key_locally(
+    folder_id: str, remote_name: str, central_path: Path
+) -> None:
     """
     Save the trusted Google Drive folder ID and remote name in the central path.
     """
@@ -36,6 +38,7 @@ def save_gdrive_key_locally(folder_id: str, remote_name: str, central_path: Path
 
     with open(central_path, "w") as file:
         file.write(f"Folder ID: {folder_id}\nRemote: {remote_name}")
+
 
 def connect_gdrive_with_logging(
     cfg: Configs,
@@ -71,6 +74,7 @@ def connect_gdrive_with_logging(
             ConnectionError,
         )
 
+
 def search_gdrive_remote_for_folders(
     search_path: Path,
     search_prefix: str,
@@ -103,6 +107,7 @@ def search_gdrive_remote_for_folders(
     )
 
     return all_folder_names, all_filenames
+
 
 def get_list_of_folder_names_over_gdrive(
     cfg: Configs,
@@ -160,17 +165,24 @@ def get_list_of_folder_names_over_gdrive(
 
     except subprocess.CalledProcessError as e:
         if verbose:
-            utils.log_and_message(f"No file found at {remote_path}\n{e.stderr}")
+            utils.log_and_message(
+                f"No file found at {remote_path}\n{e.stderr}"
+            )
 
     return all_folder_names, all_filenames
 
-def verify_gdrive_remote(folder_id: str, gdrive_key_path: Path, log: bool = True) -> bool:
+
+def verify_gdrive_remote(
+    folder_id: str, gdrive_key_path: Path, log: bool = True
+) -> bool:
     """
     Prompt user to trust and save a GDrive folder ID for future use.
     """
     success, _ = get_remote_gdrive_key(folder_id)
     if not success:
-        utils.print_message_to_user("Unable to access the Google Drive folder. Make sure it's shared and reachable.")
+        utils.print_message_to_user(
+            "Unable to access the Google Drive folder. Make sure it's shared and reachable."
+        )
         return False
 
     message = (
@@ -182,7 +194,9 @@ def verify_gdrive_remote(folder_id: str, gdrive_key_path: Path, log: bool = True
     if input_ == "y":
         save_gdrive_key_locally(folder_id, gdrive_key_path)
         if log:
-            utils.log(f"Google Drive folder ID {folder_id} trusted and saved at {gdrive_key_path}")
+            utils.log(
+                f"Google Drive folder ID {folder_id} trusted and saved at {gdrive_key_path}"
+            )
         utils.print_message_to_user("Google Drive folder accepted.")
         return True
     else:

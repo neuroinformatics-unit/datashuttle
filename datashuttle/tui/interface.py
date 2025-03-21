@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import ssh, gdrive, aws
+from datashuttle.utils import aws, gdrive, ssh
 
 
 class Interface:
@@ -203,7 +203,9 @@ class Interface:
                     else self.project.download_entire_project
                 )
                 transfer_func(
-                    overwrite_existing_files=self.tui_settings["overwrite_existing_files"],
+                    overwrite_existing_files=self.tui_settings[
+                        "overwrite_existing_files"
+                    ],
                     dry_run=self.tui_settings["dry_run"],
                 )
 
@@ -231,7 +233,6 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
-
 
     def transfer_top_level_only(
         self, selected_top_level_folder: str, upload: bool
@@ -277,7 +278,6 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
-    
 
     def transfer_custom_selection(
         self,
@@ -313,14 +313,18 @@ class Interface:
 
             if connection_method in ["ssh", "local_filesystem"]:
                 transfer_func = (
-                    self.project.upload_custom if upload else self.project.download_custom
+                    self.project.upload_custom
+                    if upload
+                    else self.project.download_custom
                 )
                 transfer_func(
                     selected_top_level_folder,
                     sub_names=sub_names,
                     ses_names=ses_names,
                     datatype=datatype,
-                    overwrite_existing_files=self.tui_settings["overwrite_existing_files"],
+                    overwrite_existing_files=self.tui_settings[
+                        "overwrite_existing_files"
+                    ],
                     dry_run=self.tui_settings["dry_run"],
                 )
 
@@ -348,7 +352,6 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
-
 
     # Setup SSH
     # ----------------------------------------------------------------------------------
@@ -510,9 +513,7 @@ class Interface:
         Retrieve AWS host credentials for verification.
         """
         try:
-            key = aws.get_remote_aws_key(
-                self.project.cfg["aws_bucket_name"]
-            )
+            key = aws.get_remote_aws_key(self.project.cfg["aws_bucket_name"])
             return True, key
         except BaseException as e:
             return False, str(e)
@@ -594,4 +595,3 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
-

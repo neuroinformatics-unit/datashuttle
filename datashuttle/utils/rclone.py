@@ -107,6 +107,7 @@ def setup_rclone_config_for_ssh(
     if log:
         log_rclone_config_output()
 
+
 def setup_rclone_config_for_gdrive(
     cfg: Configs,
     rclone_config_name: str,
@@ -251,7 +252,10 @@ def transfer_data(
         A list of options to pass to Rclone's copy function.
         see `cfg.make_rclone_transfer_options()`.
     """
-    assert upload_or_download in ["upload", "download"], "must be 'upload' or 'download'"
+    assert upload_or_download in [
+        "upload",
+        "download",
+    ], "must be 'upload' or 'download'"
 
     connection_method = cfg["connection_method"]
 
@@ -262,11 +266,15 @@ def transfer_data(
 
     # AWS S3 Path Formatting
     if connection_method == "AWS S3":
-        central_filepath = f"{cfg.get_rclone_config_name('AWS S3')}:{central_filepath}"
+        central_filepath = (
+            f"{cfg.get_rclone_config_name('AWS S3')}:{central_filepath}"
+        )
 
     # Google Drive Path Formatting
     elif connection_method == "Google Drive":
-        central_filepath = f"{cfg.get_rclone_config_name('Google Drive')}:{central_filepath}"
+        central_filepath = (
+            f"{cfg.get_rclone_config_name('Google Drive')}:{central_filepath}"
+        )
 
     # Default (SSH or Local Filesystem)
     else:
@@ -378,13 +386,21 @@ def perform_rclone_check(
     """
     connection_method = cfg["connection_method"]
 
-    local_filepath = cfg.get_base_folder("local", top_level_folder).parent.as_posix()
-    central_filepath = cfg.get_base_folder("central", top_level_folder).parent.as_posix()
+    local_filepath = cfg.get_base_folder(
+        "local", top_level_folder
+    ).parent.as_posix()
+    central_filepath = cfg.get_base_folder(
+        "central", top_level_folder
+    ).parent.as_posix()
 
     if connection_method == "AWS S3":
-        central_filepath = f"{cfg.get_rclone_config_name('AWS S3')}:{central_filepath}"
+        central_filepath = (
+            f"{cfg.get_rclone_config_name('AWS S3')}:{central_filepath}"
+        )
     elif connection_method == "Google Drive":
-        central_filepath = f"{cfg.get_rclone_config_name('Google Drive')}:{central_filepath}"
+        central_filepath = (
+            f"{cfg.get_rclone_config_name('Google Drive')}:{central_filepath}"
+        )
     else:
         central_filepath = f"{cfg.get_rclone_config_name()}:{central_filepath}"
 

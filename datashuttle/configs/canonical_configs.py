@@ -39,7 +39,9 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal["ssh", "local_filesystem", "aws", "gdrive"]],
+        "connection_method": Optional[
+            Literal["ssh", "local_filesystem", "aws", "gdrive"]
+        ],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
         "aws_bucket_name": Optional[str],
@@ -141,7 +143,10 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
     # Check Google Drive settings
-    if config_dict["connection_method"] == "gdrive" and not config_dict["gdrive_folder_id"]:
+    if (
+        config_dict["connection_method"] == "gdrive"
+        and not config_dict["gdrive_folder_id"]
+    ):
         utils.log_and_raise_error(
             "'gdrive_folder_id' is required if 'connection_method' is 'gdrive'.",
             ConfigError,

@@ -2,17 +2,16 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
-from typing import Any, List, Optional, Tuple
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, List, Tuple
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
 
 
+import fnmatch
+
 from datashuttle.utils import utils
 
-import fnmatch
-import os
 
 def get_remote_aws_key(bucket_name: str) -> Tuple[bool, str]:
     """
@@ -30,7 +29,10 @@ def get_remote_aws_key(bucket_name: str) -> Tuple[bool, str]:
     except subprocess.CalledProcessError as e:
         return False, e.stderr.decode()
 
-def save_aws_key_locally(bucket_name: str, aws_region: str, central_path: Path) -> None:
+
+def save_aws_key_locally(
+    bucket_name: str, aws_region: str, central_path: Path
+) -> None:
     """
     Save the AWS bucket name and region in the central path, following SSH-style storage.
     """
@@ -73,6 +75,8 @@ def connect_aws_with_logging(
             f"Error:\n{e}",
             ConnectionError,
         )
+
+
 def search_aws_remote_for_folders(
     search_path: Path,
     search_prefix: str,
@@ -106,6 +110,7 @@ def search_aws_remote_for_folders(
 
     return all_folder_names, all_filenames
 
+
 def get_list_of_folder_names_over_aws(
     cfg: Configs,
     search_path: Path,
@@ -132,7 +137,9 @@ def get_list_of_folder_names_over_aws(
     return_full_path : If `True`, return full rclone remote path,
                        else return only folder name
     """
-    remote_path = f"{cfg.get_rclone_config_name('AWS S3')}:{search_path.as_posix()}"
+    remote_path = (
+        f"{cfg.get_rclone_config_name('AWS S3')}:{search_path.as_posix()}"
+    )
 
     all_folder_names = []
     all_filenames = []
@@ -162,17 +169,24 @@ def get_list_of_folder_names_over_aws(
 
     except subprocess.CalledProcessError as e:
         if verbose:
-            utils.log_and_message(f"No file found at {remote_path}\n{e.stderr}")
+            utils.log_and_message(
+                f"No file found at {remote_path}\n{e.stderr}"
+            )
 
     return all_folder_names, all_filenames
 
-def verify_aws_remote(bucket_name: str, aws_key_path: Path, log: bool = True) -> bool:
+
+def verify_aws_remote(
+    bucket_name: str, aws_key_path: Path, log: bool = True
+) -> bool:
     """
     Prompt user to trust and save an AWS S3 bucket for future use.
     """
     success, _ = get_remote_aws_key(bucket_name)
     if not success:
-        utils.print_message_to_user("Unable to access the AWS S3 bucket. Make sure it exists and is accessible.")
+        utils.print_message_to_user(
+            "Unable to access the AWS S3 bucket. Make sure it exists and is accessible."
+        )
         return False
 
     message = (
@@ -184,7 +198,9 @@ def verify_aws_remote(bucket_name: str, aws_key_path: Path, log: bool = True) ->
     if input_ == "y":
         save_aws_key_locally(bucket_name, aws_key_path)
         if log:
-            utils.log(f"AWS S3 bucket {bucket_name} trusted and saved at {aws_key_path}")
+            utils.log(
+                f"AWS S3 bucket {bucket_name} trusted and saved at {aws_key_path}"
+            )
         utils.print_message_to_user("AWS bucket accepted.")
         return True
     else:

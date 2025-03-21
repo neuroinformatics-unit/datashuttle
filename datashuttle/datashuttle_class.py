@@ -36,14 +36,14 @@ from datashuttle.configs import (
 from datashuttle.configs.config_class import Configs
 from datashuttle.datashuttle_functions import _format_top_level_folder
 from datashuttle.utils import (
+    aws,
     ds_logger,
     folders,
     formatting,
+    gdrive,
     getters,
     rclone,
     ssh,
-    gdrive,
-    aws,
     utils,
     validation,
 )
@@ -55,9 +55,9 @@ from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     check_is_not_local_project,
-    requires_ssh_configs,
     requires_aws_configs,
     requires_gdrive_configs,
+    requires_ssh_configs,
 )
 
 # -----------------------------------------------------------------------------
@@ -1467,7 +1467,7 @@ class DataShuttle:
         rclone.setup_rclone_config_for_local_filesystem(
             self.cfg.get_rclone_config_name("local_filesystem"),
         )
-    
+
     def _setup_rclone_central_aws_config(self, log: bool) -> None:
         rclone.setup_rclone_config_for_aws(
             self.cfg,
@@ -1613,7 +1613,6 @@ class DataShuttle:
             self._setup_rclone_central_aws_config(log=True)
 
         ds_logger.close_log_filehandler()
-
 
     @requires_gdrive_configs
     @check_is_not_local_project

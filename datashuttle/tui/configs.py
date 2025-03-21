@@ -25,7 +25,12 @@ from textual.widgets import (
 
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
-from datashuttle.tui.screens import modal_dialogs, setup_ssh, setup_aws, setup_gdrive
+from datashuttle.tui.screens import (
+    modal_dialogs,
+    setup_aws,
+    setup_gdrive,
+    setup_ssh,
+)
 from datashuttle.tui.tooltips import get_tooltip
 
 
@@ -69,7 +74,7 @@ class ConfigsContent(Container):
         `connection_method`.
 
         `self.config_aws_widgets` are AWS-related widgets.
-        
+
         `self.config_gdrive_widgets` are Google Drive-related widgets.
 
         `config_screen_widgets` are core config-related widgets that are
@@ -112,7 +117,9 @@ class ConfigsContent(Container):
         ]
 
         self.config_gdrive_widgets = [
-            Label("Google Drive Folder ID", id="configs_gdrive_folder_id_label"),
+            Label(
+                "Google Drive Folder ID", id="configs_gdrive_folder_id_label"
+            ),
             ClickableInput(
                 self.parent_class.mainwindow,
                 placeholder="e.g. 1A2B3C4D5E6F7G8H",
@@ -133,11 +140,17 @@ class ConfigsContent(Container):
             ),
             Label("Connection Method", id="configs_connect_method_label"),
             RadioSet(
-                RadioButton("Local Filesystem", id="configs_local_filesystem_radiobutton"),
+                RadioButton(
+                    "Local Filesystem",
+                    id="configs_local_filesystem_radiobutton",
+                ),
                 RadioButton("SSH", id="configs_ssh_radiobutton"),
                 RadioButton("AWS S3", id="configs_aws_radiobutton"),
                 RadioButton("Google Drive", id="configs_gdrive_radiobutton"),
-                RadioButton("No connection (local only)", id="configs_local_only_radiobutton"),
+                RadioButton(
+                    "No connection (local only)",
+                    id="configs_local_only_radiobutton",
+                ),
                 id="configs_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
@@ -155,10 +168,22 @@ class ConfigsContent(Container):
             ),
             Horizontal(
                 Button("Save", id="configs_save_configs_button"),
-                Button("Setup SSH Connection", id="configs_setup_ssh_connection_button"),
-                Button("Setup AWS Connection", id="configs_setup_aws_connection_button"),
-                Button("Setup Google Drive Connection", id="configs_setup_gdrive_connection_button"),
-                Button("Go to Project Screen", id="configs_go_to_project_screen_button"),
+                Button(
+                    "Setup SSH Connection",
+                    id="configs_setup_ssh_connection_button",
+                ),
+                Button(
+                    "Setup AWS Connection",
+                    id="configs_setup_aws_connection_button",
+                ),
+                Button(
+                    "Setup Google Drive Connection",
+                    id="configs_setup_gdrive_connection_button",
+                ),
+                Button(
+                    "Go to Project Screen",
+                    id="configs_go_to_project_screen_button",
+                ),
                 id="configs_bottom_buttons_horizontal",
             ),
         ]
@@ -184,7 +209,9 @@ class ConfigsContent(Container):
         ]
 
         if not self.interface:
-            config_screen_widgets = init_only_config_screen_widgets + config_screen_widgets
+            config_screen_widgets = (
+                init_only_config_screen_widgets + config_screen_widgets
+            )
 
         yield Container(*config_screen_widgets, id="configs_container")
 
@@ -198,19 +225,30 @@ class ConfigsContent(Container):
         if self.interface:
             self.fill_widgets_with_project_configs()
         else:
-            self.query_one("#configs_local_filesystem_radiobutton").value = True
+            self.query_one("#configs_local_filesystem_radiobutton").value = (
+                True
+            )
             self.switch_ssh_widgets_display(display_ssh=False)
             self.switch_aws_widgets_display(display_aws=False)
             self.switch_gdrive_widgets_display(display_gdrive=False)
-            self.query_one("#configs_setup_ssh_connection_button").visible = False
-            self.query_one("#configs_setup_aws_connection_button").visible = False
-            self.query_one("#configs_setup_gdrive_connection_button").visible = False
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
+            )
+            self.query_one("#configs_setup_aws_connection_button").visible = (
+                False
+            )
+            self.query_one(
+                "#configs_setup_gdrive_connection_button"
+            ).visible = False
 
         # Setup tooltips
         if not self.interface:
             id = "#configs_name_input"
             self.query_one(id).tooltip = get_tooltip(id)
-            assert self.query_one("#configs_local_filesystem_radiobutton").value is True
+            assert (
+                self.query_one("#configs_local_filesystem_radiobutton").value
+                is True
+            )
             self.set_central_path_input_tooltip("local_filesystem")
         else:
             method = self.interface.project.cfg["connection_method"]
@@ -310,7 +348,6 @@ class ConfigsContent(Container):
 
         self.query_one(id).tooltip = get_tooltip(tooltip_id)
 
-
     def get_platform_dependent_example_paths(
         self, local_or_central: Literal["local", "central"], ssh: bool = False
     ) -> str:
@@ -387,9 +424,13 @@ class ConfigsContent(Container):
 
         # Show or hide GDrive setup button based on interface and mode
         if self.interface is None:
-            self.query_one("#configs_setup_gdrive_connection_button").visible = False
+            self.query_one(
+                "#configs_setup_gdrive_connection_button"
+            ).visible = False
         else:
-            self.query_one("#configs_setup_gdrive_connection_button").visible = display_gdrive
+            self.query_one(
+                "#configs_setup_gdrive_connection_button"
+            ).visible = display_gdrive
 
         # Set placeholder if empty
         if not self.query_one("#configs_central_path_input").value:
@@ -397,7 +438,9 @@ class ConfigsContent(Container):
                 placeholder = "e.g. gdrive://project-folder-id"
             else:
                 placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}"
-            self.query_one("#configs_central_path_input").placeholder = placeholder
+            self.query_one("#configs_central_path_input").placeholder = (
+                placeholder
+            )
 
     def switch_aws_widgets_display(self, display_aws: bool) -> None:
         """
@@ -419,9 +462,13 @@ class ConfigsContent(Container):
 
         # Show or hide AWS setup button based on interface and mode
         if self.interface is None:
-            self.query_one("#configs_setup_aws_connection_button").visible = False
+            self.query_one("#configs_setup_aws_connection_button").visible = (
+                False
+            )
         else:
-            self.query_one("#configs_setup_aws_connection_button").visible = display_aws
+            self.query_one("#configs_setup_aws_connection_button").visible = (
+                display_aws
+            )
 
         # Set placeholder if empty
         if not self.query_one("#configs_central_path_input").value:
@@ -429,7 +476,9 @@ class ConfigsContent(Container):
                 placeholder = "e.g. s3://bucket-name/project-path"
             else:
                 placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}"
-            self.query_one("#configs_central_path_input").placeholder = placeholder
+            self.query_one("#configs_central_path_input").placeholder = (
+                placeholder
+            )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -472,7 +521,6 @@ class ConfigsContent(Container):
                     path_, input_to_fill
                 ),
             )
-
 
     def handle_input_fill_from_select_directory(
         self, path_: Path, local_or_central: Literal["local", "central"]
@@ -519,6 +567,7 @@ class ConfigsContent(Container):
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.interface)
         )
+
     def setup_gdrive_connection(self) -> None:
         """
         Set up the `SetupGdriveScreen` screen.
@@ -535,6 +584,7 @@ class ConfigsContent(Container):
         self.parent_class.mainwindow.push_screen(
             setup_gdrive.SetupGdriveScreen(self.interface)
         )
+
     def setup_aws_connection(self) -> None:
         """
         Set up the `SetupAwsScreen` screen.
@@ -599,12 +649,18 @@ class ConfigsContent(Container):
 
             self.interface = interface
 
-            self.query_one("#configs_go_to_project_screen_button").visible = True
+            self.query_one("#configs_go_to_project_screen_button").visible = (
+                True
+            )
 
             if cfg_kwargs["connection_method"] == "ssh":
 
-                self.query_one("#configs_setup_ssh_connection_button").visible = True
-                self.query_one("#configs_setup_ssh_connection_button").disabled = False
+                self.query_one(
+                    "#configs_setup_ssh_connection_button"
+                ).visible = True
+                self.query_one(
+                    "#configs_setup_ssh_connection_button"
+                ).disabled = False
 
                 message = (
                     "A datashuttle project has now been created.\n\n "
@@ -615,8 +671,12 @@ class ConfigsContent(Container):
 
             elif cfg_kwargs["connection_method"] == "aws":
 
-                self.query_one("#configs_setup_aws_connection_button").visible = True
-                self.query_one("#configs_setup_aws_connection_button").disabled = False
+                self.query_one(
+                    "#configs_setup_aws_connection_button"
+                ).visible = True
+                self.query_one(
+                    "#configs_setup_aws_connection_button"
+                ).disabled = False
 
                 message = (
                     "A datashuttle project has now been created.\n\n "
@@ -627,8 +687,12 @@ class ConfigsContent(Container):
 
             elif cfg_kwargs["connection_method"] == "gdrive":
 
-                self.query_one("#configs_setup_gdrive_connection_button").visible = True
-                self.query_one("#configs_setup_gdrive_connection_button").disabled = False
+                self.query_one(
+                    "#configs_setup_gdrive_connection_button"
+                ).visible = True
+                self.query_one(
+                    "#configs_setup_gdrive_connection_button"
+                ).disabled = False
 
                 message = (
                     "A datashuttle project has now been created.\n\n "
@@ -653,7 +717,6 @@ class ConfigsContent(Container):
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
-
     def setup_configs_for_an_existing_project(self) -> None:
         """
         If the project already exists, we are on the TabbedContent
@@ -668,21 +731,45 @@ class ConfigsContent(Container):
         # Show relevant setup button depending on selected method
         connection_method = cfg_kwargs.get("connection_method", "")
         if connection_method == "ssh":
-            self.query_one("#configs_setup_ssh_connection_button").visible = True
-            self.query_one("#configs_setup_aws_connection_button").visible = False
-            self.query_one("#configs_setup_gdrive_connection_button").visible = False
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                True
+            )
+            self.query_one("#configs_setup_aws_connection_button").visible = (
+                False
+            )
+            self.query_one(
+                "#configs_setup_gdrive_connection_button"
+            ).visible = False
         elif connection_method == "aws":
-            self.query_one("#configs_setup_aws_connection_button").visible = True
-            self.query_one("#configs_setup_ssh_connection_button").visible = False
-            self.query_one("#configs_setup_gdrive_connection_button").visible = False
+            self.query_one("#configs_setup_aws_connection_button").visible = (
+                True
+            )
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
+            )
+            self.query_one(
+                "#configs_setup_gdrive_connection_button"
+            ).visible = False
         elif connection_method == "gdrive":
-            self.query_one("#configs_setup_gdrive_connection_button").visible = True
-            self.query_one("#configs_setup_ssh_connection_button").visible = False
-            self.query_one("#configs_setup_aws_connection_button").visible = False
+            self.query_one(
+                "#configs_setup_gdrive_connection_button"
+            ).visible = True
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
+            )
+            self.query_one("#configs_setup_aws_connection_button").visible = (
+                False
+            )
         else:
-            self.query_one("#configs_setup_ssh_connection_button").visible = False
-            self.query_one("#configs_setup_aws_connection_button").visible = False
-            self.query_one("#configs_setup_gdrive_connection_button").visible = False
+            self.query_one("#configs_setup_ssh_connection_button").visible = (
+                False
+            )
+            self.query_one("#configs_setup_aws_connection_button").visible = (
+                False
+            )
+            self.query_one(
+                "#configs_setup_gdrive_connection_button"
+            ).visible = False
 
         success, output = self.interface.set_configs_on_existing_project(
             cfg_kwargs
@@ -697,7 +784,6 @@ class ConfigsContent(Container):
             )
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
-
 
     def fill_widgets_with_project_configs(self) -> None:
         """
@@ -801,7 +887,6 @@ class ConfigsContent(Container):
         )
         input.value = value
 
-
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
         Get the configs to pass to `make_config_file()` from
@@ -859,12 +944,8 @@ class ConfigsContent(Container):
             None if aws_bucket_name == "" else aws_bucket_name
         )
 
-        aws_region = self.query_one(
-            "#configs_aws_region_input"
-        ).value
-        cfg_kwargs["aws_region"] = (
-            None if aws_region == "" else aws_region
-        )
+        aws_region = self.query_one("#configs_aws_region_input").value
+        cfg_kwargs["aws_region"] = None if aws_region == "" else aws_region
 
         gdrive_folder_id = self.query_one(
             "#configs_gdrive_folder_id_input"

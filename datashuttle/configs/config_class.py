@@ -240,7 +240,9 @@ class Configs(UserDict):
 
         self.aws_key_path = datashuttle_path / f"{self.project_name}_aws_key"
 
-        self.gdrive_key_path = datashuttle_path / f"{self.project_name}_gdrive_key"
+        self.gdrive_key_path = (
+            datashuttle_path / f"{self.project_name}_gdrive_key"
+        )
 
         self.hostkeys_path = datashuttle_path / "hostkeys"
 
