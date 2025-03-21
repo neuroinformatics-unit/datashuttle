@@ -47,6 +47,12 @@ def create_folder_trees(
 
     Parameters
     ----------
+    cfg
+        datashuttle config UserDict
+        
+    top_level_folder
+        either "rawdata" or "derivatives"
+    
     sub_names, ses_names, datatype
         see create_folders()
 
@@ -268,10 +274,8 @@ def items_from_datatype_input(
     directly from user input, or by searching
     what is available if "all" is passed.
 
-    Parameters
-    ----------
-    see _transfer_datatype() for parameters.
-
+    see _transfer_datatype() for full
+    parameters list.
     """
     base_folder = cfg.get_base_folder(local_or_central, top_level_folder)
 
@@ -385,6 +389,9 @@ def search_for_wildcards(
 
     Parameters
     ----------
+    cfg
+        datashuttle configs
+        
     project
         initialised datashuttle project
 
@@ -449,7 +456,7 @@ def search_sub_or_ses_level(
     return_full_path: bool = False,
 ) -> Tuple[List[str] | List[Path], List[str]]:
     """Search project folder at the subject or session level.
-    Only returns folders
+    Only returns folders.
 
     Parameters
     ----------
@@ -459,26 +466,33 @@ def search_sub_or_ses_level(
         arguments, but this is not nice and breaks the
         general rule that these functions should operate
         project-agnostic.
+        
+    base_folder
+        the path to the base folder. If sub is None, the search is
+        performed on this folder
 
     local_or_central
         search in local or central project
 
     sub
         either a subject name (string) or None. If None, the search
-        is performed at the top_level_folder level
+        is performed at the base_folder level
 
     ses
         either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)
         then the session folder is searched
 
-    str
+    search_str
         glob-format search string to search at the
         folder level.
 
     verbose
         If `True`, if a search folder cannot be found, a message
         will be printed with the un-found path.
+        
+    return_full_path
+        include the search_path in the returned paths
 
     """
     if ses and not sub:
@@ -518,6 +532,9 @@ def search_for_folders(
 
     Parameters
     ----------
+    cfg
+        datashuttle configs
+    
     local_or_central
         "local" or "central"
 
@@ -530,6 +547,9 @@ def search_for_folders(
     verbose
         If `True`, when a search folder cannot be found, a message
         will be printed with the missing path.
+
+    return_full_path
+        include the search_path in the returned paths
 
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":

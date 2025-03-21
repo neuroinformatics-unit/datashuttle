@@ -120,7 +120,7 @@ def update_names_with_range_to_flag(
     keyword must be in the form prefix-num1@num2. The maximum
     number of leading zeros are used to pad the output
     e.g.
-    sub-01@003 becomes ["sub-001", "sub-002", "sub-003"]
+    sub-01@003 becomes ["sub-001", "sub-002", "sub-003"].
 
     Input can also be a mixed list e.g.
     names = ["sub-01", "sub-02@TO@04", "sub-05@TO@10"]
@@ -278,14 +278,17 @@ def replace_date_time_tags_in_name(
 
 
 def format_date(date: str) -> str:
+    """PLACEHOLDER."""
     return f"date-{date}"
 
 
 def format_time(time_: str) -> str:
+    """PLACEHOLDER."""
     return f"time-{time_}"
 
 
 def format_datetime(date: str, time_: str) -> str:
+    """PLACEHOLDER."""
     return f"datetime-{date}T{time_}"
 
 
@@ -293,7 +296,7 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     """If names are passed with @DATE@, @TIME@, or @DATETIME@
     but not surrounded by underscores, check and insert
     if required. e.g. sub-001@DATE@ becomes sub-001_@DATE@
-    or sub-001@DATEid-101 becomes sub-001_@DATE_id-101
+    or sub-001@DATEid-101 becomes sub-001_@DATE_id-101.
     """
     key_len = len(key)
     key_start_idx = string.index(key)
@@ -320,7 +323,7 @@ def add_missing_prefixes_to_names(
     all_names: Union[List[str], str], prefix: str
 ) -> List[str]:
     """Make sure all elements in the list of names are
-    prefixed with the prefix, typically "sub-" or "ses-"
+    prefixed with the prefix, typically "sub-" or "ses-".
 
     Use expanded list for readability
     """

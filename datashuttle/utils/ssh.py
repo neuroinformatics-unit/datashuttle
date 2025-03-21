@@ -29,6 +29,7 @@ def connect_client_core(
     cfg: Configs,
     password: Optional[str] = None,
 ):
+    """PLACEHOLDER."""
     client.get_host_keys().load(cfg.hostkeys_path.as_posix())
     client.set_missing_host_key_policy(paramiko.RejectPolicy())
 
@@ -71,6 +72,7 @@ def add_public_key_to_central_authorized_keys(
 
 
 def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
+    """PLACEHOLDER."""
     key = paramiko.RSAKey.generate(4096)
     key.write_private_key_file(ssh_key_path.as_posix())
 
@@ -87,6 +89,7 @@ def get_remote_server_key(central_host_id: str):
 
 
 def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
+    """PLACEHOLDER."""
     client = paramiko.SSHClient()
     client.get_host_keys().add(central_host_id, key.get_name(), key)
     client.get_host_keys().save(hostkeys_path.as_posix())
@@ -262,6 +265,9 @@ def search_ssh_central_for_folders(
         If `True`, if a search folder cannot be found, a message
         will be printed with the un-found path.
 
+    return_full_path
+        include the search_path in the returned paths
+
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
@@ -294,7 +300,7 @@ def get_list_of_folder_names_over_sftp(
 
     Parameters
     ----------
-    stfp
+    sftp
         connected paramiko stfp object
         (see search_ssh_central_for_folders())
 
@@ -308,6 +314,9 @@ def get_list_of_folder_names_over_sftp(
     verbose
         If `True`, if a search folder cannot be found, a message
         will be printed with the un-found path.
+        
+    return_full_path
+        include the search_path in the returned paths
 
     """
     all_folder_names = []

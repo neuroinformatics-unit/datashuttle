@@ -112,6 +112,7 @@ def setup_rclone_config_for_ssh(
 
 
 def log_rclone_config_output():
+    """PLACEHOLDER."""
     output = call_rclone("config file", pipe_std=True)
     utils.log(
         f"Successfully created rclone config. {output.stdout.decode('utf-8')}"
@@ -218,6 +219,9 @@ def get_local_and_central_file_differences(
 
     Parameters
     ----------
+    cfg
+        datashuttle configs UserDict.
+
     top_level_folders_to_check
         List of top-level folders to check.
 
@@ -281,9 +285,9 @@ def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
 def perform_rclone_check(
     cfg: Configs, top_level_folder: TopLevelFolder
 ) -> str:
-    """Use Rclone's `check` command to build a list of files that
+    r"""Use Rclone's `check` command to build a list of files that
     are the same ("="), different ("*"), found in local only ("+")
-    or central only ("-"). The output is formatted as "<symbol> <path>\n".
+    or central only ("-"). The output is formatted as "\<symbol> \<path>\n".
     """
     local_filepath = cfg.get_base_folder(
         "local", top_level_folder
@@ -306,7 +310,7 @@ def perform_rclone_check(
 def handle_rclone_arguments(
     rclone_options: Dict, include_list: List[str]
 ) -> str:
-    """Construct the extra arguments to pass to RClone,"""
+    """Construct the extra arguments to pass to RClone."""
     extra_arguments_list = []
 
     extra_arguments_list += ["-" + rclone_options["transfer_verbosity"]]
@@ -336,7 +340,7 @@ def handle_rclone_arguments(
 
 
 def rclone_args(name: str) -> str:
-    """Central function to hold rclone commands"""
+    """Central function to hold rclone commands."""
     valid_names = [
         "dry_run",
         "copy",

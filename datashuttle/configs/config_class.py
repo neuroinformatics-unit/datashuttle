@@ -144,6 +144,9 @@ class Configs(UserDict):
             a list (or string for 1) of
             folder names to be joined into a path.
             If file included, must be last entry (with ext).
+            
+        top_level_folder
+            either "rawdata" or "derivatives"
 
         """
         if isinstance(sub_folders, list):
@@ -173,6 +176,9 @@ class Configs(UserDict):
         ----------
         base
             base path, "local", "central" or "datashuttle"
+            
+        top_level_folder
+            either "rawdata" or "derivatives"
 
         """
         if base == "local":

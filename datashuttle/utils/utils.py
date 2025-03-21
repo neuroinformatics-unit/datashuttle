@@ -29,7 +29,7 @@ def log(message: str) -> None:
 
 def log_and_message(message: str, use_rich: bool = False) -> None:
     """Log the message and send it to user.
-    use_rich : is True, use rich's print() function
+    use_rich : is True, use rich's print() function.
     """
     log(message)
     print_message_to_user(message, use_rich)
@@ -45,7 +45,7 @@ def log_and_raise_error(message: str, exception: Any) -> None:
 
 
 def warn(message: str, log: bool) -> None:
-    """ """
+    """PLACEHOLDER."""
     if log and ds_logger.logging_is_active():
         logger = ds_logger.get_logger()
         logger.warning(message)
@@ -74,7 +74,7 @@ def print_message_to_user(
 
 
 def get_user_input(message: str) -> str:
-    """Centralised way to get user input"""
+    """Centralised way to get user input."""
     input_ = input(message)
     return input_
 
@@ -85,6 +85,7 @@ def get_user_input(message: str) -> str:
 
 
 def path_starts_with_base_folder(base_folder: Path, path_: Path) -> bool:
+    """PLACEHOLDER."""
     return path_.as_posix().startswith(base_folder.as_posix())
 
 
@@ -158,6 +159,7 @@ def get_values_from_bids_formatted_name(
 
 
 def sub_or_ses_value_to_int(value: str) -> int:
+    """PLACEHOLDER."""
     try:
         int_value = int(value)
     except ValueError:
@@ -182,6 +184,7 @@ def get_value_from_key_regexp(name: str, key: str) -> List[str]:
 
 
 def integers_are_consecutive(list_of_ints: List[int]) -> bool:
+    """PLACEHOLDER."""
     diff_between_ints = diff(list_of_ints)
     return all([diff == 1 for diff in diff_between_ints])
 
@@ -194,7 +197,7 @@ def diff(x: List) -> List:
 
 
 def num_leading_zeros(string: str) -> int:
-    """int() strips leading zeros"""
+    """int() strips leading zeros."""
     if string[:4] in ["sub-", "ses-"]:
         string = string[4:]
 

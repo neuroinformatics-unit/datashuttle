@@ -6,7 +6,7 @@ from datashuttle.utils.utils import log_and_raise_error
 
 def requires_ssh_configs(func):
     """Decorator to check file is loaded. Used on Mainwindow class
-    methods only as first arg is assumed to be self (containing cfgs)
+    methods only as first arg is assumed to be self (containing cfgs).
     """
 
     @wraps(func)

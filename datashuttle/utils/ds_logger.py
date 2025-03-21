@@ -18,14 +18,17 @@ from datashuttle.utils import utils
 
 
 def get_logger_name():
+    """PLACEHOLDER."""
     return "datashuttle"
 
 
 def get_logger():
+    """PLACEHOLDER."""
     return logging.getLogger(get_logger_name())
 
 
 def logging_is_active():
+    """PLACEHOLDER."""
     logger_exists = get_logger_name() in logging.root.manager.loggerDict
     if logger_exists and get_logger().handlers != []:
         return True

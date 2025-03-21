@@ -19,44 +19,6 @@ class TransferData:
     The properties on this class are to be read during generation
     of transfer lists and should never be changed during the lifetime
     of the class.
-
-    Parameters
-    ----------
-    cfg
-        datashuttle configs UserDict.
-
-    upload_or_download
-        Direction to perform the transfer.
-
-    top_level_folder
-        The top-level folder structure where data is organized.
-
-    sub_names
-        List of subject names or single subject to transfer. This
-        can include transfer keywords (e.g. "all_non_sub").
-
-    ses_names
-        List of sessions or single session to transfer, for each
-        subject. May include session-level transfer keywords.
-
-    datatype
-        List of datatypes to transfer, for the sessions / subjects
-        specified. Can include datatype-level tranfser keywords.
-
-    overwrite_existing_files
-        If "never" files on target will never be overwritten by source.
-        If "always" files on target will be overwritten by source if
-        there is any difference in date or size.
-        If "if_source_newer" files on target will only be overwritten
-        by files on source with newer creation / modification datetime.
-
-    dry_run
-        If `True`, transfer will not actually occur but will be logged
-        as if it did (to see what would happen for a transfer).
-
-    log
-        if `True`, log and print the transfer output.
-
     """
 
     def __init__(
@@ -71,6 +33,43 @@ class TransferData:
         dry_run: bool,
         log: bool,
     ):
+        """Parameters
+        ----------
+        cfg
+            datashuttle configs UserDict.
+
+        upload_or_download
+            Direction to perform the transfer.
+
+        top_level_folder
+            The top-level folder structure where data is organized.
+
+        sub_names
+            List of subject names or single subject to transfer. This
+            can include transfer keywords (e.g. "all_non_sub").
+
+        ses_names
+            List of sessions or single session to transfer, for each
+            subject. May include session-level transfer keywords.
+
+        datatype
+            List of datatypes to transfer, for the sessions / subjects
+            specified. Can include datatype-level tranfser keywords.
+
+        overwrite_existing_files
+            If "never" files on target will never be overwritten by source.
+            If "always" files on target will be overwritten by source if
+            there is any difference in date or size.
+            If "if_source_newer" files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
+
+        dry_run
+            If `True`, transfer will not actually occur but will be logged
+            as if it did (to see what would happen for a transfer).
+
+        log
+            if `True`, log and print the transfer output.
+        """
         self.__cfg = cfg
         self.__upload_or_download = upload_or_download
         self.__top_level_folder = top_level_folder
@@ -112,12 +111,17 @@ class TransferData:
 
     def build_a_list_of_all_files_and_folders_to_transfer(self) -> List[str]:
         """Build a list of every file to transfer based on the user-passed
-        arguments. This cycles through every subject, session and datatype
+        arguments.
+        
+        This cycles through every subject, session and datatype
         and adds the outputs to three lists:
 
-        `sub_ses_dtype_include` - files within datatype folders
-        `extra_folder_names` - folders that do not fall within datatype folders
-        `extra_file_names` - files that do not fall within datatype folders
+        `sub_ses_dtype_include`
+            files within datatype folders
+        `extra_folder_names`
+            folders that do not fall within datatype folders
+        `extra_file_names`
+            files that do not fall within datatype folders
 
         Returns
         -------
@@ -346,6 +350,7 @@ class TransferData:
     # -------------------------------------------------------------------------
 
     def to_list(self, names: Union[str, List[str]]) -> List[str]:
+        """PLACEHOLDER."""
         if isinstance(names, str):
             names = [names]
         return names
@@ -425,9 +430,7 @@ class TransferData:
         will be searched to determine what files exist to transfer,
         and the sub / ses names list generated.
 
-        Parameters
-        ----------
-        see transfer_sub_ses_data()
+        see transfer_sub_ses_data() for list of parameters.
 
         """
         prefix: Prefix
@@ -469,7 +472,7 @@ class TransferData:
 
     def transfer_non_datatype(self, datatype_checked: List[str]) -> bool:
         """Convenience function, bool if all non-datatype folders
-        are to be transferred
+        are to be transferred.
         """
         return any(
             [name in ["all_non_datatype", "all"] for name in datatype_checked]

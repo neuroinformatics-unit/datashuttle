@@ -34,6 +34,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 def get_missing_prefix_error(name: str, prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"MISSING_PREFIX: The prefix {prefix} was not found in the name: {name}",
         path_,
@@ -41,6 +42,7 @@ def get_missing_prefix_error(name: str, prefix, path_: Path | None) -> str:
 
 
 def get_bad_value_error(name: str, prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"BAD_VALUE: The value for prefix {prefix} in name {name} is not an integer.",
         path_,
@@ -48,6 +50,7 @@ def get_bad_value_error(name: str, prefix, path_: Path | None) -> str:
 
 
 def get_duplicate_prefix_error(name: str, prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DUPLICATE_PREFIX: The name: {name} of contains more than one instance of the prefix {prefix}.",
         path_,
@@ -55,12 +58,14 @@ def get_duplicate_prefix_error(name: str, prefix, path_: Path | None) -> str:
 
 
 def get_name_error(name: str, prefix: Prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"BAD_NAME: The name: {name} of type: {prefix} is not valid.", path_
     )
 
 
 def get_special_char_error(name: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"SPECIAL_CHAR: The name: {name}, contains characters which are not alphanumeric, dash or underscore.",
         path_,
@@ -68,6 +73,7 @@ def get_special_char_error(name: str, path_: Path | None) -> str:
 
 
 def get_name_format_error(name: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"NAME_FORMAT: The name {name} does not consist of key-value pairs separated by underscores.",
         path_,
@@ -75,10 +81,12 @@ def get_name_format_error(name: str, path_: Path | None) -> str:
 
 
 def get_value_length_error(prefix: Prefix) -> str:
+    """PLACEHOLDER."""
     return f"VALUE_LENGTH: Inconsistent value lengths for the prefix: {prefix} were found in the project."
 
 
 def get_datetime_error(key, name: str, strfmt: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DATETIME: Name {name} contains an invalid {key}. It should be ISO format: {strfmt}.",
         path_,
@@ -98,6 +106,7 @@ def get_template_error(name: str, regexp: str, path_: Path | None) -> str:
 def get_missing_top_level_folder_error(
     path_: Path | None, local_or_central: Literal["local", "central"]
 ) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"TOP_LEVEL_FOLDER: The {local_or_central} project must contain a 'rawdata' or 'derivatives' folder.",
         path_,
@@ -107,6 +116,7 @@ def get_missing_top_level_folder_error(
 def get_duplicate_name_error(
     new_name: str, exist_name: str, exist_path: Path | None
 ) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DUPLICATE_NAME: The prefix for {new_name} duplicates the name: {exist_name}.",
         exist_path,
@@ -114,12 +124,14 @@ def get_duplicate_name_error(
 
 
 def get_datatype_error(datatype_name: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DATATYPE: {datatype_name} is not a valid datatype name.", path_
     )
 
 
 def handle_path(message: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     if path_:
         message += f" Path: {path_.as_posix()}"
     return message
@@ -301,7 +313,7 @@ def get_path_and_name(path_or_name: Path | str) -> Tuple[Optional[Path], str]:
 
 
 def replace_tags_in_regexp(regexp: str) -> str:
-    """Before validation, all tags in the names are converted to
+    r"""Before validation, all tags in the names are converted to
     their final values (e.g. @DATE@ -> _date-<date>). We also want to
     allow template to be formatted like `sub-\d\d_@DATE@` as it
     is convenient for auto-completion in the TUI.
@@ -349,6 +361,7 @@ def names_include_special_characters(
 
 
 def name_has_special_character(name: str) -> bool:
+    """PLACEHOLDER."""
     return not re.match("^[A-Za-z0-9_-]*$", name)
 
 

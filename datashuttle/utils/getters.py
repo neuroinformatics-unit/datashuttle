@@ -77,6 +77,10 @@ def get_next_sub_or_ses(
         the desired value can be entered here. e.g. if 3 (the default),
         if no subjects are found the subject returned will be "sub-001".
 
+    name_template_regexp
+        the name template to try and get the num digits from.
+        If unspecified, the number of digits will be default_num_value_digits.
+
     Returns
     -------
     suggested_new_num
@@ -133,7 +137,8 @@ def get_max_sub_or_ses_num_and_value_length(
     all_folders
         A list of BIDS-style formatted folder names.
 
-    see `get_next_sub_or_ses()` for other arguments.
+    prefix, default_num_value_digits, name_template_regexp
+        see `get_next_sub_or_ses()`.
 
     Returns
     -------
@@ -229,7 +234,7 @@ def get_num_value_digits_from_project(
 def get_num_value_digits_from_regexp(
     prefix: Prefix, name_template_regexp: str
 ) -> Union[Literal[False], int]:
-    """Given a name template regexp, find the number of values for the
+    r"""Given a name template regexp, find the number of values for the
     sub or ses key. These will be fixed with "\d" (digit) or ".?" (wildcard).
     If there is length-unspecific wildcard (.*) in the sub key, then skip.
     In practice, there should never really be a .* in the sub or ses
