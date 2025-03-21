@@ -22,6 +22,17 @@
 ::::{grid} 1 2 2 3
 :gutter: 4
 
+:::{grid-item-card} Get Started
+:link: pages/get_started/index
+:link-type: doc
+
+Get started with **datashuttle**.
+:::
+
+
+::::{grid} 1 2 2 3
+:gutter: 4
+
 :::{grid-item-card} Tutorials
 :link: pages/tutorials
 :link-type: doc
@@ -64,8 +75,8 @@ or
 :caption: index
 :hidden:
 
-pages/tutorials
-pages/how_tos
-pages/community/index.md
+pages/tutorials/index
+pages/how_tos/index
+pages/community/index
 pages/api_index
 ```
