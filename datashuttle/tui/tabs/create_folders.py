@@ -264,7 +264,13 @@ class CreateFoldersTab(TreeAndInputTab):
                 for ses in ses_names:
                     ses_path = sub_path / ses
                     if ses_path.exists():
-                        existing_folders.append(str(ses_path))
+                        if datatype:
+                            for dt in datatype:
+                                datatype_path = ses_path / dt
+                                if datatype_path.exists():
+                                    existing_folders.append(str(datatype_path))
+                        else:
+                            existing_folders.append(str(ses_path))
 
         if existing_folders:
             message = (
