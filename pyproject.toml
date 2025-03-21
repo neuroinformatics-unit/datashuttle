@@ -95,6 +95,13 @@ line-length = 79
 exclude = ["__init__.py","build",".eggs"]
 fix = true
 
+
+
+# Ruff config is not exactly the same as in the movement repo, as
+# currently we are only adding linting enforcement to docstrings.
+# Other ruff rules that are also present in movement repo can be
+# added here in a separate PR after these changes have been merged.
+
 [tool.ruff.lint]
 # See https://docs.astral.sh/ruff/rules/
 ignore = ["E203","E501","E731","C901","W291","W293","E402","E722",
