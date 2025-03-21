@@ -186,7 +186,7 @@ class Interface:
         top_level_folder: list[str] | None,
         include_central: bool,
         strict_mode: bool,
-    ) -> tuple[bool, list[str]]:
+    ) -> tuple[bool, list[str] | str]:
         """
         Wrap the validate project function. This returns a list of validation
         errors (empty if there are none).
@@ -211,8 +211,8 @@ class Interface:
             )
             return True, results
 
-        except BaseException:
-            return False, []
+        except BaseException as e:
+            return False, str(e)
 
     # Transfer
     # ----------------------------------------------------------------------------------
