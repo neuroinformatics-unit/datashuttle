@@ -20,7 +20,7 @@
 <br>
 
 
-::::{grid} 1 2 2 3
+::::{grid} 1 2 2 4
 :gutter: 4
 
 
@@ -32,18 +32,18 @@ Get started with ``datashuttle``
 :::
 
 
-:::{grid-item-card} Tutorials
-:link: pages/tutorials/index
+:::{grid-item-card} User Guides
+:link: pages/user_guides/index
 :link-type: doc
 
-Walkthrough ``datashuttle``
+Documentation of ``datashuttle``'s features.
 :::
 
-:::{grid-item-card} How To
-:link: pages/how_tos/index
+:::{grid-item-card} Examples
+:link: pages/examples/index
 :link-type: doc
 
-Short guides on specific actions.
+``datashuttle`` in the real world.
 :::
 
 :::{grid-item-card} Python API
@@ -52,6 +52,7 @@ Short guides on specific actions.
 
 Full Python reference
 :::
+
 ::::
 
 ``datashuttle`` creates and validates projects standardised to the
@@ -75,8 +76,8 @@ or
 :hidden:
 
 pages/get_started/index
-pages/tutorials/index
-pages/how_tos/index
+pages/user_guides/index
+pages/examples/index
 pages/community/index
 pages/api_index
 ```

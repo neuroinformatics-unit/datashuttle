@@ -2,9 +2,6 @@
 
 # Get Started
 
-
-## Get Set up
-
 ::::{grid} 1 1 2 2
 :gutter: 4
 
@@ -21,14 +18,6 @@ How to install ``datashuttle``
 
 Choose the best terminal to run the graphical interface
 :::
-
-::::
-
-
-## Validate and Manage a Project
-
-::::{grid} 1 2 2 2
-:gutter: 4
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Validate an existing project
