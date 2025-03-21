@@ -285,6 +285,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
                 .get_node_at_line(2)
                 .data.path.as_posix()
             )
+            assert (rawdata_path / "sub-001").is_dir() is False
             assert sub_path.is_dir() is True
 
             # reload tree nodes
@@ -304,11 +305,12 @@ class TestTuiCreateDirectoryTree(TuiBase):
                 pilot, "#rename_screen_okay_button"
             )
 
-            ses_path = rawdata_path / "sub-002" / "ses-002"
+            ses_path = sub_path / "ses-002"
             assert (
                 ses_path.as_posix()
                 == pilot.app.screen.query_one("#create_folders_directorytree")
                 .get_node_at_line(3)
                 .data.path.as_posix()
             )
+            assert (sub_path / "ses-001").is_dir() is False
             assert ses_path.is_dir() is True
