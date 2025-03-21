@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import platform
-from typing import TYPE_CHECKING, Literal, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -187,34 +187,3 @@ class ValidateContent(Container):
             text_log.write("\n".join(results))
         else:
             text_log.write("No issues found.")
-
-    def handle_input_fill_from_select_directory(
-        self, path_: Path, local_or_central: Literal["local", "central"]
-    ) -> None:
-        """
-        Update the `local` or `central` path inputs after
-        `SelectDirectoryTreeScreen` returns a path.
-
-        Parameters
-        ----------
-
-        path_ : Union[Literal[False], Path]
-            The path returned from `SelectDirectoryTreeScreen`. If `False`,
-            the screen exited with no directory selected.
-
-        local_or_central : str
-            The Input to fill with the path.
-
-        if path_ is False:
-            return
-
-        if local_or_central == "local":
-            self.query_one("#configs_local_path_input").value = (
-                path_.as_posix()
-            )
-        elif local_or_central == "central":
-            self.query_one("#configs_central_path_input").value = (
-                path_.as_posix()
-            )
-        """
-        pass

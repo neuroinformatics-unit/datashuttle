@@ -183,7 +183,7 @@ class Interface:
 
     def validate_project(
         self,
-        top_level_folder: list[str],
+        top_level_folder: list[str] | None,
         include_central: bool,
         strict_mode: bool,
     ) -> tuple[bool, list[str]]:
@@ -195,7 +195,8 @@ class Interface:
         ----------
 
         top_level_folder
-            The "rawdata" or "derivatives" folder to validate.
+            The "rawdata" or "derivatives" folder to validate. If `None`, both
+            will be validated.
         include_central
             If `True`, the central project is also validated.
         strict_mode
