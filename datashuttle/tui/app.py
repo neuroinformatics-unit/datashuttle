@@ -29,6 +29,7 @@ from datashuttle.tui.screens import (
     settings,
     validate_at_path,
 )
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class TuiApp(App, inherit_bindings=False):  # type: ignore
@@ -67,10 +68,8 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
     def on_mount(self) -> None:
         self.set_dark_mode(self.load_global_settings()["dark_mode"])
-        self.query_one("#mainwindow_validate_from_project_path").tooltip = (
-            "Validate a project at a given location from the filepath "
-            "(does not require setting up a full project)."
-        )
+        id = "#mainwindow_validate_from_project_path"
+        self.query_one(id).tooltip = get_tooltip(id)
 
     def set_dark_mode(self, dark_mode: bool) -> None:
         self.theme = "textual-dark" if dark_mode else "textual-light"

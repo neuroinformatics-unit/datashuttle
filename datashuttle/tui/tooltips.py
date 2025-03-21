@@ -3,6 +3,12 @@ def get_tooltip(id: str) -> str:
     Master function to get tooltips for all widgets,
     based on their widget (textual) id.
     """
+    # Main App Window
+    # -------------------------------------------------------------------------
+
+    if id == "#mainwindow_validate_from_project_path":
+        tooltip = "Validate a project at a given location from the filepath (does not require setting up a full project)."
+
     # Configs
     # -------------------------------------------------------------------------
 
