@@ -30,26 +30,25 @@ class Configs(UserDict):
     The configs must match exactly the standard set
     in canonical_configs.py. If updating these configs,
     this should be done through changing canonical_configs.py
-
-    The input dict is checked that it conforms to the
-    canonical standard by calling check_dict_values_raise_on_fail()
-
-    project_name and all paths are set at runtime but not stored.
-
-    Parameters
-    ----------
-    file_path
-        full filepath to save the config .yaml file to.
-
-    input_dict
-        a dict of config key-value pairs to input dict.
-        This must contain all canonical_config keys
-
     """
 
     def __init__(
         self, project_name: str, file_path: Path, input_dict: Union[dict, None]
     ) -> None:
+        """Parameters
+        ----------
+        file_path
+            full filepath to save the config .yaml file to.
+
+        input_dict
+            a dict of config key-value pairs to input dict.
+            This must contain all canonical_config keys
+        
+        The input dict is checked that it conforms to the
+        canonical standard by calling check_dict_values_raise_on_fail()
+
+        project_name and all paths are set at runtime but not stored.
+        """
         super(Configs, self).__init__(input_dict)
 
         self.project_name = project_name
@@ -61,12 +60,13 @@ class Configs(UserDict):
         self.project_metadata_path: Path
 
     def setup_after_load(self) -> None:
+        """PLACEHOLDER."""
         load_configs.convert_str_and_pathlib_paths(self, "str_to_path")
         self.ensure_local_and_central_path_end_in_project_name()
         self.check_dict_values_raise_on_fail()
 
     def ensure_local_and_central_path_end_in_project_name(self):
-        """"""
+        """PLACEHOLDER."""
         for path_type in ["local_path", "central_path"]:
             if path_type == "central_path" and self[path_type] is None:
                 continue
@@ -89,12 +89,15 @@ class Configs(UserDict):
         canonical_configs.check_dict_values_raise_on_fail(self)
 
     def keys(self) -> KeysView:
+        """D.keys() -> a set-like object providing a view on D's keys."""
         return self.data.keys()
 
     def items(self) -> ItemsView:
+        """D.items() -> a set-like object providing a view on D's items."""
         return self.data.items()
 
     def values(self) -> ValuesView:
+        """D.values() -> a set-like object providing a view on D's values."""
         return self.data.values()
 
     # -------------------------------------------------------------------------
@@ -110,9 +113,11 @@ class Configs(UserDict):
             yaml.dump(cfg_to_save, config_file, sort_keys=False)
 
     def load_from_file(self) -> None:
-        """Load a config dict saved at .yaml file. Note this will
+        """Load a config dict saved at .yaml file.
+        
+        Note this will
         not automatically check the configs are valid, this
-        requires calling self.check_dict_values_raise_on_fail()
+        requires calling self.check_dict_values_raise_on_fail().
         """
         with open(self.file_path) as config_file:
             config_dict = yaml.full_load(config_file)
@@ -203,7 +208,7 @@ class Configs(UserDict):
     def make_rclone_transfer_options(
         self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
     ) -> Dict:
-        """This function originally collected the relevant arguments
+        """Originally collected the relevant arguments
         from configs. Now, all are passed via function arguments
         However, now we fix the previously configurable arguments
         `show_transfer_progress` and `dry_run` here.
@@ -226,7 +231,7 @@ class Configs(UserDict):
         }
 
     def init_paths(self) -> None:
-        """"""
+        """PLACEHOLDER."""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
         datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(

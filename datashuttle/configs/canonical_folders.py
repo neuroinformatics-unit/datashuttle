@@ -11,7 +11,7 @@ from datashuttle.utils.folder_class import Folder
 
 
 def get_datatype_folders() -> dict:
-    """This function holds the canonical folders
+    """Holds the canonical folders
     managed by datashuttle.
 
     Notes
@@ -41,7 +41,7 @@ def get_datatype_folders() -> dict:
 
 def get_non_sub_names() -> List[str]:
     """Get all arguments that are not allowed at the
-    subject level for data transfer, i.e. as sub_names
+    subject level for data transfer, i.e. as sub_names.
     """
     return [
         "all_ses",
@@ -53,7 +53,7 @@ def get_non_sub_names() -> List[str]:
 
 def get_non_ses_names() -> List[str]:
     """Get all arguments that are not allowed at the
-    session level for data transfer, i.e. as ses_names
+    session level for data transfer, i.e. as ses_names.
     """
     return [
         "all_sub",
@@ -65,12 +65,13 @@ def get_non_ses_names() -> List[str]:
 
 def canonical_reserved_keywords() -> List[str]:
     """Key keyword arguments that are passed to `sub_names` or
-    `ses_names` but that we
+    `ses_names`.
     """
     return get_non_sub_names() + get_non_ses_names()
 
 
 def get_top_level_folders() -> List[TopLevelFolder]:
+    """PLACEHOLDER."""
     return ["rawdata", "derivatives"]
 
 
