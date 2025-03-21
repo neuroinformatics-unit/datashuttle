@@ -1,6 +1,6 @@
 """SSH configs are set in conftest.py . The password
 should be stored in a file called test_ssh_password.txt located
-in the same folder as test_ssh.py
+in the same folder as test_ssh.py.
 """
 
 import pytest
@@ -13,10 +13,12 @@ from datashuttle.utils import ssh
 
 @pytest.mark.skipif(ssh_config.TEST_SSH is False, reason="TEST_SSH is false")
 class TestSSH:
+    """PLACEHOLDER."""
+
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
         """Make a project as per usual, but now add
-        in test ssh configurations
+        in test ssh configurations.
         """
         tmp_path = tmp_path / "test with space"
 
@@ -45,7 +47,7 @@ class TestSSH:
     ):
         """Use the main function to test this. Test the sub-function
         when accepting, because this main function will also
-        call setup ssh key pairs which we don't want to do yet
+        call setup ssh key pairs which we don't want to do yet.
 
         This should only accept for "y" so try some random strings
         including "n" and check they all do not make the connection.
@@ -84,7 +86,7 @@ class TestSSH:
 
     def test_generate_and_write_ssh_key(self, project):
         """Check ssh key for passwordless connection is written
-        to file
+        to file.
         """
         path_to_save = project.cfg["local_path"] / "test"
         ssh.generate_and_write_ssh_key(path_to_save)

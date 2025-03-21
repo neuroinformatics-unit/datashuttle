@@ -97,21 +97,22 @@ fix = true
 
 [tool.ruff.lint]
 # See https://docs.astral.sh/ruff/rules/
-ignore = [
-    "D203", # one blank line before class
-    "D213", # multi-line-summary second line
-    "E501", # limit lines to 79 characters
-]
-select = [
-    "E",   # pycodestyle errors
-    "F",   # Pyflakes
-    "UP",  # pyupgrade
-    "I",   # isort
-    "B",   # flake8 bugbear
-    "SIM", # flake8 simplify
-    "C90", # McCabe complexity
-    "D",   # pydocstyle
-]
+#ignore = [
+#    "D203", # one blank line before class
+#    "D213", # multi-line-summary second line
+#    "D401", # first line of docstrings should be in an imperative mood
+#    "E501", # limit lines to 79 characters
+#]
+#select = [
+#    "E",   # pycodestyle errors
+#    "F",   # Pyflakes
+#    "UP",  # pyupgrade
+#    "I",   # isort
+#    "B",   # flake8 bugbear
+#    "SIM", # flake8 simplify
+#    "C90", # McCabe complexity
+#    "D",   # pydocstyle
+#]
 per-file-ignores = { "tests/*" = [
     "D100", # missing docstring in public module
     "D205", # missing blank line between summary and description
@@ -129,15 +130,19 @@ per-file-ignores = { "tests/*" = [
 # Old ruff ruleset + pydocstyle added
 # Inconsistent with movement repo, but saving this here for
 # now in case there are good reasons to keep these rules
-#ignore = ["E203","E501","E731","C901","W291","W293","E402","E722"]
-#select = [
-#    "I",        # isort
-#    "E",        # pycodestyle errors
-#    "F",        # Pyflakes
-#    "TC",       # flake8-type-checking
-#    "TID252",   # flake8-tidy-imports relative-imports
-#    "D",        # pydocstyle
-#]
+ignore = ["E203","E501","E731","C901","W291","W293","E402","E722",
+    "D203", # one blank line before class
+    "D213", # multi-line-summary second line
+    "D401", # first line of docstrings should be in an imperative mood
+]
+select = [
+    "I",        # isort
+    "E",        # pycodestyle errors
+    "F",        # Pyflakes
+    "TC",       # flake8-type-checking
+    "TID252",   # flake8-tidy-imports relative-imports
+    "D",        # pydocstyle
+]
 
 [tool.ruff.format]
 docstring-code-format = true # Also format code in docstrings

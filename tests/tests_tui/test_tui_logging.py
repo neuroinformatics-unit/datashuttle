@@ -7,6 +7,8 @@ from datashuttle.tui.tabs.logging import RichLogScreen
 
 
 class TestTuiLogging(TuiBase):
+    """PLACEHOLDER."""
+    
     @pytest.mark.asyncio
     async def test_logging(self, setup_project_paths):
         """Test logging by running some commands, checking they

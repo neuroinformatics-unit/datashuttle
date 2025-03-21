@@ -16,7 +16,7 @@ class TestUnit:
         "key", [tags("date"), tags("time"), tags("datetime")]
     )
     def test_datetime_string_replacement(self, key, underscore_position):
-        """Test the function that replaces @DATE, @TIME@ or @DATETIME@
+        r"""Test the function that replaces @DATE, @TIME@ or @DATETIME@
         keywords with the date / time / datetime. Also, it will
         pre/append underscores to the tags if they are not
         already there (e.g if user input "sub-001@DATE").
@@ -45,7 +45,7 @@ class TestUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_to_keyword_in_sub_input(self, prefix):
-        """ """
+        """PLACEHOLDER."""
         results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
@@ -94,6 +94,7 @@ class TestUnit:
     def test_process_to_keyword_bad_input_raises_error(
         self, prefix, bad_input
     ):
+        """PLACEHOLDER."""
         bad_input = bad_input.replace("prefix", prefix)
 
         with pytest.raises(ValueError) as e:
@@ -142,7 +143,7 @@ class TestUnit:
     ):
         """When the list of sub or ses names is empty, the returned max number
         should be zero and the `default_num_value_digits`
-        be set to the passed default
+        be set to the passed default.
         """
         (
             max_value,

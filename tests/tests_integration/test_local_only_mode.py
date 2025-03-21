@@ -13,9 +13,11 @@ TEST_PROJECT_NAME = "test_project"
 
 
 class TestLocalOnlyProject(BaseTest):
+    """PLACEHOLDER."""
+    
     def test_bad_setup(self, tmp_path):
         """Test setup without providing both central_path and connection
-        method (distinguishing a full vs local-only project)
+        method (distinguishing a full vs local-only project).
         """
         local_path = tmp_path / "test_local"
 

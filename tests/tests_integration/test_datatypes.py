@@ -39,7 +39,7 @@ class TestDatatypes(BaseTest):
         )
 
     def get_narrow_only_datatypes_used(self, used=True):
-        """This is similar to test_utils.get_all_broad_folders_used
+        """Similar to test_utils.get_all_broad_folders_used
         but for narrow datatypes.
         """
         return {

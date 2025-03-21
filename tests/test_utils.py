@@ -28,8 +28,7 @@ def setup_project_default_configs(
     central_path=False,
 ):
     """Set up a fresh project to test on
-
-    local_path / central_path: provide the config paths to set
+    local_path / central_path: provide the config paths to set.
     """
     delete_project_if_it_exists(project_name)
 
@@ -90,7 +89,7 @@ def glob_basenames(search_path, recursive=False, exclude=None):
 def teardown_project(
     cwd, project
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
-    """"""
+    """PLACEHOLDER."""
     os.chdir(cwd)
     delete_all_folders_in_project_path(project, "central")
     delete_all_folders_in_project_path(project, "local")
@@ -104,7 +103,7 @@ def delete_all_folders_in_local_path(project):
 
 
 def delete_all_folders_in_project_path(project, local_or_central):
-    """"""
+    """PLACEHOLDER."""
     folder = f"{local_or_central}_path"
 
     if folder == "central_path" and project.cfg[folder] is None:
@@ -119,7 +118,7 @@ def delete_all_folders_in_project_path(project, local_or_central):
 
 
 def delete_project_if_it_exists(project_name):
-    """"""
+    """PLACEHOLDER."""
     config_path, _ = canonical_folders.get_project_datashuttle_path(
         project_name
     )
@@ -158,7 +157,7 @@ def make_test_path(base_path, local_or_central, test_project_name):
 
 
 def create_all_pathtable_files(pathtable):
-    """ """
+    """PLACEHOLDER."""
     for i in range(pathtable.shape[0]):
         filepath = pathtable["base_folder"][i] / pathtable["path"][i]
         filepath.parents[0].mkdir(parents=True, exist_ok=True)
@@ -276,7 +275,7 @@ def check_folder_tree_is_correct(
                 key,
                 folder,
             ) in canonical_folders.get_datatype_folders().items():
-                assert key in folder_used.keys(), (
+                assert key in folder_used, (
                     "Key not found in folder_used. "
                     "Update folder used and hard-coded tests: "
                     "test_custom_folder_names(), test_explicitly_session_list()"
@@ -398,7 +397,7 @@ def make_local_folders_with_files_in(
 
 
 def check_configs(project, kwargs, config_path=None):
-    """"""
+    """PLACEHOLDER."""
     if config_path is None:
         config_path = project._config_path
 
@@ -433,7 +432,7 @@ def check_project_configs(
 
 
 def check_config_file(config_path, *kwargs):
-    """"""
+    """PLACEHOLDER."""
     with open(config_path) as config_file:
         config_yaml = yaml.full_load(config_file)
 
@@ -449,8 +448,7 @@ def check_config_file(config_path, *kwargs):
 def get_top_level_folder_path(
     project, local_or_central="local", folder_name="rawdata"
 ):
-    """"""
-
+    """PLACEHOLDER."""
     assert folder_name in canonical_folders.get_top_level_folders(), (
         "folder_name must be canonical e.g. rawdata"
     )
@@ -496,7 +494,7 @@ def handle_upload_or_download(
 def get_transfer_func(
     project, upload_or_download, transfer_method, top_level_folder=None
 ):
-    """"""
+    """PLACEHOLDER."""
     if transfer_method == "top_level_folder":
         assert top_level_folder is not None, "must pass top-level-folder"
     assert top_level_folder in [None, "rawdata", "derivatives"]
@@ -572,7 +570,7 @@ def swap_local_and_central_paths(project, swap_last_folder_only=False):
 
 
 def get_default_sub_sessions_to_test():
-    """Canonical subs / sessions for these tests"""
+    """Canonical subs / sessions for these tests."""
     subs = ["sub-001", "sub-002", "sub-003"]
     sessions = ["ses-001_datetime-20220516T135022", "ses-002", "ses-003"]
     return subs, sessions

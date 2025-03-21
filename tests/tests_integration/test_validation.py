@@ -14,6 +14,8 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestValidation(BaseTest):
+    """PLACEHOLDER."""
+    
     @pytest.mark.parametrize(
         "sub_name",
         ["sub-001", "sub-999_@DATE@", "sub-001_random-tag_another-tag"],
@@ -33,7 +35,7 @@ class TestValidation(BaseTest):
     def test_warn_on_inconsistent_sub_value_lengths(
         self, project, sub_name, bad_sub_name
     ):
-        """This test checks that inconsistent sub value lengths are properly
+        """Checks that inconsistent sub value lengths are properly
         detected across the project. This is performed with an assortment
         of possible filenames and leading zero conflicts.
 
@@ -92,7 +94,7 @@ class TestValidation(BaseTest):
     def test_warn_on_inconsistent_ses_value_lengths(
         self, project, ses_name, bad_ses_name
     ):
-        """This function is exactly the same as
+        """Exactly the same as
         `test_warn_on_inconsistent_sub_value_lengths()` but operates at the
         session level. This is extreme code duplication, but
         factoring the main logic out got very messy and hard to follow.
@@ -155,7 +157,7 @@ class TestValidation(BaseTest):
     def check_inconsistent_sub_or_ses_value_length_warning(
         self, project, warn_idx=0, include_central=True
     ):
-        """"""
+        """PLACEHOLDER."""
         with pytest.warns(UserWarning) as w:
             project.validate_project(
                 "rawdata", display_mode="warn", include_central=include_central
@@ -285,7 +287,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_invalid_sub_and_ses_name(self, project):
-        """This is a slightly weird case, the name is successfully
+        """Slightly weird case, the name is successfully
         prefixed as 'sub-sub_100` but when the value if `sub-` is
         extracted, it is also "sub" and so an error is raised.
         """
@@ -380,7 +382,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_validate_project_returned_list(self, project, prefix):
-        """ """
+        """PLACEHOLDER."""
         bad_names = [
             f"{prefix}-001",
             f"{prefix}-001_@DATE@",
@@ -409,7 +411,7 @@ class TestValidation(BaseTest):
         assert "VALUE_LENGTH" in concat_error
 
     def test_output_paths_are_valid(self, project):
-        """ """
+        """PLACEHOLDER."""
         sub_name = "sub-001x"
         ses_name = "ses-001x"
         project.create_folders(
@@ -747,7 +749,7 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
     def test_name_templates_validate_project(self, project):
-        """TODO:"""
+        """TODO."""
         name_templates = {
             "on": True,
             "sub": "sub-\d\d_id-\d.?",
@@ -782,7 +784,7 @@ class TestValidation(BaseTest):
     # ----------------------------------------------------------------------------------
 
     def test_quick_validation(self, mocker, project):
-        """ """
+        """PLACEHOLDER."""
         project.create_folders("rawdata", "sub-1")
         os.makedirs(project.cfg["local_path"] / "rawdata" / "sub-02")
         project.create_folders("derivatives", "sub-1")
@@ -839,7 +841,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     def test_strict_mode_validation(self, project, top_level_folder):
-        """ """
+        """PLACEHOLDER."""
         project.create_folders(
             top_level_folder,
             ["sub-001", "sub-002"],
@@ -908,9 +910,7 @@ class TestValidation(BaseTest):
     def test_check_high_level_project_structure(
         self, project, top_level_folder
     ):
-        """Check that local and central project names are properly formatted
-        and that
-        """
+        """Check that local and central project names are properly formatted."""
         with pytest.warns(UserWarning) as w:
             project.validate_project(
                 top_level_folder, "warn", include_central=True

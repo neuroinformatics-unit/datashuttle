@@ -14,7 +14,7 @@ from datashuttle.tui.screens.new_project import NewProjectScreen
 
 
 class TestTuiWidgets(TuiBase):
-    """This class performs fundamental checks on the default display
+    """Performs fundamental checks on the default display
     of widgets and that changing widgets properly change underlying
     configs. This does not perform any functional tests e.g.
     creation of configs of new files.
@@ -208,7 +208,7 @@ class TestTuiWidgets(TuiBase):
     async def check_new_project_ssh_widgets(
         self, configs_content, ssh_on, save_pressed=False
     ):
-        """"""
+        """PLACEHOLDER."""
         assert configs_content.query_one(
             "#configs_setup_ssh_connection_button"
         ).visible is (
@@ -873,7 +873,7 @@ class TestTuiWidgets(TuiBase):
         expected_val,
         move_to_position: Union[bool, int] = False,
     ):
-        """If move to position is not False, must be int specifying position"""
+        """If move to position is not False, must be int specifying position."""
         if move_to_position:
             await self.move_select_to_position(pilot, id, move_to_position)
 
@@ -992,7 +992,7 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     def check_datatype_checkboxes(self, pilot, tab, expected_on):
-        """"""
+        """PLACEHOLDER."""
         assert tab in ["create", "transfer"]
         if tab == "create":
             id = "#create_folders_datatype_checkboxes"
@@ -1016,6 +1016,7 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_all_transfer_widgets(self, setup_project_paths):
+        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -1201,7 +1202,7 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_overwrite_existing_files(self, setup_project_paths):
-        """ """
+        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -1293,6 +1294,7 @@ class TestTuiWidgets(TuiBase):
     # combine.
 
     def check_dry_run(self, pilot, project_name, value):
+        """PLACEHOLDER."""
         assert (
             pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox").value
             == value
@@ -1307,7 +1309,7 @@ class TestTuiWidgets(TuiBase):
     def check_overwrite_existing_files_configs(
         self, pilot, project_name, value
     ):
-        """"""
+        """PLACEHOLDER."""
         assert (
             pilot.app.screen.query_one("#transfer_tab_overwrite_select").value
             == value

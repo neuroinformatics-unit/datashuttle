@@ -130,14 +130,14 @@ class TuiBase:
             await pilot.pause()
 
     async def hover_and_press_tree(self, pilot, id, hover_line, press_string):
-        """Hover over a directorytree at a node-line and press a specific string"""
+        """Hover over a directorytree at a node-line and press a specific string."""
         await pilot.pause()
         pilot.app.screen.query_one(id).hover_line = hover_line
         await pilot.pause()
         await self.press_tree(pilot, id, press_string)
 
     async def press_tree(self, pilot, id, press_string):
-        """Click on a tree to give it focus and press buttons"""
+        """Click on a tree to give it focus and press buttons."""
         await self.scroll_to_click_pause(pilot, id)
         await pilot.press(press_string)
         await pilot.pause()
@@ -177,16 +177,18 @@ class TuiBase:
         )
 
     async def change_checkbox(self, pilot, id):
+        """PLACEHOLDER."""
         pilot.app.screen.query_one(id).toggle()
         await pilot.pause()
 
     async def switch_tab(self, pilot, tab):
+        """PLACEHOLDER."""
         assert tab in ["create", "transfer", "configs", "logging"]
         content_tab = ContentTab.add_prefix(f"tabscreen_{tab}_tab")
         await self.scroll_to_click_pause(pilot, f"Tab#{content_tab}")
 
     async def turn_off_all_datatype_checkboxes(self, pilot, tab="create"):
-        """Make sure all checkboxes are off to start"""
+        """Make sure all checkboxes are off to start."""
         assert tab in ["create", "transfer"]
 
         checkbox_names = canonical_configs.get_broad_datatypes()
@@ -219,7 +221,7 @@ class TuiBase:
         await self.check_and_click_onto_existing_project(pilot, project_name)
 
     async def close_messagebox(self, pilot):
-        """Close the modal_dialogs.Messagebox"""
+        """Close the modal_dialogs.Messagebox."""
         pilot.app.screen.on_button_pressed()
         await pilot.pause()
 
@@ -233,6 +235,7 @@ class TuiBase:
         await pilot.pause()
 
     async def click_and_await_transfer(self, pilot):
+        """PLACEHOLDER."""
         await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
         await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
 

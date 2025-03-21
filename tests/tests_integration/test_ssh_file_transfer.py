@@ -1,5 +1,3 @@
-""" """
-
 import copy
 import glob
 import shutil
@@ -15,6 +13,8 @@ from pytest import ssh_config
 
 
 class TestFileTransfer:
+    """PLACEHOLDER."""
+    
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem (see docstring).
@@ -115,6 +115,7 @@ class TestFileTransfer:
     # -------------------------------------------------------------------------
 
     def central_from_local(self, path_):
+        """PLACEHOLDER."""
         return Path(str(copy.copy(path_)).replace("local", "central"))
 
     # -------------------------------------------------------------------------
@@ -168,7 +169,7 @@ class TestFileTransfer:
         """Parse the arguments to filter the pathtable, getting
         the files expected to be transferred passed on the arguments
         Note files in sub/ses/datatype folders must be handled
-        separately to those in non-sub, non-ses, non-datatype folders
+        separately to those in non-sub, non-ses, non-datatype folders.
 
         see test_utils.swap_local_and_central_paths() for the logic
         on setting up and swapping local / central paths for
@@ -245,7 +246,7 @@ class TestFileTransfer:
 
     def query_table(self, pathtable, arguments):
         """Search the table for arguments, return empty
-        if arguments empty
+        if arguments empty.
         """
         if any(arguments):
             folders = pathtable.query(" | ".join(arguments))

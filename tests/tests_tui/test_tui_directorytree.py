@@ -15,7 +15,7 @@ except pyperclip.PyperclipException:
 
 class TestTuiCreateDirectoryTree(TuiBase):
     """Test the `Create` tab directory tree.
-    `Transfer`
+    `Transfer`.
     """
 
     @pytest.mark.asyncio
@@ -151,6 +151,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
     async def test_failed_pyperclip_copy(
         self, setup_project_paths, monkeypatch
     ):
+        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()

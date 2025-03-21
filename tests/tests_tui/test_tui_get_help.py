@@ -11,6 +11,7 @@ class TestTuiSettings(TuiBase):
 
     @pytest.mark.asyncio
     async def test_get_help(self, empty_project_paths):
+        """PLACEHOLDER."""
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
             await self.scroll_to_click_pause(

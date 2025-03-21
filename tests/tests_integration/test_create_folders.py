@@ -13,6 +13,8 @@ from datashuttle.configs.canonical_tags import tags
 
 
 class TestCreateFolders(BaseTest):
+    """PLACEHOLDER."""
+    
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_generate_folders_default_ses(self, project):
         """Make a subject folders with full tree. Don't specify
@@ -202,7 +204,7 @@ class TestCreateFolders(BaseTest):
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_date_flags_in_session(self, project):
         """Check that @DATE@ is converted into current date
-        in generated folder names
+        in generated folder names.
         """
         date, time_ = self.get_formatted_date_and_time()
 
@@ -224,7 +226,7 @@ class TestCreateFolders(BaseTest):
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_datetime_flag_in_session(self, project):
         """Check that @DATETIME@ is converted to datetime
-        in generated folder names
+        in generated folder names.
         """
         date, time_ = self.get_formatted_date_and_time()
 
@@ -483,10 +485,12 @@ class TestCreateFolders(BaseTest):
     # ----------------------------------------------------------------------------------
 
     def get_formatted_date_and_time(self):
+        """PLACEHOLDER."""
         date = str(datetime.datetime.now().date())
         date = date.replace("-", "")
         time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
         return date, time_
 
     def broad_datatypes(self):
+        """PLACEHOLDER."""
         return canonical_configs.get_broad_datatypes()
