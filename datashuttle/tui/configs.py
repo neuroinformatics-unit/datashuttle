@@ -30,7 +30,7 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class ConfigsContent(Container):
-    """This screen holds widgets and logic for setting datashuttle configs.
+    """Holds widgets and logic for setting datashuttle configs.
     It is used in `NewProjectPage` to instantiate a new project and
     initialise configs, or in `TabbedContent` to update an existing
     project's configs.
@@ -44,6 +44,8 @@ class ConfigsContent(Container):
 
     @dataclass
     class ConfigsSaved(Message):
+        """PLACEHOLDER."""
+        
         pass
 
     def __init__(
@@ -52,6 +54,7 @@ class ConfigsContent(Container):
         interface: Optional[Interface],
         id: str,
     ) -> None:
+        """PLACEHOLDER."""
         super(ConfigsContent, self).__init__(id=id)
 
         self.parent_class = parent_class
@@ -62,7 +65,7 @@ class ConfigsContent(Container):
         """`self.config_ssh_widgets` are SSH-setup related widgets
         that are only required when the user selects the SSH
         connection method. These are displayed / hidden based on the
-        `connection_method`
+        `connection_method`.
 
         `config_screen_widgets` are core config-related widgets that are
         always displayed.
@@ -269,7 +272,7 @@ class ConfigsContent(Container):
     def get_platform_dependent_example_paths(
         self, local_or_central: Literal["local", "central"], ssh: bool = False
     ) -> str:
-        """ """
+        """PLACEHOLDER."""
         assert local_or_central in ["local", "central"]
 
         # Handle the ssh central case separately
@@ -385,7 +388,7 @@ class ConfigsContent(Container):
             ).value = path_.as_posix()
 
     def setup_ssh_connection(self) -> None:
-        """Set up the `SetupSshScreen` screen,"""
+        """Set up the `SetupSshScreen` screen."""
         assert self.interface is not None, "type narrow flexible `interface`"
 
         if not self.widget_configs_match_saved_configs():

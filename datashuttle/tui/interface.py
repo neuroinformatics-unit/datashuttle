@@ -30,6 +30,7 @@ class Interface:
     """
 
     def __init__(self) -> None:
+        """PLACEHOLDER."""
         self.project: DataShuttle
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
@@ -347,7 +348,7 @@ class Interface:
         value
             Value to set the `persistent_settings` tui field to
 
-        key_1
+        key
             First key of the tui `persistent_settings` to update
             e.g. "top_level_folder_select"
 
@@ -367,9 +368,11 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def get_central_host_id(self) -> str:
+        """PLACEHOLDER."""
         return self.project.cfg["central_host_id"]
 
     def get_configs(self) -> Configs:
+        """PLACEHOLDER."""
         return self.project.cfg
 
     def get_textual_compatible_project_configs(self) -> Configs:
@@ -385,6 +388,7 @@ class Interface:
     def get_next_sub(
         self, top_level_folder: TopLevelFolder
     ) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             next_sub = self.project.get_next_sub(
                 top_level_folder,
@@ -398,6 +402,7 @@ class Interface:
     def get_next_ses(
         self, top_level_folder: TopLevelFolder, sub: str
     ) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             next_ses = self.project.get_next_ses(
                 top_level_folder,
@@ -410,6 +415,7 @@ class Interface:
             return False, str(e)
 
     def get_ssh_hostkey(self) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             key = ssh.get_remote_server_key(
                 self.project.cfg["central_host_id"]
@@ -419,6 +425,7 @@ class Interface:
             return False, str(e)
 
     def save_hostkey_locally(self, key: paramiko.RSAKey) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             ssh.save_hostkey_locally(
                 key,
@@ -433,6 +440,7 @@ class Interface:
     def setup_key_pair_and_rclone_config(
         self, password: str
     ) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             ssh.add_public_key_to_central_authorized_keys(
                 self.project.cfg, password, log=False

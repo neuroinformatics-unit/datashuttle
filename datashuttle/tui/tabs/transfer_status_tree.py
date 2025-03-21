@@ -38,6 +38,7 @@ class TransferStatusTree(CustomDirectoryTree):
     def __init__(
         self, mainwindow: App, interface: Interface, id: Optional[str] = None
     ):
+        """PLACEHOLDER."""
         self.interface = interface
         self.local_path_str = self.interface.get_configs()[
             "local_path"
@@ -49,6 +50,7 @@ class TransferStatusTree(CustomDirectoryTree):
         )
 
     def on_mount(self) -> None:
+        """PLACEHOLDER."""
         self.update_transfer_tree(init=True)
 
     def update_transfer_tree(self, init: bool = False) -> None:

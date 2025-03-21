@@ -27,7 +27,7 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class CreateFoldersSettingsScreen(ModalScreen):
-    """This screen handles setting datashuttle's `name_template`'s, as well
+    """Handles setting datashuttle's `name_template`'s, as well
     as the top-level-folder select and option to bypass all validation.
 
     Name Templates
@@ -53,6 +53,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
     TITLE = "Create Folders Settings"
 
     def __init__(self, mainwindow: App, interface: Interface) -> None:
+        """PLACEHOLDER."""
         super(CreateFoldersSettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
@@ -67,9 +68,11 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def action_link_docs(self) -> None:
+        """PLACEHOLDER."""
         webbrowser.open(links.get_docs_link())
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         sub_on = True if self.input_mode == "sub" else False
         ses_on = not sub_on
 
@@ -139,6 +142,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
+        """PLACEHOLDER."""
         for id in [
             "#create_folders_settings_toplevel_select",
             "#create_folders_settings_bypass_validation_checkbox",
@@ -151,11 +155,13 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.switch_template_container_disabled()
 
     def init_input_values_holding_variable(self) -> None:
+        """PLACEHOLDER."""
         name_templates = self.interface.get_name_templates()
         self.input_values["sub"] = name_templates["sub"]
         self.input_values["ses"] = name_templates["ses"]
 
     def switch_template_container_disabled(self) -> None:
+        """PLACEHOLDER."""
         is_on = self.query_one(
             "#template_settings_validation_on_checkbox"
         ).value
@@ -195,6 +201,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             self.interface.save_tui_settings(False, "bypass_validation")
 
     def make_name_templates_from_widgets(self) -> Dict:
+        """PLACEHOLDER."""
         return {
             "on": self.query_one(
                 "#template_settings_validation_on_checkbox"
@@ -241,6 +248,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.fill_input_from_template()
 
     def on_input_changed(self, message: Input.Changed) -> None:
+        """PLACEHOLDER."""
         if message.input.id == "template_settings_input":
             val = None if message.value == "" else message.value
             self.input_values[self.input_mode] = val

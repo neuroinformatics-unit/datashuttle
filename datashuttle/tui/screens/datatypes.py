@@ -89,6 +89,7 @@ class DisplayedDatatypesScreen(ModalScreen):
         create_or_transfer: Literal["create", "transfer"],
         interface: Interface,
     ) -> None:
+        """PLACEHOLDER."""
         super(DisplayedDatatypesScreen, self).__init__()
 
         self.interface = interface
@@ -138,6 +139,7 @@ class DisplayedDatatypesScreen(ModalScreen):
         )
 
     def on_mount(self):
+        """PLACEHOLDER."""
         pass
 
     #    self.query_one("#display_datatypes_screen_container").action_scroll_up()
@@ -212,6 +214,7 @@ class DatatypeCheckboxes(Static):
         create_or_transfer: Literal["create", "transfer"] = "create",
         id: Optional[str] = None,
     ) -> None:
+        """PLACEHOLDER."""
         super(DatatypeCheckboxes, self).__init__(id=id)
 
         self.interface = interface
@@ -226,6 +229,7 @@ class DatatypeCheckboxes(Static):
         ]
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         for datatype, setting in self.datatype_config.items():
             if setting["displayed"]:
                 yield Checkbox(
@@ -251,7 +255,7 @@ class DatatypeCheckboxes(Static):
         )
 
     def on_mount(self) -> None:
-        """ """
+        """PLACEHOLDER."""
         for datatype in self.datatype_config.keys():
             if self.datatype_config[datatype]["displayed"]:
                 self.query_one(
@@ -277,12 +281,14 @@ class DatatypeCheckboxes(Static):
 def get_checkbox_name(
     create_or_transfer: Literal["create", "transfer"], datatype
 ):
+    """PLACEHOLDER."""
     return f"{create_or_transfer}_{datatype}_checkbox"
 
 
 def get_tui_settings_key_name(
     create_or_transfer: Literal["create", "transfer"],
 ) -> str:
+    """PLACEHOLDER."""
     if create_or_transfer == "create":
         settings_key = "create_checkboxes_on"
     else:

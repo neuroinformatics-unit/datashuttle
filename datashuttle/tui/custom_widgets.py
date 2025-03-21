@@ -45,6 +45,8 @@ class ClickableInput(Input):
 
     @dataclass
     class Clicked(Message):
+        """PLACEHOLDER."""
+        
         input: ClickableInput
         ctrl: bool
 
@@ -56,6 +58,7 @@ class ClickableInput(Input):
         validate_on: Optional[List[str]] = None,
         validators: Optional[List[Validator]] = None,
     ) -> None:
+        """PLACEHOLDER."""
         super(ClickableInput, self).__init__(
             placeholder=placeholder,
             id=id,
@@ -69,9 +72,11 @@ class ClickableInput(Input):
         self.post_message(self.Clicked(self, event.ctrl))
 
     def as_names_list(self) -> List[str]:
+        """PLACEHOLDER."""
         return self.value.replace(" ", "").split(",")
 
     def on_key(self, event: events.Key) -> None:
+        """PLACEHOLDER."""
         if event.key == "ctrl+q":
             self.mainwindow.copy_to_clipboard(self.value)
 
@@ -92,12 +97,15 @@ class CustomDirectoryTree(DirectoryTree):
 
     @dataclass
     class DirectoryTreeSpecialKeyPress(Message):
+        """PLACEHOLDER."""
+        
         key: str
         node_path: Optional[Path]
 
     def __init__(
         self, mainwindow: App, path: Path, id: Optional[str] = None
     ) -> None:
+        """PLACEHOLDER."""
         super(CustomDirectoryTree, self).__init__(path=path, id=id)
 
         self.mainwindow = mainwindow
@@ -139,7 +147,7 @@ class CustomDirectoryTree(DirectoryTree):
     def _render_line(
         self, y: int, x1: int, x2: int, base_style: Style
     ) -> Strip:
-        """This function is overridden from textual's `Tree` class to stop
+        """Overridden from textual's `Tree` class to stop
         CSS styling on hovering and clicking which was distracting /
         changed the default color used for transfer status, respectively.
 
@@ -397,6 +405,7 @@ class TopLevelFolderSelect(Select):
     """
 
     def __init__(self, interface: Interface, id: str) -> None:
+        """PLACEHOLDER."""
         self.interface = interface
 
         top_level_folders = [

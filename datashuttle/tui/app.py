@@ -47,6 +47,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     ]
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Container(
             Label("datashuttle", id="mainwindow_banner_label"),
             Button(
@@ -60,9 +61,11 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         )
 
     def on_mount(self) -> None:
+        """PLACEHOLDER."""
         self.set_dark_mode(self.load_global_settings()["dark_mode"])
 
     def set_dark_mode(self, dark_mode: bool) -> None:
+        """PLACEHOLDER."""
         self.theme = "textual-dark" if dark_mode else "textual-light"
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -91,6 +94,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             self.push_screen(get_help.GetHelpScreen())
 
     def load_project_page(self, interface: Interface) -> None:
+        """PLACEHOLDER."""
         if interface:
             self.push_screen(
                 project_manager.ProjectManagerScreen(
@@ -99,6 +103,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             )
 
     def show_modal_error_dialog(self, message: str) -> None:
+        """PLACEHOLDER."""
         self.push_screen(modal_dialogs.MessageBox(message, border_color="red"))
 
     def handle_open_filesystem_browser(self, path_: Path) -> None:
@@ -131,14 +136,14 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             self.show_modal_error_dialog(message)
 
     def prompt_rename_file_or_folder(self, path_):
-        """ """
+        """PLACEHOLDER."""
         self.push_screen(
             modal_dialogs.RenameFileOrFolderScreen(self, path_),
             lambda new_name: self.rename_file_or_folder(path_, new_name),
         )
 
     def rename_file_or_folder(self, path_, new_name):
-        """ """
+        """PLACEHOLDER."""
         if new_name is False:
             return
         try:
@@ -185,12 +190,14 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         return path_ / "global_tui_settings.yaml"
 
     def get_default_global_settings(self) -> Dict:
+        """PLACEHOLDER."""
         return {
             "dark_mode": True,
             "show_transfer_tree_status": False,
         }
 
     def save_global_settings(self, global_settings: Dict) -> None:
+        """PLACEHOLDER."""
         settings_path = self.get_global_settings_path()
 
         if not settings_path.parent.is_dir():
@@ -212,6 +219,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
 
 def main():
+    """PLACEHOLDER."""
     TuiApp().run()
 
 

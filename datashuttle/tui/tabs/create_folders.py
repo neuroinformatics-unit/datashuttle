@@ -38,6 +38,7 @@ class CreateFoldersTab(TreeAndInputTab):
     """Create new project files formatted according to the NeuroBlueprint specification."""
 
     def __init__(self, mainwindow: App, interface: Interface) -> None:
+        """PLACEHOLDER."""
         super(CreateFoldersTab, self).__init__(
             "Create", id="tabscreen_create_tab"
         )
@@ -47,6 +48,7 @@ class CreateFoldersTab(TreeAndInputTab):
         self.prev_click_time = 0.0
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield CustomDirectoryTree(
             self.mainwindow,
             self.interface.get_configs()["local_path"],
@@ -91,7 +93,7 @@ class CreateFoldersTab(TreeAndInputTab):
         )
 
     def on_mount(self) -> None:
-        """"""
+        """PLACEHOLDER."""
         if not self.interface:
             self.query_one("#configs_name_input").tooltip = get_tooltip(
                 "#configs_name_input"
@@ -130,6 +132,7 @@ class CreateFoldersTab(TreeAndInputTab):
             )
 
     async def refresh_after_datatypes_changed(self, ignore):
+        """PLACEHOLDER."""
         await self.recompose()
         self.on_mount()
 
@@ -187,6 +190,7 @@ class CreateFoldersTab(TreeAndInputTab):
         input.value = fill_value
 
     def templates_on(self, prefix: Prefix) -> bool:
+        """PLACEHOLDER."""
         return (
             self.interface.get_name_templates()["on"]
             and self.interface.get_name_templates()[prefix] is not None
@@ -251,7 +255,7 @@ class CreateFoldersTab(TreeAndInputTab):
             self.mainwindow.show_modal_error_dialog(output)
 
     def reload_directorytree(self) -> None:
-        """This reloads the directorytree and also updates validation.
+        """Reloads the directorytree and also updates validation.
         Not now a good method name but done for consistency with other
         tab refresh methods.
         """
@@ -264,7 +268,7 @@ class CreateFoldersTab(TreeAndInputTab):
     def fill_input_with_next_sub_or_ses_template(
         self, prefix: Prefix, input_id: str
     ) -> None:
-        """This fills a sub / ses Input with a suggested name based on the
+        """Fills a sub / ses Input with a suggested name based on the
         next subject / session in the project (local).
 
         If `name_templates` are set, then the sub- or ses- first key

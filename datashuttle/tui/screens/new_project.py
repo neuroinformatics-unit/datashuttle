@@ -37,11 +37,13 @@ class NewProjectScreen(Screen):
     TITLE = "Make New Project"
 
     def __init__(self, mainwindow: App) -> None:
+        """PLACEHOLDER."""
         super(NewProjectScreen, self).__init__()
 
         self.mainwindow = mainwindow
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
         yield configs.ConfigsContent(
@@ -49,5 +51,6 @@ class NewProjectScreen(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """PLACEHOLDER."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss(None)

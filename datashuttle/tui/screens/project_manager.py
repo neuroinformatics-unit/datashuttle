@@ -41,6 +41,7 @@ class ProjectManagerScreen(Screen):
     """
 
     def __init__(self, mainwindow: App, interface: Interface, id) -> None:
+        """PLACEHOLDER."""
         super(ProjectManagerScreen, self).__init__(id=id)
 
         self.mainwindow = mainwindow
@@ -51,6 +52,7 @@ class ProjectManagerScreen(Screen):
         self.tabbed_content_mount_signal = True
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
         with TabbedContent(
@@ -118,6 +120,7 @@ class ProjectManagerScreen(Screen):
                 ).update_most_recent_label()
 
     def update_active_tab_tree(self):
+        """PLACEHOLDER."""
         active_tab_id = self.query_one("#tabscreen_tabbed_content").active
         self.query_one(f"#{active_tab_id}").reload_directorytree()
 

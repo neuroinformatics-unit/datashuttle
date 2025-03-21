@@ -18,7 +18,7 @@ from textual.widgets import (
 
 
 class SetupSshScreen(ModalScreen):
-    """This dialog windows handles the TUI equivalent of API's
+    """Dialog window that handles the TUI equivalent of API's
     setup_ssh_connection(). This asks to
     confirm the central hostkey, and takes password to setup
     SSH key pair.
@@ -29,6 +29,7 @@ class SetupSshScreen(ModalScreen):
     """
 
     def __init__(self, interface: Interface) -> None:
+        """PLACEHOLDER."""
         super(SetupSshScreen, self).__init__()
 
         self.interface = interface
@@ -38,6 +39,7 @@ class SetupSshScreen(ModalScreen):
         self.key: paramiko.RSAKey
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Container(
             Horizontal(
                 Static(
@@ -56,6 +58,7 @@ class SetupSshScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
+        """PLACEHOLDER."""
         self.query_one("#setup_ssh_password_input").visible = False
 
     def on_button_pressed(self, event: Button.pressed) -> None:
