@@ -181,6 +181,39 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
+    def validate_project(
+        self,
+        top_level_folder: list[str] | None,
+        include_central: bool,
+        strict_mode: bool,
+    ) -> tuple[bool, list[str] | str]:
+        """
+        Wrap the validate project function. This returns a list of validation
+        errors (empty if there are none).
+
+        Parameters
+        ----------
+
+        top_level_folder
+            The "rawdata" or "derivatives" folder to validate. If `None`, both
+            will be validated.
+        include_central
+            If `True`, the central project is also validated.
+        strict_mode
+            If `True`, validation will be run in strict mode.
+        """
+        try:
+            results = self.project.validate_project(
+                top_level_folder=top_level_folder,
+                display_mode="print",  # unused
+                include_central=include_central,
+                strict_mode=strict_mode,
+            )
+            return True, results
+
+        except BaseException as e:
+            return False, str(e)
+
     # Transfer
     # ----------------------------------------------------------------------------------
 
