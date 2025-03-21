@@ -9,7 +9,7 @@
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Acquisition Script
-:link: validate
+:link: acquisition-script
 :link-type: doc
 :class-img-top: tutorial-link-image
 
@@ -18,7 +18,7 @@
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Validate A Labs Projects
-:link: validate
+:link: lab-project-checker
 :link-type: doc
 :class-img-top: tutorial-link-image
 
