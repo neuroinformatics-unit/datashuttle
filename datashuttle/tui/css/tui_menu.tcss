@@ -58,6 +58,12 @@
 SetupSshScreen {
     align: center middle;
 }
+SetupAwsScreen {
+    align: center middle;
+}
+SetupGdriveScreen {
+    align: center middle;
+}
 SettingsScreen {
     align: center middle;
 }
@@ -75,6 +81,24 @@ GetHelpScreen {
     border: thick $panel-lighten-1;
 }
 #setup_ssh_screen_container {
+    border: thick $panel-darken-3;
+}
+#setup_aws_screen_container {
+    height: 75%;
+    width: 80%;
+    align: center middle;
+    border: thick $panel-lighten-1;
+}
+#setup_aws_screen_container {
+    border: thick $panel-darken-3;
+}
+#setup_gdrive_screen_container {
+    height: 75%;
+    width: 80%;
+    align: center middle;
+    border: thick $panel-lighten-1;
+}
+#setup_gdrive_screen_container {
     border: thick $panel-darken-3;
 }
 #messagebox_buttons_horizontal {
@@ -163,7 +187,13 @@ MessageBox:light > #messagebox_top_container {
     color: $success;  /* unsure about this */
 }
 
+#configs_setup_aws_connection_button {
+    margin: 2 1 0 0;
+}
 #configs_setup_ssh_connection_button {
+    margin: 2 1 0 0;
+}
+#configs_setup_gdrive_connection_button {
     margin: 2 1 0 0;
 }
 #configs_go_to_project_screen_button {
@@ -192,6 +222,15 @@ MessageBox:light > #messagebox_top_container {
     width: 70%;
 }
 #configs_central_path_input {
+    width: 70%;
+}
+#configs_aws_region_input {
+    width: 70%;
+}
+#configs_aws_bucket_name_input {
+    width: 70%;
+}
+#configs_google_drive_folder_id_input {
     width: 70%;
 }
 #configs_local_path_select_button{
