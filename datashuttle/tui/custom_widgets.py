@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import (
     TYPE_CHECKING,
     List,
@@ -10,6 +9,8 @@ from typing import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+    
     from textual import events
     from textual.validation import Validator
 
