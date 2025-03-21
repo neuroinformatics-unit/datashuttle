@@ -43,7 +43,7 @@ class Configs(UserDict):
         input_dict
             a dict of config key-value pairs to input dict.
             This must contain all canonical_config keys
-        
+
         The input dict is checked that it conforms to the
         canonical standard by calling check_dict_values_raise_on_fail()
 
@@ -114,7 +114,7 @@ class Configs(UserDict):
 
     def load_from_file(self) -> None:
         """Load a config dict saved at .yaml file.
-        
+
         Note this will
         not automatically check the configs are valid, this
         requires calling self.check_dict_values_raise_on_fail().
@@ -149,7 +149,7 @@ class Configs(UserDict):
             a list (or string for 1) of
             folder names to be joined into a path.
             If file included, must be last entry (with ext).
-            
+
         top_level_folder
             either "rawdata" or "derivatives"
 
@@ -181,7 +181,7 @@ class Configs(UserDict):
         ----------
         base
             base path, "local", "central" or "datashuttle"
-            
+
         top_level_folder
             either "rawdata" or "derivatives"
 

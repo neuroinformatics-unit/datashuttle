@@ -49,10 +49,10 @@ def create_folder_trees(
     ----------
     cfg
         datashuttle config UserDict
-        
+
     top_level_folder
         either "rawdata" or "derivatives"
-    
+
     sub_names, ses_names, datatype
         see create_folders()
 
@@ -391,7 +391,7 @@ def search_for_wildcards(
     ----------
     cfg
         datashuttle configs
-        
+
     project
         initialised datashuttle project
 
@@ -466,7 +466,7 @@ def search_sub_or_ses_level(
         arguments, but this is not nice and breaks the
         general rule that these functions should operate
         project-agnostic.
-        
+
     base_folder
         the path to the base folder. If sub is None, the search is
         performed on this folder
@@ -490,7 +490,7 @@ def search_sub_or_ses_level(
     verbose
         If `True`, if a search folder cannot be found, a message
         will be printed with the un-found path.
-        
+
     return_full_path
         include the search_path in the returned paths
 
@@ -534,7 +534,7 @@ def search_for_folders(
     ----------
     cfg
         datashuttle configs
-    
+
     local_or_central
         "local" or "central"
 

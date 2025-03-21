@@ -13,7 +13,7 @@ from textual.validation import ValidationResult, Validator
 
 class NeuroBlueprintValidator(Validator):
     """PLACEHOLDER."""
-    
+
     def __init__(self, prefix: Prefix, parent: CreateFoldersTab) -> None:
         """Custom Validator() class that takes
         sub / ses prefix as input. Runs validation of

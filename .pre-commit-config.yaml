@@ -20,8 +20,8 @@ repos:
           - id: end-of-file-fixer
           - id: mixed-line-ending
             args: [--fix=lf]
-          - id: name-tests-test
-            args: ["--pytest-test-first"]
+          #- id: name-tests-test
+          #  args: ["--pytest-test-first"]
           - id: requirements-txt-fixer
           - id: trailing-whitespace
     - repo: https://github.com/pre-commit/pygrep-hooks

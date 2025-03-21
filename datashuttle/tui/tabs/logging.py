@@ -14,7 +14,7 @@ from datashuttle.tui.utils.tui_decorators import require_double_click
 
 class RichLogScreen(ModalScreen):
     """PLACEHOLDER."""
-    
+
     def __init__(self, log_file):
         """PLACEHOLDER."""
         super(RichLogScreen, self).__init__()
@@ -42,7 +42,7 @@ class RichLogScreen(ModalScreen):
 
 class LoggingTab(TabPane):
     """PLACEHOLDER."""
-    
+
     def __init__(self, title, mainwindow, project, id):
         """PLACEHOLDER."""
         super(LoggingTab, self).__init__(title=title, id=id)

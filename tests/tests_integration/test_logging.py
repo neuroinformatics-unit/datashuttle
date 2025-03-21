@@ -19,7 +19,7 @@ from datashuttle.utils.custom_exceptions import (
 
 class TestLogging:
     """PLACEHOLDER."""
-    
+
     @pytest.fixture(scope="function")
     def teardown_logger(self):
         """Ensure the logger is deleted at the end of each test."""

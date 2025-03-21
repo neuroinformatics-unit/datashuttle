@@ -15,7 +15,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 class TestValidation(BaseTest):
     """PLACEHOLDER."""
-    
+
     @pytest.mark.parametrize(
         "sub_name",
         ["sub-001", "sub-999_@DATE@", "sub-001_random-tag_another-tag"],

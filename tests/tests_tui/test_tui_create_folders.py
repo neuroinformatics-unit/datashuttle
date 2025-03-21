@@ -14,7 +14,7 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 class TestTuiCreateFolders(TuiBase):
     """PLACEHOLDER."""
-    
+
     # -------------------------------------------------------------------------
     # General test Create Folders
     # -------------------------------------------------------------------------

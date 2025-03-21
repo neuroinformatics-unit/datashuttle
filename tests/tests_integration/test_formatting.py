@@ -7,7 +7,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 class TestFormatting(BaseTest):
     """PLACEHOLDER."""
-    
+
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize(
         "input", [1, {"test": "one"}, 1.0, ["1", "2", ["three"]]]

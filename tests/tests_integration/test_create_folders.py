@@ -14,7 +14,7 @@ from datashuttle.configs.canonical_tags import tags
 
 class TestCreateFolders(BaseTest):
     """PLACEHOLDER."""
-    
+
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_generate_folders_default_ses(self, project):
         """Make a subject folders with full tree. Don't specify

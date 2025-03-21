@@ -314,7 +314,7 @@ def get_list_of_folder_names_over_sftp(
     verbose
         If `True`, if a search folder cannot be found, a message
         will be printed with the un-found path.
-        
+
     return_full_path
         include the search_path in the returned paths
 

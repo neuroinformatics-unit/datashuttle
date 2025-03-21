@@ -14,7 +14,7 @@ from datashuttle.configs.canonical_tags import tags
 
 class TestFileTransfer(BaseTest):
     """PLACEHOLDER."""
-    
+
     @pytest.mark.parametrize(
         "top_level_folder", canonical_folders.get_top_level_folders()
     )

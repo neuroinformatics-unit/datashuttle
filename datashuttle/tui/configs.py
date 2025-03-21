@@ -45,7 +45,7 @@ class ConfigsContent(Container):
     @dataclass
     class ConfigsSaved(Message):
         """PLACEHOLDER."""
-        
+
         pass
 
     def __init__(

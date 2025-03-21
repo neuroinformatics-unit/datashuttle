@@ -46,7 +46,7 @@ class ClickableInput(Input):
     @dataclass
     class Clicked(Message):
         """PLACEHOLDER."""
-        
+
         input: ClickableInput
         ctrl: bool
 
@@ -98,7 +98,7 @@ class CustomDirectoryTree(DirectoryTree):
     @dataclass
     class DirectoryTreeSpecialKeyPress(Message):
         """PLACEHOLDER."""
-        
+
         key: str
         node_path: Optional[Path]
 

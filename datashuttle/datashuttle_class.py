@@ -1053,7 +1053,7 @@ class DataShuttle:
         ----------
         top_level_folder
             "rawdata" or "derivatives"
-        
+
         return_with_prefix
             If `True`, return with the "sub-" prefix.
 
@@ -1297,10 +1297,10 @@ class DataShuttle:
         upload_or_download
             direction to transfer the data, either "upload" (from
             local to central) or "download" (from central to local).
-            
+
         overwrite_existing_files
             determines whether or not to overwrite existing files
-            
+
         dry_run
             perform a dry-run of transfer. This will output as if file
             transfer was taking place, but no files will be moved. Useful
@@ -1341,7 +1341,7 @@ class DataShuttle:
         store_in_temp_folder
             if `False`, existing logging path will be used
             (local project .datashuttle).
-            
+
         verbose
             print warnings and error messages.
 

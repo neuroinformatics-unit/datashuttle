@@ -112,7 +112,7 @@ class TransferData:
     def build_a_list_of_all_files_and_folders_to_transfer(self) -> List[str]:
         """Build a list of every file to transfer based on the user-passed
         arguments.
-        
+
         This cycles through every subject, session and datatype
         and adds the outputs to three lists:
 

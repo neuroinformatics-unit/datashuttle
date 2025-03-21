@@ -14,7 +14,7 @@ from pytest import ssh_config
 
 class TestFileTransfer:
     """PLACEHOLDER."""
-    
+
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem (see docstring).

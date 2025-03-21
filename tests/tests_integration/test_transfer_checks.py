@@ -11,7 +11,7 @@ from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 class TestTransferChecks(BaseTest):
     """PLACEHOLDER."""
-    
+
     @pytest.mark.parametrize(
         "top_level_folders",
         [["rawdata", "derivatives"], ["rawdata"], ["derivatives"]],

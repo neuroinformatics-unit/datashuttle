@@ -141,7 +141,7 @@ select = [
     "I",        # isort
     "E",        # pycodestyle errors
     "F",        # Pyflakes
-    "TC",       # flake8-type-checking
+    "TCH",       # flake8-type-checking
     "TID252",   # flake8-tidy-imports relative-imports
     "D",        # pydocstyle
 ]
