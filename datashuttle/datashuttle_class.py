@@ -105,6 +105,7 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str, print_startup_message: bool = True):
+        """PLACEHOLDER."""
         self._error_on_base_project_name(project_name)
         self.project_name = project_name
         (
@@ -752,7 +753,7 @@ class DataShuttle:
         init_log: bool = True,
     ):
         """Core function to upload / download files within a
-        particular top-level-folder. e.g. `upload_rawdata().`
+        particular top-level-folder. e.g. `upload_rawdata()`.
         """
         if init_log:
             self._start_log(
@@ -824,7 +825,7 @@ class DataShuttle:
     def setup_ssh_connection(self) -> None:
         """Setup a connection to the central server using SSH.
         Assumes the central_host_id and central_host_username
-        are set in configs (see make_config_file() and update_config_file())
+        are set in configs (see make_config_file() and update_config_file()).
 
         First, the server key will be displayed, requiring
         verification of the server ID. This will store the
@@ -971,7 +972,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     def update_config_file(self, **kwargs) -> None:
-        """ """
+        """PLACEHOLDER."""
         if not self.cfg:
             utils.log_and_raise_error(
                 "Must have a config loaded before updating configs.",
@@ -1022,6 +1023,7 @@ class DataShuttle:
 
     @check_configs_set
     def get_configs(self) -> Configs:
+        """PLACEHOLDER."""
         return self.cfg
 
     @check_configs_set
@@ -1049,6 +1051,9 @@ class DataShuttle:
 
         Parameters
         ----------
+        top_level_folder
+            "rawdata" or "derivatives"
+        
         return_with_prefix
             If `True`, return with the "sub-" prefix.
 
@@ -1247,7 +1252,7 @@ class DataShuttle:
     def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
         """Pass list of names to check how these will be auto-formatted,
         for example as when passed to create_folders() or upload_custom()
-        or download()
+        or download().
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
         This method will print the formatted list of names,
@@ -1292,6 +1297,14 @@ class DataShuttle:
         upload_or_download
             direction to transfer the data, either "upload" (from
             local to central) or "download" (from central to local).
+            
+        overwrite_existing_files
+            determines whether or not to overwrite existing files
+            
+        dry_run
+            perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved. Useful
+            to check which files will be moved on data transfer.
 
         """
         for top_level_folder in canonical_folders.get_top_level_folders():
@@ -1328,6 +1341,9 @@ class DataShuttle:
         store_in_temp_folder
             if `False`, existing logging path will be used
             (local project .datashuttle).
+            
+        verbose
+            print warnings and error messages.
 
         """
         if local_vars is None:
@@ -1372,7 +1388,7 @@ class DataShuttle:
             )
 
     def _clear_temp_log_path(self) -> None:
-        """"""
+        """PLACEHOLDER."""
         log_files = glob.glob(str(self._temp_log_path / "*.log"))
         for file in log_files:
             os.remove(file)
@@ -1461,7 +1477,7 @@ class DataShuttle:
         self._save_persistent_settings(settings)
 
     def _save_persistent_settings(self, settings: Dict) -> None:
-        """Save the settings dict to file as .yaml"""
+        """Save the settings dict to file as ".yaml"."""
         with open(self._persistent_settings_path, "w") as settings_file:
             yaml.dump(settings, settings_file, sort_keys=False)
 
