@@ -98,8 +98,8 @@ fix = true
 [tool.ruff.lint]
 # See https://docs.astral.sh/ruff/rules/
 ignore = [
-  "D203", # one blank line before class
-  "D213", # multi-line-summary second line
+    "D203", # one blank line before class
+    "D213", # multi-line-summary second line
 ]
 select = [
     "E",   # pycodestyle errors
@@ -112,13 +112,17 @@ select = [
     "D",   # pydocstyle
 ]
 per-file-ignores = { "tests/*" = [
-  "D100", # missing docstring in public module
-  "D205", # missing blank line between summary and description
-  "D103", # missing docstring in public function
+    "D100", # missing docstring in public module
+    "D205", # missing blank line between summary and description
+    "D103", # missing docstring in public function
 ], "examples/*" = [
-  "D400", # first line should end with a period.
-  "D415", # first line should end with a period, question mark...
-  "D205", # missing blank line between summary and description
+    "D400", # first line should end with a period.
+    "D415", # first line should end with a period, question mark...
+    "D205", # missing blank line between summary and description
+], "__init__.py" = [
+    # This was part of the old config
+    # Is this needed? __init__.py is already part of tool.ruff.exclude
+    "F401", # auto remove unused imports
 ] }
 
 # Old ruff ruleset + pydocstyle added
@@ -136,9 +140,6 @@ per-file-ignores = { "tests/*" = [
 
 [tool.ruff.format]
 docstring-code-format = true # Also format code in docstrings
-
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 18
