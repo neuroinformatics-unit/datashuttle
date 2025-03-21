@@ -2,7 +2,7 @@
 
 # How to use Name Templates
 
-Validation in **datashuttle** is by default restricted to the
+Validation in ``datashuttle`` is by default restricted to the
 NeuroBlueprint specification. Any subject or session names
 that are not formatted correctly (e.g. not starting with
 "sub-" or "ses-" will be flagged.
@@ -54,7 +54,7 @@ no name template will be applied.
 
 Fill in the subject or session name template—any changes
 will be automatically saved. These settings will persist across
-**datashuttle** sessions.
+``datashuttle`` sessions.
 
 :::
 

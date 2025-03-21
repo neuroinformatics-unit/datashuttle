@@ -223,6 +223,46 @@ config label and button align center */
 }
 
 
+ /* Validate Content ----------------------------------------------------------------- */
+
+#validate_top_container {
+    align: center top;
+    content-align: center top;
+    margin: 2 0 0 0;
+    layout: vertical;
+    overflow: hidden auto;
+}
+
+
+#validate_arguments_horizontal{
+   height: auto;
+   margin: 0 1 1 1;
+}
+
+#validate_top_level_folder_select {
+    width: 30%;
+}
+
+#validate_path_input {
+    width: 80%;
+    margin: 1 1 1 1;
+}
+
+#validate_select_button {
+    margin: 1 1 1 1;
+}
+
+#validate_path_container {
+    width: 100%;
+    height: auto;
+}
+
+#validate_richlog {
+   align: center top;
+    height: 60%;
+}
+
+
 /* DisplayedDatatypesScreen --------------------------------------------------------------- */
 
 DisplayedDatatypesScreen {

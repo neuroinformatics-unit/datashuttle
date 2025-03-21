@@ -1,6 +1,6 @@
 # How to Make a Local Project
 
-**datashuttle** can be used to create and validate
+``datashuttle`` can be used to create and validate
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) projects,
 as well as transfer data. If you want to quickly create or validate a project's folders,
 but not transfer data, you can make a local-only project and immediately get started.
@@ -33,7 +33,7 @@ are now disabled).
 :::{tab-item} Python API
 :sync: python
 
-First, import **datashuttle** and set up a project with the ``project_name``.
+First, import ``datashuttle`` and set up a project with the ``project_name``.
 If a project already exists, this should match the project folder name (i.e. the level above ``rawdata``).
 
 
@@ -45,7 +45,7 @@ project = DataShuttle("my_project_name")
 
 ```
 
-Next, give **datashuttle** the path to the project folder (this can,
+Next, give ``datashuttle`` the path to the project folder (this can,
 but doesn't have to, include the ``project_name``)
 
 ```python
@@ -84,7 +84,7 @@ see  [Create Folders](how-to-create-folders)  for more details.
 
 :::{note}
 
-When in local-only mode, some functionality of **datashuttle** is lost.
+When in local-only mode, some functionality of ``datashuttle`` is lost.
 
 It will not be possible to:
 - transfer data, which requires passing configs related to a centrally-stored project.
