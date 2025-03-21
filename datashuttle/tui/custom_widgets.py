@@ -10,7 +10,7 @@ from typing import (
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
-    
+
     from textual import events
     from textual.validation import Validator
 
