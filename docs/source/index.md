@@ -19,29 +19,28 @@
 ```
 <br>
 
+
 ::::{grid} 1 2 2 3
 :gutter: 4
+
 
 :::{grid-item-card} Get Started
 :link: pages/get_started/index
 :link-type: doc
 
-Get started with **datashuttle**.
+Get started with ``datashuttle``
 :::
 
 
-::::{grid} 1 2 2 3
-:gutter: 4
-
 :::{grid-item-card} Tutorials
-:link: pages/tutorials
+:link: pages/tutorials/index
 :link-type: doc
 
-Walkthrough **datashuttle**.
+Walkthrough ``datashuttle``
 :::
 
 :::{grid-item-card} How To
-:link: pages/how_tos
+:link: pages/how_tos/index
 :link-type: doc
 
 Short guides on specific actions.
@@ -51,15 +50,15 @@ Short guides on specific actions.
 :link: pages/api_index
 :link-type: doc
 
-Full Python reference.
+Full Python reference
 :::
 ::::
 
-**datashuttle** creates and validates projects standardised to the
+``datashuttle`` creates and validates projects standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
 specification.
 
-Dive right into **datashuttle** with our
+Dive right into ``datashuttle`` with our
 [Getting Started Tutorial](tutorial-getting-started)
 or targeted [How-To Guides](how-tos).  \
 It can be used through a graphical interface or Python API.
@@ -75,6 +74,7 @@ or
 :caption: index
 :hidden:
 
+pages/get_started/index
 pages/tutorials/index
 pages/how_tos/index
 pages/community/index
