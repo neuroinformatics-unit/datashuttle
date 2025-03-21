@@ -1,5 +1,4 @@
-"""
-This module contains all information for the required
+"""This module contains all information for the required
 format of the configs class. This is clearly defined
 as configs can be provided from file or input dynamically
 and so careful checks must be done.
@@ -32,8 +31,7 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 def get_canonical_configs() -> dict:
-    """
-    The only permitted types for DataShuttle
+    """The only permitted types for DataShuttle
     config values.
     """
     canonical_configs = {
@@ -48,8 +46,7 @@ def get_canonical_configs() -> dict:
 
 
 def keys_str_on_file_but_path_in_class() -> list[str]:
-    """
-    All configs which are paths are converted to pathlib.Path
+    """All configs which are paths are converted to pathlib.Path
     objects on load. This list indicates which config entries
     are to be converted to Path.
     """
@@ -65,8 +62,7 @@ def keys_str_on_file_but_path_in_class() -> list[str]:
 
 
 def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
-    """
-    Central function for performing checks on a
+    """Central function for performing checks on a
     DataShuttle Configs UserDict class. This should
     be run after any change to the configs (e.g.
     make_config_file, update_config_file, supply_config_file).
@@ -75,9 +71,9 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     Parameters
     ----------
-
     config_dict
         datashuttle config UserDict
+
     """
     canonical_dict = get_canonical_configs()
 
@@ -144,8 +140,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
 
 def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
-    """
-    There is no circumstance where one of `central_path` and `connection_method`
+    """There is no circumstance where one of `central_path` and `connection_method`
     should be set and not the other. Either both are set ('full' project) or
     neither are ('local only' project). Check this assumption here.
     """
@@ -171,14 +166,12 @@ def raise_on_bad_path_syntax(
     path_name: str,
     path_type: str,
 ) -> None:
-    """
-    Error if some common, unsupported patterns are observed
+    """Error if some common, unsupported patterns are observed
     (e.g. ~, .) for path.
     """
     if path_name[0] == "~":
         utils.log_and_raise_error(
-            f"{path_type} must contain the full folder path "
-            "with no ~ syntax.",
+            f"{path_type} must contain the full folder path with no ~ syntax.",
             ConfigError,
         )
 
@@ -193,13 +186,10 @@ def raise_on_bad_path_syntax(
 
 
 def check_config_types(config_dict: Configs) -> None:
-    """
-    Check the type of passed configs matches the canonical types.
-    """
+    """Check the type of passed configs matches the canonical types."""
     required_types = get_canonical_configs()
 
     for key in config_dict.keys():
-
         expected_type = required_types[key]
         try:
             typeguard.check_type(config_dict[key], expected_type)
@@ -218,8 +208,7 @@ def check_config_types(config_dict: Configs) -> None:
 
 
 def get_tui_config_defaults() -> Dict:
-    """
-    Get the default settings for the datatype checkboxes
+    """Get the default settings for the datatype checkboxes
     in the TUI.
 
     Two sets are maintained (one for creating,
@@ -248,7 +237,6 @@ def get_tui_config_defaults() -> Dict:
 
     # Fill all datatype options
     for broad_key in get_broad_datatypes():
-
         settings["tui"]["create_checkboxes_on"][broad_key] = {  # type: ignore
             "on": True,
             "displayed": True,
@@ -276,8 +264,7 @@ def get_name_templates_defaults() -> Dict:
 
 
 def get_persistent_settings_defaults() -> Dict:
-    """
-    Persistent settings are settings that are maintained
+    """Persistent settings are settings that are maintained
     across sessions. Currently, persistent settings for
     both the API and TUI are stored in the same place.
 
@@ -293,8 +280,7 @@ def get_persistent_settings_defaults() -> Dict:
 
 
 def get_datatypes() -> List[str]:
-    """
-    Canonical list of datatype flags based on NeuroBlueprint.
+    """Canonical list of datatype flags based on NeuroBlueprint.
 
     This must be kept up to date with the datatypes in the NeuroBlueprint specification.
     """
@@ -306,8 +292,7 @@ def get_broad_datatypes():
 
 
 def get_narrow_datatypes():
-    """
-    Return the narrow datatype associated with each broad datatype.
+    """Return the narrow datatype associated with each broad datatype.
     The mapping between broad and narrow datatypes is required for validation.
     """
     return {
@@ -337,8 +322,7 @@ def get_narrow_datatypes():
 
 
 def quick_get_narrow_datatypes():
-    """
-    A convenience wrapper around `get_narrow_datatypes()`
+    """A convenience wrapper around `get_narrow_datatypes()`
     to quickly get a list of all narrow datatypes.
     """
     all_narrow_datatypes = get_narrow_datatypes()
@@ -352,8 +336,7 @@ def quick_get_narrow_datatypes():
 
 
 def in_place_update_settings_for_narrow_datatype(settings: dict):
-    """
-    In versions < v0.6.0, only 'broad' datatypes were implemented
+    """In versions < v0.6.0, only 'broad' datatypes were implemented
     and available in the TUI. Since, 'narrow' datatypes are introduced
     and datatype tui can be set to be both on / off but also
     displayed / not displayed.

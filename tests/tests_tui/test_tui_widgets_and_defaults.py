@@ -14,8 +14,7 @@ from datashuttle.tui.screens.new_project import NewProjectScreen
 
 
 class TestTuiWidgets(TuiBase):
-    """
-    This class performs fundamental checks on the default display
+    """This class performs fundamental checks on the default display
     of widgets and that changing widgets properly change underlying
     configs. This does not perform any functional tests e.g.
     creation of configs of new files.
@@ -27,12 +26,9 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_new_project_configs(self, empty_project_paths):
-        """
-        Test all widgets display as expected on the New Project configs page.
-        """
+        """Test all widgets display as expected on the New Project configs page."""
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Select a new project, check NewProjectScreen is displayed correctly.
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_new_project_button"
@@ -127,7 +123,6 @@ class TestTuiWidgets(TuiBase):
                 == ""
             )
             if platform.system() == "Windows":
-
                 assert (
                     configs_content.query_one(
                         "#configs_central_path_input"
@@ -240,8 +235,7 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_existing_project_configs(self, setup_project_paths):
-        """
-        Because the underlying screen is shared between new and existing
+        """Because the underlying screen is shared between new and existing
         project configs, in the existing project configs just check
         widgets are hidden as expected.
         """
@@ -249,7 +243,6 @@ class TestTuiWidgets(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Navigate to the existing project and click onto the
             # configs tab.
             await self.check_and_click_onto_existing_project(
@@ -278,15 +271,13 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_create_folders_widgets_display(self, setup_project_paths):
-        """
-        Test all widgets on the 'Create' tab of the project manager screen
+        """Test all widgets on the 'Create' tab of the project manager screen
         are displayed as expected.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -370,15 +361,13 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_create_folder_settings_widgets(self, setup_project_paths):
-        """
-        Test the widgets in the 'Settings' menu of the project
+        """Test the widgets in the 'Settings' menu of the project
         manager's 'Create' tab.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
             )
@@ -487,8 +476,7 @@ class TestTuiWidgets(TuiBase):
     async def test_name_templates_widgets_and_settings(
         self, setup_project_paths
     ):
-        """
-        Check the 'Name Templates' section of the 'Create' tab 'Settings
+        """Check the 'Name Templates' section of the 'Create' tab 'Settings
         page. Here both subject and session configs share the same
         input, so ensure these are mapped correctly by the radiobutton setting,
         and that the underlying configs are set correctly.
@@ -500,7 +488,6 @@ class TestTuiWidgets(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
             )
@@ -650,15 +637,13 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_bypass_validation_settings(self, setup_project_paths):
-        """
-        Test all configs that underly the 'bypass validation'
+        """Test all configs that underly the 'bypass validation'
         setting are updated correctly by the widget.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
             )
@@ -717,15 +702,13 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_all_top_level_folder_selects(self, setup_project_paths):
-        """
-        Test all 'top level folder' selects (in Create and Transfer tabs)
+        """Test all 'top level folder' selects (in Create and Transfer tabs)
         update the underlying configs correctly.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Open project, check top level folder are correct
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
@@ -890,9 +873,7 @@ class TestTuiWidgets(TuiBase):
         expected_val,
         move_to_position: Union[bool, int] = False,
     ):
-        """
-        If move to position is not False, must be int specifying position
-        """
+        """If move to position is not False, must be int specifying position"""
         if move_to_position:
             await self.move_select_to_position(pilot, id, move_to_position)
 
@@ -913,8 +894,7 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_all_checkboxes(self, setup_project_paths):
-        """
-        Check all datatype checkboxes (Create and Transfer tab)
+        """Check all datatype checkboxes (Create and Transfer tab)
         correctly update the underlying configs. These are tested
         together to ensure there are no strange interaction between
         these as they both share stored in the project's 'tui'
@@ -924,7 +904,6 @@ class TestTuiWidgets(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -1041,7 +1020,6 @@ class TestTuiWidgets(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Navigate to the existing project and click onto the
             # configs tab.
             await self.check_and_click_onto_existing_project(
@@ -1228,7 +1206,6 @@ class TestTuiWidgets(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Navigate to the existing project and click onto the
             # configs tab.
             await self.check_and_click_onto_existing_project(
@@ -1280,8 +1257,7 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_dry_run(self, setup_project_paths):
-        """
-        Test the dry run setting. This is very similar in structure
+        """Test the dry run setting. This is very similar in structure
         to `test_overwrite_existing_files()`, merge if more persistent
         settings added.
         """
@@ -1289,7 +1265,6 @@ class TestTuiWidgets(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Navigate to the existing project and click onto the
             # configs tab.
             await self.check_and_click_onto_existing_project(

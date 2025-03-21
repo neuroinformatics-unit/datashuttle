@@ -1,6 +1,5 @@
 class Folder:
-    """
-    Folder class used to contain details of canonical
+    """Folder class used to contain details of canonical
     folders in the project folder tree.
 
     see configs.canonical_folders.py for details.

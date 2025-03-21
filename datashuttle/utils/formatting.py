@@ -22,8 +22,7 @@ def check_and_format_names(
     name_templates: Optional[Dict] = None,
     bypass_validation: bool = False,
 ) -> List[str]:
-    """
-    Format a list of subject or session names, e.g.
+    """Format a list of subject or session names, e.g.
     by ensuring all have sub- or ses- prefix, checking
     for tags, that names do not include spaces and that
     there are not duplicates.
@@ -38,7 +37,6 @@ def check_and_format_names(
 
     Parameters
     ----------
-
     names
         str or list containing sub or ses names (e.g. to create folders)
 
@@ -53,6 +51,7 @@ def check_and_format_names(
     bypass_validation
         If `True`, NeuroBlueprint validation will be performed
         on the passed names.
+
     """
     if isinstance(names, str):
         names = [names]
@@ -79,8 +78,7 @@ def check_and_format_names(
 
 
 def format_names(names: List, prefix: Prefix) -> List[str]:
-    """
-    Check a single or list of input session or subject names.
+    """Check a single or list of input session or subject names.
 
     First check the type is correct, next prepend the prefix
     sub- or ses- to entries that do not have the relevant prefix.
@@ -88,13 +86,13 @@ def format_names(names: List, prefix: Prefix) -> List[str]:
     with required inputs e.g. date, time
 
     Parameters
-    -----------
-
+    ----------
     names
         str or list containing sub or ses names (e.g. to make folders)
 
     prefix
         "sub" or "ses" - this defines the prefix checks.
+
     """
     assert prefix in ["sub", "ses"], "`prefix` must be 'sub' or 'ses'."
 
@@ -117,8 +115,7 @@ def format_names(names: List, prefix: Prefix) -> List[str]:
 def update_names_with_range_to_flag(
     names: List[str], prefix: str
 ) -> List[str]:
-    """
-    Given a list of names, check if they contain the @TO@ keyword.
+    """Given a list of names, check if they contain the @TO@ keyword.
     If so, expand to a range of names. Names including the @TO@
     keyword must be in the form prefix-num1@num2. The maximum
     number of leading zeros are used to pad the output
@@ -135,7 +132,9 @@ def update_names_with_range_to_flag(
         if tags("to") in name:
             check_name_with_to_tag_is_formatted_correctly(name, prefix)
 
-            prefix_tag = re.search(f"{prefix}-[0-9]+{tags('to')}[0-9]+", name)[0]  # type: ignore
+            prefix_tag = re.search(f"{prefix}-[0-9]+{tags('to')}[0-9]+", name)[
+                0
+            ]  # type: ignore
             tag_number = prefix_tag.split(f"{prefix}-")[1]
 
             name_start_str, name_end_str = name.split(tag_number)
@@ -172,8 +171,7 @@ def update_names_with_range_to_flag(
 def check_name_with_to_tag_is_formatted_correctly(
     name: str, prefix: str
 ) -> None:
-    """
-    Check the input string is formatted with the @TO@ key
+    """Check the input string is formatted with the @TO@ key
     as expected.
     """
     first_key_value_pair = name.split("_")[0]
@@ -191,8 +189,7 @@ def check_name_with_to_tag_is_formatted_correctly(
 def make_list_of_zero_padded_names_across_range(
     left_number: str, right_number: str, name_start_str: str, name_end_str: str
 ) -> List[str]:
-    """
-    Numbers formatted with the @TO@ keyword need to have
+    """Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
     the maximum number of leading zeros and apply for
     all numbers in the range. Note int() will strip
@@ -200,7 +197,6 @@ def make_list_of_zero_padded_names_across_range(
 
     Parameters
     ----------
-
     left_number
         left (start) number from the range, e.g. "001"
 
@@ -213,6 +209,7 @@ def make_list_of_zero_padded_names_across_range(
     name_end_str
         rest of the name after the flag, i.e. all other
         key-value pairs.
+
     """
     max_leading_zeros = max(
         utils.num_leading_zeros(left_number),
@@ -237,8 +234,7 @@ def make_list_of_zero_padded_names_across_range(
 
 
 def update_names_with_datetime(names: List[str]) -> None:
-    """
-    Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
+    """Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
 
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
@@ -261,8 +257,7 @@ def replace_date_time_tags_in_name(
     date_with_key: str,
     time_with_key: str,
 ):
-    """
-    For all names in the list, do the replacement of tags
+    """For all names in the list, do the replacement of tags
     with their final values.
     """
     for i, name in enumerate(names):
@@ -295,8 +290,7 @@ def format_datetime(date: str, time_: str) -> str:
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
-    """
-    If names are passed with @DATE@, @TIME@, or @DATETIME@
+    """If names are passed with @DATE@, @TIME@, or @DATETIME@
     but not surrounded by underscores, check and insert
     if required. e.g. sub-001@DATE@ becomes sub-001_@DATE@
     or sub-001@DATEid-101 becomes sub-001_@DATE_id-101
@@ -307,9 +301,9 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
     # Handle left edge
     if string[key_start_idx - 1] != "_":
         string_split = string.split(key)  # assumes key only in string once
-        assert (
-            len(string_split) == 2
-        ), f"{key} must not appear in string more than once."
+        assert len(string_split) == 2, (
+            f"{key} must not appear in string more than once."
+        )
 
         string = f"{string_split[0]}_{key}{string_split[1]}"
 
@@ -325,8 +319,7 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
 def add_missing_prefixes_to_names(
     all_names: Union[List[str], str], prefix: str
 ) -> List[str]:
-    """
-    Make sure all elements in the list of names are
+    """Make sure all elements in the list of names are
     prefixed with the prefix, typically "sub-" or "ses-"
 
     Use expanded list for readability

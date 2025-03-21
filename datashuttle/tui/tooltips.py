@@ -1,6 +1,5 @@
 def get_tooltip(id: str) -> str:
-    """
-    Master function to get tooltips for all widgets,
+    """Master function to get tooltips for all widgets,
     based on their widget (textual) id.
     """
     # Configs

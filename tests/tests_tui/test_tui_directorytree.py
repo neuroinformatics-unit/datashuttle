@@ -14,22 +14,19 @@ except pyperclip.PyperclipException:
 
 
 class TestTuiCreateDirectoryTree(TuiBase):
-    """
-    Test the `Create` tab directory tree.
+    """Test the `Create` tab directory tree.
     `Transfer`
     """
 
     @pytest.mark.asyncio
     async def test_fill_and_append_next_sub_and_ses(self, setup_project_paths):
-        """
-        Test the CTRL+F and CTRL+A functions on the directorytree
+        """Test the CTRL+F and CTRL+A functions on the directorytree
         that fill and append subject / session name to the inputs.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Open the create tab and first fill the subject
             # and session inputs with -001.
             await self.check_and_click_onto_existing_project(
@@ -116,8 +113,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
     async def test_create_folders_directorytree_clipboard(
         self, setup_project_paths
     ):
-        """
-        Check that pressing CTRL+Q on the directorytree copies the
+        """Check that pressing CTRL+Q on the directorytree copies the
         hovered folder to the clipboard (using pyperclip).
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
@@ -159,7 +155,6 @@ class TestTuiCreateDirectoryTree(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up a project and navigate to the directory tree
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=True
@@ -197,8 +192,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
     async def test_create_folders_directorytree_open_filesystem(
         self, setup_project_paths, monkeypatch
     ):
-        """
-        Test pressing CTRL+O on the filetree triggers the opening
+        """Test pressing CTRL+O on the filetree triggers the opening
         of a folder through the show-in-file-manager package
         (monkeypatched function).
         """
@@ -206,7 +200,6 @@ class TestTuiCreateDirectoryTree(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up the 'create tab' with loaded nodes
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=True

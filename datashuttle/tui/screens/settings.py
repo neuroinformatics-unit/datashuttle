@@ -20,8 +20,7 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class SettingsScreen(ModalScreen):
-    """
-    Screen accessible from the main window that contains
+    """Screen accessible from the main window that contains
     'global' settings for the TUI. 'Global' settings are non-project
     specific settings (e.g. dark mode) and are handled independently
     of the main datashuttle API.

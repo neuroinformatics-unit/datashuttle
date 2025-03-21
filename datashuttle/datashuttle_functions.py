@@ -28,14 +28,12 @@ def quick_validate_project(
     display_mode: DisplayMode = "warn",
     name_templates: Optional[Dict] = None,
 ) -> List[str]:
-    """
-    Perform validation on the project. This checks the subject
+    """Perform validation on the project. This checks the subject
     and session level folders to ensure there are not
     NeuroBlueprint formatting issues.
 
     Parameters
     ----------
-
     project_path
         Path to the project to validate. Must include the project
         name, and hold a "rawdata" or "derivatives" folder.
@@ -52,6 +50,7 @@ def quick_validate_project(
         A dictionary of templates for subject and session name
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.
+
     """
     project_path = Path(project_path)
 
@@ -91,8 +90,7 @@ def quick_validate_project(
 def _format_top_level_folder(
     top_level_folder: TopLevelFolder | None,
 ) -> List[TopLevelFolder]:
-    """
-    Take a `top_level_folder` ("rawdata" or "derivatives" str) and
+    """Take a `top_level_folder` ("rawdata" or "derivatives" str) and
     convert to list, if `None`, convert it to a list
     of both possible top-level folders.
     """

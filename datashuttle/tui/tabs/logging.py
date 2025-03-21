@@ -16,7 +16,7 @@ class RichLogScreen(ModalScreen):
     def __init__(self, log_file):
         super(RichLogScreen, self).__init__()
 
-        with open(log_file, "r") as file:
+        with open(log_file) as file:
             self.log_contents = "".join(file.readlines())
 
     def compose(self):

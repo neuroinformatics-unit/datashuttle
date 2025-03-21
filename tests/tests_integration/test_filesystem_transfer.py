@@ -13,7 +13,6 @@ from datashuttle.configs.canonical_tags import tags
 
 
 class TestFileTransfer(BaseTest):
-
     @pytest.mark.parametrize(
         "top_level_folder", canonical_folders.get_top_level_folders()
     )
@@ -28,8 +27,7 @@ class TestFileTransfer(BaseTest):
         upload_or_download,
         transfer_method,
     ):
-        """
-        First make a project (folders only) locally.
+        """First make a project (folders only) locally.
         Next upload this to the central path
         and check all folders are uploaded correctly.
         """
@@ -78,8 +76,7 @@ class TestFileTransfer(BaseTest):
         upload_or_download,
         transfer_method,
     ):
-        """
-        For each possible top level folder (e.g. rawdata, derivatives)
+        """For each possible top level folder (e.g. rawdata, derivatives)
         (parametrized) create a folder tree in every top-level folder,
         then transfer using upload / download and
         upload_rawdata() / download_rawdata() that only the working top-level folder
@@ -151,7 +148,6 @@ class TestFileTransfer(BaseTest):
         transfer_function()
 
         for top_level_folder in canonical_folders.get_top_level_folders():
-
             test_utils.check_folder_tree_is_correct(
                 os.path.join(base_path_to_check, top_level_folder),
                 subs,
@@ -177,8 +173,7 @@ class TestFileTransfer(BaseTest):
     def test_transfer_empty_folder_specific_data(
         self, project, upload_or_download, datatype_to_transfer
     ):
-        """
-        For the combination of datatype folders, make a folder
+        """For the combination of datatype folders, make a folder
         tree with all datatype folders then upload select ones,
         checking only the selected ones are uploaded.
         """
@@ -215,7 +210,7 @@ class TestFileTransfer(BaseTest):
             ["behav", "ephys", "funcimg", "anat"],
         ],
     )
-    @pytest.mark.parametrize("upload_or_download", ["upload" "download"])
+    @pytest.mark.parametrize("upload_or_download", ["uploaddownload"])
     def test_transfer_empty_folder_specific_subs(
         self,
         project,
@@ -223,8 +218,7 @@ class TestFileTransfer(BaseTest):
         datatype_to_transfer,
         sub_idx_to_upload,
     ):
-        """
-        Create a project folder tree with a set of subs, then
+        """Create a project folder tree with a set of subs, then
         take a subset of these subs and upload them. Check only the
         selected subs were uploaded.
         """
@@ -268,8 +262,7 @@ class TestFileTransfer(BaseTest):
         sub_idx_to_upload,
         ses_idx_to_upload,
     ):
-        """
-        Make a project with set subs and sessions. Then select a subset of the
+        """Make a project with set subs and sessions. Then select a subset of the
         sessions to upload. Check only the selected sessions were uploaded.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -303,8 +296,7 @@ class TestFileTransfer(BaseTest):
     def test_transfer_with_keyword_parameters(
         self, project, upload_or_download
     ):
-        """
-        Test the @TO@ keyword is accepted properly when making a session and
+        """Test the @TO@ keyword is accepted properly when making a session and
         transferring it. First pass @TO@-formatted sub and sessions to
         create_folders. Then transfer the files (upload or download).
 
@@ -350,8 +342,7 @@ class TestFileTransfer(BaseTest):
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_wildcard_transfer(self, project, upload_or_download):
-        """
-        Transfer a subset of define subject and session
+        """Transfer a subset of define subject and session
         and check only the expected folders are there.
         """
         subs = ["sub-389", "sub-989", "sub-445"]
@@ -395,8 +386,7 @@ class TestFileTransfer(BaseTest):
             ]
 
     def test_deep_folder_structure(self, project):
-        """
-        Just a quick test as all other tests only test files directly in the
+        """Just a quick test as all other tests only test files directly in the
         datatyp directly. Check that rlcone is setup to transfer
         multiple levels down from the datatype level.
         """
@@ -427,8 +417,7 @@ class TestFileTransfer(BaseTest):
         dry_run,
         capsys,
     ):
-        """
-        When verbosity is --vv, rclone itself will output
+        """When verbosity is --vv, rclone itself will output
         a list of all called arguments. Use this to check
         rclone is called with the arguments set in configs
         as expected. verbosity itself is tested in another method.
@@ -475,8 +464,7 @@ class TestFileTransfer(BaseTest):
         top_level_folder,
         upload_or_download,
     ):
-        """
-        Main test to check every parameterization for overwrite settings.
+        """Main test to check every parameterization for overwrite settings.
         It is such an important setting it is tested for all top level folder,
         transfer method, even though it makes for quite a confusing function.
 
@@ -541,8 +529,7 @@ class TestFileTransfer(BaseTest):
         top_level_folder,
         upload_or_download,
     ):
-        """
-        This functions is extremely similar to
+        """This functions is extremely similar to
         `test_overwrite_same_size_later_to_earlier()` but it is much
         easier to understand individually when they are split.
 
@@ -588,8 +575,7 @@ class TestFileTransfer(BaseTest):
     def test_overwrite_different_size_different_times(
         self, project, overwrite_existing_files
     ):
-        """
-        Quick additional test to confirm that "if_source_newer" will still
+        """Quick additional test to confirm that "if_source_newer" will still
         not transfer even if the older file is larger. This is the expected
         behaviour from rclone, this is confidence check on understanding.
         """
@@ -670,8 +656,7 @@ class TestFileTransfer(BaseTest):
     def test_dry_run(
         self, project, top_level_folder, transfer_method, upload_or_download
     ):
-        """
-        Just do a quick functional test on dry-run that indeed nothing
+        """Just do a quick functional test on dry-run that indeed nothing
         is transferred across all top-level-folder / upload-download
         methods.
         """
@@ -704,8 +689,7 @@ class TestFileTransfer(BaseTest):
         transfer_file,
         upload_or_download,
     ):
-        """
-        Test upload_specific_folder_or_file() and download_specific_folder_or_file().
+        """Test upload_specific_folder_or_file() and download_specific_folder_or_file().
 
         Make a project with two different files (just to
         ensure non-target files are not transferred). Transfer

@@ -11,8 +11,7 @@ from datashuttle.utils.folder_class import Folder
 
 
 def get_datatype_folders() -> dict:
-    """
-    This function holds the canonical folders
+    """This function holds the canonical folders
     managed by datashuttle.
 
     Notes
@@ -32,6 +31,7 @@ def get_datatype_folders() -> dict:
         an option for rare cases in which advanced users want to change it.
 
     level : "sub" or "ses", level to make the folder at.
+
     """
     return {
         datatype: Folder(name=datatype, level="ses")
@@ -40,8 +40,7 @@ def get_datatype_folders() -> dict:
 
 
 def get_non_sub_names() -> List[str]:
-    """
-    Get all arguments that are not allowed at the
+    """Get all arguments that are not allowed at the
     subject level for data transfer, i.e. as sub_names
     """
     return [
@@ -53,8 +52,7 @@ def get_non_sub_names() -> List[str]:
 
 
 def get_non_ses_names() -> List[str]:
-    """
-    Get all arguments that are not allowed at the
+    """Get all arguments that are not allowed at the
     session level for data transfer, i.e. as ses_names
     """
     return [
@@ -66,8 +64,7 @@ def get_non_ses_names() -> List[str]:
 
 
 def canonical_reserved_keywords() -> List[str]:
-    """
-    Key keyword arguments that are passed to `sub_names` or
+    """Key keyword arguments that are passed to `sub_names` or
     `ses_names` but that we
     """
     return get_non_sub_names() + get_non_ses_names()
@@ -78,16 +75,14 @@ def get_top_level_folders() -> List[TopLevelFolder]:
 
 
 def get_datashuttle_path() -> Path:
-    """
-    Get the datashuttle path where all project
+    """Get the datashuttle path where all project
     configs are stored.
     """
     return Path.home() / ".datashuttle"
 
 
 def get_project_datashuttle_path(project_name: str) -> Tuple[Path, Path]:
-    """
-    Get the datashuttle path for the project,
+    """Get the datashuttle path for the project,
     where configuration files are stored.
     Also, return a temporary path in this for logging in
     some cases where local_path location is not clear.

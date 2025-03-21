@@ -14,8 +14,7 @@ from datashuttle.tui import configs
 
 
 class NewProjectScreen(Screen):
-    """
-    Screen for setting up a new datashuttle project, by
+    """Screen for setting up a new datashuttle project, by
     inputting the desired configs. This uses the
     ConfigsContent window to display and set the configs.
 
@@ -30,9 +29,9 @@ class NewProjectScreen(Screen):
 
     Parameters
     ----------
-
     mainwindow
         The main TUI app
+
     """
 
     TITLE = "Make New Project"

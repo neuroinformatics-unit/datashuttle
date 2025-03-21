@@ -31,8 +31,7 @@ from datashuttle.tui.screens import (
 
 
 class TuiApp(App, inherit_bindings=False):  # type: ignore
-    """
-    The main app page for the DataShuttle TUI.
+    """The main app page for the DataShuttle TUI.
 
     This class acts as a base class from which all windows
     (select existing project, make new project, settings and
@@ -67,8 +66,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         self.theme = "textual-dark" if dark_mode else "textual-light"
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        Raise the relevant screen after button press. `push_screen`
+        """Raise the relevant screen after button press. `push_screen`
         second argument is a callback function returned after screen closes.
         """
         if event.button.id == "mainwindow_existing_project_button":
@@ -104,8 +102,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         self.push_screen(modal_dialogs.MessageBox(message, border_color="red"))
 
     def handle_open_filesystem_browser(self, path_: Path) -> None:
-        """
-        Open the system file browser to the path with the `showinfm`
+        """Open the system file browser to the path with the `showinfm`
         package, performing checks that the path exists prior to opening.
         """
         if not path_.exists():
@@ -166,8 +163,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     # Global Settings ---------------------------------------------------------
 
     def load_global_settings(self) -> Dict:
-        """
-        Load the 'global settings' for the TUI that determine
+        """Load the 'global settings' for the TUI that determine
         project-independent settings that are persistent across
         sessions. These are stored in the canonical
         .datashuttle folder (see `get_global_settings_path`).
@@ -178,15 +174,13 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             global_settings = self.get_default_global_settings()
             self.save_global_settings(global_settings)
         else:
-            with open(settings_path, "r") as file:
+            with open(settings_path) as file:
                 global_settings = yaml.full_load(file)
 
         return global_settings
 
     def get_global_settings_path(self) -> Path:
-        """
-        The canonical path for the TUI's global settings.
-        """
+        """The canonical path for the TUI's global settings."""
         path_ = canonical_folders.get_datashuttle_path()
         return path_ / "global_tui_settings.yaml"
 
@@ -206,8 +200,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             yaml.dump(global_settings, file, sort_keys=False)
 
     def copy_to_clipboard(self, value):
-        """
-        Centralized function to copy to clipboard.
+        """Centralized function to copy to clipboard.
         This may fail under some circumstances (e.g., in headless mode on an HPC).
         """
         try:

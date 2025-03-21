@@ -38,9 +38,7 @@ def start(
     variables: Optional[List[Any]],
     verbose: bool = True,
 ) -> None:
-    """
-    Call fancylog to initialise logging.
-    """
+    """Call fancylog to initialise logging."""
     filename = get_logging_filename(command_name)
 
     fancylog.start_logging(
@@ -60,8 +58,7 @@ def start(
 
 
 def get_logging_filename(command_name: str) -> str:
-    """
-    Get the filename to which the log will be saved. This
+    """Get the filename to which the log will be saved. This
     starts with ISO8601-formatted datetime, so logs are stored
     in datetime order.
     """
@@ -70,26 +67,24 @@ def get_logging_filename(command_name: str) -> str:
 
 
 def log_names(list_of_headers: List[Any], list_of_names: List[Any]) -> None:
-    """
-    Log a list of subject or session names.
+    """Log a list of subject or session names.
 
     Parameters
     ----------
-
     list_of_headers
         a list of titles that the names
         will be printed under, e.g. "sub_names", "ses_names"
 
     list_of_names
         list of names to print to log
+
     """
     for header, names in zip(list_of_headers, list_of_names):
         utils.log(f"{header}: {names}")
 
 
 def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs) -> List:
-    """
-    Wrap the locals from the original function call to log
+    """Wrap the locals from the original function call to log
     and the datashuttle.cfg in a wrapper class with __dict__
     attribute for fancylog writing.
 
@@ -110,9 +105,7 @@ def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs) -> List:
 
 
 def close_log_filehandler() -> None:
-    """
-    Remove handlers from all loggers.
-    """
+    """Remove handlers from all loggers."""
     logger = get_logger()
     logger.debug("Finished logging.")
     handlers = logger.handlers[:]

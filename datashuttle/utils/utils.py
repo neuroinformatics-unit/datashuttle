@@ -19,8 +19,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 def log(message: str) -> None:
-    """
-    Log the message to the main initialised
+    """Log the message to the main initialised
     logger.
     """
     if ds_logger.logging_is_active():
@@ -29,8 +28,7 @@ def log(message: str) -> None:
 
 
 def log_and_message(message: str, use_rich: bool = False) -> None:
-    """
-    Log the message and send it to user.
+    """Log the message and send it to user.
     use_rich : is True, use rich's print() function
     """
     log(message)
@@ -38,9 +36,7 @@ def log_and_message(message: str, use_rich: bool = False) -> None:
 
 
 def log_and_raise_error(message: str, exception: Any) -> None:
-    """
-    Log the message before raising the same message as an error.
-    """
+    """Log the message before raising the same message as an error."""
     if ds_logger.logging_is_active():
         logger = ds_logger.get_logger()
         logger.error(f"\n\n{' '.join(traceback.format_stack(limit=5))}")
@@ -57,8 +53,7 @@ def warn(message: str, log: bool) -> None:
 
 
 def raise_error(message: str, exception) -> None:
-    """
-    Centralized way to raise an error. The logger is closed
+    """Centralized way to raise an error. The logger is closed
     to ensure it is not still running if a function call
     raises an exception in a python environment.
     """
@@ -69,8 +64,7 @@ def raise_error(message: str, exception) -> None:
 def print_message_to_user(
     message: Union[str, list], use_rich: bool = False
 ) -> None:
-    """
-    Centralised way to send message.
+    """Centralised way to send message.
     use_rich :  use rich's print() function.
     """
     if use_rich:
@@ -80,9 +74,7 @@ def print_message_to_user(
 
 
 def get_user_input(message: str) -> str:
-    """
-    Centralised way to get user input
-    """
+    """Centralised way to get user input"""
     input_ = input(message)
     return input_
 
@@ -125,8 +117,7 @@ def get_values_from_bids_formatted_name(
     return_as_int: bool = False,
     sort: bool = False,
 ) -> Union[List[int], List[str]]:
-    """
-    Find the values associated with a key from a list of all
+    """Find the values associated with a key from a list of all
     BIDS-formatted file / folder names. This is typically used to
     find sub / ses values.
 
@@ -135,10 +126,10 @@ def get_values_from_bids_formatted_name(
     This function does not raise through datashuttle because we
     don't want to turn off logging, as some times these exceptions
     are caught and skipped.
+
     """
     all_values = []
     for name in all_names:
-
         if key not in name:
             raise NeuroBlueprintError(
                 f"The key {key} is not found in {name}", KeyError
@@ -177,8 +168,7 @@ def sub_or_ses_value_to_int(value: str) -> int:
 
 
 def get_value_from_key_regexp(name: str, key: str) -> List[str]:
-    """
-    Find the value related to the key in a
+    """Find the value related to the key in a
     BIDS-style key-value pair name.
     e.g. sub-001_ses-312 would find
     312 for key "ses".
@@ -197,8 +187,7 @@ def integers_are_consecutive(list_of_ints: List[int]) -> bool:
 
 
 def diff(x: List) -> List:
-    """
-    slow, custom differentiator for small inputs, to avoid
+    """slow, custom differentiator for small inputs, to avoid
     adding numpy as a dependency.
     """
     return [x[i + 1] - x[i] for i in range(len(x) - 1)]
@@ -213,14 +202,10 @@ def num_leading_zeros(string: str) -> int:
 
 
 def all_unique(list_: List) -> bool:
-    """
-    Check that all values in a list are different.
-    """
+    """Check that all values in a list are different."""
     return len(list_) == len(set(list_))
 
 
 def all_identical(list_: List) -> bool:
-    """
-    Check that all values in a list are identical.
-    """
+    """Check that all values in a list are identical."""
     return len(set(list_)) == 1

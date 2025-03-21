@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, List, Literal, Optional
 
 if TYPE_CHECKING:
-
     from textual.app import ComposeResult
 
     from datashuttle.tui.interface import Interface
@@ -65,8 +64,7 @@ tooltips = {
 
 
 class DisplayedDatatypesScreen(ModalScreen):
-    """
-    Screen to select the which datatype checkboxes to show on the Create / Transfer tabs.
+    """Screen to select the which datatype checkboxes to show on the Create / Transfer tabs.
 
     Display a SessionList widget which all canonical broad and narrow-type
     datatypes. When selected, this will update DatatypeCheckboxes (coordinates
@@ -83,6 +81,7 @@ class DisplayedDatatypesScreen(ModalScreen):
            checkboxes are so close together. Testing indicate that when writing to
            file after each click, syncing could get messed up and the wrong checkboxes
            displayed on the window.
+
     """
 
     def __init__(
@@ -102,8 +101,7 @@ class DisplayedDatatypesScreen(ModalScreen):
         )
 
     def compose(self) -> ComposeResult:
-        """
-        Collect the datatypes names and status from
+        """Collect the datatypes names and status from
         the persistent settings and display.
         """
         selections = []
@@ -146,8 +144,7 @@ class DisplayedDatatypesScreen(ModalScreen):
     # assert False, f"{dir(self.query_one('#displayed_datatypes_selection_list'))}"
 
     def on_button_pressed(self, event):
-        """
-        When 'Save' is pressed, the configs copied on this class
+        """When 'Save' is pressed, the configs copied on this class
         are updated back onto the interface configs, and written to disk.
         Otherwise, close the screen without saving.
         """
@@ -163,8 +160,7 @@ class DisplayedDatatypesScreen(ModalScreen):
     def on_selection_list_selection_toggled(
         self, event: SelectionList.SelectionMessage.SelectionToggled
     ):
-        """
-        When a selection is toggled, update the configs with
+        """When a selection is toggled, update the configs with
         the 'displayed' status and save to disk.
         """
         datatype_name = event.selection.prompt.plain
@@ -182,13 +178,11 @@ class DisplayedDatatypesScreen(ModalScreen):
 
 
 class DatatypeCheckboxes(Static):
-    """
-    Dynamically-populated checkbox widget for convenient datatype
+    """Dynamically-populated checkbox widget for convenient datatype
     selection during folder creation.
 
     Parameters
     ----------
-
     settings_key
         'create' if datatype checkboxes for the create tab,
         'transfer' for the transfer tab. Transfer tab includes
@@ -196,7 +190,6 @@ class DatatypeCheckboxes(Static):
 
     Attributes
     ----------
-
     datatype_config
         a Dictionary containing datatype as key (e.g. "ephys", "behav")
         and values are `bool` indicating whether the checkbox is on / off.
@@ -210,6 +203,7 @@ class DatatypeCheckboxes(Static):
     however because this screen persists through the lifetime of the app
     there is no clear time point in which to save the checkbox status.
     Therefore, the configs are updated (written to disk) on each click.
+
     """
 
     def __init__(
@@ -242,8 +236,7 @@ class DatatypeCheckboxes(Static):
 
     @on(Checkbox.Changed)
     def on_checkbox_changed(self) -> None:
-        """
-        When a checkbox is changed, update the `self.datatype_config`
+        """When a checkbox is changed, update the `self.datatype_config`
         to contain new boolean values for each datatype. Also update
         the stored `persistent_settings`.
         """
@@ -266,8 +259,7 @@ class DatatypeCheckboxes(Static):
                 ).tooltip = tooltips[datatype]
 
     def selected_datatypes(self) -> List[str]:
-        """
-        Get the names of the datatype options for which the
+        """Get the names of the datatype options for which the
         checkboxes are switched on.
         """
         selected_datatypes = [

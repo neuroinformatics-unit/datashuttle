@@ -47,7 +47,6 @@ class GetHelpScreen(ModalScreen):
         webbrowser.open(links.get_link_zulip())
 
     def compose(self) -> ComposeResult:
-
         yield Container(
             Static(self.text, id="get_help_label"),
             Button("Main Menu", id="all_main_menu_buttons"),

@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
-
     from textual.app import ComposeResult
 
     from datashuttle.tui.app import App
@@ -28,8 +27,7 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class CreateFoldersSettingsScreen(ModalScreen):
-    """
-    This screen handles setting datashuttle's `name_template`'s, as well
+    """This screen handles setting datashuttle's `name_template`'s, as well
     as the top-level-folder select and option to bypass all validation.
 
     Name Templates
@@ -46,10 +44,10 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     Attributes
     ----------
-
     Because the Input for `name_templates` is shared between subject
     and session, the values are held in the `input_values` attribute.
     These are loaded from `persistent_settings` on init.
+
     """
 
     TITLE = "Create Folders Settings"
@@ -164,8 +162,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.query_one("#template_inner_container").disabled = not is_on
 
     def fill_input_from_template(self) -> None:
-        """
-        Fill the `name_templates` Input, that is shared
+        """Fill the `name_templates` Input, that is shared
         between subject and session, depending on the
         current radioset value.
         """
@@ -179,8 +176,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             input.value = value
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        On close, update the `name_templates` stored in
+        """On close, update the `name_templates` stored in
         `persistent_settings` with those set on the TUI.
 
         Setting may error if templates are turned on but
@@ -208,9 +204,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """
-        Turn `name_templates` on or off and update the TUI accordingly.
-        """
+        """Turn `name_templates` on or off and update the TUI accordingly."""
         is_on = event.value
 
         if event.checkbox.id == "template_settings_validation_on_checkbox":
@@ -232,13 +226,12 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 disable_container = not self.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).value
-            self.query_one("#template_inner_container").disabled = (
-                disable_container
-            )
+            self.query_one(
+                "#template_inner_container"
+            ).disabled = disable_container
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        """
-        Update the displayed SSH widgets when the `connection_method`
+        """Update the displayed SSH widgets when the `connection_method`
         radiobuttons are changed.
         """
         label = str(event.pressed.label)

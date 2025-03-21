@@ -23,8 +23,7 @@ from datashuttle.tui.utils.tui_decorators import require_double_click
 
 
 class MessageBox(ModalScreen):
-    """
-    A screen for rendering error messages.
+    """A screen for rendering error messages.
 
     message
         The message to display in the message box
@@ -70,8 +69,7 @@ class MessageBox(ModalScreen):
 
 
 class ConfirmAndAwaitTransferPopup(ModalScreen):
-    """
-    A popup screen for confirming, awaiting and finishing a Transfer.
+    """A popup screen for confirming, awaiting and finishing a Transfer.
 
     When users select Transfer, this screen pops up to a) allow users to confirm transfer b) display
     a `LoadingIndicator` while the transfer runs in a separate worker c) indicate the transfer is finished.
@@ -117,7 +115,6 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
     async def handle_transfer_and_update_ui_when_complete(self) -> None:
         """Runs the data transfer worker and updates the UI on completion"""
-
         data_transfer_worker = self.transfer_func()
         await data_transfer_worker.wait()
         success, output = data_transfer_worker.result
@@ -138,21 +135,20 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
-    """
-    A modal screen that includes a DirectoryTree to browse
+    """A modal screen that includes a DirectoryTree to browse
     and select folders. If a folder is double-clicked,
     the path to the folder is returned through 'dismiss'
     callback mechanism.
 
     Parameters
     ----------
-
     mainwindow
         Textual main app screen
 
     path_
         Path to use as the DirectoryTree root,
         if `None` set to the system user home.
+
     """
 
     def __init__(self, mainwindow: App, path_: Optional[Path] = None) -> None:
@@ -166,7 +162,6 @@ class SelectDirectoryTreeScreen(ModalScreen):
         self.prev_click_time = 0
 
     def compose(self) -> ComposeResult:
-
         label_message = (
             "Select (double click) a folder with the same name as the project.\n"
             "If the project folder does not exist, select the parent folder and it will be created."

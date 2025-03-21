@@ -18,8 +18,7 @@ from datashuttle.utils.getters import (
 
 
 class ProjectSelectorScreen(Screen):
-    """
-    The project selection screen. Finds and displays DataShuttle
+    """The project selection screen. Finds and displays DataShuttle
     projects present on the local system.
 
     `self.dismiss()` returns an initialised project if initialisation
@@ -28,7 +27,6 @@ class ProjectSelectorScreen(Screen):
 
     Parameters
     ----------
-
     mainwindow
         The main TUI app, functions on which are used to coordinate
         screen display.
@@ -55,7 +53,6 @@ class ProjectSelectorScreen(Screen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id in self.project_names:
-
             project_name = event.button.id
 
             interface = Interface()
