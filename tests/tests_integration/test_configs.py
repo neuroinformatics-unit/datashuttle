@@ -10,6 +10,8 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 class TestConfigs(BaseTest):
+    """PLACEHOLDER."""
+
     # Test Errors
     # -------------------------------------------------------------
 
@@ -55,7 +57,7 @@ class TestConfigs(BaseTest):
     )
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
     def test_bad_path_syntax(self, project, bad_pattern, path_type, tmp_path):
-        """ "~", "." and "../" syntax is not supported because
+        """"~", "." and "../" syntax is not supported because
         it does not work with rclone. Theoretically it
         could be supported by checking for "." etc. and
         filling in manually, but it does not seem robust.
@@ -90,7 +92,7 @@ class TestConfigs(BaseTest):
 
     def test_no_ssh_options_set_on_make_config_file(self, no_cfg_project):
         """Check that program will assert if not all ssh options
-        are set on make_config_file
+        are set on make_config_file.
         """
         with pytest.raises(ConfigError) as e:
             no_cfg_project.make_config_file(
@@ -211,9 +213,9 @@ class TestConfigs(BaseTest):
         function is monkeypatched in order to point to a tmp_path.
 
         The tmp_path / "projects" is filled with a mix of project folders
-        with and without config, and tested against accordingly. The `local_path`
-        and `central_path` specified in the DataShuttle config are arbitrarily put in
-        `tmp_path`.
+        with and without config, and tested against accordingly. The
+        `local_path` and `central_path` specified in the DataShuttle config are
+        arbitrarily put in `tmp_path`.
         """
 
         def patch_get_datashuttle_path():
@@ -249,9 +251,9 @@ class TestConfigs(BaseTest):
             (tmp_path / "projects" / "project_3"),
         ]
 
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utils
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def check_config_reopen_and_check_config_again(self, project, *kwargs):
         """Check the config file and project.cfg against provided kwargs,
