@@ -1,57 +1,51 @@
 :html_theme.sidebar_secondary.remove:
 
-```bash
-
-#!/bin/bash
-
-# Ensure Bash is loaded
-source ~/.bashrc
-
-echo "Starting script..."
-micromamba activate datashuttle-env
-echo "Micromamba environment activated."
+# Acquisition Script
 
 
-# Change to the appropriate directory (modify as needed)
-cd ~/datashuttle
 
-# Run the Python script
-python3 - <<EOF
-print("Python script started...")
-from datashuttle import DataShuttle
-import os
+```python
+def get_file_path():
 
-# Define the projects directory
-projects_dir = "/mnt/ceph/_projects"
+    # get your project
+    project = DataShuttle("social_sleaping")
 
-# Get the list of projects
-project_list = os.listdir(projects_dir)
+    # create a prompt to enter the ID number
+    # (which we will use to get the subject number)
+    id_number = input("Enter ID number: ")
+    sub = ID_DICT.get(id_number)
 
-# Dictionary to store error messages
-error_messages = {}
+    # get your session number and create a new folder
+    # for the session you are about to record.
+    # the function get_next_ses() normally checks for the next session
+    # if you are recording for a new subject you can use it as well to create
+    # the first session folder for this subject.
+    session = project.get_next_ses(top_level_folder="rawdata",
+                                   sub=f"sub-{sub}_id-{id_number}")
 
-# Iterate through projects and validate
-for p in project_list:
-    project_path = os.path.join(projects_dir, p)
-    if os.path.isdir(project_path):  # Only process directories
-        project = DataShuttle(p)
-        # project.make_config_file(local_path=project_path)
-        try:
-            errors = project.validate_project("rawdata", display_mode="print", strict_mode=True)
-            error_messages[p] = errors if errors else "No errors"
-        except Exception as e:
-            error_messages[p] = f"Validation failed: {e}"
+    # create the folders
+    created_folders = project.create_folders(
+        top_level_folder="rawdata",
+        sub_names=f"sub-{sub}_id-{id_number}",
+        ses_names=f"{session}_@DATETIME@",
+        datatype=["behav"]
+    )
+    # create a prompt to enter the experiment information and
+    # conspecific ID for social experiments.
+    # (this is only important for the video file name and might not be
+    # relevant for you.)
+    exp_number = input("Enter Experiment condition: ")
+    comsp_id = input("Enter Conspecific ID: ")
 
-# Save log file
-log_file = "project_validation.txt"
-with open(log_file, "w") as f:
-    for project, message in error_messages.items():
-        f.write(f"{project}: {message}\n")
+    # print the start of your acquisition
+    start = datetime.now()
+    print(datetime.now())
+    # create the video file name
+    file_name_video_1 = f"{exp_number}_{comsp_id}.avi"
 
-# Optional: Print summary of error messages
-for project, message in error_messages.items():
-    print(f"{project}: {message}")
-EOF
+    # create the path to the video file
+    file_path1 = created_folders['behav'][0] / file_name_video_1
+    file_path1.touch()
 
-echo "Python script executed."
+    return file_path1
 ```
