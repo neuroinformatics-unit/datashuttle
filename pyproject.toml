@@ -131,6 +131,7 @@ per-file-ignores = { "tests/*" = [
 # Inconsistent with movement repo, but saving this here for
 # now in case there are good reasons to keep these rules
 ignore = ["E203","E501","E731","C901","W291","W293","E402","E722",
+    "D100", # missing docstring in public module (not enforced FOR NOW)
     "D203", # one blank line before class
     "D213", # multi-line-summary second line
     "D401", # first line of docstrings should be in an imperative mood
