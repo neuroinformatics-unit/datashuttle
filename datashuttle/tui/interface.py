@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import ssh
+from datashuttle.utils import ssh, gdrive, aws
 
 
 class Interface:
@@ -183,35 +183,55 @@ class Interface:
 
     # Transfer
     # ----------------------------------------------------------------------------------
-
     def transfer_entire_project(self, upload: bool) -> InterfaceOutput:
         """
         Transfer the entire project (all canonical top-level folders).
 
         Parameters
         ----------
-
         upload : bool
             Upload from local to central if `True`, otherwise download
             from central to remote.
         """
         try:
-            if upload:
-                transfer_func = self.project.upload_entire_project
-            else:
-                transfer_func = self.project.download_entire_project
+            connection_method = self.project.cfg["connection_method"]
 
-            transfer_func(
-                overwrite_existing_files=self.tui_settings[
-                    "overwrite_existing_files"
-                ],
-                dry_run=self.tui_settings["dry_run"],
-            )
+            if connection_method in ["ssh", "local_filesystem"]:
+                transfer_func = (
+                    self.project.upload_entire_project
+                    if upload
+                    else self.project.download_entire_project
+                )
+                transfer_func(
+                    overwrite_existing_files=self.tui_settings["overwrite_existing_files"],
+                    dry_run=self.tui_settings["dry_run"],
+                )
+
+            elif connection_method == "aws":
+                remote_path = self.project.cfg["aws_bucket_name"]
+                success, message = self.project.transfer_aws_files(
+                    upload_or_download="upload" if upload else "download",
+                    local_path=self.project.cfg["local_path"],
+                    remote_path=remote_path,
+                )
+                if not success:
+                    return False, message
+
+            elif connection_method == "gdrive":
+                remote_path = self.project.cfg["google_drive_folder_id"]
+                success, message = self.project.transfer_gdrive_files(
+                    upload_or_download="upload" if upload else "download",
+                    local_path=self.project.cfg["local_path"],
+                    remote_path=remote_path,
+                )
+                if not success:
+                    return False, message
 
             return True, None
 
         except BaseException as e:
             return False, str(e)
+
 
     def transfer_top_level_only(
         self, selected_top_level_folder: str, upload: bool
@@ -257,6 +277,7 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
+    
 
     def transfer_custom_selection(
         self,
@@ -271,7 +292,6 @@ class Interface:
 
         Parameters
         ----------
-
         selected_top_level_folder : str
             The top level folder selected in the TUI for this transfer window.
 
@@ -289,26 +309,46 @@ class Interface:
             from central to remote.
         """
         try:
-            if upload:
-                transfer_func = self.project.upload_custom
-            else:
-                transfer_func = self.project.download_custom
+            connection_method = self.project.cfg["connection_method"]
 
-            transfer_func(
-                selected_top_level_folder,
-                sub_names=sub_names,
-                ses_names=ses_names,
-                datatype=datatype,
-                overwrite_existing_files=self.tui_settings[
-                    "overwrite_existing_files"
-                ],
-                dry_run=self.tui_settings["dry_run"],
-            )
+            if connection_method in ["ssh", "local_filesystem"]:
+                transfer_func = (
+                    self.project.upload_custom if upload else self.project.download_custom
+                )
+                transfer_func(
+                    selected_top_level_folder,
+                    sub_names=sub_names,
+                    ses_names=ses_names,
+                    datatype=datatype,
+                    overwrite_existing_files=self.tui_settings["overwrite_existing_files"],
+                    dry_run=self.tui_settings["dry_run"],
+                )
+
+            elif connection_method == "aws":
+                remote_path = f"{self.project.cfg['aws_bucket_name']}/{selected_top_level_folder}"
+                success, message = self.project.transfer_aws_files(
+                    upload_or_download="upload" if upload else "download",
+                    local_path=self.project.cfg["local_path"],
+                    remote_path=remote_path,
+                )
+                if not success:
+                    return False, message
+
+            elif connection_method == "grive":
+                remote_path = f"{self.project.cfg['google_drive_folder_id']}/{selected_top_level_folder}"
+                success, message = self.project.transfer_gdrive_files(
+                    upload_or_download="upload" if upload else "download",
+                    local_path=self.project.cfg["local_path"],
+                    remote_path=remote_path,
+                )
+                if not success:
+                    return False, message
 
             return True, None
 
         except BaseException as e:
             return False, str(e)
+
 
     # Setup SSH
     # ----------------------------------------------------------------------------------
@@ -455,3 +495,103 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
+
+    # Setup AWS S3
+    # ----------------------------------------------------------------------------------
+
+    def get_aws_bucket_name(self) -> str:
+        """
+        Retrieve the AWS bucket name from project configs.
+        """
+        return self.project.cfg["aws_bucket_name"]
+
+    def get_aws_hostkey(self) -> InterfaceOutput:
+        """
+        Retrieve AWS host credentials for verification.
+        """
+        try:
+            key = aws.get_remote_aws_key(
+                self.project.cfg["aws_bucket_name"]
+            )
+            return True, key
+        except BaseException as e:
+            return False, str(e)
+
+    def save_aws_key_locally(self, key: str) -> InterfaceOutput:
+        """
+        Save the AWS access key locally for secure storage.
+        """
+        try:
+            aws.save_aws_key_locally(
+                key,
+                self.project.cfg["aws_bucket_name"],
+                self.project.cfg.aws_key_path,
+            )
+            return True, None
+
+        except BaseException as e:
+            return False, str(e)
+
+    def setup_aws_bucket_and_rclone_config(
+        self, bucket_name: str, region: str
+    ) -> InterfaceOutput:
+        try:
+            self.project.cfg["aws_bucket_name"] = bucket_name
+            self.project.cfg["aws_region"] = region
+
+            self.project._setup_rclone_central_aws_config(log=False)
+
+            return True, None
+
+        except BaseException as e:
+            return False, str(e)
+
+    # Setup Google Drive
+    # ----------------------------------------------------------------------------------
+
+    def get_gdrive_folder_id(self) -> str:
+        """
+        Retrieve the Google Drive folder ID from project configs.
+        """
+        return self.project.cfg["gdrive_folder_id"]
+
+    def get_gdrive_hostkey(self) -> InterfaceOutput:
+        """
+        Retrieve Google Drive credentials for verification.
+        """
+        try:
+            key = gdrive.get_remote_gdrive_key(
+                self.project.cfg["gdrive_folder_id"]
+            )
+            return True, key
+        except BaseException as e:
+            return False, str(e)
+
+    def save_gdrive_key_locally(self, key: str) -> InterfaceOutput:
+        """
+        Save the Google Drive credentials locally for secure storage.
+        """
+        try:
+            gdrive.save_gdrive_key_locally(
+                key,
+                self.project.cfg["gdrive_folder_id"],
+                self.project.cfg.gdrive_key_path,
+            )
+            return True, None
+
+        except BaseException as e:
+            return False, str(e)
+
+    def setup_gdrive_folder_and_rclone_config(
+        self, folder_id: str
+    ) -> InterfaceOutput:
+        try:
+            self.project.cfg["gdrive_folder_id"] = folder_id
+
+            self.project._setup_rclone_central_gdrive_config(log=False)
+
+            return True, None
+
+        except BaseException as e:
+            return False, str(e)
+

@@ -42,6 +42,8 @@ from datashuttle.utils import (
     getters,
     rclone,
     ssh,
+    gdrive,
+    aws,
     utils,
     validation,
 )
@@ -54,6 +56,8 @@ from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     check_is_not_local_project,
     requires_ssh_configs,
+    requires_aws_configs,
+    requires_gdrive_configs,
 )
 
 # -----------------------------------------------------------------------------
@@ -903,47 +907,44 @@ class DataShuttle:
         connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
+        aws_bucket_name: Optional[str] = None,
+        aws_region: Optional[str] = "us-east-1",
+        gdrive_folder_id: Optional[str] = None,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
         local machine. Once initialised, these settings will be
-        used each time the datashuttle is opened. This method
-        can also be used to completely overwrite existing configs.
-
-        These settings are stored in a config file on the
-        datashuttle path (not in the project folder)
-        on the local machine. Use get_config_path() to
-        get the full path to the saved config file.
-
-        Use update_config_file() to selectively update settings.
+        used each time datashuttle is opened.
 
         Parameters
         ----------
-
         local_path :
-            path to project folder on local machine
+            Path to project folder on local machine.
 
         central_path :
-            Filepath to central project.
-            If this is local (i.e. connection_method = "local_filesystem"),
-            this is the full path on the local filesystem
-            Otherwise, if this is via ssh (i.e. connection method = "ssh"),
-            this is the path to the project folder on central machine.
-            This should be a full path to central folder i.e. this cannot
-            include ~ home folder syntax, must contain the full path
-            (e.g. /nfs/nhome/live/jziminski)
+            Filepath to central project (local or SSH).
 
         connection_method :
-            The method used to connect to the central project filesystem,
-            e.g. "local_filesystem" (e.g. mounted drive) or "ssh"
+            The method used to connect to the central project filesystem:
+            - "local_filesystem" (mounted drive)
+            - "ssh" (remote connection)
+            - "aws_s3" (Amazon S3 cloud storage)
+            - "google_drive" (Google Drive cloud storage)
 
         central_host_id :
-            server address for central host for ssh connection
-            e.g. "ssh.swc.ucl.ac.uk"
+            Server address for SSH connection.
 
         central_host_username :
-            username for which to log in to central host.
-            e.g. "jziminski"
+            Username for SSH login.
+
+        aws_bucket_name :
+            Name of the AWS S3 bucket (required for AWS).
+
+        aws_region :
+            AWS region (default: "us-east-1").
+
+        google_drive_folder_id :
+            Folder ID for Google Drive (required for Google Drive).
         """
         self._start_log(
             "make-config-file",
@@ -967,6 +968,9 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
+                "aws_bucket_name": aws_bucket_name,
+                "aws_region": aws_region,
+                "gdrive_folder_id": gdrive_folder_id,
             },
         )
 
@@ -1463,6 +1467,22 @@ class DataShuttle:
         rclone.setup_rclone_config_for_local_filesystem(
             self.cfg.get_rclone_config_name("local_filesystem"),
         )
+    
+    def _setup_rclone_central_aws_config(self, log: bool) -> None:
+        rclone.setup_rclone_config_for_aws(
+            self.cfg,
+            self.cfg.get_rclone_config_name("aws"),
+            self.cfg["aws_region"],
+            log=log,
+        )
+
+    def _setup_rclone_central_gdrive_config(self, log: bool) -> None:
+        rclone.setup_rclone_config_for_gdrive(
+            self.cfg,
+            self.cfg.get_rclone_config_name("gdrive"),
+            self.cfg["gdrive_folder_id"],
+            log=log,
+        )
 
     # Persistent settings
     # -------------------------------------------------------------------------
@@ -1565,3 +1585,55 @@ class DataShuttle:
                 f"{canonical_top_level_folders}",
                 ValueError,
             )
+
+    # -------------------------------------------------------------------------
+    # AWS S3 and Google Drive
+    # -------------------------------------------------------------------------
+
+    @requires_aws_configs
+    @check_is_not_local_project
+    def setup_aws_connection(self) -> None:
+        """
+        Setup a connection to AWS S3 using RClone.
+
+        Assumes the aws_bucket_name and aws_region are set in configs.
+        First, prompt the user to verify the AWS bucket as trusted,
+        then create the RClone config for AWS.
+        """
+        self._start_log("setup-aws-connection", local_vars=locals())
+
+        verified = aws.verify_aws_remote(
+            self.cfg["aws_bucket_name"],
+            self.cfg["aws_region"],
+            self.cfg.aws_key_path,
+            log=True,
+        )
+
+        if verified:
+            self._setup_rclone_central_aws_config(log=True)
+
+        ds_logger.close_log_filehandler()
+
+
+    @requires_gdrive_configs
+    @check_is_not_local_project
+    def setup_gdrive_connection(self) -> None:
+        """
+        Setup a connection to Google Drive using RClone.
+
+        Assumes the gdrive_folder_id is set in configs.
+        First, prompt the user to verify and trust the folder ID,
+        then create the RClone config for Google Drive.
+        """
+        self._start_log("setup-gdrive-connection", local_vars=locals())
+
+        verified = gdrive.verify_gdrive_remote(
+            self.cfg["gdrive_folder_id"],
+            self.cfg.gdrive_key_path,
+            log=True,
+        )
+
+        if verified:
+            self._setup_rclone_central_gdrive_config(log=True)
+
+        ds_logger.close_log_filehandler()

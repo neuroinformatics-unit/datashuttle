@@ -33,9 +33,37 @@ def get_tooltip(id: str) -> str:
     elif id == "#configs_ssh_radiobutton":
         tooltip = "Use SSH when planning to connect with the central data storage via SSH protocol."
 
+    # AWS S3 radiobutton
+    elif id == "#configs_aws_radiobutton":
+        tooltip = "Use AWS S3 when planning to connect with your AWS storage bucket."
+
+    # Google Drive radiobutton
+    elif id == "#configs_gdrive_radiobutton":
+        tooltip = "Use Google Drive when planning to connect with your Google Drive folder."
+
     # No connection (local only) radiobutton
     elif id == "#configs_local_only_radiobutton":
         tooltip = "No connection to a central project is made.\nTransfer functionality will not be available."
+
+     # AWS S3 Inputs
+    elif id == "#configs_aws_bucket_name_input":
+        tooltip = (
+            "Name of your AWS S3 bucket where project data will be stored.\n\n"
+            "Ensure the bucket already exists before attempting to connect."
+        )
+
+    elif id == "#configs_aws_region_input":
+        tooltip = (
+            "AWS region where your S3 bucket is located.\n\n"
+            "Example regions: us-east-1, eu-west-1, etc."
+        )
+
+    # Google Drive Inputs
+    elif id == "#configs_gdrive_folder_id_input":
+        tooltip = (
+            "The folder ID of your Google Drive folder for project data storage.\n\n"
+            "Find the folder ID in your Google Drive folder URL."
+        )
 
     # central host input
     elif id == "#configs_central_host_id_input":
@@ -50,6 +78,20 @@ def get_tooltip(id: str) -> str:
         tooltip = (
             "The path to the project folder on the central machine (or it's parent folder).\n\n"
             "With 'SSH', this path is relative to the server e.g. /nhome/users/myusername"
+        )
+    # AWS S3 Tooltip
+    elif id == "config_central_path_input_mode-aws":
+        tooltip = (
+            "The path to the project folder on AWS S3.\n\n"
+            "Provide the full bucket path. For example:\n"
+            "s3://my-bucket-name/project_folder"
+        )
+
+    # Google Drive Tooltip
+    elif id == "config_central_path_input_mode-gdrive":
+        tooltip = (
+            "The path to the project folder on Google Drive.\n\n"
+            "Provide the folder ID associated with your Google Drive project folder."
         )
 
     elif id == "config_central_path_input_mode-local_filesystem":

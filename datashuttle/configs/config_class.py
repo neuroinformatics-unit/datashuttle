@@ -59,6 +59,8 @@ class Configs(UserDict):
         self.logging_path: Path
         self.hostkeys_path: Path
         self.ssh_key_path: Path
+        self.aws_key_path: Path
+        self.gdrive_fo_path: Path
         self.project_metadata_path: Path
 
     def setup_after_load(self) -> None:
@@ -235,6 +237,10 @@ class Configs(UserDict):
         )
 
         self.ssh_key_path = datashuttle_path / f"{self.project_name}_ssh_key"
+
+        self.aws_key_path = datashuttle_path / f"{self.project_name}_aws_key"
+
+        self.gdrive_key_path = datashuttle_path / f"{self.project_name}_gdrive_key"
 
         self.hostkeys_path = datashuttle_path / "hostkeys"
 

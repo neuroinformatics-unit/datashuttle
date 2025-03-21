@@ -20,7 +20,7 @@ import glob
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
-from datashuttle.utils import ssh, utils, validation
+from datashuttle.utils import ssh, utils, validation, aws, gdrive
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -514,14 +514,44 @@ def search_for_folders(
     verbose : If `True`, when a search folder cannot be found, a message
           will be printed with the missing path.
     """
-    if local_or_central == "central" and cfg["connection_method"] == "ssh":
-        all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
-            search_path,
-            search_prefix,
-            cfg,
-            verbose,
-            return_full_path,
-        )
+    if local_or_central == "central":
+        if cfg["connection_method"] == "ssh":
+            all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
+                search_path,
+                search_prefix,
+                cfg,
+                verbose,
+                return_full_path,
+            )
+        elif cfg["connection_method"] == "AWS S3":
+            all_folder_names, all_filenames = aws.search_aws_remote_for_folders(
+                search_path,
+                search_prefix,
+                cfg,
+                verbose,
+                return_full_path,
+            )
+        elif cfg["connection_method"] == "Google Drive":
+            all_folder_names, all_filenames = gdrive.search_gdrive_remote_for_folders(
+                search_path,
+                search_prefix,
+                cfg,
+                verbose,
+                return_full_path,
+            )
+        else:
+            # Default to filesystem search if no valid method found
+            if not search_path.exists():
+                if verbose:
+                    utils.log_and_message(
+                        f"No file found at {search_path.as_posix()}"
+                    )
+                return [], []
+
+            all_folder_names, all_filenames = search_filesystem_path_for_folders(
+                search_path / search_prefix, return_full_path
+            )
+
     else:
         if not search_path.exists():
             if verbose:
@@ -533,6 +563,7 @@ def search_for_folders(
         all_folder_names, all_filenames = search_filesystem_path_for_folders(
             search_path / search_prefix, return_full_path
         )
+
     return all_folder_names, all_filenames
 
 

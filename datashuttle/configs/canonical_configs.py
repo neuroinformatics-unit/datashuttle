@@ -39,9 +39,12 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal["ssh", "local_filesystem"]],
+        "connection_method": Optional[Literal["ssh", "local_filesystem", "aws", "gdrive"]],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
+        "aws_bucket_name": Optional[str],
+        "aws_region": Optional[str],
+        "gdrive_folder_id": Optional[str],
     }
 
     return canonical_configs
@@ -125,6 +128,22 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.log_and_raise_error(
             "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'.",
+            ConfigError,
+        )
+
+    # Check AWS S3 settings
+    if config_dict["connection_method"] == "aws" and (
+        not config_dict["aws_bucket_name"] or not config_dict["aws_region"]
+    ):
+        utils.log_and_raise_error(
+            "'aws_bucket_name' and 'aws_region' are required if 'connection_method' is 'aws'.",
+            ConfigError,
+        )
+
+    # Check Google Drive settings
+    if config_dict["connection_method"] == "gdrive" and not config_dict["gdrive_folder_id"]:
+        utils.log_and_raise_error(
+            "'gdrive_folder_id' is required if 'connection_method' is 'gdrive'.",
             ConfigError,
         )
 
