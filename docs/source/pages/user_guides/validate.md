@@ -3,13 +3,13 @@
 # Project Validation
 
 ``datashuttle`` can validate a project against the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinformatics.dev/latest/specification.html).
+[NeuroBlueprint specification](https://neuroblueprint.neuroinforma[read-logs.md](read-logs.md)tics.dev/latest/specification.html).
 This will find and display a list of all formatting errors in the project.
 
 To quickly validate an existing project with only the project path, see [quick-validate-projects](quick-validate-projects).
 
-Otherwise, below we will cover how to validate a datashuttle project (which will additionally save validation results in a log file).
-Currently, validation is not available through the terminal-user interface.
+Below we will cover how to validate a datashuttle-managed project
+(which will additionally [log](how-to-read-the-logs) the validation results).
 
 # Validating a local project
 
