@@ -8,7 +8,7 @@
 :gutter: 4
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate Folders
 :link: validate
 :link-type: doc
 :class-img-top: tutorial-link-image
@@ -22,6 +22,14 @@ Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev
 :link-type: doc
 
 Create [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders
+:::
+
+
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Set up Configs for Transfer
+:link: set-up-configs-for-transfer
+:link-type: doc
+
+Set up a project for data-transfer
 :::
 
 
@@ -65,7 +73,7 @@ A handy feature for template subject and session names.
 
 validate
 create-folders
-make-a-full-project
+set-up-configs-for-transfer
 transfer-data
 update-configs
 read-logs

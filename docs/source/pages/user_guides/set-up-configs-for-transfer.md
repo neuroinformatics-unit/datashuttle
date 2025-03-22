@@ -1,8 +1,9 @@
-(make-a-full-project_target)=
-# How to Make a Full Project
+(set-up-configs-for-transfer_)=
+# Set up configurations for transfer
 
 This guide will cover all you need to know for setting up a new project
-in ``datashuttle``.
+in ``datashuttle`` for transfer. If you just want to create and validate
+folders, see [set up a local project](set-up-a-local-project).
 
 First, make sure you have
 [installed and launched ``datashuttle``](how-to-install).
