@@ -39,7 +39,9 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal["ssh", "local_filesystem"]],
+        "connection_method": Optional[
+            Literal["ssh", "local_filesystem", "google_drive"]
+        ],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
     }
