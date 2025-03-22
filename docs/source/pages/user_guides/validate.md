@@ -13,9 +13,7 @@ Currently, validation is not available through the terminal-user interface.
 
 # Validating a local project
 
-Project validation can be run with the [](datashuttle.DataShuttle.validate_project) function.
-
-This function will highlight validation errors within a project. For example, consider
+Validation will highlight validation errors within a project. For example, consider
 ``my_project``, which has a NeuroBlueprint error (a subject that does not have an integer value):
 
 ```shell
@@ -23,6 +21,38 @@ This function will highlight validation errors within a project. For example, co
     └── rawdata/
         └── sub-abc
 ```
+
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+:sync: gui
+
+In a set-up datashuttle project, the `Validate` tab
+can be used to validate the project.
+
+Clicking the validate button will print all validation
+issues to the output region. See the sections below
+for details on the options.
+
+```{image} /_static/screenshots/tutorial-validation-light.png
+:align: center
+:class: only-light
+:width: 600px
+```
+
+```{image} /_static/screenshots/tutorial-validation-dark.png
+:align: center
+:class: only-dark
+:width: 600px
+```
+
+:::
+
+:::{tab-item} Python API
+:sync: python
+
+
+Project validation can be run with the [](datashuttle.DataShuttle.validate_project) function.
 
 Violations of the NeuroBlueprint can be set to raise an error, be displayed as warnings or printed as output.
 They are also returned in a list of strings.
@@ -53,6 +83,12 @@ print(error_messages)
 The options for `display_mode` and ``"error"``, ``"warn"`` and ``"print"``.
 For `"error"`, only the first  encountered NeuroBlueprint violation will be raised.
 
+:::
+
+::::
+
+Below, we will explore the two key options ``strict_mode`` and ``include_central``.
+
 :::{note}
 
 By default, only ``sub-`` and ``ses-`` prefixed folders are validated
@@ -61,7 +97,6 @@ in the project. To validate all folders (including
 use ``strict_mode``.
 
 :::
-
 
 ## ``strict_mode``
 
@@ -101,7 +136,7 @@ project.validate_project(
 
 ```
 
-# Validating local and central together
+## ``include_central``
 
 Validation can be performed across all folders in projects in which data is transferred
 between a 'local' and 'central' machine. The validation will combine ``sub-`` and ``ses-``
