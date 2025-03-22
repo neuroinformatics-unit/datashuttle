@@ -25,7 +25,7 @@ a 'mock' experiment, standardised to the
 We will upload data to a central data storage machine,
 as you would do at the end of a real acquisition session.
 
-Finally we will download data from the central
+Finally, we will download data from the central
 storage to a local machine, as you would do during analysis.
 
 ## Installing ``datashuttle``
@@ -57,7 +57,7 @@ will launch the application in your terminal:
 :::{tab-item} Python API
 :sync: python
 
-We can check ``datashuttle`` has installed correctly by
+We can check ``datashuttle`` has installed correctly
 by importing it into Python without error:
 
 ```python
@@ -66,6 +66,14 @@ from datashuttle import DataShuttle
 
 :::
 ::::
+
+:::{note}
+
+This walkthrough does not include the recently-added validation
+feature (it will be updated soon). Please see the [validation guide](tutorial-validation)
+for how to validate your project format.
+
+:::
 
 ## Make a new project
 

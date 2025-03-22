@@ -1,6 +1,6 @@
 :html_theme.sidebar_secondary.remove:
 
-(how-tos)=
+(user-guides)=
 # User Guides
 
 
@@ -13,15 +13,15 @@
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Check a project for
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
-formatting issues
+Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatting issues
 :::
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Create Folders
 :link: create-folders
 :link-type: doc
+
+Create [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders
 :::
 
 
@@ -29,26 +29,31 @@ formatting issues
 :link: transfer-data
 :link-type: doc
 
-Transfer data between a local acquisition
-and central storage machine
+Transfer data between acquisition and storage machines
 :::
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Update Configs
 :link: update-configs
 :link-type: doc
+
+Change an existing project's configurations
 :::
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Read Logs
 :link: read-logs
 :link-type: doc
+
+Access full logs of all ``datashuttle``'s actions
 :::
 
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Use Name Templates
 :link: use-name-templates
 :link-type: doc
+
+A handy feature for template subject and session names.
 :::
 
 ::::

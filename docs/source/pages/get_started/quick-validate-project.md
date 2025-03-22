@@ -3,12 +3,12 @@
 # How to Quickly Validate an Existing Project
 
 Datashuttle provides the functionality to validate an existing
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) project.
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted project.
 All NeuroBlueprint issues will be flagged, including a filepath pointing to
 problematic folders.
 
-Below, we explore how to quickly validate a NeuroBlueprint project without
-setting up a full project in ``datashuttle``.
+Below, we explore how to quickly validate a NeuroBlueprint-formatted
+project without setting up a full project in ``datashuttle``.
 
 ::::{tab-set}
 
