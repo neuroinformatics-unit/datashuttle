@@ -2,7 +2,8 @@
 
 # Acquisition Script
 
-
+This script shows how Laura Schwartz (O'Keefe Lab, [Sainsbury Wellcome Centre](https://www.sainsburywellcome.org/web/))
+uses datashuttle to help automate the creation of standardised project folders.
 
 ```python
 def get_file_path():

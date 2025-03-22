@@ -2,6 +2,10 @@
 
 # Validating a Labs' projects
 
+This example shows how Viktor Plattner (Akrami Lab, [Sainsbury Wellcome Centre](https://www.sainsburywellcome.org/web/)) validates
+all projects in the lab for NeuroBlueprint errors. This is scheduled to run once a week,
+logging if any errors have been introduced into a projects format.
+
 
 ```bash
 
