@@ -109,7 +109,7 @@ folders across 'local' and 'central' before validation. This is useful check aga
 (e.g. `sub-001` vs `sub-02`) and duplicate names (e.g. ``sub-001`` and ``sub-001_date-20240101``) across
 the 'local' and 'central' project.
 
-To perform this type of validation, connection configurations [must be set](make-a-full-project_target).
+To perform this type of validation, connection configurations [must be set](set-up-configs-for-transfer_).
 The ``include_central`` argument must be set to ``True``:
 
 ```python

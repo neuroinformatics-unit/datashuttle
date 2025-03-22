@@ -1,5 +1,5 @@
 (how-to-install)=
-# How to Install
+# Install
 
 ``datashuttle`` requires
 [Python](https://www.python.org/)
@@ -97,5 +97,5 @@ datashuttle launch
 ```
 
 Before using the graphical interface, you may want to
-[choose the best terminal](how-to-choose-a-terminal)
+[choose the best terminal](choose-a-terminal_)
 for your operating system.

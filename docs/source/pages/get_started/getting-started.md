@@ -1,4 +1,4 @@
-(tutorial-getting-started)=
+(getting-started-walkthrough)=
 
 # Getting Started
 
@@ -88,7 +88,7 @@ We need to set the:
 
 ``datashuttle`` supports connecting to the central storage machine
 either as a mounted drive or through SHH. \
-See [How to Make a New Project](make-a-full-project_target)
+See [Set up configs for transfer(set-up-configs-for-transfer_)
 for detailed instructions for
 connecting a mounted drive or by using SSH.
 
@@ -584,7 +584,7 @@ from your **local path**.
 We will next download data from the **central path** to our now-empty local project.
 
 In practice when setting up ``datashuttle`` on a new machine, you would
-again [make a new project](make-a-full-project_target).
+again [make a new project](set-up-configs-for-transfer_).
 ```
 
 We will look at a small subset of possible

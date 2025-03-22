@@ -1,6 +1,6 @@
 (quick-validate-projects)=
 
-# How to Quickly Validate an Existing Project
+# Quickly Validate an Existing Project
 
 Datashuttle provides the functionality to validate an existing
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted project.

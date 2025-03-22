@@ -1,6 +1,6 @@
-(how-to-choose-a-terminal)=
+(choose-a-terminal_)=
 
-# How to Choose a Terminal
+# Choose a Terminal
 
 ``datashuttle``'s graphical interface can run in almost any terminal—but
 native Windows and macOS terminals may display with rendering errors.
@@ -13,12 +13,12 @@ If you are using Linux, the native terminal will work without issue.
 
 :::{tab-item} Good Rendering
 
-```{image} /_static/screenshots/how-to-choose-a-terminal-good-dark.png
+```{image} /_static/screenshots/choose-a-terminal-good-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-choose-a-terminal-good-light.png
+```{image} /_static/screenshots/choose-a-terminal-good-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -30,12 +30,12 @@ If you are using Linux, the native terminal will work without issue.
 
 :::{tab-item} Bad Rendering
 
-```{image} /_static/screenshots/how-to-choose-a-terminal-bad-dark.png
+```{image} /_static/screenshots/choose-a-terminal-bad-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-choose-a-terminal-bad-light.png
+```{image} /_static/screenshots/choose-a-terminal-bad-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -80,6 +80,6 @@ with rendering errors.
 ## Getting started with the Graphical Interface
 
 Once you've chosen a terminal, get started with
-``datashuttle`` with our [Getting Started Tutorial](tutorial-getting-started).
+``datashuttle`` with our [Getting Started Tutorial](getting-started-walkthrough).
 
 To quit ``datashuttle`` in the terminal, press `CTRL+C`.

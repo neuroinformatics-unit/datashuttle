@@ -1,9 +1,15 @@
-# How to Make a Local Project
+(set-up-a-local-project)=
+# Set up a Local Project
 
-``datashuttle`` can be used to create and validate
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) projects,
-as well as transfer data. If you want to quickly create or validate a project's folders,
-but not transfer data, you can make a local-only project and immediately get started.
+``datashuttle`` can be used to create, validate and transfer
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) projects. In this guide, we will
+set up a local-only project that can manage creation
+and validation of project folders. This requires
+setting up minimal configurations to get started.
+
+To see how a datashuttle project can be set up for transfer,
+see the [transfer](how-to-transfer-data) user guide.
+
 
 ::::{tab-set}
 
@@ -27,6 +33,25 @@ are now disabled).
    :width: 900px
 ```
 <br>
+
+
+You will now be able to go to the project manager screen:
+
+```{image} /_static/screenshots/how-to-create-folders-example-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-create-folders-example-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
+
+See the [create folders](how-to-create-folders) and [validate folders](tutorial-validation)
+for details on how to create and validate your project.
 
 :::
 
@@ -62,7 +87,7 @@ have to set the `local_path` again).
 
 If you wish to change the project settings at a later time, use ``project.update_config_file()``.
 
-For example, it is possible to immediately validate the project:
+For example, it is possible to immediately validate the project (if it already exists):
 
 ```python
 project.validate_project("rawdata", error_or_warn="warn")
@@ -82,14 +107,4 @@ see  [Create Folders](how-to-create-folders)  for more details.
 :::
 ::::
 
-:::{note}
-
-When in local-only mode, some functionality of ``datashuttle`` is lost.
-
-It will not be possible to:
-- transfer data, which requires passing configs related to a centrally-stored project.
-- Any method that exposes a ``include_central`` argument will always set this to ``False``.
-For example, validation will only ever be performed on the local project.
-
-See [](make-a-full-project_target) for more information on setting up for data transfer.
 :::

@@ -31,12 +31,12 @@ formatting issues
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Manage a project
-:link: make-a-local-project
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Set up a project
+:link: set-up-a-local-project
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Create, validate and transfer project folders
+Start a new project or manage an existing project
 :::
 
 ::::
@@ -66,7 +66,7 @@ install
 choose-a-terminal
 
 quick-validate-project
-make-a-local-project
+set-up-a-local-project
 
 getting-started
 ```

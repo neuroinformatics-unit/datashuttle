@@ -59,6 +59,7 @@ A lack of project standardization in systems neuroscience
 [hinders data sharing and collaboration](https://neuroinformatics.dev/blog/neuroblueprint.html),
 creating barriers to reproducibility and scientific progress
 
+
 ``datashuttle`` helps creates, validate and transfer projects standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev) specification:
 
@@ -74,10 +75,9 @@ creating barriers to reproducibility and scientific progress
 ```
 
 Dive right into ``datashuttle`` with our
-[Getting Started Tutorial](tutorial-getting-started)
-or targeted [How-To Guides](how-tos).  \
+[Getting Started Tutorial](getting-started-walkthrough)
+or targeted [User Guides](pages/user_guides/index).  \
 It can be used through a graphical interface or Python API.
-[create-folders.md](pages%2Fuser_guides%2Fcreate-folders.md)
 
 Don't hesitate to get in contact through our
 [GitHub Issues](https://github.com/neuroinformatics-unit/datashuttle/issues)
