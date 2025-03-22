@@ -3,7 +3,7 @@
 # Project Validation
 
 ``datashuttle`` can validate a project against the
-[NeuroBlueprint specification](https://neuroblueprint.neuroinforma[read-logs.md](read-logs.md)tics.dev/latest/specification.html).
+[NeuroBlueprint specification](https://neuroblueprint.neuroinformactics.dev/latest/specification.html).
 This will find and display a list of all formatting errors in the project.
 
 To quickly validate an existing project with only the project path, see [quick-validate-projects](quick-validate-projects).
