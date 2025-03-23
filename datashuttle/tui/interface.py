@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     import paramiko
 
     from datashuttle.configs.config_class import Configs
-    from datashuttle.tui.app import App
     from datashuttle.utils.custom_types import InterfaceOutput, TopLevelFolder
 
 from datashuttle import DataShuttle
@@ -33,7 +32,7 @@ class Interface:
 
     def __init__(self) -> None:
 
-        self.project: App
+        self.project: DataShuttle
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
 
@@ -404,7 +403,9 @@ class Interface:
     ) -> InterfaceOutput:
         try:
             next_sub = self.project.get_next_sub(
-                top_level_folder, return_with_prefix=True, local_only=True
+                top_level_folder,
+                return_with_prefix=True,
+                include_central=False,
             )
             return True, next_sub
         except BaseException as e:
@@ -416,7 +417,10 @@ class Interface:
 
         try:
             next_ses = self.project.get_next_ses(
-                top_level_folder, sub, return_with_prefix=True, local_only=True
+                top_level_folder,
+                sub,
+                return_with_prefix=True,
+                include_central=False,
             )
             return True, next_ses
         except BaseException as e:
