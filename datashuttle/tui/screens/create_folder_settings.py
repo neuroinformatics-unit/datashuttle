@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
-
     from textual.app import ComposeResult
 
     from datashuttle.tui.app import App
@@ -28,8 +27,7 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class CreateFoldersSettingsScreen(ModalScreen):
-    """
-    This screen handles setting datashuttle's `name_template`'s, as well
+    """Handles setting datashuttle's `name_template`'s, as well
     as the top-level-folder select and option to bypass all validation.
 
     Name Templates
@@ -46,15 +44,16 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     Attributes
     ----------
-
     Because the Input for `name_templates` is shared between subject
     and session, the values are held in the `input_values` attribute.
     These are loaded from `persistent_settings` on init.
+
     """
 
     TITLE = "Create Folders Settings"
 
     def __init__(self, mainwindow: App, interface: Interface) -> None:
+        """PLACEHOLDER."""
         super(CreateFoldersSettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
@@ -69,9 +68,11 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def action_link_docs(self) -> None:
+        """PLACEHOLDER."""
         webbrowser.open(links.get_docs_link())
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         sub_on = True if self.input_mode == "sub" else False
         ses_on = not sub_on
 
@@ -141,6 +142,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
+        """PLACEHOLDER."""
         for id in [
             "#create_folders_settings_toplevel_select",
             "#create_folders_settings_bypass_validation_checkbox",
@@ -153,19 +155,20 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.switch_template_container_disabled()
 
     def init_input_values_holding_variable(self) -> None:
+        """PLACEHOLDER."""
         name_templates = self.interface.get_name_templates()
         self.input_values["sub"] = name_templates["sub"]
         self.input_values["ses"] = name_templates["ses"]
 
     def switch_template_container_disabled(self) -> None:
+        """PLACEHOLDER."""
         is_on = self.query_one(
             "#template_settings_validation_on_checkbox"
         ).value
         self.query_one("#template_inner_container").disabled = not is_on
 
     def fill_input_from_template(self) -> None:
-        """
-        Fill the `name_templates` Input, that is shared
+        """Fill the `name_templates` Input, that is shared
         between subject and session, depending on the
         current radioset value.
         """
@@ -179,8 +182,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             input.value = value
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        On close, update the `name_templates` stored in
+        """On close, update the `name_templates` stored in
         `persistent_settings` with those set on the TUI.
 
         Setting may error if templates are turned on but
@@ -199,6 +201,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             self.interface.save_tui_settings(False, "bypass_validation")
 
     def make_name_templates_from_widgets(self) -> Dict:
+        """PLACEHOLDER."""
         return {
             "on": self.query_one(
                 "#template_settings_validation_on_checkbox"
@@ -208,9 +211,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """
-        Turn `name_templates` on or off and update the TUI accordingly.
-        """
+        """Turn `name_templates` on or off and update the TUI accordingly."""
         is_on = event.value
 
         if event.checkbox.id == "template_settings_validation_on_checkbox":
@@ -232,13 +233,12 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 disable_container = not self.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).value
-            self.query_one("#template_inner_container").disabled = (
-                disable_container
-            )
+            self.query_one(
+                "#template_inner_container"
+            ).disabled = disable_container
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        """
-        Update the displayed SSH widgets when the `connection_method`
+        """Update the displayed SSH widgets when the `connection_method`
         radiobuttons are changed.
         """
         label = str(event.pressed.label)
@@ -248,6 +248,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.fill_input_from_template()
 
     def on_input_changed(self, message: Input.Changed) -> None:
+        """PLACEHOLDER."""
         if message.input.id == "template_settings_input":
             val = None if message.value == "" else message.value
             self.input_values[self.input_mode] = val

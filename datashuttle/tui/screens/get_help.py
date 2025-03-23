@@ -18,9 +18,10 @@ from datashuttle.configs import links
 
 
 class GetHelpScreen(ModalScreen):
-    """ """
+    """PLACEHOLDER."""
 
     def __init__(self) -> None:
+        """PLACEHOLDER."""
         super(GetHelpScreen, self).__init__()
 
         self.text = """
@@ -35,19 +36,23 @@ class GetHelpScreen(ModalScreen):
         """
 
     def action_link_docs(self) -> None:
+        """PLACEHOLDER."""
         webbrowser.open(links.get_docs_link())
 
     def action_link_github(self) -> None:
+        """PLACEHOLDER."""
         webbrowser.open(links.get_github_link())
 
     def action_link_github_issues(self) -> None:
+        """PLACEHOLDER."""
         webbrowser.open(links.get_link_github_issues())
 
     def action_link_zulip(self):
+        """PLACEHOLDER."""
         webbrowser.open(links.get_link_zulip())
 
     def compose(self) -> ComposeResult:
-
+        """PLACEHOLDER."""
         yield Container(
             Static(self.text, id="get_help_label"),
             Button("Main Menu", id="all_main_menu_buttons"),
@@ -55,5 +60,6 @@ class GetHelpScreen(ModalScreen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """PLACEHOLDER."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()

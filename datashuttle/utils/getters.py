@@ -37,8 +37,7 @@ def get_next_sub_or_ses(
     default_num_value_digits: int = 3,
     name_template_regexp: Optional[str] = None,
 ) -> str:
-    """
-    Suggest the next available subject or session number. This function will
+    """Suggest the next available subject or session number. This function will
     search the local repository, and the central repository, for all subject
     or session folders (subject or session depending on inputs).
 
@@ -50,37 +49,43 @@ def get_next_sub_or_ses(
 
     Parameters
     ----------
-    cfg : Configs
+    cfg
         datashuttle configs class
 
-    top_level_folder: TopLevelFolder
+    top_level_folder
         The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
 
-    sub : Optional[str]
+    sub
         subject name to search within if searching for sessions, otherwise None
         to search for subjects
 
-    search_str : str
+    search_str
         the string to search for within the top-level or subject-level
         folder ("sub-*") or ("ses-*") are suggested, respectively.
 
-    include_central : bool
+    include_central
         If `False, only get names from `local_path`, otherwise from
         `local_path` and `central_path`.
 
-    return_with_prefix : bool
+    return_with_prefix
         If `True`, the next sub or ses value will include the prefix
         e.g. "sub-001", otherwise the value alone will be returned (e.g. "001")
 
-    default_num_value_digits : int
+    default_num_value_digits
         If no sub or ses exist in the project, the starting number is 1.
         Because the number of digits for the project is not accessible,
         the desired value can be entered here. e.g. if 3 (the default),
         if no subjects are found the subject returned will be "sub-001".
 
+    name_template_regexp
+        the name template to try and get the num digits from.
+        If unspecified, the number of digits will be default_num_value_digits.
+
     Returns
     -------
-    suggested_new_num : the new suggested sub / ses.
+    suggested_new_num
+        the new suggested sub / ses.
+
     """
     prefix: Prefix
 
@@ -121,8 +126,7 @@ def get_max_sub_or_ses_num_and_value_length(
     default_num_value_digits: Optional[int] = None,
     name_template_regexp: Optional[str] = None,
 ) -> Tuple[int, int]:
-    """
-    Given a list of BIDS-style folder names, find the maximum subject or
+    """Given a list of BIDS-style folder names, find the maximum subject or
     session value (sub or ses depending on `prefix`). Also, find the
     number of value digits across the project, so a new suggested number
     can be formatted consistency. If the list is empty, set the value
@@ -130,19 +134,18 @@ def get_max_sub_or_ses_num_and_value_length(
 
     Parameters
     ----------
-
-    all_folders : List[str]
+    all_folders
         A list of BIDS-style formatted folder names.
 
-    see `get_next_sub_or_ses()` for other arguments.
+    prefix, default_num_value_digits, name_template_regexp
+        see `get_next_sub_or_ses()`.
 
     Returns
     -------
-
-    max_existing_num : int
+    max_existing_num
         The largest number sub / ses value in the past list.
 
-    num_value_digits : int
+    num_value_digits
         The length of the value in all sub / ses values within the
         passed list. If these are not consistent, an error is raised.
 
@@ -151,10 +154,9 @@ def get_max_sub_or_ses_num_and_value_length(
 
     """
     if len(all_folders) == 0:
-
-        assert isinstance(
-            default_num_value_digits, int
-        ), "`default_num_value_digits` must be int`"
+        assert isinstance(default_num_value_digits, int), (
+            "`default_num_value_digits` must be int`"
+        )
 
         max_existing_num = 0
 
@@ -212,8 +214,7 @@ def get_max_sub_or_ses_num_and_value_length(
 def get_num_value_digits_from_project(
     all_values_str: List[str], prefix: Prefix
 ) -> int:
-    """
-    Find the number of digits for the sub or ses key within the project.
+    """Find the number of digits for the sub or ses key within the project.
     `all_values_str` is a list of all the sub or ses values from within
     the project.
     """
@@ -233,8 +234,7 @@ def get_num_value_digits_from_project(
 def get_num_value_digits_from_regexp(
     prefix: Prefix, name_template_regexp: str
 ) -> Union[Literal[False], int]:
-    """
-    Given a name template regexp, find the number of values for the
+    r"""Given a name template regexp, find the number of values for the
     sub or ses key. These will be fixed with "\d" (digit) or ".?" (wildcard).
     If there is length-unspecific wildcard (.*) in the sub key, then skip.
     In practice, there should never really be a .* in the sub or ses
@@ -260,8 +260,7 @@ def get_num_value_digits_from_regexp(
 
 
 def get_existing_project_paths() -> List[Path]:
-    """
-    Return full path and names of datashuttle projects on
+    """Return full path and names of datashuttle projects on
     this local machine. A project is determined by a project
     folder in the home / .datashuttle folder that contains a
     config.yaml file. Returns in order of most recently modified
@@ -299,8 +298,7 @@ def get_all_sub_and_ses_paths(
     top_level_folder: TopLevelFolder,
     include_central: bool,
 ) -> Dict:
-    """
-    Get a list of every subject and session name in the
+    """Get a list of every subject and session name in the
     local and central project folders. Local and central names are combined
     into a single list, separately for subject and sessions.
 
@@ -309,16 +307,16 @@ def get_all_sub_and_ses_paths(
 
     Parameters
     ----------
-
-    cfg : Configs
+    cfg
         datashuttle Configs
 
-    top_level_folder: TopLevelFolder
+    top_level_folder
         The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
 
-    include_central : bool
+    include_central
         If `False, only get names from `local_path`, otherwise from
         `local_path` and `central_path`.
+
     """
     sub_folder_paths = folders.search_project_for_sub_or_ses_names(
         cfg,
@@ -338,7 +336,6 @@ def get_all_sub_and_ses_paths(
 
     all_ses_folder_paths = {}
     for sub_path in all_sub_folder_paths:
-
         sub = sub_path.name
 
         ses_folder_paths = folders.search_project_for_sub_or_ses_names(

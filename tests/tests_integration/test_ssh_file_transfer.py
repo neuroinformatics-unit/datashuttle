@@ -1,5 +1,3 @@
-""" """
-
 import copy
 import glob
 import shutil
@@ -15,6 +13,8 @@ from pytest import ssh_config
 
 
 class TestFileTransfer:
+    """PLACEHOLDER."""
+
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem (see docstring).
@@ -29,8 +29,7 @@ class TestFileTransfer:
         ],
     )
     def pathtable_and_project(self, request, tmpdir_factory):
-        """
-        Create a project for SSH testing. Setup
+        """Create a project for SSH testing. Setup
         the project as normal, and switch configs
         to use SSH connection.
 
@@ -49,7 +48,7 @@ class TestFileTransfer:
         items have been transferred. This is achieved
         by using "class" scope.
 
-        NOTES
+        Notes
         -----
         - Pytest params - The `params` key sets the
         `params` attribute on the pytest `request` fixture.
@@ -68,6 +67,7 @@ class TestFileTransfer:
         a few seconds after SSH transfer. This makes the
         tests run very slowly. We can get rid
         of this limitation on linux.
+
         """
         testing_ssh = request.param
         tmp_path = tmpdir_factory.mktemp("test")
@@ -115,6 +115,7 @@ class TestFileTransfer:
     # -------------------------------------------------------------------------
 
     def central_from_local(self, path_):
+        """PLACEHOLDER."""
         return Path(str(copy.copy(path_)).replace("local", "central"))
 
     # -------------------------------------------------------------------------
@@ -165,11 +166,10 @@ class TestFileTransfer:
         datatype,
         upload_or_download,
     ):
-        """
-        Parse the arguments to filter the pathtable, getting
+        """Parse the arguments to filter the pathtable, getting
         the files expected to be transferred passed on the arguments
         Note files in sub/ses/datatype folders must be handled
-        separately to those in non-sub, non-ses, non-datatype folders
+        separately to those in non-sub, non-ses, non-datatype folders.
 
         see test_utils.swap_local_and_central_paths() for the logic
         on setting up and swapping local / central paths for
@@ -245,9 +245,8 @@ class TestFileTransfer:
     # ---------------------------------------------------------------------------------------------------------------
 
     def query_table(self, pathtable, arguments):
-        """
-        Search the table for arguments, return empty
-        if arguments empty
+        """Search the table for arguments, return empty
+        if arguments empty.
         """
         if any(arguments):
             folders = pathtable.query(" | ".join(arguments))
@@ -256,8 +255,7 @@ class TestFileTransfer:
         return folders
 
     def parse_arguments(self, pathtable, list_of_names, field):
-        """
-        Replicate datashuttle name formatting by parsing
+        """Replicate datashuttle name formatting by parsing
         "all" arguments and turning them into a list of all names,
         (subject or session), taken from the pathtable.
         """
@@ -276,8 +274,7 @@ class TestFileTransfer:
         return list_of_names
 
     def make_pathtable_search_filter(self, sub_names, ses_names, datatype):
-        """
-        Create a string of arguments to pass to pd.query() that will
+        """Create a string of arguments to pass to pd.query() that will
         create the table of only transferred sub, ses and datatype.
 
         Two arguments must be created, one of all sub / ses / datatypes

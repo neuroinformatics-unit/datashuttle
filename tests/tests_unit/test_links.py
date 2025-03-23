@@ -4,8 +4,7 @@ from datashuttle.configs import links
 
 
 def test_links():
-    """
-    Test canonical links are working. Unfortunately Zulip links cannot
+    """Test canonical links are working. Unfortunately Zulip links cannot
     be validated.
     """
     assert validators.url(links.get_docs_link())
