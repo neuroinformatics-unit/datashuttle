@@ -109,6 +109,9 @@ class ConfigsContent(Container):
                 ),
                 RadioButton("SSH", id="configs_ssh_radiobutton"),
                 RadioButton(
+                    "Google Drive", id="configs_google_drive_radiobutton"
+                ),
+                RadioButton(
                     "No connection (local only)",
                     id="configs_local_only_radiobutton",
                 ),
@@ -215,6 +218,7 @@ class ConfigsContent(Container):
             "#configs_connect_method_label",
             "#configs_local_filesystem_radiobutton",
             "#configs_ssh_radiobutton",
+            "#configs_google_drive_radiobutton",
             "#configs_local_only_radiobutton",
             "#configs_central_host_username_input",
             "#configs_central_host_id_input",
