@@ -10,30 +10,27 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 class TestConfigs(BaseTest):
+    """PLACEHOLDER."""
+
     # Test Errors
     # -------------------------------------------------------------
 
     @pytest.fixture(scope="function")
     def non_existent_path(self, tmp_path):
-        """
-        Return a path that does not exist.
-        """
+        """Return a path that does not exist."""
         non_existent_path = tmp_path / "does_not_exist"
         assert not non_existent_path.is_dir()
         return non_existent_path
 
     @pytest.fixture(scope="function")
     def existent_path(self, tmp_path):
-        """
-        Return a path that exists.
-        """
+        """Return a path that exists."""
         existent_path = tmp_path / "exists"
         os.makedirs(existent_path, exist_ok=True)
         return existent_path
 
     def test_warning_on_startup(self, no_cfg_project):
-        """
-        When no configs have been set, a warning should be shown that
+        """When no configs have been set, a warning should be shown that
         the config has not been initialized. Need to download
         Rclone first to ensure input() is not called.
         """
@@ -60,8 +57,7 @@ class TestConfigs(BaseTest):
     )
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
     def test_bad_path_syntax(self, project, bad_pattern, path_type, tmp_path):
-        """
-        "~", "." and "../" syntax is not supported because
+        """"~", "." and "../" syntax is not supported because
         it does not work with rclone. Theoretically it
         could be supported by checking for "." etc. and
         filling in manually, but it does not seem robust.
@@ -95,9 +91,8 @@ class TestConfigs(BaseTest):
         assert "must contain the full folder path with no " in str(e.value)
 
     def test_no_ssh_options_set_on_make_config_file(self, no_cfg_project):
-        """
-        Check that program will assert if not all ssh options
-        are set on make_config_file
+        """Check that program will assert if not all ssh options
+        are set on make_config_file.
         """
         with pytest.raises(ConfigError) as e:
             no_cfg_project.make_config_file(
@@ -116,8 +111,7 @@ class TestConfigs(BaseTest):
     # -------------------------------------------------------------
 
     def test_required_configs(self, no_cfg_project, tmp_path):
-        """
-        Set the required arguments of the config (local_path, central_path,
+        """Set the required arguments of the config (local_path, central_path,
         connection_method and check they are set correctly in both
         the no_cfg_project.cfg dict and config.yaml file.
         """
@@ -133,8 +127,7 @@ class TestConfigs(BaseTest):
         )
 
     def test_config_defaults(self, no_cfg_project, tmp_path):
-        """
-        Check the default configs are set as expected
+        """Check the default configs are set as expected
         (see get_test_config_arguments_dict()) for tested defaults.
         """
         required_options = test_utils.get_test_config_arguments_dict(
@@ -150,8 +143,7 @@ class TestConfigs(BaseTest):
         test_utils.check_configs(no_cfg_project, default_options)
 
     def test_non_default_configs(self, no_cfg_project, tmp_path):
-        """
-        Set the configs to non-default options, make the
+        """Set the configs to non-default options, make the
         config file and check file and no_cfg_project.cfg are set correctly.
         """
         changed_configs = test_utils.get_test_config_arguments_dict(
@@ -167,8 +159,7 @@ class TestConfigs(BaseTest):
     # -------------------------------------------------------------
 
     def test_update_config_file__(self, no_cfg_project, tmp_path):
-        """
-        Set the configs as default, and then update them to
+        """Set the configs as default, and then update them to
         new configs and check they are updated properly.
 
         Then, update only a subset (back to the defaults) and
@@ -213,8 +204,7 @@ class TestConfigs(BaseTest):
         test_utils.check_configs(project, default_configs)
 
     def test_existing_projects(self, monkeypatch, tmp_path):
-        """
-        Test existing projects are correctly found based on whether
+        """Test existing projects are correctly found based on whether
         they exist in the home directory and contain a config.yaml.
 
         By default, datashuttle saves project folders to
@@ -223,9 +213,9 @@ class TestConfigs(BaseTest):
         function is monkeypatched in order to point to a tmp_path.
 
         The tmp_path / "projects" is filled with a mix of project folders
-        with and without config, and tested against accordingly. The `local_path`
-        and `central_path` specified in the DataShuttle config are arbitrarily put in
-        `tmp_path`.
+        with and without config, and tested against accordingly. The
+        `local_path` and `central_path` specified in the DataShuttle config are
+        arbitrarily put in `tmp_path`.
         """
 
         def patch_get_datashuttle_path():
@@ -261,13 +251,12 @@ class TestConfigs(BaseTest):
             (tmp_path / "projects" / "project_3"),
         ]
 
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
     # Utils
-    # --------------------------------------------------------------------------------------------------------------------
+    # -------------------------------------------------------------------------
 
     def check_config_reopen_and_check_config_again(self, project, *kwargs):
-        """
-        Check the config file and project.cfg against provided kwargs,
+        """Check the config file and project.cfg against provided kwargs,
         delete the project and set up the project again,
         checking everything is loaded correctly.
         """

@@ -6,13 +6,14 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestFormatting(BaseTest):
+    """PLACEHOLDER."""
+
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize(
         "input", [1, {"test": "one"}, 1.0, ["1", "2", ["three"]]]
     )
     def test_format_names_bad_input(self, input, prefix):
-        """
-        Test that names passed in incorrect type
+        """Test that names passed in incorrect type
         (not str, list) raise appropriate error.
         """
         with pytest.raises(TypeError) as e:
@@ -22,8 +23,7 @@ class TestFormatting(BaseTest):
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_format_names_duplicate_ele(self, prefix):
-        """
-        Test that appropriate error is raised when duplicate name
+        """Test that appropriate error is raised when duplicate name
         is passed to format_names().
         """
         with pytest.raises(NeuroBlueprintError) as e:
@@ -37,8 +37,7 @@ class TestFormatting(BaseTest):
         )
 
     def test_format_names_prefix(self):
-        """
-        Check that format_names correctly prefixes input
+        """Check that format_names correctly prefixes input
         with default sub or ses prefix. This is less useful
         now that ses/sub name dash and underscore order is
         more strictly checked.
@@ -66,6 +65,7 @@ class TestFormatting(BaseTest):
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_warning_non_consecutive_numbers(self, project, top_level_folder):
+        """PLACEHOLDER."""
         project.create_folders(
             top_level_folder,
             ["sub-01", "sub-02", "sub-04"],

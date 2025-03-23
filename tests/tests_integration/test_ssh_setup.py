@@ -1,7 +1,6 @@
-"""
-SSH configs are set in conftest.py . The password
+"""SSH configs are set in conftest.py . The password
 should be stored in a file called test_ssh_password.txt located
-in the same folder as test_ssh.py
+in the same folder as test_ssh.py.
 """
 
 import pytest
@@ -14,11 +13,12 @@ from datashuttle.utils import ssh
 
 @pytest.mark.skipif(ssh_config.TEST_SSH is False, reason="TEST_SSH is false")
 class TestSSH:
+    """PLACEHOLDER."""
+
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
-        """
-        Make a project as per usual, but now add
-        in test ssh configurations
+        """Make a project as per usual, but now add
+        in test ssh configurations.
         """
         tmp_path = tmp_path / "test with space"
 
@@ -45,10 +45,9 @@ class TestSSH:
     def test_verify_ssh_central_host_do_not_accept(
         self, capsys, project, input_
     ):
-        """
-        Use the main function to test this. Test the sub-function
+        """Use the main function to test this. Test the sub-function
         when accepting, because this main function will also
-        call setup ssh key pairs which we don't want to do yet
+        call setup ssh key pairs which we don't want to do yet.
 
         This should only accept for "y" so try some random strings
         including "n" and check they all do not make the connection.
@@ -64,8 +63,7 @@ class TestSSH:
         assert "Host not accepted. No connection made.\n" in captured.out
 
     def test_verify_ssh_central_host_accept(self, capsys, project):
-        """
-        User is asked to accept the server hostkey. Mock this here
+        """User is asked to accept the server hostkey. Mock this here
         and check hostkey is successfully accepted and written to configs.
         """
         test_utils.clear_capsys(capsys)
@@ -81,20 +79,19 @@ class TestSSH:
         captured = capsys.readouterr()
         assert captured.out == "Host accepted.\n"
 
-        with open(project.cfg.hostkeys_path, "r") as file:
+        with open(project.cfg.hostkeys_path) as file:
             hostkey = file.readlines()[0]
 
         assert f"{project.cfg['central_host_id']} ssh-ed25519 " in hostkey
 
     def test_generate_and_write_ssh_key(self, project):
-        """
-        Check ssh key for passwordless connection is written
-        to file
+        """Check ssh key for passwordless connection is written
+        to file.
         """
         path_to_save = project.cfg["local_path"] / "test"
         ssh.generate_and_write_ssh_key(path_to_save)
 
-        with open(path_to_save, "r") as file:
+        with open(path_to_save) as file:
             first_line = file.readlines()[0]
 
         assert first_line == "-----BEGIN RSA PRIVATE KEY-----\n"

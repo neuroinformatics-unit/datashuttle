@@ -10,13 +10,14 @@ from datashuttle.utils.rclone import get_local_and_central_file_differences
 
 
 class TestTransferChecks(BaseTest):
+    """PLACEHOLDER."""
+
     @pytest.mark.parametrize(
         "top_level_folders",
         [["rawdata", "derivatives"], ["rawdata"], ["derivatives"]],
     )
     def test_rclone_check(self, project, top_level_folders):
-        """
-        Test rclone.get_local_and_central_file_differences(). This function
+        """Test rclone.get_local_and_central_file_differences(). This function
         returns a dictionary where values are list of paths and keys
         separate based on differences between local and central projects.
 
@@ -91,6 +92,7 @@ class TestTransferChecks(BaseTest):
                     assert path_ not in results_paths
 
     def get_folder_structure(self, top_level_folder):
+        """PLACEHOLDER."""
         # fmt: off
         folder_structure = [
             [f"{top_level_folder}/sub-001/ses-001/ephys/local_only_1.txt",          "local_only"],

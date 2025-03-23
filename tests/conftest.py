@@ -1,5 +1,4 @@
-"""
-Test configs, used for setting up SSH tests.
+"""Test configs, used for setting up SSH tests.
 
 Before running these tests, it is necessary to setup
 an SSH key. This can be done through datashuttle

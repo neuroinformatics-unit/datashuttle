@@ -20,20 +20,21 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class SettingsScreen(ModalScreen):
-    """
-    Screen accessible from the main window that contains
+    """Screen accessible from the main window that contains
     'global' settings for the TUI. 'Global' settings are non-project
     specific settings (e.g. dark mode) and are handled independently
     of the main datashuttle API.
     """
 
     def __init__(self, mainwindow: App) -> None:
+        """PLACEHOLDER."""
         super(SettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
         self.global_settings = self.mainwindow.load_global_settings()
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         dark_mode = self.global_settings["dark_mode"]
         yield Container(
             RadioSet(
@@ -59,11 +60,12 @@ class SettingsScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
-        """"""
+        """PLACEHOLDER."""
         id = "#show_transfer_tree_status_checkbox"
         self.query_one(id).tooltip = get_tooltip(id)
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
+        """PLACEHOLDER."""
         label = str(event.pressed.label)
         assert label in ["Light Mode", "Dark Mode"]
 
@@ -74,9 +76,11 @@ class SettingsScreen(ModalScreen):
         self.mainwindow.save_global_settings(self.global_settings)
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        """PLACEHOLDER."""
         self.global_settings["show_transfer_tree_status"] = event.value
         self.mainwindow.save_global_settings(self.global_settings)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """PLACEHOLDER."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()

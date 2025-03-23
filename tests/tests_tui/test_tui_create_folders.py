@@ -13,6 +13,7 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiCreateFolders(TuiBase):
+    """PLACEHOLDER."""
 
     # -------------------------------------------------------------------------
     # General test Create Folders
@@ -23,9 +24,7 @@ class TestTuiCreateFolders(TuiBase):
     async def test_create_folders_sub_and_ses(
         self, setup_project_paths, test_multi_input
     ):
-        """
-        Basic test that folders are created as expected through the TUI.
-        """
+        """Basic test that folders are created as expected through the TUI."""
         # Define folders to create
         if test_multi_input:
             sub_text = "sub-001, sub-002"
@@ -42,7 +41,6 @@ class TestTuiCreateFolders(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up the TUI on the 'create' tab, filling the
             # input with the subject and session folders to create.
             await self.check_and_click_onto_existing_project(
@@ -87,8 +85,7 @@ class TestTuiCreateFolders(TuiBase):
 
     @pytest.mark.asyncio
     async def test_create_folders_formatted_names(self, setup_project_paths):
-        """
-        Test preview tooltips and create folders with _@DATE@ formatting.
+        """Test preview tooltips and create folders with _@DATE@ formatting.
         The @TO@ key is not tested.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
@@ -181,15 +178,13 @@ class TestTuiCreateFolders(TuiBase):
     async def test_create_folders_bad_validation_tooltips(
         self, setup_project_paths
     ):
-        """
-        Check that correct tooltips are displayed when
+        """Check that correct tooltips are displayed when
         various invalid subject or session names are provided.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -259,8 +254,7 @@ class TestTuiCreateFolders(TuiBase):
     async def test_validation_error_and_bypass_validation(
         self, setup_project_paths
     ):
-        """
-        Test validation and bypass validation options by
+        """Test validation and bypass validation options by
         first trying to create an invalid folder name, and
         checking an error displays. Next, turn on 'bypass validation'
         and check the folders are created despite being invalid.
@@ -269,7 +263,6 @@ class TestTuiCreateFolders(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -338,15 +331,13 @@ class TestTuiCreateFolders(TuiBase):
     async def test_name_template_next_sub_or_ses_and_validation(
         self, setup_project_paths
     ):
-        """
-        Test validation and double-click for next sub / ses
+        """Test validation and double-click for next sub / ses
         values when 'name templates' is set in the 'Settings' window.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -468,15 +459,13 @@ class TestTuiCreateFolders(TuiBase):
 
     @pytest.mark.asyncio
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
-        """
-        Test the double click on Input correctly fills with the
+        """Test the double click on Input correctly fills with the
         next sub or ses (or prefix only when CTRL is pressed).
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=True
             )
@@ -532,15 +521,13 @@ class TestTuiCreateFolders(TuiBase):
     async def test_create_folders_settings_top_level_folder(
         self, setup_project_paths
     ):
-        """
-        Check the folders are created in the correct top level
+        """Check the folders are created in the correct top level
         folder when this is changed in the 'Settings' screen.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Open the CreateFoldersSettingsScreen
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
@@ -615,11 +602,11 @@ class TestTuiCreateFolders(TuiBase):
     async def iterate_and_check_all_datatype_folders(
         self, pilot, subs, sessions
     ):
+        """PLACEHOLDER."""
         project = pilot.app.screen.interface.project
         folder_used = test_utils.get_all_broad_folders_used(value=False)
 
         for datatype in canonical_configs.get_broad_datatypes():
-
             await self.scroll_to_click_pause(
                 pilot,
                 f"#create_{datatype}_checkbox",
@@ -633,6 +620,7 @@ class TestTuiCreateFolders(TuiBase):
     async def create_folders_and_check_output(
         self, pilot, project, subs, sessions, folder_used
     ):
+        """PLACEHOLDER."""
         await self.scroll_to_click_pause(
             pilot,
             "#create_folders_create_folders_button",

@@ -15,8 +15,7 @@ from datashuttle.utils import ssh
 
 
 class Interface:
-    """
-    An interface class between the TUI and datashuttle API. Takes input
+    """An interface class between the TUI and datashuttle API. Takes input
     to all datashuttle functions as passed from the TUI, outputs
     success status (True or False) and optional data, in the case
     of False.
@@ -31,21 +30,20 @@ class Interface:
     """
 
     def __init__(self) -> None:
-
+        """PLACEHOLDER."""
         self.project: DataShuttle
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
 
     def select_existing_project(self, project_name: str) -> InterfaceOutput:
-        """
-        Load an existing project into `self.project`.
+        """Load an existing project into `self.project`.
 
         Parameters
         ----------
-
         project_name
             The name of the datashuttle project to load.
             Must already exist.
+
         """
         try:
             project = DataShuttle(project_name, print_startup_message=False)
@@ -58,17 +56,16 @@ class Interface:
     def setup_new_project(
         self, project_name: str, cfg_kwargs: Dict
     ) -> InterfaceOutput:
-        """
-        Set up a new project and load into `self.project`.
+        """Set up a new project and load into `self.project`.
 
         Parameters
         ----------
-
         project_name
             Name of the project to set up.
 
         cfg_kwargs
             The configurations to set the new project to.
+
         """
         try:
             project = DataShuttle(project_name, print_startup_message=False)
@@ -85,15 +82,14 @@ class Interface:
     def set_configs_on_existing_project(
         self, cfg_kwargs: Dict
     ) -> InterfaceOutput:
-        """
-        Update the settings on an existing project. Only the settings
+        """Update the settings on an existing project. Only the settings
         passed in `cfg_kwargs` are updated.
 
         Parameters
         ----------
-
         cfg_kwargs
             The configs and new values to update.
+
         """
         try:
             self.project.update_config_file(**cfg_kwargs)
@@ -108,12 +104,10 @@ class Interface:
         ses_names: Optional[List[str]],
         datatype: List[str],
     ) -> InterfaceOutput:
-        """
-        Create folders through datashuttle.
+        """Create folders through datashuttle.
 
         Parameters
         ----------
-
         sub_names
             A list of un-formatted / unvalidated subject names to create.
 
@@ -122,6 +116,7 @@ class Interface:
 
         datatype
             A list of canonical datatype names to create.
+
         """
         top_level_folder = self.tui_settings["top_level_folder_select"][
             "create_tab"
@@ -144,8 +139,7 @@ class Interface:
     def validate_names(
         self, sub_names: List[str], ses_names: Optional[List[str]]
     ) -> InterfaceOutput:
-        """
-        Validate a list of subject / session names. This is used
+        """Validate a list of subject / session names. This is used
         to populate the Input tooltips with validation errors.
         Uses a central `_format_and_validate_names()` that is also
         called during folder creation itself, to ensure these a
@@ -153,12 +147,12 @@ class Interface:
 
         Parameters
         ----------
-
         sub_names
             List of subject names to format.
 
         ses_names
             List of session names to format.
+
         """
         top_level_folder = self.tui_settings["top_level_folder_select"][
             "create_tab"
@@ -185,15 +179,14 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def transfer_entire_project(self, upload: bool) -> InterfaceOutput:
-        """
-        Transfer the entire project (all canonical top-level folders).
+        """Transfer the entire project (all canonical top-level folders).
 
         Parameters
         ----------
-
         upload
             Upload from local to central if `True`, otherwise download
             from central to remote.
+
         """
         try:
             if upload:
@@ -216,12 +209,10 @@ class Interface:
     def transfer_top_level_only(
         self, selected_top_level_folder: str, upload: bool
     ) -> InterfaceOutput:
-        """
-        Transfer all files within a selected top level folder.
+        """Transfer all files within a selected top level folder.
 
         Parameters
         ----------
-
         selected_top_level_folder
             The top level folder selected in the TUI for this transfer window.
 
@@ -266,12 +257,10 @@ class Interface:
         datatype: List[str],
         upload: bool,
     ) -> InterfaceOutput:
-        """
-        Transfer a custom selection of subjects / sessions / datatypes.
+        """Transfer a custom selection of subjects / sessions / datatypes.
 
         Parameters
         ----------
-
         selected_top_level_folder
             The top level folder selected in the TUI for this transfer window.
 
@@ -287,6 +276,7 @@ class Interface:
         upload
             Upload from local to central if `True`, otherwise download
             from central to remote.
+
         """
         try:
             if upload:
@@ -314,8 +304,7 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def get_name_templates(self) -> Dict:
-        """
-        Get the `name_templates` defining templates to validate
+        """Get the `name_templates` defining templates to validate
         against. These are stored in a variable to avoid constantly
         reading these values from disk where they are stored in
         `persistent_settings`. It is critical this variable
@@ -328,8 +317,7 @@ class Interface:
         return self.name_templates
 
     def set_name_templates(self, name_templates: Dict) -> InterfaceOutput:
-        """
-        Set the `name_templates` here and on disk. See `get_name_templates`
+        """Set the `name_templates` here and on disk. See `get_name_templates`
         for more information.
         """
         try:
@@ -341,8 +329,7 @@ class Interface:
             return False, str(e)
 
     def get_tui_settings(self) -> Dict:
-        """
-        Get the "tui" field of `persistent_settings`. Similar to
+        """Get the "tui" field of `persistent_settings`. Similar to
         `get_name_templates`, there are held on the class to avoid
         constantly reading from disk.
         """
@@ -354,22 +341,21 @@ class Interface:
     def save_tui_settings(
         self, value: Any, key: str, key_2: Optional[str] = None
     ) -> None:
-        """
-        Update the "tui" field of the `persistent_settings` on disk.
+        """Update the "tui" field of the `persistent_settings` on disk.
 
         Parameters
         ----------
-
         value
             Value to set the `persistent_settings` tui field to
 
-        key_1
+        key
             First key of the tui `persistent_settings` to update
             e.g. "top_level_folder_select"
 
         key_2
             Optionals second level of the dictionary to update.
             e.g. "create_tab"
+
         """
         if key_2 is None:
             self.tui_settings[key] = value
@@ -382,14 +368,15 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def get_central_host_id(self) -> str:
+        """PLACEHOLDER."""
         return self.project.cfg["central_host_id"]
 
     def get_configs(self) -> Configs:
+        """PLACEHOLDER."""
         return self.project.cfg
 
     def get_textual_compatible_project_configs(self) -> Configs:
-        """
-        Datashuttle configs keeps paths saved as pathlib.Path
+        """Datashuttle configs keeps paths saved as pathlib.Path
         objects. In some cases textual requires str representation.
         This method returns datashuttle configs with all paths that
         are Path converted to str.
@@ -401,6 +388,7 @@ class Interface:
     def get_next_sub(
         self, top_level_folder: TopLevelFolder
     ) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             next_sub = self.project.get_next_sub(
                 top_level_folder,
@@ -414,7 +402,7 @@ class Interface:
     def get_next_ses(
         self, top_level_folder: TopLevelFolder, sub: str
     ) -> InterfaceOutput:
-
+        """PLACEHOLDER."""
         try:
             next_ses = self.project.get_next_ses(
                 top_level_folder,
@@ -427,6 +415,7 @@ class Interface:
             return False, str(e)
 
     def get_ssh_hostkey(self) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             key = ssh.get_remote_server_key(
                 self.project.cfg["central_host_id"]
@@ -436,6 +425,7 @@ class Interface:
             return False, str(e)
 
     def save_hostkey_locally(self, key: paramiko.RSAKey) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             ssh.save_hostkey_locally(
                 key,
@@ -450,6 +440,7 @@ class Interface:
     def setup_key_pair_and_rclone_config(
         self, password: str
     ) -> InterfaceOutput:
+        """PLACEHOLDER."""
         try:
             ssh.add_public_key_to_central_authorized_keys(
                 self.project.cfg, password, log=False

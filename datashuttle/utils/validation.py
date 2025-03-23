@@ -34,6 +34,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 def get_missing_prefix_error(name: str, prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"MISSING_PREFIX: The prefix {prefix} was not found in the name: {name}",
         path_,
@@ -41,6 +42,7 @@ def get_missing_prefix_error(name: str, prefix, path_: Path | None) -> str:
 
 
 def get_bad_value_error(name: str, prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"BAD_VALUE: The value for prefix {prefix} in name {name} is not an integer.",
         path_,
@@ -48,6 +50,7 @@ def get_bad_value_error(name: str, prefix, path_: Path | None) -> str:
 
 
 def get_duplicate_prefix_error(name: str, prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DUPLICATE_PREFIX: The name: {name} of contains more than one instance of the prefix {prefix}.",
         path_,
@@ -55,12 +58,14 @@ def get_duplicate_prefix_error(name: str, prefix, path_: Path | None) -> str:
 
 
 def get_name_error(name: str, prefix: Prefix, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"BAD_NAME: The name: {name} of type: {prefix} is not valid.", path_
     )
 
 
 def get_special_char_error(name: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"SPECIAL_CHAR: The name: {name}, contains characters which are not alphanumeric, dash or underscore.",
         path_,
@@ -68,6 +73,7 @@ def get_special_char_error(name: str, path_: Path | None) -> str:
 
 
 def get_name_format_error(name: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"NAME_FORMAT: The name {name} does not consist of key-value pairs separated by underscores.",
         path_,
@@ -75,10 +81,12 @@ def get_name_format_error(name: str, path_: Path | None) -> str:
 
 
 def get_value_length_error(prefix: Prefix) -> str:
+    """PLACEHOLDER."""
     return f"VALUE_LENGTH: Inconsistent value lengths for the prefix: {prefix} were found in the project."
 
 
 def get_datetime_error(key, name: str, strfmt: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DATETIME: Name {name} contains an invalid {key}. It should be ISO format: {strfmt}.",
         path_,
@@ -86,8 +94,7 @@ def get_datetime_error(key, name: str, strfmt: str, path_: Path | None) -> str:
 
 
 def get_template_error(name: str, regexp: str, path_: Path | None) -> str:
-    """
-    The missing full-stop at the end is intentional, to avoid
+    """The missing full-stop at the end is intentional, to avoid
     confusion when reading the regexp.
     """
     return handle_path(
@@ -99,6 +106,7 @@ def get_template_error(name: str, regexp: str, path_: Path | None) -> str:
 def get_missing_top_level_folder_error(
     path_: Path | None, local_or_central: Literal["local", "central"]
 ) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"TOP_LEVEL_FOLDER: The {local_or_central} project must contain a 'rawdata' or 'derivatives' folder.",
         path_,
@@ -108,6 +116,7 @@ def get_missing_top_level_folder_error(
 def get_duplicate_name_error(
     new_name: str, exist_name: str, exist_path: Path | None
 ) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DUPLICATE_NAME: The prefix for {new_name} duplicates the name: {exist_name}.",
         exist_path,
@@ -115,12 +124,14 @@ def get_duplicate_name_error(
 
 
 def get_datatype_error(datatype_name: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     return handle_path(
         f"DATATYPE: {datatype_name} is not a valid datatype name.", path_
     )
 
 
 def handle_path(message: str, path_: Path | None) -> str:
+    """PLACEHOLDER."""
     if path_:
         message += f" Path: {path_.as_posix()}"
     return message
@@ -137,13 +148,11 @@ def validate_list_of_names(
     name_templates: Optional[Dict] = None,
     check_value_lengths: bool = True,
 ) -> List[str]:
-    """
-    Validate a list of subject or session names, ensuring
+    """Validate a list of subject or session names, ensuring
     they are formatted as per NeuroBlueprint.
 
     Parameters
     ----------
-
     path_or_name_list
         A list of pathlib.Path to NeuroBlueprint-formatted folders to validate
 
@@ -156,6 +165,7 @@ def validate_list_of_names(
     check_value_lengths
         If `True`, check that the prefix-<value> value lengths
         are consistent across the passed list.
+
     """
     if len(path_or_name_list) == 0:
         return []
@@ -164,7 +174,6 @@ def validate_list_of_names(
 
     # First, just validate each name individually
     for path_or_name in path_or_name_list:
-
         path_, name = get_path_and_name(path_or_name)
 
         error_messages += prefix_is_duplicate_or_has_bad_values(
@@ -190,7 +199,6 @@ def validate_list_of_names(
     )
 
     for path_or_name in stripped_path_or_names_list:
-
         path_, name = get_path_and_name(path_or_name)
 
         error_messages += new_name_duplicates_existing(
@@ -208,8 +216,7 @@ def validate_list_of_names(
 def prefix_is_duplicate_or_has_bad_values(
     name: str, prefix: Prefix, path_: Path | None
 ) -> List[str]:
-    """
-    Check that the prefix (sub- or ses-) is found only
+    """Check that the prefix (sub- or ses-) is found only
     once in the name and that its value can be converted
     to integer.
     """
@@ -233,8 +240,7 @@ def new_name_duplicates_existing(
     existing_path_or_name_list: List[Path] | List[str],
     prefix: Prefix,
 ) -> List[str]:
-    """
-    Check that a subject or session value does not duplicate
+    """Check that a subject or session value does not duplicate
     an existing value. The only case this is allowed is
     when the names match exactly.
 
@@ -251,7 +257,6 @@ def new_name_duplicates_existing(
 
     error_messages = []
     for exist_path_or_name in existing_path_or_name_list:
-
         exist_path, exist_name = get_path_and_name(exist_path_or_name)
 
         exist_name_id = utils.get_values_from_bids_formatted_name(
@@ -274,8 +279,7 @@ def names_dont_match_templates(
     prefix: Prefix,
     name_templates: Optional[Dict] = None,
 ) -> List[str]:
-    """
-    Test a list of subject or session names against
+    """Test a list of subject or session names against
     the respective `name_templates`, a regexp template.
     """
     if name_templates is None:
@@ -298,8 +302,7 @@ def names_dont_match_templates(
 
 
 def get_path_and_name(path_or_name: Path | str) -> Tuple[Optional[Path], str]:
-    """
-    Convenience function to get the folder name
+    """Convenience function to get the folder name
     from something that is either a Path (pointing
     to the folder) or a str of the folder name itself.
     """
@@ -310,8 +313,7 @@ def get_path_and_name(path_or_name: Path | str) -> Tuple[Optional[Path], str]:
 
 
 def replace_tags_in_regexp(regexp: str) -> str:
-    """
-    Before validation, all tags in the names are converted to
+    r"""Before validation, all tags in the names are converted to
     their final values (e.g. @DATE@ -> _date-<date>). We also want to
     allow template to be formatted like `sub-\d\d_@DATE@` as it
     is convenient for auto-completion in the TUI.
@@ -336,8 +338,7 @@ def replace_tags_in_regexp(regexp: str) -> str:
 def name_begins_with_bad_key(
     name: str, prefix: Prefix, path_: Path | None
 ) -> List[str]:
-    """
-    Check that a list of NeuroBlueprint names begin
+    """Check that a list of NeuroBlueprint names begin
     with the required prefix (sub- or ses-).
     """
     if name[:4] != f"{prefix}-":
@@ -349,8 +350,7 @@ def name_begins_with_bad_key(
 def names_include_special_characters(
     name: str, path_: Path | None
 ) -> List[str]:
-    """
-    Check that a list of NeuroBlueprint formatted
+    """Check that a list of NeuroBlueprint formatted
     names do not contain special characters (i.e. characters
     that are not integers, letters, dash or underscore).
     """
@@ -361,14 +361,14 @@ def names_include_special_characters(
 
 
 def name_has_special_character(name: str) -> bool:
+    """Check if the name contains special characters."""
     return not re.match("^[A-Za-z0-9_-]*$", name)
 
 
 def dashes_and_underscore_alternate_incorrectly(
     name: str, path_: Path | None
 ) -> List[str]:
-    """
-    Check a list of NeuroBlueprint formatted names
+    """Check a list of NeuroBlueprint formatted names
     have the "-" and "-" ordered correctly. Names should be
     key-value pairs separated by underscores e.g.
     sub-001_ses-001.
@@ -386,7 +386,7 @@ def dashes_and_underscore_alternate_incorrectly(
         or dashes_underscores[0] != 1  # first must be -
         or dashes_underscores[-1] != 1  # last must be -
         or underscore_dash_not_interleaved
-        or (name[-1] in discrim.keys())  # name cannot end with - or _
+        or (name[-1] in discrim)  # name cannot end with - or _
     ):
         return [get_name_format_error(name, path_)]
     else:
@@ -397,8 +397,7 @@ def value_lengths_are_inconsistent(
     path_or_names_list: List[Path] | List[str] | List[Path | str],
     prefix: Prefix,
 ) -> List[str]:
-    """
-    Given a list of NeuroBlueprint-formatted subject or session
+    """Given a list of NeuroBlueprint-formatted subject or session
     names, determine if there are inconsistent value lengths for
     the sub or ses key. e.g. ["sub-01", "sub-001"] is an error.
     """
@@ -429,9 +428,7 @@ def datetime_are_iso_format(
     name: str,
     path_: Path | None,
 ) -> List[str]:
-    """
-    Check formatting for date-, time-, or datetime- tags.
-    """
+    """Check formatting for date-, time-, or datetime- tags."""
     formats = {
         "datetime": "%Y%m%dT%H%M%S",
         "time": "%H%M%S",
@@ -466,8 +463,7 @@ def datetime_are_iso_format(
 def raise_display_mode(
     message: str, display_mode: DisplayMode, log: bool
 ) -> None:
-    """
-    Show a message by raising an error, displaying warning, or printing.
+    """Show a message by raising an error, displaying warning, or printing.
     Optionally log with the current datashuttle logger.
     """
     if display_mode == "error":
@@ -501,12 +497,10 @@ def validate_project(
     name_templates: Optional[Dict] = None,
     strict_mode: bool = False,
 ) -> List[str]:
-    """
-    Validate all subject and session folders within a project.
+    """Validate all subject and session folders within a project.
 
     Parameters
-    -----------
-
+    ----------
     cfg
         datashuttle Configs class.
 
@@ -534,6 +528,7 @@ def validate_project(
         starting with sub- or ses- prefix are checked. In `Strict Mode`,
         any folder not prefixed with sub-, ses- or a valid datatype will
         raise a validation issue.
+
     """
     error_messages = []
 
@@ -541,7 +536,6 @@ def validate_project(
     error_messages += check_high_level_project_structure(cfg, include_central)
 
     for top_level_folder in top_level_folder_list:
-
         if strict_mode:
             error_messages += check_strict_mode(
                 cfg, top_level_folder, include_central
@@ -568,7 +562,6 @@ def validate_project(
 
         # Check all names as well as duplicates per-subject
         for ses_paths in folder_paths["ses"].values():
-
             error_messages += validate_list_of_names(
                 ses_paths,
                 "ses",
@@ -604,8 +597,7 @@ def validate_names_against_project(
     log: bool = True,
     name_templates: Optional[Dict] = None,
 ) -> None:
-    """
-    Given a list of subject and (optionally) session names,
+    """Given a list of subject and (optionally) session names,
     check that these names are formatted consistently with the
     rest of the project. Used for creating folders.
 
@@ -615,7 +607,6 @@ def validate_names_against_project(
 
     Parameters
     ----------
-
     cfg
         datashuttle Configs class.
 
@@ -645,6 +636,7 @@ def validate_names_against_project(
 
     name_templates
         A `name_template` dictionary to validate against. See `set_name_templates()`.
+
     """
     error_messages = []
 
@@ -662,7 +654,6 @@ def validate_names_against_project(
     )
 
     if folder_paths["sub"]:
-
         # Strip any totally invalid names which we can't extract
         # the sub integer value for the following checks
         valid_sub_names = strip_uncheckable_names(sub_names, "sub")
@@ -690,14 +681,12 @@ def validate_names_against_project(
 
     # Now we need to check the sessions.
     if ses_names is not None and any(ses_names):
-
         # First, validate the list of passed session names
         error_messages += validate_list_of_names(
             ses_names, "ses", name_templates=name_templates
         )
 
         if folder_paths["sub"]:
-
             # Next, we need to check that the passed session names
             # do not duplicate existing session names and
             # that do not create inconsistent ses-<value> lengths across the project.
@@ -708,7 +697,6 @@ def validate_names_against_project(
             # are allowed across different subjects (but not within a single sub).
             for new_sub in sub_names:
                 if new_sub in folder_paths["ses"]:
-
                     valid_ses_in_sub = strip_uncheckable_names(
                         folder_paths["ses"][new_sub],
                         "ses",
@@ -746,8 +734,7 @@ def validate_names_against_project(
 def check_high_level_project_structure(
     cfg: Configs, include_central: bool
 ) -> List[str]:
-    """
-    Perform basic validation checks on the project structure,
+    """Perform basic validation checks on the project structure,
     that the project folder name is valid, and that the
     project folder contains either a "rawdata" or "derivatives"
     folder.
@@ -810,8 +797,7 @@ def check_high_level_project_structure(
 def check_strict_mode(
     cfg: Configs, top_level_folder: TopLevelFolder, include_central: bool
 ) -> List[str]:
-    """
-    `strict_mode` does not allow any non-NeuroBlueprint folder to exist
+    """`strict_mode` does not allow any non-NeuroBlueprint folder to exist
     in the project outside the datatype folder. NeuroBlueprint folders
     are top-level folder or folder with sub-, ses- or datatype.
 
@@ -841,7 +827,6 @@ def check_strict_mode(
     )
 
     for sub_level_path in sub_level_folder_paths["local"]:
-
         # Check all folders found in a top-level folder are
         # sub- prefixed folders.
         sub_level_name = sub_level_path.name
@@ -861,7 +846,6 @@ def check_strict_mode(
         )
 
         for ses_level_path in ses_level_folder_paths["local"]:
-
             # For each sub- prefixed folder, check that all folders within
             # the subject folder are ses- prefixed folders.
             ses_level_name = ses_level_path.name
@@ -884,7 +868,6 @@ def check_strict_mode(
 
             canonical_datatypes = canonical_configs.get_datatypes()
             for datatype_level_path in search_results:
-
                 # For each ses- prefixed folder, check that
                 # only valid datatypes are included within it.
                 datatype_level_name = datatype_level_path.name
@@ -916,8 +899,7 @@ def strip_uncheckable_names(
     path_or_names_list: List[Path] | List[str],
     prefix: Prefix,
 ) -> List[Path] | List[str]:
-    """
-    Convenience function to remove any name in which
+    """Convenience function to remove any name in which
     the `prefix` value (sub or ses typically) cannot be
     converted into an integer. This is necessary as some
     validation steps (e.g. checking duplicate names) requires
@@ -927,7 +909,6 @@ def strip_uncheckable_names(
     new_list = []
 
     for path_or_name in path_or_names_list:
-
         path_, name = get_path_and_name(path_or_name)
 
         try:
@@ -953,8 +934,7 @@ def strip_uncheckable_names(
 def check_datatypes_are_valid(
     datatype: Union[List[str], str], allow_all: bool = False
 ) -> str | None:
-    """
-    Check a datatype of list of datatypes is a valid
+    """Check a datatype of list of datatypes is a valid
     NeuroBlueprint datatype.
     """
     datatype_folders = canonical_folders.get_datatype_folders()

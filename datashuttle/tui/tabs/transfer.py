@@ -43,15 +43,13 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class TransferTab(TreeAndInputTab):
-    """
-    This tab handles the upload / download of files between local
+    """Handles the upload / download of files between local
     and central folders. It contains a TransferDirectoryTree that
     displays the transfer status of the files in the local folder,
     and calls underlying datashuttle transfer functions.
 
     Parameters
     ----------
-
     title
         The title of the tab
 
@@ -66,7 +64,6 @@ class TransferTab(TreeAndInputTab):
 
     Attributes
     ----------
-
     show_legend
         Convenience attribute linked to a global setting exists that
         turns off / on styling of directorytree nodes based on transfer status. `
@@ -76,6 +73,7 @@ class TransferTab(TreeAndInputTab):
         ]`
 
         When on, the legend must be hidden.
+
     """
 
     def __init__(
@@ -85,6 +83,7 @@ class TransferTab(TreeAndInputTab):
         interface: Interface,
         id: Optional[str] = None,
     ) -> None:
+        """PLACEHOLDER."""
         super(TransferTab, self).__init__(title, id=id)
         self.mainwindow = mainwindow
         self.interface = interface
@@ -97,6 +96,7 @@ class TransferTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         self.transfer_all_widgets = [
             Label(
                 "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred.",
@@ -210,7 +210,7 @@ class TransferTab(TreeAndInputTab):
             yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self) -> None:
-
+        """PLACEHOLDER."""
         for id in [
             "#transfer_directorytree",
             "#transfer_switch_container",
@@ -242,6 +242,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_select_changed(self, event: Select.Changed) -> None:
+        """PLACEHOLDER."""
         if event.select.id == "transfer_tab_overwrite_select":
             assert event.select.value in ["Never", "Always", "If Source Newer"]
             format_select = event.select.value.lower().replace(" ", "_")
@@ -251,6 +252,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        """PLACEHOLDER."""
         if event.checkbox.id == "transfer_tab_dry_run_checkbox":
             self.interface.save_tui_settings(
                 event.checkbox.value,
@@ -261,8 +263,7 @@ class TransferTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def switch_transfer_widgets_display(self) -> None:
-        """
-        Show or hide transfer parameters based on whether the transfer mode
+        """Show or hide transfer parameters based on whether the transfer mode
         currently selected in `transfer_radioset`.
         """
         for widget in self.transfer_all_widgets:
@@ -279,8 +280,7 @@ class TransferTab(TreeAndInputTab):
             ).value
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        """
-        Update the displayed transfer parameter widgets when the
+        """Update the displayed transfer parameter widgets when the
         `transfer_radioset` radiobuttons are changed.
         """
         label = str(event.pressed.label)
@@ -288,8 +288,7 @@ class TransferTab(TreeAndInputTab):
         self.switch_transfer_widgets_display()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        If the Transfer button is clicked, opens a modal dialog
+        """If the Transfer button is clicked, opens a modal dialog
         to confirm that the user wishes to transfer their data
         (in the direction selected). If "Yes" is selected,
         `self.transfer_data` (see below) is run.
@@ -323,6 +322,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     async def refresh_after_datatype_changed(self, ignore):
+        """PLACEHOLDER."""
         await self.recompose()
         self.on_mount()
         self.query_one("#transfer_custom_radiobutton").value = True
@@ -331,6 +331,7 @@ class TransferTab(TreeAndInputTab):
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
     ) -> None:
+        """PLACEHOLDER."""
         if event.key == "ctrl+r":
             self.reload_directorytree()
 
@@ -344,11 +345,11 @@ class TransferTab(TreeAndInputTab):
             self.reload_directorytree()
 
     def reload_directorytree(self) -> None:
+        """PLACEHOLDER."""
         self.query_one("#transfer_directorytree").update_transfer_tree()
 
     def update_directorytree_root(self, new_root_path: Path) -> None:
-        """
-        This will automatically refresh the tree through the
+        """Automatically refreshes the tree through the
         reactive variable `path`.
         """
         self.query_one("#transfer_directorytree").path = new_root_path
@@ -358,8 +359,7 @@ class TransferTab(TreeAndInputTab):
 
     @work(exclusive=True, thread=True)
     def transfer_data(self) -> Worker[InterfaceOutput]:
-        """
-        A threaded worker to transfer data
+        """A threaded worker to transfer data.
 
         This function transfers data based on the config provided by the radio buttons
         such as a) the data to be transferred (all / top-level-folders / custom) b) the
@@ -375,7 +375,6 @@ class TransferTab(TreeAndInputTab):
             success, output = self.interface.transfer_entire_project(upload)
 
         elif self.query_one("#transfer_toplevel_radiobutton").value:
-
             selected_top_level_folder = self.query_one(
                 "#transfer_toplevel_select"
             ).get_top_level_folder()
@@ -385,7 +384,6 @@ class TransferTab(TreeAndInputTab):
             )
 
         elif self.query_one("#transfer_custom_radiobutton").value:
-
             selected_top_level_folder = self.query_one(
                 "#transfer_custom_select"
             ).get_top_level_folder()

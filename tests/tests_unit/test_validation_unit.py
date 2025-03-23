@@ -4,10 +4,11 @@ from datashuttle.utils import formatting, validation
 
 
 class TestValidationUnit:
+    """PLACEHOLDER."""
+
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_more_than_one_instance(self, prefix):
-        """
-        Check that any duplicate sub or ses values are caught
+        """Check that any duplicate sub or ses values are caught
         in `validate_list_of_names()`.
         """
         error_message = validation.validate_list_of_names(
@@ -36,8 +37,7 @@ class TestValidationUnit:
         ],
     )
     def test_name_does_not_begin_with_prefix(self, prefix_and_names):
-        """
-        Check validation that names passed to `validate_list_of_names()`
+        """Check validation that names passed to `validate_list_of_names()`
         start with the prefix prefix (sub or ses).
         """
         prefix, names = prefix_and_names
@@ -48,9 +48,8 @@ class TestValidationUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_special_characters_in_format_names(self, prefix):
-        """
-        Check `validate_list_of_names()` catches
-        spaces in passed names (not all names are bad
+        """Check `validate_list_of_names()` catches
+        spaces in passed names (not all names are bad.
         """
         error_messages = validation.validate_list_of_names(
             [
@@ -72,7 +71,7 @@ class TestValidationUnit:
         ],
     )
     def test_prefix_is_not_an_integer(self, prefix_and_names):
-        """ """
+        """PLACEHOLDER."""
         prefix, names = prefix_and_names
 
         error_messages = validation.validate_list_of_names(names, prefix)
@@ -88,11 +87,9 @@ class TestValidationUnit:
     def test_formatting_dashes_and_underscore_alternate_incorrectly(
         self, prefix
     ):
-        """
-        Check `validate_list_of_names()` catches "-" and "_" that
+        """Check `validate_list_of_names()` catches "-" and "_" that
         are not in the correct order.
         """
-
         # Test a large range of bad names. Do not use
         # parametrize so we can use f"{prefix}".
         # There should always be two validation errors per list.
@@ -144,8 +141,7 @@ class TestValidationUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_inconsistent_value_lengths_in_list_of_names(self, prefix):
-        """
-        Ensure a list of sub / ses names that contain inconsistent
+        """Ensure a list of sub / ses names that contain inconsistent
         leading zeros (e.g. ["sub-001", "sub-02"]) leads to an error.
         """
         for names in [
@@ -163,8 +159,7 @@ class TestValidationUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_duplicate_ids_in_list_of_names(self, prefix):
-        """
-        Ensure a list of sub / ses names that contain duplicate sub / ses
+        """Ensure a list of sub / ses names that contain duplicate sub / ses
         ids (e.g. ["sub-001", "sub-001_@DATE@"]) leads to an error.
         """
         names = [
@@ -183,12 +178,10 @@ class TestValidationUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_new_name_duplicates_existing(self, prefix):
-        """
-        Test the function `new_name_duplicates_existing()`
+        """Test the function `new_name_duplicates_existing()`
         that will throw an error if a sub / ses name matches
         an existing name (unless it matches exactly).
         """
-
         # Check an exactly matching case that should not raise and error
         new_name = f"{prefix}-002"
         existing_names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-003"]
@@ -231,8 +224,7 @@ class TestValidationUnit:
         )
 
     def test_tags_autoreplace_in_regexp(self):
-        """
-        Check the validation function `replace_tags_in_regexp()`
+        """Check the validation function `replace_tags_in_regexp()`
         correctly replaces tags in a regexp with their regexp equivalent.
 
         Test date, time and datetime with some random regexp that
@@ -259,7 +251,7 @@ class TestValidationUnit:
         )
 
     def test_handle_path(self):
-
+        """PLACEHOLDER."""
         output = validation.handle_path("message", None)
         assert output == "message"
 
@@ -271,7 +263,7 @@ class TestValidationUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_datetime_iso_format(self, prefix):
-
+        """PLACEHOLDER."""
         # Test dates
         error_messages = validation.validate_list_of_names(
             [

@@ -22,8 +22,7 @@ from datashuttle.tui.tabs import create_folders, logging, transfer
 
 
 class ProjectManagerScreen(Screen):
-    """
-    Screen containing the Create, Transfer and Configs tabs. This is
+    """Screen containing the Create, Transfer and Configs tabs. This is
     the primary screen within which the user interacts with
     a pre-configured project.
 
@@ -42,6 +41,7 @@ class ProjectManagerScreen(Screen):
     """
 
     def __init__(self, mainwindow: App, interface: Interface, id) -> None:
+        """PLACEHOLDER."""
         super(ProjectManagerScreen, self).__init__(id=id)
 
         self.mainwindow = mainwindow
@@ -52,6 +52,7 @@ class ProjectManagerScreen(Screen):
         self.tabbed_content_mount_signal = True
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
         with TabbedContent(
@@ -85,8 +86,7 @@ class ProjectManagerScreen(Screen):
             )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        Dismisses the TabScreen (and returns to the main menu) once
+        """Dismisses the TabScreen (and returns to the main menu) once
         the 'Main Menu' button is pressed.
         """
         if event.button.id == "all_main_menu_buttons":
@@ -95,8 +95,7 @@ class ProjectManagerScreen(Screen):
     def on_tabbed_content_tab_activated(
         self, event: TabbedContent.TabActivated
     ) -> None:
-        """
-        Refresh the directorytree for create or transfer tabs whenever
+        """Refresh the directorytree for create or transfer tabs whenever
         the tabbedcontent is switched to one of these tabs.
 
         This is also triggered on mount, leading to it being reloaded
@@ -121,12 +120,12 @@ class ProjectManagerScreen(Screen):
                 ).update_most_recent_label()
 
     def update_active_tab_tree(self):
+        """PLACEHOLDER."""
         active_tab_id = self.query_one("#tabscreen_tabbed_content").active
         self.query_one(f"#{active_tab_id}").reload_directorytree()
 
     def on_configs_content_configs_saved(self) -> None:
-        """
-        When configs are saved, we may switch between a 'full' project
+        """When configs are saved, we may switch between a 'full' project
         and a 'local only' project (no `central_path` or `connection_method` set).
         In such a case we need to refresh the ProjectManager screen to add / remove
         the transfer tab.
@@ -148,7 +147,6 @@ class ProjectManagerScreen(Screen):
         )
 
         if old_project_type == project_type:
-
             if project_type == "full":
                 self.query_one(
                     "#tabscreen_transfer_tab"
@@ -167,8 +165,7 @@ class ProjectManagerScreen(Screen):
             )
 
     def wrap_dismiss(self, _):
-        """
-        Need to wrap dismiss as cannot include it directly
+        """Need to wrap dismiss as cannot include it directly
         in push_screen callback, or even wrapped in lambda.
         """
         self.dismiss()

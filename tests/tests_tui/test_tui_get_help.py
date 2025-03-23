@@ -5,17 +5,15 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestTuiSettings(TuiBase):
-    """
-    Test that the 'Get Help' page from the main menu.
+    """Test that the 'Get Help' page from the main menu.
     Open it, check the expected label is displayed, close it.
     """
 
     @pytest.mark.asyncio
     async def test_get_help(self, empty_project_paths):
-
+        """PLACEHOLDER."""
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_get_help_button"
             )

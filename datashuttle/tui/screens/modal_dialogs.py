@@ -23,8 +23,7 @@ from datashuttle.tui.utils.tui_decorators import require_double_click
 
 
 class MessageBox(ModalScreen):
-    """
-    A screen for rendering error messages.
+    """A screen for rendering error messages.
 
     message
         The message to display in the message box
@@ -35,12 +34,14 @@ class MessageBox(ModalScreen):
     """
 
     def __init__(self, message: str, border_color: str) -> None:
+        """PLACEHOLDER."""
         super(MessageBox, self).__init__()
 
         self.message = message
         self.border_color = border_color
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Container(
             Container(
                 Static(self.message, id="messagebox_message_label"),
@@ -51,6 +52,7 @@ class MessageBox(ModalScreen):
         )
 
     def on_mount(self) -> None:
+        """PLACEHOLDER."""
         if self.border_color == "red":
             color = "rgb(140, 12, 0)"
         elif self.border_color == "green":
@@ -66,12 +68,12 @@ class MessageBox(ModalScreen):
         )
 
     def on_button_pressed(self) -> None:
+        """PLACEHOLDER."""
         self.dismiss(True)
 
 
 class ConfirmAndAwaitTransferPopup(ModalScreen):
-    """
-    A popup screen for confirming, awaiting and finishing a Transfer.
+    """A popup screen for confirming, awaiting and finishing a Transfer.
 
     When users select Transfer, this screen pops up to a) allow users to confirm transfer b) display
     a `LoadingIndicator` while the transfer runs in a separate worker c) indicate the transfer is finished.
@@ -83,12 +85,14 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
         message: str,
         transfer_func: Callable[[], Worker[InterfaceOutput]],
     ) -> None:
+        """PLACEHOLDER."""
         super().__init__()
 
         self.transfer_func = transfer_func
         self.message = message
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Container(
             Label(self.message, id="confirm_message_label"),
             Horizontal(
@@ -100,6 +104,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """PLACEHOLDER."""
         if event.button.id == "confirm_ok_button":
             self.query_one("#confirm_button_container").remove()
 
@@ -116,8 +121,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.dismiss()
 
     async def handle_transfer_and_update_ui_when_complete(self) -> None:
-        """Runs the data transfer worker and updates the UI on completion"""
-
+        """Runs the data transfer worker and updates the UI on completion."""
         data_transfer_worker = self.transfer_func()
         await data_transfer_worker.wait()
         success, output = data_transfer_worker.result
@@ -138,24 +142,24 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
-    """
-    A modal screen that includes a DirectoryTree to browse
+    """A modal screen that includes a DirectoryTree to browse
     and select folders. If a folder is double-clicked,
     the path to the folder is returned through 'dismiss'
     callback mechanism.
 
     Parameters
     ----------
-
     mainwindow
         Textual main app screen
 
     path_
         Path to use as the DirectoryTree root,
         if `None` set to the system user home.
+
     """
 
     def __init__(self, mainwindow: App, path_: Optional[Path] = None) -> None:
+        """PLACEHOLDER."""
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
@@ -166,7 +170,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         self.prev_click_time = 0
 
     def compose(self) -> ComposeResult:
-
+        """PLACEHOLDER."""
         label_message = (
             "Select (double click) a folder with the same name as the project.\n"
             "If the project folder does not exist, select the parent folder and it will be created."
@@ -185,26 +189,30 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     @require_double_click
     def on_directory_tree_directory_selected(self, node) -> None:
+        """PLACEHOLDER."""
         if node.path.is_file():
             return
         else:
             self.dismiss(node.path)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """PLACEHOLDER."""
         if event.button.id == "cancel_button":
             self.dismiss(False)
 
 
 class RenameFileOrFolderScreen(ModalScreen):
-    """ """
+    """PLACEHOLDER."""
 
     def __init__(self, mainwindow: App, path_: Path) -> None:
+        """PLACEHOLDER."""
         super(RenameFileOrFolderScreen, self).__init__()
 
         self.mainwindow = mainwindow
         self.path_ = path_
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Container(
             Label("Input the new name:", id="rename_screen_label"),
             Input(value=self.path_.stem, id="rename_screen_input"),
@@ -217,7 +225,7 @@ class RenameFileOrFolderScreen(ModalScreen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """"""
+        """PLACEHOLDER."""
         if event.button.id == "rename_screen_okay_button":
             self.dismiss(self.query_one("#rename_screen_input").value)
 
