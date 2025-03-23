@@ -210,11 +210,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         if platform.system() == "Windows":
             return [disk.device for disk in psutil.disk_partitions(all=False)]
 
-        elif platform.system() == "Linux":
-            return [
-                disk.mountpoint for disk in psutil.disk_partitions(all=False)
-            ]
-        elif platform.system() == "Darwin":
+        elif platform.system() in ["Darwin", "Linux"]:
             return ["/"] + [
                 f"/{d}" for d in os.listdir("/") if os.path.isdir(f"/{d}")
             ]
