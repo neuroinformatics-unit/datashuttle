@@ -251,6 +251,35 @@ class CreateFoldersTab(TreeAndInputTab):
         if ses_names == [""]:
             ses_names = None
 
+        existing_folders = []
+        for sub in sub_names:
+            sub_path = (
+                self.interface.get_configs()["local_path"] / "rawdata" / sub
+            )
+
+            if ses_names is None:
+                if sub_path.exists():
+                    existing_folders.append(str(sub_path))
+            else:
+                for ses in ses_names:
+                    ses_path = sub_path / ses
+                    if ses_path.exists():
+                        if datatype:
+                            for dt in datatype:
+                                datatype_path = ses_path / dt
+                                if datatype_path.exists():
+                                    existing_folders.append(str(datatype_path))
+                        else:
+                            existing_folders.append(str(ses_path))
+
+        if existing_folders:
+            message = (
+                "The following folder already exists in this path:\n"
+                + "\n".join(existing_folders)
+            )
+            self.mainwindow.show_modal_error_dialog(message)
+            return
+
         success, output = self.interface.create_folders(
             sub_names, ses_names, datatype
         )
