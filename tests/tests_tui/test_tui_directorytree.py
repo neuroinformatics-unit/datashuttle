@@ -239,3 +239,72 @@ class TestTuiCreateDirectoryTree(TuiBase):
             )
 
             await pilot.pause()
+
+    @pytest.mark.asyncio
+    async def test_create_folders_directorytree_rename(
+        self, setup_project_paths
+    ):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        rawdata_path = tmp_path / "local" / project_name / "rawdata"
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+
+            # Set up the 'create tab' with loaded nodes
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            await self.reload_tree_nodes(
+                pilot, "#create_folders_directorytree", 4
+            )
+
+            # rename the subject folder
+            await self.hover_and_press_tree(
+                pilot,
+                "#create_folders_directorytree",
+                hover_line=2,
+                press_string="ctrl+n",
+            )
+            await self.fill_input(pilot, "#rename_screen_input", "sub-002")
+            await self.scroll_to_click_pause(
+                pilot, "#rename_screen_okay_button"
+            )
+
+            sub_path = rawdata_path / "sub-002"
+            assert (
+                sub_path.as_posix()
+                == pilot.app.screen.query_one("#create_folders_directorytree")
+                .get_node_at_line(2)
+                .data.path.as_posix()
+            )
+            assert (rawdata_path / "sub-001").is_dir() is False
+            assert sub_path.is_dir() is True
+
+            # reload tree nodes
+            await self.reload_tree_nodes(
+                pilot, "#create_folders_directorytree", 4
+            )
+
+            # rename the session folder
+            await self.hover_and_press_tree(
+                pilot,
+                "#create_folders_directorytree",
+                hover_line=3,
+                press_string="ctrl+n",
+            )
+            await self.fill_input(pilot, "#rename_screen_input", "ses-002")
+            await self.scroll_to_click_pause(
+                pilot, "#rename_screen_okay_button"
+            )
+
+            ses_path = sub_path / "ses-002"
+            assert (
+                ses_path.as_posix()
+                == pilot.app.screen.query_one("#create_folders_directorytree")
+                .get_node_at_line(3)
+                .data.path.as_posix()
+            )
+            assert (sub_path / "ses-001").is_dir() is False
+            assert ses_path.is_dir() is True
