@@ -12,11 +12,10 @@ if TYPE_CHECKING:
     from datashuttle.tui.app import App
     from datashuttle.utils.custom_types import InterfaceOutput
 
-import os
 import platform
 from pathlib import Path
 
-import win32api
+import psutil
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
@@ -208,18 +207,12 @@ class SelectDirectoryTreeScreen(ModalScreen):
     @staticmethod
     def get_drives():
         if platform.system() == "Windows":
-            drives = win32api.GetLogicalDriveStrings()
-            drives = drives.split("\000")[
-                :-1
-            ]  # Splitting based on null terminator
-            return drives
+            return [disk.device for disk in psutil.disk_partitions(all=False)]
 
-        elif platform.system() in ["Linux", "Darwin"]:  # Darwin is for macOS
-            # List all possible drive mount points (Linux/macOS)
-            drives = ["/mnt", "/media", "/"]  # Common mount points
-            mounted_drives = [d for d in drives if os.path.ismount(d)]
-            return mounted_drives
-
+        elif platform.system() in ["Linux", "Darwin"]:
+            return [
+                disk.mountpoint for disk in psutil.disk_partitions(all=False)
+            ]
         return ["/"]
 
     def on_select_changed(self, event: Select.Changed) -> None:
