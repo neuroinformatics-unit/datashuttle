@@ -127,8 +127,6 @@ class DataShuttle:
 
         if self.cfg:
             self._set_attributes_after_config_load()
-        else:
-            rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
         """

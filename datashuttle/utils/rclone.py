@@ -127,7 +127,7 @@ def check_rclone_with_default_call() -> bool:
     return True if output.returncode == 0 else False
 
 
-def prompt_rclone_download_if_does_not_exist() -> None:
+def raise_prompt_rclone_download_if_does_not_exist() -> None:
     """
     Check that rclone is installed. If it does not
     (e.g. first time using datashuttle) then download.
