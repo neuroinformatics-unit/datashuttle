@@ -10,6 +10,15 @@ class Folder:
         name: str,
         level: str,
     ):
-        """PLACEHOLDER."""
+        """Parameters
+        -------------
+
+        name
+            the name of the folder.
+
+        level
+            level to make the folder at.
+
+        """
         self.name = name
         self.level = level

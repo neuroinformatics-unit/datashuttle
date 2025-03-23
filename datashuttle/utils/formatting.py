@@ -278,17 +278,17 @@ def replace_date_time_tags_in_name(
 
 
 def format_date(date: str) -> str:
-    """PLACEHOLDER."""
+    """Format the `date` as `date-<date>`."""
     return f"date-{date}"
 
 
 def format_time(time_: str) -> str:
-    """PLACEHOLDER."""
+    """Format the `time_` as `time-<time_>`."""
     return f"time-{time_}"
 
 
 def format_datetime(date: str, time_: str) -> str:
-    """PLACEHOLDER."""
+    """Format the `date` and `time_` as `datetime-<date>T<time_>`."""
     return f"datetime-{date}T{time_}"
 
 

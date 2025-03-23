@@ -25,12 +25,16 @@ def get_datatype_folders() -> dict:
     The value is a Folder() class instance with
     the required fields
 
-    name : The display name for the datatype, that will
+    Parameters
+    ----------
+    name
+        The display name for the datatype, that will
         be used for making and transferring files in practice.
         This should always match the canonical name, but left as
         an option for rare cases in which advanced users want to change it.
 
-    level : "sub" or "ses", level to make the folder at.
+    level
+        "sub" or "ses", level to make the folder at.
 
     """
     return {
@@ -71,7 +75,7 @@ def canonical_reserved_keywords() -> List[str]:
 
 
 def get_top_level_folders() -> List[TopLevelFolder]:
-    """PLACEHOLDER."""
+    """Return a list of the different top level folder names."""
     return ["rawdata", "derivatives"]
 
 

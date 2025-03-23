@@ -85,27 +85,26 @@ class DataShuttle:
     with SSH, use setup setup_ssh_connection().
     This will allow you to check the server key, add host key to
     profile if accepted, and setup ssh key pair.
-
-    Parameters
-    ----------
-    project_name
-        The project name to use the datashuttle
-        Folders containing all project files
-        and folders are specified in make_config_file().
-        Datashuttle-related files are stored in
-        a .datashuttle folder in the user home
-        folder. Use get_datashuttle_path() to
-        see the path to this folder.
-
-    print_startup_message
-        If `True`, a start-up message displaying the
-        current state of the program (e.g. persistent
-        settings such as the 'top-level folder') is shown.
-
     """
 
     def __init__(self, project_name: str, print_startup_message: bool = True):
-        """PLACEHOLDER."""
+        """Parameters
+        ----------
+        project_name
+            The project name to use the datashuttle
+            Folders containing all project files
+            and folders are specified in make_config_file().
+            Datashuttle-related files are stored in
+            a .datashuttle folder in the user home
+            folder. Use get_datashuttle_path() to
+            see the path to this folder.
+
+        print_startup_message
+            If `True`, a start-up message displaying the
+            current state of the program (e.g. persistent
+            settings such as the 'top-level folder') is shown.
+
+        """
         self._error_on_base_project_name(project_name)
         self.project_name = project_name
         (
@@ -972,7 +971,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     def update_config_file(self, **kwargs) -> None:
-        """PLACEHOLDER."""
+        """Update the configuration file."""
         if not self.cfg:
             utils.log_and_raise_error(
                 "Must have a config loaded before updating configs.",
@@ -1023,7 +1022,7 @@ class DataShuttle:
 
     @check_configs_set
     def get_configs(self) -> Configs:
-        """PLACEHOLDER."""
+        """Get the datashuttle configs."""
         return self.cfg
 
     @check_configs_set
@@ -1388,7 +1387,7 @@ class DataShuttle:
             )
 
     def _clear_temp_log_path(self) -> None:
-        """PLACEHOLDER."""
+        """Delete temporary log files."""
         log_files = glob.glob(str(self._temp_log_path / "*.log"))
         for file in log_files:
             os.remove(file)

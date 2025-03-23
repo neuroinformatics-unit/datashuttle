@@ -60,13 +60,15 @@ class Configs(UserDict):
         self.project_metadata_path: Path
 
     def setup_after_load(self) -> None:
-        """PLACEHOLDER."""
+        """Setup the config after loading it."""
         load_configs.convert_str_and_pathlib_paths(self, "str_to_path")
         self.ensure_local_and_central_path_end_in_project_name()
         self.check_dict_values_raise_on_fail()
 
     def ensure_local_and_central_path_end_in_project_name(self):
-        """PLACEHOLDER."""
+        """Ensure that the local and central path end in the name of
+        the project.
+        """
         for path_type in ["local_path", "central_path"]:
             if path_type == "central_path" and self[path_type] is None:
                 continue
@@ -157,7 +159,7 @@ class Configs(UserDict):
         if isinstance(sub_folders, list):
             sub_folders_str = "/".join(sub_folders)
         else:
-            sub_folders_str = cast(str, sub_folders)
+            sub_folders_str = cast("str", sub_folders)
 
         sub_folders_path = Path(sub_folders_str)
 
@@ -231,7 +233,7 @@ class Configs(UserDict):
         }
 
     def init_paths(self) -> None:
-        """PLACEHOLDER."""
+        """Initiate the datashuttle paths."""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
         datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(

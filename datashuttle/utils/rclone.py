@@ -112,7 +112,7 @@ def setup_rclone_config_for_ssh(
 
 
 def log_rclone_config_output():
-    """PLACEHOLDER."""
+    """Log the output from creating Rclone config."""
     output = call_rclone("config file", pipe_std=True)
     utils.log(
         f"Successfully created rclone config. {output.stdout.decode('utf-8')}"

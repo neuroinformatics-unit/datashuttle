@@ -159,7 +159,7 @@ def get_values_from_bids_formatted_name(
 
 
 def sub_or_ses_value_to_int(value: str) -> int:
-    """PLACEHOLDER."""
+    """Convert a subject or session value to an integer."""
     try:
         int_value = int(value)
     except ValueError:
@@ -184,7 +184,7 @@ def get_value_from_key_regexp(name: str, key: str) -> List[str]:
 
 
 def integers_are_consecutive(list_of_ints: List[int]) -> bool:
-    """PLACEHOLDER."""
+    """Check if a list of integers is consecutive."""
     diff_between_ints = diff(list_of_ints)
     return all([diff == 1 for diff in diff_between_ints])
 

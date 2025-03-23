@@ -350,7 +350,7 @@ class TransferData:
     # -------------------------------------------------------------------------
 
     def to_list(self, names: Union[str, List[str]]) -> List[str]:
-        """PLACEHOLDER."""
+        """Convert a name or list of names to a list."""
         if isinstance(names, str):
             names = [names]
         return names

@@ -361,7 +361,7 @@ def names_include_special_characters(
 
 
 def name_has_special_character(name: str) -> bool:
-    """PLACEHOLDER."""
+    """Check if the name contains special characters."""
     return not re.match("^[A-Za-z0-9_-]*$", name)
 
 

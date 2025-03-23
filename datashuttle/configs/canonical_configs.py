@@ -156,7 +156,9 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
 
 
 def local_only_configs_are_none(config_dict: Configs) -> list[bool]:
-    """PLACEHOLDER."""
+    """Check if the central_path and connection_method config options
+    are set to `None`.
+    """
     return [
         config_dict[key] is None
         for key in ["central_path", "connection_method"]
@@ -261,7 +263,7 @@ def get_tui_config_defaults() -> Dict:
 
 
 def get_name_templates_defaults() -> Dict:
-    """PLACEHOLDER."""
+    """Get the default values for name_templates."""
     return {"name_templates": {"on": False, "sub": None, "ses": None}}
 
 
@@ -290,7 +292,7 @@ def get_datatypes() -> List[str]:
 
 
 def get_broad_datatypes():
-    """PLACEHOLDER."""
+    """Return a list of broad datatypes."""
     return ["ephys", "behav", "funcimg", "anat"]
 
 
