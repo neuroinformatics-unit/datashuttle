@@ -27,7 +27,9 @@ from datashuttle.tui.screens import (
     project_manager,
     project_selector,
     settings,
+    validate_at_path,
 )
+from datashuttle.tui.tooltips import get_tooltip
 
 
 class TuiApp(App, inherit_bindings=False):  # type: ignore
@@ -55,6 +57,10 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
                 id="mainwindow_existing_project_button",
             ),
             Button("Make New Project", id="mainwindow_new_project_button"),
+            Button(
+                "Validate Project at Path",
+                id="mainwindow_validate_from_project_path",
+            ),
             Button("Settings", id="mainwindow_settings_button"),
             Button("Get Help", id="mainwindow_get_help_button"),
             id="mainwindow_contents_container",
@@ -62,6 +68,8 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
     def on_mount(self) -> None:
         self.set_dark_mode(self.load_global_settings()["dark_mode"])
+        id = "#mainwindow_validate_from_project_path"
+        self.query_one(id).tooltip = get_tooltip(id)
 
     def set_dark_mode(self, dark_mode: bool) -> None:
         self.theme = "textual-dark" if dark_mode else "textual-light"
@@ -89,8 +97,12 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
                     self,
                 )
             )
+
         elif event.button.id == "mainwindow_get_help_button":
             self.push_screen(get_help.GetHelpScreen())
+
+        elif event.button.id == "mainwindow_validate_from_project_path":
+            self.push_screen(validate_at_path.ValidateScreen(self))
 
     def load_project_page(self, interface: Interface) -> None:
         if interface:

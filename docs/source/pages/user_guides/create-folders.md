@@ -1,7 +1,7 @@
 (how-to-create-folders)=
-# How to Create Folders
+# Create Folders
 
-**datashuttle** automates project folder creation and validation
+``datashuttle`` automates project folder creation and validation
 according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/).
 
 Before starting with folder creation, we'll briefly introduce the
@@ -40,7 +40,7 @@ Now, let's get started with folder creation!
 ## Creating project folders
 
 The project-name folder is located at the **local path**
-specified when [setting up the project](make-a-full-project_target).
+specified when [setting up the project](set-up-configs-for-transfer_).
 
 We will now create subject, session and
 datatype folders within a `rawdata` top-level folder.

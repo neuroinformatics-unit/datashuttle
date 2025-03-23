@@ -1,5 +1,5 @@
 
-# How to Update Configs
+# Update Configs
 
 The project configs can be updated at any time following the initial setup.
 
