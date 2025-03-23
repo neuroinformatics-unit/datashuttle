@@ -57,9 +57,9 @@ class TestConfigs(BaseTest):
     )
     @pytest.mark.parametrize("path_type", ["local_path", "central_path"])
     def test_bad_path_syntax(self, project, bad_pattern, path_type, tmp_path):
-        """ "~", "." and "../" syntax is not supported because
+        """`~`, `.` and `../` syntax is not supported because
         it does not work with rclone. Theoretically it
-        could be supported by checking for "." etc. and
+        could be supported by checking for `.` etc. and
         filling in manually, but it does not seem robust.
 
         Here check an error is raised when path contains
