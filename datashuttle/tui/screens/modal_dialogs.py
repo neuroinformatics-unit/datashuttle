@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from datashuttle.tui.app import App
     from datashuttle.utils.custom_types import InterfaceOutput
 
+import os
 import platform
 from pathlib import Path
 
@@ -209,9 +210,13 @@ class SelectDirectoryTreeScreen(ModalScreen):
         if platform.system() == "Windows":
             return [disk.device for disk in psutil.disk_partitions(all=False)]
 
-        elif platform.system() in ["Linux", "Darwin"]:
+        elif platform.system() == "Linux":
             return [
                 disk.mountpoint for disk in psutil.disk_partitions(all=False)
+            ]
+        elif platform.system() == "Darwin":
+            return ["/"] + [
+                f"/{d}" for d in os.listdir("/") if os.path.isdir(f"/{d}")
             ]
         return ["/"]
 
