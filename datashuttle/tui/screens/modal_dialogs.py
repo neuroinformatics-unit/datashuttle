@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from datashuttle.tui.app import TuiApp
     from datashuttle.utils.custom_types import InterfaceOutput
 
+import os
 import platform
 from pathlib import Path
 
