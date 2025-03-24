@@ -52,6 +52,10 @@ def get_tooltip(id: str) -> str:
     elif id == "#configs_central_host_username_input":
         tooltip = "The account username through which to access the server."
 
+    # central folder id input
+    elif id == "#configs_google_drive_folder_id_input":
+        tooltip = "The ID of the project folder on Google Drive"
+
     # central path input
     elif id == "config_central_path_input_mode-ssh":
         tooltip = (

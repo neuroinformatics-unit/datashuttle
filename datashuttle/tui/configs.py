@@ -25,7 +25,11 @@ from textual.widgets import (
 
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
-from datashuttle.tui.screens import modal_dialogs, setup_ssh
+from datashuttle.tui.screens import (
+    modal_dialogs,
+    setup_google_drive,
+    setup_ssh,
+)
 from datashuttle.tui.tooltips import get_tooltip
 
 
@@ -58,6 +62,7 @@ class ConfigsContent(Container):
         self.parent_class = parent_class
         self.interface = interface
         self.config_ssh_widgets: List[Any] = []
+        self.config_google_drive_widgets: List[Any] = []
 
     def compose(self) -> ComposeResult:
         """
@@ -90,6 +95,18 @@ class ConfigsContent(Container):
             ),
         ]
 
+        self.config_google_drive_widgets = [
+            Label(
+                "Google Drive Folder ID",
+                id="configs_google_drive_folder_id_label",
+            ),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="e.g. 1zQq4t8l2f4g5h6j7k8l9m0n1o2p3q4r5s6t7u8v9w0x",
+                id="configs_google_drive_folder_id_input",
+            ),
+        ]
+
         config_screen_widgets = [
             Label("Local Path", id="configs_local_path_label"),
             Horizontal(
@@ -118,6 +135,7 @@ class ConfigsContent(Container):
                 id="configs_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
+            *self.config_google_drive_widgets,
             Label("Central Path", id="configs_central_path_label"),
             Horizontal(
                 ClickableInput(
@@ -133,6 +151,10 @@ class ConfigsContent(Container):
                 Button(
                     "Setup SSH Connection",
                     id="configs_setup_ssh_connection_button",
+                ),
+                Button(
+                    "Setup Google Drive Connection",
+                    id="configs_setup_google_drive_connection_button",
                 ),
                 # Below button is always hidden when accessing
                 # configs from project manager screen
@@ -192,9 +214,15 @@ class ConfigsContent(Container):
                 True
             )
             self.switch_ssh_widgets_display(display_ssh=False)
+            self.switch_google_drive_widgets_display(
+                display_google_drive=False
+            )
             self.query_one("#configs_setup_ssh_connection_button").visible = (
                 False
             )
+            self.query_one(
+                "#configs_setup_google_drive_connection_button"
+            ).visible = False
 
         # Setup tooltips
         if not self.interface:
@@ -222,6 +250,7 @@ class ConfigsContent(Container):
             "#configs_local_only_radiobutton",
             "#configs_central_host_username_input",
             "#configs_central_host_id_input",
+            "#configs_google_drive_folder_id_input",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -239,25 +268,29 @@ class ConfigsContent(Container):
         label = str(event.pressed.label)
         assert label in [
             "SSH",
+            "Google Drive",
             "Local Filesystem",
             "No connection (local only)",
         ], "Unexpected label."
 
-        if label == "No connection (local only)":
+        if label in ["No connection (local only)", "Google Drive"]:
             self.query_one("#configs_central_path_input").value = ""
             self.query_one("#configs_central_path_input").disabled = True
             self.query_one("#configs_central_path_select_button").disabled = (
                 True
             )
             display_ssh = False
+            display_google_drive = label == "Google Drive"
         else:
             self.query_one("#configs_central_path_input").disabled = False
             self.query_one("#configs_central_path_select_button").disabled = (
                 False
             )
             display_ssh = True if label == "SSH" else False
+            display_google_drive = False
 
         self.switch_ssh_widgets_display(display_ssh)
+        self.switch_google_drive_widgets_display(display_google_drive)
         self.set_central_path_input_tooltip(display_ssh)
 
     def set_central_path_input_tooltip(self, display_ssh: bool) -> None:
@@ -331,6 +364,44 @@ class ConfigsContent(Container):
                 placeholder
             )
 
+    def switch_google_drive_widgets_display(
+        self, display_google_drive: bool
+    ) -> None:
+        """
+        Show or hide Google Drive-related configs based on whether the current
+        `connection_method` widget is "google_drive" or "local_filesystem".
+
+        Parameters
+        ----------
+
+        display_google_drive : bool
+            If `True`, display the Google Drive-related widgets.
+        """
+        for widget in self.config_google_drive_widgets:
+            widget.display = display_google_drive
+
+        # Setting all the central path widgets to not display
+        self.query_one("#configs_central_path_select_button").display = (
+            not display_google_drive
+        )
+
+        self.query_one("#configs_central_path_input").display = (
+            not display_google_drive
+        )
+
+        self.query_one("#configs_central_path_label").display = (
+            not display_google_drive
+        )
+
+        if self.interface is None:
+            self.query_one(
+                "#configs_setup_google_drive_connection_button"
+            ).visible = False
+        else:
+            self.query_one(
+                "#configs_setup_google_drive_connection_button"
+            ).visible = display_google_drive
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
         Enables the Create Folders button to read out current input values
@@ -344,6 +415,9 @@ class ConfigsContent(Container):
 
         elif event.button.id == "configs_setup_ssh_connection_button":
             self.setup_ssh_connection()
+
+        elif event.button.id == "configs_setup_google_drive_connection_button":
+            self.setup_google_drive_connection()
 
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
@@ -413,6 +487,23 @@ class ConfigsContent(Container):
             setup_ssh.SetupSshScreen(self.interface)
         )
 
+    def setup_google_drive_connection(self) -> None:
+        """
+        Set up the `SetupGoogleDriveScreen` screen,
+        """
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        if not self.widget_configs_match_saved_configs():
+            self.parent_class.mainwindow.show_modal_error_dialog(
+                "The values set above must equal the datashuttle settings. "
+                "Either press 'Save' or reload this page."
+            )
+            return
+
+        self.parent_class.mainwindow.push_screen(
+            setup_google_drive.SetupGoogleDriveScreen(self.interface)
+        )
+
     def widget_configs_match_saved_configs(self):
         """
         Check that the configs currently stored in the widgets
@@ -427,13 +518,17 @@ class ConfigsContent(Container):
 
         project_name = self.interface.project.cfg.project_name
 
-        for key, value in cfg_kwargs.items():
-            saved_val = self.interface.get_configs()[key]
-            if key in ["central_path", "local_path"]:
-                if value.name != project_name:
-                    value = value / project_name
-            if saved_val != value:
-                return False
+        connection_method = cfg_kwargs["connection_method"]
+
+        if connection_method not in ["google_drive"]:
+            for key, value in cfg_kwargs.items():
+                saved_val = self.interface.get_configs()[key]
+                if key in ["central_path", "local_path"]:
+                    if value.name != project_name:
+                        value = value / project_name
+                if saved_val != value:
+                    return False
+            return True
         return True
 
     def setup_configs_for_a_new_project(self) -> None:
@@ -480,6 +575,23 @@ class ConfigsContent(Container):
                     "Next, setup the SSH connection. Once complete, navigate to the "
                     "'Main Menu' and proceed to the project page, where you will be "
                     "able to create and transfer project folders."
+                )
+
+            elif cfg_kwargs["connection_method"] == "google_drive":
+
+                self.query_one(
+                    "#configs_setup_google_drive_connection_button"
+                ).visible = True
+                self.query_one(
+                    "#configs_setup_google_drive_connection_button"
+                ).disabled = False
+
+                message = (
+                    "A datashuttle project has now been created.\n\n "
+                    "Next setup the Google Drive connection. "
+                    "Once complete, navigate to the 'Main Menu' and proceed to the "
+                    "project page, where you will be able to create "
+                    "and transfer project folders."
                 )
 
             else:
@@ -558,6 +670,8 @@ class ConfigsContent(Container):
         what_radiobuton_is_on = {
             "configs_ssh_radiobutton":
                 cfg_to_load["connection_method"] == "ssh",
+            "configs_google_drive_radiobutton":
+                cfg_to_load["connection_method"] == "google_drive",
             "configs_local_filesystem_radiobutton":
                 cfg_to_load["connection_method"] == "local_filesystem",
             "configs_local_only_radiobutton":
@@ -570,6 +684,12 @@ class ConfigsContent(Container):
 
         self.switch_ssh_widgets_display(
             display_ssh=what_radiobuton_is_on["configs_ssh_radiobutton"]
+        )
+
+        self.switch_google_drive_widgets_display(
+            display_google_drive=what_radiobuton_is_on[
+                "configs_google_drive_radiobutton"
+            ]
         )
 
         # Central Host ID
@@ -587,6 +707,15 @@ class ConfigsContent(Container):
             ""
             if cfg_to_load["central_host_username"] is None
             else cfg_to_load["central_host_username"]
+        )
+        input.value = value
+
+        # Google Drive Folder ID
+        input = self.query_one("#configs_google_drive_folder_id_input")
+        value = (
+            ""
+            if cfg_to_load["google_drive_folder_id"] is None
+            else cfg_to_load["google_drive_folder_id"]
         )
         input.value = value
 
@@ -612,6 +741,9 @@ class ConfigsContent(Container):
         if self.query_one("#configs_ssh_radiobutton").value:
             connection_method = "ssh"
 
+        elif self.query_one("#configs_google_drive_radiobutton").value:
+            connection_method = "google_drive"
+
         elif self.query_one("#configs_local_filesystem_radiobutton").value:
             connection_method = "local_filesystem"
 
@@ -623,8 +755,14 @@ class ConfigsContent(Container):
         central_host_id = self.query_one(
             "#configs_central_host_id_input"
         ).value
+        google_drive_folder_id = self.query_one(
+            "#configs_google_drive_folder_id_input"
+        ).value
         cfg_kwargs["central_host_id"] = (
             None if central_host_id == "" else central_host_id
+        )
+        cfg_kwargs["google_drive_folder_id"] = (
+            None if google_drive_folder_id == "" else google_drive_folder_id
         )
 
         central_host_username = self.query_one(

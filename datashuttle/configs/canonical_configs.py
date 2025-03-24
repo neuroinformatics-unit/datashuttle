@@ -44,6 +44,7 @@ def get_canonical_configs() -> dict:
         ],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
+        "google_drive_folder_id": Optional[str],
     }
 
     return canonical_configs
@@ -150,15 +151,25 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
     should be set and not the other. Either both are set ('full' project) or
     neither are ('local only' project). Check this assumption here.
     """
-    params_are_none = local_only_configs_are_none(config_dict)
+    cloud_method = cloud_config_method(config_dict)
 
-    if any(params_are_none):
-        if not all(params_are_none):
-            utils.log_and_raise_error(
-                "Either both `central_path` and `connection_method` must be set, "
-                "or must both be `None` (for local-project mode).",
-                ConfigError,
-            )
+    if not cloud_method:
+        params_are_none = local_only_configs_are_none(config_dict)
+
+        if any(params_are_none):
+            if not all(params_are_none):
+                utils.log_and_raise_error(
+                    "Either both `central_path` and `connection_method` must be set, "
+                    "or must both be `None` (for local-project mode).",
+                    ConfigError,
+                )
+
+
+def cloud_config_method(config_dict: Configs) -> bool:
+    """
+    Check if the config is set to Google Drive or AWS.
+    """
+    return config_dict["connection_method"] in ["google_drive", "aws"]
 
 
 def local_only_configs_are_none(config_dict: Configs) -> list[bool]:

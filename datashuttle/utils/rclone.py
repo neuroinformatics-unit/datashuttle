@@ -108,6 +108,18 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output()
 
 
+def setup_rclone_clone_for_google_drive(
+    rclone_config_name: str,
+    log: bool = True,
+):
+    call_rclone(
+        f"config create " f"{rclone_config_name} " f"drive",
+        pipe_std=True,
+    )
+    if log:
+        log_rclone_config_output()
+
+
 def log_rclone_config_output():
     output = call_rclone("config file", pipe_std=True)
     utils.log(
