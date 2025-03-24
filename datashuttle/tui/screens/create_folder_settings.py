@@ -163,6 +163,24 @@ class CreateFoldersSettingsScreen(ModalScreen):
         ).value
         self.query_one("#template_inner_container").disabled = not is_on
 
+    def convert_custom_tags_to_regex(self, template: str) -> str:
+        """
+        Convert custom tags in the template to their corresponding regex patterns.
+        """
+        CUSTOM_TAGS = {
+            "<ANY_DIGIT>": r"\d",  # Matches a single digit (0-9)
+            "<ANY_LETTER>": r"[a-zA-Z]",  # Matches a single letter (uppercase or lowercase)
+            "<ANY_WORD>": r"\w+",  # Matches a whole word (letters, numbers, underscores)
+            "<DATE_YYYYMMDD>": r"\d{4}-\d{2}-\d{2}",  # Matches a date format YYYY-MM-DD
+            "<ANY_CHAR>": r".",  # Matches any single character
+            "<ANY_STRING>": r".*",  # Matches any sequence of characters
+        }
+
+        for tag, regex in CUSTOM_TAGS.items():
+            template = template.replace(tag, regex)
+
+        return template
+
     def fill_input_from_template(self) -> None:
         """
         Fill the `name_templates` Input, that is shared
@@ -176,7 +194,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
             input.value = ""
             input.placeholder = f"{self.input_mode}-"
         else:
-            input.value = value
+            converted_regex = self.convert_custom_tags_to_regex(value)
+            input.value = converted_regex
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
