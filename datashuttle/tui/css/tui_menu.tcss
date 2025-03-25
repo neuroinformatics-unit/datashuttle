@@ -58,6 +58,9 @@
 SetupSshScreen {
     align: center middle;
 }
+SetupGoogleDriveScreen {
+    align: center middle;
+}
 SettingsScreen {
     align: center middle;
 }
@@ -77,6 +80,17 @@ GetHelpScreen {
 #setup_ssh_screen_container {
     border: thick $panel-darken-3;
 }
+#setup_google_drive_screen_container {
+    height: 75%;
+    width: 80%;
+    align: center middle;
+    border: thick $panel-lighten-1;
+}
+
+#setup_google_drive_screen_container {
+    border: thick $panel-darken-3;
+}
+
 #messagebox_buttons_horizontal {
     align: center middle;
 }
@@ -165,6 +179,9 @@ MessageBox:light > #messagebox_top_container {
 
 #configs_setup_ssh_connection_button {
     margin: 2 1 0 0;
+}
+#configs_setup_google_drive_connection_button {
+    margin: 2;
 }
 #configs_go_to_project_screen_button {
     margin: 2 1 0 0;

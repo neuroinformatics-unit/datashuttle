@@ -33,6 +33,13 @@ def get_tooltip(id: str) -> str:
     elif id == "#configs_ssh_radiobutton":
         tooltip = "Use SSH when planning to connect with the central data storage via SSH protocol."
 
+    # Google Drive radiobutton
+    elif id == "#configs_google_drive_radiobutton":
+        tooltip = (
+            "Use Google Drive when the central data storage "
+            "is a Google Drive folder."
+        )
+
     # No connection (local only) radiobutton
     elif id == "#configs_local_only_radiobutton":
         tooltip = "No connection to a central project is made.\nTransfer functionality will not be available."
@@ -44,6 +51,10 @@ def get_tooltip(id: str) -> str:
     # central host username input
     elif id == "#configs_central_host_username_input":
         tooltip = "The account username through which to access the server."
+
+    # central folder id input
+    elif id == "#configs_google_drive_folder_id_input":
+        tooltip = "The ID of the project folder on Google Drive"
 
     # central path input
     elif id == "config_central_path_input_mode-ssh":

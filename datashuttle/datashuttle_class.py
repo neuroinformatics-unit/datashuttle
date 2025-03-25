@@ -903,6 +903,7 @@ class DataShuttle:
         connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
+        google_drive_folder_id: Optional[str] = None,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -967,6 +968,7 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
+                "google_drive_folder_id": google_drive_folder_id,
             },
         )
 
@@ -1456,6 +1458,12 @@ class DataShuttle:
             self.cfg,
             self.cfg.get_rclone_config_name("ssh"),
             self.cfg.ssh_key_path,
+            log=log,
+        )
+
+    def _setup_rclone_central_google_drive_config(self, log: bool) -> None:
+        rclone.setup_rclone_clone_for_google_drive(
+            self.cfg.get_rclone_config_name("google_drive"),
             log=log,
         )
 
