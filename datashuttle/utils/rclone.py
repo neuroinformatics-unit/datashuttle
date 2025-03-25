@@ -150,6 +150,35 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output()
 
 
+def setup_rclone_config_for_gdrive(
+    cfg: Configs,
+    rclone_config_name: str,
+    log: bool = True,
+):
+    client_id_key_value = (
+        f"client_id {cfg['gdrive_client_id']} "
+        if cfg["gdrive_client_id"]
+        else " "
+    )
+    client_secret_key_value = (
+        f"client_secret {cfg['gdrive_client_secret']} "
+        if cfg["gdrive_client_secret"]
+        else ""
+    )
+    call_rclone(
+        f"config create "
+        f"{rclone_config_name} "
+        f"drive "
+        f"{client_id_key_value}"
+        f"{client_secret_key_value}"
+        f"scope drive",
+        pipe_std=True,
+    )
+
+    if log:
+        log_rclone_config_output()
+
+
 def log_rclone_config_output():
     output = call_rclone("config file", pipe_std=True)
     utils.log(

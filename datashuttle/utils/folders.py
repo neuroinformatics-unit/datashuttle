@@ -20,7 +20,7 @@ import glob
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
-from datashuttle.utils import ssh, utils, validation
+from datashuttle.utils import gdrive, ssh, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -515,14 +515,23 @@ def search_for_folders(
     verbose : If `True`, when a search folder cannot be found, a message
           will be printed with the missing path.
     """
-    if local_or_central == "central" and cfg["connection_method"] == "ssh":
-        all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
-            search_path,
-            search_prefix,
-            cfg,
-            verbose,
-            return_full_path,
-        )
+    if local_or_central == "central":
+        if cfg["connection_method"] == "ssh":
+            all_folder_names, all_filenames = (
+                ssh.search_ssh_central_for_folders(
+                    search_path,
+                    search_prefix,
+                    cfg,
+                    verbose,
+                    return_full_path,
+                )
+            )
+        elif cfg["connection_method"] == "gdrive":
+            all_folder_names, all_filenames = (
+                gdrive.search_gdrive_central_for_folders(
+                    search_path, search_prefix, cfg, verbose, return_full_path
+                )
+            )
     else:
         if not search_path.exists():
             if verbose:
