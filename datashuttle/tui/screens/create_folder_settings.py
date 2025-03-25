@@ -169,10 +169,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
         CUSTOM_TAGS = {
             "<ANY_DIGIT>": r"\d",  # Matches a single digit (0-9)
-            "<ANY_LETTER>": r"[a-zA-Z]",  # Matches a single letter (uppercase or lowercase)
-            "<ANY_WORD>": r"\w+",  # Matches a whole word (letters, numbers, underscores)
-            "<DATE_YYYYMMDD>": r"\d{4}-\d{2}-\d{2}",  # Matches a date format YYYY-MM-DD
-            "<ANY_CHAR>": r".",  # Matches any single character
+            "<ANY_CHAR>": r".?",  # Matches any single character
             "<ANY_STRING>": r".*",  # Matches any sequence of characters
         }
 
