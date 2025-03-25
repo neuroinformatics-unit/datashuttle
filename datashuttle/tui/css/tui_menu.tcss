@@ -161,11 +161,15 @@ MessageBox:light > #messagebox_top_container {
     padding: 0 4 0 4;
     width: 26;
     color: $success;  /* unsure about this */
+    dock: left;
 }
 
-#configs_setup_ssh_connection_button {
+#setup_buttons_container > Button {
     margin: 2 1 0 0;
+    dock: left;
 }
+
+
 #configs_go_to_project_screen_button {
     margin: 2 1 0 0;
 }
