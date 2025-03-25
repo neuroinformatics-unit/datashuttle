@@ -1179,6 +1179,21 @@ class DataShuttle:
         settings = self._load_persistent_settings()
         return settings["name_templates"]
 
+    def convert_custom_tags_to_regex(self, template: str) -> str:
+        """
+        Convert custom tags in the template to their corresponding regex patterns.
+        """
+        CUSTOM_TAGS = {
+            "<ANY_DIGIT>": r"\d",  # Matches a single digit (0-9)
+            "<ANY_CHAR>": r".?",  # Matches any single character
+            "<ANY_STRING>": r".*",  # Matches any sequence of characters
+        }
+
+        for tag, regex in CUSTOM_TAGS.items():
+            template = template.replace(tag, regex)
+
+        return template
+
     def set_name_templates(self, new_name_templates: Dict) -> None:
         """
         Update the persistent settings with new name templates.
@@ -1194,6 +1209,16 @@ class DataShuttle:
             where "sub" or "ses" can be a regexp that subject and session
             names respectively are validated against.
         """
+        if "sub" in new_name_templates and new_name_templates["sub"]:
+            new_name_templates["sub"] = self.convert_custom_tags_to_regex(
+                new_name_templates["sub"]
+            )
+
+        if "ses" in new_name_templates and new_name_templates["ses"]:
+            new_name_templates["ses"] = self.convert_custom_tags_to_regex(
+                new_name_templates["ses"]
+            )
+
         self._update_persistent_setting("name_templates", new_name_templates)
 
     # -------------------------------------------------------------------------
