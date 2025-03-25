@@ -113,7 +113,7 @@ def setup_rclone_clone_for_google_drive(
     log: bool = True,
 ):
     call_rclone(
-        f"config create " f"{rclone_config_name} " f"drive",
+        f"config create " f"{rclone_config_name} " f"drive ",
         pipe_std=True,
     )
     if log:

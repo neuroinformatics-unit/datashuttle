@@ -64,3 +64,39 @@ class SetupGoogleDriveScreen(ModalScreen):
         """
         if event.button.id == "setup_google_drive_cancel_button":
             self.dismiss()
+
+        if event.button.id == "setup_google_drive_ok_button":
+            if self.stage == 0:
+                self.ask_user_to_authenticate()
+            elif self.stage == 1:
+                self.dismiss()
+
+    def ask_user_to_authenticate(self) -> None:
+        """
+        Prompts the user to authenticate their Google Drive account.
+
+        This method will guide the user through the process of authenticating
+        their Google Drive account, which is necessary for accessing and
+        managing files stored in Google Drive through the application.
+
+        Returns:
+            None
+        """
+
+        success, output = (
+            self.interface.setup_key_pair_and_google_drive_config()
+        )
+        if success:
+            message = "Connection successful! You can now access your Google Drive files."
+            self.query_one("#setup_google_drive_ok_button").label = "Finish"
+            self.query_one("#setup_google_drive_cancel_button").disabled = True
+            self.stage += 1
+
+        else:
+            message = (
+                f"Google Drive setup failed. Check your browser and try again."
+                f"\n\n Traceback: {output}"
+            )
+            self.stage += 1
+
+        self.query_one("#messagebox_message_label").update(message)

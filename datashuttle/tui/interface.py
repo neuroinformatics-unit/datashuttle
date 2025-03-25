@@ -460,3 +460,12 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
+
+    def setup_key_pair_and_google_drive_config(self) -> InterfaceOutput:
+        try:
+            self.project._setup_rclone_central_google_drive_config(log=False)
+
+            return True, None
+
+        except BaseException as e:
+            return False, str(e)
