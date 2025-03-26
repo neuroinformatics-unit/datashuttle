@@ -26,7 +26,7 @@ from textual.widgets import (
 
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
-from datashuttle.tui.screens import modal_dialogs, setup_ssh
+from datashuttle.tui.screens import modal_dialogs, setup_gdrive, setup_ssh
 from datashuttle.tui.tooltips import get_tooltip
 
 
@@ -95,12 +95,12 @@ class ConfigsContent(Container):
             Label("Client ID", id="configs_gdrive_client_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="",
+                placeholder="Google Drive Client ID (leave blank to use rclone's default client (slower))",
                 id="configs_gdrive_client_id_input",
             ),
             Label("Client Secret", id="configs_gdrive_client_secret_label"),
             Input(
-                placeholder="",
+                placeholder="Google Drive Client Secret (leave blank to use rclone's default client (slower))",
                 password=True,
                 id="configs_gdrive_client_secret_input",
             ),
@@ -427,7 +427,8 @@ class ConfigsContent(Container):
             self.setup_ssh_connection()
 
         elif event.button.id == "configs_setup_gdrive_connection_button":
-            self.interface.project.setup_google_drive_connection()
+            self.setup_gdrive_connection()
+
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
 
@@ -494,6 +495,23 @@ class ConfigsContent(Container):
 
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.interface)
+        )
+
+    def setup_gdrive_connection(self) -> None:
+        """
+        Set up the `SetupGdriveScreen` screen,
+        """
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        if not self.widget_configs_match_saved_configs():
+            self.parent_class.mainwindow.show_modal_error_dialog(
+                "The values set above must equal the datashuttle settings. "
+                "Either press 'Save' or reload this page."
+            )
+            return
+
+        self.parent_class.mainwindow.push_screen(
+            setup_gdrive.SetupGdriveScreen(self.interface)
         )
 
     def widget_configs_match_saved_configs(self):
@@ -791,8 +809,6 @@ class ConfigsContent(Container):
         cfg_kwargs["central_host_username"] = (
             None if central_host_username == "" else central_host_username
         )
-
-        # TODO : ADD CFG FOR GDRIVE CLIENT ID AND CLIENT SECRET
 
         gdrive_client_id = self.query_one(
             "#configs_gdrive_client_id_input"
