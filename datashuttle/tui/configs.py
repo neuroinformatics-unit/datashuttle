@@ -17,6 +17,7 @@ from textual.containers import Container, Horizontal
 from textual.message import Message
 from textual.widgets import (
     Button,
+    Input,
     Label,
     RadioButton,
     RadioSet,
@@ -98,10 +99,9 @@ class ConfigsContent(Container):
                 id="configs_gdrive_client_id_input",
             ),
             Label("Client Secret", id="configs_gdrive_client_secret_label"),
-            # TODO: HIDE THIS
-            ClickableInput(
-                self.parent_class.mainwindow,
+            Input(
                 placeholder="",
+                password=True,
                 id="configs_gdrive_client_secret_input",
             ),
         ]
