@@ -357,7 +357,10 @@ class ConfigsContent(Container):
             not display_ssh
         )
 
-        if self.interface is None:
+        if (
+            self.interface is None
+            or self.interface.get_configs()["connection_method"] != "ssh"
+        ):
             self.query_one("#configs_setup_ssh_connection_button").visible = (
                 False
             )
@@ -383,9 +386,10 @@ class ConfigsContent(Container):
             not display_gdrive
         )
 
-        # TODO: ADD SETUP FOR BUTTONS
-
-        if self.interface is None:
+        if (
+            self.interface is None
+            or self.interface.get_configs()["connection_method"] != "gdrive"
+        ):
             self.query_one(
                 "#configs_setup_gdrive_connection_button"
             ).visible = False
@@ -396,7 +400,10 @@ class ConfigsContent(Container):
 
     def switch_aws_widgets_display(self, display_aws: bool) -> None:
 
-        if self.interface is None:
+        if (
+            self.interface is None
+            or self.interface.get_configs()["connection_method"] != "aws_s3"
+        ):
             self.query_one("#configs_setup_aws_connection_button").visible = (
                 False
             )
@@ -419,6 +426,8 @@ class ConfigsContent(Container):
         elif event.button.id == "configs_setup_ssh_connection_button":
             self.setup_ssh_connection()
 
+        elif event.button.id == "configs_setup_gdrive_connection_button":
+            self.interface.project.setup_google_drive_connection()
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
 
@@ -612,6 +621,8 @@ class ConfigsContent(Container):
                 ),
                 lambda unused: self.post_message(self.ConfigsSaved()),
             )
+            # to trigger the appearance of buttons
+            self.setup_widgets_to_display(cfg_kwargs["connection_method"])
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
@@ -686,7 +697,7 @@ class ConfigsContent(Container):
         input = self.query_one("#configs_gdrive_client_id_input")
         value = (
             ""
-            if cfg_to_load["gdrive_client_id"] is None
+            if cfg_to_load.get("gdrive_client_id", None) is None
             else cfg_to_load["gdrive_client_id"]
         )
         input.value = value
@@ -695,7 +706,7 @@ class ConfigsContent(Container):
         input = self.query_one("#configs_gdrive_client_secret_input")
         value = (
             ""
-            if cfg_to_load["gdrive_client_secret"] is None
+            if cfg_to_load.get("gdrive_client_secret", None) is None
             else cfg_to_load["gdrive_client_secret"]
         )
         input.value = value

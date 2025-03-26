@@ -157,12 +157,12 @@ def setup_rclone_config_for_gdrive(
 ):
     client_id_key_value = (
         f"client_id {cfg['gdrive_client_id']} "
-        if cfg["gdrive_client_id"]
+        if cfg.get("gdrive_client_id", None)
         else " "
     )
     client_secret_key_value = (
         f"client_secret {cfg['gdrive_client_secret']} "
-        if cfg["gdrive_client_secret"]
+        if cfg.get("gdrive_client_secret", None)
         else ""
     )
     call_rclone(
