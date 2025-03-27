@@ -102,8 +102,10 @@ class TransferData:
                 ),
             )
 
-            if log:
-                utils.log_and_message(output.stderr.decode("utf-8"))
+        self.reset_transfer_file()
+
+        if log:
+            utils.log_and_message(output.stderr.decode("utf-8"))
         else:
             if log:
                 utils.log_and_message("No files included. None transferred.")
@@ -445,6 +447,13 @@ class TransferData:
         Return the path to the .datashuttleignore file
         """
         return cfg["local_path"] / ".datashuttle/.datashuttleignore"
+
+    def reset_transfer_file(self) -> None:
+        """
+        Reset the .datashuttleignore file
+        """
+        with open(self.get_datashuttle_ignore_path(self.__cfg), "w") as f:
+            f.write("")
 
     # -------------------------------------------------------------------------
     # Format Arguments
