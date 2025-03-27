@@ -1,4 +1,4 @@
-from pathlib import Path
+from pathlib import Path, PosixPath
 from typing import List, Literal, Optional, Union
 
 from datashuttle.configs import canonical_folders
@@ -89,12 +89,14 @@ class TransferData:
 
         include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
 
+        transfer_file = self.make_transfer_arg(include_list, exclude_files=[])
+
         if any(include_list):
             output = rclone.transfer_data(
                 self.__cfg,
                 self.__upload_or_download,
                 self.__top_level_folder,
-                include_list,
+                transfer_file,
                 cfg.make_rclone_transfer_options(
                     overwrite_existing_files, dry_run
                 ),
@@ -107,7 +109,7 @@ class TransferData:
                 utils.log_and_message("No files included. None transferred.")
 
     # -------------------------------------------------------------------------
-    # Build the --include list
+    # Build the --filter-from list
     # -------------------------------------------------------------------------
 
     def build_a_list_of_all_files_and_folders_to_transfer(self) -> List[str]:
@@ -195,14 +197,40 @@ class TransferData:
         if recursive:
 
             def include_arg(ele: str) -> str:
-                return f' --include "{ele}/**" '
+                return f" + {ele}/** "
 
         else:
 
             def include_arg(ele: str) -> str:
-                return f' --include "{ele}" '
+                return f" + {ele} "
 
-        return ["".join([include_arg(ele) for ele in list_of_paths])]
+        return [include_arg(ele) for ele in list_of_paths]
+
+    def make_transfer_arg(
+        self, include_files: List[str], exclude_files: List[str] = []
+    ) -> List[str]:
+        """
+        Format the list of paths to rclone's required
+        `--filter-from` flag format.
+        """
+        ignore_path: PosixPath = self.write_transfer_file(
+            include_files, exclude_files
+        )
+
+        return [f' --filter-from "{ignore_path}" ']
+
+    def write_transfer_file(
+        self, include_files: List[str], exclude_files: List[str] = []
+    ) -> PosixPath:
+        """
+        Write the list of files to transfer to a file
+        """
+        file_path: PosixPath = self.get_datashuttle_ignore_path(self.__cfg)
+
+        with open(file_path, "w") as f:
+            f.write("\n".join(include_files))
+
+        return file_path
 
     # -------------------------------------------------------------------------
     # Search for non-sub / ses / dtype folders and add them to list
@@ -411,6 +439,12 @@ class TransferData:
                     f"`{name}` input cannot be empty.",
                     ValueError,
                 )
+
+    def get_datashuttle_ignore_path(self, cfg: Configs) -> PosixPath:
+        """
+        Return the path to the .datashuttleignore file
+        """
+        return cfg["local_path"] / ".datashuttle/.datashuttleignore"
 
     # -------------------------------------------------------------------------
     # Format Arguments
