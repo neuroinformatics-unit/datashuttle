@@ -102,10 +102,16 @@ class TransferData:
                 ),
             )
 
-        self.reset_transfer_file()
+            self.reset_transfer_file()
 
         if log:
-            utils.log_and_message(output.stderr.decode("utf-8"))
+            (
+                utils.log_and_message(output.stderr.decode("utf-8"))
+                if any(include_list)
+                else utils.log_and_message(
+                    "No files included. None transferred."
+                )
+            )
         else:
             if log:
                 utils.log_and_message("No files included. None transferred.")
