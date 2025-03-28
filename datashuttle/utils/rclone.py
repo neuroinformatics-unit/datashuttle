@@ -179,6 +179,26 @@ def setup_rclone_config_for_gdrive(
         log_rclone_config_output()
 
 
+def setup_rclone_config_for_aws_s3(
+    cfg: Configs,
+    aws_secret_access_key: str,
+    rclone_config_name: str,
+    log: bool = True,
+):
+    call_rclone(
+        "config create "
+        f"{rclone_config_name} "
+        "s3 provider AWS "
+        f"access_key_id {cfg['aws_access_key_id']} "
+        f"secret_access_key {aws_secret_access_key} "
+        f"region {cfg['aws_s3_region']} "
+        f"location_constraint {cfg['aws_s3_region']}"
+    )
+
+    if log:
+        log_rclone_config_output()
+
+
 def log_rclone_config_output():
     output = call_rclone("config file", pipe_std=True)
     utils.log(

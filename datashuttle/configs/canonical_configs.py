@@ -46,6 +46,9 @@ def get_canonical_configs() -> dict:
         "central_host_username": Optional[str],
         "gdrive_client_id": Optional[str],
         "gdrive_client_secret": Optional[str],
+        "aws_access_key_id": Optional[str],
+        "aws_s3_region": Optional[str],
+        # "aws_s3_endpoint_url": Optional[str],
     }
 
     return canonical_configs
@@ -133,7 +136,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
     # Check gdrive settings
-    if config_dict["connection_method"] == "gdrive" and (
+    elif config_dict["connection_method"] == "gdrive" and (
         (
             config_dict["gdrive_client_id"]
             and not config_dict["gdrive_client_secret"]
@@ -144,7 +147,17 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
     ):
         utils.log_and_raise_error(
-            "Both gdrive_client_id and gdrive_client_secret must be present together",
+            "Both gdrive_client_id and gdrive_client_secret must be present together.",
+            ConfigError,
+        )
+
+    # Check AWS settings
+    elif config_dict["connection_method"] == "aws_s3" and (
+        not config_dict["aws_access_key_id"]
+        or not config_dict["aws_s3_region"]
+    ):
+        utils.log_and_raise_error(
+            "Both aws_access_key_id and aws_s3_region must be present for AWS connection.",
             ConfigError,
         )
 

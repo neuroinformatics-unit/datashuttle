@@ -28,6 +28,27 @@ def requires_ssh_configs(func):
     return wrapper
 
 
+def requires_aws_configs(func):
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if (
+            not args[0].cfg["aws_access_key_id"]
+            or not args[0].cfg["aws_s3_region"]
+        ):
+            log_and_raise_error(
+                "Cannot setup AWS connection, 'aws_access_key_id' "
+                "or 'aws_s3_region' is not set in the "
+                "configuration file",
+                ConfigError,
+            )
+
+        else:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
 def check_configs_set(func):
     """
     Check that configs have been loaded (i.e.
