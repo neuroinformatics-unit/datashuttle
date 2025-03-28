@@ -108,6 +108,55 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output()
 
 
+def setup_rclone_config_for_gdrive(
+    cfg: Configs,
+    rclone_config_name: str,
+    log: bool = True,
+):
+    client_id_key_value = (
+        f"client_id {cfg['gdrive_client_id']} "
+        if cfg.get("gdrive_client_id", None)
+        else " "
+    )
+    client_secret_key_value = (
+        f"client_secret {cfg['gdrive_client_secret']} "
+        if cfg.get("gdrive_client_secret", None)
+        else ""
+    )
+    call_rclone(
+        f"config create "
+        f"{rclone_config_name} "
+        f"drive "
+        f"{client_id_key_value}"
+        f"{client_secret_key_value}"
+        f"scope drive",
+        pipe_std=True,
+    )
+
+    if log:
+        log_rclone_config_output()
+
+
+def setup_rclone_config_for_aws_s3(
+    cfg: Configs,
+    aws_secret_access_key: str,
+    rclone_config_name: str,
+    log: bool = True,
+):
+    call_rclone(
+        "config create "
+        f"{rclone_config_name} "
+        "s3 provider AWS "
+        f"access_key_id {cfg['aws_access_key_id']} "
+        f"secret_access_key {aws_secret_access_key} "
+        f"region {cfg['aws_s3_region']} "
+        f"location_constraint {cfg['aws_s3_region']}"
+    )
+
+    if log:
+        log_rclone_config_output()
+
+
 def log_rclone_config_output():
     output = call_rclone("config file", pipe_std=True)
     utils.log(

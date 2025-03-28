@@ -64,6 +64,9 @@ SettingsScreen {
 GetHelpScreen {
     align: center middle;
 }
+SetupGdriveScreen {
+    align: center middle;
+ }
 #get_help_label {
     align: center middle;
     text-align: center;
@@ -114,6 +117,37 @@ MessageBox:light > #messagebox_top_container {
     align: center middle;
  }
 
+#setup_gdrive_screen_container {
+    height: 75%;
+    width: 80%;
+    align: center middle;
+    border: thick $panel-lighten-1;
+}
+
+#gdrive_setup_messagebox_message_container {
+    align: center middle;
+    overflow: hidden auto;
+    margin: 0 1;
+}
+
+#gdrive_setup_messagebox_message {
+    text-align: center;
+    padding: 0 2;
+}
+
+#setup_gdrive_ok_button {
+    align: center bottom;
+    height: 3;
+}
+
+#setup_gdrive_cancel_button {
+    align: center bottom;
+}
+
+#setup_gdrive_buttons_horizontal {
+    align: center middle;
+}
+
  /* Configs Content ----------------------------------------------------------------- */
 
 #configs_container {
@@ -161,11 +195,15 @@ MessageBox:light > #messagebox_top_container {
     padding: 0 4 0 4;
     width: 26;
     color: $success;  /* unsure about this */
+    dock: left;
 }
 
-#configs_setup_ssh_connection_button {
+#setup_buttons_container > Button {
     margin: 2 1 0 0;
+    dock: left;
 }
+
+
 #configs_go_to_project_screen_button {
     margin: 2 1 0 0;
 }

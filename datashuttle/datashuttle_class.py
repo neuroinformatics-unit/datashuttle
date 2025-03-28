@@ -32,6 +32,7 @@ from datashuttle.configs import (
     canonical_configs,
     canonical_folders,
     load_configs,
+    regions,
 )
 from datashuttle.configs.config_class import Configs
 from datashuttle.datashuttle_functions import _format_top_level_folder
@@ -53,6 +54,7 @@ from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     check_is_not_local_project,
+    requires_aws_configs,
     requires_ssh_configs,
 )
 
@@ -893,6 +895,35 @@ class DataShuttle:
         public.close()
 
     # -------------------------------------------------------------------------
+    # Google Drive
+    # -------------------------------------------------------------------------
+
+    @check_configs_set
+    def setup_google_drive_connection(self) -> None:
+        self._start_log(
+            "setup-google-drive-connection-to-central-server",
+            local_vars=locals(),
+        )
+
+        self._setup_rclone_gdrive_config(log=True)
+        ds_logger.close_log_filehandler()
+
+    # -------------------------------------------------------------------------
+    # AWS S3
+    # -------------------------------------------------------------------------
+
+    @requires_aws_configs
+    @check_configs_set
+    def setup_aws_s3_connection(self, aws_secret_access_key: str) -> None:
+        self._start_log(
+            "setup-aws-s3-connection-to-central-server",
+            local_vars=locals(),
+        )
+
+        self._setup_rclone_aws_config(aws_secret_access_key, log=True)
+        ds_logger.close_log_filehandler()
+
+    # -------------------------------------------------------------------------
     # Configs
     # -------------------------------------------------------------------------
 
@@ -903,6 +934,10 @@ class DataShuttle:
         connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
+        gdrive_client_id: Optional[str] = None,
+        gdrive_client_secret: Optional[str] = None,
+        aws_access_key_id: Optional[str] = None,
+        aws_s3_region: Optional[regions.AWS_REGION] = None,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -967,6 +1002,12 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
+                "gdrive_client_id": gdrive_client_id,
+                "gdrive_client_secret": gdrive_client_secret,
+                "aws_access_key_id": aws_access_key_id,
+                "aws_s3_region": (
+                    aws_s3_region.value if aws_s3_region else None
+                ),
             },
         )
 
@@ -1462,6 +1503,21 @@ class DataShuttle:
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
             self.cfg.get_rclone_config_name("local_filesystem"),
+        )
+
+    def _setup_rclone_gdrive_config(self, log: bool) -> None:
+        rclone.setup_rclone_config_for_gdrive(
+            self.cfg, self.cfg.get_rclone_config_name("gdrive"), log=log
+        )
+
+    def _setup_rclone_aws_config(
+        self, aws_secret_access_key: str, log: bool
+    ) -> None:
+        rclone.setup_rclone_config_for_aws_s3(
+            self.cfg,
+            aws_secret_access_key,
+            self.cfg.get_rclone_config_name("aws_s3"),
+            log=log,
         )
 
     # Persistent settings

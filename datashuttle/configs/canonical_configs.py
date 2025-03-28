@@ -39,9 +39,16 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal["ssh", "local_filesystem"]],
+        "connection_method": Optional[
+            Literal["ssh", "local_filesystem", "gdrive", "aws_s3"]
+        ],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
+        "gdrive_client_id": Optional[str],
+        "gdrive_client_secret": Optional[str],
+        "aws_access_key_id": Optional[str],
+        "aws_s3_region": Optional[str],
+        # "aws_s3_endpoint_url": Optional[str],
     }
 
     return canonical_configs
@@ -125,6 +132,32 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.log_and_raise_error(
             "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'.",
+            ConfigError,
+        )
+
+    # Check gdrive settings
+    elif config_dict["connection_method"] == "gdrive" and (
+        (
+            config_dict["gdrive_client_id"]
+            and not config_dict["gdrive_client_secret"]
+        )
+        or (
+            not config_dict["gdrive_client_id"]
+            and config_dict["gdrive_client_secret"]
+        )
+    ):
+        utils.log_and_raise_error(
+            "Both gdrive_client_id and gdrive_client_secret must be present together.",
+            ConfigError,
+        )
+
+    # Check AWS settings
+    elif config_dict["connection_method"] == "aws_s3" and (
+        not config_dict["aws_access_key_id"]
+        or not config_dict["aws_s3_region"]
+    ):
+        utils.log_and_raise_error(
+            "Both aws_access_key_id and aws_s3_region must be present for AWS connection.",
             ConfigError,
         )
 
