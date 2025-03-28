@@ -280,6 +280,7 @@ class ConfigsContent(Container):
             "AWS S3",
         ], "Unexpected label."
 
+        connection_method = None
         if label == "No connection (local only)":
             self.query_one("#configs_central_path_input").value = ""
             self.query_one("#configs_central_path_input").disabled = True
@@ -287,20 +288,21 @@ class ConfigsContent(Container):
                 True
             )
             display_ssh = False
-            display_gdrive = False
-            display_aws = False
         else:
             self.query_one("#configs_central_path_input").disabled = False
             self.query_one("#configs_central_path_select_button").disabled = (
                 False
             )
             display_ssh = True if label == "SSH" else False
-            display_gdrive = True if label == "Google Drive" else False
-            display_aws = True if label == "AWS S3" else False
 
-        self.switch_ssh_widgets_display(display_ssh)
-        self.switch_gdrive_widgets_display(display_gdrive)
-        self.switch_aws_widgets_display(display_aws)
+            if label == "SSH":
+                connection_method = "ssh"
+            elif label == "Google Drive":
+                connection_method = "gdrive"
+            elif label == "AWS S3":
+                connection_method = "aws_s3"
+
+        self.setup_widgets_to_display(connection_method)
 
         self.set_central_path_input_tooltip(display_ssh)
 
@@ -740,14 +742,15 @@ class ConfigsContent(Container):
             ], "Unexpected Connection Method"
 
         if connection_method == "ssh":
-            self.switch_ssh_widgets_display(True)
+            # order matters -> fix this
             self.switch_gdrive_widgets_display(False)
             self.switch_aws_widgets_display(False)
+            self.switch_ssh_widgets_display(True)
 
         elif connection_method == "gdrive":
             self.switch_ssh_widgets_display(False)
-            self.switch_gdrive_widgets_display(True)
             self.switch_aws_widgets_display(False)
+            self.switch_gdrive_widgets_display(True)
 
         elif connection_method == "aws_s3":
             self.switch_ssh_widgets_display(False)
