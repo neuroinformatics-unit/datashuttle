@@ -37,6 +37,7 @@ from datashuttle.configs import (
 from datashuttle.configs.config_class import Configs
 from datashuttle.datashuttle_functions import _format_top_level_folder
 from datashuttle.utils import (
+    aws,
     ds_logger,
     folders,
     formatting,
@@ -921,6 +922,12 @@ class DataShuttle:
         )
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
+
+        aws.check_successful_connection(self.cfg)
+        utils.log_and_message("AWS Connection Successful.")
+
+        aws.warn_if_bucket_absent(self.cfg)
+
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
