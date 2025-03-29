@@ -32,7 +32,6 @@ from datashuttle.configs import (
     canonical_configs,
     canonical_folders,
     load_configs,
-    regions,
 )
 from datashuttle.configs.config_class import Configs
 from datashuttle.datashuttle_functions import _format_top_level_folder
@@ -944,7 +943,7 @@ class DataShuttle:
         gdrive_client_id: Optional[str] = None,
         gdrive_client_secret: Optional[str] = None,
         aws_access_key_id: Optional[str] = None,
-        aws_s3_region: Optional[regions.AWS_REGION] = None,
+        aws_s3_region: Optional[str] = None,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -1012,9 +1011,7 @@ class DataShuttle:
                 "gdrive_client_id": gdrive_client_id,
                 "gdrive_client_secret": gdrive_client_secret,
                 "aws_access_key_id": aws_access_key_id,
-                "aws_s3_region": (
-                    aws_s3_region.value if aws_s3_region else None
-                ),
+                "aws_s3_region": aws_s3_region,
             },
         )
 

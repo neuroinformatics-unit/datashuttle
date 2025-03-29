@@ -1,7 +1,4 @@
-from enum import Enum
-
-
-class AWS_REGION(Enum):
+class AWS_REGION:
     US_EAST_1 = "us-east-1"
     US_EAST_2 = "us-east-2"
     US_WEST_1 = "us-west-1"
@@ -28,3 +25,11 @@ class AWS_REGION(Enum):
     CN_NORTHWEST_1 = "cn-northwest-1"
     US_GOV_EAST_1 = "us-gov-east-1"
     US_GOV_WEST_1 = "us-gov-west-1"
+
+    @classmethod
+    def get_all_regions(cls):
+        return [
+            value
+            for key, value in vars(cls).items()
+            if not key.startswith("__") and isinstance(value, str)
+        ]
