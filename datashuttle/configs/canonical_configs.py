@@ -27,6 +27,7 @@ from pathlib import Path
 
 import typeguard
 
+from datashuttle.configs.regions import AWS_REGION
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
@@ -47,7 +48,7 @@ def get_canonical_configs() -> dict:
         "gdrive_client_id": Optional[str],
         "gdrive_client_secret": Optional[str],
         "aws_access_key_id": Optional[str],
-        "aws_s3_region": Optional[str],
+        "aws_s3_region": Optional[Literal[*AWS_REGION.get_all_regions()]],
         # "aws_s3_endpoint_url": Optional[str],
     }
 
