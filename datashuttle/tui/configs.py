@@ -21,9 +21,11 @@ from textual.widgets import (
     Label,
     RadioButton,
     RadioSet,
+    Select,
     Static,
 )
 
+from datashuttle import AWS_REGION
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import modal_dialogs, setup_gdrive, setup_ssh
@@ -106,7 +108,19 @@ class ConfigsContent(Container):
             ),
         ]
 
-        self.config_aws_s3_widgets = []
+        self.config_aws_s3_widgets = [
+            Label("AWS Access Key ID", id="configs_aws_access_key_id_label"),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="AWS Access Key ID eg. EJIBCLSIP2K2PQK3CDON",
+                id="configs_aws_access_key_id_input",
+            ),
+            Label("AWS S3 Region", id="configs_aws_s3_region_label"),
+            Select(
+                ((region, region) for region in AWS_REGION.get_all_regions()),
+                id="configs_aws_s3_region_select",
+            ),
+        ]
 
         config_screen_widgets = [
             Label("Local Path", id="configs_local_path_label"),
@@ -402,6 +416,13 @@ class ConfigsContent(Container):
 
     def switch_aws_widgets_display(self, display_aws: bool) -> None:
 
+        for widget in self.config_aws_s3_widgets:
+            widget.display = display_aws
+
+        self.query_one("#configs_central_path_select_button").display = (
+            not display_aws
+        )
+
         if (
             self.interface is None
             or self.interface.get_configs()["connection_method"] != "aws_s3"
@@ -566,7 +587,12 @@ class ConfigsContent(Container):
             self.query_one("#configs_go_to_project_screen_button").visible = (
                 True
             )
-
+            message_template = (
+                "A datashuttle project has now been created.\n\n "
+                "Next, setup the {method_name} connection. Once complete, navigate to the "
+                "'Main Menu' and proceed to the project page, where you will be "
+                "able to create and transfer project folders."
+            )
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.
             if cfg_kwargs["connection_method"] == "ssh":
@@ -578,12 +604,8 @@ class ConfigsContent(Container):
                     "#configs_setup_ssh_connection_button"
                 ).disabled = False
 
-                message = (
-                    "A datashuttle project has now been created.\n\n "
-                    "Next, setup the SSH connection. Once complete, navigate to the "
-                    "'Main Menu' and proceed to the project page, where you will be "
-                    "able to create and transfer project folders."
-                )
+                message = message_template.format(method_name="SSH")
+
             elif cfg_kwargs["connection_method"] == "gdrive":
 
                 self.query_one(
@@ -593,12 +615,19 @@ class ConfigsContent(Container):
                     "#configs_setup_gdrive_connection_button"
                 ).disabled = False
 
-                message = (
-                    "A datashuttle project has now been created.\n\n "
-                    "Next, setup the Google Drive connection. Once complete, navigate to the "
-                    "'Main Menu' and proceed to the project page, where you will be "
-                    "able to create and transfer project folders."
-                )
+                message = message_template.format(method_name="Google Drive")
+
+            elif cfg_kwargs["connection_method"] == "aws_s3":
+
+                self.query_one(
+                    "#configs_setup_aws_connection_button"
+                ).visible = True
+                self.query_one(
+                    "#configs_setup_aws_connection_button"
+                ).disabled = False
+
+                message = message_template.format(method_name="AWS")
+
             else:
                 message = (
                     "A datashuttle project has now been created.\n\n "
@@ -731,6 +760,24 @@ class ConfigsContent(Container):
         )
         input.value = value
 
+        # AWS Access Key ID
+        input = self.query_one("#configs_aws_access_key_id_input")
+        value = (
+            ""
+            if cfg_to_load.get("aws_access_key_id", None) is None
+            else cfg_to_load["aws_access_key_id"]
+        )
+        input.value = value
+
+        # AWS S3 Region
+        select = self.query_one("#configs_aws_s3_region_select")
+        value = (
+            Select.BLANK
+            if cfg_to_load.get("aws_s3_region", None) is None
+            else cfg_to_load["aws_s3_region"]
+        )
+        select.value = value
+
     def setup_widgets_to_display(self, connection_method: str | None) -> None:
 
         if connection_method:
@@ -798,6 +845,7 @@ class ConfigsContent(Container):
 
         cfg_kwargs["connection_method"] = connection_method
 
+        # SSH specific
         central_host_id = self.query_one(
             "#configs_central_host_id_input"
         ).value
@@ -813,18 +861,32 @@ class ConfigsContent(Container):
             None if central_host_username == "" else central_host_username
         )
 
+        # Google Drive specific
         gdrive_client_id = self.query_one(
             "#configs_gdrive_client_id_input"
         ).value
-        gdrive_client_secret = self.query_one(
-            "#configs_gdrive_client_secret_input"
-        ).value
-
         cfg_kwargs["gdrive_client_id"] = (
             None if gdrive_client_id == "" else gdrive_client_id
         )
+
+        gdrive_client_secret = self.query_one(
+            "#configs_gdrive_client_secret_input"
+        ).value
         cfg_kwargs["gdrive_client_secret"] = (
             None if gdrive_client_secret == "" else gdrive_client_secret
+        )
+
+        # AWS specific
+        aws_access_key_id = self.query_one(
+            "#configs_aws_access_key_id_input"
+        ).value
+        cfg_kwargs["aws_access_key_id"] = (
+            None if aws_access_key_id == "" else aws_access_key_id
+        )
+
+        aws_s3_region = self.query_one("#configs_aws_s3_region_select").value
+        cfg_kwargs["aws_s3_region"] = (
+            None if aws_s3_region == Select.BLANK else aws_s3_region
         )
 
         return cfg_kwargs
