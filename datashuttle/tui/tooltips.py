@@ -195,6 +195,13 @@ def get_tooltip(id: str) -> str:
             "Use 'all_non_ses' to transfer all other folders only (i.e. that do not start with the 'ses-' prefix)."
         )
 
+    elif id == "#transfer_ignore_file_input":
+        tooltip = (
+            "A list of files or folders to ignore during transfer. "
+            "Use wildcards to match any part of a filename e.g. *.mp4, folder/.\n\n"
+            "Folders must end with '/' suffix, otherwise it will be treated as a file.\n\n"
+        )
+
     # 'all', 'all datatype', 'all non datatype'
     elif id == "#transfer_all_checkbox":
         tooltip = "Select to transfer all datatype and non-datatype folders within sessions."

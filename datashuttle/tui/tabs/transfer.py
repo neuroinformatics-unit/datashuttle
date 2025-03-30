@@ -139,7 +139,7 @@ class TransferTab(TreeAndInputTab):
             ClickableInput(
                 self.mainwindow,
                 id="transfer_ignore_file_input",
-                placeholder="e.g. *.mp4",
+                placeholder="e.g. *.mp4, folder/",
                 validate_on=None,
                 validators=None,
             ),
@@ -222,6 +222,7 @@ class TransferTab(TreeAndInputTab):
             "#transfer_switch_container",
             "#transfer_subject_input",
             "#transfer_session_input",
+            "#transfer_ignore_file_input",
             "#transfer_all_checkbox",
             "#transfer_all_datatype_checkbox",
             "#transfer_all_non_datatype_checkbox",
