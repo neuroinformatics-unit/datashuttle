@@ -384,6 +384,21 @@ class TreeAndInputTab(TabPane):
 
         return sub_names, ses_names, datatype
 
+    def get_ignore_files(self, ignore_files_input_key: str) -> List[str]:
+        """
+        Get the ignore files from the input widget.
+        Parameters
+        ----------
+        ignore_files_input_key : str
+            The textual widget id for the ignore files input (prefixed with #)
+        Returns
+            A list of ignore files.
+        -------
+        """
+        ignore_files = self.query_one(ignore_files_input_key).as_names_list()
+
+        return ignore_files
+
 
 class TopLevelFolderSelect(Select):
     """
@@ -470,7 +485,6 @@ class TopLevelFolderSelect(Select):
         top_level_folder = event.value
 
         if event.value != Select.BLANK:
-
             self.interface.save_tui_settings(
                 top_level_folder, "top_level_folder_select", self.settings_key
             )

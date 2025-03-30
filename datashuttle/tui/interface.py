@@ -264,6 +264,7 @@ class Interface:
         sub_names: List[str],
         ses_names: List[str],
         datatype: List[str],
+        ignore_files: List[str],
         upload: bool,
     ) -> InterfaceOutput:
         """
@@ -284,6 +285,9 @@ class Interface:
         datatype : List[str]
             Datatypes or datatype-level canonical transfer keys to transfer.
 
+        ignore_files : List[str]
+            List of files to ignore during transfer.
+
         upload : bool
             Upload from local to central if `True`, otherwise download
             from central to remote.
@@ -299,6 +303,7 @@ class Interface:
                 sub_names=sub_names,
                 ses_names=ses_names,
                 datatype=datatype,
+                ignore_files=ignore_files,
                 overwrite_existing_files=self.tui_settings[
                     "overwrite_existing_files"
                 ],

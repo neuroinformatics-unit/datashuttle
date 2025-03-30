@@ -150,7 +150,6 @@ def make_datatype_folders(
 
     for datatype_key, datatype_folder in datatype_items:  # type: ignore
         if datatype_folder.level == level:
-
             datatype_name = datatype_folder.name
 
             datatype_path = sub_or_ses_level_path / datatype_name
@@ -471,8 +470,7 @@ def search_sub_or_ses_level(
     """
     if ses and not sub:
         utils.log_and_raise_error(
-            "cannot pass session to "
-            "search_sub_or_ses_level() without subject",
+            "cannot pass session to search_sub_or_ses_level() without subject",
             ValueError,
         )
 
@@ -552,7 +550,6 @@ def search_filesystem_path_for_folders(
     sorter_files_and_folders = sorted(all_files_and_folders)
 
     for file_or_folder_str in sorter_files_and_folders:
-
         file_or_folder = Path(file_or_folder_str)
 
         if file_or_folder.is_dir():
@@ -565,3 +562,85 @@ def search_filesystem_path_for_folders(
             )
 
     return all_folder_names, all_filenames
+
+
+# -----------------------------------------------------------------------------
+# Search RegEx ignore files/folders
+# -----------------------------------------------------------------------------
+
+
+def search_for_ignore_extra_files(
+    ignored_patterns: List[str],
+    extra_filenames: List[str],
+    base_folder: Path,
+) -> List[str]:
+    """
+    Search for files or folders that match the regex patterns
+    """
+
+    ignored_paths: List[str] = []
+
+    files, _ = utils.split_files_and_folders_regex(ignored_patterns)
+    subjects: List[str] = utils.search_sub_match(extra_filenames)
+
+    if files:
+        ignored_paths += find_match_exclude_patterns(
+            files, subjects, base_folder
+        )
+
+    return ignored_paths
+
+
+def search_for_ignore_files_in_folders(
+    ignored_patterns: List[str],
+    sub_ses_dtype_include: List[str],
+    extra_folder_names: List[str],
+    base_folder: Path,
+) -> Tuple[List[str], List[str]]:
+    """
+    Search for files or folders that match the regex patterns
+    """
+    ignored_sub_ses_folders: List[str] = []
+    ignored_sub_ses_files: List[str] = []
+    ignored_extra_folders: List[str] = []
+
+    files, folders = utils.split_files_and_folders_regex(ignored_patterns)
+    subjects: List[str] = utils.search_sub_match(extra_folder_names)
+
+    if folders:
+        ignored_sub_ses_folders += find_match_exclude_patterns(
+            folders, sub_ses_dtype_include, base_folder
+        )
+
+        ignored_extra_folders += find_match_exclude_patterns(
+            folders, subjects, base_folder
+        )
+
+    if files:
+        ignored_sub_ses_files += find_match_exclude_patterns(
+            files, sub_ses_dtype_include, base_folder
+        )
+
+    return (
+        (ignored_sub_ses_folders + ignored_extra_folders),
+        ignored_sub_ses_files,
+    )
+
+
+def find_match_exclude_patterns(
+    files_or_folders_pattern: List[str],
+    sub_ses_dtype_include: List[str],
+    base_folder: Path,
+) -> List[str]:
+    """
+    Search for subject (or extra) that match excluded files or folders
+    """
+    ignored_folders: List[str] = []
+
+    for pattern in files_or_folders_pattern:
+        for sub_ses in sub_ses_dtype_include:
+            ignored_folders += glob.glob(
+                (base_folder / sub_ses / pattern).as_posix(),
+                recursive=True,
+            )
+    return [utils.find_sub_match(path) for path in ignored_folders]

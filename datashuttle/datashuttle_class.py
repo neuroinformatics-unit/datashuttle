@@ -329,6 +329,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
+        ignore_files: Union[str, list] = "",
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
@@ -362,6 +363,11 @@ class DataShuttle:
             The (broad or narrow) NeuroBlueprint datatypes to transfer.
             If "all", any broad or narrow datatype folder will be transferred.
 
+        ignore_files :
+            A list of files to ignore during transfer. This can
+            include wildcards (e.g. "*.json"). This is passed
+            to rclone as an include list.
+
         overwrite_existing_files :
             If `False`, files on central will never be overwritten
             by files transferred from local. If `True`, central files
@@ -390,6 +396,7 @@ class DataShuttle:
             sub_names,
             ses_names,
             datatype,
+            ignore_files,
             overwrite_existing_files,
             dry_run,
             log=True,
@@ -406,6 +413,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
+        ignore_files: Union[str, list] = "",
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
@@ -434,6 +442,11 @@ class DataShuttle:
 
         datatype :
             see create_folders()
+
+        ignore_files :
+            A list of files to ignore during transfer. This can
+            include wildcards (e.g. "*.json"). This is passed
+            to rclone as an include list.
 
         overwrite_existing_files :
             If "never" files on target will never be overwritten by source.
@@ -464,6 +477,7 @@ class DataShuttle:
             sub_names,
             ses_names,
             datatype,
+            ignore_files,
             overwrite_existing_files,
             dry_run,
             log=True,

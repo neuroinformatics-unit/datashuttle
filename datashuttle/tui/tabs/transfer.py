@@ -135,6 +135,14 @@ class TransferTab(TreeAndInputTab):
                 id="transfer_session_input",
                 placeholder="e.g. ses-001",
             ),
+            Label("Ignore File(s)", id="transfer_ignore_file_label"),
+            ClickableInput(
+                self.mainwindow,
+                id="transfer_ignore_file_input",
+                placeholder="e.g. *.mp4",
+                validate_on=None,
+                validators=None,
+            ),
             # These are almost identical to create tab
             Label("Datatype(s)", id="transfer_datatype_label"),
             DatatypeCheckboxes(
@@ -393,11 +401,13 @@ class TransferTab(TreeAndInputTab):
                     "#transfer_subject_input", "#transfer_session_input"
                 )
             )
+            ignore_files = self.get_ignore_files("#transfer_ignore_file_input")
             success, output = self.interface.transfer_custom_selection(
                 selected_top_level_folder,
                 sub_names,
                 ses_names,
                 datatype,
+                ignore_files,
                 upload,
             )
 
