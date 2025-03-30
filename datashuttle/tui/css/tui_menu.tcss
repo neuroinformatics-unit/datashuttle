@@ -66,7 +66,10 @@ GetHelpScreen {
 }
 SetupGdriveScreen {
     align: center middle;
- }
+}
+SetupAwsScreen {
+    align: center middle;
+}
 #get_help_label {
     align: center middle;
     text-align: center;
@@ -145,6 +148,37 @@ MessageBox:light > #messagebox_top_container {
 }
 
 #setup_gdrive_buttons_horizontal {
+    align: center middle;
+}
+
+#setup_aws_screen_container {
+    height: 75%;
+    width: 80%;
+    align: center middle;
+    border: thick $panel-lighten-1;
+}
+
+#setup_aws_messagebox_message_container {
+    align: center middle;
+    overflow: hidden auto;
+    margin: 0 1;
+}
+
+#setup_aws_messagebox_message {
+    text-align: center;
+    padding: 0 2;
+}
+
+#setup_aws_ok_button {
+    align: center bottom;
+    height: 3;
+}
+
+#setup_aws_cancel_button {
+    align: center bottom;
+}
+
+#setup_aws_buttons_horizontal {
     align: center middle;
 }
 

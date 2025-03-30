@@ -28,7 +28,12 @@ from textual.widgets import (
 from datashuttle import AWS_REGION
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
-from datashuttle.tui.screens import modal_dialogs, setup_gdrive, setup_ssh
+from datashuttle.tui.screens import (
+    modal_dialogs,
+    setup_aws,
+    setup_gdrive,
+    setup_ssh,
+)
 from datashuttle.tui.tooltips import get_tooltip
 
 
@@ -452,6 +457,9 @@ class ConfigsContent(Container):
         elif event.button.id == "configs_setup_gdrive_connection_button":
             self.setup_gdrive_connection()
 
+        elif event.button.id == "configs_setup_aws_connection_button":
+            self.setup_aws_connection()
+
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
 
@@ -535,6 +543,20 @@ class ConfigsContent(Container):
 
         self.parent_class.mainwindow.push_screen(
             setup_gdrive.SetupGdriveScreen(self.interface)
+        )
+
+    def setup_aws_connection(self) -> None:
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        if not self.widget_configs_match_saved_configs():
+            self.parent_class.mainwindow.show_modal_error_dialog(
+                "The values set above must equal the datashuttle settings. "
+                "Either press 'Save' or reload this page."
+            )
+            return
+
+        self.parent_class.mainwindow.push_screen(
+            setup_aws.SetupAwsScreen(self.interface)
         )
 
     def widget_configs_match_saved_configs(self):
