@@ -493,3 +493,15 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
+
+    # Setup AWS
+    # ----------------------------------------------------------------------------------
+
+    def setup_aws_connection(
+        self, aws_secret_access_key: str
+    ) -> InterfaceOutput:
+        try:
+            self.project.setup_aws_s3_connection(aws_secret_access_key)
+            return True, None
+        except BaseException as e:
+            return False, str(e)
