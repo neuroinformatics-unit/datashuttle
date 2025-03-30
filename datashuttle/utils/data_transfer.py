@@ -109,16 +109,12 @@ class TransferData:
             self.reset_transfer_file()
 
         if log:
-            (
-                utils.log_and_message(output.stderr.decode("utf-8"))
+            message = (
+                output.stderr.decode("utf-8")
                 if any(include_list)
-                else utils.log_and_message(
-                    "No files included. None transferred."
-                )
+                else "No files included. None transferred."
             )
-        else:
-            if log:
-                utils.log_and_message("No files included. None transferred.")
+            utils.log_and_message(message)
 
     # -------------------------------------------------------------------------
     # Build the --filter-from list
