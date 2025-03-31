@@ -67,10 +67,10 @@ class TransferData:
         sub_names: Union[str, List[str]],
         ses_names: Union[str, List[str]],
         datatype: Union[str, List[str]],
-        ignore_files: Union[str, List[str]],
         overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
-        log: bool,
+        ignore_files: Union[str, List[str]] = "",
+        log: bool = True,
     ):
         self.__cfg = cfg
         self.__upload_or_download = upload_or_download
@@ -85,7 +85,7 @@ class TransferData:
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
         self.datatype = self.to_list(datatype)
-        self.ignore_files = self.to_list(ignore_files)
+        self.ignore_files = self.to_list(ignore_files) if ignore_files else []
 
         self.check_input_arguments()
 
@@ -188,9 +188,17 @@ class TransferData:
                 )
 
         include_list = (
-            self.make_include_arg(sub_ses_dtype_include)
-            + self.make_include_arg(extra_folder_names)
-            + self.make_include_arg(extra_filenames, recursive=False)
+            self.make_include_arg(
+                sub_ses_dtype_include, exclude_files=any(self.ignore_files)
+            )
+            + self.make_include_arg(
+                extra_folder_names, exclude_files=any(self.ignore_files)
+            )
+            + self.make_include_arg(
+                extra_filenames,
+                recursive=False,
+                exclude_files=any(self.ignore_files),
+            )
         )
 
         if self.ignore_files:
@@ -203,14 +211,17 @@ class TransferData:
                 )
             )
 
-        exclude_list = self.make_exclude_arg(
-            excluded_folders
-        ) + self.make_exclude_arg(excluded_files, recursive=False)
+            exclude_list = self.make_exclude_arg(
+                excluded_folders
+            ) + self.make_exclude_arg(excluded_files, recursive=False)
 
         return include_list, exclude_list
 
     def make_include_arg(
-        self, list_of_paths: List[str], recursive: bool = True
+        self,
+        list_of_paths: List[str],
+        recursive: bool = True,
+        exclude_files: bool = False,
     ) -> List[str]:
         """
         Format the list of paths to rclone's required
@@ -221,15 +232,19 @@ class TransferData:
 
         if recursive:
 
-            def include_arg(ele: str) -> str:
-                return f" + {ele}/** "
+            def include_arg(ele: str, exclude_files: bool = False) -> str:
+                if exclude_files:
+                    return f" + {ele}/** "
+                return f' --include "{ele}/**" '
 
         else:
 
-            def include_arg(ele: str) -> str:
-                return f" + {ele} "
+            def include_arg(ele: str, exclude_files: bool = False) -> str:
+                if exclude_files:
+                    return f" + {ele} "
+                return f' --include "{ele}" '
 
-        return [include_arg(ele) for ele in list_of_paths]
+        return [include_arg(ele, exclude_files) for ele in list_of_paths]
 
     def make_exclude_arg(
         self, list_of_paths: List[str], recursive: bool = True
@@ -260,11 +275,13 @@ class TransferData:
         Format the list of paths to rclone's required
         `--filter-from` flag format.
         """
-        ignore_path: PosixPath = self.write_transfer_file(
-            include_files, exclude_files
-        )
+        if exclude_files:
+            ignore_path: PosixPath = self.write_transfer_file(
+                include_files, exclude_files
+            )
+            return [f' --filter-from "{ignore_path}" ']
 
-        return [f' --filter-from "{ignore_path}" ']
+        return ["".join(include_files)]
 
     def write_transfer_file(
         self, include_files: List[str], exclude_files: List[str]

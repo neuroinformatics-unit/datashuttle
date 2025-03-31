@@ -396,10 +396,9 @@ class DataShuttle:
             sub_names,
             ses_names,
             datatype,
-            ignore_files,
             overwrite_existing_files,
             dry_run,
-            log=True,
+            ignore_files,
         )
 
         if init_log:
@@ -477,10 +476,9 @@ class DataShuttle:
             sub_names,
             ses_names,
             datatype,
-            ignore_files,
             overwrite_existing_files,
             dry_run,
-            log=True,
+            ignore_files,
         )
 
         if init_log:
