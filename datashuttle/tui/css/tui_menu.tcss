@@ -128,6 +128,7 @@ MessageBox:light > #messagebox_top_container {
 }
 
 #gdrive_setup_messagebox_message_container {
+    height: 70%;
     align: center middle;
     overflow: hidden auto;
     margin: 0 1;

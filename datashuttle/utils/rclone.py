@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
@@ -153,6 +153,7 @@ def setup_rclone_config_for_ssh(
 def setup_rclone_config_for_gdrive(
     cfg: Configs,
     rclone_config_name: str,
+    config_token: Optional[str] = None,
     log: bool = True,
 ):
     client_id_key_value = (
@@ -165,13 +166,20 @@ def setup_rclone_config_for_gdrive(
         if cfg.get("gdrive_client_secret", None)
         else ""
     )
+
+    extra_args = (
+        f"config_is_local=false config_token={config_token}"
+        if config_token
+        else ""
+    )
     call_rclone(
         f"config create "
         f"{rclone_config_name} "
         f"drive "
         f"{client_id_key_value}"
         f"{client_secret_key_value}"
-        f"scope drive",
+        f"scope drive "
+        f"{extra_args}",
         pipe_std=True,
     )
 

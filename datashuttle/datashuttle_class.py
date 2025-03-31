@@ -40,6 +40,7 @@ from datashuttle.utils import (
     ds_logger,
     folders,
     formatting,
+    gdrive,
     getters,
     rclone,
     ssh,
@@ -904,8 +905,15 @@ class DataShuttle:
             "setup-google-drive-connection-to-central-server",
             local_vars=locals(),
         )
+        browser_available = gdrive.ask_user_for_browser()
+        config_token = None
 
-        self._setup_rclone_gdrive_config(log=True)
+        if not browser_available:
+            config_token = gdrive.prompt_and_get_config_token(
+                self.cfg, self.cfg.get_rclone_config_name("gdrive")
+            )
+
+        self._setup_rclone_gdrive_config(config_token, log=True)
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
@@ -1515,9 +1523,12 @@ class DataShuttle:
             self.cfg.get_rclone_config_name("local_filesystem"),
         )
 
-    def _setup_rclone_gdrive_config(self, log: bool) -> None:
+    def _setup_rclone_gdrive_config(self, config_token, log: bool) -> None:
         rclone.setup_rclone_config_for_gdrive(
-            self.cfg, self.cfg.get_rclone_config_name("gdrive"), log=log
+            self.cfg,
+            self.cfg.get_rclone_config_name("gdrive"),
+            config_token,
+            log=log,
         )
 
     def _setup_rclone_aws_config(

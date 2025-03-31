@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -14,6 +14,7 @@ from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
+    Input,
     Static,
 )
 
@@ -62,6 +63,12 @@ class SetupGdriveScreen(ModalScreen):
         elif event.button.id == "setup_gdrive_yes_button":
             self.open_browser_and_setup_gdrive_connection()
 
+        elif event.button.id == "setup_gdrive_no_button":
+            self.prompt_user_for_config_token()
+
+        elif event.button.id == "setup_gdrive_enter_button":
+            self.setup_gdrive_connection_using_config_token()
+
     def ask_user_for_browser(self) -> None:
         message = (
             "Are you running Datashuttle on a machine "
@@ -98,9 +105,60 @@ class SetupGdriveScreen(ModalScreen):
 
         asyncio.create_task(_setup_gdrive_and_update_ui())
 
+    def prompt_user_for_config_token(self) -> None:
+
+        self.query_one("#setup_gdrive_yes_button").remove()
+        self.query_one("#setup_gdrive_no_button").remove()
+
+        success, message = (
+            self.interface.get_rclone_message_for_gdrive_without_browser()
+        )
+
+        if not success:
+            self.display_failed()
+            return
+
+        self.query_one("#gdrive_setup_messagebox_message").update(
+            message + "\nPress shift+click to copy."
+        )
+
+        enter_button = Button("Enter", id="setup_gdrive_enter_button")
+        input_box = Input(id="setup_gdrive_config_token_input")
+
+        self.query_one("#setup_gdrive_buttons_horizontal").mount(
+            enter_button, before="#setup_gdrive_cancel_button"
+        )
+        self.query_one("#setup_gdrive_screen_container").mount(
+            input_box, before="#setup_gdrive_buttons_horizontal"
+        )
+
+    def setup_gdrive_connection_using_config_token(self) -> None:
+
+        self.query_one("#setup_gdrive_config_token_input").disabled = True
+
+        enter_button = self.query_one("#setup_gdrive_enter_button")
+        enter_button.disabled = True
+
+        config_token = self.query_one("#setup_gdrive_config_token_input").value
+
+        async def _setup_gdrive_and_update_ui():
+            worker = self.setup_gdrive_connection(config_token)
+            self.setup_worker = worker
+            if worker.is_running:
+                await worker.wait()
+
+            enter_button.remove()
+
+            # TODO : check if successful
+            self.show_finish_screen()
+
+        asyncio.create_task(_setup_gdrive_and_update_ui())
+
     @work(exclusive=True, thread=True)
-    def setup_gdrive_connection(self) -> Worker:
-        self.interface.project.setup_google_drive_connection()
+    def setup_gdrive_connection(
+        self, config_token: Optional[str] = None
+    ) -> Worker:
+        self.interface.setup_google_drive_connection(config_token)
         self.stage += 1
 
     def show_finish_screen(self) -> None:
@@ -111,3 +169,6 @@ class SetupGdriveScreen(ModalScreen):
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
             Button("Finish", id="setup_gdrive_finish_button")
         )
+
+    def display_failed(self) -> None:
+        pass
