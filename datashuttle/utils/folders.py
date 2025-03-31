@@ -602,7 +602,7 @@ def search_remote_central_for_folders(
     except Exception:
         if verbose:
             utils.log_and_message(
-                f"Error searching files at {search_path.to_posix()}"
+                f"Error searching files at {search_path.as_posix()}"
             )
 
     return all_folder_names, all_filenames
