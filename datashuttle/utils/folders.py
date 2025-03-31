@@ -517,7 +517,11 @@ def search_for_folders(
     verbose : If `True`, when a search folder cannot be found, a message
           will be printed with the missing path.
     """
-    if local_or_central == "central":
+    if local_or_central == "central" and cfg["connection_method"] in [
+        "ssh",
+        "gdrive",
+        "aws_s3",
+    ]:
         if cfg["connection_method"] == "ssh":
             all_folder_names, all_filenames = (
                 ssh.search_ssh_central_for_folders(
