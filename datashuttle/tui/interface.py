@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import ssh
+from datashuttle.utils import gdrive, ssh
 
 
 class Interface:
@@ -458,5 +458,40 @@ class Interface:
 
             return True, None
 
+        except BaseException as e:
+            return False, str(e)
+
+    # Setup Google Drive
+    # ----------------------------------------------------------------------------------
+
+    def setup_google_drive_connection(
+        self, config_token: Optional[str] = None
+    ) -> InterfaceOutput:
+        try:
+            self.project._setup_rclone_gdrive_config(config_token, log=False)
+            return True, None
+        except BaseException as e:
+            return False, str(e)
+
+    def get_rclone_message_for_gdrive_without_browser(self):
+        try:
+            output = gdrive.preliminary_for_setup_without_browser(
+                self.project.cfg,
+                self.project.cfg.get_rclone_config_name("gdrive"),
+                log=False,
+            )
+            return True, output
+        except BaseException as e:
+            return False, str(e)
+
+    # Setup AWS
+    # ----------------------------------------------------------------------------------
+
+    def setup_aws_connection(
+        self, aws_secret_access_key: str
+    ) -> InterfaceOutput:
+        try:
+            self.project.setup_aws_s3_connection(aws_secret_access_key)
+            return True, None
         except BaseException as e:
             return False, str(e)

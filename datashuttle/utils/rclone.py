@@ -1,7 +1,7 @@
 import subprocess
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
@@ -101,6 +101,64 @@ def setup_rclone_config_for_ssh(
         f"user {cfg['central_host_username']} "
         f"port 22 "
         f"key_file {ssh_key_path.as_posix()}",
+        pipe_std=True,
+    )
+
+    if log:
+        log_rclone_config_output()
+
+
+def setup_rclone_config_for_gdrive(
+    cfg: Configs,
+    rclone_config_name: str,
+    config_token: Optional[str] = None,
+    log: bool = True,
+):
+    client_id_key_value = (
+        f"client_id {cfg['gdrive_client_id']} "
+        if cfg.get("gdrive_client_id", None)
+        else " "
+    )
+    client_secret_key_value = (
+        f"client_secret {cfg['gdrive_client_secret']} "
+        if cfg.get("gdrive_client_secret", None)
+        else ""
+    )
+
+    extra_args = (
+        f"config_is_local=false config_token={config_token}"
+        if config_token
+        else ""
+    )
+    call_rclone(
+        f"config create "
+        f"{rclone_config_name} "
+        f"drive "
+        f"{client_id_key_value}"
+        f"{client_secret_key_value}"
+        f"scope drive "
+        f"{extra_args}",
+        pipe_std=True,
+    )
+
+    if log:
+        log_rclone_config_output()
+
+
+def setup_rclone_config_for_aws_s3(
+    cfg: Configs,
+    aws_secret_access_key: str,
+    rclone_config_name: str,
+    log: bool = True,
+):
+    call_rclone(
+        "config create "
+        f"{rclone_config_name} "
+        "s3 provider AWS "
+        f"access_key_id {cfg['aws_access_key_id']} "
+        f"secret_access_key {aws_secret_access_key} "
+        f"region {cfg['aws_s3_region']} "
+        f"location_constraint {cfg['aws_s3_region']}",
         pipe_std=True,
     )
 
