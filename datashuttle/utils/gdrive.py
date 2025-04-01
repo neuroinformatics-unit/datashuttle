@@ -5,7 +5,7 @@ from datashuttle.utils import rclone, utils
 
 
 def preliminary_for_setup_without_browser(
-    cfg: Configs, rclone_config_name: str
+    cfg: Configs, rclone_config_name: str, log: bool = True
 ):
     client_id_key_value = (
         f"client_id {cfg['gdrive_client_id']} "
@@ -31,7 +31,12 @@ def preliminary_for_setup_without_browser(
 
     # TODO: make this more robust
     output_json = json.loads(output.stdout)
-    return output_json["Option"]["Help"]
+    message = output_json["Option"]["Help"]
+
+    if log:
+        utils.log(message)
+
+    return message
 
 
 # -----------------------------------------------------------------------------
@@ -39,7 +44,7 @@ def preliminary_for_setup_without_browser(
 # -----------------------------------------------------------------------------
 
 
-def ask_user_for_browser() -> bool:
+def ask_user_for_browser(log: bool = True) -> bool:
     message = "Are you running Datashuttle on a machine with access to a web browser? (y/n): "
     input_ = utils.get_user_input(message).lower()
 
@@ -52,14 +57,18 @@ def ask_user_for_browser() -> bool:
     else:
         answer = False
 
-    # TODO: Add logging here
+    if log:
+        utils.log(message)
 
     return answer
 
 
-def prompt_and_get_config_token(cfg: Configs, rclone_config_name: str) -> str:
-    message = preliminary_for_setup_without_browser(cfg, rclone_config_name)
-
+def prompt_and_get_config_token(
+    cfg: Configs, rclone_config_name: str, log: bool = True
+) -> str:
+    message = preliminary_for_setup_without_browser(
+        cfg, rclone_config_name, log=log
+    )
     input_ = utils.get_user_input(message).strip()
 
     return input_

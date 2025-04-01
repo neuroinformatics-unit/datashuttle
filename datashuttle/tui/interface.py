@@ -501,7 +501,7 @@ class Interface:
         self, config_token: Optional[str] = None
     ) -> InterfaceOutput:
         try:
-            self.project._setup_rclone_gdrive_config(config_token, log=True)
+            self.project._setup_rclone_gdrive_config(config_token, log=False)
             return True, None
         except BaseException as e:
             return False, str(e)
@@ -511,6 +511,7 @@ class Interface:
             output = gdrive.preliminary_for_setup_without_browser(
                 self.project.cfg,
                 self.project.cfg.get_rclone_config_name("gdrive"),
+                log=False,
             )
             return True, output
         except BaseException as e:

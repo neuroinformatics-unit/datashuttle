@@ -905,12 +905,14 @@ class DataShuttle:
             "setup-google-drive-connection-to-central-server",
             local_vars=locals(),
         )
-        browser_available = gdrive.ask_user_for_browser()
+        browser_available = gdrive.ask_user_for_browser(log=True)
         config_token = None
 
         if not browser_available:
             config_token = gdrive.prompt_and_get_config_token(
-                self.cfg, self.cfg.get_rclone_config_name("gdrive")
+                self.cfg,
+                self.cfg.get_rclone_config_name("gdrive"),
+                log=True,
             )
 
         self._setup_rclone_gdrive_config(config_token, log=True)
