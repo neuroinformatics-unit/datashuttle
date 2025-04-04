@@ -313,9 +313,16 @@ CreateFoldersSettingsScreen {
     width: 80%;
     background: $primary-background;
     border: tall $panel-lighten-3;
- }
+}
+#checkbox_container {
+    height: 65%;
+    overflow: hidden auto;
+}
+#toplevel_folder_select_container {
+    height: 15%;
+}
 #template_top_container {
-    height: 50%;
+    height: 70%;
     background: $primary-background;
     border: tall $panel-lighten-3;
     overflow: hidden auto;
