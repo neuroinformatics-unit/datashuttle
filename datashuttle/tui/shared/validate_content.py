@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import platform
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional, Union, cast
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -155,7 +155,7 @@ class ValidateContent(Container):
                 )
                 if not success:
                     self.parent_class.mainwindow.show_modal_error_dialog(
-                        output
+                        cast(str, output)
                     )
                 else:
                     self.write_results_to_richlog(output)

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
 
 from textual.screen import Screen
@@ -42,7 +42,7 @@ class ProjectManagerScreen(Screen):
     See ConfigsContent for more information.
     """
 
-    def __init__(self, mainwindow: App, interface: Interface, id) -> None:
+    def __init__(self, mainwindow: TuiApp, interface: Interface, id) -> None:
         super(ProjectManagerScreen, self).__init__(id=id)
 
         self.mainwindow = mainwindow

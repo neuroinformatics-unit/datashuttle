@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.worker import Worker
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.custom_widgets import CustomDirectoryTree
     from datashuttle.tui.interface import Interface
     from datashuttle.utils.custom_types import InterfaceOutput
@@ -54,7 +54,7 @@ class TransferTab(TreeAndInputTab):
 
     title : str
 
-    mainwindow : App
+    mainwindow : TuiApp
 
     interface : Interface
         TUI-datashuttle interface object
@@ -79,7 +79,7 @@ class TransferTab(TreeAndInputTab):
     def __init__(
         self,
         title: str,
-        mainwindow: App,
+        mainwindow: TuiApp,
         interface: Interface,
         id: Optional[str] = None,
     ) -> None:
