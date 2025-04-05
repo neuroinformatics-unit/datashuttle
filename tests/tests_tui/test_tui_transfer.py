@@ -24,7 +24,6 @@ class TestTuiTransfer(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -118,7 +117,6 @@ class TestTuiTransfer(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -154,9 +152,16 @@ class TestTuiTransfer(TuiBase):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
+    @pytest.mark.parametrize(
+        "ignored_files", ["", "*.mp4", "placeholder_movie.mp4"]
+    )
     @pytest.mark.asyncio
     async def test_transfer_custom(
-        self, setup_project_paths, top_level_folder, upload_or_download
+        self,
+        setup_project_paths,
+        top_level_folder,
+        upload_or_download,
+        ignored_files,
     ):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
@@ -167,7 +172,6 @@ class TestTuiTransfer(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -193,7 +197,9 @@ class TestTuiTransfer(TuiBase):
                 pilot, "#transfer_session_input", ses_to_transfer
             )
 
-            await self.fill_input(pilot, "#transfer_ignore_file_input", "")
+            await self.fill_input(
+                pilot, "#transfer_ignore_file_input", ignored_files
+            )
 
             await self.scroll_to_click_pause(
                 pilot, "#transfer_all_checkbox"
@@ -230,7 +236,6 @@ class TestTuiTransfer(TuiBase):
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):
-
         if top_level_folder == "rawdata":
             assert pilot.app.screen.query_one(id).value == "rawdata"
         else:

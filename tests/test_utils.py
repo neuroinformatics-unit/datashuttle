@@ -397,8 +397,10 @@ def make_local_folders_with_files_in(
     project.create_folders(top_level_folder, subs, sessions, datatype)
     for root, dirs, _ in os.walk(project.cfg["local_path"]):
         if not dirs:
-            path_ = Path(root) / "placeholder_file.txt"
-            write_file(path_, contents="placeholder")
+            placeholders = ["placeholder_file.txt", "placeholder_movie.mp4"]
+            path_ = [Path(root) / placeholder for placeholder in placeholders]
+            for path_ in path_:
+                write_file(path_, contents="placeholder")
 
 
 # -----------------------------------------------------------------------------
@@ -671,9 +673,9 @@ def check_working_top_level_folder_only_exists(
 def read_log_file(logging_path):
     log_filepath = list(glob.glob(str(logging_path / "*.log")))
 
-    assert len(log_filepath) == 1, (
-        f"there should only be one log " f"in log output path {logging_path}"
-    )
+    assert (
+        len(log_filepath) == 1
+    ), f"there should only be one log in log output path {logging_path}"
     log_filepath = log_filepath[0]
 
     with open(log_filepath, "r") as file:

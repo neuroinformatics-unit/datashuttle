@@ -293,6 +293,7 @@ class TransferData:
 
         with open(file_path, "w") as f:
             f.write("\n".join(exclude_files + include_files))
+            f.write("\n - **")
 
         return file_path
 
