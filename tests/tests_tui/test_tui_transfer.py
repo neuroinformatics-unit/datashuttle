@@ -193,6 +193,8 @@ class TestTuiTransfer(TuiBase):
                 pilot, "#transfer_session_input", ses_to_transfer
             )
 
+            await self.fill_input(pilot, "#transfer_ignore_file_input", "")
+
             await self.scroll_to_click_pause(
                 pilot, "#transfer_all_checkbox"
             )  # turn this off

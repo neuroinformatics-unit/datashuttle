@@ -1,5 +1,5 @@
-from pathlib import Path
-from typing import List, Literal, Optional, Union
+from pathlib import Path, PosixPath
+from typing import List, Literal, Optional, Tuple, Union
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.config_class import Configs
@@ -69,7 +69,8 @@ class TransferData:
         datatype: Union[str, List[str]],
         overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
-        log: bool,
+        ignore_files: Union[str, List[str]] = "",
+        log: bool = True,
     ):
         self.__cfg = cfg
         self.__upload_or_download = upload_or_download
@@ -84,33 +85,44 @@ class TransferData:
         self.sub_names = self.to_list(sub_names)
         self.ses_names = self.to_list(ses_names)
         self.datatype = self.to_list(datatype)
+        self.ignore_files = self.to_list(ignore_files) if ignore_files else []
 
         self.check_input_arguments()
 
-        include_list = self.build_a_list_of_all_files_and_folders_to_transfer()
+        include_list, exclude_list = (
+            self.build_a_list_of_all_files_and_folders_to_transfer()
+        )
+
+        transfer_file = self.make_transfer_arg(include_list, exclude_list)
 
         if any(include_list):
             output = rclone.transfer_data(
                 self.__cfg,
                 self.__upload_or_download,
                 self.__top_level_folder,
-                include_list,
+                transfer_file,
                 cfg.make_rclone_transfer_options(
                     overwrite_existing_files, dry_run
                 ),
             )
 
-            if log:
-                utils.log_and_message(output.stderr.decode("utf-8"))
-        else:
-            if log:
-                utils.log_and_message("No files included. None transferred.")
+            self.reset_transfer_file()
+
+        if log:
+            message = (
+                output.stderr.decode("utf-8")
+                if any(include_list)
+                else "No files included. None transferred."
+            )
+            utils.log_and_message(message)
 
     # -------------------------------------------------------------------------
-    # Build the --include list
+    # Build the --filter-from list
     # -------------------------------------------------------------------------
 
-    def build_a_list_of_all_files_and_folders_to_transfer(self) -> List[str]:
+    def build_a_list_of_all_files_and_folders_to_transfer(
+        self,
+    ) -> Tuple[List[str], List[str]]:
         """
         Build a list of every file to transfer based on the user-passed
         arguments. This cycles through every subject, session and datatype
@@ -132,6 +144,7 @@ class TransferData:
         sub_ses_dtype_include: List[str] = []
         extra_folder_names: List[str] = []
         extra_filenames: List[str] = []
+        exclude_list: List[str] = []
 
         for sub in processed_sub_names:
             # subjects at top level folder ------------------------------------
@@ -175,15 +188,40 @@ class TransferData:
                 )
 
         include_list = (
-            self.make_include_arg(sub_ses_dtype_include)
-            + self.make_include_arg(extra_folder_names)
-            + self.make_include_arg(extra_filenames, recursive=False)
+            self.make_include_arg(
+                sub_ses_dtype_include, exclude_files=any(self.ignore_files)
+            )
+            + self.make_include_arg(
+                extra_folder_names, exclude_files=any(self.ignore_files)
+            )
+            + self.make_include_arg(
+                extra_filenames,
+                recursive=False,
+                exclude_files=any(self.ignore_files),
+            )
         )
 
-        return include_list
+        if self.ignore_files:
+            excluded_files, excluded_folders = (
+                self.update_list_with_excluded_paths(
+                    self.ignore_files,
+                    sub_ses_dtype_include=sub_ses_dtype_include,
+                    extra_folder_names=extra_folder_names,
+                    extra_filenames=extra_filenames,
+                )
+            )
+
+            exclude_list = self.make_exclude_arg(
+                excluded_folders
+            ) + self.make_exclude_arg(excluded_files, recursive=False)
+
+        return include_list, exclude_list
 
     def make_include_arg(
-        self, list_of_paths: List[str], recursive: bool = True
+        self,
+        list_of_paths: List[str],
+        recursive: bool = True,
+        exclude_files: bool = False,
     ) -> List[str]:
         """
         Format the list of paths to rclone's required
@@ -194,22 +232,78 @@ class TransferData:
 
         if recursive:
 
-            def include_arg(ele: str) -> str:
+            def include_arg(ele: str, exclude_files: bool = False) -> str:
+                if exclude_files:
+                    return f" + {ele}/** "
                 return f' --include "{ele}/**" '
 
         else:
 
-            def include_arg(ele: str) -> str:
+            def include_arg(ele: str, exclude_files: bool = False) -> str:
+                if exclude_files:
+                    return f" + {ele} "
                 return f' --include "{ele}" '
 
-        return ["".join([include_arg(ele) for ele in list_of_paths])]
+        return [include_arg(ele, exclude_files) for ele in list_of_paths]
+
+    def make_exclude_arg(
+        self, list_of_paths: List[str], recursive: bool = True
+    ) -> List[str]:
+        """
+        Format the list of paths to rclone's required
+        `--exclude` flag format.
+        """
+        if not any(list_of_paths):
+            return []
+
+        if recursive:
+
+            def exclude_arg(ele: str) -> str:
+                return f" - {ele}/** "
+
+        else:
+
+            def exclude_arg(ele: str) -> str:
+                return f" - {ele} "
+
+        return [exclude_arg(ele) for ele in list_of_paths]
+
+    def make_transfer_arg(
+        self, include_files: List[str], exclude_files: List[str]
+    ) -> List[str]:
+        """
+        Format the list of paths to rclone's required
+        `--filter-from` flag format.
+        """
+        if exclude_files:
+            ignore_path: PosixPath = self.write_transfer_file(
+                include_files, exclude_files
+            )
+            return [f' --filter-from "{ignore_path}" ']
+
+        return ["".join(include_files)]
+
+    def write_transfer_file(
+        self, include_files: List[str], exclude_files: List[str]
+    ) -> PosixPath:
+        """
+        Write the list of files to transfer to a file
+        """
+        file_path: PosixPath = self.get_datashuttle_ignore_path(self.__cfg)
+
+        with open(file_path, "w") as f:
+            f.write("\n".join(exclude_files + include_files))
+
+        return file_path
 
     # -------------------------------------------------------------------------
     # Search for non-sub / ses / dtype folders and add them to list
     # -------------------------------------------------------------------------
 
     def update_list_with_non_sub_top_level_folders(
-        self, extra_folder_names: List[str], extra_filenames: List[str]
+        self,
+        extra_folder_names: List[str],
+        extra_filenames: List[str],
     ) -> None:
         """
         Search the subject level for all files and folders in the
@@ -348,6 +442,49 @@ class TransferData:
                 sub_ses_dtype_include.append(filepath.as_posix())
 
     # -------------------------------------------------------------------------
+    # Update list with files to exclude inside included transfer paths
+    # -------------------------------------------------------------------------
+
+    def update_list_with_excluded_paths(
+        self,
+        ignore_files: List[str],
+        sub_ses_dtype_include: List[str],
+        extra_folder_names: List[str],
+        extra_filenames: List[str],
+    ) -> Tuple[List[str], List[str]]:
+        """
+        Update the include list with the files to exclude
+        from transfer. These are passed as a list of strings
+        and will be formatted to rclone's `--filter-from` format.
+        """
+
+        ignored_extra_files: List[str] = []
+        factually_ignored_files: List[str] = []
+        ignored_sub_ses_files: List[str] = []
+        factually_ignored_folders: List[str] = []
+
+        if extra_filenames:
+            ignored_extra_files += folders.search_for_ignore_extra_files(
+                ignore_files,
+                extra_filenames,
+                self.__base_folder,
+            )
+
+        if sub_ses_dtype_include or extra_folder_names:
+            factually_ignored_folders, ignored_sub_ses_files = (
+                folders.search_for_ignore_files_in_folders(
+                    ignore_files,
+                    sub_ses_dtype_include,
+                    extra_folder_names,
+                    self.__base_folder,
+                )
+            )
+
+        factually_ignored_files = ignored_extra_files + ignored_sub_ses_files
+
+        return factually_ignored_files, factually_ignored_folders
+
+    # -------------------------------------------------------------------------
     # Utils
     # -------------------------------------------------------------------------
 
@@ -411,6 +548,19 @@ class TransferData:
                     f"`{name}` input cannot be empty.",
                     ValueError,
                 )
+
+    def get_datashuttle_ignore_path(self, cfg: Configs) -> PosixPath:
+        """
+        Return the path to the .datashuttleignore file
+        """
+        return cfg["local_path"] / ".datashuttle/.datashuttleignore"
+
+    def reset_transfer_file(self) -> None:
+        """
+        Reset the .datashuttleignore file
+        """
+        with open(self.get_datashuttle_ignore_path(self.__cfg), "w") as f:
+            f.write("")
 
     # -------------------------------------------------------------------------
     # Format Arguments

@@ -104,7 +104,6 @@ class DataShuttle:
     """
 
     def __init__(self, project_name: str, print_startup_message: bool = True):
-
         self._error_on_base_project_name(project_name)
         self.project_name = project_name
         (
@@ -329,6 +328,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
+        ignore_files: Union[str, list] = "",
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
@@ -362,6 +362,11 @@ class DataShuttle:
             The (broad or narrow) NeuroBlueprint datatypes to transfer.
             If "all", any broad or narrow datatype folder will be transferred.
 
+        ignore_files :
+            A list of files to ignore during transfer. This can
+            include wildcards (e.g. "*.json"). This is passed
+            to rclone as an include list.
+
         overwrite_existing_files :
             If `False`, files on central will never be overwritten
             by files transferred from local. If `True`, central files
@@ -392,7 +397,7 @@ class DataShuttle:
             datatype,
             overwrite_existing_files,
             dry_run,
-            log=True,
+            "" if self._check_ignore_files(ignore_files) else ignore_files,
         )
 
         if init_log:
@@ -406,6 +411,7 @@ class DataShuttle:
         sub_names: Union[str, list],
         ses_names: Union[str, list],
         datatype: Union[List[str], str] = "all",
+        ignore_files: Union[str, list] = "",
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
@@ -434,6 +440,11 @@ class DataShuttle:
 
         datatype :
             see create_folders()
+
+        ignore_files :
+            A list of files to ignore during transfer. This can
+            include wildcards (e.g. "*.json"). This is passed
+            to rclone as an include list.
 
         overwrite_existing_files :
             If "never" files on target will never be overwritten by source.
@@ -466,7 +477,7 @@ class DataShuttle:
             datatype,
             overwrite_existing_files,
             dry_run,
-            log=True,
+            "" if self._check_ignore_files(ignore_files) else ignore_files,
         )
 
         if init_log:
@@ -1338,7 +1349,6 @@ class DataShuttle:
                     local to central) or "download" (from central to local).
         """
         for top_level_folder in canonical_folders.get_top_level_folders():
-
             utils.log_and_message(f"Transferring `{top_level_folder}`")
 
             self._transfer_top_level_folder(
@@ -1489,8 +1499,7 @@ class DataShuttle:
 
         if setting_name not in settings:
             utils.log_and_raise_error(
-                f"Setting key {setting_name} not found in "
-                f"settings dictionary",
+                f"Setting key {setting_name} not found in settings dictionary",
                 KeyError,
             )
 
@@ -1571,3 +1580,10 @@ class DataShuttle:
                 f"{canonical_top_level_folders}",
                 ValueError,
             )
+
+    def _check_ignore_files(self, ignore_files: Union[str, list]):
+        """
+        Check if there are any files or folders to be ignored.
+        """
+        test_list = [""]
+        return test_list == ignore_files
