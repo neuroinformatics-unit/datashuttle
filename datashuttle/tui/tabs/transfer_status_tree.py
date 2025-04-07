@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from rich.style import Style
     from textual.widgets._directory_tree import DirEntry
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
 
 import os
@@ -38,7 +38,10 @@ class TransferStatusTree(CustomDirectoryTree):
     """
 
     def __init__(
-        self, mainwindow: App, interface: Interface, id: Optional[str] = None
+        self,
+        mainwindow: TuiApp,
+        interface: Interface,
+        id: Optional[str] = None,
     ):
 
         self.interface = interface

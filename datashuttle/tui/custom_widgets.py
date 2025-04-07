@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from textual import events
     from textual.validation import Validator
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
 
 from dataclasses import dataclass
@@ -51,7 +51,7 @@ class ClickableInput(Input):
 
     def __init__(
         self,
-        mainwindow: App,
+        mainwindow: TuiApp,
         placeholder: str,
         id: Optional[str] = None,
         validate_on: Optional[List[str]] = None,
@@ -98,7 +98,7 @@ class CustomDirectoryTree(DirectoryTree):
         node_path: Optional[Path]
 
     def __init__(
-        self, mainwindow: App, path: Path, id: Optional[str] = None
+        self, mainwindow: TuiApp, path: Path, id: Optional[str] = None
     ) -> None:
         super(CustomDirectoryTree, self).__init__(path=path, id=id)
 

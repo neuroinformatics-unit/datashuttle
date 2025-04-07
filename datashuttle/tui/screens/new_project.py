@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
 
 from textual.screen import Screen
 from textual.widgets import Button, Header
@@ -36,7 +36,7 @@ class NewProjectScreen(Screen):
 
     TITLE = "Make New Project"
 
-    def __init__(self, mainwindow: App) -> None:
+    def __init__(self, mainwindow: TuiApp) -> None:
         super(NewProjectScreen, self).__init__()
 
         self.mainwindow = mainwindow
