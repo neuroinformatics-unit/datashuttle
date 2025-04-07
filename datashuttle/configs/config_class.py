@@ -153,7 +153,7 @@ class Configs(UserDict):
         if isinstance(sub_folders, list):
             sub_folders_str = "/".join(sub_folders)
         else:
-            sub_folders_str = cast(str, sub_folders)
+            sub_folders_str = cast("str", sub_folders)
 
         sub_folders_path = Path(sub_folders_str)
 
