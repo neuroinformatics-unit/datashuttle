@@ -23,7 +23,6 @@ from textual.widgets import (
 from datashuttle.tui.custom_widgets import (
     ClickableInput,
     CustomDirectoryTree,
-    CustomSpinner,
     TreeAndInputTab,
 )
 from datashuttle.tui.screens.create_folder_settings import (
@@ -32,6 +31,9 @@ from datashuttle.tui.screens.create_folder_settings import (
 from datashuttle.tui.screens.datatypes import (
     DatatypeCheckboxes,
     DisplayedDatatypesScreen,
+)
+from datashuttle.tui.screens.modal_dialogs import (
+    SearchingRemoteForNextSubSesPopup,
 )
 from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -142,7 +144,7 @@ class CreateFoldersTab(TreeAndInputTab):
         self.on_mount()
 
     @require_double_click
-    def on_clickable_input_clicked(
+    async def on_clickable_input_clicked(
         self, event: ClickableInput.Clicked
     ) -> None:
         """
@@ -160,24 +162,13 @@ class CreateFoldersTab(TreeAndInputTab):
         if event.ctrl:
             self.fill_input_with_template(prefix, input_id)
         else:
+            include_central = self.interface.get_tui_settings()[
+                "suggest_next_sub_ses_remote"
+            ]
 
-            async def _on_clickable_input_clicked():
-                input_box = self.query_one(f"#{input_id}")
-                spinner = CustomSpinner(id="input_suggestion_spinner")
-                input_box.mount(spinner)
-                input_box.disabled = True
-                worker = self.fill_input_with_next_sub_or_ses_template(
-                    prefix,
-                    input_id,
-                    self.interface.get_tui_settings()[
-                        "suggest_next_sub_ses_remote"
-                    ],
-                )
-                await worker.wait()
-                spinner.remove()
-                input_box.disabled = False
-
-            asyncio.create_task(_on_clickable_input_clicked())
+            await self.suggest_next_sub_ses_with_popup(
+                prefix, input_id, include_central
+            )
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
@@ -292,7 +283,8 @@ class CreateFoldersTab(TreeAndInputTab):
 
     # Filling Inputs
     # ----------------------------------------------------------------------------------
-    @work(exclusive=False, thread=True)
+
+    @work(exclusive=True, thread=True)
     def fill_input_with_next_sub_or_ses_template(
         self, prefix: Prefix, input_id: str, include_central: bool
     ) -> Worker:
@@ -369,6 +361,27 @@ class CreateFoldersTab(TreeAndInputTab):
 
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
+
+    async def suggest_next_sub_ses_with_popup(
+        self, prefix: Prefix, input_id: str, include_central: bool
+    ):
+        if include_central:
+            searching_popup = SearchingRemoteForNextSubSesPopup(prefix)
+            self.mainwindow.push_screen(searching_popup)
+
+            async def _fill_suggestion_and_dismiss_popup():
+                worker = self.fill_input_with_next_sub_or_ses_template(
+                    prefix, input_id, include_central
+                )
+                await worker.wait()
+                searching_popup.dismiss()
+
+            asyncio.create_task(_fill_suggestion_and_dismiss_popup())
+        else:
+            worker = self.fill_input_with_next_sub_or_ses_template(
+                prefix, input_id, include_central
+            )
+            await worker.wait()
 
     def run_local_validation(self, prefix: Prefix):
         """
