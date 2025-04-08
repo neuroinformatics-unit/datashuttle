@@ -443,6 +443,41 @@ ConfirmAndAwaitTransferPopup {
     content-align: center middle;
 }
 
+/* Suggesting Screen --------------------------------------------------------------------- */
+
+SearchingRemoteForNextSubSesPopup {
+    align: center middle;
+}
+
+#searching_top_container {
+    align: center middle;
+    height: 15;
+    width: 65;
+    border: tall $panel-lighten-1;
+    background: $primary-background;
+ }
+
+#searching_top_container:light {
+    background: $boost;
+    border: tall $panel-darken-3;
+}
+
+#searching_message_label {
+    align: center middle;
+    text-align: center;
+    overflow: hidden auto;
+    width: 100%;
+    margin: 1 0 0 0;
+}
+
+#searching_animated_indicator {
+    align: center middle;
+    padding: 0;
+    height: 3;
+    margin: 1 0 0 0;
+    content-align: center middle;
+}
+
 /* Light Mode Error Screen */
 
 MessageBox:light > #confirm_top_container {

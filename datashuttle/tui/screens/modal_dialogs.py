@@ -137,6 +137,20 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.app.show_modal_error_dialog(output)
 
 
+class SearchingRemoteForNextSubSesPopup(ModalScreen):
+
+    def __init__(self, sub_or_ses: Prefix) -> None:
+        super().__init__()
+        self.message = f"Searching remote for next {sub_or_ses}"
+
+    def compose(self) -> ComposeResult:
+        yield Container(
+            Label(self.message, id="searching_message_label"),
+            LoadingIndicator(id="searching_animated_indicator"),
+            id="searching_top_container",
+        )
+
+
 class SelectDirectoryTreeScreen(ModalScreen):
     """
     A modal screen that includes a DirectoryTree to browse
