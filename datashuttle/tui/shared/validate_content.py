@@ -155,7 +155,7 @@ class ValidateContent(Container):
                 )
                 if not success:
                     self.parent_class.mainwindow.show_modal_error_dialog(
-                        cast("str", output)
+                        cast(str, output)  # noqa
                     )
                 else:
                     self.write_results_to_richlog(output)
