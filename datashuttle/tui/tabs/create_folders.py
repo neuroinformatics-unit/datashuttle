@@ -51,6 +51,7 @@ class CreateFoldersTab(TreeAndInputTab):
         )
         self.mainwindow = mainwindow
         self.interface = interface
+        self.searching_remote_popup: SearchingRemoteForNextSubSesPopup | None
 
         self.prev_click_time = 0.0
 
@@ -314,7 +315,7 @@ class CreateFoldersTab(TreeAndInputTab):
                 top_level_folder, include_central=include_central
             )
             if not success:
-                self.mainwindow.show_modal_error_dialog_from_main_thread(
+                self.dismiss_popup_and_show_modal_error_dialog_from_thread(
                     output
                 )
                 return
@@ -326,14 +327,14 @@ class CreateFoldersTab(TreeAndInputTab):
             ).as_names_list()
 
             if len(sub_names) > 1:
-                self.mainwindow.show_modal_error_dialog_from_main_thread(
+                self.dismiss_popup_and_show_modal_error_dialog_from_thread(
                     "Can only suggest next session number when a "
                     "single subject is provided."
                 )
                 return
 
             if sub_names == [""]:
-                self.mainwindow.show_modal_error_dialog_from_main_thread(
+                self.dismiss_popup_and_show_modal_error_dialog_from_thread(
                     "Must input a subject number before suggesting "
                     "next session number."
                 )
@@ -346,7 +347,7 @@ class CreateFoldersTab(TreeAndInputTab):
                 top_level_folder, sub, include_central=include_central
             )
             if not success:
-                self.mainwindow.show_modal_error_dialog_from_main_thread(
+                self.dismiss_popup_and_show_modal_error_dialog_from_thread(
                     output
                 )
                 return
@@ -366,15 +367,17 @@ class CreateFoldersTab(TreeAndInputTab):
         self, prefix: Prefix, input_id: str, include_central: bool
     ):
         if include_central:
-            searching_popup = SearchingRemoteForNextSubSesPopup(prefix)
-            self.mainwindow.push_screen(searching_popup)
+            searching_remote_popup = SearchingRemoteForNextSubSesPopup(prefix)
+            self.searching_remote_popup = searching_remote_popup
+            self.mainwindow.push_screen(searching_remote_popup)
 
             async def _fill_suggestion_and_dismiss_popup():
                 worker = self.fill_input_with_next_sub_or_ses_template(
                     prefix, input_id, include_central
                 )
                 await worker.wait()
-                searching_popup.dismiss()
+                if self.searching_remote_popup:
+                    searching_remote_popup.dismiss()
 
             asyncio.create_task(_fill_suggestion_and_dismiss_popup())
         else:
@@ -439,3 +442,14 @@ class CreateFoldersTab(TreeAndInputTab):
         Will automatically refresh the tree through the reactive attribute `path`.
         """
         self.query_one("#create_folders_directorytree").path = new_root_path
+
+    def dismiss_popup_and_show_modal_error_dialog_from_thread(
+        self, message: str
+    ) -> None:
+        if self.searching_remote_popup:
+            self.mainwindow.call_from_thread(
+                self.searching_remote_popup.dismiss
+            )
+            self.searching_remote_popup = None
+
+        self.mainwindow.show_modal_error_dialog_from_main_thread(message)
