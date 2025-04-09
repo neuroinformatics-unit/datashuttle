@@ -51,7 +51,9 @@ class CreateFoldersTab(TreeAndInputTab):
         )
         self.mainwindow = mainwindow
         self.interface = interface
-        self.searching_remote_popup: SearchingRemoteForNextSubSesPopup | None
+        self.searching_remote_popup: (
+            SearchingRemoteForNextSubSesPopup | None
+        ) = None
 
         self.prev_click_time = 0.0
 
@@ -145,7 +147,7 @@ class CreateFoldersTab(TreeAndInputTab):
         self.on_mount()
 
     @require_double_click
-    async def on_clickable_input_clicked(
+    def on_clickable_input_clicked(
         self, event: ClickableInput.Clicked
     ) -> None:
         """
@@ -167,7 +169,7 @@ class CreateFoldersTab(TreeAndInputTab):
                 "suggest_next_sub_ses_remote"
             ]
 
-            await self.suggest_next_sub_ses_with_popup(
+            self.suggest_next_sub_ses_with_popup(
                 prefix, input_id, include_central
             )
 
@@ -363,7 +365,18 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    async def suggest_next_sub_ses_with_popup(
+    async def fill_suggestion_and_dismiss_popup(
+        self, prefix, input_id, include_central
+    ):
+        worker = self.fill_input_with_next_sub_or_ses_template(
+            prefix, input_id, include_central
+        )
+        await worker.wait()
+        if self.searching_remote_popup:
+            self.searching_remote_popup.dismiss()
+            self.searching_remote_popup = None
+
+    def suggest_next_sub_ses_with_popup(
         self, prefix: Prefix, input_id: str, include_central: bool
     ):
         if include_central:
@@ -371,20 +384,11 @@ class CreateFoldersTab(TreeAndInputTab):
             self.searching_remote_popup = searching_remote_popup
             self.mainwindow.push_screen(searching_remote_popup)
 
-            async def _fill_suggestion_and_dismiss_popup():
-                worker = self.fill_input_with_next_sub_or_ses_template(
-                    prefix, input_id, include_central
-                )
-                await worker.wait()
-                if self.searching_remote_popup:
-                    searching_remote_popup.dismiss()
-
-            asyncio.create_task(_fill_suggestion_and_dismiss_popup())
-        else:
-            worker = self.fill_input_with_next_sub_or_ses_template(
+        asyncio.create_task(
+            self.fill_suggestion_and_dismiss_popup(
                 prefix, input_id, include_central
             )
-            await worker.wait()
+        )
 
     def run_local_validation(self, prefix: Prefix):
         """
