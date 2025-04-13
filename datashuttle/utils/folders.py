@@ -17,11 +17,14 @@ if TYPE_CHECKING:
     from datashuttle.utils.custom_types import TopLevelFolder
 
 import glob
+import re
+from datetime import datetime
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
 from datashuttle.utils import ssh, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
+from datashuttle.utils.utils import get_values_from_bids_formatted_name
 
 # -----------------------------------------------------------------------------
 # Create Folders
@@ -401,27 +404,65 @@ def search_for_wildcards(
     """
     new_all_names: List[str] = []
     for name in all_names:
-        if canonical_tags.tags("*") in name:
-            name = name.replace(canonical_tags.tags("*"), "*")
-
-            matching_names: List[str]
+        if canonical_tags.tags("*") in name or "@DATETO@" in name:
+            search_str = name.replace(canonical_tags.tags("*"), "*")
+            # If a date-range tag is present, extract dates and update the search string.
+            if "@DATETO@" in name:
+                m = re.search(r"(\d{8})@DATETO@(\d{8})", name)
+                if not m:
+                    raise ValueError(
+                        "Invalid date range format in name: " + name
+                    )
+                start_str, end_str = m.groups()
+                try:
+                    start_date = datetime.strptime(start_str, "%Y%m%d")
+                    end_date = datetime.strptime(end_str, "%Y%m%d")
+                except ValueError as e:
+                    raise ValueError("Invalid date in date range: " + str(e))
+                # Replace the date-range substring with "date-*"
+                search_str = re.sub(r"\d{8}@DATETO@\d{8}", "date-*", name)
+            # Use the helper function to perform the glob search.
             if sub:
-                matching_names = search_sub_or_ses_level(  # type: ignore
-                    cfg, base_folder, local_or_central, sub, search_str=name
+                matching_names: List[str] = search_sub_or_ses_level(
+                    cfg,
+                    base_folder,
+                    local_or_central,
+                    sub,
+                    search_str=search_str,
                 )[0]
             else:
-                matching_names = search_sub_or_ses_level(  # type: ignore
-                    cfg, base_folder, local_or_central, search_str=name
+                matching_names = search_sub_or_ses_level(
+                    cfg, base_folder, local_or_central, search_str=search_str
                 )[0]
-
+            # If a date-range tag was provided, further filter the results.
+            if "@DATETO@" in name:
+                filtered_names: List[str] = []
+                for candidate in matching_names:
+                    candidate_basename = (
+                        candidate
+                        if isinstance(candidate, str)
+                        else candidate.name
+                    )
+                    values_list = get_values_from_bids_formatted_name(
+                        [candidate_basename], "date"
+                    )
+                    if not values_list:
+                        continue
+                    candidate_date_str = values_list[0]
+                    try:
+                        candidate_date = datetime.strptime(
+                            candidate_date_str, "%Y%m%d"
+                        )
+                    except ValueError:
+                        continue
+                    if start_date <= candidate_date <= end_date:
+                        filtered_names.append(candidate)
+                matching_names = filtered_names
             new_all_names += matching_names
         else:
             new_all_names += [name]
-
-    new_all_names = list(
-        set(new_all_names)
-    )  # remove duplicate names in case of wildcard overlap
-
+    # Remove duplicates in case of wildcard overlap.
+    new_all_names = list(set(new_all_names))
     return new_all_names
 
 
@@ -440,7 +481,7 @@ def search_sub_or_ses_level(
     search_str: str = "*",
     verbose: bool = True,
     return_full_path: bool = False,
-) -> Tuple[List[str] | List[Path], List[str]]:
+) -> Tuple[Union[List[str], List[Path]], List[str]]:
     """
     Search project folder at the subject or session level.
     Only returns folders
