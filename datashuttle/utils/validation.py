@@ -321,7 +321,7 @@ def replace_tags_in_regexp(regexp: str) -> str:
     Note `replace_date_time_tags_in_name()` operates in place on a list.
     """
     regexp_list = [regexp]
-    date_regexp = "\d\d\d\d\d\d\d\d"
+    date_regexp = r"\d{8}"
     time_regexp = "\d\d\d\d\d\d"
 
     formatting.replace_date_time_tags_in_name(
