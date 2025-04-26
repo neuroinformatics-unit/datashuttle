@@ -3,14 +3,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    import paramiko
     from textual.app import ComposeResult
-    
+    from datashuttle.tui.interface import Interface
+
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
+    Input,
     Static,
 )
+
 
 class SetupGdriveScreen(ModalScreen):
     """

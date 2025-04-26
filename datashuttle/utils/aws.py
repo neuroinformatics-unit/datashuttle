@@ -54,7 +54,9 @@ def reset_aws_config(cfg: Configs) -> Tuple[bool, str]:
     rclone_config_name = cfg.get_rclone_config_name()
 
     try:
-        output = rclone.call_rclone(f"config delete {rclone_config_name}", pipe_std=True)
+        rclone.call_rclone(
+            f"config delete {rclone_config_name}", pipe_std=True
+        )
         return True, "AWS configuration reset successfully. Please set up the connection again."
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
@@ -181,7 +183,6 @@ def verify_file_integrity(
         )
 
 
-
 # -----------------------------------------------------------------------------
 # Setup AWS - API Wrappers
 # -----------------------------------------------------------------------------
@@ -255,7 +256,6 @@ def setup_aws_rclone_config_with_logging(
             RuntimeError,
         )
         
-
 
 def get_aws_connection_health(cfg: Configs) -> Dict:
     """

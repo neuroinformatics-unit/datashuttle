@@ -1,17 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List, Optional
+import time
 
 if TYPE_CHECKING:
+    import paramiko
     from textual.app import ComposeResult
+    from datashuttle.tui.interface import Interface
 
-from datashuttle.tui.interface import Interface
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
+    Input,
     Static,
+    LoadingIndicator,
 )
+
 
 class SetupAwsScreen(ModalScreen):
     """
@@ -87,6 +92,7 @@ class SetupAwsScreen(ModalScreen):
                 self.verify_aws_connection()
             elif self.stage == 3:
                 self.dismiss(True)
+                
 
     def explain_aws_credential_requirements(self) -> None:
         """

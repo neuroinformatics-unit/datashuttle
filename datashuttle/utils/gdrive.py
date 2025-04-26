@@ -94,13 +94,14 @@ def prompt_gdrive_setup(
 
 def reset_gdrive_config(cfg: Configs) -> Tuple[bool, str]:
     """
-    Remove the existing Google Drive configuration so it can be recreated.
-    Returns (success, message)
+    Google Drive configurationn.
     """
     rclone_config_name = cfg.get_rclone_config_name()
 
     try:
-        output = rclone.call_rclone(f"config delete {rclone_config_name}", pipe_std=True)
+        rclone.call_rclone(
+            f"config delete {rclone_config_name}", pipe_std=True
+        )
         return True, "Google Drive configuration reset successfully. Please set up the connection again."
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
@@ -144,6 +145,7 @@ def attempt_gdrive_connect(cfg: Configs) -> Tuple[bool, str]:
                 return False, f"Connection error: {error.strip()}"
     except Exception as e:
         return False, f"Error during connection attempt: {str(e)}"
+
 
 def verify_with_retry(cfg: Configs, attempts: int = 3, delay: int = 1) -> Tuple[bool, str]:
     """
@@ -372,7 +374,6 @@ def setup_gdrive_with_logging(
             f"Error details: {str(e)}",
             RuntimeError,
         )
-        
 
 
 def get_gdrive_connection_health(cfg: Configs) -> Dict:
