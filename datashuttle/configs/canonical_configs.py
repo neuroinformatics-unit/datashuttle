@@ -108,31 +108,45 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     raise_on_bad_local_only_project_configs(config_dict)
 
+    # Check connection-specific requirements AFTER the general consistency check
+    if config_dict["connection_method"] == "ssh" and (
+        not config_dict["central_host_id"]
+        or not config_dict["central_host_username"]
+    ):
+        utils.log_and_raise_error(
+            "SSH connection requires both 'central_host_id' and 'central_host_username'.",
+            ConfigError,
+        )
+    elif (
+        config_dict["connection_method"] == "aws"
+        and not config_dict["aws_bucket_name"]
+    ):
+        utils.log_and_raise_error(
+            "AWS connection requires 'aws_bucket_name' to be specified.",
+            ConfigError,
+        )
+    elif (
+        config_dict["connection_method"] == "gdrive"
+        and not config_dict["gdrive_folder_id"]
+    ):
+        utils.log_and_raise_error(
+            "Google Drive connection requires 'gdrive_folder_id' to be specified.",
+            ConfigError,
+        )
+
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
             f"New config keys are in the wrong order. The"
-            f" order should be: {canonical_dict.keys()}.",
+            f" order should be: {list(canonical_dict.keys())}.",
             ConfigError,
         )
 
     raise_on_bad_path_syntax(
         config_dict["local_path"].as_posix(), "local_path"
     )
-
     if config_dict["central_path"] is not None:
         raise_on_bad_path_syntax(
             config_dict["central_path"].as_posix(), "central_path"
-        )
-
-    # Check SSH settings
-    if config_dict["connection_method"] == "ssh" and (
-        not config_dict["central_host_id"]
-        or not config_dict["central_host_username"]
-    ):
-        utils.log_and_raise_error(
-            "'central_host_id' and 'central_host_username' are "
-            "required if 'connection_method' is 'ssh'.",
-            ConfigError,
         )
 
     # Initialise the local project folder
@@ -141,10 +155,10 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     )
     try:
         folders.create_folders(config_dict["local_path"])
-    except OSError:
+    except OSError as e:
         utils.log_and_raise_error(
             f"Could not make project folder at: {config_dict['local_path']}. "
-            f"Config file not updated.",
+            f"Error: {e}. Config file not updated.",
             RuntimeError,
         )
 

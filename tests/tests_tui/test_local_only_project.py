@@ -37,6 +37,9 @@ class TestTuiLocalOnlyProject(TuiBase):
                 "connection_method": None,
                 "central_host_id": None,
                 "central_host_username": None,
+                "aws_bucket_name": None,
+                "aws_region": None,
+                "gdrive_folder_id": None,
             }
             assert pilot.app.screen.query_one(
                 "#placeholder_transfer_tab"
