@@ -3,17 +3,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import paramiko
     from textual.app import ComposeResult
 
-from datashuttle.tui.interface import Interface
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
-    Input,
     Static,
 )
+
+from datashuttle.tui.interface import Interface
+
 
 class SetupGdriveScreen(ModalScreen):
     """
@@ -41,7 +41,9 @@ class SetupGdriveScreen(ModalScreen):
             ),
             Horizontal(
                 Button("OK", id="setup_gdrive_ok_button"),
-                Button("Reset", id="setup_gdrive_reset_button", variant="warning"),
+                Button(
+                    "Reset", id="setup_gdrive_reset_button", variant="warning"
+                ),
                 Button("Cancel", id="setup_gdrive_cancel_button"),
                 id="messagebox_buttons_horizontal",
             ),
@@ -59,20 +61,23 @@ class SetupGdriveScreen(ModalScreen):
         and provide the command to run interactively.
         """
         button_id = event.button.id
-        
+
         if button_id == "setup_gdrive_cancel_button":
             self.dismiss(False)
-            
+
         elif button_id == "setup_gdrive_reset_button":
             from datashuttle.utils import gdrive
-            success, message = gdrive.reset_gdrive_config(self.interface.project.cfg)
+
+            success, message = gdrive.reset_gdrive_config(
+                self.interface.project.cfg
+            )
             self.query_one("#messagebox_message_label").update(
                 f"{message}\n\nPress OK to restart the setup process."
             )
             self.stage = 0
             self.query_one("#setup_gdrive_ok_button").label = "OK"
             self.query_one("#setup_gdrive_reset_button").visible = False
-            
+
         elif button_id == "setup_gdrive_ok_button":
             if self.stage == 0:
                 self.explain_gdrive_interactive_setup()
@@ -130,9 +135,9 @@ class SetupGdriveScreen(ModalScreen):
             "Checking Google Drive connection...\n\n"
             "This may take a few seconds."
         )
-        
+
         success, message = self.interface.verify_gdrive_connection()
-        
+
         if success:
             self.query_one("#messagebox_message_label").update(
                 f"Google Drive connection verified successfully!\n\n"
@@ -143,9 +148,11 @@ class SetupGdriveScreen(ModalScreen):
             self.query_one("#setup_gdrive_cancel_button").disabled = True
             self.stage += 1
         else:
-            rclone_config_name = self.interface.get_configs().get_rclone_config_name()
+            rclone_config_name = (
+                self.interface.get_configs().get_rclone_config_name()
+            )
             command = f"rclone config create {rclone_config_name} drive root_folder_id {self.interface.get_configs()['gdrive_folder_id']}"
-            
+
             self.query_one("#messagebox_message_label").update(
                 f"Google Drive connection verification failed:\n\n"
                 f"{message}\n\n"

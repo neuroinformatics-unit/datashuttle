@@ -1,14 +1,11 @@
-from typing import Dict, List, Optional, Tuple, Union
-import os
-import sys
-from pathlib import Path
+from typing import Dict, Literal, Tuple, Union
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import rclone, utils
 from datashuttle.utils.custom_exceptions import ConfigError
-from typing import Literal
 
 TopLevelFolder = Literal["rawdata", "derivatives"]
+
 
 # -----------------------------------------------------------------------------
 # Core Functions
@@ -22,18 +19,16 @@ def verify_gdrive_access_core(
     """
     if not cfg["gdrive_folder_id"]:
         return False
-        
+
     if not verify_gdrive_config_exists(cfg):
         return False
 
     rclone_config_name = cfg.get_rclone_config_name()
 
-    output = rclone.call_rclone(
-        f"lsf {rclone_config_name}:",
-        pipe_std=True
-    )
+    output = rclone.call_rclone(f"lsf {rclone_config_name}:", pipe_std=True)
 
     return output.returncode == 0
+
 
 def verify_gdrive_config_exists(cfg: Configs) -> bool:
     """
@@ -41,19 +36,22 @@ def verify_gdrive_config_exists(cfg: Configs) -> bool:
     Checks multiple possible config names.
     """
     rclone_config_name = cfg.get_rclone_config_name()
-    
+
     output = rclone.call_rclone("config show", pipe_std=True)
     config_output = output.stdout.decode("utf-8")
-    
+
     if rclone_config_name in config_output:
         return True
-    
+
     project_name = cfg.project_name
-    if any(name.startswith(project_name) and "drive" in config_output.lower() 
-           for name in config_output.split("\n")):
+    if any(
+        name.startswith(project_name) and "drive" in config_output.lower()
+        for name in config_output.split("\n")
+    ):
         return True
-        
+
     return False
+
 
 def get_gdrive_setup_command(
     cfg: Configs,
@@ -74,6 +72,7 @@ def get_gdrive_setup_command(
 
     return f"rclone config create {rclone_config_name} drive root_folder_id {folder_id}"
 
+
 def prompt_gdrive_setup(
     cfg: Configs,
 ) -> None:
@@ -89,18 +88,25 @@ def prompt_gdrive_setup(
     """
     rclone.setup_rclone_config_for_gdrive(cfg, cfg.get_rclone_config_name())
 
+
 def reset_gdrive_config(cfg: Configs) -> Tuple[bool, str]:
     """
     Remove the existing Google Drive configuration so it can be recreated.
     Returns (success, message)
     """
     rclone_config_name = cfg.get_rclone_config_name()
-    
+
     try:
-        output = rclone.call_rclone(f"config delete {rclone_config_name}", pipe_std=True)
-        return True, "Google Drive configuration reset successfully. Please set up the connection again."
+        output = rclone.call_rclone(
+            f"config delete {rclone_config_name}", pipe_std=True
+        )
+        return (
+            True,
+            "Google Drive configuration reset successfully. Please set up the connection again.",
+        )
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
+
 
 def attempt_gdrive_connect(cfg: Configs) -> Tuple[bool, str]:
     """
@@ -108,47 +114,59 @@ def attempt_gdrive_connect(cfg: Configs) -> Tuple[bool, str]:
     """
     if not cfg["gdrive_folder_id"]:
         return False, "Google Drive folder ID is not configured"
-    
+
     if not verify_gdrive_config_exists(cfg):
         command = f"rclone config create {cfg.get_rclone_config_name()} drive root_folder_id {cfg['gdrive_folder_id']}"
         return False, (
             f"Google Drive configuration not found. "
             f"You need to run this command in your terminal:\n{command}"
         )
-    
+
     try:
         rclone_config_name = cfg.get_rclone_config_name()
-        output = rclone.call_rclone(f"lsf {rclone_config_name}:", pipe_std=True)
-        
+        output = rclone.call_rclone(
+            f"lsf {rclone_config_name}:", pipe_std=True
+        )
+
         if output.returncode == 0:
             return True, "Successfully connected to Google Drive"
         else:
             error = output.stderr.decode("utf-8")
             if "not found" in error.lower():
-                return False, "Configuration exists but couldn't connect. Try resetting and creating again."
+                return (
+                    False,
+                    "Configuration exists but couldn't connect. Try resetting and creating again.",
+                )
             elif "permission denied" in error.lower():
-                return False, "Permission denied. Check folder ID and permissions."
+                return (
+                    False,
+                    "Permission denied. Check folder ID and permissions.",
+                )
             else:
                 return False, f"Connection error: {error.strip()}"
     except Exception as e:
         return False, f"Error during connection attempt: {str(e)}"
 
-def verify_with_retry(cfg: Configs, attempts: int = 3, delay: int = 1) -> Tuple[bool, str]:
+
+def verify_with_retry(
+    cfg: Configs, attempts: int = 3, delay: int = 1
+) -> Tuple[bool, str]:
     """
     Try verification multiple times with delay, to handle timing issues
     where the config may take a moment to be fully available.
     """
     import time
-    
+
     for attempt in range(attempts):
         success, message = attempt_gdrive_connect(cfg)
         if success:
             return True, message
-            
+
         if attempt < attempts - 1:
             time.sleep(delay)
-    
+
     return False, message  # Return last message if all attempts fail
+
 
 # -----------------------------------------------------------------------------
 # Enhanced Transfer Features
@@ -159,25 +177,28 @@ def get_drive_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
     Returns (success, data) where data is either a dict with stats or an error message.
     """
     if not verify_gdrive_access_core(cfg):
-        return False, "Cannot access Google Drive. Please verify configuration."
-        
+        return (
+            False,
+            "Cannot access Google Drive. Please verify configuration.",
+        )
+
     rclone_config_name = cfg.get_rclone_config_name()
-    
-    output = rclone.call_rclone(
-        f"about {rclone_config_name}:",
-        pipe_std=True
-    )
-    
+
+    output = rclone.call_rclone(f"about {rclone_config_name}:", pipe_std=True)
+
     if output.returncode != 0:
-        return False, f"Failed to get Drive info: {output.stderr.decode('utf-8')}"
-    
+        return (
+            False,
+            f"Failed to get Drive info: {output.stderr.decode('utf-8')}",
+        )
+
     about_output = output.stdout.decode("utf-8")
-    
+
     try:
         total_size = 0
         total_bytes_used = 0
         total_bytes_free = 0
-        
+
         for line in about_output.splitlines():
             if "Total:" in line:
                 total_part = line.split("Total:")[1].strip()
@@ -185,38 +206,52 @@ def get_drive_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
                     bytes_part = total_part.split("(")[1].split(")")[0].strip()
                     if "Bytes" in bytes_part:
                         total_size = int(bytes_part.split(" ")[0])
-            
+
             if "Used:" in line:
                 used_part = line.split("Used:")[1].strip()
                 if "(" in used_part:
                     bytes_part = used_part.split("(")[1].split(")")[0].strip()
                     if "Bytes" in bytes_part:
                         total_bytes_used = int(bytes_part.split(" ")[0])
-            
+
             if "Free:" in line:
                 free_part = line.split("Free:")[1].strip()
                 if "(" in free_part:
                     bytes_part = free_part.split("(")[1].split(")")[0].strip()
                     if "Bytes" in bytes_part:
                         total_bytes_free = int(bytes_part.split(" ")[0])
-        
+
         return True, {
             "total_size_bytes": total_size,
-            "total_size_human": utils.human_readable_size(total_size) if hasattr(utils, "human_readable_size") else f"{total_size} bytes",
+            "total_size_human": (
+                utils.human_readable_size(total_size)
+                if hasattr(utils, "human_readable_size")
+                else f"{total_size} bytes"
+            ),
             "used_bytes": total_bytes_used,
-            "used_human": utils.human_readable_size(total_bytes_used) if hasattr(utils, "human_readable_size") else f"{total_bytes_used} bytes",
+            "used_human": (
+                utils.human_readable_size(total_bytes_used)
+                if hasattr(utils, "human_readable_size")
+                else f"{total_bytes_used} bytes"
+            ),
             "free_bytes": total_bytes_free,
-            "free_human": utils.human_readable_size(total_bytes_free) if hasattr(utils, "human_readable_size") else f"{total_bytes_free} bytes",
-            "usage_percent": round((total_bytes_used / total_size) * 100, 2) if total_size > 0 else 0
+            "free_human": (
+                utils.human_readable_size(total_bytes_free)
+                if hasattr(utils, "human_readable_size")
+                else f"{total_bytes_free} bytes"
+            ),
+            "usage_percent": (
+                round((total_bytes_used / total_size) * 100, 2)
+                if total_size > 0
+                else 0
+            ),
         }
     except Exception as e:
         return False, f"Failed to parse Drive size information: {str(e)}"
 
 
 def verify_file_integrity(
-    cfg: Configs,
-    top_level_folder: TopLevelFolder,
-    filepath: str
+    cfg: Configs, top_level_folder: TopLevelFolder, filepath: str
 ) -> Tuple[bool, str]:
     """
     Verify the integrity of a file by comparing checksums.
@@ -226,19 +261,23 @@ def verify_file_integrity(
         return False, f"Local file does not exist: {local_path}"
 
     rclone_config_name = cfg.get_rclone_config_name()
-    central_path_str = cfg.get_base_folder("central", top_level_folder).as_posix()
+    central_path_str = cfg.get_base_folder(
+        "central", top_level_folder
+    ).as_posix()
     remote_path = f"{rclone_config_name}:{central_path_str}/{filepath}"
 
     local_md5_cmd = rclone.call_rclone(f"md5sum '{local_path}'", pipe_std=True)
     if local_md5_cmd.returncode != 0:
-        stderr_output = local_md5_cmd.stderr.decode('utf-8')
+        stderr_output = local_md5_cmd.stderr.decode("utf-8")
         return False, f"Failed to calculate local checksum: {stderr_output}"
 
     local_md5 = local_md5_cmd.stdout.decode("utf-8").split()[0]
 
-    remote_md5_cmd = rclone.call_rclone(f"md5sum '{remote_path}'", pipe_std=True)
+    remote_md5_cmd = rclone.call_rclone(
+        f"md5sum '{remote_path}'", pipe_std=True
+    )
     if remote_md5_cmd.returncode != 0:
-        stderr_output = remote_md5_cmd.stderr.decode('utf-8')
+        stderr_output = remote_md5_cmd.stderr.decode("utf-8")
         return False, f"Failed to calculate remote checksum: {stderr_output}"
 
     remote_md5 = remote_md5_cmd.stdout.decode("utf-8").split()[0]
@@ -246,7 +285,10 @@ def verify_file_integrity(
     if local_md5 == remote_md5:
         return True, "File integrity verified"
     else:
-        return False, f"Checksum mismatch: local={local_md5}, remote={remote_md5}"
+        return (
+            False,
+            f"Checksum mismatch: local={local_md5}, remote={remote_md5}",
+        )
 
 
 # -----------------------------------------------------------------------------
@@ -275,7 +317,7 @@ def verify_gdrive_access_with_logging(
         else:
             if not verify_gdrive_config_exists(cfg):
                 utils.log_and_raise_error(
-                    f"Google Drive configuration does not exist. You need to run the setup process first.",
+                    "Google Drive configuration does not exist. You need to run the setup process first.",
                     ConfigError,
                 )
             else:
@@ -297,6 +339,7 @@ def verify_gdrive_access_with_logging(
         )
         return False
 
+
 def setup_gdrive_with_logging(
     cfg: Configs,
     log: bool = True,
@@ -313,7 +356,7 @@ def setup_gdrive_with_logging(
     try:
         command = get_gdrive_setup_command(cfg)
         prompt_gdrive_setup(cfg)
-        
+
         if log:
             message = (
                 f"To complete Google Drive setup, run this in your terminal:\n\n"
@@ -330,10 +373,11 @@ def setup_gdrive_with_logging(
             RuntimeError,
         )
 
+
 def get_gdrive_connection_health(cfg: Configs) -> Dict:
     """
     Check the health of the Google Drive connection by running multiple tests.
-    
+
     Returns a dictionary with test results and overall health status.
     """
     health = {
@@ -341,51 +385,67 @@ def get_gdrive_connection_health(cfg: Configs) -> Dict:
         "connection_ok": False,
         "folder_exists": False,
         "overall_status": "FAILED",
-        "message": ""
+        "message": "",
     }
-    
+
     if verify_gdrive_config_exists(cfg):
         health["config_exists"] = True
     else:
-        health["message"] = "Google Drive configuration not found. Run the setup process."
+        health["message"] = (
+            "Google Drive configuration not found. Run the setup process."
+        )
         return health
-    
+
     try:
         rclone_config_name = cfg.get_rclone_config_name()
-        output = rclone.call_rclone(f"lsf {rclone_config_name}:", pipe_std=True)
-        
+        output = rclone.call_rclone(
+            f"lsf {rclone_config_name}:", pipe_std=True
+        )
+
         if output.returncode == 0:
             health["connection_ok"] = True
         else:
             error = output.stderr.decode("utf-8")
             if "permission denied" in error.lower():
-                health["message"] = "Permission denied. Check folder permissions."
+                health["message"] = (
+                    "Permission denied. Check folder permissions."
+                )
             else:
                 health["message"] = f"Connection error: {error.strip()}"
             return health
     except Exception as e:
         health["message"] = f"Error checking connection: {str(e)}"
         return health
-    
+
     try:
         folder_id = cfg["gdrive_folder_id"]
         rclone_config_name = cfg.get_rclone_config_name()
-        
-        output = rclone.call_rclone(f"lsf {rclone_config_name}:", pipe_std=True)
-        
+
+        output = rclone.call_rclone(
+            f"lsf {rclone_config_name}:", pipe_std=True
+        )
+
         if output.returncode == 0:
             health["folder_exists"] = True
         else:
-            health["message"] = f"Folder with ID '{folder_id}' not found or not accessible."
+            health["message"] = (
+                f"Folder with ID '{folder_id}' not found or not accessible."
+            )
             return health
     except Exception as e:
         health["message"] = f"Error checking folder: {str(e)}"
         return health
-    
-    if all([health["config_exists"], health["connection_ok"], health["folder_exists"]]):
+
+    if all(
+        [
+            health["config_exists"],
+            health["connection_ok"],
+            health["folder_exists"],
+        ]
+    ):
         health["overall_status"] = "HEALTHY"
         health["message"] = "Google Drive connection is healthy"
     elif not health["message"]:
         health["message"] = "Google Drive connection has issues"
-    
+
     return health

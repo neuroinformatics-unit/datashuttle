@@ -1,19 +1,19 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import paramiko
     from textual.app import ComposeResult
 
-from datashuttle.tui.interface import Interface
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
-    Input,
     Static,
-    LoadingIndicator,
 )
+
+from datashuttle.tui.interface import Interface
+
 
 class SetupAwsScreen(ModalScreen):
     """
@@ -41,7 +41,9 @@ class SetupAwsScreen(ModalScreen):
             ),
             Horizontal(
                 Button("OK", id="setup_aws_ok_button"),
-                Button("Reset", id="setup_aws_reset_button", variant="warning"),
+                Button(
+                    "Reset", id="setup_aws_reset_button", variant="warning"
+                ),
                 Button("Cancel", id="setup_aws_cancel_button"),
                 id="messagebox_buttons_horizontal",
             ),
@@ -57,15 +59,16 @@ class SetupAwsScreen(ModalScreen):
         Handle button press events with improved verification logic.
         """
         button_id = event.button.id
-        
+
         if self.is_checking and button_id != "setup_aws_cancel_button":
             return
-                
+
         if button_id == "setup_aws_cancel_button":
             self.dismiss(False)
-                
+
         elif button_id == "setup_aws_reset_button":
             from datashuttle.utils import aws
+
             success, message = aws.reset_aws_config(self.interface.project.cfg)
             self.query_one("#messagebox_message_label").update(
                 f"{message}\n\nPress OK to restart the setup process."
@@ -73,7 +76,7 @@ class SetupAwsScreen(ModalScreen):
             self.stage = 0
             self.query_one("#setup_aws_ok_button").label = "OK"
             self.query_one("#setup_aws_reset_button").visible = False
-                
+
         elif button_id == "setup_aws_ok_button":
             if self.stage == 0:
                 self.explain_aws_credential_requirements()
@@ -83,7 +86,6 @@ class SetupAwsScreen(ModalScreen):
                 self.verify_aws_connection()
             elif self.stage == 3:
                 self.dismiss(True)
-
 
     def explain_aws_credential_requirements(self) -> None:
         """
@@ -137,24 +139,24 @@ class SetupAwsScreen(ModalScreen):
         Verify AWS connection with direct rclone check.
         """
         self.query_one("#messagebox_message_label").update(
-            "Checking AWS S3 connection...\n\n"
-            "This may take a few seconds."
+            "Checking AWS S3 connection...\n\n" "This may take a few seconds."
         )
-        
+
         self.is_checking = True
-        
+
         cfg = self.interface.get_configs()
         rclone_config_name = cfg.get_rclone_config_name()
         bucket_name = cfg["aws_bucket_name"]
-        
+
         from datashuttle.utils import rclone
+
         output = rclone.call_rclone(
             f"lsf {rclone_config_name}:{bucket_name} --max-depth 1",
-            pipe_std=True
+            pipe_std=True,
         )
-        
+
         self.is_checking = False
-        
+
         if output.returncode == 0:
             self.query_one("#messagebox_message_label").update(
                 f"AWS S3 connection verified successfully!\n\n"

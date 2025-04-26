@@ -1,12 +1,8 @@
-from typing import Dict, List, Optional, Tuple, Union
-import os
-import sys
-from pathlib import Path
+from typing import Dict, Literal, Tuple, Union
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import rclone, utils
 from datashuttle.utils.custom_exceptions import ConfigError
-from typing import Literal
 
 TopLevelFolder = Literal["rawdata", "derivatives"]
 
@@ -28,11 +24,11 @@ def verify_aws_credentials_core(
     rclone_config_name = cfg.get_rclone_config_name()
 
     output = rclone.call_rclone(
-        f"lsf {rclone_config_name}:{bucket_name} --max-depth 1",
-        pipe_std=True
+        f"lsf {rclone_config_name}:{bucket_name} --max-depth 1", pipe_std=True
     )
 
     return output.returncode == 0
+
 
 def setup_aws_rclone_config_core(
     cfg: Configs,
@@ -47,18 +43,25 @@ def setup_aws_rclone_config_core(
     rclone_config_name = cfg.get_rclone_config_name()
     rclone.setup_rclone_config_for_aws(cfg, rclone_config_name)
 
+
 def reset_aws_config(cfg: Configs) -> Tuple[bool, str]:
     """
     Remove the existing AWS S3 configuration so it can be recreated.
     Returns (success, message)
     """
     rclone_config_name = cfg.get_rclone_config_name()
-    
+
     try:
-        output = rclone.call_rclone(f"config delete {rclone_config_name}", pipe_std=True)
-        return True, "AWS configuration reset successfully. Please set up the connection again."
+        output = rclone.call_rclone(
+            f"config delete {rclone_config_name}", pipe_std=True
+        )
+        return (
+            True,
+            "AWS configuration reset successfully. Please set up the connection again.",
+        )
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
+
 
 def check_bucket_exists(cfg: Configs) -> bool:
     """
@@ -67,19 +70,17 @@ def check_bucket_exists(cfg: Configs) -> bool:
     bucket_name = cfg["aws_bucket_name"]
     if not bucket_name:
         return False
-        
+
     rclone_config_name = cfg.get_rclone_config_name()
-    
-    output = rclone.call_rclone(
-        f"lsf {rclone_config_name}:", 
-        pipe_std=True
-    )
-    
+
+    output = rclone.call_rclone(f"lsf {rclone_config_name}:", pipe_std=True)
+
     if output.returncode != 0:
         return False
-        
+
     buckets = output.stdout.decode("utf-8").splitlines()
     return bucket_name in buckets
+
 
 # -----------------------------------------------------------------------------
 # Enhanced Transfer Features
@@ -92,23 +93,25 @@ def get_bucket_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
     bucket_name = cfg["aws_bucket_name"]
     if not bucket_name:
         return False, "No bucket name configured"
-        
+
     rclone_config_name = cfg.get_rclone_config_name()
-    
+
     output = rclone.call_rclone(
-        f"size {rclone_config_name}:{bucket_name}",
-        pipe_std=True
+        f"size {rclone_config_name}:{bucket_name}", pipe_std=True
     )
-    
+
     if output.returncode != 0:
-        return False, f"Failed to get bucket size: {output.stderr.decode('utf-8')}"
-    
+        return (
+            False,
+            f"Failed to get bucket size: {output.stderr.decode('utf-8')}",
+        )
+
     size_output = output.stdout.decode("utf-8")
-    
+
     try:
         total_size = 0
         total_objects = 0
-        
+
         for line in size_output.splitlines():
             if "Total size:" in line:
                 size_part = line.split("Total size:")[1].strip()
@@ -116,23 +119,26 @@ def get_bucket_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
                     bytes_part = size_part.split("(")[1].split(")")[0].strip()
                     if "Bytes" in bytes_part:
                         total_size = int(bytes_part.split(" ")[0])
-            
+
             if "Total objects:" in line:
                 objects_part = line.split("Total objects:")[1].strip()
                 total_objects = int(objects_part)
-        
+
         return True, {
             "total_size_bytes": total_size,
-            "total_size_human": utils.human_readable_size(total_size) if hasattr(utils, "human_readable_size") else f"{total_size} bytes",
-            "total_objects": total_objects
+            "total_size_human": (
+                utils.human_readable_size(total_size)
+                if hasattr(utils, "human_readable_size")
+                else f"{total_size} bytes"
+            ),
+            "total_objects": total_objects,
         }
     except Exception as e:
         return False, f"Failed to parse bucket size information: {str(e)}"
 
+
 def verify_file_integrity(
-    cfg: Configs,
-    top_level_folder: TopLevelFolder,
-    filepath: str
+    cfg: Configs, top_level_folder: TopLevelFolder, filepath: str
 ) -> Tuple[bool, str]:
     """
     Verify the integrity of a file by comparing checksums.
@@ -140,27 +146,41 @@ def verify_file_integrity(
     local_path = cfg.get_base_folder("local", top_level_folder) / filepath
     if not local_path.exists():
         return False, f"Local file does not exist: {local_path}"
-    
+
     rclone_config_name = cfg.get_rclone_config_name()
-    central_path_str = cfg.get_base_folder("central", top_level_folder).as_posix()
+    central_path_str = cfg.get_base_folder(
+        "central", top_level_folder
+    ).as_posix()
     remote_path = f"{rclone_config_name}:{central_path_str}/{filepath}"
-    
+
     local_md5_cmd = rclone.call_rclone(f"md5sum '{local_path}'", pipe_std=True)
     if local_md5_cmd.returncode != 0:
-        return False, f"Failed to calculate local checksum: {local_md5_cmd.stderr.decode('utf-8')}"
-    
+        return (
+            False,
+            f"Failed to calculate local checksum: {local_md5_cmd.stderr.decode('utf-8')}",
+        )
+
     local_md5 = local_md5_cmd.stdout.decode("utf-8").split()[0]
-    
-    remote_md5_cmd = rclone.call_rclone(f"md5sum '{remote_path}'", pipe_std=True)
+
+    remote_md5_cmd = rclone.call_rclone(
+        f"md5sum '{remote_path}'", pipe_std=True
+    )
     if remote_md5_cmd.returncode != 0:
-        return False, f"Failed to calculate remote checksum: {remote_md5_cmd.stderr.decode('utf-8')}"
-    
+        return (
+            False,
+            f"Failed to calculate remote checksum: {remote_md5_cmd.stderr.decode('utf-8')}",
+        )
+
     remote_md5 = remote_md5_cmd.stdout.decode("utf-8").split()[0]
-    
+
     if local_md5 == remote_md5:
         return True, "File integrity verified"
     else:
-        return False, f"Checksum mismatch: local={local_md5}, remote={remote_md5}"
+        return (
+            False,
+            f"Checksum mismatch: local={local_md5}, remote={remote_md5}",
+        )
+
 
 # -----------------------------------------------------------------------------
 # Setup AWS - API Wrappers
@@ -204,6 +224,7 @@ def verify_aws_credentials_with_logging(
         )
         return False
 
+
 def setup_aws_rclone_config_with_logging(
     cfg: Configs,
     log: bool = True,
@@ -220,9 +241,7 @@ def setup_aws_rclone_config_with_logging(
     try:
         setup_aws_rclone_config_core(cfg)
         if log:
-            success_message = (
-                f"AWS rclone config setup successfully for bucket: {cfg['aws_bucket_name']}"
-            )
+            success_message = f"AWS rclone config setup successfully for bucket: {cfg['aws_bucket_name']}"
             utils.print_message_to_user(success_message)
             utils.log(f"\n{success_message}")
     except Exception as e:
@@ -234,10 +253,11 @@ def setup_aws_rclone_config_with_logging(
             RuntimeError,
         )
 
+
 def get_aws_connection_health(cfg: Configs) -> Dict:
     """
     Check the health of the AWS connection by running multiple tests.
-    
+
     Returns a dictionary with test results and overall health status.
     """
     health = {
@@ -246,25 +266,27 @@ def get_aws_connection_health(cfg: Configs) -> Dict:
         "bucket_writable": False,
         "bucket_readable": False,
         "overall_status": "FAILED",
-        "message": ""
+        "message": "",
     }
-    
+
     if verify_aws_credentials_core(cfg):
         health["connection_ok"] = True
     else:
         health["message"] = "Failed to connect to AWS. Check credentials."
         return health
-    
+
     if check_bucket_exists(cfg):
         health["bucket_exists"] = True
     else:
-        health["message"] = f"Bucket '{cfg['aws_bucket_name']}' not found or not accessible."
+        health["message"] = (
+            f"Bucket '{cfg['aws_bucket_name']}' not found or not accessible."
+        )
         return health
-    
+
     if all([health["connection_ok"], health["bucket_exists"]]):
         health["overall_status"] = "HEALTHY"
         health["message"] = "AWS connection is healthy"
     elif not health["message"]:
         health["message"] = "AWS connection has issues with permissions"
-    
+
     return health
