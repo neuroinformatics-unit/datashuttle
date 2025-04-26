@@ -10,6 +10,8 @@ TopLevelFolder = Literal["rawdata", "derivatives"]
 # -----------------------------------------------------------------------------
 # Core Functions
 # -----------------------------------------------------------------------------
+
+
 def verify_aws_credentials_core(
     cfg: Configs,
 ) -> bool:
@@ -52,13 +54,8 @@ def reset_aws_config(cfg: Configs) -> Tuple[bool, str]:
     rclone_config_name = cfg.get_rclone_config_name()
 
     try:
-        output = rclone.call_rclone(
-            f"config delete {rclone_config_name}", pipe_std=True
-        )
-        return (
-            True,
-            "AWS configuration reset successfully. Please set up the connection again.",
-        )
+        output = rclone.call_rclone(f"config delete {rclone_config_name}", pipe_std=True)
+        return True, "AWS configuration reset successfully. Please set up the connection again."
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
 
@@ -85,6 +82,8 @@ def check_bucket_exists(cfg: Configs) -> bool:
 # -----------------------------------------------------------------------------
 # Enhanced Transfer Features
 # -----------------------------------------------------------------------------
+
+
 def get_bucket_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
     """
     Get storage usage statistics from the AWS S3 bucket.
@@ -182,9 +181,12 @@ def verify_file_integrity(
         )
 
 
+
 # -----------------------------------------------------------------------------
 # Setup AWS - API Wrappers
 # -----------------------------------------------------------------------------
+
+
 def verify_aws_credentials_with_logging(
     cfg: Configs,
     message_on_successful_connection: bool = True,
@@ -252,6 +254,7 @@ def setup_aws_rclone_config_with_logging(
             f"Error details: {str(e)}",
             RuntimeError,
         )
+        
 
 
 def get_aws_connection_health(cfg: Configs) -> Dict:

@@ -3,6 +3,7 @@ from typing import Dict, Literal, Tuple, Union
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import rclone, utils
 from datashuttle.utils.custom_exceptions import ConfigError
+from typing import Literal
 
 TopLevelFolder = Literal["rawdata", "derivatives"]
 
@@ -10,6 +11,8 @@ TopLevelFolder = Literal["rawdata", "derivatives"]
 # -----------------------------------------------------------------------------
 # Core Functions
 # -----------------------------------------------------------------------------
+
+
 def verify_gdrive_access_core(
     cfg: Configs,
 ) -> bool:
@@ -97,13 +100,8 @@ def reset_gdrive_config(cfg: Configs) -> Tuple[bool, str]:
     rclone_config_name = cfg.get_rclone_config_name()
 
     try:
-        output = rclone.call_rclone(
-            f"config delete {rclone_config_name}", pipe_std=True
-        )
-        return (
-            True,
-            "Google Drive configuration reset successfully. Please set up the connection again.",
-        )
+        output = rclone.call_rclone(f"config delete {rclone_config_name}", pipe_std=True)
+        return True, "Google Drive configuration reset successfully. Please set up the connection again."
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
 
@@ -147,10 +145,7 @@ def attempt_gdrive_connect(cfg: Configs) -> Tuple[bool, str]:
     except Exception as e:
         return False, f"Error during connection attempt: {str(e)}"
 
-
-def verify_with_retry(
-    cfg: Configs, attempts: int = 3, delay: int = 1
-) -> Tuple[bool, str]:
+def verify_with_retry(cfg: Configs, attempts: int = 3, delay: int = 1) -> Tuple[bool, str]:
     """
     Try verification multiple times with delay, to handle timing issues
     where the config may take a moment to be fully available.
@@ -164,13 +159,15 @@ def verify_with_retry(
 
         if attempt < attempts - 1:
             time.sleep(delay)
-
+    
     return False, message  # Return last message if all attempts fail
 
 
 # -----------------------------------------------------------------------------
 # Enhanced Transfer Features
 # -----------------------------------------------------------------------------
+
+
 def get_drive_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
     """
     Get storage usage statistics from Google Drive.
@@ -250,6 +247,7 @@ def get_drive_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
         return False, f"Failed to parse Drive size information: {str(e)}"
 
 
+
 def verify_file_integrity(
     cfg: Configs, top_level_folder: TopLevelFolder, filepath: str
 ) -> Tuple[bool, str]:
@@ -294,6 +292,8 @@ def verify_file_integrity(
 # -----------------------------------------------------------------------------
 # Setup GDrive - API Wrappers
 # -----------------------------------------------------------------------------
+
+
 def verify_gdrive_access_with_logging(
     cfg: Configs,
     message_on_successful_connection: bool = True,
@@ -372,6 +372,7 @@ def setup_gdrive_with_logging(
             f"Error details: {str(e)}",
             RuntimeError,
         )
+        
 
 
 def get_gdrive_connection_health(cfg: Configs) -> Dict:

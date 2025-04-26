@@ -5,15 +5,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+from datashuttle.tui.interface import Interface
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
     Static,
 )
-
-from datashuttle.tui.interface import Interface
-
 
 class SetupAwsScreen(ModalScreen):
     """
@@ -29,6 +27,7 @@ class SetupAwsScreen(ModalScreen):
         self.interface = interface
         self.stage = 0
         self.is_checking = False
+
 
     def compose(self) -> ComposeResult:
         yield Container(
@@ -50,9 +49,11 @@ class SetupAwsScreen(ModalScreen):
             id="setup_aws_screen_container",
         )
 
+
     def on_mount(self) -> None:
         # Hide the reset button initially
         self.query_one("#setup_aws_reset_button").visible = False
+
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -105,6 +106,7 @@ class SetupAwsScreen(ModalScreen):
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
 
+
     def attempt_aws_rclone_config(self) -> None:
         """
         Attempt to create the rclone configuration for AWS.
@@ -133,6 +135,7 @@ class SetupAwsScreen(ModalScreen):
             )
 
         self.query_one("#messagebox_message_label").update(message)
+
 
     def verify_aws_connection(self) -> None:
         """
