@@ -93,7 +93,7 @@ def prompt_gdrive_setup(
 
 def reset_gdrive_config(cfg: Configs) -> Tuple[bool, str]:
     """
-    Google Drive configurationn it can be created.
+    Google Drive configuration it can be created.
     Returns (success, message)
     """
     rclone_config_name = cfg.get_rclone_config_name()
