@@ -48,7 +48,7 @@ def setup_aws_rclone_config_core(
 
 def reset_aws_config(cfg: Configs) -> Tuple[bool, str]:
     """
-    Remove the existing AWS S3 configuration so it can be recreated.
+    AWS S3 configuration it can be created.
     Returns (success, message)
     """
     rclone_config_name = cfg.get_rclone_config_name()
