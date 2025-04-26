@@ -36,6 +36,7 @@ from datashuttle.configs import (
 from datashuttle.configs.config_class import Configs
 from datashuttle.datashuttle_functions import _format_top_level_folder
 from datashuttle.utils import (
+    aws,
     ds_logger,
     folders,
     formatting,
@@ -53,6 +54,8 @@ from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     check_is_not_local_project,
+    requires_aws_configs,
+    requires_gdrive_configs,
     requires_ssh_configs,
 )
 
@@ -833,7 +836,7 @@ class DataShuttle:
         utils.log(output.stderr.decode("utf-8"))
 
     # -------------------------------------------------------------------------
-    # SSH
+    # Connection Setup (SSH, AWS, GDrive)
     # -------------------------------------------------------------------------
 
     @requires_ssh_configs
@@ -892,6 +895,109 @@ class DataShuttle:
             public.write(key.get_base64())
         public.close()
 
+    @check_configs_set
+    @check_is_not_local_project
+    def setup_gdrive_connection(self) -> None:
+        """
+        Guide user through Google Drive setup process.
+
+        This method provides instructions for setting up Rclone configuration
+        for Google Drive. Since Google Drive auth requires browser interaction,
+        this primarily provides guidance rather than automating the process.
+        """
+        self._start_log("setup-gdrive-connection", local_vars=locals())
+
+        utils.log_and_message(
+            "Setting up Google Drive connection via Rclone..."
+        )
+
+        if not self.cfg["gdrive_folder_id"]:
+            utils.log_and_raise_error(
+                "Google Drive folder ID is not configured. Update config file with 'gdrive_folder_id'.",
+                ConfigError,
+            )
+
+        self._setup_rclone_central_gdrive_config(log=True)
+
+        utils.log_and_message(
+            "Once you've completed the interactive setup in your terminal, "
+            "your Google Drive connection should be ready to use."
+        )
+
+        ds_logger.close_log_filehandler()
+
+    def _setup_rclone_central_gdrive_config(self, log: bool = True) -> None:
+        """
+        Provide instructions for Google Drive Rclone setup.
+
+        This doesn't actually perform the setup, but provides the command
+        to run and instructions for the user.
+
+        Parameters
+        ----------
+        log : bool
+            Whether to log the process
+        """
+        rclone.setup_rclone_config_for_gdrive(
+            self.cfg,
+            self.cfg.get_rclone_config_name("gdrive"),
+            log=log,
+        )
+
+    @check_configs_set
+    @check_is_not_local_project
+    def setup_aws_connection(self) -> None:
+        """
+        Setup AWS S3 connection and configure Rclone.
+
+        This method verifies AWS credentials can access the specified bucket,
+        then sets up Rclone configuration for the project.
+
+        Assumes AWS credentials are already set up externally (environment
+        variables, AWS CLI config, instance profile, etc).
+        """
+        self._start_log("setup-aws-connection", local_vars=locals())
+
+        utils.log_and_message("Setting up AWS S3 connection via Rclone...")
+
+        if not self.cfg["aws_bucket_name"]:
+            utils.log_and_raise_error(
+                "AWS bucket name is not configured. Update config file with 'aws_bucket_name'.",
+                ConfigError,
+            )
+
+        self._setup_rclone_central_aws_config(log=True)
+
+        verification_result = aws.verify_aws_credentials_with_logging(
+            self.cfg, message_on_successful_connection=True
+        )
+
+        if not verification_result:
+            utils.log_and_message(
+                "Failed to verify AWS connection. Check credentials and try again."
+            )
+        else:
+            utils.log_and_message("AWS S3 connection setup successful!")
+
+        ds_logger.close_log_filehandler()
+
+    def _setup_rclone_central_aws_config(self, log: bool = True) -> None:
+        """
+        Configure Rclone for AWS S3 access.
+
+        This creates/updates an rclone remote configuration for the AWS S3 bucket.
+
+        Parameters
+        ----------
+        log : bool
+            Whether to log the process
+        """
+        rclone.setup_rclone_config_for_aws(
+            self.cfg,
+            self.cfg.get_rclone_config_name("aws"),
+            log=log,
+        )
+
     # -------------------------------------------------------------------------
     # Configs
     # -------------------------------------------------------------------------
@@ -903,6 +1009,9 @@ class DataShuttle:
         connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
+        aws_bucket_name: Optional[str] = None,
+        aws_region: Optional[str] = None,
+        gdrive_folder_id: Optional[str] = None,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -924,26 +1033,41 @@ class DataShuttle:
             path to project folder on local machine
 
         central_path :
-            Filepath to central project.
-            If this is local (i.e. connection_method = "local_filesystem"),
-            this is the full path on the local filesystem
-            Otherwise, if this is via ssh (i.e. connection method = "ssh"),
-            this is the path to the project folder on central machine.
-            This should be a full path to central folder i.e. this cannot
-            include ~ home folder syntax, must contain the full path
-            (e.g. /nfs/nhome/live/jziminski)
+            Meaning depends on connection_method:
+            - local_filesystem: full filesystem path on local machine
+            - ssh: full path on SSH server
+            - aws: optional prefix path within the S3 bucket
+            - gdrive: optional path within the Google Drive folder
+            - None (local-only): ignored/not used
 
         connection_method :
-            The method used to connect to the central project filesystem,
-            e.g. "local_filesystem" (e.g. mounted drive) or "ssh"
+            The method used to connect to the central project filesystem:
+            - "local_filesystem": mounted drive on local machine
+            - "ssh": remote SSH server
+            - "aws": Amazon S3 bucket
+            - "gdrive": Google Drive folder
+            - None: local-only mode (no central storage)
 
         central_host_id :
-            server address for central host for ssh connection
-            e.g. "ssh.swc.ucl.ac.uk"
+            For SSH: server address for central host (e.g. "ssh.example.com")
+            For other connection methods: ignored
 
         central_host_username :
-            username for which to log in to central host.
-            e.g. "jziminski"
+            For SSH: username to log in to central host (e.g. "username")
+            For other connection methods: ignored
+
+        aws_bucket_name :
+            For AWS: name of the S3 bucket to use
+            For other connection methods: ignored
+
+        aws_region :
+            For AWS: region of the S3 bucket (e.g. "us-east-1")
+            Optional: if None, uses default credentials region
+            For other connection methods: ignored
+
+        gdrive_folder_id :
+            For GDrive: ID of the Google Drive folder to use as root
+            For other connection methods: ignored
         """
         self._start_log(
             "make-config-file",
@@ -958,6 +1082,24 @@ class DataShuttle:
                 RuntimeError,
             )
 
+        if connection_method == "ssh" and (
+            not central_host_id or not central_host_username
+        ):
+            utils.log_and_raise_error(
+                "SSH connection requires both 'central_host_id' and 'central_host_username'.",
+                ConfigError,
+            )
+        elif connection_method == "aws" and not aws_bucket_name:
+            utils.log_and_raise_error(
+                "AWS connection requires 'aws_bucket_name' to be specified.",
+                ConfigError,
+            )
+        elif connection_method == "gdrive" and not gdrive_folder_id:
+            utils.log_and_raise_error(
+                "Google Drive connection requires 'gdrive_folder_id' to be specified.",
+                ConfigError,
+            )
+
         cfg = Configs(
             self.project_name,
             self._config_path,
@@ -967,19 +1109,34 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
+                "aws_bucket_name": aws_bucket_name,
+                "aws_region": aws_region,
+                "gdrive_folder_id": gdrive_folder_id,
             },
         )
 
-        cfg.setup_after_load()  # will raise error if fails
+        cfg.setup_after_load()
         self.cfg = cfg
 
         self.cfg.dump_to_file()
 
         self._set_attributes_after_config_load()
 
-        # This is just a placeholder rclone config that will suffice
-        # if central is a 'local filesystem'.
-        self._setup_rclone_central_local_filesystem_config()
+        if connection_method == "local_filesystem":
+            self._setup_rclone_central_local_filesystem_config()
+        elif connection_method == "ssh":
+            self._setup_rclone_central_ssh_config(log=True)
+        elif connection_method == "aws":
+            self._setup_rclone_central_aws_config(log=True)
+        elif connection_method == "gdrive":
+            utils.log_and_message(
+                "Google Drive connection requires interactive setup. "
+                "Run setup_gdrive_connection() after config initialization."
+            )
+        elif connection_method is None:
+            pass
+        else:
+            self._setup_rclone_central_local_filesystem_config()
 
         utils.log_and_message(
             "Configuration file has been saved and "
