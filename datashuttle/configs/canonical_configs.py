@@ -39,9 +39,16 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal["ssh", "local_filesystem"]],
+        "connection_method": Optional[
+            Literal["ssh", "local_filesystem", "aws", "gdrive"]
+        ],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
+        # AWS S3 specific configs
+        "aws_bucket_name": Optional[str],
+        "aws_region": Optional[str],
+        # Google Drive specific configs
+        "gdrive_folder_id": Optional[str],
     }
 
     return canonical_configs

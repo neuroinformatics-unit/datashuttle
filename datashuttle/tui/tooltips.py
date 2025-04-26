@@ -65,6 +65,51 @@ def get_tooltip(id: str) -> str:
             "to a project folder, possibly on a mounted drive.\n\n"
         )
 
+    # AWS radiobutton
+    elif id == "#configs_aws_radiobutton":
+        tooltip = (
+            "Use AWS S3 when planning to store data in an Amazon S3 bucket."
+        )
+
+    # GDrive radiobutton
+    elif id == "#configs_gdrive_radiobutton":
+        tooltip = "Use Google Drive when planning to store data in a Google Drive folder."
+
+    # AWS specific inputs
+    elif id == "#configs_aws_bucket_name_input":
+        tooltip = "The name of the S3 bucket to use for central storage."
+
+    elif id == "#configs_aws_region_input":
+        tooltip = "The AWS region where the bucket is located (e.g., us-east-1). Optional if using default credentials."
+
+    elif id == "#configs_setup_aws_connection_button":
+        tooltip = "Configure Rclone for accessing your AWS S3 bucket."
+
+    # GDrive specific inputs
+    elif id == "#configs_gdrive_folder_id_input":
+        tooltip = "The ID of the Google Drive folder to use as the root for this project. Found in the folder's URL."
+
+    elif id == "#configs_setup_gdrive_connection_button":
+        tooltip = "Start interactive setup to authenticate with Google Drive."
+
+    # Central path tooltips for different connection methods
+    elif id == "config_central_path_input_mode-aws":
+        tooltip = (
+            "Optional: A path prefix within the S3 bucket.\n\n"
+            "If left empty, project data will be stored at the root of the bucket.\n\n"
+            "e.g. myproject/data"
+        )
+
+    elif id == "config_central_path_input_mode-gdrive":
+        tooltip = (
+            "Optional: A path relative to the specified Google Drive folder ID.\n\n"
+            "If left empty, project data will be stored directly in the folder specified by the ID.\n\n"
+            "e.g. data/raw"
+        )
+
+    elif id == "config_central_path_input_mode-none":
+        tooltip = "Central path is not applicable when in local-only mode."
+
     # Settings
     # -------------------------------------------------------------------------
 

@@ -28,6 +28,52 @@ def requires_ssh_configs(func):
     return wrapper
 
 
+def requires_aws_configs(func):
+    """
+    Decorator to check AWS configs are loaded. Used on Mainwindow class
+    methods only as first arg is assumed to be self (containing cfgs)
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if (
+            not args[0].cfg["aws_bucket_name"]
+            or not args[0].cfg["aws_region"]
+            or not args[0].cfg["aws_access_key_id"]
+            or not args[0].cfg["aws_secret_access_key"]
+        ):
+            log_and_raise_error(
+                "Cannot setup AWS connection, 'aws_bucket_name', 'aws_region', "
+                "'aws_access_key_id' or 'aws_secret_access_key' is not set in "
+                "the configuration file.",
+                ConfigError,
+            )
+        else:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
+def requires_gdrive_configs(func):
+    """
+    Decorator to check Google Drive configs are loaded. Used on Mainwindow class
+    methods only as first arg is assumed to be self (containing cfgs)
+    """
+
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        if not args[0].cfg["gdrive_folder_id"]:
+            log_and_raise_error(
+                "Cannot setup Google Drive connection, 'gdrive_folder_id' "
+                "is not set in the configuration file.",
+                ConfigError,
+            )
+        else:
+            return func(*args, **kwargs)
+
+    return wrapper
+
+
 def check_configs_set(func):
     """
     Check that configs have been loaded (i.e.

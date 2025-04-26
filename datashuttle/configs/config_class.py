@@ -60,6 +60,8 @@ class Configs(UserDict):
         self.hostkeys_path: Path
         self.ssh_key_path: Path
         self.project_metadata_path: Path
+        self.aws_config_path: Path
+        self.gdrive_config_path: Path
 
     def setup_after_load(self) -> None:
         load_configs.convert_str_and_pathlib_paths(self, "str_to_path")
@@ -227,7 +229,9 @@ class Configs(UserDict):
         }
 
     def init_paths(self) -> None:
-        """"""
+        """
+        Initialize paths for configuration files and logs.
+        """
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
         datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(
@@ -235,10 +239,16 @@ class Configs(UserDict):
         )
 
         self.ssh_key_path = datashuttle_path / f"{self.project_name}_ssh_key"
-
         self.hostkeys_path = datashuttle_path / "hostkeys"
-
         self.logging_path = self.make_and_get_logging_path()
+
+        # Add paths for AWS and Google Drive configuration
+        self.aws_config_path = (
+            datashuttle_path / f"{self.project_name}_aws_config"
+        )
+        self.gdrive_config_path = (
+            datashuttle_path / f"{self.project_name}_gdrive_config"
+        )
 
     def make_and_get_logging_path(
         self,

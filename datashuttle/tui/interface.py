@@ -411,7 +411,7 @@ class Interface:
 
         self.project._update_persistent_setting("tui", self.tui_settings)
 
-    # Setup SSH
+    # Setup SSH, AWS, GDRIVE
     # ----------------------------------------------------------------------------------
 
     def get_central_host_id(self) -> str:
@@ -493,3 +493,82 @@ class Interface:
 
         except BaseException as e:
             return False, str(e)
+
+    # AWS Methods
+    def setup_rclone_aws_config(self) -> InterfaceOutput:
+        """
+        Setup the AWS S3 Rclone configuration using the project's
+        bucket name and region settings.
+        """
+        try:
+            from datashuttle.utils import aws
+
+            self.project._setup_rclone_central_aws_config(log=False)
+
+            success = aws.verify_aws_credentials_core(self.project.cfg)
+
+            if success:
+                return True, None
+            else:
+                return False, (
+                    "AWS configuration created but connection verification failed. "
+                    "Check your AWS credentials and bucket configuration."
+                )
+
+        except BaseException as e:
+            return False, str(e)
+
+    def verify_aws_connection(self) -> InterfaceOutput:
+        """
+        Verify that AWS credentials are working by attempting to
+        list contents of the configured bucket.
+        """
+        try:
+            from datashuttle.utils import aws
+
+            success = aws.verify_aws_credentials_with_logging(
+                self.project.cfg, message_on_successful_connection=False
+            )
+
+            if success:
+                return True, "AWS connection verified successfully."
+            else:
+                return (
+                    False,
+                    "Could not connect to AWS. Check credentials and bucket name.",
+                )
+
+        except BaseException as e:
+            return False, str(e)
+
+    # Google Drive Methods
+    def setup_rclone_gdrive_config(self) -> InterfaceOutput:
+        """
+        Provide instructions for Google Drive Rclone configuration setup.
+        Because GDrive setup requires interactive authentication in a browser,
+        this primarily provides the command to run.
+        """
+        try:
+            from datashuttle.utils import gdrive
+
+            gdrive.setup_gdrive_with_logging(self.project.cfg, log=False)
+
+            command = gdrive.get_gdrive_setup_command(self.project.cfg)
+
+            return True, command
+
+        except BaseException as e:
+            return False, str(e)
+
+    def verify_gdrive_connection(self) -> InterfaceOutput:
+        """
+        Enhanced verification with better error reporting
+        """
+        try:
+            from datashuttle.utils import gdrive
+
+            success, message = gdrive.attempt_gdrive_connect(self.project.cfg)
+            return success, message
+
+        except BaseException as e:
+            return False, f"Verification error: {str(e)}"
