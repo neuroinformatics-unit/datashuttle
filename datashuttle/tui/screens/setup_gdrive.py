@@ -3,15 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    import paramiko
     from textual.app import ComposeResult
+
     from datashuttle.tui.interface import Interface
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
 from textual.widgets import (
     Button,
-    Input,
     Static,
 )
 
@@ -30,7 +29,6 @@ class SetupGdriveScreen(ModalScreen):
         super().__init__()
         self.interface = interface
         self.stage = 0
-
 
     def compose(self) -> ComposeResult:
         yield Container(
@@ -52,11 +50,9 @@ class SetupGdriveScreen(ModalScreen):
             id="setup_gdrive_screen_container",
         )
 
-
     def on_mount(self) -> None:
         # Hide the reset button initially
         self.query_one("#setup_gdrive_reset_button").visible = False
-
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -92,7 +88,6 @@ class SetupGdriveScreen(ModalScreen):
             elif self.stage == 3:
                 self.dismiss(True)
 
-
     def explain_gdrive_interactive_setup(self) -> None:
         """
         Explain to the user that Google Drive setup requires
@@ -109,7 +104,6 @@ class SetupGdriveScreen(ModalScreen):
 
         self.query_one("#messagebox_message_label").update(message)
         self.stage += 1
-
 
     def show_gdrive_setup_command(self) -> None:
         """
@@ -132,7 +126,6 @@ class SetupGdriveScreen(ModalScreen):
         self.query_one("#setup_gdrive_ok_button").label = "Verify"
         self.query_one("#setup_gdrive_reset_button").visible = True
         self.stage += 1
-
 
     def verify_gdrive_connection(self) -> None:
         """

@@ -3,7 +3,6 @@ from typing import Dict, Literal, Tuple, Union
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import rclone, utils
 from datashuttle.utils.custom_exceptions import ConfigError
-from typing import Literal
 
 TopLevelFolder = Literal["rawdata", "derivatives"]
 
@@ -102,7 +101,10 @@ def reset_gdrive_config(cfg: Configs) -> Tuple[bool, str]:
         rclone.call_rclone(
             f"config delete {rclone_config_name}", pipe_std=True
         )
-        return True, "Google Drive configuration reset successfully. Please set up the connection again."
+        return (
+            True,
+            "Google Drive configuration reset successfully. Please set up the connection again.",
+        )
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
 
@@ -147,7 +149,9 @@ def attempt_gdrive_connect(cfg: Configs) -> Tuple[bool, str]:
         return False, f"Error during connection attempt: {str(e)}"
 
 
-def verify_with_retry(cfg: Configs, attempts: int = 3, delay: int = 1) -> Tuple[bool, str]:
+def verify_with_retry(
+    cfg: Configs, attempts: int = 3, delay: int = 1
+) -> Tuple[bool, str]:
     """
     Try verification multiple times with delay, to handle timing issues
     where the config may take a moment to be fully available.
@@ -161,7 +165,7 @@ def verify_with_retry(cfg: Configs, attempts: int = 3, delay: int = 1) -> Tuple[
 
         if attempt < attempts - 1:
             time.sleep(delay)
-    
+
     return False, message  # Return last message if all attempts fail
 
 
@@ -247,7 +251,6 @@ def get_drive_usage(cfg: Configs) -> Tuple[bool, Union[Dict, str]]:
         }
     except Exception as e:
         return False, f"Failed to parse Drive size information: {str(e)}"
-
 
 
 def verify_file_integrity(

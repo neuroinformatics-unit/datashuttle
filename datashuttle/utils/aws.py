@@ -57,7 +57,10 @@ def reset_aws_config(cfg: Configs) -> Tuple[bool, str]:
         rclone.call_rclone(
             f"config delete {rclone_config_name}", pipe_std=True
         )
-        return True, "AWS configuration reset successfully. Please set up the connection again."
+        return (
+            True,
+            "AWS configuration reset successfully. Please set up the connection again.",
+        )
     except Exception as e:
         return False, f"Error resetting configuration: {str(e)}"
 
@@ -255,7 +258,7 @@ def setup_aws_rclone_config_with_logging(
             f"Error details: {str(e)}",
             RuntimeError,
         )
-        
+
 
 def get_aws_connection_health(cfg: Configs) -> Dict:
     """
