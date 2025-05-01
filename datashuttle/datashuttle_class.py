@@ -1457,7 +1457,7 @@ class DataShuttle:
         """
         folders.create_folders(self.cfg.project_metadata_path, log=False)
 
-    def _setup_rclone_central_ssh_config(self, log: bool) -> None: #449
+    def _setup_rclone_central_ssh_config(self, log: bool) -> None:  # 449
         """
         1. Set up RClone SSH config.
         2. Check write permissions on central_path using the same SSH connection.
@@ -1469,7 +1469,9 @@ class DataShuttle:
             log=log,
         )
 
-        if not ssh.check_write_permissions(self.cfg, self.cfg["central_path"], log=log):
+        if not ssh.check_write_permissions(
+            self.cfg, self.cfg["central_path"], log=log
+        ):
             raise PermissionError(
                 f"Cannot write to central path: {self.cfg['central_path']}\n"
             )
