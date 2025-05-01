@@ -1,9 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
-    from datashuttle.utils.custom_types import DisplayMode, TopLevelFolder
+    from datashuttle.utils.custom_types import (
+        DisplayMode,
+        TopLevelFolder,
+    )
+
 from pathlib import Path
 from typing import (
     Optional,
@@ -20,10 +24,11 @@ from datashuttle.utils import (
 
 def quick_validate_project(
     project_path: str | Path,
-    top_level_folder: Optional[TopLevelFolder] = None,
+    top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
+    strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
-):
+) -> List[str]:
     """
     Perform validation on the project. This checks the subject
     and session level folders to ensure there are not
@@ -37,12 +42,20 @@ def quick_validate_project(
         name, and hold a "rawdata" or "derivatives" folder.
 
     top_level_folder : TopLevelFolder
-        The top-level folder ("rawdata" or "derivatives" to
+        The top-level folder ("rawdata" or "derivatives") to
         perform validation. If `None`, both are checked.
 
     display_mode : DisplayMode
         The validation issues are displayed as ``"error"`` (raise error)
         ``"warn"`` (show warning) or ``"print"``.
+
+    strict_mode: bool
+        If `True`, only allow NeuroBlueprint-formatted folders to exist in
+        the project. By default, non-NeuroBlueprint folders (e.g. a folder
+        called 'my_stuff' in the 'rawdata') are allowed, and only folders
+        starting with sub- or ses- prefix are checked. In `Strict Mode`,
+        any folder not prefixed with sub-, ses- or a valid datatype will
+        raise a validation issue.
 
     name_templates : Dict
         A dictionary of templates for subject and session name
@@ -55,27 +68,10 @@ def quick_validate_project(
     # at least one top-level folder
     if not project_path.is_dir():
         raise FileNotFoundError(
-            f"No file or folder found at `project_path`: {project_path}"
-        )
-    if (
-        not (project_path / "rawdata").is_dir()
-        or not (project_path / "derivatives").is_dir()
-    ):
-        raise FileNotFoundError(
-            "`project_path` must contain a 'rawdata' or 'derivatives' folder."
+            f"Cannot perform validation. No file or folder found at `project_path`: {project_path}"
         )
 
-    # Format the top-level folders into a list
-    rawdata_and_derivatives = ["rawdata", "derivatives"]
-
-    if top_level_folder is None:
-        top_level_folders_to_validate = rawdata_and_derivatives
-    else:
-        if top_level_folder not in rawdata_and_derivatives:
-            raise ValueError(
-                f"`top_level_folder must be one of: {rawdata_and_derivatives}"
-            )
-        top_level_folders_to_validate = [top_level_folder]
+    top_level_folders_to_validate = _format_top_level_folder(top_level_folder)
 
     # Create some mock configs for the validation call,
     # then for each top-level folder, run the validation
@@ -90,11 +86,37 @@ def quick_validate_project(
         input_dict=placeholder_configs,
     )
 
-    for folder in top_level_folders_to_validate:
-        validation.validate_project(
-            cfg=cfg,
-            top_level_folder=folder,  # type: ignore
-            local_only=True,
-            display_mode=display_mode,
-            name_templates=name_templates,
-        )
+    error_messages = validation.validate_project(
+        cfg=cfg,
+        top_level_folder_list=top_level_folders_to_validate,
+        include_central=False,
+        display_mode=display_mode,
+        name_templates=name_templates,
+        strict_mode=strict_mode,
+    )
+
+    return error_messages
+
+
+def _format_top_level_folder(
+    top_level_folder: TopLevelFolder | None,
+) -> List[TopLevelFolder]:
+    """
+    Take a `top_level_folder` ("rawdata" or "derivatives" str) and
+    convert to list, if `None`, convert it to a list
+    of both possible top-level folders.
+    """
+    rawdata_and_derivatives: List[TopLevelFolder] = ["rawdata", "derivatives"]
+
+    formatted_top_level_folders: List[TopLevelFolder]
+
+    if top_level_folder is None:
+        formatted_top_level_folders = rawdata_and_derivatives
+    else:
+        if top_level_folder not in rawdata_and_derivatives:
+            raise ValueError(
+                f"`top_level_folder must be one of: {rawdata_and_derivatives}"
+            )
+        formatted_top_level_folders = [top_level_folder]
+
+    return formatted_top_level_folders

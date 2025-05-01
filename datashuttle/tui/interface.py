@@ -7,7 +7,6 @@ if TYPE_CHECKING:
     import paramiko
 
     from datashuttle.configs.config_class import Configs
-    from datashuttle.tui.app import App
     from datashuttle.utils.custom_types import InterfaceOutput, TopLevelFolder
 
 from datashuttle import DataShuttle
@@ -33,7 +32,7 @@ class Interface:
 
     def __init__(self) -> None:
 
-        self.project: App
+        self.project: DataShuttle
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
 
@@ -178,6 +177,39 @@ class Interface:
                 "format_sub": format_sub,
                 "format_ses": format_ses,
             }
+
+        except BaseException as e:
+            return False, str(e)
+
+    def validate_project(
+        self,
+        top_level_folder: list[str] | None,
+        include_central: bool,
+        strict_mode: bool,
+    ) -> tuple[bool, list[str] | str]:
+        """
+        Wrap the validate project function. This returns a list of validation
+        errors (empty if there are none).
+
+        Parameters
+        ----------
+
+        top_level_folder
+            The "rawdata" or "derivatives" folder to validate. If `None`, both
+            will be validated.
+        include_central
+            If `True`, the central project is also validated.
+        strict_mode
+            If `True`, validation will be run in strict mode.
+        """
+        try:
+            results = self.project.validate_project(
+                top_level_folder=top_level_folder,
+                display_mode="print",  # unused
+                include_central=include_central,
+                strict_mode=strict_mode,
+            )
+            return True, results
 
         except BaseException as e:
             return False, str(e)
@@ -404,7 +436,9 @@ class Interface:
     ) -> InterfaceOutput:
         try:
             next_sub = self.project.get_next_sub(
-                top_level_folder, return_with_prefix=True, local_only=True
+                top_level_folder,
+                return_with_prefix=True,
+                include_central=False,
             )
             return True, next_sub
         except BaseException as e:
@@ -416,7 +450,10 @@ class Interface:
 
         try:
             next_ses = self.project.get_next_ses(
-                top_level_folder, sub, return_with_prefix=True, local_only=True
+                top_level_folder,
+                sub,
+                return_with_prefix=True,
+                include_central=False,
             )
             return True, next_ses
         except BaseException as e:

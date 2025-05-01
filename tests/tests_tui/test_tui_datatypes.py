@@ -181,11 +181,8 @@ class TestDatatypesTUI(TuiBase):
             spy_transfer_func = mocker.spy(
                 pilot.app.screen.interface.project, "upload_custom"
             )
-            await self.scroll_to_click_pause(
-                pilot, "#transfer_transfer_button"
-            )
-            await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
-            await self.close_messagebox(pilot)
+
+            await self.click_and_await_transfer(pilot)
 
             _, kwargs = spy_transfer_func.call_args_list[0]
             assert kwargs["sub_names"] == ["sub-001"]

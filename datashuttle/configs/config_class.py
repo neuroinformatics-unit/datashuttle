@@ -153,7 +153,7 @@ class Configs(UserDict):
         if isinstance(sub_folders, list):
             sub_folders_str = "/".join(sub_folders)
         else:
-            sub_folders_str = cast(str, sub_folders)
+            sub_folders_str = cast("str", sub_folders)
 
         sub_folders_path = Path(sub_folders_str)
 
@@ -240,7 +240,9 @@ class Configs(UserDict):
 
         self.logging_path = self.make_and_get_logging_path()
 
-    def make_and_get_logging_path(self) -> Path:
+    def make_and_get_logging_path(
+        self,
+    ) -> Path:
         """
         Build (and create if does not exist) the path where
         logs are stored.
