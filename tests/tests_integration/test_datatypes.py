@@ -1,4 +1,5 @@
 import os
+import random
 
 import pytest
 import test_utils
@@ -63,9 +64,9 @@ class TestDatatypes(BaseTest):
 
         # Unfortunately on Windows we are encountering 'The command line is too long'
         # and so cannot test against all datatypes here.
-        some_narrow_datatypes = canonical_configs.quick_get_narrow_datatypes()[
-            :10
-        ]
+        some_narrow_datatypes = random.sample(
+            canonical_configs.quick_get_narrow_datatypes(), 10
+        )
 
         datatypes_used = self.get_narrow_only_datatypes_used(used=False)
         for key in some_narrow_datatypes:

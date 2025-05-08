@@ -1551,13 +1551,10 @@ class DataShuttle:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]
 
-        # Handle conversion to 'narrow datatype' v0.6.0
-        if not isinstance(
-            settings["tui"]["create_checkboxes_on"]["behav"], dict
-        ):
-            canonical_configs.in_place_update_settings_for_narrow_datatype(
-                settings
-            )
+        # Handle updating with narrow datatypes
+        canonical_configs.in_place_update_narrow_datatypes_if_required(
+            settings
+        )
 
     def _check_top_level_folder(self, top_level_folder):
         """
