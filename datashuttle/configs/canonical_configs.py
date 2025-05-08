@@ -351,7 +351,7 @@ def quick_get_narrow_datatypes():
     return flat_narrow_datatypes
 
 
-def in_place_update_settings_for_narrow_datatype(settings: dict):
+def in_place_update_narrow_datatypes_if_required(user_settings: dict):
     """
     In versions < v0.6.0, only 'broad' datatypes were implemented
     and available in the TUI. Since, 'narrow' datatypes are introduced
@@ -360,8 +360,39 @@ def in_place_update_settings_for_narrow_datatype(settings: dict):
 
     This function converts the old format to the new format so that
     all broad datatype settings (on / off) are maintained in
-    then new version.
+    then new version. It does this by copying the full default
+    parameters and overwriting them with the available user-set
+    defaults. This is the best approach, as it maintains the
+    order of the datatypes (otherwise, inserting non-existing
+    datatypes into the user datatype dict results in the wrong order).
+
     """
+    has_narrow_datatypes = isinstance(
+        user_settings["tui"]["create_checkboxes_on"]["behav"], dict
+    )  # added 'narrow datatype' v0.6.0 with major refactor to dict
+
+    all_narrow_datatypes = quick_get_narrow_datatypes()
+
+    is_not_missing_narrow_datatypes = all(
+        [
+            dtype in all_narrow_datatypes
+            for dtype in user_settings["tui"]["create_checkboxes_on"]
+        ]
+    )
+
+    if is_not_missing_narrow_datatypes:
+        assert all(
+            [
+                dtype in all_narrow_datatypes
+                for dtype in user_settings["tui"]["transfer_checkboxes_on"]
+            ]
+        )
+
+    if has_narrow_datatypes and is_not_missing_narrow_datatypes:
+        return
+
+    # Copy TUI defaults that include narrow-datatype defaults
+
     canonical_tui_configs = get_tui_config_defaults()
 
     new_create_checkbox_configs = copy.deepcopy(
@@ -371,18 +402,35 @@ def in_place_update_settings_for_narrow_datatype(settings: dict):
         canonical_tui_configs["tui"]["transfer_checkboxes_on"]
     )
 
+    # Copy the pre-existing settings for broad datatypes
     for key in ["behav", "ephys", "funcimg", "anat"]:
-        new_create_checkbox_configs[key]["on"] = settings["tui"][
+        new_create_checkbox_configs[key]["on"] = user_settings["tui"][
             "create_checkboxes_on"
         ][key]
-        new_transfer_checkbox_configs[key]["on"] = settings["tui"][
+        new_transfer_checkbox_configs[key]["on"] = user_settings["tui"][
             "transfer_checkboxes_on"
         ][key]
 
+    # Copy the pre-existing settings for the transfer checkboxes
     for key in ["all", "all_datatype", "all_non_datatype"]:
-        new_transfer_checkbox_configs[key]["on"] = settings["tui"][
+        new_transfer_checkbox_configs[key]["on"] = user_settings["tui"][
             "transfer_checkboxes_on"
         ][key]
 
-    settings["tui"]["create_checkboxes_on"] = new_create_checkbox_configs
-    settings["tui"]["transfer_checkboxes_on"] = new_transfer_checkbox_configs
+    for narrow_datatype in all_narrow_datatypes:
+        if (
+            narrow_datatype
+            not in user_settings["tui"]["create_checkboxes_on"].keys()
+        ):
+            user_settings["tui"][
+                "create_checkboxes_on"
+            ] = new_create_checkbox_configs
+
+    for narrow_datatype in all_narrow_datatypes:
+        if (
+            narrow_datatype
+            not in user_settings["tui"]["transfer_checkboxes_on"].keys()
+        ):
+            user_settings["tui"][
+                "transfer_checkboxes_on"
+            ] = new_transfer_checkbox_configs
