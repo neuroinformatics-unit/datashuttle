@@ -310,7 +310,8 @@ def get_narrow_datatypes():
     The mapping between broad and narrow datatypes is required for validation.
     """
     return {
-        "ephys": ["ecephys", "icephys"],
+        "behav": ["motion"],
+        "ephys": ["ecephys", "icephys", "emg"],
         "funcimg": ["cscope", "f2pe", "fmri", "fusi"],
         "anat": [
             "2pe",
