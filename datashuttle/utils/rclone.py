@@ -309,7 +309,6 @@ def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
     case is untested and a test case is required. Once the test case is
     obtained this should most likely be moved to tests.
     """
-    breakpoint()
     assert result[1] == " ", (
         "`rclone check` output does not contain a "
         "space as the second character`."
