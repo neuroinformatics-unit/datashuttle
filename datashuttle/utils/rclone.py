@@ -23,6 +23,19 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     pipe_std: if True, do not output anything to stdout.
     """
     command = "rclone " + command
+    if pipe_std:
+        output = subprocess.run(
+            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+        )
+    else:
+        output = subprocess.run(command, shell=True)
+
+    return output
+
+
+def call_rclone_through_script(command: str) -> CompletedProcess:
+    """ """
+    command = "rclone " + command
 
     system = platform.system()
 
@@ -42,15 +55,13 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
         if system != "Windows":
             os.chmod(tmp_script_path, 0o700)
 
-        if pipe_std:
-            output = subprocess.run(
-                [tmp_script_path],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                shell=False,
-            )
-        else:
-            output = subprocess.run([tmp_script_path], shell=False)
+        output = subprocess.run(
+            [tmp_script_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,
+        )
+
     finally:
         os.remove(tmp_script_path)
 
@@ -216,19 +227,17 @@ def transfer_data(
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
     if upload_or_download == "upload":
-        output = call_rclone(
+        output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
             f'{central_filepath}" {extra_arguments}',
-            pipe_std=True,
         )
 
     elif upload_or_download == "download":
-        output = call_rclone(
+        output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:'
             f'{central_filepath}" "{local_filepath}"  {extra_arguments}',
-            pipe_std=True,
         )
 
     return output
@@ -299,6 +308,7 @@ def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
     case is untested and a test case is required. Once the test case is
     obtained this should most likely be moved to tests.
     """
+    breakpoint()
     assert result[1] == " ", (
         "`rclone check` output does not contain a "
         "space as the second character`."
