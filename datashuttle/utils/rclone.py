@@ -24,38 +24,35 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     """
     command = "rclone " + command
 
-    if platform.system() == "Windows":
-        # Write command to a temporary .bat script
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".bat", delete=False
-        ) as tmp_script:
-            tmp_script.write(command)
-            tmp_script_path = tmp_script.name
+    system = platform.system()
 
-        try:
-            if pipe_std:
-                output = subprocess.run(
-                    [tmp_script_path],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    shell=True,
-                )
-            else:
-                output = subprocess.run([tmp_script_path], shell=True)
-        finally:
-            os.remove(tmp_script_path)  # Clean up temp script
-
+    if system == "Windows":
+        suffix = ".bat"
     else:
-        # On non-Windows, just run it normally
+        suffix = ".sh"
+
+    # Write the command to a temporary script file
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=suffix, delete=False
+    ) as tmp_script:
+        tmp_script.write(command)
+        tmp_script_path = tmp_script.name
+
+    try:
+        if system != "Windows":
+            os.chmod(tmp_script_path, 0o700)
+
         if pipe_std:
             output = subprocess.run(
-                command,
+                [tmp_script_path],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                shell=True,
+                shell=False,
             )
         else:
-            output = subprocess.run(command, shell=True)
+            output = subprocess.run([tmp_script_path], shell=False)
+    finally:
+        os.remove(tmp_script_path)
 
     return output
 
