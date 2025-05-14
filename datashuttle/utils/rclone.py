@@ -43,6 +43,7 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
         suffix = ".bat"
     else:
         suffix = ".sh"
+        command = "#!/bin/bash\n" + command
 
     # Write the command to a temporary script file
     with tempfile.NamedTemporaryFile(
