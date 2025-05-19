@@ -40,7 +40,7 @@ Now, let's get started with folder creation!
 ## Creating project folders
 
 The project-name folder is located at the **local path**
-specified when [setting up the project](set-up-configs-for-transfer_).
+specified when [setting up the project](set-up-a-project-for-transfer).
 
 We will now create subject, session and
 datatype folders within a `rawdata` top-level folder.

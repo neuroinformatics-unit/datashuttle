@@ -1,4 +1,4 @@
-(set-up-a-project)=
+(set-up-a-project_)=
 ## Set up a Project
 
 ``datashuttle`` can be used to create, validate and transfer

@@ -2,10 +2,10 @@
 
 # Get Started
 
-See [Set up a project](set-up-a-project) to set up the configurations for a managed project,
-for folder creation, validation and transfer.
+See [Set up a project](set-up-a-project_) to set up `datashuttle` to manage a new or existing
+project for folder creation, validation and transfer.
 
-Alternatively, to validate an existing [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
+Alternatively, to quickly validate an existing [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
 project without setting it up as a managed project, see [Validate an existing project](quick-validate-projects).
 
 
@@ -50,7 +50,7 @@ Start a new project or manage an existing project.
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-A full walk-through all of ``datashuttle``'s functionality.
+A complete walkthrough all of ``datashuttle``'s functionality.
 
 :::
 

@@ -4,7 +4,7 @@
 :::{note}
 
 This guide assumes that you have already set up your project
-for data transfer. Please see [set up a project for transfer](set-up-a-project)
+for data transfer. Please see [set up a project for transfer](set-up-a-project_)
 for details.
 
 :::

@@ -3,7 +3,7 @@
 # Acquisition Script
 
 This script shows how Laura Schwartz (O'Keefe Lab, [Sainsbury Wellcome Centre](https://www.sainsburywellcome.org/web/))
-uses ``datashuttle`` to create project folders during acquisition of a behavioural
+uses ``datashuttle`` to create project folders during the acquisition of a behavioural
 task in mice.
 
 ```python

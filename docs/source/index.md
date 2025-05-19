@@ -36,7 +36,7 @@ Get started with ``datashuttle``.
 :link: pages/user_guides/index
 :link-type: doc
 
-Explore ``datashuttle``'s features
+Explore ``datashuttle``'s features.
 :::
 
 :::{grid-item-card} Examples

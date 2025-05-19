@@ -33,7 +33,7 @@ NeuroBlueprint-formatted projects at once.
 
 ```{toctree}
 :maxdepth: 2
-:caption: how to
+:caption: Examples
 :hidden:
 
 acquisition-script

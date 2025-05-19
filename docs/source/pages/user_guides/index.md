@@ -3,7 +3,7 @@
 (user-guides)=
 # User Guides
 
-These guides assume a managed project has already been set up (if not, see the [Set up a project](set-up-a-project) guide).
+These guides assume a managed project has already been set up. If not, see the [Set up a project](set-up-a-project_) guide.
 
 ::::{grid} 1 1 2 2
 :gutter: 4
@@ -37,7 +37,7 @@ Transfer data between acquisition and storage machines.
 :link: update-configs
 :link-type: doc
 
-Change an existing project's configurations
+Modify an existing project's configurations
 :::
 
 
@@ -45,7 +45,7 @@ Change an existing project's configurations
 :link: read-logs
 :link-type: doc
 
-Access full logs of all ``datashuttle``'s actions
+Access logs of all ``datashuttle``'s actions.
 :::
 
 
@@ -53,14 +53,15 @@ Access full logs of all ``datashuttle``'s actions
 :link: use-name-templates
 :link-type: doc
 
-A handy feature for template subject and session names.
+Use templates for subject and session names.
+
 :::
 
 ::::
 
 ```{toctree}
 :maxdepth: 2
-:caption: how to
+:caption: User Guides
 :hidden:
 
 validate
