@@ -6,12 +6,11 @@
 to run.
 
 The easiest way to install ``datashuttle`` is through the Python package manager
-[conda](https://docs.conda.io/en/latest/). However,
-installation via `pip` is also supported.
+[conda](https://docs.conda.io/en/latest/). However, installation with `pip` is also supported.
 
 :::{warning}
 ``datashuttle`` is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
-get in contact if you experience any bugs or unexpected behaviour.
+get in contact if you encounter any bugs or unexpected behaviour.
 :::
 
 ## Installation instructions
@@ -73,7 +72,7 @@ Next, clone the ``datashuttle``
 to get the latest development version.
 
 To install ``datashuttle`` and its developer dependencies,
-run the follow command from inside the repository:
+run the following command from inside the repository:
 
 ```sh
 pip install -e .[dev]  # works on most shells

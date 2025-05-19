@@ -53,11 +53,11 @@ If you are using Linux, the native terminal will work without issue.
 :::{tab-item} Windows
 
 For Windows, we recommend using
-[Terminal](https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&hl=en-gb&gl=GB)—Window's
+[Windows Terminal](https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&hl=en-gb&gl=GB)—Windows'
 own high-powered terminal available for free on the
 Microsoft Store.
 
-``datashuttle`` will run in Command Prompt (`cmd.exe`), Powershell (`ps.exe`)
+``datashuttle`` will run in Command Prompt (`cmd.exe`), PowerShell (`ps.exe`)
 or [Anaconda Prompt](https://docs.anaconda.com/free/anaconda/getting-started/index.html),
 but may display with rendering errors.
 
