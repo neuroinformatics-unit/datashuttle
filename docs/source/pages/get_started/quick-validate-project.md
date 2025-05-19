@@ -2,13 +2,10 @@
 
 # Quickly Validate an Existing Project
 
-Datashuttle provides the functionality to validate an existing
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted project.
-All NeuroBlueprint issues will be flagged, including a filepath pointing to
-problematic folders.
-
-Below, we explore how to quickly validate a NeuroBlueprint-formatted
-project without setting up a full project in ``datashuttle``.
+``datashuttle`` can validate an existing
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted project given only the filepath.
+All [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) issues will be flagged along with the full filepath
+to any problematic folders.
 
 ::::{tab-set}
 
@@ -16,9 +13,9 @@ project without setting up a full project in ``datashuttle``.
 :sync: gui
 
 To quickly validate a project, start the terminal user interface with
-``datashuttle launch`` and click ``"Validate Project at Path"``.
+``datashuttle launch`` and click ``Validate Project at Path``.
 
-This will open the screen below. To validate an existing project,
+The screen below will show. To validate an existing project,
 enter the full filepath to the project folder in the top input box
 and click ``Validate``:
 
@@ -35,7 +32,7 @@ and click ``Validate``:
 <br>
 
 Any validation errors detected in the project will be displayed in the logging box.
-See ``Strict Mode`` below for key details on how the validation is performed.
+See ``Strict Mode`` below for details on how the validation is performed.
 
 **Options:**
 
@@ -43,11 +40,11 @@ Top level folder dropdown
 : The top-level folder to validate the folders within.
 
 Strict Mode
-: If `True`, only allow NeuroBlueprint-formatted folders to exist in
-the project. By default, non-NeuroBlueprint folders (e.g. a folder
-called 'my_stuff' in the 'rawdata') are allowed, and only folders
-starting with sub- or ses- prefix are checked. In `Strict Mode`,
-any folder not prefixed with sub-, ses- or a valid datatype will
+: If `True`, only [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders are allowed
+in the project. By default, non-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) folders (e.g. a folder
+called `my_stuff` in the `rawdata`) are allowed, and only folders
+starting with `sub-` or `ses-` prefix are checked. In `Strict Mode`,
+any folder not prefixed with `sub-`, `ses-` or a valid datatype will
 raise a validation issue.
 
 :::
@@ -68,8 +65,8 @@ quick_validate_project(
 
 ```
 
-In this case, display_mode=error will result in an error on the first encountered validation issue.
-Otherwise "warn" will show a python warning for all detected issues, while "print" will print directly to console.
+In this case, `display_mode=error` will result in an error on the first encountered validation issue.
+Otherwise, `"warn"` will show a python warning for all detected issues, while `"print"` will print directly to console.
 
 See the [](datashuttle.quick_validate_project) API documentation at the link,
 for full details of parameters including the important argument ``strict_mode``
@@ -78,3 +75,5 @@ that controls how validation is performed.
 :::
 
 ::::
+\
+More detail on validation options can be found in the [Validation](tutorial-validation) user guide.

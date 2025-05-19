@@ -1,6 +1,13 @@
 (getting-started-walkthrough)=
 ## Getting Started Walkthrough
 
+:::{note}
+
+This walkthrough was written at ``datashuttle`` version `0.3.0`. While the
+interface may look slightly different, core functionality remains the same.
+
+:::
+
 This tutorial will give a full introduction to managing
 a neuroscience project with ``datashuttle``.
 

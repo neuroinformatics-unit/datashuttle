@@ -45,7 +45,7 @@ formatting issues.
 Start a new project or manage an existing project.
 :::
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Full Walkthrough
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Walkthrough
 :link: getting-started
 :link-type: doc
 :class-img-top: tutorial-link-image

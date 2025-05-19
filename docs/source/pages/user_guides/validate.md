@@ -14,7 +14,8 @@ Below we will cover how to validate a datashuttle-managed project
 # Validating a local project
 
 Validation will highlight validation errors within a project. For example, consider
-``my_project``, which has a NeuroBlueprint error (a subject that does not have an integer value):
+``my_project``, which has a [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
+error (a subject that does not have an integer value):
 
 ```shell
 └── my_project/
@@ -54,7 +55,7 @@ for details on the options.
 
 Project validation can be run with the [](datashuttle.DataShuttle.validate_project) function.
 
-Violations of the NeuroBlueprint can be set to raise an error, be displayed as warnings or printed as output.
+Violations of the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) can be set to raise an error, be displayed as warnings or printed as output.
 They are also returned in a list of strings.
 
 ```python
@@ -71,7 +72,7 @@ error_messages = project.validate_project(
 # UserWarning: BAD_VALUE: The value for prefix sub in name sub-abc is not an integer. Path: <path to folder>
 ```
 
-This outputs any NeuroBlueprint validation as a warning.
+This outputs any [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) validation as a warning.
 
 The returned ``error_messages`` is a last of strings containing all validation errors, to be used if required e.g.:
 
@@ -81,7 +82,7 @@ print(error_messages)
 ```
 
 The options for `display_mode` and ``"error"``, ``"warn"`` and ``"print"``.
-For `"error"`, only the first  encountered NeuroBlueprint violation will be raised.
+For `"error"`, only the first  encountered [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) violation will be raised.
 
 :::
 
@@ -100,11 +101,10 @@ use ``strict_mode``.
 
 ## ``strict_mode``
 
-In strict-mode, all folders outside the
-``datatype`` ]()
-folder (e.g. ``"ephys"``) must be NeuroBlueprint-formatted.
+In strict-mode, all folders outside the ``datatype`` folder (e.g. ``"ephys"``)
+must be [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted.
 
-NeuroBlueprint does not require all folders in the project to be NeuroBlueprint-formatted ``sub-``, ``ses-`` or
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) does not require all folders in the project to be [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted ``sub-``, ``ses-`` or
 datatype folders.
 
 For example, ``some_other_folder``:
@@ -119,10 +119,10 @@ For example, ``some_other_folder``:
 ```
 
 However, this means it is hard to validate all folder names, as it is not possible to determine whether
-these are mistkaes e.g. ``rat-001`` or auxiliary folders. By default, ``datashuttle`` will only look for
+these are mistakes e.g. ``rat-001`` or auxiliary folders. By default, ``datashuttle`` will only look for
 ``sub-`` or ``ses-`` prefixed files to validate.
 
-In ``strict_mode``, non-NeuroBlueprint formatted folders are not allowed (except within datatype folders).
+In ``strict_mode``, non-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatted folders are not allowed (except within datatype folders).
 Therefore, any additional folders at the subject or session level will raise a validation error, for example:
 
 ```python
@@ -140,9 +140,9 @@ project.validate_project(
 
 Validation can be performed across all folders in projects in which data is transferred
 between a 'local' and 'central' machine. The validation will combine ``sub-`` and ``ses-``
-folders across 'local' and 'central' before validation. This is useful check against inconsistent value lengths
+folders across local and central before validation. This is useful check against inconsistent value lengths
 (e.g. `sub-001` vs `sub-02`) and duplicate names (e.g. ``sub-001`` and ``sub-001_date-20240101``) across
-the 'local' and 'central' project.
+the local and central project.
 
 To perform this type of validation, connection configurations [must be set](set-up-a-project-for-transfer).
 The ``include_central`` argument must be set to ``True``:

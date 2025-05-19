@@ -1,14 +1,13 @@
 (set-up-a-project_)=
 ## Set up a Project
 
-``datashuttle`` can be used to create, validate and transfer
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) projects. The first section will
-set up a local-only project that can manage creation
+The first section of this guide will
+set up a "local-only" project that can manage creation
 and validation of project folders. This requires
-only minimal configurations to get started.
+only minimal configuration to get started.
 
 To see how a datashuttle project can be set up for transfer,
-see the [Set up a project for transfer](set-up-a-project-for-transfer) section.
+visit [Set up a project for transfer](set-up-a-project-for-transfer) section.
 
 
 ::::{tab-set}
@@ -19,8 +18,8 @@ see the [Set up a project for transfer](set-up-a-project-for-transfer) section.
 Selecting `Make New Project` will take you to the project set up screen.
 
 Enter the name of your project, the path to your project folder and
-select `No connection (local only)` (note that the central-path options
-are now disabled).
+select `No connection (local only)` (note that the central-path option
+is now disabled).
 
 ```{image} /_static/screenshots/how-to-make-local-project-configs-dark.png
    :align: center
@@ -47,11 +46,6 @@ You will now be able to go to the project manager screen:
    :class: only-light
    :width: 900px
 ```
-<br>
-
-
-See the [create folders](how-to-create-folders) and [validate folders](tutorial-validation)
-for details on how to create and validate your project.
 
 :::
 
@@ -80,7 +74,7 @@ project.make_config_file(
 )
 
 ```
-
+\
 The project is now ready for use, and in future can be instantiated only
 with the line ``project = DataShuttle("my_project_name")`` (i.e. you will not
 have to set the `local_path` again).
@@ -102,24 +96,23 @@ New project folders can also be created in the local folder:
 project.create_folders("rawdata", "sub-001", "ses-001_@DATE@", datatype=["ephys", "behav"])
 ```
 
-see  [Create Folders](how-to-create-folders)  for more details.
-
 :::
 ::::
 
-
 Now, this project is ready for creating and validating
-folders to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) standard.
+folders to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) standard. See the [create folders](how-to-create-folders)
+and [validate folders](tutorial-validation) for details.
+
 If you would also like to transfer files to a central machine, see the next section.
 
 (set-up-a-project-for-transfer)=
 ## Set up a project for transfer
 
 Above, we have set up a ``datashuttle`` project by providing the **project name**
-and **local path**. For data transfer, transfer across the local filesystem or via SSH
-is supported. Therefore, we will need to provide:
+and **local path**. Transfer across the local filesystem or via SSH is supported.
+Therefore, we will need to provide:
 
-1) **central path**: location of the project on the central data storage machine.
+1) **central path**: location of the project on the central storage machine.
 2) Connection-specific settings (e.g. if using SSH).
 
 ```{image} /_static/datashuttle-overview-dark.png
@@ -312,7 +305,6 @@ Clicking `Save` will save these project configs. A button
 `Set up SSH Connection` will appear. Click to
 confirm the server ID and enter your password
 (you will only need to do this once).
-
 
 :::
 :::{tab-item} Python API
