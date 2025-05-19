@@ -2,7 +2,7 @@
 
 
 Contributions to ``datashuttle`` are strongly encouraged. If you would like to submit
-a bug fix or implement a new feature, please feel free to do so! We are a
+a bug fix or implement a new feature, please feel free to open an issue or pull request. We are a
 friendly bunch and happy to answer any questions before,
 during or after a contribution. See the [Contributing Guide](contributing.md) for more details.
 

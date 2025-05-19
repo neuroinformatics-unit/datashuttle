@@ -1,8 +1,7 @@
 (getting-started-walkthrough)=
+## Getting Started Walkthrough
 
-# Getting Started
-
-This tutorial will give a full introduction to starting
+This tutorial will give a full introduction to managing
 a neuroscience project with ``datashuttle``.
 
 We will highlight  ``datashuttle``'s key features by creating
@@ -28,7 +27,7 @@ as you would do at the end of a real acquisition session.
 Finally, we will download data from the central
 storage to a local machine, as you would do during analysis.
 
-## Installing ``datashuttle``
+### Installing ``datashuttle``
 
 The first step is to install ``datashuttle`` by following the instructions
 on the [How to Install](how-to-install) page.
@@ -75,7 +74,7 @@ for how to validate your project format.
 
 :::
 
-## Make a new project
+### Make a new project
 
 The first thing to do when using ``datashuttle`` on a new machine is
 to set up your project.
@@ -100,7 +99,7 @@ folder on our local machine for simplicity.
 :sync: gui
 
 Click `Make New Project` and you
-will be taken to the project setup page.
+will be taken to the project set up page.
 
 ```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
    :align: center
@@ -225,7 +224,7 @@ project.update_config_file(
 We are now ready to create our standardised project folders.
 :::
 ::::
-## Creating folders
+### Creating folders
 
 Let's imagine today is our first day of data collection,
 and we are acquiring  behaviour (`behav`) and electrophysiology (`ephys`) data.

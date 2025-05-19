@@ -1,10 +1,10 @@
 :html_theme.sidebar_secondary.remove:
 
-# Validating a Labs' projects
+# Validating a Lab's projects
 
 This example shows how Viktor Plattner (Akrami Lab, [Sainsbury Wellcome Centre](https://www.sainsburywellcome.org/web/)) validates
-all projects in the lab for NeuroBlueprint errors. This is scheduled to run once a week,
-logging if any errors have been introduced into a projects format.
+all projects in the lab at once, saving a log file of any detected NeuroBlueprint-formatting errors.
+This is scheduled to run once a week, catching if any formatting errors have been introduced into a project.
 
 
 ```bash

@@ -1,7 +1,7 @@
 
 # Update Configs
 
-The project configs can be updated at any time following the initial setup.
+The project configs can be updated at any time following the initial set up.
 
 ::::{tab-set}
 
@@ -27,7 +27,7 @@ Changing any config and clicking `Save` will  update the project
 configs on the local machine.
 
 If SSH configs are changed the connection may need to be
-[setup again](new-project-ssh).
+[set up again](new-project-ssh).
 
 :::
 
@@ -47,7 +47,7 @@ project.update_config_file(
 ```
 
 If SSH configs are changed the connection may need to be
-[setup again](new-project-ssh) with:
+[set up again](new-project-ssh) with:
 
 ```python
 project.setup_ssh_connection()

@@ -3,7 +3,8 @@
 # Acquisition Script
 
 This script shows how Laura Schwartz (O'Keefe Lab, [Sainsbury Wellcome Centre](https://www.sainsburywellcome.org/web/))
-uses datashuttle to help automate the creation of standardised project folders.
+uses ``datashuttle`` to create project folders during acquisition of a behavioural
+task in mice.
 
 ```python
 def get_file_path():
@@ -39,8 +40,8 @@ def get_file_path():
     comsp_id = input("Enter Conspecific ID: ")
 
     # print the start of your acquisition
-    start = datetime.now()
     print(datetime.now())
+
     # create the video file name
     file_name_video_1 = f"{exp_number}_{comsp_id}.avi"
 

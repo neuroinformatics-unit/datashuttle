@@ -13,8 +13,7 @@
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Using datashuttle to create project folders
-used in a behavioural-data acquisition script.
+Using ``datashuttle`` to create project folders in a behavioural-data acquisition script.
 
 :::
 
@@ -24,7 +23,8 @@ used in a behavioural-data acquisition script.
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Validating a drive containing a lab's NeuroBlueprint-formatted projects.
+As script used to validate all of a lab's
+NeuroBlueprint-formatted projects at once.
 
 :::
 

@@ -3,6 +3,7 @@
 (user-guides)=
 # User Guides
 
+These guides assume a managed project has already been set up (if not, see the [Set up a project](set-up-a-project) guide).
 
 ::::{grid} 1 1 2 2
 :gutter: 4
@@ -13,7 +14,7 @@
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatting issues
+Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatting issues.
 :::
 
 
@@ -21,23 +22,14 @@ Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev
 :link: create-folders
 :link-type: doc
 
-Create [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders
+Create [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders.
 :::
-
-
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Set up Configs for Transfer
-:link: set-up-configs-for-transfer
-:link-type: doc
-
-Set up a project for data-transfer
-:::
-
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Transfer Data
 :link: transfer-data
 :link-type: doc
 
-Transfer data between acquisition and storage machines
+Transfer data between acquisition and storage machines.
 :::
 
 
