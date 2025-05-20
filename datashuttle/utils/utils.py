@@ -138,7 +138,6 @@ def get_values_from_bids_formatted_name(
     """
     all_values = []
     for name in all_names:
-
         if key not in name:
             raise NeuroBlueprintError(
                 f"The key {key} is not found in {name}", KeyError
@@ -224,3 +223,37 @@ def all_identical(list_: List) -> bool:
     Check that all values in a list are identical.
     """
     return len(set(list_)) == 1
+
+
+def split_files_and_folders_regex(
+    ignored_files: List[str],
+) -> tuple[List[str], List[str]]:
+    """
+    Split the files and folders from a list of datashuttleignore patterns.
+    """
+    folder_pattern = re.compile(r".*/$")
+
+    folders = [file for file in ignored_files if folder_pattern.match(file)]
+    files = [file for file in ignored_files if not folder_pattern.match(file)]
+
+    return files, folders
+
+
+def find_sub_match(
+    path: str,
+) -> str:
+    """
+    Find the sub match in a path.
+    """
+    match = re.findall(r"(sub-\d+/.*)", path)
+    return match.pop() if match else ""
+
+
+def search_sub_match(extra_filenames: List[str]) -> List[str]:
+    """ """
+
+    return [
+        match.group(1)
+        for path in extra_filenames
+        if (match := re.search(r"(sub-\d+)", path))
+    ]
