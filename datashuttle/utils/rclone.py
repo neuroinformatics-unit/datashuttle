@@ -1,4 +1,7 @@
+import os
+import platform
 import subprocess
+import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
 from typing import Dict, List, Literal
@@ -26,6 +29,45 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
         )
     else:
         output = subprocess.run(command, shell=True)
+
+    return output
+
+
+def call_rclone_through_script(command: str) -> CompletedProcess:
+    """
+    Call rclone through a script, to avoid limits on command-line calls
+    (in particular on Windows). Used for transfers due to generation of
+    large call strings.
+    """
+    system = platform.system()
+
+    command = "rclone " + command
+
+    if system == "Windows":
+        suffix = ".bat"
+    else:
+        suffix = ".sh"
+        command = "#!/bin/bash\n" + command
+
+    with tempfile.NamedTemporaryFile(
+        mode="w", suffix=suffix, delete=False
+    ) as tmp_script:
+        tmp_script.write(command)
+        tmp_script_path = tmp_script.name
+
+    try:
+        if system != "Windows":
+            os.chmod(tmp_script_path, 0o700)
+
+        output = subprocess.run(
+            [tmp_script_path],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=False,
+        )
+
+    finally:
+        os.remove(tmp_script_path)
 
     return output
 
@@ -189,19 +231,17 @@ def transfer_data(
     extra_arguments = handle_rclone_arguments(rclone_options, include_list)
 
     if upload_or_download == "upload":
-        output = call_rclone(
+        output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{local_filepath}" "{cfg.get_rclone_config_name()}:'
             f'{central_filepath}" {extra_arguments}',
-            pipe_std=True,
         )
 
     elif upload_or_download == "download":
-        output = call_rclone(
+        output = call_rclone_through_script(
             f"{rclone_args('copy')} "
             f'"{cfg.get_rclone_config_name()}:'
             f'{central_filepath}" "{local_filepath}"  {extra_arguments}',
-            pipe_std=True,
         )
 
     return output
