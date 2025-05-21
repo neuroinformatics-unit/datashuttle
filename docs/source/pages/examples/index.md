@@ -23,8 +23,7 @@ Using ``datashuttle`` to create project folders in a behavioural-data acquisitio
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-As script used to validate all of a lab's
-NeuroBlueprint-formatted projects at once.
+A script used to validate every project in a lab at once.
 
 :::
 

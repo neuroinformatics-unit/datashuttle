@@ -81,9 +81,9 @@ or targeted [User Guides](pages/user_guides/index).  \
 ``datashuttle`` can be used through a graphical interface or Python API.
 
 Have questions, issues or feedback? Get in contact through
-[GitHub Issues](https://github.com/neuroinformatics-unit/datashuttle/issues)
+[GitHub issues](https://github.com/neuroinformatics-unit/datashuttle/issues)
 or our
-[Zulip Chat.](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle)
+[Zulip chat.](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle)
 
 ```{toctree}
 :maxdepth: 2

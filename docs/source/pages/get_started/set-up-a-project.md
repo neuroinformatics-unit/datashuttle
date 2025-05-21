@@ -100,7 +100,7 @@ project.create_folders("rawdata", "sub-001", "ses-001_@DATE@", datatype=["ephys"
 ::::
 
 Now, this project is ready for creating and validating
-folders to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) standard. See the [create folders](how-to-create-folders)
+folders to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) standard. See [create folders](how-to-create-folders)
 and [validate folders](tutorial-validation) for details.
 
 If you would also like to transfer files to a central machine, see the next section.
@@ -128,7 +128,7 @@ Therefore, we will need to provide:
 <br>
 
 How the **central path** is set depends on whether your connection to
-central storage is as a
+central storage is a
 [mounted drive](new-project-mounted-drive)
 or via
 [SSH](new-project-ssh).

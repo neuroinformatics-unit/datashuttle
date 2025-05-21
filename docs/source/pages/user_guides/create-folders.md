@@ -81,7 +81,8 @@ will create the folders within the project.
 
 A number of useful shortcuts to streamline this process are described below.
 
-### `Create` shortcuts
+**`Create`** **shortcuts**
+
 
 The `Create` tab has a lot of useful shortcuts.
 
@@ -114,8 +115,8 @@ Copy the full filepath.
 : `CTRL+Q` will copy the entire filepath of the file or
 folder.
 
-
-### `Create` Settings
+\
+**`Create`** **Settings**
 
 Click the `Settings` button on the `Create` tab to set
 the top-level folder, and bypass validation.

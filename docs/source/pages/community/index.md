@@ -11,9 +11,9 @@ in ``datashuttle`` and
 [**NeuroBlueprint**](https://neuroblueprint.neuroinformatics.dev).
 Please get in contact with any thoughts on how these tools can be
 improved by opening a
-[GitHub Issue](https://github.com/neuroinformatics-unit/datashuttle/issues)
+[GitHub issue](https://github.com/neuroinformatics-unit/datashuttle/issues)
 or by joining our
-[Zulip Chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle).
+[Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle).
 
 To see what we have planned for the future of **NeuroBlueprint** and ``datashuttle``, visit
 our [Guiding Principles](guiding-principles.md) and [Roadmap](roadmap.md).

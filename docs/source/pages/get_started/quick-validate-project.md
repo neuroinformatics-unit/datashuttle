@@ -44,7 +44,7 @@ Strict Mode
 in the project. By default, non-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) folders (e.g. a folder
 called `my_stuff` in the `rawdata`) are allowed, and only folders
 starting with `sub-` or `ses-` prefix are checked. In `Strict Mode`,
-any folder not prefixed with `sub-`, `ses-` or a valid datatype will
+any folder with a name not prefixed with `sub-`, `ses-` or a valid datatype will
 raise a validation issue.
 
 :::
@@ -66,10 +66,10 @@ quick_validate_project(
 ```
 
 In this case, `display_mode=error` will result in an error on the first encountered validation issue.
-Otherwise, `"warn"` will show a python warning for all detected issues, while `"print"` will print directly to console.
+Otherwise, `"warn"` will show a python warning for all detected issues, while `"print"` will print directly to the console.
 
-See the [](datashuttle.quick_validate_project) API documentation at the link,
-for full details of parameters including the important argument ``strict_mode``
+See the [](datashuttle.quick_validate_project) API documentation
+for full details of parameters, including the important argument ``strict_mode``
 that controls how validation is performed.
 
 :::
