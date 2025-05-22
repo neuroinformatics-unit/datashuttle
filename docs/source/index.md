@@ -76,7 +76,7 @@ during acquisition and analysis. Folders are standardised to the
    :width: 550px
 ```
 
-Dive in with our [Getting Started Tutorial](getting-started-walkthrough)
+Dive in with our [Getting Started page](pages/get_started/index)
 or targeted [User Guides](pages/user_guides/index).  \
 ``datashuttle`` can be used through a graphical interface or Python API.
 

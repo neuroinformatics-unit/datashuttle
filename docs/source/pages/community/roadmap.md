@@ -23,5 +23,5 @@ NeuroBlueprint version and facilitate conversion to NWB and customisation.
 
 
 ## Notes on previous goals
-Q4 2024, Standardised metadata support : after [discussion](https://github.com/neuroinformatics-unit/NeuroBlueprint/issues/30),
+Q4 2024, Standardised metadata support. After [discussion](https://github.com/neuroinformatics-unit/NeuroBlueprint/issues/30),
 this was put on hold to await further consultation with researchers.
