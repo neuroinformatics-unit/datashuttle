@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from datashuttle.tui.app import TuiApp
-    from datashuttle.utils.custom_types import InterfaceOutput
+    from datashuttle.utils.custom_types import InterfaceOutput, Prefix
 
 from pathlib import Path
 
@@ -137,11 +137,11 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.app.show_modal_error_dialog(output)
 
 
-class SearchingRemoteForNextSubSesPopup(ModalScreen):
+class SearchingCentralForNextSubSesPopup(ModalScreen):
 
     def __init__(self, sub_or_ses: Prefix) -> None:
         super().__init__()
-        self.message = f"Searching remote for next {sub_or_ses}"
+        self.message = f"Searching central for next {sub_or_ses}"
 
     def compose(self) -> ComposeResult:
         yield Container(

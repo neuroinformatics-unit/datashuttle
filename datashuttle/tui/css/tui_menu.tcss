@@ -445,7 +445,7 @@ ConfirmAndAwaitTransferPopup {
 
 /* Suggesting Screen --------------------------------------------------------------------- */
 
-SearchingRemoteForNextSubSesPopup {
+SearchingCentralForNextSubSesPopup {
     align: center middle;
 }
 
