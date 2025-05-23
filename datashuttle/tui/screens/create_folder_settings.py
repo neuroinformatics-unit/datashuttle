@@ -86,8 +86,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
-        suggest_next_sub_ses_remote = self.interface.tui_settings[
-            "suggest_next_sub_ses_remote"
+        suggest_next_sub_ses_central = self.interface.tui_settings[
+            "suggest_next_sub_ses_central"
         ]
 
         yield Container(
@@ -104,9 +104,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
             ),
             Container(
                 Checkbox(
-                    "Search Remote For Suggestions",
-                    value=suggest_next_sub_ses_remote,
-                    id="suggest_next_sub_ses_remote",
+                    "Search Central For Suggestions",
+                    value=suggest_next_sub_ses_central,
+                    id="suggest_next_sub_ses_central",
                 ),
                 Checkbox(
                     "Bypass validation",
@@ -157,7 +157,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_toplevel_select",
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
-            "#suggest_next_sub_ses_remote",
+            "#suggest_next_sub_ses_central",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -248,9 +248,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
             self.query_one("#template_inner_container").disabled = (
                 disable_container
             )
-        elif event.checkbox.id == "suggest_next_sub_ses_remote":
+        elif event.checkbox.id == "suggest_next_sub_ses_central":
             self.interface.save_tui_settings(
-                is_on, "suggest_next_sub_ses_remote"
+                is_on, "suggest_next_sub_ses_central"
             )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:

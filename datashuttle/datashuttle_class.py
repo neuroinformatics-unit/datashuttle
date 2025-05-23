@@ -1550,7 +1550,7 @@ class DataShuttle:
         for key in [
             "overwrite_existing_files",
             "dry_run",
-            "suggest_next_sub_ses_remote",
+            "suggest_next_sub_ses_central",
         ]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]

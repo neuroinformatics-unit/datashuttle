@@ -33,7 +33,7 @@ from datashuttle.tui.screens.datatypes import (
     DisplayedDatatypesScreen,
 )
 from datashuttle.tui.screens.modal_dialogs import (
-    SearchingRemoteForNextSubSesPopup,
+    SearchingCentralForNextSubSesPopup,
 )
 from datashuttle.tui.tooltips import get_tooltip
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -51,8 +51,8 @@ class CreateFoldersTab(TreeAndInputTab):
         )
         self.mainwindow = mainwindow
         self.interface = interface
-        self.searching_remote_popup: (
-            SearchingRemoteForNextSubSesPopup | None
+        self.searching_central_popup_widget: (
+            SearchingCentralForNextSubSesPopup | None
         ) = None
 
         self.prev_click_time = 0.0
@@ -166,7 +166,7 @@ class CreateFoldersTab(TreeAndInputTab):
             self.fill_input_with_template(prefix, input_id)
         else:
             include_central = self.interface.get_tui_settings()[
-                "suggest_next_sub_ses_remote"
+                "suggest_next_sub_ses_central"
             ]
 
             self.suggest_next_sub_ses_with_popup(
@@ -372,17 +372,19 @@ class CreateFoldersTab(TreeAndInputTab):
             prefix, input_id, include_central
         )
         await worker.wait()
-        if self.searching_remote_popup:
-            self.searching_remote_popup.dismiss()
-            self.searching_remote_popup = None
+        if self.searching_central_popup_widget:
+            self.searching_central_popup_widget.dismiss()
+            self.searching_central_popup_widget = None
 
     def suggest_next_sub_ses_with_popup(
         self, prefix: Prefix, input_id: str, include_central: bool
     ):
         if include_central:
-            searching_remote_popup = SearchingRemoteForNextSubSesPopup(prefix)
-            self.searching_remote_popup = searching_remote_popup
-            self.mainwindow.push_screen(searching_remote_popup)
+            searching_central_popup = SearchingCentralForNextSubSesPopup(
+                prefix
+            )
+            self.searching_central_popup_widget = searching_central_popup
+            self.mainwindow.push_screen(searching_central_popup)
 
         asyncio.create_task(
             self.fill_suggestion_and_dismiss_popup(
@@ -450,10 +452,10 @@ class CreateFoldersTab(TreeAndInputTab):
     def dismiss_popup_and_show_modal_error_dialog_from_thread(
         self, message: str
     ) -> None:
-        if self.searching_remote_popup:
+        if self.searching_central_popup_widget:
             self.mainwindow.call_from_thread(
-                self.searching_remote_popup.dismiss
+                self.searching_central_popup_widget.dismiss
             )
-            self.searching_remote_popup = None
+            self.searching_central_popup_widget = None
 
         self.mainwindow.show_modal_error_dialog_from_main_thread(message)
