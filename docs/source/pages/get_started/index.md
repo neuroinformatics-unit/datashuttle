@@ -16,14 +16,14 @@ project without setting it up as a managed project, see [Validate an existing pr
 :link: install
 :link-type: doc
 
-How to install ``datashuttle``.
+How to install ``datashuttle``
 :::
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Choose a Terminal
 :link: choose-a-terminal
 :link-type: doc
 
-Choose the best terminal to run the graphical interface.
+Choose the best terminal to run the graphical interface
 :::
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Validate an existing project
@@ -32,8 +32,7 @@ Choose the best terminal to run the graphical interface.
 :class-img-top: tutorial-link-image
 
 Quickly check an existing project for
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
-formatting issues.
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatting issues
 :::
 
 
@@ -42,7 +41,7 @@ formatting issues.
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Start a new project or manage an existing project.
+Start a new project or manage an existing project
 :::
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Walkthrough
@@ -50,7 +49,7 @@ Start a new project or manage an existing project.
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-A complete walkthrough all of ``datashuttle``'s functionality.
+A complete walkthrough all of ``datashuttle``'s functionality
 
 :::
 

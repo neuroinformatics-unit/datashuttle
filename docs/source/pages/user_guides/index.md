@@ -14,7 +14,7 @@ These guides assume a managed project has already been set up. If not, see the [
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatting issues.
+Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatting issues
 :::
 
 
@@ -22,14 +22,14 @@ Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev
 :link: create-folders
 :link-type: doc
 
-Create [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders.
+Create [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders
 :::
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Transfer Data
 :link: transfer-data
 :link-type: doc
 
-Transfer data between acquisition and storage machines.
+Transfer data between acquisition and storage machines
 :::
 
 
@@ -45,7 +45,7 @@ Modify an existing project's configurations
 :link: read-logs
 :link-type: doc
 
-Access logs of all ``datashuttle``'s actions.
+Access logs of all ``datashuttle``'s actions
 :::
 
 
@@ -53,7 +53,7 @@ Access logs of all ``datashuttle``'s actions.
 :link: use-name-templates
 :link-type: doc
 
-Use templates for subject and session names.
+Use templates for subject and session names
 
 :::
 

@@ -13,7 +13,7 @@
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-Using ``datashuttle`` to create project folders in a behavioural-data acquisition script.
+Using ``datashuttle`` to create project folders in a behavioural-data acquisition script
 
 :::
 
@@ -23,7 +23,7 @@ Using ``datashuttle`` to create project folders in a behavioural-data acquisitio
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-A script used to validate every project in a lab at once.
+A script used to validate every project in a lab at once
 
 :::
 

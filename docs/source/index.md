@@ -28,7 +28,7 @@
 :link: pages/get_started/index
 :link-type: doc
 
-Get started with ``datashuttle``.
+Get started with ``datashuttle``
 :::
 
 
@@ -36,21 +36,21 @@ Get started with ``datashuttle``.
 :link: pages/user_guides/index
 :link-type: doc
 
-Explore ``datashuttle``'s features.
+Explore ``datashuttle``'s features
 :::
 
 :::{grid-item-card} Examples
 :link: pages/examples/index
 :link-type: doc
 
-``datashuttle`` in the real world.
+``datashuttle`` in the real world
 :::
 
 :::{grid-item-card} Python API
 :link: pages/api_index
 :link-type: doc
 
-Full Python reference.
+Full Python reference
 :::
 
 ::::
