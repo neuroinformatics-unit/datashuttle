@@ -169,9 +169,7 @@ class CreateFoldersTab(TreeAndInputTab):
                 "suggest_next_sub_ses_central"
             ]
 
-            self.suggest_next_sub_ses_with_popup(
-                prefix, input_id, include_central
-            )
+            self.suggest_next_sub_ses(prefix, input_id, include_central)
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
@@ -287,6 +285,57 @@ class CreateFoldersTab(TreeAndInputTab):
     # Filling Inputs
     # ----------------------------------------------------------------------------------
 
+    def suggest_next_sub_ses(
+        self, prefix: Prefix, input_id: str, include_central: bool
+    ):
+        """
+        This handles suggesting next sub/ses for the project. Shows
+        a pop up screen in cases when searching for next sub/ses takes
+        time such as searching central in SSH connection method.
+
+        Creates an asyncio task which handles the suggestion logic and
+        dismissing the pop up.
+        """
+        assert self.interface.project.cfg["connection_method"] in [
+            "local_filesystem",
+            "ssh",
+        ]
+
+        if (
+            include_central
+            and self.interface.project.cfg["connection_method"] == "ssh"
+        ):
+            searching_central_popup = SearchingCentralForNextSubSesPopup(
+                prefix
+            )
+            self.searching_central_popup_widget = searching_central_popup
+            self.mainwindow.push_screen(searching_central_popup)
+
+        asyncio.create_task(
+            self.fill_suggestion_and_dismiss_popup(
+                prefix, input_id, include_central
+            )
+        )
+
+    async def fill_suggestion_and_dismiss_popup(
+        self, prefix, input_id, include_central
+    ):
+        """
+        This handles running the running the `fill_input_with_next_sub_or_ses_template`
+        worker and waiting for it to complete. If an error occurs in
+        `fill_input_with_next_sub_or_ses_template`, it dismisses the popup itself.
+
+        Else, if the worker successfully exits, this function handles dismissal
+        of the popup.
+        """
+        worker = self.fill_input_with_next_sub_or_ses_template(
+            prefix, input_id, include_central
+        )
+        await worker.wait()
+        if self.searching_central_popup_widget:
+            self.searching_central_popup_widget.dismiss()
+            self.searching_central_popup_widget = None
+
     @work(exclusive=True, thread=True)
     def fill_input_with_next_sub_or_ses_template(
         self, prefix: Prefix, input_id: str, include_central: bool
@@ -299,6 +348,9 @@ class CreateFoldersTab(TreeAndInputTab):
         of the template name will be replaced with the suggested
         sub or ses key-value. Otherwise, the sub/ses key-value pair only
         will be suggested.
+
+        It runs in a worker thread so as to allow the TUI to show a loading
+        animation.
 
         Parameters
 
@@ -365,32 +417,25 @@ class CreateFoldersTab(TreeAndInputTab):
         input = self.query_one(f"#{input_id}")
         input.value = fill_value
 
-    async def fill_suggestion_and_dismiss_popup(
-        self, prefix, input_id, include_central
-    ):
-        worker = self.fill_input_with_next_sub_or_ses_template(
-            prefix, input_id, include_central
-        )
-        await worker.wait()
+    def dismiss_popup_and_show_modal_error_dialog_from_thread(
+        self, message: str
+    ) -> None:
+        """
+        This is a utility function that the `fill_input_with_next_sub_or_ses_template`
+        worker calls to display error dialog an if an error occurs while suggesting
+        the next sub/ses. Handles the TUI widget manipulation from the main thread
+        when called from within a worker thread.
+        """
         if self.searching_central_popup_widget:
-            self.searching_central_popup_widget.dismiss()
+            self.mainwindow.call_from_thread(
+                self.searching_central_popup_widget.dismiss
+            )
             self.searching_central_popup_widget = None
 
-    def suggest_next_sub_ses_with_popup(
-        self, prefix: Prefix, input_id: str, include_central: bool
-    ):
-        if include_central:
-            searching_central_popup = SearchingCentralForNextSubSesPopup(
-                prefix
-            )
-            self.searching_central_popup_widget = searching_central_popup
-            self.mainwindow.push_screen(searching_central_popup)
+        self.mainwindow.show_modal_error_dialog_from_main_thread(message)
 
-        asyncio.create_task(
-            self.fill_suggestion_and_dismiss_popup(
-                prefix, input_id, include_central
-            )
-        )
+    # Validation
+    # ----------------------------------------------------------------------------------
 
     def run_local_validation(self, prefix: Prefix):
         """
@@ -448,14 +493,3 @@ class CreateFoldersTab(TreeAndInputTab):
         Will automatically refresh the tree through the reactive attribute `path`.
         """
         self.query_one("#create_folders_directorytree").path = new_root_path
-
-    def dismiss_popup_and_show_modal_error_dialog_from_thread(
-        self, message: str
-    ) -> None:
-        if self.searching_central_popup_widget:
-            self.mainwindow.call_from_thread(
-                self.searching_central_popup_widget.dismiss
-            )
-            self.searching_central_popup_widget = None
-
-        self.mainwindow.show_modal_error_dialog_from_main_thread(message)

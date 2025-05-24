@@ -116,7 +116,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 Container(
                     Horizontal(
                         Checkbox(
-                            "Template Validation",
+                            "Template validation",
                             id="template_settings_validation_on_checkbox",
                             value=self.interface.get_name_templates()["on"],
                         ),
