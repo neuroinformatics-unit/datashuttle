@@ -443,7 +443,7 @@ ConfirmAndAwaitTransferPopup {
     content-align: center middle;
 }
 
-/* Suggesting Screen --------------------------------------------------------------------- */
+/* Suggest next subject / session loading pop up --------------------------------------------------- */
 
 SearchingCentralForNextSubSesPopup {
     align: center middle;
