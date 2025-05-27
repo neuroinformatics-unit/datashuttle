@@ -19,13 +19,6 @@ project without setting it up as a managed project, see [Validate an existing pr
 How to install ``datashuttle``
 :::
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Choose a Terminal
-:link: choose-a-terminal
-:link-type: doc
-
-Choose the best terminal to run the graphical interface
-:::
-
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Validate an existing project
 :link: quick-validate-project
 :link-type: doc

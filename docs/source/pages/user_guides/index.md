@@ -8,6 +8,13 @@ These guides assume a managed project has already been set up. If not, see the [
 ::::{grid} 1 1 2 2
 :gutter: 4
 
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Choose a Terminal
+:link: choose-a-terminal
+:link-type: doc
+
+Choose the best terminal to run the graphical interface
+:::
+
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Validate Folders
 :link: validate
