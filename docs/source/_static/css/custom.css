@@ -47,6 +47,6 @@ html[data-theme=light] {
   margin: 5px auto;
 }
 
-.center {
+.center:not(.section), .center>h1, .center>h2 {
     text-align: center;
 }
