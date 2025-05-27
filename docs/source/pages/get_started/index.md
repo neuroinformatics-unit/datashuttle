@@ -5,7 +5,7 @@
 Set up `datashuttle` on a new or existing project for automated folder creation, validation and transfer.
 
 To quickly validate an existing [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
-project, see our [Validate project from  a path](quick-validate-project) guide.
+project, see our [Validate project from a filepath](quick-validate-project) guide.
 
 ::::{grid} 1 1 2 2
 :gutter: 4
