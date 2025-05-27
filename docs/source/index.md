@@ -24,7 +24,7 @@
 :gutter: 4
 
 
-:::{grid-item-card} Get Started
+:::{grid-item-card} Get started
 :link: pages/get_started/index
 :link-type: doc
 
@@ -32,7 +32,7 @@ Get started with ``datashuttle``
 :::
 
 
-:::{grid-item-card} User Guides
+:::{grid-item-card} User guides
 :link: pages/user_guides/index
 :link-type: doc
 

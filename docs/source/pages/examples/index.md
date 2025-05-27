@@ -8,7 +8,7 @@
 :gutter: 4
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Acquisition Script
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Acquisition script
 :link: acquisition-script
 :link-type: doc
 :class-img-top: tutorial-link-image

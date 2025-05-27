@@ -1,6 +1,6 @@
 :html_theme.sidebar_secondary.remove:
 
-# Get Started
+# Get started
 
 Set up `datashuttle` on a new or existing project for automated folder creation, validation and transfer.
 
@@ -25,7 +25,7 @@ How to install ``datashuttle``
 Start a new project or manage an existing project
 :::
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Walkthrough
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Walkthrough ``datashuttle``
 :link: getting-started
 :link-type: doc
 :class-img-top: tutorial-link-image

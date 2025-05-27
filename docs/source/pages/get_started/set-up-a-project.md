@@ -1,5 +1,5 @@
 (set-up-a-project_)=
-## Set up a Project
+## Set up a project
 
 The first section of this guide will
 set up a "local-only" project that can manage creation

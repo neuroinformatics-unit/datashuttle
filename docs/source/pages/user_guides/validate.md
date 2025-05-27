@@ -1,6 +1,6 @@
 (tutorial-validation)=
 
-# Project Validation
+# Project validation
 
 ``datashuttle`` can validate a project against the
 [NeuroBlueprint specification](https://neuroblueprint.neuroinformactics.dev/latest/specification.html).

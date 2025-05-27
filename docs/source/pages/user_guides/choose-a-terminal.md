@@ -1,6 +1,6 @@
 (choose-a-terminal_)=
 
-# Choose a Terminal
+# Choose a terminal
 
 ``datashuttle``'s graphical interface can run in almost any terminal—but
 native Windows and macOS terminals may display with rendering errors.

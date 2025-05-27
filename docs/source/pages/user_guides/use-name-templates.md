@@ -1,6 +1,6 @@
 (how-to-use-name-templates)=
 
-# Name Templates
+# Name templates
 
 Validation in ``datashuttle`` is by default restricted to the
 NeuroBlueprint specification. Any subject or session names

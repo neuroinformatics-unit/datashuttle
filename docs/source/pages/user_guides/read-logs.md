@@ -1,6 +1,6 @@
 (how-to-read-the-logs)=
 
-# Read the Logs
+# Read the logs
 
 ``datashuttle`` stores detailed logs when commands that
 create folders, change project configs or perform data transfers are run.

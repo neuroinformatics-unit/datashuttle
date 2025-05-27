@@ -1,6 +1,6 @@
 :html_theme.sidebar_secondary.remove:
 
-# Acquisition Script
+# Acquisition script
 
 This script shows how Laura Schwartz (O'Keefe Lab, [Sainsbury Wellcome Centre](https://www.sainsburywellcome.org/web/))
 uses ``datashuttle`` to create project folders during the acquisition of a behavioural

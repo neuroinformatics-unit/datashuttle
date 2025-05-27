@@ -1,6 +1,6 @@
 (quick-validate-projects)=
 
-# Quickly Validate an Existing Project
+# Validate a project from a filepath
 
 ``datashuttle`` can validate an existing
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted project given only the filepath.

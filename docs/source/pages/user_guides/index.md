@@ -1,14 +1,14 @@
 :html_theme.sidebar_secondary.remove:
 
 (user-guides)=
-# User Guides
+# User guides
 
 These guides assume a managed project has already been set up. If not, see the [Set up a project](set-up-a-project_) guide.
 
 ::::{grid} 1 1 2 2
 :gutter: 4
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Choose a Terminal
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Choose a terminal
 :link: choose-a-terminal
 :link-type: doc
 
@@ -16,7 +16,7 @@ Choose the best terminal to run the graphical interface
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate Folders
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate folders
 :link: validate
 :link-type: doc
 :class-img-top: tutorial-link-image
@@ -25,14 +25,14 @@ Check a project for [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Create Folders
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Create folders
 :link: create-folders
 :link-type: doc
 
 Create [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)-formatted folders
 :::
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Transfer Data
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Transfer data
 :link: transfer-data
 :link-type: doc
 
@@ -40,7 +40,7 @@ Transfer data between acquisition and storage machines
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Update Configs
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Update configs
 :link: update-configs
 :link-type: doc
 
@@ -48,7 +48,7 @@ Modify an existing project's configurations
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Read Logs
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Read logs
 :link: read-logs
 :link-type: doc
 
@@ -56,7 +56,7 @@ Access logs of all ``datashuttle``'s actions
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Use Name Templates
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Use name templates
 :link: use-name-templates
 :link-type: doc
 

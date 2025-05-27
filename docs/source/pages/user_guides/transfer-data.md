@@ -1,5 +1,5 @@
 (how-to-transfer-data)=
-# Transfer Data
+# Transfer data
 
 :::{note}
 

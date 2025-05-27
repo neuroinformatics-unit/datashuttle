@@ -1,5 +1,5 @@
 (getting-started-walkthrough)=
-## Getting Started Walkthrough
+## Walkthrough ``datashuttle``
 
 :::{note}
 
