@@ -1,17 +1,17 @@
 (how-to-install)=
 # Install
 
+:::{warning}
+``datashuttle`` is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
+get in contact if you encounter any bugs or unexpected behaviour.
+:::
+
 ``datashuttle`` requires
 [Python](https://www.python.org/)
 to run (see [this guide](https://realpython.com/installing-python/) for how to install Python).
 
 The easiest way to install ``datashuttle`` is through the Python package manager
 [conda](https://docs.conda.io/en/latest/). However, installation with `pip` is also supported.
-
-:::{warning}
-``datashuttle`` is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
-get in contact if you encounter any bugs or unexpected behaviour.
-:::
 
 ## Installation instructions
 
