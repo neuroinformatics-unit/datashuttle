@@ -1,8 +1,17 @@
 :html_theme.sidebar_secondary.remove:
 
-# **datashuttle**
+```{raw} html
+<div style="height: 0; visibility: hidden;">
+```
 
-<p style="text-align: left; font-size: 22px;">Automate the creation, validation and transfer of neuroscience project folders.</p>
+# datashuttle
+
+```{raw} html
+</div>
+```
+
+<p style="text-align: center; font-size: 48px;"><b>datashuttle</b></p>
+<p style="text-align: center; font-size: 22px;">Automate the creation, validation and transfer of neuroscience project folders.</p>
 
 ```{image} _static/datashuttle-overview-light.png
 :alt: My Logo
