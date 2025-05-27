@@ -7,24 +7,8 @@ all of a lab's projects at once, saving a log file of any detected NeuroBlueprin
 This runs weekly to catch any formatting issues introduced into projects.
 
 
-```bash
+```python
 
-#!/bin/bash
-
-# Ensure Bash is loaded
-source ~/.bashrc
-
-echo "Starting script..."
-micromamba activate datashuttle-env
-echo "Micromamba environment activated."
-
-
-# Change to the appropriate directory (modify as needed)
-cd ~/datashuttle
-
-# Run the Python script
-python3 - <<EOF
-print("Python script started...")
 from datashuttle import DataShuttle
 import os
 
@@ -42,7 +26,6 @@ for p in project_list:
     project_path = os.path.join(projects_dir, p)
     if os.path.isdir(project_path):  # Only process directories
         project = DataShuttle(p)
-        # project.make_config_file(local_path=project_path)
         try:
             errors = project.validate_project("rawdata", display_mode="print", strict_mode=True)
             error_messages[p] = errors if errors else "No errors"
@@ -58,7 +41,5 @@ with open(log_file, "w") as f:
 # Optional: Print summary of error messages
 for project, message in error_messages.items():
     print(f"{project}: {message}")
-EOF
 
-echo "Python script executed."
 ```
