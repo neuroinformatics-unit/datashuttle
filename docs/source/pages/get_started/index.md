@@ -40,7 +40,6 @@ A step-by-step guide through ``datashuttle``'s features
 :maxdepth: 2
 :caption: Get Started
 :hidden:
-
 install
 set-up-a-project
 getting-started
