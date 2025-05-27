@@ -71,9 +71,9 @@ Use templates for subject and session names
 :caption: User Guides
 :hidden:
 
+choose-a-terminal
 validate
 create-folders
-set-up-configs-for-transfer
 transfer-data
 update-configs
 read-logs

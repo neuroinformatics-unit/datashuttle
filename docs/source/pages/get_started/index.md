@@ -2,12 +2,10 @@
 
 # Get Started
 
-See [Set up a project](set-up-a-project_) to set up `datashuttle` to manage a new or existing
-project for folder creation, validation and transfer.
+Set up `datashuttle` on a new or existing project for automated folder creation, validation and transfer.
 
-Alternatively, to quickly validate an existing [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
-project without setting it up as a managed project, see [Validate an existing project](quick-validate-projects).
-
+To quickly validate an existing [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html)
+project, see our [Validate project from  a path](quick-validate-project) guide.
 
 ::::{grid} 1 1 2 2
 :gutter: 4
@@ -18,16 +16,6 @@ project without setting it up as a managed project, see [Validate an existing pr
 
 How to install ``datashuttle``
 :::
-
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate an existing project
-:link: quick-validate-project
-:link-type: doc
-:class-img-top: tutorial-link-image
-
-Quickly check an existing project for
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) formatting issues
-:::
-
 
 :::{grid-item-card} {fas}`desktop;sd-text-primary` Set up a project
 :link: set-up-a-project
@@ -42,7 +30,7 @@ Start a new project or manage an existing project
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-A complete walkthrough all of ``datashuttle``'s functionality
+A complete guide through ``datashuttle``'s functionality
 
 :::
 
@@ -54,10 +42,6 @@ A complete walkthrough all of ``datashuttle``'s functionality
 :hidden:
 
 install
-choose-a-terminal
-
-quick-validate-project
 set-up-a-project
-
 getting-started
 ```
