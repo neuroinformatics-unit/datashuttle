@@ -1,11 +1,14 @@
 :html_theme.sidebar_secondary.remove:
 
+<!-- We want to have a centered title, which is difficult in sphinx without centering
+the entire page. We need the title here otherwise the tab title defaults to <no-title>.
+Therefore, add the title and hide it, then add a custom centered title.
+-->
+
 ```{raw} html
 <div style="height: 0; visibility: hidden;">
 ```
-
 # datashuttle
-
 ```{raw} html
 </div>
 ```
