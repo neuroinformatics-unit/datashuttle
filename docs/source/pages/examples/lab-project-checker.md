@@ -1,6 +1,6 @@
 :html_theme.sidebar_secondary.remove:
 
-# Validating a Lab's projects
+# Validate all projects in a lab
 
 This example shows how Viktor Plattner (Akrami Lab, [Sainsbury Wellcome Centre](https://www.sainsburywellcome.org/web/)) validates
 all of a lab's projects at once, saving a log file of any detected NeuroBlueprint-formatting errors.

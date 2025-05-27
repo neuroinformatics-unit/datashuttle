@@ -18,7 +18,7 @@ Using ``datashuttle`` to create project folders in a behavioural-data acquisitio
 :::
 
 
-:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate A Labs Projects
+:::{grid-item-card} {fas}`desktop;sd-text-primary` Validate all projects in a lab
 :link: lab-project-checker
 :link-type: doc
 :class-img-top: tutorial-link-image
