@@ -46,7 +46,3 @@ html[data-theme=light] {
   height: auto;
   margin: 5px auto;
 }
-
-.center:not(.section), .center>h1, .center>h2 {
-    text-align: center;
-}
