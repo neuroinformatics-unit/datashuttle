@@ -30,7 +30,7 @@ Start a new project or manage an existing project
 :link-type: doc
 :class-img-top: tutorial-link-image
 
-A complete guide through ``datashuttle``'s functionality
+A step-by-step guide through ``datashuttle``'s features
 
 :::
 
