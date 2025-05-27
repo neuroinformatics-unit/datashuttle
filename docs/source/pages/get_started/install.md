@@ -3,7 +3,7 @@
 
 ``datashuttle`` requires
 [Python](https://www.python.org/)
-to run.
+to run (see [this guide](https://realpython.com/installing-python/) for how to install Python).
 
 The easiest way to install ``datashuttle`` is through the Python package manager
 [conda](https://docs.conda.io/en/latest/). However, installation with `pip` is also supported.
