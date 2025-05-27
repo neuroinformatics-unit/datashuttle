@@ -58,10 +58,19 @@ A lack of project standardization in systems neuroscience
 [hinders data sharing and collaboration](https://neuroinformatics.dev/blog/neuroblueprint.html),
 creating barriers to reproducibility and scientific progress.
 
-
 ``datashuttle`` helps standardise experimental
 projects by automating folder creation and transfer
-during acquisition and analysis. Folders are standardised to the
+during acquisition and analysis. Its graphical interface or Python API builds
+folder trees according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
+specification. Automation and validation ensures that no errors, such as duplicate session
+names or incorrect dates, slip into the project.
+
+Data can be transferred between acquisition, storage and analysis
+machines with a single function call or button click. Standardisation makes
+folder names predictable, meaning it is easy to transfer specific combinations
+of subjects, sessions or data-types with ``datashuttle``.
+
+Folders are standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev) specification:
 
 ```{image} /_static/NeuroBlueprint_project_tree_dark.png
@@ -76,8 +85,7 @@ during acquisition and analysis. Folders are standardised to the
 ```
 
 Dive in with our [Getting Started page](pages/get_started/index)
-or targeted [User Guides](pages/user_guides/index).  \
-``datashuttle`` can be used through a graphical interface or Python API.
+or targeted [User Guides](pages/user_guides/index).
 
 Have questions, issues or feedback? Get in contact through
 [GitHub issues](https://github.com/neuroinformatics-unit/datashuttle/issues)
