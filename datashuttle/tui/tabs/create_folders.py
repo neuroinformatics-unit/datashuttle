@@ -314,7 +314,8 @@ class CreateFoldersTab(TreeAndInputTab):
         asyncio.create_task(
             self.fill_suggestion_and_dismiss_popup(
                 prefix, input_id, include_central
-            )
+            ),
+            name=f"suggest_next_{prefix}_async_task",
         )
 
     async def fill_suggestion_and_dismiss_popup(

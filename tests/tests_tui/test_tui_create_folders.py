@@ -524,6 +524,67 @@ class TestTuiCreateFolders(TuiBase):
 
             await pilot.pause()
 
+    @pytest.mark.asyncio
+    async def test_get_next_sub_and_ses_central_no_template(
+        self, setup_project_paths, mocker
+    ):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            # turn on the central checkbox
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#suggest_next_sub_ses_central_checkbox"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+
+            # mocking the datashuttle functions
+            spy_get_next_sub = mocker.spy(
+                pilot.app.screen.interface.project, "get_next_sub"
+            )
+            spy_get_next_ses = mocker.spy(
+                pilot.app.screen.interface.project, "get_next_ses"
+            )
+
+            # check subject suggestion
+            await self.double_click(pilot, "#create_folders_subject_input")
+
+            if suggest_sub_task := test_utils.get_task_by_name(
+                "suggest_next_sub_async_task"
+            ):
+                await suggest_sub_task
+
+            spy_get_next_sub.assert_called_with(
+                "rawdata", return_with_prefix=True, include_central=True
+            )
+
+            # check session suggestion
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+            await self.double_click(pilot, "#create_folders_session_input")
+
+            if suggest_ses_task := test_utils.get_task_by_name(
+                "suggest_next_ses_async_task"
+            ):
+                await suggest_ses_task
+
+            spy_get_next_ses.assert_called_with(
+                "rawdata",
+                "sub-001",
+                return_with_prefix=True,
+                include_central=True,
+            )
+
     # -------------------------------------------------------------------------
     # Test Top Level Folders
     # -------------------------------------------------------------------------

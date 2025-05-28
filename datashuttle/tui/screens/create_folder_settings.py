@@ -106,7 +106,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 Checkbox(
                     "Search Central For Suggestions",
                     value=suggest_next_sub_ses_central,
-                    id="suggest_next_sub_ses_central",
+                    id="suggest_next_sub_ses_central_checkbox",
                 ),
                 Checkbox(
                     "Bypass validation",
@@ -157,7 +157,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_toplevel_select",
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
-            "#suggest_next_sub_ses_central",
+            "#suggest_next_sub_ses_central_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -248,7 +248,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             self.query_one("#template_inner_container").disabled = (
                 disable_container
             )
-        elif event.checkbox.id == "suggest_next_sub_ses_central":
+        elif event.checkbox.id == "suggest_next_sub_ses_central_checkbox":
             self.interface.save_tui_settings(
                 is_on, "suggest_next_sub_ses_central"
             )
