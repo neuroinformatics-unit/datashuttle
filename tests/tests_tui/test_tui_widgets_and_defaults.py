@@ -399,6 +399,21 @@ class TestTuiWidgets(TuiBase):
                 == "rawdata"
             )
 
+            # Search central for suggestions checkbox
+            assert (
+                pilot.app.screen.query_one(
+                    "#suggest_next_sub_ses_central_checkbox"
+                ).label._text[0]
+                == "Search Central For Suggestions"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#suggest_next_sub_ses_central_checkbox"
+                ).value
+                is False
+            )
+
+            # Bypass validation checkbox
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_bypass_validation_checkbox"
@@ -412,6 +427,7 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
+            # Template validation
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_validation_on_checkbox"
