@@ -445,6 +445,10 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=False
             )
+            if suggest_sub_task := test_utils.get_task_by_name(
+                "suggest_next_sub_async_task"
+            ):
+                await suggest_sub_task
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -458,6 +462,10 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_session_input", control=False
             )
+            if suggest_ses_task := test_utils.get_task_by_name(
+                "suggest_next_ses_async_task"
+            ):
+                await suggest_ses_task
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -504,6 +512,10 @@ class TestTuiCreateFolders(TuiBase):
 
             # Double click without CTRL modifier key.
             await self.double_click(pilot, "#create_folders_subject_input")
+            if suggest_sub_task := test_utils.get_task_by_name(
+                "suggest_next_sub_async_task"
+            ):
+                await suggest_sub_task
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -515,6 +527,10 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_subject_input", "sub-001"
             )
             await self.double_click(pilot, "#create_folders_session_input")
+            if suggest_ses_task := test_utils.get_task_by_name(
+                "suggest_next_ses_async_task"
+            ):
+                await suggest_ses_task
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
