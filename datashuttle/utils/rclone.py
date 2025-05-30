@@ -152,18 +152,19 @@ def setup_rclone_config_for_ssh(
 
 def setup_rclone_config_for_gdrive(
     cfg: Configs,
+    gdrive_client_secret: str | None,
     rclone_config_name: str,
     config_token: Optional[str] = None,
     log: bool = True,
 ):
     client_id_key_value = (
         f"client_id {cfg['gdrive_client_id']} "
-        if cfg.get("gdrive_client_id", None)
+        if cfg["gdrive_client_id"]
         else " "
     )
     client_secret_key_value = (
-        f"client_secret {cfg['gdrive_client_secret']} "
-        if cfg.get("gdrive_client_secret", None)
+        f"client_secret {gdrive_client_secret} "
+        if gdrive_client_secret
         else ""
     )
 

@@ -4,8 +4,12 @@ from datashuttle.configs.config_class import Configs
 from datashuttle.utils import rclone, utils
 
 
-def check_successful_connection(cfg: Configs) -> None:
-    """Check for a successful connection by executing an `ls` command"""
+def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
+    """
+    Check for a successful connection by executing an `ls` command. It pings the
+    the central host to list files and folders in the root directory.
+    If the command fails, it raises a ConnectionError with the error message.
+    """
 
     output = rclone.call_rclone(
         f"ls {cfg.get_rclone_config_name()}:", pipe_std=True

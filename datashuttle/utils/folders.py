@@ -533,14 +533,9 @@ def search_for_folders(
                 )
             )
 
-        elif (
-            cfg["connection_method"] == "gdrive"
-            or cfg["connection_method"] == "aws_s3"
-        ):
-            all_folder_names, all_filenames = (
-                search_remote_central_for_folders(
-                    search_path, search_prefix, cfg, verbose, return_full_path
-                )
+        else:
+            all_folder_names, all_filenames = search_gdrive_or_aws_for_folders(
+                search_path, search_prefix, cfg, return_full_path
             )
 
     else:
@@ -557,13 +552,17 @@ def search_for_folders(
     return all_folder_names, all_filenames
 
 
-def search_remote_central_for_folders(
+def search_gdrive_or_aws_for_folders(
     search_path: Path,
     search_prefix: str,
     cfg: Configs,
-    verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
+    """
+    Searches for files and folders in central path using `rclone lsjson` command.
+    This command lists all the files and folders in the central path in a json format.
+    The json contains file/folder info about each file/folder like name, type, etc.
+    """
 
     command = (
         "rclone lsjson "
@@ -581,10 +580,9 @@ def search_remote_central_for_folders(
     all_filenames: List[str] = []
 
     if output.returncode != 0:
-        if verbose:
-            utils.log_and_message(
-                f"Error searching files at {search_path.as_posix()} \n {output.stderr.decode("utf-8") if output.stderr else ""}"
-            )
+        utils.log_and_message(
+            f"Error searching files at {search_path.as_posix()} \n {output.stderr.decode('utf-8') if output.stderr else ""}"
+        )
         return all_folder_names, all_filenames
 
     files_and_folders = json.loads(output.stdout)
@@ -604,10 +602,9 @@ def search_remote_central_for_folders(
                 all_filenames.append(to_append)
 
     except Exception:
-        if verbose:
-            utils.log_and_message(
-                f"Error searching files at {search_path.as_posix()}"
-            )
+        utils.log_and_message(
+            f"Error searching files at {search_path.as_posix()}"
+        )
 
     return all_folder_names, all_filenames
 
