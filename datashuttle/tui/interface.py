@@ -498,7 +498,8 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def setup_google_drive_connection(
-        self, config_token: Optional[str] = None
+        self,
+        config_token: Optional[str] = None,
     ) -> InterfaceOutput:
         try:
             self.project._setup_rclone_gdrive_config(config_token, log=False)

@@ -25,7 +25,7 @@ from textual.widgets import (
     Static,
 )
 
-from datashuttle import AWS_REGION
+from datashuttle.configs.aws_regions import get_aws_regions_list
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import (
@@ -122,7 +122,7 @@ class ConfigsContent(Container):
             ),
             Label("AWS S3 Region", id="configs_aws_s3_region_label"),
             Select(
-                ((region, region) for region in AWS_REGION.get_all_regions()),
+                ((region, region) for region in get_aws_regions_list()),
                 id="configs_aws_s3_region_select",
             ),
         ]
