@@ -99,7 +99,7 @@ def get_client_secret(log: bool = True) -> str:
             "This can occur if running the command in an IDE.\n\n"
             "Press 'y' to proceed to client secret entry. "
             "The characters will not be hidden!\n"
-            "Alternatively, run ssh setup after starting Python in your "
+            "Alternatively, run google drive setup after starting Python in your "
             "system terminal \nrather than through an IDE: "
         )
         if proceed != "y":

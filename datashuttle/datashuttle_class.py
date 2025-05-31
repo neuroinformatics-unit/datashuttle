@@ -933,11 +933,13 @@ class DataShuttle:
 
     @requires_aws_configs
     @check_configs_set
-    def setup_aws_s3_connection(self, aws_secret_access_key: str) -> None:
+    def setup_aws_s3_connection(self) -> None:
         self._start_log(
             "setup-aws-s3-connection-to-central-server",
             local_vars=locals(),
         )
+
+        aws_secret_access_key = aws.get_aws_secret_access_key()
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
