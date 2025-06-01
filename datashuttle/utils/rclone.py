@@ -173,16 +173,22 @@ def setup_rclone_config_for_gdrive(
         if config_token
         else ""
     )
-    call_rclone(
+    output = call_rclone(
         f"config create "
         f"{rclone_config_name} "
         f"drive "
         f"{client_id_key_value}"
         f"{client_secret_key_value}"
         f"scope drive "
+        f"root_folder_id {cfg['gdrive_root_folder_id']} "
         f"{extra_args}",
         pipe_std=True,
     )
+
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            output.stderr.decode("utf-8"), ConnectionError
+        )
 
     if log:
         log_rclone_config_output()
@@ -194,7 +200,7 @@ def setup_rclone_config_for_aws_s3(
     rclone_config_name: str,
     log: bool = True,
 ):
-    call_rclone(
+    output = call_rclone(
         "config create "
         f"{rclone_config_name} "
         "s3 provider AWS "
@@ -205,8 +211,28 @@ def setup_rclone_config_for_aws_s3(
         pipe_std=True,
     )
 
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            output.stderr.decode("utf-8"), ConnectionError
+        )
+
     if log:
         log_rclone_config_output()
+
+
+def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
+    """
+    Check for a successful connection by executing an `ls` command. It pings the
+    the central host to list files and folders in the root directory.
+    If the command fails, it raises a ConnectionError with the error message.
+    """
+
+    output = call_rclone(f"ls {cfg.get_rclone_config_name()}:", pipe_std=True)
+
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            output.stderr.decode("utf-8"), ConnectionError
+        )
 
 
 def log_rclone_config_output():

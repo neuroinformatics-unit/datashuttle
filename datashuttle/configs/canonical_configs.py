@@ -46,7 +46,7 @@ def get_canonical_configs() -> dict:
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
         "gdrive_client_id": Optional[str],
-        # "gdrive_client_secret": Optional[str],
+        "gdrive_root_folder_id": Optional[str],
         "aws_access_key_id": Optional[str],
         "aws_s3_region": Optional[Literal[*get_aws_regions_list()]],
         # "aws_s3_endpoint_url": Optional[str],
@@ -137,12 +137,18 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         )
 
     # Check gdrive settings
-    elif config_dict["connection_method"] == "gdrive" and (
-        not config_dict["gdrive_client_id"]
-    ):
-        utils.log_and_message(
-            "`gdrive_client_id` not found in config. default rlcone client will be used (slower)."
-        )
+    elif config_dict["connection_method"] == "gdrive":
+        if not config_dict["gdrive_root_folder_id"]:
+            utils.log_and_raise_error(
+                "'gdrive_root_folder_id' is required if 'connection_method' "
+                "is 'gdrive'.",
+                ConfigError,
+            )
+
+        if not config_dict["gdrive_client_id"]:
+            utils.log_and_message(
+                "`gdrive_client_id` not found in config. default rlcone client will be used (slower)."
+            )
 
     # Check AWS settings
     elif config_dict["connection_method"] == "aws_s3" and (

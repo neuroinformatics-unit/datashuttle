@@ -925,6 +925,9 @@ class DataShuttle:
         self._setup_rclone_gdrive_config(
             gdrive_client_secret, config_token, log=True
         )
+
+        rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
+
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------
@@ -943,7 +946,7 @@ class DataShuttle:
 
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
-        aws.check_successful_connection_and_raise_error_on_fail(self.cfg)
+        rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
         utils.log_and_message("AWS Connection Successful.")
 
         aws.warn_if_bucket_absent(self.cfg)
@@ -962,6 +965,7 @@ class DataShuttle:
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
         gdrive_client_id: Optional[str] = None,
+        gdrive_root_folder_id: Optional[str] = None,
         aws_access_key_id: Optional[str] = None,
         aws_s3_region: Optional[str] = None,
     ) -> None:
@@ -1029,6 +1033,7 @@ class DataShuttle:
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
                 "gdrive_client_id": gdrive_client_id,
+                "gdrive_root_folder_id": gdrive_root_folder_id,
                 "aws_access_key_id": aws_access_key_id,
                 "aws_s3_region": aws_s3_region,
             },
