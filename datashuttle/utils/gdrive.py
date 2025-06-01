@@ -53,12 +53,14 @@ def preliminary_for_setup_without_browser(
         f"{client_id_key_value}"
         f"{client_secret_key_value}"
         f"scope drive "
+        f"root_folder_id {cfg['gdrive_root_folder_id']} "
         f"config_is_local=false "
         f"--non-interactive",
         pipe_std=True,
     )
 
     # TODO: make this more robust
+    # extracting rclone's message from the json
     output_json = json.loads(output.stdout)
     message = output_json["Option"]["Help"]
 
