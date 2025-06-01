@@ -17,7 +17,6 @@ from textual.containers import Container, Horizontal
 from textual.message import Message
 from textual.widgets import (
     Button,
-    Input,
     Label,
     RadioButton,
     RadioSet,
@@ -105,11 +104,11 @@ class ConfigsContent(Container):
                 placeholder="Google Drive Client ID (leave blank to use rclone's default client (slower))",
                 id="configs_gdrive_client_id_input",
             ),
-            Label("Client Secret", id="configs_gdrive_client_secret_label"),
-            Input(
-                placeholder="Google Drive Client Secret (leave blank to use rclone's default client (slower))",
-                password=True,
-                id="configs_gdrive_client_secret_input",
+            Label("Root Folder ID", id="configs_gdrive_root_folder_id_label"),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="Google Drive Root Folder ID (leave blank to use the topmost folder)",
+                id="configs_gdrive_root_folder_id",
             ),
         ]
 
@@ -142,11 +141,21 @@ class ConfigsContent(Container):
             RadioSet(
                 RadioButton(
                     "Local Filesystem",
-                    id="configs_local_filesystem_radiobutton",
+                    id=self.radiobutton_id_from_connection_method(
+                        "local_filesystem"
+                    ),
                 ),
-                RadioButton("SSH", id="configs_ssh_radiobutton"),
-                RadioButton("Google Drive", id="configs_gdrive_radiobutton"),
-                RadioButton("AWS S3", id="configs_aws_s3_radiobutton"),
+                RadioButton(
+                    "SSH", id=self.radiobutton_id_from_connection_method("ssh")
+                ),
+                RadioButton(
+                    "Google Drive",
+                    id=self.radiobutton_id_from_connection_method("gdrive"),
+                ),
+                RadioButton(
+                    "AWS S3",
+                    id=self.radiobutton_id_from_connection_method("aws_s3"),
+                ),
                 RadioButton(
                     "No connection (local only)",
                     id="configs_local_only_radiobutton",
@@ -245,7 +254,6 @@ class ConfigsContent(Container):
             self.query_one("#configs_local_filesystem_radiobutton").value = (
                 True
             )
-            # self.switch_ssh_widgets_display(display_ssh=False)
             self.setup_widgets_to_display(connection_method="local_filesystem")
             self.query_one("#configs_setup_ssh_connection_button").visible = (
                 False
@@ -291,6 +299,12 @@ class ConfigsContent(Container):
         disabled.
         """
         label = str(event.pressed.label)
+        radiobutton_id = event.pressed.id
+
+        connection_method = self.connection_method_from_radiobutton_id(
+            radiobutton_id
+        )
+
         assert label in [
             "SSH",
             "Local Filesystem",
@@ -299,31 +313,45 @@ class ConfigsContent(Container):
             "AWS S3",
         ], "Unexpected label."
 
-        connection_method = None
-        if label == "No connection (local only)":
-            self.query_one("#configs_central_path_input").value = ""
-            self.query_one("#configs_central_path_input").disabled = True
-            self.query_one("#configs_central_path_select_button").disabled = (
-                True
-            )
-            display_ssh = False
-        else:
-            self.query_one("#configs_central_path_input").disabled = False
-            self.query_one("#configs_central_path_select_button").disabled = (
-                False
-            )
-            display_ssh = True if label == "SSH" else False
-
-            if label == "SSH":
-                connection_method = "ssh"
-            elif label == "Google Drive":
-                connection_method = "gdrive"
-            elif label == "AWS S3":
-                connection_method = "aws_s3"
+        connection_method = self.connection_method_from_radiobutton_id(
+            radiobutton_id
+        )
+        display_ssh = (
+            True if connection_method == "ssh" else False
+        )  # temporarily, for tooltips
 
         self.setup_widgets_to_display(connection_method)
 
         self.set_central_path_input_tooltip(display_ssh)
+
+    def radiobutton_id_from_connection_method(
+        self, connection_method: str
+    ) -> str:
+        return f"configs_{connection_method}_radiobutton"
+
+    def connection_method_from_radiobutton_id(
+        self, radiobutton_id: str
+    ) -> str | None:
+        """
+        Get the connection method from the radiobutton id.
+        """
+        assert radiobutton_id.startswith("configs_")
+        assert radiobutton_id.endswith("_radiobutton")
+
+        connection_string = radiobutton_id[
+            len("configs_") : -len("_radiobutton")
+        ]
+        return (
+            connection_string
+            if connection_string
+            in [
+                "ssh",
+                "gdrive",
+                "aws_s3",
+                "local_filesystem",
+            ]
+            else None
+        )
 
     def set_central_path_input_tooltip(self, display_ssh: bool) -> None:
         """
@@ -374,10 +402,6 @@ class ConfigsContent(Container):
         for widget in self.config_ssh_widgets:
             widget.display = display_ssh
 
-        self.query_one("#configs_central_path_select_button").display = (
-            not display_ssh
-        )
-
         if (
             self.interface is None
             or self.interface.get_configs()["connection_method"] != "ssh"
@@ -403,10 +427,6 @@ class ConfigsContent(Container):
         for widget in self.config_gdrive_widgets:
             widget.display = display_gdrive
 
-        self.query_one("#configs_central_path_select_button").display = (
-            not display_gdrive
-        )
-
         if (
             self.interface is None
             or self.interface.get_configs()["connection_method"] != "gdrive"
@@ -423,10 +443,6 @@ class ConfigsContent(Container):
 
         for widget in self.config_aws_s3_widgets:
             widget.display = display_aws
-
-        self.query_one("#configs_central_path_select_button").display = (
-            not display_aws
-        )
 
         if (
             self.interface is None
@@ -773,12 +789,12 @@ class ConfigsContent(Container):
         )
         input.value = value
 
-        # Google Drive Client Secret
-        input = self.query_one("#configs_gdrive_client_secret_input")
+        # Google Drive Root Folder ID
+        input = self.query_one("#configs_gdrive_root_folder_id")
         value = (
             ""
-            if cfg_to_load.get("gdrive_client_secret", None) is None
-            else cfg_to_load["gdrive_client_secret"]
+            if cfg_to_load.get("gdrive_root_folder_id", None) is None
+            else cfg_to_load["gdrive_root_folder_id"]
         )
         input.value = value
 
@@ -810,26 +826,29 @@ class ConfigsContent(Container):
                 "aws_s3",
             ], "Unexpected Connection Method"
 
-        if connection_method == "ssh":
-            # order matters -> fix this
-            self.switch_gdrive_widgets_display(False)
-            self.switch_aws_widgets_display(False)
-            self.switch_ssh_widgets_display(True)
+        connection_widget_display_functions = {
+            "ssh": self.switch_ssh_widgets_display,
+            "gdrive": self.switch_gdrive_widgets_display,
+            "aws_s3": self.switch_aws_widgets_display,
+        }
 
-        elif connection_method == "gdrive":
-            self.switch_ssh_widgets_display(False)
-            self.switch_aws_widgets_display(False)
-            self.switch_gdrive_widgets_display(True)
+        for name, widget_func in connection_widget_display_functions.items():
+            if connection_method == name:
+                widget_func(True)
+            else:
+                widget_func(False)
 
-        elif connection_method == "aws_s3":
-            self.switch_ssh_widgets_display(False)
-            self.switch_gdrive_widgets_display(False)
-            self.switch_aws_widgets_display(True)
-
+        if not connection_method:
+            self.query_one("#configs_central_path_input").value = ""
+            self.query_one("#configs_central_path_input").disabled = True
+            self.query_one("#configs_central_path_select_button").disabled = (
+                True
+            )
         else:
-            self.switch_ssh_widgets_display(False)
-            self.switch_gdrive_widgets_display(False)
-            self.switch_aws_widgets_display(False)
+            self.query_one("#configs_central_path_select_button").disabled = (
+                False
+            )
+            self.query_one("#configs_central_path_input").disabled = False
 
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
@@ -891,11 +910,11 @@ class ConfigsContent(Container):
             None if gdrive_client_id == "" else gdrive_client_id
         )
 
-        gdrive_client_secret = self.query_one(
-            "#configs_gdrive_client_secret_input"
+        gdrive_root_folder_id = self.query_one(
+            "#configs_gdrive_root_folder_id"
         ).value
-        cfg_kwargs["gdrive_client_secret"] = (
-            None if gdrive_client_secret == "" else gdrive_client_secret
+        cfg_kwargs["gdrive_root_folder_id"] = (
+            None if gdrive_root_folder_id == "" else gdrive_root_folder_id
         )
 
         # AWS specific
