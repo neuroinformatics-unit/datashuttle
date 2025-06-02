@@ -171,7 +171,6 @@ class SelectDirectoryTreeScreen(ModalScreen):
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
-        self.available_drives = self.get_drives()
 
         if path_ is None:
             path_ = Path().home()
@@ -193,7 +192,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         yield Container(
             Static(label_message, id="select_directory_tree_screen_label"),
             Select(  # Dropdown for drives
-                [(drive, drive) for drive in self.available_drives],
+                [(drive, drive) for drive in self.get_drives()],
                 value=self.selected_drive,
                 allow_blank=False,
                 id="select_directory_tree_drive_select",
@@ -214,16 +213,13 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
         elif platform.system() in ["Darwin", "Linux"]:
             return ["/"] + [
-                f"/{d}" for d in os.listdir("/") if os.path.isdir(f"/{d}")
+                f"/{dir.name}" for dir in Path("/").iterdir() if dir.is_dir()
             ]
         return ["/"]
 
     def on_select_changed(self, event: Select.Changed) -> None:
         """Updates the directory tree when the drive is changed."""
-        print(f"Drive selected: {event.value}")  # Debug message
-
-        self.selected_drive = event.value
-        self.path_ = Path(self.selected_drive)
+        self.path_ = Path(event.value)
         self.query_one("#select_directory_tree_directory_tree").path = (
             self.path_
         )
