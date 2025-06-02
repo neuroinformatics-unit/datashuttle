@@ -3,6 +3,12 @@ def get_tooltip(id: str) -> str:
     Master function to get tooltips for all widgets,
     based on their widget (textual) id.
     """
+    # Main App Window
+    # -------------------------------------------------------------------------
+
+    if id == "#mainwindow_validate_from_project_path":
+        tooltip = "Validate a project at a given location from the filepath (does not require setting up a full project)."
+
     # Configs
     # -------------------------------------------------------------------------
 
@@ -204,5 +210,24 @@ def get_tooltip(id: str) -> str:
 
     elif id == "#transfer_all_non_datatype_checkbox":
         tooltip = "Select to transfer only non-datatype folders from within sessions."
+
+    # Tabscreen - Validation
+    # -------------------------------------------------------------------------
+
+    elif id == "validate_path_input":
+        tooltip = "The file path to the NeuroBlueprint-formatted project to validate."
+
+    elif id == "validate_top_level_folder_select":
+        tooltip = "Validate all folders within this top-level folder."
+
+    elif id == "validate_include_central_checkbox":
+        tooltip = "If `True`, the central project will also be validated."
+
+    elif id == "validate_strict_mode_checkbox":
+        tooltip = (
+            "By default, only sub- or ses- prefixed folders are checked.\n\n"
+            "Strict mode forces any folder in project to be a "
+            "NeuroBlueprint-formatted sub-, ses- or datatype folder."
+        )
 
     return tooltip

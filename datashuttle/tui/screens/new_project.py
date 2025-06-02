@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
 
 from textual.screen import Screen
 from textual.widgets import Button, Header
 
-from datashuttle.tui import configs
+from datashuttle.tui.shared import configs_content
 
 
 class NewProjectScreen(Screen):
@@ -36,7 +36,7 @@ class NewProjectScreen(Screen):
 
     TITLE = "Make New Project"
 
-    def __init__(self, mainwindow: App) -> None:
+    def __init__(self, mainwindow: TuiApp) -> None:
         super(NewProjectScreen, self).__init__()
 
         self.mainwindow = mainwindow
@@ -44,7 +44,7 @@ class NewProjectScreen(Screen):
     def compose(self) -> ComposeResult:
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
-        yield configs.ConfigsContent(
+        yield configs_content.ConfigsContent(
             self, interface=None, id="new_project_configs_content"
         )
 

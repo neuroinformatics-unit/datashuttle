@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.worker import Worker
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.utils.custom_types import InterfaceOutput
 
 import os
@@ -157,7 +157,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
     Parameters
     ----------
 
-    mainwindow : App
+    mainwindow : TuiApp
         Textual main app screen
 
     path_ : Optional[Path]
@@ -165,7 +165,9 @@ class SelectDirectoryTreeScreen(ModalScreen):
         if `None` set to the system user home.
     """
 
-    def __init__(self, mainwindow: App, path_: Optional[Path] = None) -> None:
+    def __init__(
+        self, mainwindow: TuiApp, path_: Optional[Path] = None
+    ) -> None:
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
@@ -241,7 +243,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
 class RenameFileOrFolderScreen(ModalScreen):
     """ """
 
-    def __init__(self, mainwindow: App, path_: Path) -> None:
+    def __init__(self, mainwindow: TuiApp, path_: Path) -> None:
         super(RenameFileOrFolderScreen, self).__init__()
 
         self.mainwindow = mainwindow
