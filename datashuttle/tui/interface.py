@@ -499,18 +499,27 @@ class Interface:
 
     def setup_google_drive_connection(
         self,
+        gdrive_client_secret: Optional[str] = None,
         config_token: Optional[str] = None,
     ) -> InterfaceOutput:
         try:
-            self.project._setup_rclone_gdrive_config(config_token, log=False)
+            self.project._setup_rclone_gdrive_config(
+                gdrive_client_secret, config_token, log=False
+            )
+            rclone.check_successful_connection_and_raise_error_on_fail(
+                self.project.cfg
+            )
             return True, None
         except BaseException as e:
             return False, str(e)
 
-    def get_rclone_message_for_gdrive_without_browser(self):
+    def get_rclone_message_for_gdrive_without_browser(
+        self, gdrive_client_secret: Optional[str] = None
+    ) -> InterfaceOutput:
         try:
             output = gdrive.preliminary_for_setup_without_browser(
                 self.project.cfg,
+                gdrive_client_secret,
                 self.project.cfg.get_rclone_config_name("gdrive"),
                 log=False,
             )
