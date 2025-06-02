@@ -15,7 +15,10 @@ from textual.widgets import Button, Input, Static
 class SetupAwsScreen(ModalScreen):
     """
     This dialog window handles the TUI equivalent of API's
-    `setup_aws_s3_connection()`.
+    `setup_aws_s3_connection()`. This asks the user for confirmation
+    to proceed with the setup, and then prompts the user for the AWS Secret Access Key.
+    The secret access key is then used to setup rclone config for AWS S3.
+    Works similar to `SetupSshScreen`.
     """
 
     def __init__(self, interface: Interface) -> None:
