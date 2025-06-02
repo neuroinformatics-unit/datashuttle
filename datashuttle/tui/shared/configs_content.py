@@ -839,6 +839,7 @@ class ConfigsContent(Container):
                 widget_func(False)
 
         if not connection_method:
+            # local only project
             self.query_one("#configs_central_path_input").value = ""
             self.query_one("#configs_central_path_input").disabled = True
             self.query_one("#configs_central_path_select_button").disabled = (

@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import gdrive, ssh
+from datashuttle.utils import gdrive, rclone, ssh
 
 
 class Interface:
@@ -525,7 +525,12 @@ class Interface:
         self, aws_secret_access_key: str
     ) -> InterfaceOutput:
         try:
-            self.project.setup_aws_s3_connection(aws_secret_access_key)
+            self.project._setup_rclone_aws_config(
+                aws_secret_access_key, log=False
+            )
+            rclone.check_successful_connection_and_raise_error_on_fail(
+                self.project.cfg
+            )
             return True, None
         except BaseException as e:
             return False, str(e)
