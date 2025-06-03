@@ -8,7 +8,7 @@ get in contact if you encounter any bugs or unexpected behaviour.
 
 ``datashuttle`` requires
 [Python](https://www.python.org/)
-to run (see [this guide](https://realpython.com/installing-python/) for how to install Python).
+to run (see [this guide](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html) on managing Python with conda).
 
 The easiest way to install ``datashuttle`` is through the Python package manager
 [conda](https://docs.conda.io/en/latest/). However, installation with `pip` is also supported.
@@ -20,7 +20,7 @@ The easiest way to install ``datashuttle`` is through the Python package manager
 :::{tab-item} Conda
 
 If you do not already have `conda` on your system, first
-[download and install conda](https://docs.anaconda.com/free/miniconda/miniconda-install/).
+[download and install conda](https://docs.conda.io/projects/conda/en/latest/user-guide/index.html).
 
 If you are on Windows, the easiest way to use `conda` is through the [Anaconda Prompt](https://docs.anaconda.com/free/anaconda/getting-started/index.html).
 
