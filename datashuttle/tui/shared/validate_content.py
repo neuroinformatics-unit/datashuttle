@@ -142,7 +142,7 @@ class ValidateContent(Container):
             if self.interface:
 
                 if self.interface.project.is_local_project():
-                    include_central = True
+                    include_central = False
                 else:
                     include_central = self.query_one(
                         "#validate_include_central_checkbox"
