@@ -1,5 +1,3 @@
-import re
-
 import pytest
 import test_utils
 from tui_base import TuiBase
@@ -98,6 +96,7 @@ class TestTuiCreateFolders(TuiBase):
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
+            import re
 
             # Fill the subject input with names with @DATE@ tags and
             # check the tooltip displays the formatted value.
@@ -107,15 +106,19 @@ class TestTuiCreateFolders(TuiBase):
                 "sub-001_@DATE@, sub-002_@DATE@",
             )
 
-            sub_1_regexp = "sub\-001_date\-\d{8}"
-            sub_2_regexp = "sub\-002_date\-\d{8}"
+            # A lot of regexp magic required to dynamically
+            # process date str but handle the [ escape needed
+            # to avoid textual processing these as markdown style syntax
+            sub_1_regexp = r"sub-001_date-\d{8}"
+            sub_2_regexp = r"sub-002_date-\d{8}"
             sub_tooltip_regexp = (
-                "Formatted names: \['"
+                re.escape("Formatted names: \\['")
                 + sub_1_regexp
-                + "', '"
+                + re.escape("', '")
                 + sub_2_regexp
-                + "'\]"
+                + re.escape("']")
             )
+
             sub_tooltip = pilot.app.screen.query_one(
                 "#create_folders_subject_input"
             ).tooltip
@@ -127,17 +130,19 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_session_input", "ses-001@TO@003_@DATE@"
             )
 
-            ses_1_regexp = "ses\-001_date\-\d{8}"
-            ses_2_regexp = "ses\-002_date\-\d{8}"
-            ses_3_regexp = "ses\-003_date\-\d{8}"
+            ses_1_regexp = r"ses-001_date-\d{8}"
+            ses_2_regexp = r"ses-002_date-\d{8}"
+            ses_3_regexp = r"ses-003_date-\d{8}"
+
+            # Build pattern with escaped fixed parts, regex for date parts
             ses_tooltip_regexp = (
-                "Formatted names: \['"
+                re.escape("Formatted names: \\['")
                 + ses_1_regexp
-                + "', '"
+                + re.escape("', '")
                 + ses_2_regexp
-                + "', '"
+                + re.escape("', '")
                 + ses_3_regexp
-                + "'\]"
+                + re.escape("']")
             )
             ses_tooltip = pilot.app.screen.query_one(
                 "#create_folders_session_input"
@@ -225,7 +230,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).tooltip
-                == "Formatted names: ['sub-001']"
+                == "Formatted names: \['sub-001']"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -411,8 +416,9 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).tooltip
-                == "Formatted names: ['sub-001']"
+                == "Formatted names: \['sub-001']"
             )
+
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
