@@ -33,7 +33,10 @@ class NeuroBlueprintValidator(Validator):
         """
         valid, message = self.parent.run_local_validation(self.prefix)
 
-        message = message.replace("[", "\[")
+        message = message.replace(
+            "[", "\["
+        )  # stop Rich interpreting [ as markdown style
+
         self.parent.update_input_tooltip(message, self.prefix)
 
         if valid:
