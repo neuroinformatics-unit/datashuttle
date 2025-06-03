@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 
 from textual.validation import ValidationResult, Validator
 
+from datashuttle.tui.utils.tui_helpers import process_str_for_textual
+
 
 class NeuroBlueprintValidator(Validator):
     def __init__(self, prefix: Prefix, parent: CreateFoldersTab) -> None:
@@ -33,11 +35,9 @@ class NeuroBlueprintValidator(Validator):
         """
         valid, message = self.parent.run_local_validation(self.prefix)
 
-        message = message.replace(
-            "[", "\["
-        )  # stop Rich interpreting [ as markdown style
-
-        self.parent.update_input_tooltip(message, self.prefix)
+        self.parent.update_input_tooltip(
+            process_str_for_textual(message), self.prefix
+        )
 
         if valid:
             if self.prefix == "sub":

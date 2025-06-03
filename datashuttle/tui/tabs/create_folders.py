@@ -217,7 +217,7 @@ class CreateFoldersTab(TreeAndInputTab):
             value = self.query_one(key).value
             self.query_one(key).validate(value=value)
 
-    def update_input_tooltip(self, message: List[str], prefix: Prefix) -> None:
+    def update_input_tooltip(self, message: str, prefix: Prefix) -> None:
         """
         Update the value of a subject or session tooltip, which
         indicates the validation status of the input value.

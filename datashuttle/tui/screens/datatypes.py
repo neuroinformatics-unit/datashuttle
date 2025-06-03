@@ -23,6 +23,8 @@ from textual.widgets import (
 )
 from textual.widgets.selection_list import Selection
 
+from datashuttle.tui.utils.tui_helpers import process_str_for_textual
+
 # --------------------------------------------------------------------------------------
 # Select Displayed Datatypes Screen
 # --------------------------------------------------------------------------------------
@@ -261,7 +263,7 @@ class DatatypeCheckboxes(Static):
             if self.datatype_config[datatype]["displayed"]:
                 self.query_one(
                     f"#{get_checkbox_name(self.create_or_transfer, datatype)}"
-                ).tooltip = tooltips[datatype]
+                ).tooltip = process_str_for_textual(tooltips[datatype])
 
     def selected_datatypes(self) -> List[str]:
         """
