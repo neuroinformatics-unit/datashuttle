@@ -101,13 +101,13 @@ class ConfigsContent(Container):
             Label("Client ID", id="configs_gdrive_client_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="Google Drive Client ID (leave blank to use rclone's default client (slower))",
+                placeholder="Google Drive Client ID",
                 id="configs_gdrive_client_id_input",
             ),
             Label("Root Folder ID", id="configs_gdrive_root_folder_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="Google Drive Root Folder ID (leave blank to use the topmost folder)",
+                placeholder="Google Drive Root Folder ID",
                 id="configs_gdrive_root_folder_id",
             ),
         ]
@@ -284,6 +284,8 @@ class ConfigsContent(Container):
             "#configs_local_only_radiobutton",
             "#configs_central_host_username_input",
             "#configs_central_host_id_input",
+            "#configs_gdrive_client_id_input",
+            "#configs_gdrive_root_folder_id",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -625,12 +627,15 @@ class ConfigsContent(Container):
             self.query_one("#configs_go_to_project_screen_button").visible = (
                 True
             )
+
+            # A message template to display custom message to user according to the chosen connection method
             message_template = (
                 "A datashuttle project has now been created.\n\n "
                 "Next, setup the {method_name} connection. Once complete, navigate to the "
                 "'Main Menu' and proceed to the project page, where you will be "
                 "able to create and transfer project folders."
             )
+
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.
             if cfg_kwargs["connection_method"] == "ssh":
