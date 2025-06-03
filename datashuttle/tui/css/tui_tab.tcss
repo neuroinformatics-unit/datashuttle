@@ -53,9 +53,6 @@ TabScreen > TabbedContent {
     layout: horizontal;
     background: transparent;
     margin: 1 0 0 0;
-}
-
-#transfer_radioset:focus {
     border: transparent;
 }
 
