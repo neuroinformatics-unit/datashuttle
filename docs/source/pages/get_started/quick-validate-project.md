@@ -1,3 +1,4 @@
+:orphan:
 (quick-validate-projects)=
 
 # Validate a project from a filepath
