@@ -322,7 +322,9 @@ class ConfigsContent(Container):
             True if connection_method == "ssh" else False
         )  # temporarily, for tooltips
 
-        self.fill_inputs_with_project_configs()
+        if self.interface:
+            self.fill_inputs_with_project_configs()
+
         self.setup_widgets_to_display(connection_method)
 
         self.set_central_path_input_tooltip(display_ssh)
