@@ -179,16 +179,8 @@ class ConfigsContent(Container):
                 Button("Save", id="configs_save_configs_button"),
                 Horizontal(
                     Button(
-                        "Setup SSH Connection",
-                        id="configs_setup_ssh_connection_button",
-                    ),
-                    Button(
-                        "Setup Google Drive Connection",
-                        id="configs_setup_gdrive_connection_button",
-                    ),
-                    Button(
-                        "Setup AWS Connection",
-                        id="configs_setup_aws_connection_button",
+                        "Setup Button",
+                        id="configs_setup_connection_button",
                     ),
                     id="setup_buttons_container",
                 ),
@@ -255,9 +247,6 @@ class ConfigsContent(Container):
                 True
             )
             self.setup_widgets_to_display(connection_method="local_filesystem")
-            self.query_one("#configs_setup_ssh_connection_button").visible = (
-                False
-            )
 
         # Setup tooltips
         if not self.interface:
@@ -407,18 +396,6 @@ class ConfigsContent(Container):
         for widget in self.config_ssh_widgets:
             widget.display = display_ssh
 
-        if (
-            self.interface is None
-            or self.interface.get_configs()["connection_method"] != "ssh"
-        ):
-            self.query_one("#configs_setup_ssh_connection_button").visible = (
-                False
-            )
-        else:
-            self.query_one("#configs_setup_ssh_connection_button").visible = (
-                display_ssh
-            )
-
         if not self.query_one("#configs_central_path_input").value:
             if display_ssh:
                 placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=True)}"
@@ -432,34 +409,9 @@ class ConfigsContent(Container):
         for widget in self.config_gdrive_widgets:
             widget.display = display_gdrive
 
-        if (
-            self.interface is None
-            or self.interface.get_configs()["connection_method"] != "gdrive"
-        ):
-            self.query_one(
-                "#configs_setup_gdrive_connection_button"
-            ).visible = False
-        else:
-            self.query_one(
-                "#configs_setup_gdrive_connection_button"
-            ).visible = display_gdrive
-
     def switch_aws_widgets_display(self, display_aws: bool) -> None:
-
         for widget in self.config_aws_s3_widgets:
             widget.display = display_aws
-
-        if (
-            self.interface is None
-            or self.interface.get_configs()["connection_method"] != "aws_s3"
-        ):
-            self.query_one("#configs_setup_aws_connection_button").visible = (
-                False
-            )
-        else:
-            self.query_one("#configs_setup_aws_connection_button").visible = (
-                display_aws
-            )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """
@@ -472,14 +424,21 @@ class ConfigsContent(Container):
             else:
                 self.setup_configs_for_an_existing_project()
 
-        elif event.button.id == "configs_setup_ssh_connection_button":
-            self.setup_ssh_connection()
+        elif event.button.id == "configs_setup_connection_button":
+            assert (
+                self.interface is not None
+            ), "type narrow flexible `interface`"
 
-        elif event.button.id == "configs_setup_gdrive_connection_button":
-            self.setup_gdrive_connection()
+            connection_method = self.interface.get_configs()[
+                "connection_method"
+            ]
 
-        elif event.button.id == "configs_setup_aws_connection_button":
-            self.setup_aws_connection()
+            if connection_method == "ssh":
+                self.setup_ssh_connection()
+            elif connection_method == "gdrive":
+                self.setup_gdrive_connection()
+            elif connection_method == "aws_s3":
+                self.setup_aws_connection()
 
         elif event.button.id == "configs_go_to_project_screen_button":
             self.parent_class.dismiss(self.interface)
@@ -641,37 +600,18 @@ class ConfigsContent(Container):
 
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.
-            if cfg_kwargs["connection_method"] == "ssh":
+            connection_method = cfg_kwargs["connection_method"]
 
-                self.query_one(
-                    "#configs_setup_ssh_connection_button"
-                ).visible = True
-                self.query_one(
-                    "#configs_setup_ssh_connection_button"
-                ).disabled = False
+            # To trigger the appearance of "Setup connection" button
+            self.setup_widgets_to_display(connection_method)
 
+            if connection_method == "ssh":
                 message = message_template.format(method_name="SSH")
 
-            elif cfg_kwargs["connection_method"] == "gdrive":
-
-                self.query_one(
-                    "#configs_setup_gdrive_connection_button"
-                ).visible = True
-                self.query_one(
-                    "#configs_setup_gdrive_connection_button"
-                ).disabled = False
-
+            elif connection_method == "gdrive":
                 message = message_template.format(method_name="Google Drive")
 
-            elif cfg_kwargs["connection_method"] == "aws_s3":
-
-                self.query_one(
-                    "#configs_setup_aws_connection_button"
-                ).visible = True
-                self.query_one(
-                    "#configs_setup_aws_connection_button"
-                ).disabled = False
-
+            elif connection_method == "aws_s3":
                 message = message_template.format(method_name="AWS")
 
             else:
@@ -716,7 +656,7 @@ class ConfigsContent(Container):
                 ),
                 lambda unused: self.post_message(self.ConfigsSaved()),
             )
-            # to trigger the appearance of buttons
+            # To trigger the appearance of "Setup connection" button
             self.setup_widgets_to_display(cfg_kwargs["connection_method"])
         else:
             self.parent_class.mainwindow.show_modal_error_dialog(output)
@@ -855,18 +795,39 @@ class ConfigsContent(Container):
             else:
                 widget_func(False)
 
+        self.query_one("#configs_central_path_input").disabled = (
+            connection_method is None
+        )
+        self.query_one("#configs_central_path_select_button").disabled = (
+            connection_method is None
+        )
+
+        # Local only project
         if not connection_method:
-            # local only project
             self.query_one("#configs_central_path_input").value = ""
-            self.query_one("#configs_central_path_input").disabled = True
-            self.query_one("#configs_central_path_select_button").disabled = (
-                True
-            )
+
+        setup_connection_button = self.query_one(
+            "#configs_setup_connection_button"
+        )
+
+        # fmt: off
+        if (
+            not connection_method
+            or connection_method == "local_filesystem"
+            or not self.interface
+            or connection_method != self.interface.get_configs()["connection_method"]
+        ):
+            setup_connection_button.visible = False
+        # fmt: on
         else:
-            self.query_one("#configs_central_path_select_button").disabled = (
-                False
-            )
-            self.query_one("#configs_central_path_input").disabled = False
+            setup_connection_button.visible = True
+
+            if connection_method == "ssh":
+                setup_connection_button.label = "Setup SSH Connection"
+            elif connection_method == "gdrive":
+                setup_connection_button.label = "Setup Google Drive Connection"
+            elif connection_method == "aws":
+                setup_connection_button.label = "Setup AWS Connection"
 
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
         """
