@@ -140,6 +140,10 @@ class ConfigsContent(Container):
             Label("Connection Method", id="configs_connect_method_label"),
             RadioSet(
                 RadioButton(
+                    "No connection (local only)",
+                    id="configs_local_only_radiobutton",
+                ),
+                RadioButton(
                     "Local Filesystem",
                     id=self.radiobutton_id_from_connection_method(
                         "local_filesystem"
@@ -155,10 +159,6 @@ class ConfigsContent(Container):
                 RadioButton(
                     "AWS S3",
                     id=self.radiobutton_id_from_connection_method("aws_s3"),
-                ),
-                RadioButton(
-                    "No connection (local only)",
-                    id="configs_local_only_radiobutton",
                 ),
                 id="configs_connect_method_radioset",
             ),
@@ -322,6 +322,7 @@ class ConfigsContent(Container):
             True if connection_method == "ssh" else False
         )  # temporarily, for tooltips
 
+        self.fill_inputs_with_project_configs()
         self.setup_widgets_to_display(connection_method)
 
         self.set_central_path_input_tooltip(display_ssh)
@@ -724,23 +725,14 @@ class ConfigsContent(Container):
         widgets with the current project configs. This in some instances
         requires recasting to a new type of changing the value.
 
-        In the case of the `connection_method` widget, the associated
-        "ssh" widgets are hidden / displayed based on the current setting,
-        in `self.switch_ssh_widgets_display()`.
+        In the case of the `connection_method` widget, the associated connection
+        method radio button is hidden / displayed based on the current settings.
+        This change of radio button triggers `on_radio_set_changed` which displays
+        the appropriate connection method widgets.
         """
         assert self.interface is not None, "type narrow flexible `interface`"
 
         cfg_to_load = self.interface.get_textual_compatible_project_configs()
-
-        # Local Path
-        input = self.query_one("#configs_local_path_input")
-        input.value = cfg_to_load["local_path"]
-
-        # Central Path
-        input = self.query_one("#configs_central_path_input")
-        input.value = (
-            cfg_to_load["central_path"] if cfg_to_load["central_path"] else ""
-        )
 
         # Connection Method
         # Make a dict of radiobutton: is on bool to easily find
@@ -763,9 +755,27 @@ class ConfigsContent(Container):
         for id, value in what_radiobuton_is_on.items():
             self.query_one(f"#{id}").value = value
 
-        # self.switch_ssh_widgets_display(
-        #     display_ssh=what_radiobuton_is_on["configs_ssh_radiobutton"]
-        # )
+        self.fill_inputs_with_project_configs()
+
+    def fill_inputs_with_project_configs(self) -> None:
+        """
+        This fills the input widgets with the current project configs. It is
+        used while setting up widgets for the project while mounting the current
+        tab and also to repopulate input widgets when the radio buttons change.
+        """
+        assert self.interface is not None, "type narrow flexible `interface`"
+
+        cfg_to_load = self.interface.get_textual_compatible_project_configs()
+
+        # Local Path
+        input = self.query_one("#configs_local_path_input")
+        input.value = cfg_to_load["local_path"]
+
+        # Central Path
+        input = self.query_one("#configs_central_path_input")
+        input.value = (
+            cfg_to_load["central_path"] if cfg_to_load["central_path"] else ""
+        )
 
         # Central Host ID
         input = self.query_one("#configs_central_host_id_input")
@@ -875,65 +885,68 @@ class ConfigsContent(Container):
         else:
             cfg_kwargs["central_path"] = Path(central_path_value)
 
-        if self.query_one("#configs_ssh_radiobutton").value:
-            connection_method = "ssh"
-
-        elif self.query_one("#configs_gdrive_radiobutton").value:
-            connection_method = "gdrive"
-
-        elif self.query_one("#configs_aws_s3_radiobutton").value:
-            connection_method = "aws_s3"
-
-        elif self.query_one("#configs_local_filesystem_radiobutton").value:
-            connection_method = "local_filesystem"
-
-        elif self.query_one("#configs_local_only_radiobutton").value:
-            connection_method = None
+        for id in [
+            "configs_local_filesystem_radiobutton",
+            "configs_ssh_radiobutton",
+            "configs_gdrive_radiobutton",
+            "configs_aws_s3_radiobutton",
+            "configs_local_only_radiobutton",
+        ]:
+            if self.query_one("#" + id).value:
+                connection_method = self.connection_method_from_radiobutton_id(
+                    id
+                )
+                break
 
         cfg_kwargs["connection_method"] = connection_method
 
         # SSH specific
-        central_host_id = self.query_one(
-            "#configs_central_host_id_input"
-        ).value
-        cfg_kwargs["central_host_id"] = (
-            None if central_host_id == "" else central_host_id
-        )
+        if connection_method == "ssh":
+            central_host_id = self.query_one(
+                "#configs_central_host_id_input"
+            ).value
+            cfg_kwargs["central_host_id"] = (
+                None if central_host_id == "" else central_host_id
+            )
 
-        central_host_username = self.query_one(
-            "#configs_central_host_username_input"
-        ).value
+            central_host_username = self.query_one(
+                "#configs_central_host_username_input"
+            ).value
 
-        cfg_kwargs["central_host_username"] = (
-            None if central_host_username == "" else central_host_username
-        )
+            cfg_kwargs["central_host_username"] = (
+                None if central_host_username == "" else central_host_username
+            )
 
         # Google Drive specific
-        gdrive_client_id = self.query_one(
-            "#configs_gdrive_client_id_input"
-        ).value
-        cfg_kwargs["gdrive_client_id"] = (
-            None if gdrive_client_id == "" else gdrive_client_id
-        )
+        elif connection_method == "gdrive":
+            gdrive_client_id = self.query_one(
+                "#configs_gdrive_client_id_input"
+            ).value
+            cfg_kwargs["gdrive_client_id"] = (
+                None if gdrive_client_id == "" else gdrive_client_id
+            )
 
-        gdrive_root_folder_id = self.query_one(
-            "#configs_gdrive_root_folder_id"
-        ).value
-        cfg_kwargs["gdrive_root_folder_id"] = (
-            None if gdrive_root_folder_id == "" else gdrive_root_folder_id
-        )
+            gdrive_root_folder_id = self.query_one(
+                "#configs_gdrive_root_folder_id"
+            ).value
+            cfg_kwargs["gdrive_root_folder_id"] = (
+                None if gdrive_root_folder_id == "" else gdrive_root_folder_id
+            )
 
         # AWS specific
-        aws_access_key_id = self.query_one(
-            "#configs_aws_access_key_id_input"
-        ).value
-        cfg_kwargs["aws_access_key_id"] = (
-            None if aws_access_key_id == "" else aws_access_key_id
-        )
+        elif connection_method == "aws_s3":
+            aws_access_key_id = self.query_one(
+                "#configs_aws_access_key_id_input"
+            ).value
+            cfg_kwargs["aws_access_key_id"] = (
+                None if aws_access_key_id == "" else aws_access_key_id
+            )
 
-        aws_s3_region = self.query_one("#configs_aws_s3_region_select").value
-        cfg_kwargs["aws_s3_region"] = (
-            None if aws_s3_region == Select.BLANK else aws_s3_region
-        )
+            aws_s3_region = self.query_one(
+                "#configs_aws_s3_region_select"
+            ).value
+            cfg_kwargs["aws_s3_region"] = (
+                None if aws_s3_region == Select.BLANK else aws_s3_region
+            )
 
         return cfg_kwargs
