@@ -947,9 +947,9 @@ class DataShuttle:
         self._setup_rclone_aws_config(aws_secret_access_key, log=True)
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
-        utils.log_and_message("AWS Connection Successful.")
+        aws.raise_if_bucket_absent(self.cfg)
 
-        aws.warn_if_bucket_absent(self.cfg)
+        utils.log_and_message("AWS Connection Successful.")
 
         ds_logger.close_log_filehandler()
 

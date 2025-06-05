@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import gdrive, rclone, ssh
+from datashuttle.utils import aws, gdrive, rclone, ssh
 
 
 class Interface:
@@ -540,6 +540,7 @@ class Interface:
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.project.cfg
             )
+            aws.raise_if_bucket_absent(self.project.cfg)
             return True, None
         except BaseException as e:
             return False, str(e)
