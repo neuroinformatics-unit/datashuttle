@@ -16,6 +16,8 @@ from textual.widgets import (
     Static,
 )
 
+from datashuttle.tui.utils.tui_helpers import process_str_for_textual
+
 
 class SetupSshScreen(ModalScreen):
     """
@@ -112,7 +114,9 @@ class SetupSshScreen(ModalScreen):
             )
             self.query_one("#setup_ssh_ok_button").disabled = True
 
-        self.query_one("#messagebox_message_label").update(message)
+        self.query_one("#messagebox_message_label").update(
+            process_str_for_textual(message)
+        )
         self.stage += 1
 
     def save_hostkeys_and_prompt_password_input(self) -> None:
@@ -137,7 +141,9 @@ class SetupSshScreen(ModalScreen):
             )
             self.query_one("#setup_ssh_ok_button").disabled = True
 
-        self.query_one("#messagebox_message_label").update(message)
+        self.query_one("#messagebox_message_label").update(
+            process_str_for_textual(message)
+        )
         self.stage += 1
 
     def use_password_to_setup_ssh_key_pairs(self) -> None:
@@ -169,4 +175,6 @@ class SetupSshScreen(ModalScreen):
             )
             self.failed_password_attempts += 1
 
-        self.query_one("#messagebox_message_label").update(message)
+        self.query_one("#messagebox_message_label").update(
+            process_str_for_textual(message)
+        )

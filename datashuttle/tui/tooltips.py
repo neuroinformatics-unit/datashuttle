@@ -1,3 +1,6 @@
+from datashuttle.tui.utils.tui_helpers import process_str_for_textual
+
+
 def get_tooltip(id: str) -> str:
     """
     Master function to get tooltips for all widgets,
@@ -230,4 +233,4 @@ def get_tooltip(id: str) -> str:
             "NeuroBlueprint-formatted sub-, ses- or datatype folder."
         )
 
-    return tooltip
+    return process_str_for_textual(tooltip)

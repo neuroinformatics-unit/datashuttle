@@ -10,6 +10,7 @@ from datashuttle.tui.custom_widgets import (
     CustomDirectoryTree,
 )
 from datashuttle.tui.utils.tui_decorators import require_double_click
+from datashuttle.tui.utils.tui_helpers import process_str_for_textual
 
 
 class RichLogScreen(ModalScreen):
@@ -85,7 +86,9 @@ class LoggingTab(TabPane):
     def update_most_recent_label(self):
         self.update_latest_log_path()
         self.query_one("#logging_most_recent_label").update(
-            f"or open most recent: {self.latest_log_path.stem}"
+            process_str_for_textual(
+                f"or open most recent: {self.latest_log_path.stem}"
+            )
         )
         self.refresh()
 

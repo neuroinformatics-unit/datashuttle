@@ -32,6 +32,7 @@ TabScreen > TabbedContent {
 
 #create_folders_buttons_horizontal {
     height: 3;
+    margin: 0 0 1 0
 }
 
 #template_settings_validation_on_checkbox.-on > .toggle--button{
@@ -52,9 +53,6 @@ TabScreen > TabbedContent {
     layout: horizontal;
     background: transparent;
     margin: 1 0 0 0;
-}
-
-#transfer_radioset:focus {
     border: transparent;
 }
 
