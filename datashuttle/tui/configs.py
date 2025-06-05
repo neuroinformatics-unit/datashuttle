@@ -826,7 +826,7 @@ class ConfigsContent(Container):
                 setup_connection_button.label = "Setup SSH Connection"
             elif connection_method == "gdrive":
                 setup_connection_button.label = "Setup Google Drive Connection"
-            elif connection_method == "aws":
+            elif connection_method == "aws_s3":
                 setup_connection_button.label = "Setup AWS Connection"
 
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
