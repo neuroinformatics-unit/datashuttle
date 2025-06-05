@@ -116,7 +116,10 @@ class Configs(UserDict):
     def load_from_file(self) -> None:
         """
         Load a config dict saved at .yaml file. Note this will
-        not automatically check the configs are valid, this
+        do a minimal backwards compatibility check and add config
+        keys to ensure backwards compatibility with new connection
+        methods added to Datashuttle.
+        But this will not automatically check the configs are valid, this
         requires calling self.check_dict_values_raise_on_fail()
         """
         with open(self.file_path, "r") as config_file:
@@ -124,7 +127,31 @@ class Configs(UserDict):
 
         load_configs.convert_str_and_pathlib_paths(config_dict, "str_to_path")
 
+        config_dict = self.ensure_backwards_compatibilty_for_config(
+            config_dict
+        )
         self.data = config_dict
+
+    def ensure_backwards_compatibilty_for_config(
+        self, config_dict: Dict
+    ) -> Dict:
+        canonical_config_keys_to_add = [
+            "gdrive_client_id",
+            "gdrive_root_folder_id",
+            "aws_access_key_id",
+            "aws_s3_region",
+        ]
+
+        # All keys shall be missing for a backwards compatibility update
+        needs_update = all(
+            key not in config_dict.keys()
+            for key in canonical_config_keys_to_add
+        )
+        if needs_update:
+            for key in canonical_config_keys_to_add:
+                config_dict[key] = None
+
+        return config_dict
 
     # -------------------------------------------------------------------------
     # Utils
