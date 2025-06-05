@@ -12,17 +12,17 @@ The core development team will support you in contributing code, regardless of y
 
 ## Creating a development environment
 
-For detailed instructions on installing **datashuttle** along with
+For detailed instructions on installing ``datashuttle`` along with
 all necessary packages for development, refer to the `Developers` tab on the
-[How to install **datashuttle**](how-to-install) page.
+[How to install ``datashuttle``](how-to-install) page.
 
-Briefly, after installing Rclone, the **datashuttle** repository can be cloned:
+Briefly, after installing Rclone, the ``datashuttle`` repository can be cloned:
 
 ```sh
 git clone git@github.com:neuroinformatics-unit/datashuttle.git
 ```
 
-and **datashuttle** pip-installed with the developer tag:
+and ``datashuttle`` pip-installed with the developer tag:
 
 
 ```sh
@@ -117,8 +117,8 @@ Make sure to provide docstrings for all public functions, classes, and methods.
 
 ## Contributing documentation
 
-It is very important that the documentation for **datashuttle** is clear,
-accurate and concise. A key principle of **datashuttle** is it should
+It is very important that the documentation for ``datashuttle`` is clear,
+accurate and concise. A key principle of ``datashuttle`` is it should
 make data acquisition simple and easy—therefore it should be
 well-documented.
 
