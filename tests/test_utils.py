@@ -695,3 +695,8 @@ def get_task_by_name(name):
         None,
     )
     return target_task
+
+
+async def await_task_by_name_if_present(name: str) -> None:
+    if task := get_task_by_name(name):
+        await task

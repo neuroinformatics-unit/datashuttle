@@ -138,6 +138,13 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
 
 class SearchingCentralForNextSubSesPopup(ModalScreen):
+    """
+    A popup to show message and a loading indicator when awaiting search next sub/ses across
+    the folders present in both local and central machines. This search happens in a separate
+    thread so as to allow TUI to display the loading indicate without freezing.
+
+    Only displayed when the `include_central` flag is checked and the connection method is "ssh".
+    """
 
     def __init__(self, sub_or_ses: Prefix) -> None:
         super().__init__()

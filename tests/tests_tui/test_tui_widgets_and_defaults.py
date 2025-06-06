@@ -929,6 +929,11 @@ class TestTuiWidgets(TuiBase):
     async def test_search_central_for_suggestion_settings(
         self, setup_project_paths
     ):
+        """
+        Check the settings for the checkbox that selects include_central when
+        getting the next subject or session in the 'Create' tab and ensure that
+        the underlying settings are changed.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
