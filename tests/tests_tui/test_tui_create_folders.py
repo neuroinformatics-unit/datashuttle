@@ -552,7 +552,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, project_name, create_folders=True
             )
 
-            # turn on the central checkbox
+            # Turn on the central checkbox
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_button"
             )
@@ -563,7 +563,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_settings_close_button"
             )
 
-            # mocking the datashuttle functions
+            # Mock the datashuttle functions
             spy_get_next_sub = mocker.spy(
                 pilot.app.screen.interface.project, "get_next_sub"
             )
@@ -571,7 +571,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.interface.project, "get_next_ses"
             )
 
-            # check subject suggestion
+            #  # Check subject suggestion called mocked function correctly
             await self.double_click(pilot, "#create_folders_subject_input")
 
             if suggest_sub_task := test_utils.get_task_by_name(
@@ -583,7 +583,7 @@ class TestTuiCreateFolders(TuiBase):
                 "rawdata", return_with_prefix=True, include_central=True
             )
 
-            # check session suggestion
+            # Check session suggestion called mocked function correctly
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
             )

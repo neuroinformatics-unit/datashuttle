@@ -322,7 +322,7 @@ class CreateFoldersTab(TreeAndInputTab):
         self, prefix, input_id, include_central
     ):
         """
-        This handles running the running the `fill_input_with_next_sub_or_ses_template`
+        This handles running the `fill_input_with_next_sub_or_ses_template`
         worker and waiting for it to complete. If an error occurs in
         `fill_input_with_next_sub_or_ses_template`, it dismisses the popup itself.
 

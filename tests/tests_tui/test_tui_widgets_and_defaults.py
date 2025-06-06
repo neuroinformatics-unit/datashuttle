@@ -942,7 +942,7 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
-            # check default
+            # Check default value
             assert (
                 pilot.app.screen.query_one(
                     "#suggest_next_sub_ses_central_checkbox"
@@ -956,7 +956,7 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
-            # click and check
+            # Click and check the value is switched
             await self.scroll_to_click_pause(
                 pilot, "#suggest_next_sub_ses_central_checkbox"
             )
@@ -974,7 +974,7 @@ class TestTuiWidgets(TuiBase):
                 is True
             )
 
-            # some navigations
+            # Refresh the session
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_close_button"
             )
@@ -985,7 +985,7 @@ class TestTuiWidgets(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
 
-            # ensure settings persist
+            # Ensure settings persist
             assert (
                 pilot.app.screen.query_one(
                     "#suggest_next_sub_ses_central_checkbox"
