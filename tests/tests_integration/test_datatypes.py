@@ -1,5 +1,4 @@
 import os
-import random
 
 import pytest
 import test_utils
