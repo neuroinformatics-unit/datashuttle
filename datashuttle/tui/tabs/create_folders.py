@@ -305,11 +305,10 @@ class CreateFoldersTab(TreeAndInputTab):
             include_central
             and self.interface.project.cfg["connection_method"] == "ssh"
         ):
-            searching_central_popup = SearchingCentralForNextSubSesPopup(
-                prefix
+            self.searching_central_popup_widget = (
+                SearchingCentralForNextSubSesPopup(prefix)
             )
-            self.searching_central_popup_widget = searching_central_popup
-            self.mainwindow.push_screen(searching_central_popup)
+            self.mainwindow.push_screen(self.searching_central_popup_widget)
 
         asyncio.create_task(
             self.fill_suggestion_and_dismiss_popup(

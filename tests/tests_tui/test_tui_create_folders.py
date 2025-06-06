@@ -445,10 +445,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=False
             )
-            if suggest_sub_task := test_utils.get_task_by_name(
+            await test_utils.await_task_by_name_if_present(
                 "suggest_next_sub_async_task"
-            ):
-                await suggest_sub_task
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -462,10 +461,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_session_input", control=False
             )
-            if suggest_ses_task := test_utils.get_task_by_name(
+            await test_utils.await_task_by_name_if_present(
                 "suggest_next_ses_async_task"
-            ):
-                await suggest_ses_task
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -512,10 +510,9 @@ class TestTuiCreateFolders(TuiBase):
 
             # Double click without CTRL modifier key.
             await self.double_click(pilot, "#create_folders_subject_input")
-            if suggest_sub_task := test_utils.get_task_by_name(
+            await test_utils.await_task_by_name_if_present(
                 "suggest_next_sub_async_task"
-            ):
-                await suggest_sub_task
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -527,10 +524,9 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_subject_input", "sub-001"
             )
             await self.double_click(pilot, "#create_folders_session_input")
-            if suggest_ses_task := test_utils.get_task_by_name(
+            await test_utils.await_task_by_name_if_present(
                 "suggest_next_ses_async_task"
-            ):
-                await suggest_ses_task
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -544,6 +540,11 @@ class TestTuiCreateFolders(TuiBase):
     async def test_get_next_sub_and_ses_central_no_template(
         self, setup_project_paths, mocker
     ):
+        """
+        Test getting the next subject / session with the include_central option. Check the
+        checkbox widget that turns the setting on. Trigger a get next subject / session and mock
+        the underlying datashuttle function to ensure include_central is properly called.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -571,13 +572,11 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.interface.project, "get_next_ses"
             )
 
-            #  # Check subject suggestion called mocked function correctly
+            # Check subject suggestion called mocked function correctly
             await self.double_click(pilot, "#create_folders_subject_input")
-
-            if suggest_sub_task := test_utils.get_task_by_name(
+            await test_utils.await_task_by_name_if_present(
                 "suggest_next_sub_async_task"
-            ):
-                await suggest_sub_task
+            )
 
             spy_get_next_sub.assert_called_with(
                 "rawdata", return_with_prefix=True, include_central=True
@@ -589,10 +588,9 @@ class TestTuiCreateFolders(TuiBase):
             )
             await self.double_click(pilot, "#create_folders_session_input")
 
-            if suggest_ses_task := test_utils.get_task_by_name(
+            await test_utils.await_task_by_name_if_present(
                 "suggest_next_ses_async_task"
-            ):
-                await suggest_ses_task
+            )
 
             spy_get_next_ses.assert_called_with(
                 "rawdata",
