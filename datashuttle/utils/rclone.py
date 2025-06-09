@@ -194,7 +194,7 @@ def setup_rclone_config_for_gdrive(
         log_rclone_config_output()
 
 
-def setup_rclone_config_for_aws_s3(
+def setup_rclone_config_for_aws(
     cfg: Configs,
     aws_secret_access_key: str,
     rclone_config_name: str,

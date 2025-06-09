@@ -41,7 +41,7 @@ def get_canonical_configs() -> dict:
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
         "connection_method": Optional[
-            Literal["ssh", "local_filesystem", "gdrive", "aws_s3"]
+            Literal["ssh", "local_filesystem", "gdrive", "aws"]
         ],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
@@ -151,7 +151,7 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
             )
 
     # Check AWS settings
-    elif config_dict["connection_method"] == "aws_s3" and (
+    elif config_dict["connection_method"] == "aws" and (
         not config_dict["aws_access_key_id"] or not config_dict["aws_region"]
     ):
         utils.log_and_raise_error(

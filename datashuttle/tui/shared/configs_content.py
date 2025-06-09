@@ -112,7 +112,7 @@ class ConfigsContent(Container):
             ),
         ]
 
-        self.config_aws_s3_widgets = [
+        self.config_aws_widgets = [
             Label("AWS Access Key ID", id="configs_aws_access_key_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
@@ -158,13 +158,13 @@ class ConfigsContent(Container):
                 ),
                 RadioButton(
                     "AWS S3",
-                    id=self.radiobutton_id_from_connection_method("aws_s3"),
+                    id=self.radiobutton_id_from_connection_method("aws"),
                 ),
                 id="configs_connect_method_radioset",
             ),
             *self.config_ssh_widgets,
             *self.config_gdrive_widgets,
-            *self.config_aws_s3_widgets,
+            *self.config_aws_widgets,
             Label("Central Path", id="configs_central_path_label"),
             Horizontal(
                 ClickableInput(
@@ -341,7 +341,7 @@ class ConfigsContent(Container):
             in [
                 "ssh",
                 "gdrive",
-                "aws_s3",
+                "aws",
                 "local_filesystem",
             ]
             else None
@@ -410,7 +410,7 @@ class ConfigsContent(Container):
             widget.display = display_gdrive
 
     def switch_aws_widgets_display(self, display_aws: bool) -> None:
-        for widget in self.config_aws_s3_widgets:
+        for widget in self.config_aws_widgets:
             widget.display = display_aws
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -437,7 +437,7 @@ class ConfigsContent(Container):
                 self.setup_ssh_connection()
             elif connection_method == "gdrive":
                 self.setup_gdrive_connection()
-            elif connection_method == "aws_s3":
+            elif connection_method == "aws":
                 self.setup_aws_connection()
 
         elif event.button.id == "configs_go_to_project_screen_button":
@@ -611,7 +611,7 @@ class ConfigsContent(Container):
             elif connection_method == "gdrive":
                 message = message_template.format(method_name="Google Drive")
 
-            elif connection_method == "aws_s3":
+            elif connection_method == "aws":
                 message = message_template.format(method_name="AWS")
 
             else:
@@ -687,8 +687,8 @@ class ConfigsContent(Container):
                 cfg_to_load["connection_method"] == "local_filesystem",
             "configs_gdrive_radiobutton":
                 cfg_to_load["connection_method"] == "gdrive",
-            "configs_aws_s3_radiobutton":
-                cfg_to_load["connection_method"] == "aws_s3",
+            "configs_aws_radiobutton":
+                cfg_to_load["connection_method"] == "aws",
             "configs_local_only_radiobutton":
                 cfg_to_load["connection_method"] is None,
         }
@@ -780,13 +780,13 @@ class ConfigsContent(Container):
                 "local_filesystem",
                 "ssh",
                 "gdrive",
-                "aws_s3",
+                "aws",
             ], "Unexpected Connection Method"
 
         connection_widget_display_functions = {
             "ssh": self.switch_ssh_widgets_display,
             "gdrive": self.switch_gdrive_widgets_display,
-            "aws_s3": self.switch_aws_widgets_display,
+            "aws": self.switch_aws_widgets_display,
         }
 
         for name, widget_func in connection_widget_display_functions.items():
@@ -826,7 +826,7 @@ class ConfigsContent(Container):
                 setup_connection_button.label = "Setup SSH Connection"
             elif connection_method == "gdrive":
                 setup_connection_button.label = "Setup Google Drive Connection"
-            elif connection_method == "aws_s3":
+            elif connection_method == "aws":
                 setup_connection_button.label = "Setup AWS Connection"
 
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
@@ -852,7 +852,7 @@ class ConfigsContent(Container):
             "configs_local_filesystem_radiobutton",
             "configs_ssh_radiobutton",
             "configs_gdrive_radiobutton",
-            "configs_aws_s3_radiobutton",
+            "configs_aws_radiobutton",
             "configs_local_only_radiobutton",
         ]:
             if self.query_one("#" + id).value:
@@ -897,7 +897,7 @@ class ConfigsContent(Container):
             )
 
         # AWS specific
-        elif connection_method == "aws_s3":
+        elif connection_method == "aws":
             aws_access_key_id = self.query_one(
                 "#configs_aws_access_key_id_input"
             ).value

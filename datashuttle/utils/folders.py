@@ -520,7 +520,7 @@ def search_for_folders(
     if local_or_central == "central" and cfg["connection_method"] in [
         "ssh",
         "gdrive",
-        "aws_s3",
+        "aws",
     ]:
         if cfg["connection_method"] == "ssh":
             all_folder_names, all_filenames = (
