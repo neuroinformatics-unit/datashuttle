@@ -277,7 +277,7 @@ MessageBox:light > #messagebox_top_container {
     padding: 0 0 2 0;
 }
 
-#configs_aws_s3_region_select {
+#configs_aws_region_select {
     width: 70%;
 }
 

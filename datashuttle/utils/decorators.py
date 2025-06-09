@@ -34,11 +34,11 @@ def requires_aws_configs(func):
     def wrapper(*args, **kwargs):
         if (
             not args[0].cfg["aws_access_key_id"]
-            or not args[0].cfg["aws_s3_region"]
+            or not args[0].cfg["aws_region"]
         ):
             log_and_raise_error(
                 "Cannot setup AWS connection, 'aws_access_key_id' "
-                "or 'aws_s3_region' is not set in the "
+                "or 'aws_region' is not set in the "
                 "configuration file",
                 ConfigError,
             )

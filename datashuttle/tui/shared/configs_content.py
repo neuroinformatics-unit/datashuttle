@@ -119,10 +119,10 @@ class ConfigsContent(Container):
                 placeholder="AWS Access Key ID eg. EJIBCLSIP2K2PQK3CDON",
                 id="configs_aws_access_key_id_input",
             ),
-            Label("AWS S3 Region", id="configs_aws_s3_region_label"),
+            Label("AWS S3 Region", id="configs_aws_region_label"),
             Select(
                 ((region, region) for region in get_aws_regions_list()),
-                id="configs_aws_s3_region_select",
+                id="configs_aws_region_select",
             ),
         ]
 
@@ -765,11 +765,11 @@ class ConfigsContent(Container):
         input.value = value
 
         # AWS S3 Region
-        select = self.query_one("#configs_aws_s3_region_select")
+        select = self.query_one("#configs_aws_region_select")
         value = (
             Select.BLANK
-            if cfg_to_load.get("aws_s3_region", None) is None
-            else cfg_to_load["aws_s3_region"]
+            if cfg_to_load.get("aws_region", None) is None
+            else cfg_to_load["aws_region"]
         )
         select.value = value
 
@@ -905,11 +905,9 @@ class ConfigsContent(Container):
                 None if aws_access_key_id == "" else aws_access_key_id
             )
 
-            aws_s3_region = self.query_one(
-                "#configs_aws_s3_region_select"
-            ).value
-            cfg_kwargs["aws_s3_region"] = (
-                None if aws_s3_region == Select.BLANK else aws_s3_region
+            aws_region = self.query_one("#configs_aws_region_select").value
+            cfg_kwargs["aws_region"] = (
+                None if aws_region == Select.BLANK else aws_region
             )
 
         return cfg_kwargs

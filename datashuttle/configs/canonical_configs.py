@@ -48,7 +48,7 @@ def get_canonical_configs() -> dict:
         "gdrive_client_id": Optional[str],
         "gdrive_root_folder_id": Optional[str],
         "aws_access_key_id": Optional[str],
-        "aws_s3_region": Optional[Literal[*get_aws_regions_list()]],
+        "aws_region": Optional[Literal[*get_aws_regions_list()]],
         # "aws_s3_endpoint_url": Optional[str],
     }
 
@@ -152,11 +152,10 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     # Check AWS settings
     elif config_dict["connection_method"] == "aws_s3" and (
-        not config_dict["aws_access_key_id"]
-        or not config_dict["aws_s3_region"]
+        not config_dict["aws_access_key_id"] or not config_dict["aws_region"]
     ):
         utils.log_and_raise_error(
-            "Both aws_access_key_id and aws_s3_region must be present for AWS connection.",
+            "Both aws_access_key_id and aws_region must be present for AWS connection.",
             ConfigError,
         )
 

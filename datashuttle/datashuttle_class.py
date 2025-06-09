@@ -967,7 +967,7 @@ class DataShuttle:
         gdrive_client_id: Optional[str] = None,
         gdrive_root_folder_id: Optional[str] = None,
         aws_access_key_id: Optional[str] = None,
-        aws_s3_region: Optional[str] = None,
+        aws_region: Optional[str] = None,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -1035,7 +1035,7 @@ class DataShuttle:
                 "gdrive_client_id": gdrive_client_id,
                 "gdrive_root_folder_id": gdrive_root_folder_id,
                 "aws_access_key_id": aws_access_key_id,
-                "aws_s3_region": aws_s3_region,
+                "aws_region": aws_region,
             },
         )
 

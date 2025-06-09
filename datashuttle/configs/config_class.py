@@ -139,7 +139,7 @@ class Configs(UserDict):
             "gdrive_client_id",
             "gdrive_root_folder_id",
             "aws_access_key_id",
-            "aws_s3_region",
+            "aws_region",
         ]
 
         # All keys shall be missing for a backwards compatibility update
