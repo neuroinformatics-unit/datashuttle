@@ -865,44 +865,38 @@ class ConfigsContent(Container):
 
         # SSH specific
         if connection_method == "ssh":
-            central_host_id = self.query_one(
-                "#configs_central_host_id_input"
-            ).value
             cfg_kwargs["central_host_id"] = (
-                None if central_host_id == "" else central_host_id
+                self.get_config_value_from_input_value(
+                    "#configs_central_host_id_input"
+                )
             )
 
-            central_host_username = self.query_one(
-                "#configs_central_host_username_input"
-            ).value
-
             cfg_kwargs["central_host_username"] = (
-                None if central_host_username == "" else central_host_username
+                self.get_config_value_from_input_value(
+                    "#configs_central_host_username_input"
+                )
             )
 
         # Google Drive specific
         elif connection_method == "gdrive":
-            gdrive_client_id = self.query_one(
-                "#configs_gdrive_client_id_input"
-            ).value
             cfg_kwargs["gdrive_client_id"] = (
-                None if gdrive_client_id == "" else gdrive_client_id
+                self.get_config_value_from_input_value(
+                    "#configs_gdrive_client_id_input"
+                )
             )
 
-            gdrive_root_folder_id = self.query_one(
-                "#configs_gdrive_root_folder_id"
-            ).value
             cfg_kwargs["gdrive_root_folder_id"] = (
-                None if gdrive_root_folder_id == "" else gdrive_root_folder_id
+                self.get_config_value_from_input_value(
+                    "#configs_gdrive_root_folder_id"
+                )
             )
 
         # AWS specific
         elif connection_method == "aws":
-            aws_access_key_id = self.query_one(
-                "#configs_aws_access_key_id_input"
-            ).value
             cfg_kwargs["aws_access_key_id"] = (
-                None if aws_access_key_id == "" else aws_access_key_id
+                self.get_config_value_from_input_value(
+                    "#configs_aws_access_key_id_input"
+                )
             )
 
             aws_region = self.query_one("#configs_aws_region_select").value
@@ -911,3 +905,10 @@ class ConfigsContent(Container):
             )
 
         return cfg_kwargs
+
+    def get_config_value_from_input_value(
+        self, input_box_selector: str
+    ) -> str | None:
+        input_value = self.query_one(input_box_selector).value
+
+        return None if input_value == "" else input_value
