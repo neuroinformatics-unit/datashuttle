@@ -297,6 +297,7 @@ class CreateFoldersTab(TreeAndInputTab):
         dismissing the pop up.
         """
         assert self.interface.project.cfg["connection_method"] in [
+            None,
             "local_filesystem",
             "ssh",
         ]
