@@ -599,6 +599,40 @@ class TestTuiCreateFolders(TuiBase):
                 include_central=True,
             )
 
+    @pytest.mark.asyncio
+    async def test_get_next_sub_and_ses_error_popup(self, setup_project_paths):
+        """
+        Test the modal error dialog display on encountering an error
+        while suggesting next sub/ses. Since getting the suggestion happens
+        in a thread, the `dismiss_popup_and_show_modal_error_dialog_from_thread`
+        function which is used to display the modal error dialog from main thread
+        is being tested. It is done by trying to get next session suggestion without
+        inputting a subject.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            # Clear the inputs
+            await self.fill_input(pilot, "#create_folders_subject_input", "")
+            await self.fill_input(pilot, "#create_folders_session_input", "")
+
+            await self.double_click(pilot, "#create_folders_session_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
+
+            assert (
+                "Must input a subject number before suggesting next session number."
+                in pilot.app.screen.query_one(
+                    "#messagebox_message_label"
+                ).renderable
+            )
+
     # -------------------------------------------------------------------------
     # Test Top Level Folders
     # -------------------------------------------------------------------------
