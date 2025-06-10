@@ -1,11 +1,17 @@
-(tutorial-getting-started)=
+(getting-started-walkthrough)=
+# Walkthrough ``datashuttle``
 
-# Getting Started
+:::{note}
 
-This tutorial will give a full introduction to starting
-a neuroscience project with **datashuttle**.
+This walkthrough was written at ``datashuttle`` version `0.3.0`. While the
+interface may look slightly different, core functionality remains the same.
 
-We will highlight  **datashuttle**'s key features by creating
+:::
+
+This tutorial will give a full introduction to managing
+a neuroscience project with ``datashuttle``.
+
+We will highlight  ``datashuttle``'s key features by creating
 a 'mock' experiment, standardised to the
 [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/) style.
 
@@ -25,12 +31,12 @@ a 'mock' experiment, standardised to the
 We will upload data to a central data storage machine,
 as you would do at the end of a real acquisition session.
 
-Finally we will download data from the central
+Finally, we will download data from the central
 storage to a local machine, as you would do during analysis.
 
-## Installing **datashuttle**
+## Installing ``datashuttle``
 
-The first step is to install **datashuttle** by following the instructions
+The first step is to install ``datashuttle`` by following the instructions
 on the [How to Install](how-to-install) page.
 
 
@@ -57,7 +63,7 @@ will launch the application in your terminal:
 :::{tab-item} Python API
 :sync: python
 
-We can check **datashuttle** has installed correctly by
+We can check ``datashuttle`` has installed correctly
 by importing it into Python without error:
 
 ```python
@@ -67,9 +73,17 @@ from datashuttle import DataShuttle
 :::
 ::::
 
+:::{note}
+
+This walkthrough does not include the recently-added validation
+feature (it will be updated soon). Please see the [validation guide](tutorial-validation)
+for how to validate your project format.
+
+:::
+
 ## Make a new project
 
-The first thing to do when using **datashuttle** on a new machine is
+The first thing to do when using ``datashuttle`` on a new machine is
 to set up your project.
 
 We need to set the:
@@ -78,9 +92,9 @@ We need to set the:
 2) location of the project our local machine (where the acquired data will be saved).
 3) location of the project on the central data storage (where we will upload the acquired data).
 
-**datashuttle** supports connecting to the central storage machine
+``datashuttle`` supports connecting to the central storage machine
 either as a mounted drive or through SHH. \
-See [How to Make a New Project](make-a-full-project_target)
+See [Set up configs for transfer(set-up-a-project-for-transfer)
 for detailed instructions for
 connecting a mounted drive or by using SSH.
 
@@ -92,7 +106,7 @@ folder on our local machine for simplicity.
 :sync: gui
 
 Click `Make New Project` and you
-will be taken to the project setup page.
+will be taken to the project set up page.
 
 ```{image} /_static/screenshots/tutorial-1-make-screen-dark.png
    :align: center
@@ -325,7 +339,7 @@ for details).
 In the session name we will include today's date as an extra key-value pair.
 Our first session will be `ses-001_date-<todays_date>`.
 
-Finally, we will tell **datashuttle** to create `behav` and `ephys` datatype
+Finally, we will tell ``datashuttle`` to create `behav` and `ephys` datatype
 folders only:
 
 ```python
@@ -379,7 +393,7 @@ including additional customisation with [Name Templates](how-to-use-name-templat
 
 In our imagined experiment, we will now want to save data from
 acquisition software into our newly created, standardised folders.
-**datashuttle** provides some quick methods to pass the created
+``datashuttle`` provides some quick methods to pass the created
 folder paths to acquisition software.
 
 ::::{tab-set}
@@ -565,7 +579,7 @@ data for further processing.
 
 In this example we will download the behavioural data only from the first session.
 
-In practice **datashuttle**'s custom data transfers work well when there
+In practice ``datashuttle``'s custom data transfers work well when there
 are many subjects and sessions. For example, we may want to download
 only the behavioural 'test' sessions from a specific range of subjects.
 
@@ -575,8 +589,8 @@ from your **local path**.
 
 We will next download data from the **central path** to our now-empty local project.
 
-In practice when setting up **datashuttle** on a new machine, you would
-again [make a new project](make-a-full-project_target).
+In practice when setting up ``datashuttle`` on a new machine, you would
+again [make a new project](set-up-a-project-for-transfer).
 ```
 
 We will look at a small subset of possible
@@ -706,7 +720,7 @@ of files will now be available in the **local path**.
 
 ## Summary
 
-That final transfer marks the end of our **datashuttle** tutorial!
+That final transfer marks the end of our ``datashuttle`` tutorial!
 
 Now you can:
 
@@ -714,7 +728,7 @@ Now you can:
 2) upload your acquired data to a central storage machine
 3) download subsets of data for analysis
 
-We are always keen to improve **datashuttle**, so please don't hesitate
+We are always keen to improve ``datashuttle``, so please don't hesitate
 to get in contact with any
 [Issues](https://github.com/neuroinformatics-unit/datashuttle)
 or drop in to our

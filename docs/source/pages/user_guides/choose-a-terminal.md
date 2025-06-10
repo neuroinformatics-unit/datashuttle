@@ -1,8 +1,8 @@
-(how-to-choose-a-terminal)=
+(choose-a-terminal_)=
 
-# How to Choose a Terminal
+# Choose a terminal
 
-**datashuttle**'s graphical interface can run in almost any terminal—but
+``datashuttle``'s graphical interface can run in almost any terminal—but
 native Windows and macOS terminals may display with rendering errors.
 See below for recommended terminals for these operating systems.
 
@@ -13,12 +13,12 @@ If you are using Linux, the native terminal will work without issue.
 
 :::{tab-item} Good Rendering
 
-```{image} /_static/screenshots/how-to-choose-a-terminal-good-dark.png
+```{image} /_static/screenshots/choose-a-terminal-good-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-choose-a-terminal-good-light.png
+```{image} /_static/screenshots/choose-a-terminal-good-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -30,12 +30,12 @@ If you are using Linux, the native terminal will work without issue.
 
 :::{tab-item} Bad Rendering
 
-```{image} /_static/screenshots/how-to-choose-a-terminal-bad-dark.png
+```{image} /_static/screenshots/choose-a-terminal-bad-dark.png
    :align: center
    :class: only-dark
    :width: 900px
 ```
-```{image} /_static/screenshots/how-to-choose-a-terminal-bad-light.png
+```{image} /_static/screenshots/choose-a-terminal-bad-light.png
    :align: center
    :class: only-light
    :width: 900px
@@ -53,11 +53,11 @@ If you are using Linux, the native terminal will work without issue.
 :::{tab-item} Windows
 
 For Windows, we recommend using
-[Terminal](https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&hl=en-gb&gl=GB)—Window's
+[Windows Terminal](https://apps.microsoft.com/detail/9n0dx20hk701?rtc=1&hl=en-gb&gl=GB)—Windows'
 own high-powered terminal available for free on the
 Microsoft Store.
 
-**datashuttle** will run in Command Prompt (`cmd.exe`), Powershell (`ps.exe`)
+``datashuttle`` will run in Command Prompt (`cmd.exe`), PowerShell (`ps.exe`)
 or [Anaconda Prompt](https://docs.anaconda.com/free/anaconda/getting-started/index.html),
 but may display with rendering errors.
 
@@ -70,7 +70,7 @@ as [Warp](https://warp.dev/)
 or [Wezterm](https://wezfurlong.org/wezterm/index.html).
 Both come with easy-to-use installers.
 
-**datashuttle** will run on the native macOS terminal but may display
+``datashuttle`` will run on the native macOS terminal but may display
 with rendering errors.
 
 :::
@@ -80,6 +80,6 @@ with rendering errors.
 ## Getting started with the Graphical Interface
 
 Once you've chosen a terminal, get started with
-**datashuttle** with our [Getting Started Tutorial](tutorial-getting-started).
+``datashuttle`` with our [Getting Started Tutorial](getting-started-walkthrough).
 
-To quit **datashuttle** in the terminal, press `CTRL+C`.
+To quit ``datashuttle`` in the terminal, press `CTRL+C`.

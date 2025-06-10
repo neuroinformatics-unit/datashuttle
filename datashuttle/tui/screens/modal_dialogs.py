@@ -12,7 +12,6 @@ if TYPE_CHECKING:
     from datashuttle.tui.app import TuiApp
     from datashuttle.utils.custom_types import InterfaceOutput
 
-import os
 import platform
 from pathlib import Path
 
@@ -170,7 +169,6 @@ class SelectDirectoryTreeScreen(ModalScreen):
     ) -> None:
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
-
 
         if path_ is None:
             path_ = Path().home()

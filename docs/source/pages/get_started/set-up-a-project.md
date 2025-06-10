@@ -1,18 +1,119 @@
-(make-a-full-project_target)=
-# How to Make a Full Project
+(set-up-a-project_)=
+# Set up a project
 
-This guide will cover all you need to know for setting up a new project
-in **datashuttle**.
+The first section of this guide will
+set up a "local-only" project that can manage creation
+and validation of project folders. This requires
+only minimal configuration to get started.
 
-First, make sure you have
-[installed and launched **datashuttle**](how-to-install).
+To see how a datashuttle project can be set up for transfer,
+visit [Set up a project for transfer](set-up-a-project-for-transfer) section.
 
-Next, we set up **datashuttle** on a new machine we must tell it three things:
 
-1) **project name**: The name of the project (must be the same for all
-local machines tied to a project).
-2) **local path**: location of the project our local machine.
-3) **central path**: location of the project on the central data storage machine.
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+:sync: gui
+
+Selecting `Make New Project` will take you to the project set up screen.
+
+Enter the name of your project, the path to your project folder and
+select `No connection (local only)` (note that the central-path option
+is now disabled).
+
+```{image} /_static/screenshots/how-to-make-local-project-configs-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-make-local-project-configs-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
+
+You will now be able to go to the project manager screen:
+
+```{image} /_static/screenshots/how-to-create-folders-example-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-create-folders-example-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+
+:::
+
+:::{tab-item} Python API
+:sync: python
+
+First, import ``datashuttle`` and set up a project with the ``project_name``.
+If a project already exists, this should match the project folder name (i.e. the level above ``rawdata``).
+
+
+```python
+
+from datashuttle import DataShuttle
+
+project = DataShuttle("my_project_name")
+
+```
+
+Next, give ``datashuttle`` the path to the project folder (this can,
+but doesn't have to, include the ``project_name``)
+
+```python
+
+project.make_config_file(
+    local_path=r"C:\MyUsername\my_data\my_project_name"
+)
+
+```
+\
+The project is now ready for use, and in future can be instantiated only
+with the line ``project = DataShuttle("my_project_name")`` (i.e. you will not
+have to set the `local_path` again).
+
+If you wish to change the project settings at a later time, use ``project.update_config_file()``.
+
+For example, it is possible to immediately validate the project (if it already exists):
+
+```python
+project.validate_project("rawdata", error_or_warn="warn")
+```
+
+Setting ``error_or_warn`` will display all validation issues, otherwise
+it will error on the first one encountered.
+
+New project folders can also be created in the local folder:
+
+```python
+project.create_folders("rawdata", "sub-001", "ses-001_@DATE@", datatype=["ephys", "behav"])
+```
+
+:::
+::::
+
+Now, this project is ready for creating and validating
+folders to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev/latest/index.html) standard. See [create folders](how-to-create-folders)
+and [validate folders](tutorial-validation) for details.
+
+If you would also like to transfer files to a central machine, see the next section.
+
+(set-up-a-project-for-transfer)=
+## Set up a project for transfer
+
+Above, we have set up a ``datashuttle`` project by providing the **project name**
+and **local path**. Transfer across the local filesystem or via SSH is supported.
+Therefore, we will need to provide:
+
+1) **central path**: location of the project on the central storage machine.
+2) Connection-specific settings (e.g. if using SSH).
 
 ```{image} /_static/datashuttle-overview-dark.png
    :align: center
@@ -27,7 +128,7 @@ local machines tied to a project).
 <br>
 
 How the **central path** is set depends on whether your connection to
-central storage is as a
+central storage is a
 [mounted drive](new-project-mounted-drive)
 or via
 [SSH](new-project-ssh).
@@ -36,7 +137,7 @@ If you are unsure of your connection method, speak to your lab administrator
 or IT department.
 
 (new-project-mounted-drive)=
-## When central storage is a mounted drive
+### Connecting to central storage through a mounted drive
 
 In this case, the central storage machine is mounted as a drive
 on the local machine.
@@ -84,7 +185,7 @@ The `Make New Project` screen will be displayed:
 <br>
 
 (general-tui-datashuttle-setup)=
-Setting up **datashuttle** is as simple as entering the `Project name`,
+Setting up ``datashuttle`` is as simple as entering the `Project name`,
 `Local Path` and `Central Path` into the relevant input boxes.
 
 The paths do not need to end in the project name—it will be automatically added.
@@ -135,7 +236,7 @@ project.make_config_file(
 ::::
 
 (new-project-ssh)=
-## Connecting to central storage via SSH
+### Connecting to central storage through SSH
 
 Another common method of connecting to a central storage machine is via
 [SSH](https://www.ssh.com/academy/ssh/protocol).
@@ -201,10 +302,9 @@ Next, input the `Central Host ID`, `Central Host Username` and
 `Central Path` as described above.
 
 Clicking `Save` will save these project configs. A button
-`Setup SSH Connection` will appear. Click to
+`Set up SSH Connection` will appear. Click to
 confirm the server ID and enter your password
 (you will only need to do this once).
-
 
 :::
 :::{tab-item} Python API
