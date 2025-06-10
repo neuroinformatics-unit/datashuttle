@@ -142,7 +142,7 @@ class ValidateContent(Container):
             if self.interface:
 
                 if self.interface.project.is_local_project():
-                    include_central = True
+                    include_central = False
                 else:
                     include_central = self.query_one(
                         "#validate_include_central_checkbox"
@@ -155,7 +155,7 @@ class ValidateContent(Container):
                 )
                 if not success:
                     self.parent_class.mainwindow.show_modal_error_dialog(
-                        cast(str, output)  # noqa
+                        cast("str", output)
                     )
                 else:
                     self.write_results_to_richlog(output)
