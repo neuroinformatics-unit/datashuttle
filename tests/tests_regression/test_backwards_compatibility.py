@@ -26,14 +26,13 @@ class TestBackwardsCompatibility:
             "transfer_checkboxes_on"
         ]
 
-        assert reloaded_create_checkboxes["ephys"]["displayed"] is False
-        assert reloaded_create_checkboxes["motion"]["displayed"] is False
-        assert reloaded_create_checkboxes["f2pe"]["displayed"] is True
+        for key in reloaded_create_checkboxes.keys():
+            assert reloaded_create_checkboxes[key]["displayed"] is (
+                key == "f2pe"
+            )
 
-        assert transfer_checkboxes["ephys"]["displayed"] is False
-        assert transfer_checkboxes["all"]["displayed"] is False
-        assert transfer_checkboxes["motion"]["displayed"] is False
-        assert transfer_checkboxes["f2pe"]["displayed"] is True
+        for key in transfer_checkboxes.keys():
+            assert transfer_checkboxes[key]["displayed"] is (key == "f2pe")
 
     def test_v0_5_3(self):
         """
