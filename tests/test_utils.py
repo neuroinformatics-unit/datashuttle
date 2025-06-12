@@ -108,7 +108,9 @@ def delete_all_folders_in_project_path(project, local_or_central):
     """"""
     folder = f"{local_or_central}_path"
 
-    if folder == "central_path" and project.cfg[folder] is None:
+    if project.cfg is None or (
+        folder == "central_path" and project.cfg[folder] is None
+    ):
         return
 
     ds_logger.close_log_filehandler()
