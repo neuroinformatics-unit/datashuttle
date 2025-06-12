@@ -617,9 +617,8 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, project_name, create_folders=True
             )
 
-            # Clear the inputs
+            # Clear the subject input
             await self.fill_input(pilot, "#create_folders_subject_input", "")
-            await self.fill_input(pilot, "#create_folders_session_input", "")
 
             await self.double_click(pilot, "#create_folders_session_input")
             await test_utils.await_task_by_name_if_present(
