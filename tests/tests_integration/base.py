@@ -1,4 +1,3 @@
-import os
 import warnings
 
 import pytest
@@ -58,9 +57,8 @@ class BaseTest:
         else:
             raise ValueError("`parametrized value must be 'full' or 'local'")
 
-        cwd = os.getcwd()
         yield project
-        test_utils.teardown_project(cwd, project)
+        test_utils.teardown_project(project)
 
     @pytest.fixture(scope="function")
     def clean_project_name(self):

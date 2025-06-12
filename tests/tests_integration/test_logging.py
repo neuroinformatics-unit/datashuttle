@@ -118,7 +118,7 @@ class TestLogging:
         """
         project_type = getattr(request, "param", "full")
 
-        project, cwd = test_utils.setup_project_fixture(
+        project = test_utils.setup_project_fixture(
             tmp_path, clean_project_name, project_type
         )
 
@@ -128,7 +128,7 @@ class TestLogging:
 
         yield project
 
-        test_utils.teardown_project(cwd, project)
+        test_utils.teardown_project(project)
         test_utils.set_datashuttle_loggers(disable=True)
 
     # ----------------------------------------------------------------------------------------------------------

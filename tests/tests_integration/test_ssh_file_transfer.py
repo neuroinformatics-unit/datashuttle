@@ -80,7 +80,7 @@ class TestFileTransfer:
             central_path = base_path
         test_project_name = "test_file_conflicts"
 
-        project, cwd = test_utils.setup_project_fixture(
+        project = test_utils.setup_project_fixture(
             base_path, test_project_name
         )
 
@@ -104,7 +104,7 @@ class TestFileTransfer:
 
         yield [pathtable, project]
 
-        test_utils.teardown_project(cwd, project)
+        test_utils.teardown_project(project)
 
         if testing_ssh:
             for result in glob.glob(ssh_config.FILESYSTEM_PATH):
