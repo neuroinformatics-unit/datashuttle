@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
     from datashuttle.tui.app import TuiApp
-    from datashuttle.utils.custom_types import InterfaceOutput
+    from datashuttle.utils.custom_types import InterfaceOutput, Prefix
 
 from pathlib import Path
 
@@ -135,6 +135,27 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             )
         else:
             self.app.show_modal_error_dialog(output)
+
+
+class SearchingCentralForNextSubSesPopup(ModalScreen):
+    """
+    A popup to show message and a loading indicator when awaiting search next sub/ses across
+    the folders present in both local and central machines. This search happens in a separate
+    thread so as to allow TUI to display the loading indicate without freezing.
+
+    Only displayed when the `include_central` flag is checked and the connection method is "ssh".
+    """
+
+    def __init__(self, sub_or_ses: Prefix) -> None:
+        super().__init__()
+        self.message = f"Searching central for next {sub_or_ses}"
+
+    def compose(self) -> ComposeResult:
+        yield Container(
+            Label(self.message, id="searching_message_label"),
+            LoadingIndicator(id="searching_animated_indicator"),
+            id="searching_top_container",
+        )
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
