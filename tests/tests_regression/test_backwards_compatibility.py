@@ -1,10 +1,19 @@
 import shutil
 from pathlib import Path
 
+import pytest
+
 from datashuttle import DataShuttle
 
 
 class TestBackwardsCompatibility:
+
+    @pytest.fixture(scope="function")
+    def project(self):
+        """ """
+        project = DataShuttle("test_project")
+
+        yield project
 
     def test_v0_6_0(self):
         """
