@@ -1,0 +1,37 @@
+name: conda install check
+
+on:
+  schedule:
+    # Weekly cron job at 12:00 AM UTC on Mondays
+    - cron: '0 0 * * 1'
+
+jobs:
+  conda_install_check:
+    name: Conda install check (${{ matrix.os }} py${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-13, macos-14]
+        python-version: ["3.9", "3.12"]
+
+    defaults:
+      run:
+        shell: bash -l {0}  # Required for conda activation
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+          auto-update-conda: true
+          channels: conda-forge
+          activate-environment: "datashuttle-test"
+      - name: Install datashuttle from conda
+        run: |
+          conda activate datashuttle-test
+          conda install -c conda-forge datashuttle
+      - name: Run datashuttle --version
+        run: |
+          conda activate datashuttle-test
+          datashuttle --version
