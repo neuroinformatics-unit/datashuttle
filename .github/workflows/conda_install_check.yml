@@ -43,4 +43,4 @@ jobs:
       - name: Run datashuttle --help
         run: |
           conda activate datashuttle-test
-          datashuttle --version
+          datashuttle --help
