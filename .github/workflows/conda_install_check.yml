@@ -1,8 +1,9 @@
+# As conda is the recommended installation method, run weekly checks
+# to ensure
 name: conda install check
 
 on:
   schedule:
-    # Weekly cron job at 12:00 AM UTC on Mondays
     - cron: '0 0 * * 1'
 
 jobs:
@@ -31,7 +32,7 @@ jobs:
         run: |
           conda activate datashuttle-test
           conda install -c conda-forge datashuttle
-      - name: Run datashuttle --version
+      - name: Run datashuttle --help
         run: |
           conda activate datashuttle-test
           datashuttle --version

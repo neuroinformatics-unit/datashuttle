@@ -46,9 +46,8 @@ jobs:
           channels: conda-forge
           activate-environment: "datashuttle-test"
 
-      # Here we test the repo dependencies so that dependency updates
-      # in the pyproject.toml are installed in the environment.
-      # Conda installation is tested in a separate workflow and conda release pipeline.
+      # The recommended installation is via conda, but we need to test
+      # pip dependencies so any dependency changes in a PR are reflected
       - name: Install rclone
         run: |
           conda activate datashuttle-test
