@@ -56,7 +56,6 @@ jobs:
       - name: Install datashuttle from repo
         run: |
           # --force will only uninstall datashuttle not dependencies
-          conda uninstall datashuttle --force
           python -m pip install --upgrade pip
           pip install .[dev]
       - name: Test
