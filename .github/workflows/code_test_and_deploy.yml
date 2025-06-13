@@ -45,8 +45,18 @@ jobs:
           auto-update-conda: true
           channels: conda-forge
           activate-environment: "datashuttle-test"
-      - name: Install datashuttle
+
+      # Here we test the repo dependencies so that dependency updates
+      # in the pyproject.toml are installed in the environment.
+      # Conda installation is tested in a separate workflow and conda release pipeline.
+      - name: Install rclone
         run: |
+          conda activate datashuttle-test
+          conda install -c conda-forge rclone
+      - name: Install datashuttle from repo
+        run: |
+          # --force will only uninstall datashuttle not dependencies
+          conda uninstall datashuttle --force
           python -m pip install --upgrade pip
           pip install .[dev]
       - name: Test
