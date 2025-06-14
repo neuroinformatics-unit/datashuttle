@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import utils
@@ -148,6 +148,91 @@ def setup_rclone_config_for_ssh(
 
     if log:
         log_rclone_config_output()
+
+
+def setup_rclone_config_for_gdrive(
+    cfg: Configs,
+    gdrive_client_secret: str | None,
+    rclone_config_name: str,
+    config_token: Optional[str] = None,
+    log: bool = True,
+):
+    client_id_key_value = (
+        f"client_id {cfg['gdrive_client_id']} "
+        if cfg["gdrive_client_id"]
+        else " "
+    )
+    client_secret_key_value = (
+        f"client_secret {gdrive_client_secret} "
+        if gdrive_client_secret
+        else ""
+    )
+
+    extra_args = (
+        f"config_is_local=false config_token={config_token}"
+        if config_token
+        else ""
+    )
+    output = call_rclone(
+        f"config create "
+        f"{rclone_config_name} "
+        f"drive "
+        f"{client_id_key_value}"
+        f"{client_secret_key_value}"
+        f"scope drive "
+        f"root_folder_id {cfg['gdrive_root_folder_id']} "
+        f"{extra_args}",
+        pipe_std=True,
+    )
+
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            output.stderr.decode("utf-8"), ConnectionError
+        )
+
+    if log:
+        log_rclone_config_output()
+
+
+def setup_rclone_config_for_aws(
+    cfg: Configs,
+    aws_secret_access_key: str,
+    rclone_config_name: str,
+    log: bool = True,
+):
+    output = call_rclone(
+        "config create "
+        f"{rclone_config_name} "
+        "s3 provider AWS "
+        f"access_key_id {cfg['aws_access_key_id']} "
+        f"secret_access_key {aws_secret_access_key} "
+        f"region {cfg['aws_region']} "
+        f"location_constraint {cfg['aws_region']}",
+        pipe_std=True,
+    )
+
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            output.stderr.decode("utf-8"), ConnectionError
+        )
+
+    if log:
+        log_rclone_config_output()
+
+
+def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
+    """
+    Check for a successful connection by executing an `ls` command. It pings the
+    the central host to list files and folders in the root directory.
+    If the command fails, it raises a ConnectionError with the error message.
+    """
+
+    output = call_rclone(f"ls {cfg.get_rclone_config_name()}:", pipe_std=True)
+
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            output.stderr.decode("utf-8"), ConnectionError
+        )
 
 
 def log_rclone_config_output():
