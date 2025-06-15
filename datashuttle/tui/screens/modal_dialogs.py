@@ -12,11 +12,20 @@ if TYPE_CHECKING:
     from datashuttle.tui.app import TuiApp
     from datashuttle.utils.custom_types import InterfaceOutput
 
+import platform
 from pathlib import Path
 
+import psutil
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Input, Label, LoadingIndicator, Static
+from textual.widgets import (
+    Button,
+    Input,
+    Label,
+    LoadingIndicator,
+    Select,
+    Static,
+)
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -165,6 +174,10 @@ class SelectDirectoryTreeScreen(ModalScreen):
             path_ = Path().home()
         self.path_ = path_
 
+        if platform.system() == "Windows":
+            self.selected_drive = self.path_.drive + "\\"
+        else:
+            self.selected_drive = "/"
         self.prev_click_time = 0
 
     def compose(self) -> ComposeResult:
@@ -174,8 +187,20 @@ class SelectDirectoryTreeScreen(ModalScreen):
             "If the project folder does not exist, select the parent folder and it will be created."
         )
 
+        drives = self.get_drives()
+
         yield Container(
             Static(label_message, id="select_directory_tree_screen_label"),
+            Select(
+                [(drive, drive) for drive in self.get_drives()],
+                value=(
+                    self.selected_drive
+                    if self.selected_drive in drives
+                    else drives[0]
+                ),
+                allow_blank=False,
+                id="select_directory_tree_drive_select",
+            ),
             CustomDirectoryTree(
                 self.mainwindow,
                 self.path_,
@@ -183,6 +208,31 @@ class SelectDirectoryTreeScreen(ModalScreen):
             ),
             Button("Cancel", id="cancel_button"),
             id="select_directory_tree_container",
+        )
+
+    @staticmethod
+    def get_drives():
+        operating_system = platform.system()
+
+        assert operating_system in [
+            "Windows",
+            "Darwin",
+            "Linux",
+        ], f"Unexpected operating system: {operating_system} encountered"
+
+        if platform.system() == "Windows":
+            return [disk.device for disk in psutil.disk_partitions(all=False)]
+
+        elif platform.system() in ["Darwin", "Linux"]:
+            return ["/"] + [
+                f"/{dir.name}" for dir in Path("/").iterdir() if dir.is_dir()
+            ]
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        """Updates the directory tree when the drive is changed."""
+        self.path_ = Path(event.value)
+        self.query_one("#select_directory_tree_directory_tree").path = (
+            self.path_
         )
 
     @require_double_click
