@@ -191,7 +191,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
         yield Container(
             Static(label_message, id="select_directory_tree_screen_label"),
-            Select(  # Dropdown for drives
+            Select(
                 [(drive, drive) for drive in self.get_drives()],
                 value=self.selected_drive if self.selected_drive in drives else drives[0],
                 allow_blank=False,

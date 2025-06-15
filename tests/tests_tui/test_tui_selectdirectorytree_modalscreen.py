@@ -16,9 +16,6 @@ class TestSelectTree(TuiBase):
         updates the DirectoryTree path as expected.
         """
 
-        Drive1= str(Path.home().drive) if platform.system() == "Windows" else "/"
-        Drive2 = "Z:\\" if platform.system() == "Windows" else "/mnt/fake"
-
         monkeypatch.setattr(
             SelectDirectoryTreeScreen,
             "get_drives",
@@ -26,7 +23,7 @@ class TestSelectTree(TuiBase):
         )
 
         app = TuiApp()
-        async with app.run_test(size=(200,100)) as pilot:
+        async with app.run_test() as pilot:
 
             await self.scroll_to_click_pause(pilot,"#mainwindow_new_project_button")
 
