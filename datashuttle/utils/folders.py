@@ -362,7 +362,49 @@ def process_glob_to_find_datatype_folders(
 # -----------------------------------------------------------------------------
 
 
-def search_for_wildcards(
+def filter_names_by_datetime_range(
+    names: List[str],
+    format_type: str,
+    start_timepoint: datetime,
+    end_timepoint: datetime,
+) -> List[str]:
+    """
+    Filter a list of names based on a datetime range.
+    Assumes all names contain the format_type pattern (e.g., date-*, time-*)
+    as they were searched using this pattern.
+
+    Parameters
+    ----------
+    names : List[str]
+        List of names to filter, all containing the datetime pattern
+    format_type : str
+        One of "datetime", "time", or "date"
+    start_timepoint : datetime
+        Start of the datetime range
+    end_timepoint : datetime
+        End of the datetime range
+
+    Returns
+    -------
+    List[str]
+        Filtered list of names that fall within the datetime range
+    """
+    filtered_names: List[str] = []
+    for candidate in names:
+        candidate_basename = candidate if isinstance(candidate, str) else candidate.name
+        value = get_values_from_bids_formatted_name([candidate_basename], format_type)[0]
+        try:
+            candidate_timepoint = datetime.strptime(
+                value, canonical_tags.get_datetime_format(format_type)
+            )
+            if start_timepoint <= candidate_timepoint <= end_timepoint:
+                filtered_names.append(candidate)
+        except ValueError:
+            continue
+    return filtered_names
+
+
+def search_with_tags(
     cfg: Configs,
     base_folder: Path,
     local_or_central: str,
@@ -400,68 +442,69 @@ def search_for_wildcards(
 
     sub : optional subject to search for sessions in. If not provided,
         will search for subjects rather than sessions.
-
     """
     new_all_names: List[str] = []
     for name in all_names:
-        if canonical_tags.tags("*") in name or "@DATETO@" in name:
-            search_str = name.replace(canonical_tags.tags("*"), "*")
-            # If a date-range tag is present, extract dates and update the search string.
-            if "@DATETO@" in name:
-                m = re.search(r"(\d{8})@DATETO@(\d{8})", name)
-                if not m:
-                    raise ValueError(
-                        "Invalid date range format in name: " + name
-                    )
-                start_str, end_str = m.groups()
-                try:
-                    start_date = datetime.strptime(start_str, "%Y%m%d")
-                    end_date = datetime.strptime(end_str, "%Y%m%d")
-                except ValueError as e:
-                    raise ValueError("Invalid date in date range: " + str(e))
-                # Replace the date-range substring with "date-*"
-                search_str = re.sub(r"\d{8}@DATETO@\d{8}", "date-*", name)
-            # Use the helper function to perform the glob search.
-            if sub:
-                matching_names: List[str] = search_sub_or_ses_level(
-                    cfg,
-                    base_folder,
-                    local_or_central,
-                    sub,
-                    search_str=search_str,
-                )[0]
-            else:
-                matching_names = search_sub_or_ses_level(
-                    cfg, base_folder, local_or_central, search_str=search_str
-                )[0]
-            # If a date-range tag was provided, further filter the results.
-            if "@DATETO@" in name:
-                filtered_names: List[str] = []
-                for candidate in matching_names:
-                    candidate_basename = (
-                        candidate
-                        if isinstance(candidate, str)
-                        else candidate.name
-                    )
-                    values_list = get_values_from_bids_formatted_name(
-                        [candidate_basename], "date"
-                    )
-                    if not values_list:
-                        continue
-                    candidate_date_str = values_list[0]
-                    try:
-                        candidate_date = datetime.strptime(
-                            candidate_date_str, "%Y%m%d"
-                        )
-                    except ValueError:
-                        continue
-                    if start_date <= candidate_date <= end_date:
-                        filtered_names.append(candidate)
-                matching_names = filtered_names
-            new_all_names += matching_names
+        if not (canonical_tags.tags("*") in name or
+                canonical_tags.tags("DATETO") in name or
+                canonical_tags.tags("TIMETO") in name or
+                canonical_tags.tags("DATETIMETO") in name):
+            new_all_names.append(name)
+            continue
+
+        # Initialize search string
+        search_str = name
+
+        # Handle wildcard replacement first if present
+        if canonical_tags.tags("*") in name:
+            search_str = search_str.replace(canonical_tags.tags("*"), "*")
+
+        # Handle datetime ranges
+        format_type = tag = None
+        if canonical_tags.tags("DATETO") in search_str:
+            format_type = "date"
+            tag = canonical_tags.tags("DATETO")
+        elif canonical_tags.tags("TIMETO") in search_str:
+            format_type = "time"
+            tag = canonical_tags.tags("TIMETO")
+        elif canonical_tags.tags("DATETIMETO") in search_str:
+            format_type = "datetime"
+            tag = canonical_tags.tags("DATETIMETO")
+
+        if format_type is not None:
+            assert tag is not None, "format and tag should be set together"
+            search_str = validation.format_and_validate_datetime_search_str(search_str, format_type, tag)
+
+        # Use the helper function to perform the glob search
+        if sub:
+            matching_names: List[str] = search_sub_or_ses_level(
+                cfg,
+                base_folder,
+                local_or_central,
+                sub,
+                search_str=search_str,
+            )[0]
         else:
-            new_all_names += [name]
-    # Remove duplicates in case of wildcard overlap.
+            matching_names = search_sub_or_ses_level(
+                cfg, base_folder, local_or_central, search_str=search_str
+            )[0]
+
+        # Filter results by datetime range if one was present
+        if format_type is not None and tag is not None:
+            expected_values = validation.get_expected_num_datetime_values(format_type)
+            full_tag_regex = fr"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
+            match = re.search(full_tag_regex, name)
+            if match:  # We know this is true because format_and_validate_datetime_search_str succeeded
+                start_str, end_str = match.groups()
+                start_timepoint = datetime.strptime(start_str, canonical_tags.get_datetime_format(format_type))
+                end_timepoint = datetime.strptime(end_str, canonical_tags.get_datetime_format(format_type))
+                matching_names = filter_names_by_datetime_range(
+                    matching_names, format_type, start_timepoint, end_timepoint
+                )
+
+        new_all_names.extend(matching_names)
+
+    # Remove duplicates in case of wildcard overlap
     new_all_names = list(set(new_all_names))
     return new_all_names
 
