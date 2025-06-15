@@ -193,7 +193,11 @@ class SelectDirectoryTreeScreen(ModalScreen):
             Static(label_message, id="select_directory_tree_screen_label"),
             Select(
                 [(drive, drive) for drive in self.get_drives()],
-                value=self.selected_drive if self.selected_drive in drives else drives[0],
+                value=(
+                    self.selected_drive
+                    if self.selected_drive in drives
+                    else drives[0]
+                ),
                 allow_blank=False,
                 id="select_directory_tree_drive_select",
             ),
@@ -209,10 +213,13 @@ class SelectDirectoryTreeScreen(ModalScreen):
     @staticmethod
     def get_drives():
         operating_system = platform.system()
-    
-        assert operating_system in ["Windows", "Darwin", "Linux"], \
-            f"Unexpected operating system: {operating_system} encountered"
-        
+
+        assert operating_system in [
+            "Windows",
+            "Darwin",
+            "Linux",
+        ], f"Unexpected operating system: {operating_system} encountered"
+
         if platform.system() == "Windows":
             return [disk.device for disk in psutil.disk_partitions(all=False)]
 

@@ -1,7 +1,6 @@
 import pytest
-from pathlib import Path
-import platform
 from tui_base import TuiBase
+
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
@@ -25,14 +24,21 @@ class TestSelectTree(TuiBase):
         app = TuiApp()
         async with app.run_test() as pilot:
 
-            await self.scroll_to_click_pause(pilot,"#mainwindow_new_project_button")
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
 
-            await self.scroll_to_click_pause(pilot,"#configs_local_path_select_button")
+            await self.scroll_to_click_pause(
+                pilot, "#configs_local_path_select_button"
+            )
             assert isinstance(pilot.app.screen, SelectDirectoryTreeScreen)
 
-            tree = pilot.app.screen.query_one("#select_directory_tree_directory_tree")
-            select = pilot.app.screen.query_one("#select_directory_tree_drive_select")
-
+            tree = pilot.app.screen.query_one(
+                "#select_directory_tree_directory_tree"
+            )
+            select = pilot.app.screen.query_one(
+                "#select_directory_tree_drive_select"
+            )
 
             select.value = "Drive1"
             await pilot.pause()
