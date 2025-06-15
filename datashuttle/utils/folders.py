@@ -391,8 +391,12 @@ def filter_names_by_datetime_range(
     """
     filtered_names: List[str] = []
     for candidate in names:
-        candidate_basename = candidate if isinstance(candidate, str) else candidate.name
-        value = get_values_from_bids_formatted_name([candidate_basename], format_type)[0]
+        candidate_basename = (
+            candidate if isinstance(candidate, str) else candidate.name
+        )
+        value = get_values_from_bids_formatted_name(
+            [candidate_basename], format_type
+        )[0]
         try:
             candidate_timepoint = datetime.strptime(
                 value, canonical_tags.get_datetime_format(format_type)
@@ -445,10 +449,12 @@ def search_with_tags(
     """
     new_all_names: List[str] = []
     for name in all_names:
-        if not (canonical_tags.tags("*") in name or
-                canonical_tags.tags("DATETO") in name or
-                canonical_tags.tags("TIMETO") in name or
-                canonical_tags.tags("DATETIMETO") in name):
+        if not (
+            canonical_tags.tags("*") in name
+            or canonical_tags.tags("DATETO") in name
+            or canonical_tags.tags("TIMETO") in name
+            or canonical_tags.tags("DATETIMETO") in name
+        ):
             new_all_names.append(name)
             continue
 
@@ -473,7 +479,9 @@ def search_with_tags(
 
         if format_type is not None:
             assert tag is not None, "format and tag should be set together"
-            search_str = validation.format_and_validate_datetime_search_str(search_str, format_type, tag)
+            search_str = validation.format_and_validate_datetime_search_str(
+                search_str, format_type, tag
+            )
 
         # Use the helper function to perform the glob search
         if sub:
@@ -491,13 +499,21 @@ def search_with_tags(
 
         # Filter results by datetime range if one was present
         if format_type is not None and tag is not None:
-            expected_values = validation.get_expected_num_datetime_values(format_type)
-            full_tag_regex = fr"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
+            expected_values = validation.get_expected_num_datetime_values(
+                format_type
+            )
+            full_tag_regex = rf"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
             match = re.search(full_tag_regex, name)
-            if match:  # We know this is true because format_and_validate_datetime_search_str succeeded
+            if (
+                match
+            ):  # We know this is true because format_and_validate_datetime_search_str succeeded
                 start_str, end_str = match.groups()
-                start_timepoint = datetime.strptime(start_str, canonical_tags.get_datetime_format(format_type))
-                end_timepoint = datetime.strptime(end_str, canonical_tags.get_datetime_format(format_type))
+                start_timepoint = datetime.strptime(
+                    start_str, canonical_tags.get_datetime_format(format_type)
+                )
+                end_timepoint = datetime.strptime(
+                    end_str, canonical_tags.get_datetime_format(format_type)
+                )
                 matching_names = filter_names_by_datetime_range(
                     matching_names, format_type, start_timepoint, end_timepoint
                 )

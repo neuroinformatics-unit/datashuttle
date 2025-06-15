@@ -24,7 +24,11 @@ from datetime import datetime
 from itertools import chain
 from pathlib import Path
 
-from datashuttle.configs import canonical_configs, canonical_folders, canonical_tags
+from datashuttle.configs import (
+    canonical_configs,
+    canonical_folders,
+    canonical_tags,
+)
 from datashuttle.utils import formatting, getters, utils
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -432,7 +436,9 @@ def datetime_are_iso_format(
     """
     Check formatting for date-, time-, or datetime- tags.
     """
-    key = next((key for key in ["datetime", "time", "date"] if key in name), None)
+    key = next(
+        (key for key in ["datetime", "time", "date"] if key in name), None
+    )
 
     error_message: List[str]
     if not key:
@@ -447,15 +453,22 @@ def datetime_are_iso_format(
 
         try:
             if not validate_datetime(format_to_check, key):
-                error_message = [get_datetime_error(
-                    key, name, canonical_tags.get_datetime_format(key), path_
-                )]
+                error_message = [
+                    get_datetime_error(
+                        key,
+                        name,
+                        canonical_tags.get_datetime_format(key),
+                        path_,
+                    )
+                ]
             else:
                 error_message = []
         except ValueError:
-            error_message = [get_datetime_error(
-                key, name, canonical_tags.get_datetime_format(key), path_
-            )]
+            error_message = [
+                get_datetime_error(
+                    key, name, canonical_tags.get_datetime_format(key), path_
+                )
+            ]
 
     return error_message
 
@@ -477,7 +490,9 @@ def validate_datetime(datetime_str: str, format_type: str) -> bool:
         True if valid, False otherwise
     """
     try:
-        datetime.strptime(datetime_str, canonical_tags.get_datetime_format(format_type))
+        datetime.strptime(
+            datetime_str, canonical_tags.get_datetime_format(format_type)
+        )
         return True
     except ValueError:
         return False
@@ -502,7 +517,9 @@ def get_expected_num_datetime_values(format_type: str) -> int:
     return len(today.strftime(format_str))
 
 
-def format_and_validate_datetime_search_str(search_str: str, format_type: str, tag: str) -> str:
+def format_and_validate_datetime_search_str(
+    search_str: str, format_type: str, tag: str
+) -> str:
     """
     Validate and format a search string containing a datetime range.
 
@@ -526,7 +543,9 @@ def format_and_validate_datetime_search_str(search_str: str, format_type: str, t
         If the datetime format is invalid or the range is malformed
     """
     expected_values = get_expected_num_datetime_values(format_type)
-    full_tag_regex = fr"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
+    full_tag_regex = (
+        rf"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
+    )
     match = re.search(full_tag_regex, search_str)
 
     if not match:
@@ -549,8 +568,12 @@ def format_and_validate_datetime_search_str(search_str: str, format_type: str, t
             NeuroBlueprintError,
         )
 
-    start_timepoint = datetime.strptime(start_str, canonical_tags.get_datetime_format(format_type))
-    end_timepoint = datetime.strptime(end_str, canonical_tags.get_datetime_format(format_type))
+    start_timepoint = datetime.strptime(
+        start_str, canonical_tags.get_datetime_format(format_type)
+    )
+    end_timepoint = datetime.strptime(
+        end_str, canonical_tags.get_datetime_format(format_type)
+    )
 
     if end_timepoint < start_timepoint:
         utils.log_and_raise_error(
@@ -1079,5 +1102,3 @@ def check_datatypes_are_valid(
         return message
 
     return None
-
-

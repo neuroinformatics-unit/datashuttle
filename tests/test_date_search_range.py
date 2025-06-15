@@ -3,7 +3,6 @@ import os
 import re
 import shutil
 import tempfile
-from datetime import datetime
 from pathlib import Path
 from typing import List
 
@@ -20,7 +19,7 @@ class DummyCanonicalTags:
             "*": "@*@",
             "DATETO": "@DATETO@",
             "TIMETO": "@TIMETO@",
-            "DATETIMETO": "@DATETIMETO@"
+            "DATETIMETO": "@DATETIMETO@",
         }
         return tags_dict.get(x, x)
 
@@ -40,8 +39,13 @@ class DummyCanonicalTags:
 @pytest.fixture(autouse=True)
 def patch_canonical_tags(monkeypatch):
     from datashuttle.configs import canonical_tags
+
     monkeypatch.setattr(canonical_tags, "tags", DummyCanonicalTags.tags)
-    monkeypatch.setattr(canonical_tags, "get_datetime_format", DummyCanonicalTags.get_datetime_format)
+    monkeypatch.setattr(
+        canonical_tags,
+        "get_datetime_format",
+        DummyCanonicalTags.get_datetime_format,
+    )
 
 
 # Dummy implementation for search_sub_or_ses_level that simply performs globbing.
@@ -57,11 +61,16 @@ def dummy_search_sub_or_ses_level(
 @pytest.fixture(autouse=True)
 def patch_search_sub_or_ses_level(monkeypatch):
     from datashuttle.utils import folders
-    monkeypatch.setattr(folders, "search_sub_or_ses_level", dummy_search_sub_or_ses_level)
+
+    monkeypatch.setattr(
+        folders, "search_sub_or_ses_level", dummy_search_sub_or_ses_level
+    )
 
 
 # Dummy implementation for get_values_from_bids_formatted_name
-def dummy_get_values_from_bids_formatted_name(names: List[str], key: str, return_as_int: bool = False) -> List[str]:
+def dummy_get_values_from_bids_formatted_name(
+    names: List[str], key: str, return_as_int: bool = False
+) -> List[str]:
     results = []
     for name in names:
         if key == "date":
@@ -75,7 +84,12 @@ def dummy_get_values_from_bids_formatted_name(names: List[str], key: str, return
 @pytest.fixture(autouse=True)
 def patch_get_values_from_bids(monkeypatch):
     from datashuttle.utils import utils
-    monkeypatch.setattr(utils, "get_values_from_bids_formatted_name", dummy_get_values_from_bids_formatted_name)
+
+    monkeypatch.setattr(
+        utils,
+        "get_values_from_bids_formatted_name",
+        dummy_get_values_from_bids_formatted_name,
+    )
 
 
 # Fixture to create a temporary directory with a simulated folder structure.
@@ -104,6 +118,7 @@ def test_date_range_wildcard(temp_project_dir: Path):
     only folders whose embedded date falls between 20250306 and 20250309 (inclusive)
     should be returned.
     """
+
     class Configs:
         pass
 
@@ -130,6 +145,7 @@ def test_simple_wildcard(temp_project_dir: Path):
     When given a simple wildcard pattern like "sub-01_@*@",
     all folders should be returned.
     """
+
     class Configs:
         pass
 
@@ -146,6 +162,7 @@ def test_invalid_date_range(temp_project_dir: Path):
     """
     Test that invalid date ranges raise appropriate errors.
     """
+
     class Configs:
         pass
 
@@ -170,6 +187,7 @@ def test_combined_wildcards(temp_project_dir: Path):
     """
     Test that wildcard and date range can be combined in the same pattern.
     """
+
     class Configs:
         pass
 
@@ -197,4 +215,3 @@ def test_combined_wildcards(temp_project_dir: Path):
         "sub-03_date-20250308",
     }
     assert matched_folders == expected_folders
-

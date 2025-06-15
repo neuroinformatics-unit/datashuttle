@@ -45,6 +45,7 @@ def get_datetime_format(format_type: str) -> str:
         If format_type is not one of the supported types
     """
     if format_type not in _DATETIME_FORMATS:
-        raise ValueError(f"Invalid format type: {format_type}. Must be one of {list(_DATETIME_FORMATS.keys())}")
+        raise ValueError(
+            f"Invalid format type: {format_type}. Must be one of {list(_DATETIME_FORMATS.keys())}"
+        )
     return _DATETIME_FORMATS[format_type]
-
