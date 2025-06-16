@@ -110,7 +110,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one(
                     "#configs_connect_method_radioset"
-                ).pressed_button.label._text[0]
+                ).pressed_button.label._text
                 == "Local Filesystem"
             )
 
@@ -327,38 +327,36 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_behav_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "behav"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#create_ephys_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "ephys"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#create_funcimg_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "funcimg"
             )
             assert (
-                pilot.app.screen.query_one(
-                    "#create_anat_checkbox"
-                ).label._text[0]
+                pilot.app.screen.query_one("#create_anat_checkbox").label._text
                 == "anat"
             )
 
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_create_folders_button"
-                ).label._text[0]
+                ).label._text
                 == "Create Folders"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_button"
-                ).label._text[0]
+                ).label._text
                 == "Settings"
             )
 
@@ -404,7 +402,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_bypass_validation_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "Bypass validation"
             )
             assert (
@@ -417,7 +415,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_validation_on_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "Template Validation"
             )
             assert (
@@ -453,7 +451,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_radioset"
-                ).pressed_button.label._text[0]
+                ).pressed_button.label._text
                 == "Subject"
             )
             assert (
@@ -1053,19 +1051,19 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_all_radiobutton"
-                ).label._text[0]
+                ).label._text
                 == "All"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_toplevel_radiobutton"
-                ).label._text[0]
+                ).label._text
                 == "Top Level"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_custom_radiobutton"
-                ).label._text[0]
+                ).label._text
                 == "Custom"
             )
 
@@ -1095,7 +1093,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_transfer_button"
-                ).label._text[0]
+                ).label._text
                 == "Transfer"
             )
 
@@ -1163,44 +1161,44 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_behav_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "behav"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_ephys_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "ephys"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_funcimg_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "funcimg"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_anat_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "anat"
             )
 
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_all_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "all"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_all_datatype_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "all datatype"
             )
             assert (
                 pilot.app.screen.query_one(
                     "#transfer_all_non_datatype_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "all non datatype"
             )
 
