@@ -58,7 +58,9 @@ class TestTuiValidate(TuiBase):
 
             written_lines = [
                 ele.text
-                for ele in pilot.app.query_one("#validate_richlog").lines
+                for ele in pilot.app.screen.query_one(
+                    "#validate_richlog"
+                ).lines
             ]
 
             assert len(written_lines) == 3
@@ -157,7 +159,7 @@ class TestTuiValidate(TuiBase):
                 "validate_path_container",
             ]:
                 with pytest.raises(textual.css.query.InvalidQueryFormat):
-                    pilot.app.query_one(id)
+                    pilot.app.screen.query_one(id)
 
     @pytest.mark.asyncio
     async def test_validate_at_path_kwargs(self, setup_project_paths, mocker):
@@ -198,4 +200,4 @@ class TestTuiValidate(TuiBase):
 
             # Check removed widgets, this should be removed because always local
             with pytest.raises(textual.css.query.InvalidQueryFormat):
-                pilot.app.query_one("validate_include_central_checkbox")
+                pilot.app.screen.query_one("validate_include_central_checkbox")

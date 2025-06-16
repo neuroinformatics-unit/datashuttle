@@ -166,7 +166,11 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
                     path_.as_posix(),
                     path_.parent / f"{new_name}{path_.suffix}",
                 )
-            self.query_one("#project_manager_screen").update_active_tab_tree()
+            assert isinstance(
+                self.screen, project_manager.ProjectManagerScreen
+            )
+            self.screen.update_active_tab_tree()
+
         except BaseException as e:
             self.show_modal_error_dialog(
                 f"Could not rename the file or folder."
