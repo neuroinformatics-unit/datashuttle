@@ -47,7 +47,8 @@ jobs:
           activate-environment: "datashuttle-test"
 
       # The recommended installation is via conda, but we need to test
-      # pip dependencies so any dependency changes in a PR are reflected
+      # against dependencies from the pyproject.toml on the branch
+      # to ensure dependency changes in a PR are reflected.
       - name: Install rclone
         run: |
           conda activate datashuttle-test
