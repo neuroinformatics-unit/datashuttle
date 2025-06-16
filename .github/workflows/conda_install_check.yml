@@ -3,15 +3,8 @@
 name: conda install check
 
 on:
-  push:
-    branches:
-      - main
-    tags:
-      - 'v*'
-  pull_request:
   schedule:
     # Weekly cron job at 12:00 AM UTC on Mondays.
-    # This will only run on main by default.
     - cron: '0 0 * * 1'
 
 jobs:
