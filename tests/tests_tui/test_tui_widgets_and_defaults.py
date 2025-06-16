@@ -403,7 +403,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 pilot.app.screen.query_one(
                     "#suggest_next_sub_ses_central_checkbox"
-                ).label._text[0]
+                ).label._text
                 == "Search Central For Suggestions"
             )
             assert (
