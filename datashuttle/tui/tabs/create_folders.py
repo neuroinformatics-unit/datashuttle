@@ -36,7 +36,7 @@ from datashuttle.tui.screens.modal_dialogs import (
     SearchingCentralForNextSubSesPopup,
 )
 from datashuttle.tui.tooltips import get_tooltip
-from datashuttle.tui.utils.tui_decorators import require_double_click
+from datashuttle.tui.utils.tui_decorators import require_double_click_input_box
 from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 
 
@@ -56,6 +56,7 @@ class CreateFoldersTab(TreeAndInputTab):
         ) = None
 
         self.prev_click_time = 0.0
+        self.prev_click_input_id: str | None = None
 
     def compose(self) -> ComposeResult:
         yield CustomDirectoryTree(
@@ -146,7 +147,7 @@ class CreateFoldersTab(TreeAndInputTab):
         await self.recompose()
         self.on_mount()
 
-    @require_double_click
+    @require_double_click_input_box
     def on_clickable_input_clicked(
         self, event: ClickableInput.Clicked
     ) -> None:
