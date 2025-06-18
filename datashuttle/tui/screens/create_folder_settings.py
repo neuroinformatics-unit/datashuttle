@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Dict, Optional
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
 
 import webbrowser
@@ -52,7 +52,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     TITLE = "Create Folders Settings"
 
-    def __init__(self, mainwindow: App, interface: Interface) -> None:
+    def __init__(self, mainwindow: TuiApp, interface: Interface) -> None:
         """PLACEHOLDER."""
         super(CreateFoldersSettingsScreen, self).__init__()
 

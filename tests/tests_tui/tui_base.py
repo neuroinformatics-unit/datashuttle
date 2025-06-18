@@ -184,6 +184,8 @@ class TuiBase:
     async def switch_tab(self, pilot, tab):
         """PLACEHOLDER."""
         assert tab in ["create", "transfer", "configs", "logging"]
+        assert tab in ["create", "transfer", "configs", "logging", "validate"]
+
         content_tab = ContentTab.add_prefix(f"tabscreen_{tab}_tab")
         await self.scroll_to_click_pause(pilot, f"Tab#{content_tab}")
 

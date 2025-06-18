@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
 
 from textual.containers import Container
 from textual.screen import Screen
@@ -35,7 +35,7 @@ class ProjectSelectorScreen(Screen):
 
     TITLE = "Select Project"
 
-    def __init__(self, mainwindow: App) -> None:
+    def __init__(self, mainwindow: TuiApp) -> None:
         """PLACEHOLDER."""
         super(ProjectSelectorScreen, self).__init__()
 

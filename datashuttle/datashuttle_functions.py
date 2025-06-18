@@ -26,6 +26,7 @@ def quick_validate_project(
     project_path: str | Path,
     top_level_folder: Optional[TopLevelFolder] = "rawdata",
     display_mode: DisplayMode = "warn",
+    strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
 ) -> List[str]:
     """Perform validation on the project.
@@ -47,6 +48,14 @@ def quick_validate_project(
     display_mode
         The validation issues are displayed as ``"error"`` (raise error)
         ``"warn"`` (show warning) or ``"print"``.
+
+    strict_mode
+        If `True`, only allow NeuroBlueprint-formatted folders to exist in
+        the project. By default, non-NeuroBlueprint folders (e.g. a folder
+        called 'my_stuff' in the 'rawdata') are allowed, and only folders
+        starting with sub- or ses- prefix are checked. In `Strict Mode`,
+        any folder not prefixed with sub-, ses- or a valid datatype will
+        raise a validation issue.
 
     name_templates
         A dictionary of templates for subject and session name
@@ -84,6 +93,7 @@ def quick_validate_project(
         include_central=False,
         display_mode=display_mode,
         name_templates=name_templates,
+        strict_mode=strict_mode,
     )
 
     return error_messages

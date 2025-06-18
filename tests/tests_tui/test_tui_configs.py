@@ -389,7 +389,7 @@ class TestTuiConfigs(TuiBase):
         assert (
             configs_content.query_one(
                 "#configs_connect_method_radioset"
-            ).pressed_button.label._text[0]
+            ).pressed_button.label._text
             == label
         )
 

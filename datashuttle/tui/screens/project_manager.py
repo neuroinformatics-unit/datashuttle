@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
 
 from textual.screen import Screen
@@ -16,8 +16,9 @@ from textual.widgets import (
     TabPane,
 )
 
-from datashuttle.tui.configs import ConfigsContent
 from datashuttle.tui.screens import modal_dialogs
+from datashuttle.tui.shared.configs_content import ConfigsContent
+from datashuttle.tui.shared.validate_content import ValidateContent
 from datashuttle.tui.tabs import create_folders, logging, transfer
 
 
@@ -40,7 +41,7 @@ class ProjectManagerScreen(Screen):
     See ConfigsContent for more information.
     """
 
-    def __init__(self, mainwindow: App, interface: Interface, id) -> None:
+    def __init__(self, mainwindow: TuiApp, interface: Interface, id) -> None:
         """PLACEHOLDER."""
         super(ProjectManagerScreen, self).__init__(id=id)
 
@@ -73,6 +74,10 @@ class ProjectManagerScreen(Screen):
                     self.mainwindow,
                     self.interface,
                     id="tabscreen_transfer_tab",
+                )
+            with TabPane("Validate", id="tabscreen_validate_tab"):
+                yield ValidateContent(
+                    self, self.interface, id="tabscreen_validate_content"
                 )
             with TabPane("Configs", id="tabscreen_configs_tab"):
                 yield ConfigsContent(

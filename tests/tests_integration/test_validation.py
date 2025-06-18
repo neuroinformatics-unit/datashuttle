@@ -902,8 +902,8 @@ class TestValidation(BaseTest):
             )
 
         assert (
-            str(e.value)
-            == "`strict_mode` is currently only available for `include_central=False`."
+            "`strict_mode` is currently only available for `include_central=False`."
+            in str(e.value)
         )
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])

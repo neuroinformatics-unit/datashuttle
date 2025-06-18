@@ -59,12 +59,10 @@ class TestDatatypes(BaseTest):
 
         # Unfortunately on Windows we are encountering 'The command line is too long'
         # and so cannot test against all datatypes here.
-        some_narrow_datatypes = canonical_configs.quick_get_narrow_datatypes()[
-            :10
-        ]
+        narrow_datatypes = canonical_configs.quick_get_narrow_datatypes()
 
         datatypes_used = self.get_narrow_only_datatypes_used(used=False)
-        for key in some_narrow_datatypes:
+        for key in narrow_datatypes:
             datatypes_used[key] = True
 
         test_utils.make_and_check_local_project_folders(
@@ -72,7 +70,7 @@ class TestDatatypes(BaseTest):
             "rawdata",
             subs,
             sessions,
-            some_narrow_datatypes,
+            narrow_datatypes,
             datatypes_used,
         )
 
@@ -83,7 +81,7 @@ class TestDatatypes(BaseTest):
             project, upload_or_download, "custom", "rawdata"
         )
 
-        transfer_function("rawdata", "all", "all", some_narrow_datatypes)
+        transfer_function("rawdata", "all", "all", narrow_datatypes)
 
         test_utils.check_folder_tree_is_correct(
             os.path.join(base_path_to_check, "rawdata"),

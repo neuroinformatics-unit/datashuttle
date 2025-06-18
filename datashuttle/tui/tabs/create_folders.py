@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
     from datashuttle.utils.custom_types import Prefix
 
@@ -37,7 +37,7 @@ from datashuttle.tui.utils.tui_validators import NeuroBlueprintValidator
 class CreateFoldersTab(TreeAndInputTab):
     """Create new project files formatted according to the NeuroBlueprint specification."""
 
-    def __init__(self, mainwindow: App, interface: Interface) -> None:
+    def __init__(self, mainwindow: TuiApp, interface: Interface) -> None:
         """PLACEHOLDER."""
         super(CreateFoldersTab, self).__init__(
             "Create", id="tabscreen_create_tab"
