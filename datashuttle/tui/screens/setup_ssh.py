@@ -44,7 +44,6 @@ class SetupSshScreen(ModalScreen):
             Horizontal(
                 Static(
                     "Ready to setup SSH. Press OK to proceed.",
-
                     id="messagebox_message_label",
                 ),
                 id="messagebox_message_container",

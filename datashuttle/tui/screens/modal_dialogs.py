@@ -157,6 +157,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         if `None` set to the system user home.
 
     """
+
     def __init__(
         self, mainwindow: TuiApp, path_: Optional[Path] = None
     ) -> None:

@@ -36,8 +36,7 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
 
 
 def call_rclone_through_script(command: str) -> CompletedProcess:
-    """
-    Call rclone through a script, to avoid limits on command-line calls
+    """Call rclone through a script, to avoid limits on command-line calls
     (in particular on Windows). Used for transfers due to generation of
     large call strings.
     """
