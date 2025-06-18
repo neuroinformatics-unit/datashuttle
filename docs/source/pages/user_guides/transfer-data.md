@@ -1,8 +1,17 @@
 (how-to-transfer-data)=
-# How to Transfer Data
+# Transfer data
 
-**datashuttle** facilitates convenient transfer of data between
+:::{note}
+
+This guide assumes that you have already set up your project
+for data transfer. Please see [set up a project for transfer](set-up-a-project_)
+for details.
+
+:::
+
+``datashuttle`` facilitates convenient transfer of data between
 local and central storage machines.
+
 
 This includes:
 - 'Uploading' data from an acquisition machine to central data storage.
@@ -22,8 +31,7 @@ This includes:
 :::{admonition} Transfer Direction
 :class: note
 
-
-In **datashuttle**, the *upload* refers to transfer
+In ``datashuttle``, the *upload* refers to transfer
 from a local to the central machine.
 *Download* refers to transfer from the central machine to a local machine.
 :::
@@ -76,7 +84,7 @@ to central storage while existing files will be ignored.
 ```
 <br>
 
-To transfer the entire project navitgate to the `Transfer tab`. The
+To transfer the entire project navigate to the `Transfer tab`. The
 `All` button is selected to transfer the entire project.
 
 Click `Transfer` to begin.

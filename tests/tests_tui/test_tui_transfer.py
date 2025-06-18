@@ -99,9 +99,7 @@ class TestTuiTransfer(TuiBase):
         logging_path = pilot.app.screen.interface.project.get_logging_path()
 
         test_utils.delete_log_files(logging_path)
-        await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
-        await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
-        await self.close_messagebox(pilot)
+        await self.click_and_await_transfer(pilot)
 
         log = test_utils.read_log_file(logging_path)
         assert f"overwrite_existing_files': '{overwrite_setting}'" in log
@@ -245,9 +243,7 @@ class TestTuiTransfer(TuiBase):
         if upload_or_download == "download":
             await self.scroll_to_click_pause(pilot, "#transfer_switch")
 
-        await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
-        await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
-        await self.close_messagebox(pilot)
+        await self.click_and_await_transfer(pilot)
 
     def setup_project_for_data_transfer(
         self,

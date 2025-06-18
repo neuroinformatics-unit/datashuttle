@@ -13,13 +13,12 @@ if TYPE_CHECKING:
     from textual import events
     from textual.validation import Validator
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.interface import Interface
 
 from dataclasses import dataclass
 from pathlib import Path
 
-import pyperclip
 from rich.style import Style
 from rich.text import Text
 from textual._segment_tools import line_pad
@@ -34,11 +33,10 @@ from textual.widgets import (
 
 from datashuttle.configs import canonical_folders
 
+
 # --------------------------------------------------------------------------------------
 # ClickableInput
 # --------------------------------------------------------------------------------------
-
-
 class ClickableInput(Input):
     """
     An input widget which emits a `ClickableInput.Clicked`
@@ -53,7 +51,7 @@ class ClickableInput(Input):
 
     def __init__(
         self,
-        mainwindow: App,
+        mainwindow: TuiApp,
         placeholder: str,
         id: Optional[str] = None,
         validate_on: Optional[List[str]] = None,
@@ -76,7 +74,7 @@ class ClickableInput(Input):
 
     def on_key(self, event: events.Key) -> None:
         if event.key == "ctrl+q":
-            pyperclip.copy(self.value)
+            self.mainwindow.copy_to_clipboard(self.value)
 
         elif event.key == "ctrl+o":
             self.mainwindow.handle_open_filesystem_browser(Path(self.value))
@@ -100,7 +98,7 @@ class CustomDirectoryTree(DirectoryTree):
         node_path: Optional[Path]
 
     def __init__(
-        self, mainwindow: App, path: Path, id: Optional[str] = None
+        self, mainwindow: TuiApp, path: Path, id: Optional[str] = None
     ) -> None:
         super(CustomDirectoryTree, self).__init__(path=path, id=id)
 
@@ -121,7 +119,8 @@ class CustomDirectoryTree(DirectoryTree):
         """
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
-            pyperclip.copy(path_.as_posix())
+            path_str = path_.as_posix()
+            self.mainwindow.copy_to_clipboard(path_str)
 
         elif event.key == "ctrl+o":
             path_ = self.get_node_at_line(self.hover_line).data.path

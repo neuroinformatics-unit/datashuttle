@@ -5,7 +5,7 @@ on:
     branches:
       - main
     tags:
-      - '*'
+      - 'v*'
   pull_request:
   schedule:
     # Weekly cron job at 12:00 AM UTC on Mondays.
@@ -45,14 +45,16 @@ jobs:
           auto-update-conda: true
           channels: conda-forge
           activate-environment: "datashuttle-test"
-      - name: Install datashuttle with conda
+
+      # The recommended installation is via conda, but we need to test
+      # against dependencies from the pyproject.toml on the branch
+      # to ensure dependency changes in a PR are reflected.
+      - name: Install rclone
         run: |
           conda activate datashuttle-test
-          conda install -c conda-forge datashuttle
-      - name: Install local datashuttle for testing
+          conda install -c conda-forge rclone
+      - name: Install datashuttle from repo
         run: |
-          # --force will only uninstall datashuttle not dependencies
-          conda uninstall datashuttle --force
           python -m pip install --upgrade pip
           pip install .[dev]
       - name: Test

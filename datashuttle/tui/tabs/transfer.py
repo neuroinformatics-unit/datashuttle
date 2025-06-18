@@ -6,12 +6,15 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from textual.app import ComposeResult
+    from textual.worker import Worker
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
     from datashuttle.tui.custom_widgets import CustomDirectoryTree
     from datashuttle.tui.interface import Interface
+    from datashuttle.utils.custom_types import InterfaceOutput
 
 from rich.text import Text
+from textual import work
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import (
     Button,
@@ -33,8 +36,7 @@ from datashuttle.tui.screens.datatypes import (
     DisplayedDatatypesScreen,
 )
 from datashuttle.tui.screens.modal_dialogs import (
-    FinishTransferScreen,
-    MessageBox,
+    ConfirmAndAwaitTransferPopup,
 )
 from datashuttle.tui.tabs.transfer_status_tree import TransferStatusTree
 from datashuttle.tui.tooltips import get_tooltip
@@ -52,7 +54,7 @@ class TransferTab(TreeAndInputTab):
 
     title : str
 
-    mainwindow : App
+    mainwindow : TuiApp
 
     interface : Interface
         TUI-datashuttle interface object
@@ -77,7 +79,7 @@ class TransferTab(TreeAndInputTab):
     def __init__(
         self,
         title: str,
-        mainwindow: App,
+        mainwindow: TuiApp,
         interface: Interface,
         id: Optional[str] = None,
     ) -> None:
@@ -88,7 +90,6 @@ class TransferTab(TreeAndInputTab):
         self.show_legend = self.mainwindow.load_global_settings()[
             "show_transfer_tree_status"
         ]
-        self.finish_transfer_screen: Optional[FinishTransferScreen] = None
 
     # Setup
     # ----------------------------------------------------------------------------------
@@ -248,9 +249,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        if (
-            event.checkbox.id == "transfer_tab_dry_run_checkbox"
-        ):  # TODO: UPDATE NAMES TO INC. TAB! ALSO UPDATE TOOLTIPS
+        if event.checkbox.id == "transfer_tab_dry_run_checkbox":
             self.interface.save_tui_settings(
                 event.checkbox.value,
                 "dry_run",
@@ -293,20 +292,7 @@ class TransferTab(TreeAndInputTab):
         (in the direction selected). If "Yes" is selected,
         `self.transfer_data` (see below) is run.
 
-        Notes
-        -----
-        The way that Textualize works makes it difficult (impossible?)
-        to render a screen but keep the main loop with another screen.
-        What we want to do is 1) select 'OK' to start transfer
-        2) show 'Transferring...' 3) transfer data 4) tear down 'transferring'
-        screen 5) show confirmation screen. This is not simple if we want to
-        manage the actual transfer in this screen, which makes a lot of
-        sense as all options are held here. The alternative is to pass all settings
-        to a `Transferring` modal dialog which seems even more convoluted. So,
-        `FinishTransferScreen` calls back to `self.transfer_data`. If 'OK' was
-        selected, the message is changed to 'Transferring'. Then, `self.transfer_data`
-        handles data transfer, teardown of the `FinishTransferScreen`
-        and display of the confirmation screen.
+        And `ConfirmAndAwaitTransferPopup` handles the UI updates.
         """
         if event.button.id == "transfer_transfer_button":
             if not self.query_one("#transfer_switch").value:
@@ -323,15 +309,10 @@ class TransferTab(TreeAndInputTab):
                 " central filesystem.\n\nAre you sure you wish to proceed?\n",
             )
 
-            # This is very convoluted. See docstring for details.
-            assert (
-                self.finish_transfer_screen is None
-            ), "`finish_transfer_screen` should de cleaned up in `transfer_data`."
-
-            self.finish_transfer_screen = FinishTransferScreen(
+            finish_transfer_screen = ConfirmAndAwaitTransferPopup(
                 message, self.transfer_data
             )
-            self.mainwindow.push_screen(self.finish_transfer_screen)
+            self.mainwindow.push_screen(finish_transfer_screen)
 
         if event.button.id == "transfer_tab_displayed_datatypes_button":
             self.mainwindow.push_screen(
@@ -373,71 +354,53 @@ class TransferTab(TreeAndInputTab):
     # Transfer
     # ----------------------------------------------------------------------------------
 
-    def transfer_data(self, transfer_bool: bool) -> None:
+    @work(exclusive=True, thread=True)
+    def transfer_data(self) -> Worker[InterfaceOutput]:
         """
-        Executes data transfer using the parameters provided
-        by the user.
+        A threaded worker to transfer data
 
-        Parameters
-        ----------
-        transfer_bool: Passed by `FinishTransferScreen`. True if user confirmed
-            transfer by clicking "Yes".
+        This function transfers data based on the config provided by the radio buttons
+        such as a) the data to be transferred (all / top-level-folders / custom) b) the
+        direction of transfer c) overwrite rules, etc.
 
+        This function is passed to `ConfirmAndAwaitTransferPopup` which calls it to handle
+        data transfer in a worker thread. The UI updates during and after transfer are
+        handled by `ConfirmAndAwaitTransferPopup`.
         """
-        # Teardown the screen first, whatever `transfer_bool` is.
-        # It will not be updated until the transfer is complete.
-        assert self.finish_transfer_screen is not None
-        self.finish_transfer_screen.dismiss()
-        self.finish_transfer_screen = None
+        upload = not self.query_one("#transfer_switch").value
 
-        if transfer_bool:
-            upload = not self.query_one("#transfer_switch").value
+        if self.query_one("#transfer_all_radiobutton").value:
+            success, output = self.interface.transfer_entire_project(upload)
 
-            if self.query_one("#transfer_all_radiobutton").value:
-                success, output = self.interface.transfer_entire_project(
-                    upload
+        elif self.query_one("#transfer_toplevel_radiobutton").value:
+
+            selected_top_level_folder = self.query_one(
+                "#transfer_toplevel_select"
+            ).get_top_level_folder()
+
+            success, output = self.interface.transfer_top_level_only(
+                selected_top_level_folder, upload
+            )
+
+        elif self.query_one("#transfer_custom_radiobutton").value:
+
+            selected_top_level_folder = self.query_one(
+                "#transfer_custom_select"
+            ).get_top_level_folder()
+
+            sub_names, ses_names, datatype = (
+                self.get_sub_ses_names_and_datatype(
+                    "#transfer_subject_input", "#transfer_session_input"
                 )
+            )
+            success, output = self.interface.transfer_custom_selection(
+                selected_top_level_folder,
+                sub_names,
+                ses_names,
+                datatype,
+                upload,
+            )
 
-            elif self.query_one("#transfer_toplevel_radiobutton").value:
+        self.app.call_from_thread(self.reload_directorytree)
 
-                selected_top_level_folder = self.query_one(
-                    "#transfer_toplevel_select"
-                ).get_top_level_folder()
-
-                success, output = self.interface.transfer_top_level_only(
-                    selected_top_level_folder, upload
-                )
-
-            elif self.query_one("#transfer_custom_radiobutton").value:
-
-                selected_top_level_folder = self.query_one(
-                    "#transfer_custom_select"
-                ).get_top_level_folder()
-
-                sub_names, ses_names, datatype = (
-                    self.get_sub_ses_names_and_datatype(
-                        "#transfer_subject_input", "#transfer_session_input"
-                    )
-                )
-                success, output = self.interface.transfer_custom_selection(
-                    selected_top_level_folder,
-                    sub_names,
-                    ses_names,
-                    datatype,
-                    upload,
-                )
-
-            self.reload_directorytree()
-
-            if success:
-                self.mainwindow.push_screen(
-                    MessageBox(
-                        "Transfer finished."
-                        "\n\n"
-                        "Check the most recent logs to "
-                        "ensure transfer completed successfully.",
-                        border_color="grey",
-                    )
-                )
-            else:
-                self.mainwindow.show_modal_error_dialog(output)
+        return success, output

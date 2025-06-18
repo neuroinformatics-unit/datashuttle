@@ -1,19 +1,22 @@
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING, Callable, Optional
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from textual.app import ComposeResult
+    from textual.worker import Worker
 
-    from datashuttle.tui.app import App
+    from datashuttle.tui.app import TuiApp
+    from datashuttle.utils.custom_types import InterfaceOutput
 
 from pathlib import Path
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Input, Label, Static
+from textual.widgets import Button, Input, Label, LoadingIndicator, Static
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
 from datashuttle.tui.utils.tui_decorators import require_double_click
@@ -66,13 +69,20 @@ class MessageBox(ModalScreen):
         self.dismiss(True)
 
 
-class FinishTransferScreen(ModalScreen):
+class ConfirmAndAwaitTransferPopup(ModalScreen):
     """
-    A screen for rendering confirmation messages
-    taking user input ('OK' or 'Cancel').
+    A popup screen for confirming, awaiting and finishing a Transfer.
+
+    When users select Transfer, this screen pops up to a) allow users to confirm transfer b) display
+    a `LoadingIndicator` while the transfer runs in a separate worker c) indicate the transfer is finished.
+    It is much easier to handle this on a single screen, rather than open / close screens at each stage.
     """
 
-    def __init__(self, message: str, transfer_func: Callable) -> None:
+    def __init__(
+        self,
+        message: str,
+        transfer_func: Callable[[], Worker[InterfaceOutput]],
+    ) -> None:
         super().__init__()
 
         self.transfer_func = transfer_func
@@ -91,15 +101,40 @@ class FinishTransferScreen(ModalScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "confirm_ok_button":
-            # Update the display to 'transferring' before
-            # TUI freezes during data transfer.
-            self.query_one("#confirm_button_container").visible = False
+            self.query_one("#confirm_button_container").remove()
+
+            # Start the data transfer
+            asyncio.create_task(
+                self.handle_transfer_and_update_ui_when_complete(),
+                name="data_transfer_async_task",
+            )
+
             self.query_one("#confirm_message_label").update("Transferring...")
-            self.query_one("#confirm_message_label").call_after_refresh(
-                lambda: self.transfer_func(True)
+            loading_indicator = LoadingIndicator(id="loading_indicator")
+            self.query_one("#confirm_top_container").mount(loading_indicator)
+        else:
+            self.dismiss()
+
+    async def handle_transfer_and_update_ui_when_complete(self) -> None:
+        """Runs the data transfer worker and updates the UI on completion"""
+
+        data_transfer_worker = self.transfer_func()
+        await data_transfer_worker.wait()
+        success, output = data_transfer_worker.result
+        self.dismiss()
+
+        if success:
+            self.app.push_screen(
+                MessageBox(
+                    "Transfer finished."
+                    "\n\n"
+                    "Check the most recent logs to "
+                    "ensure transfer completed successfully.",
+                    border_color="grey",
+                )
             )
         else:
-            self.transfer_func(False)
+            self.app.show_modal_error_dialog(output)
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
@@ -112,7 +147,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
     Parameters
     ----------
 
-    mainwindow : App
+    mainwindow : TuiApp
         Textual main app screen
 
     path_ : Optional[Path]
@@ -120,7 +155,9 @@ class SelectDirectoryTreeScreen(ModalScreen):
         if `None` set to the system user home.
     """
 
-    def __init__(self, mainwindow: App, path_: Optional[Path] = None) -> None:
+    def __init__(
+        self, mainwindow: TuiApp, path_: Optional[Path] = None
+    ) -> None:
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
@@ -163,7 +200,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
 class RenameFileOrFolderScreen(ModalScreen):
     """ """
 
-    def __init__(self, mainwindow: App, path_: Path) -> None:
+    def __init__(self, mainwindow: TuiApp, path_: Path) -> None:
         super(RenameFileOrFolderScreen, self).__init__()
 
         self.mainwindow = mainwindow

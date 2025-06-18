@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from datashuttle.utils.custom_types import TopLevelFolder
 
 import glob
-import os
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
@@ -64,11 +63,11 @@ def create_folder_trees(
         )
 
     if datatype_passed:
-        is_invalid, message = validation.datatypes_are_invalid(
-            datatype, allow_all=False
+        error_message = validation.check_datatypes_are_valid(
+            datatype, allow_all=True
         )
-        if is_invalid:
-            utils.log_and_raise_error(message, NeuroBlueprintError)
+        if error_message:
+            utils.log_and_raise_error(error_message, NeuroBlueprintError)
 
         all_paths: Dict = {}
     else:
@@ -204,7 +203,8 @@ def search_project_for_sub_or_ses_names(
     top_level_folder: TopLevelFolder,
     sub: Optional[str],
     search_str: str,
-    local_only: bool,
+    include_central: bool,
+    return_full_path: bool = False,
 ) -> Dict:
     """
     If sub is None, the top-level level folder will be
@@ -226,13 +226,12 @@ def search_project_for_sub_or_ses_names(
         sub=sub,
         search_str=search_str,
         verbose=False,
+        return_full_path=return_full_path,
     )
 
     central_foldernames: List
 
-    if local_only:
-        central_foldernames = []
-    else:
+    if include_central:
         central_foldernames, _ = search_sub_or_ses_level(
             cfg,
             cfg.get_base_folder("central", top_level_folder),
@@ -240,7 +239,11 @@ def search_project_for_sub_or_ses_names(
             sub,
             search_str=search_str,
             verbose=False,
+            return_full_path=return_full_path,
         )
+    else:
+        central_foldernames = []
+
     return {"local": local_foldernames, "central": central_foldernames}
 
 
@@ -396,17 +399,18 @@ def search_for_wildcards(
         will search for subjects rather than sessions.
 
     """
-    new_all_names = []
+    new_all_names: List[str] = []
     for name in all_names:
         if canonical_tags.tags("*") in name:
             name = name.replace(canonical_tags.tags("*"), "*")
 
+            matching_names: List[str]
             if sub:
-                matching_names = search_sub_or_ses_level(
+                matching_names = search_sub_or_ses_level(  # type: ignore
                     cfg, base_folder, local_or_central, sub, search_str=name
                 )[0]
             else:
-                matching_names = search_sub_or_ses_level(
+                matching_names = search_sub_or_ses_level(  # type: ignore
                     cfg, base_folder, local_or_central, search_str=name
                 )[0]
 
@@ -426,6 +430,7 @@ def search_for_wildcards(
 # -----------------------------------------------------------------------------
 
 
+# @overload: Cannot get type overloading to work with this function.
 def search_sub_or_ses_level(
     cfg: Configs,
     base_folder: Path,
@@ -434,7 +439,8 @@ def search_sub_or_ses_level(
     ses: Optional[str] = None,
     search_str: str = "*",
     verbose: bool = True,
-) -> Tuple[List[str], List[str]]:
+    return_full_path: bool = False,
+) -> Tuple[List[str] | List[Path], List[str]]:
     """
     Search project folder at the subject or session level.
     Only returns folders
@@ -482,6 +488,7 @@ def search_sub_or_ses_level(
         local_or_central,
         search_str,
         verbose,
+        return_full_path,
     )
 
     return all_folder_names, all_filenames
@@ -493,6 +500,7 @@ def search_for_folders(
     local_or_central: str,
     search_prefix: str,
     verbose: bool = True,
+    return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
     """
     Wrapper to determine the method used to search for search
@@ -513,6 +521,7 @@ def search_for_folders(
             search_prefix,
             cfg,
             verbose,
+            return_full_path,
         )
     else:
         if not search_path.exists():
@@ -523,24 +532,36 @@ def search_for_folders(
             return [], []
 
         all_folder_names, all_filenames = search_filesystem_path_for_folders(
-            search_path / search_prefix
+            search_path / search_prefix, return_full_path
         )
     return all_folder_names, all_filenames
 
 
+# Actual function implementation
 def search_filesystem_path_for_folders(
-    search_path_with_prefix: Path,
-) -> Tuple[List[str], List[str]]:
+    search_path_with_prefix: Path, return_full_path: bool = False
+) -> Tuple[List[Path | str], List[Path | str]]:
     """
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning folders only.
     """
     all_folder_names = []
     all_filenames = []
-    for file_or_folder in glob.glob(search_path_with_prefix.as_posix()):
-        if os.path.isdir(file_or_folder):
-            all_folder_names.append(os.path.basename(file_or_folder))
+
+    all_files_and_folders = list(glob.glob(search_path_with_prefix.as_posix()))
+    sorter_files_and_folders = sorted(all_files_and_folders)
+
+    for file_or_folder_str in sorter_files_and_folders:
+
+        file_or_folder = Path(file_or_folder_str)
+
+        if file_or_folder.is_dir():
+            all_folder_names.append(
+                file_or_folder if return_full_path else file_or_folder.name
+            )
         else:
-            all_filenames.append(os.path.basename(file_or_folder))
+            all_filenames.append(
+                file_or_folder if return_full_path else file_or_folder.name
+            )
 
     return all_folder_names, all_filenames

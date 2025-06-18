@@ -50,7 +50,9 @@ class TestDatatypesTUI(TuiBase):
 
             for datatype in narrow_datatype_names:
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
@@ -96,7 +98,9 @@ class TestDatatypesTUI(TuiBase):
             for datatype in broad_datatype_names:
                 # check all are shown and False again (because False on reset)
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
@@ -116,13 +120,15 @@ class TestDatatypesTUI(TuiBase):
             for datatype in broad_datatype_names:
                 # check all are shown and False again
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
             # Confirm also that narrow datatypes are not shown.
             with pytest.raises(BaseException):
-                pilot.app.query_one(
+                pilot.app.screen.query_one(
                     f"#create_{narrow_datatype_names[0]}_checkbox"
                 )
 
@@ -165,7 +171,9 @@ class TestDatatypesTUI(TuiBase):
 
             for datatype in narrow_datatype_names:
                 assert (
-                    pilot.app.query_one(f"#transfer_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#transfer_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
@@ -181,11 +189,8 @@ class TestDatatypesTUI(TuiBase):
             spy_transfer_func = mocker.spy(
                 pilot.app.screen.interface.project, "upload_custom"
             )
-            await self.scroll_to_click_pause(
-                pilot, "#transfer_transfer_button"
-            )
-            await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
-            await self.close_messagebox(pilot)
+
+            await self.click_and_await_transfer(pilot)
 
             _, kwargs = spy_transfer_func.call_args_list[0]
             assert kwargs["sub_names"] == ["sub-001"]
