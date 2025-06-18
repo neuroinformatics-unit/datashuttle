@@ -7,7 +7,6 @@ from datashuttle.tui.screens.modal_dialogs import (
 )
 
 
-
 class TestSelectTree(TuiBase):
     @pytest.mark.asyncio
     async def test_select_directory_tree(self, monkeypatch):
