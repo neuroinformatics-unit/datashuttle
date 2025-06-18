@@ -19,7 +19,10 @@ from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Label, LoadingIndicator, Static
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
-from datashuttle.tui.utils.tui_decorators import require_double_click
+from datashuttle.tui.utils.tui_decorators import (
+    ClickInfo,
+    require_double_click,
+)
 
 
 class MessageBox(ModalScreen):
@@ -186,7 +189,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             path_ = Path().home()
         self.path_ = path_
 
-        self.prev_click_time = 0
+        self.click_info = ClickInfo()
 
     def compose(self) -> ComposeResult:
 
@@ -207,11 +210,11 @@ class SelectDirectoryTreeScreen(ModalScreen):
         )
 
     @require_double_click
-    def on_directory_tree_directory_selected(self, node) -> None:
-        if node.path.is_file():
+    def on_directory_tree_directory_selected(self, event) -> None:
+        if event.path.is_file():
             return
         else:
-            self.dismiss(node.path)
+            self.dismiss(event.path)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "cancel_button":

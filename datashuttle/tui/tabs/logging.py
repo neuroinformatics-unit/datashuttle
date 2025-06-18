@@ -9,7 +9,10 @@ from textual.widgets import Button, Label, RichLog, TabPane
 from datashuttle.tui.custom_widgets import (
     CustomDirectoryTree,
 )
-from datashuttle.tui.utils.tui_decorators import require_double_click
+from datashuttle.tui.utils.tui_decorators import (
+    ClickInfo,
+    require_double_click,
+)
 
 
 class RichLogScreen(ModalScreen):
@@ -45,7 +48,7 @@ class LoggingTab(TabPane):
         # display and functionality are always in sync.
         self.latest_log_path = None
         self.update_latest_log_path()
-        self.prev_click_time = 0
+        self.click_info = ClickInfo()
 
     def update_latest_log_path(self):
         logs = list(self.project.get_logging_path().glob("*.log"))
@@ -94,15 +97,15 @@ class LoggingTab(TabPane):
             self.push_rich_log_screen(self.latest_log_path)
 
     @require_double_click
-    def on_directory_tree_file_selected(self, node):
-        if not node.path.is_file():
+    def on_directory_tree_file_selected(self, event):
+        if not event.path.is_file():
             self.mainwindow.show_modal_error_dialog(
                 "Log file no longer exists. Refresh the directory tree"
                 "by pressing CTRL and r at the same time."
             )
             return
 
-        self.push_rich_log_screen(node.path)
+        self.push_rich_log_screen(event.path)
 
     def push_rich_log_screen(self, log_path):
         self.mainwindow.push_screen(
