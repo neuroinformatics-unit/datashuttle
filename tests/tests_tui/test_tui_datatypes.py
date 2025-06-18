@@ -50,7 +50,9 @@ class TestDatatypesTUI(TuiBase):
 
             for datatype in narrow_datatype_names:
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
@@ -96,7 +98,9 @@ class TestDatatypesTUI(TuiBase):
             for datatype in broad_datatype_names:
                 # check all are shown and False again (because False on reset)
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
@@ -116,13 +120,15 @@ class TestDatatypesTUI(TuiBase):
             for datatype in broad_datatype_names:
                 # check all are shown and False again
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
             # Confirm also that narrow datatypes are not shown.
             with pytest.raises(BaseException):
-                pilot.app.query_one(
+                pilot.app.screen.query_one(
                     f"#create_{narrow_datatype_names[0]}_checkbox"
                 )
 
@@ -165,7 +171,9 @@ class TestDatatypesTUI(TuiBase):
 
             for datatype in narrow_datatype_names:
                 assert (
-                    pilot.app.query_one(f"#transfer_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#transfer_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
