@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from textual.app import ComposeResult
+    from textual.widgets._tree import TreeNode
     from textual.worker import Worker
 
     from datashuttle.tui.app import TuiApp
@@ -210,9 +211,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         )
 
     @require_double_click
-    def on_directory_tree_directory_selected(
-        self, node: DirectoryTree.TreeNode
-    ) -> None:
+    def on_directory_tree_directory_selected(self, node: TreeNode) -> None:
         if node.path.is_file():
             return
         else:
