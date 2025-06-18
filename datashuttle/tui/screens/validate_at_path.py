@@ -14,8 +14,7 @@ from datashuttle.tui.shared import validate_content
 
 
 class ValidateScreen(Screen):
-    """
-    Screen to hold the validation window for
+    """Screen to hold the validation window for
     validating an existing project at a given path.
     All widgets are stored in `ValidateContent`, which is
     shared between here and the validation tab on the project manager.

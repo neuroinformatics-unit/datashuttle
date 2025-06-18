@@ -27,7 +27,6 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class ValidateContent(Container):
-
     def __init__(
         self,
         parent_class: Union[
@@ -42,7 +41,6 @@ class ValidateContent(Container):
         self.interface = interface
 
     def compose(self) -> ComposeResult:
-
         if platform.system() == "Windows":
             example_path = r"C:\path\to\project\project_name"
         else:
@@ -117,9 +115,7 @@ class ValidateContent(Container):
             self.query_one("#validate_path_input").value = path_.as_posix()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-
         if event.button.id == "validate_select_button":
-
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.SelectDirectoryTreeScreen(
                     self.parent_class.mainwindow
@@ -128,7 +124,6 @@ class ValidateContent(Container):
             )
 
         elif event.button.id == "validate_validate_button":
-
             select_value = self.query_one(
                 "#validate_top_level_folder_select"
             ).value
@@ -140,7 +135,6 @@ class ValidateContent(Container):
             #            assert False, f"strict mode: {strict_mode}"
 
             if self.interface:
-
                 if self.interface.project.is_local_project():
                     include_central = False
                 else:
@@ -159,11 +153,10 @@ class ValidateContent(Container):
                     )
                 else:
                     self.write_results_to_richlog(output)
-                    self.query_one("#validate_logs_label").value = (
-                        f"Logs output to: {self.interface.project.get_logging_path()}"
-                    )
+                    self.query_one(
+                        "#validate_logs_label"
+                    ).value = f"Logs output to: {self.interface.project.get_logging_path()}"
             else:
-
                 path_ = self.query_one("#validate_path_input").value
 
                 if path_ == "":

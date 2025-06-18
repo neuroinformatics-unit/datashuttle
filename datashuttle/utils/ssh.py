@@ -29,6 +29,7 @@ def connect_client_core(
     cfg: Configs,
     password: Optional[str] = None,
 ):
+    """PLACEHOLDER."""
     client.get_host_keys().load(cfg.hostkeys_path.as_posix())
     client.set_missing_host_key_policy(paramiko.RejectPolicy())
 
@@ -48,9 +49,7 @@ def connect_client_core(
 def add_public_key_to_central_authorized_keys(
     cfg: Configs, password: str, log=True
 ) -> None:
-    """
-    Append the public part of key to central server ~/.ssh/authorized_keys.
-    """
+    """Append the public part of key to central server ~/.ssh/authorized_keys."""
     generate_and_write_ssh_key(cfg.ssh_key_path)
 
     key = paramiko.RSAKey.from_private_key_file(cfg.ssh_key_path.as_posix())
@@ -73,13 +72,13 @@ def add_public_key_to_central_authorized_keys(
 
 
 def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
+    """PLACEHOLDER."""
     key = paramiko.RSAKey.generate(4096)
     key.write_private_key_file(ssh_key_path.as_posix())
 
 
 def get_remote_server_key(central_host_id: str):
-    """
-    Get the remove server host key for validation before
+    """Get the remove server host key for validation before
     connection.
     """
     transport: paramiko.Transport
@@ -90,6 +89,7 @@ def get_remote_server_key(central_host_id: str):
 
 
 def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
+    """PLACEHOLDER."""
     client = paramiko.SSHClient()
     client.get_host_keys().add(central_host_id, key.get_name(), key)
     client.get_host_keys().save(hostkeys_path.as_posix())
@@ -106,8 +106,7 @@ def setup_ssh_key(
     cfg: Configs,
     log: bool = True,
 ) -> None:
-    """
-    Set up an SSH private / public key pair with
+    """Set up an SSH private / public key pair with
     central server. First, a private key is generated
     and saved in the .datashuttle config path.
     Next a connection requiring input
@@ -115,17 +114,21 @@ def setup_ssh_key(
     added to ~/.ssh/authorized_keys.
 
     Parameters
-    -----------
+    ----------
+    ssh_key_path
+        path to the ssh private key
 
-    ssh_key_path : path to the ssh private key
-
-    hostkeys_path : path to the ssh host key, once the user
+    hostkeys_path
+        path to the ssh host key, once the user
         has confirmed the key ID this is saved so verification
         is not required each time.
 
-    cfg : datashuttle config UserDict
+    cfg
+        datashuttle config UserDict
 
-    log : log if True, logger must already be initialised.
+    log
+        log if True, logger must already be initialised.
+
     """
     if not sys.stdin.isatty():
         proceed = input(
@@ -171,8 +174,7 @@ def connect_client_with_logging(
     password: Optional[str] = None,
     message_on_sucessful_connection: bool = True,
 ) -> None:
-    """
-    Connect client to central server using paramiko.
+    """Connect client to central server using paramiko.
     Accept either password or path to private key, but not both.
     Paramiko does not support pathlib.
     """
@@ -180,7 +182,7 @@ def connect_client_with_logging(
         connect_client_core(client, cfg, password)
         if message_on_sucessful_connection:
             utils.print_message_to_user(
-                f"Connection to { cfg['central_host_id']} made successfully."
+                f"Connection to {cfg['central_host_id']} made successfully."
             )
 
     except Exception:
@@ -199,8 +201,7 @@ def connect_client_with_logging(
 def verify_ssh_central_host(
     central_host_id: str, hostkeys_path: Path, log: bool = True
 ) -> bool:
-    """
-    Similar to connecting with other SSH manager e.g. putty,
+    """Similar to connecting with other SSH manager e.g. putty,
     get the server key and present when connecting
     for manual validation.
     """
@@ -246,21 +247,27 @@ def search_ssh_central_for_folders(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """
-    Search for the search prefix in the search path over SSH.
+    """Search for the search prefix in the search path over SSH.
     Returns the list of matching folders, files are filtered out.
 
     Parameters
-    -----------
+    ----------
+    search_path
+        path to search for folders in
 
-    search_path : path to search for folders in
+    search_prefix
+        search prefix for folder names e.g. "sub-*"
 
-    search_prefix : search prefix for folder names e.g. "sub-*"
+    cfg
+        see connect_client_with_logging()
 
-    cfg : see connect_client_with_logging()
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
 
-    verbose : If `True`, if a search folder cannot be found, a message
-              will be printed with the un-found path.
+    return_full_path
+        include the search_path in the returned paths
+
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
@@ -288,29 +295,34 @@ def get_list_of_folder_names_over_sftp(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """
-    Use paramiko's sftp to search a path
+    """Use paramiko's sftp to search a path
     over ssh for folders. Return the folder names.
 
     Parameters
     ----------
-
-    stfp : connected paramiko stfp object
+    sftp
+        connected paramiko stfp object
         (see search_ssh_central_for_folders())
 
-    search_path : path to search for folders in
+    search_path
+        path to search for folders in
 
-    search_prefix : prefix (can include wildcards)
+    search_prefix
+        prefix (can include wildcards)
         to search folder names.
 
-    verbose : If `True`, if a search folder cannot be found, a message
-          will be printed with the un-found path.
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
+
+    return_full_path
+        include the search_path in the returned paths
+
     """
     all_folder_names = []
     all_filenames = []
     try:
         for file_or_folder in sftp.listdir_attr(search_path.as_posix()):
-
             if file_or_folder.st_mode is not None and fnmatch.fnmatch(
                 file_or_folder.filename, search_prefix
             ):

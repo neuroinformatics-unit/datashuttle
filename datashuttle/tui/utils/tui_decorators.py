@@ -9,8 +9,7 @@ from time import monotonic
 
 
 def require_double_click(func):
-    """
-    A decorator that calls the decorated function
+    """A decorator that calls the decorated function
     on a double click, otherwise will not do anything.
 
     Requires the first argument (`self` on the class) to

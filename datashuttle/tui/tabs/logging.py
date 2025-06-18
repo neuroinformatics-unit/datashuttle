@@ -13,29 +13,38 @@ from datashuttle.tui.utils.tui_decorators import require_double_click
 
 
 class RichLogScreen(ModalScreen):
+    """PLACEHOLDER."""
+
     def __init__(self, log_file):
+        """PLACEHOLDER."""
         super(RichLogScreen, self).__init__()
 
-        with open(log_file, "r") as file:
+        with open(log_file) as file:
             self.log_contents = "".join(file.readlines())
 
     def compose(self):
+        """PLACEHOLDER."""
         yield Container(
             RichLog(highlight=True, markup=True, id="richlog_screen_rich_log"),
             Button("Close", id="richlog_screen_close_button"),
         )
 
     def on_mount(self):
+        """PLACEHOLDER."""
         text_log = self.query_one(RichLog)
         text_log.write(self.log_contents)
 
     def on_button_pressed(self, event):
+        """PLACEHOLDER."""
         if event.button.id == "richlog_screen_close_button":
             self.dismiss()
 
 
 class LoggingTab(TabPane):
+    """PLACEHOLDER."""
+
     def __init__(self, title, mainwindow, project, id):
+        """PLACEHOLDER."""
         super(LoggingTab, self).__init__(title=title, id=id)
 
         self.mainwindow = mainwindow
@@ -48,6 +57,7 @@ class LoggingTab(TabPane):
         self.prev_click_time = 0
 
     def update_latest_log_path(self):
+        """PLACEHOLDER."""
         logs = list(self.project.get_logging_path().glob("*.log"))
         self.latest_log_path = (
             max(logs, key=os.path.getctime)
@@ -56,6 +66,7 @@ class LoggingTab(TabPane):
         )
 
     def compose(self):
+        """PLACEHOLDER."""
         yield Container(
             Label(
                 "Double click logging file to select:",
@@ -83,6 +94,7 @@ class LoggingTab(TabPane):
         self.update_most_recent_label()
 
     def update_most_recent_label(self):
+        """PLACEHOLDER."""
         self.update_latest_log_path()
         self.query_one("#logging_most_recent_label").update(
             f"or open most recent: {self.latest_log_path.stem}"
@@ -90,11 +102,13 @@ class LoggingTab(TabPane):
         self.refresh()
 
     def on_button_pressed(self, event):
+        """PLACEHOLDER."""
         if event.button.id == "logging_tab_open_most_recent_button":
             self.push_rich_log_screen(self.latest_log_path)
 
     @require_double_click
     def on_directory_tree_file_selected(self, node):
+        """PLACEHOLDER."""
         if not node.path.is_file():
             self.mainwindow.show_modal_error_dialog(
                 "Log file no longer exists. Refresh the directory tree"
@@ -105,6 +119,7 @@ class LoggingTab(TabPane):
         self.push_rich_log_screen(node.path)
 
     def push_rich_log_screen(self, log_path):
+        """PLACEHOLDER."""
         self.mainwindow.push_screen(
             RichLogScreen(
                 log_path,
@@ -112,7 +127,9 @@ class LoggingTab(TabPane):
         )
 
     def reload_directorytree(self):
+        """PLACEHOLDER."""
         self.query_one("#logging_tab_custom_directory_tree").reload()
 
     def on_custom_directory_tree_directory_tree_special_key_press(self):
+        """PLACEHOLDER."""
         self.reload_directorytree()
