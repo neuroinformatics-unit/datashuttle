@@ -1084,16 +1084,16 @@ class DataShuttle:
 
         Parameters
         ----------
-        top_level_folder : TopLevelFolder
-            The top-level folder structure where subject data is organized.
+        top_level_folder
+            The top-level folder, "rawdata" or "derivatives".
 
-        return_with_prefix : bool, optional
-            If `True`, return the subject with the "sub-" prefix. Defaults to `True`.
+        return_with_prefix
+            If `True`, return the subject with the "sub-" prefix.
 
-        local_only : bool, optional
+        local_only
             If `True`, only get names from `local_path`; otherwise,
             retrieve names from both `local_path` and `central_path`.
-            If in local-project mode, this flag is ignored. Defaults to `False`.
+            If in local-project mode, this flag is ignored.
         """
         name_template = self.get_name_templates()
         name_template_regexp = (
@@ -1128,16 +1128,16 @@ class DataShuttle:
         Parameters
         ----------
 
-        top_level_folder:
-            "rawdata" or "derivatives"
+        top_level_folder
+            The top-level folder, "rawdata" or "derivatives".
 
-        sub: Optional[str]
+        sub
             Name of the subject to find the next session of.
 
-        return_with_prefix : bool
+        return_with_prefix
             If `True`, return with the "ses-" prefix.
 
-        local_only : bool
+        local_only
             If `True, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
