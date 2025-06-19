@@ -86,6 +86,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
+        suggest_next_sub_ses_central = self.interface.tui_settings[
+            "suggest_next_sub_ses_central"
+        ]
 
         yield Container(
             Horizontal(
@@ -97,43 +100,52 @@ class CreateFoldersSettingsScreen(ModalScreen):
                     self.interface,
                     id="create_folders_settings_toplevel_select",
                 ),
-            ),
-            Checkbox(
-                "Bypass validation",
-                value=bypass_validation,
-                id="create_folders_settings_bypass_validation_checkbox",
+                id="toplevel_folder_select_container",
             ),
             Container(
-                Horizontal(
-                    Checkbox(
-                        "Template Validation",
-                        id="template_settings_validation_on_checkbox",
-                        value=self.interface.get_name_templates()["on"],
-                    ),
-                    id="template_inner_horizontal_container",
+                Checkbox(
+                    "Search Central For Suggestions",
+                    value=suggest_next_sub_ses_central,
+                    id="suggest_next_sub_ses_central_checkbox",
+                ),
+                Checkbox(
+                    "Bypass validation",
+                    value=bypass_validation,
+                    id="create_folders_settings_bypass_validation_checkbox",
                 ),
                 Container(
-                    Label(explanation, id="template_message_label"),
-                    Container(
-                        RadioSet(
-                            RadioButton(
-                                "Subject",
-                                id="template_settings_subject_radiobutton",
-                                value=sub_on,
-                            ),
-                            RadioButton(
-                                "Session",
-                                id="template_settings_session_radiobutton",
-                                value=ses_on,
-                            ),
-                            id="template_settings_radioset",
+                    Horizontal(
+                        Checkbox(
+                            "Template validation",
+                            id="template_settings_validation_on_checkbox",
+                            value=self.interface.get_name_templates()["on"],
                         ),
-                        Input(id="template_settings_input"),
-                        id="template_other_widgets_container",
+                        id="template_inner_horizontal_container",
                     ),
-                    id="template_inner_container",
+                    Container(
+                        Label(explanation, id="template_message_label"),
+                        Container(
+                            RadioSet(
+                                RadioButton(
+                                    "Subject",
+                                    id="template_settings_subject_radiobutton",
+                                    value=sub_on,
+                                ),
+                                RadioButton(
+                                    "Session",
+                                    id="template_settings_session_radiobutton",
+                                    value=ses_on,
+                                ),
+                                id="template_settings_radioset",
+                            ),
+                            Input(id="template_settings_input"),
+                            id="template_other_widgets_container",
+                        ),
+                        id="template_inner_container",
+                    ),
+                    id="template_top_container",
                 ),
-                id="template_top_container",
+                id="checkbox_container",
             ),
             Container(),
             Button("Close", id="create_folders_settings_close_button"),
@@ -145,6 +157,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_toplevel_select",
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
+            "#suggest_next_sub_ses_central_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -234,6 +247,10 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 ).value
             self.query_one("#template_inner_container").disabled = (
                 disable_container
+            )
+        elif event.checkbox.id == "suggest_next_sub_ses_central_checkbox":
+            self.interface.save_tui_settings(
+                is_on, "suggest_next_sub_ses_central"
             )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:

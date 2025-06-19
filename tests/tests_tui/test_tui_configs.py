@@ -1,5 +1,6 @@
 import copy
 from pathlib import Path
+from time import monotonic
 
 import pytest
 import test_utils
@@ -316,11 +317,11 @@ class TestTuiConfigs(TuiBase):
                 )
                 root_path = tree.root.data.path
 
-                import time
+                pilot.app.screen.click_info.prev_click_widget_id = tree.id
+                pilot.app.screen.click_info.prev_click_time = monotonic()
 
-                pilot.app.screen.prev_click_time = time.time()
                 pilot.app.screen.on_directory_tree_directory_selected(
-                    tree.root.data
+                    tree.DirectorySelected(tree.root, root_path)
                 )
                 await pilot.pause()
 

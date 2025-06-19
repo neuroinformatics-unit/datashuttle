@@ -241,6 +241,7 @@ def get_tui_config_defaults() -> Dict:
             "bypass_validation": False,
             "overwrite_existing_files": "never",
             "dry_run": False,
+            "suggest_next_sub_ses_central": False,
         }
     }
 

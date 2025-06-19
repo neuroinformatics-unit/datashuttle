@@ -115,6 +115,13 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     def show_modal_error_dialog(self, message: str) -> None:
         self.push_screen(modal_dialogs.MessageBox(message, border_color="red"))
 
+    def show_modal_error_dialog_from_main_thread(self, message: str) -> None:
+        """
+        Used to call `show_modal_error_dialog from main thread when executing
+        in another thread. Throws error when called from main thread.
+        """
+        self.call_from_thread(self.show_modal_error_dialog, message)
+
     def handle_open_filesystem_browser(self, path_: Path) -> None:
         """
         Open the system file browser to the path with the `showinfm`

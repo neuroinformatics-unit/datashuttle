@@ -1547,7 +1547,11 @@ class DataShuttle:
         if "tui" not in settings:
             settings.update(canonical_tui_configs)
 
-        for key in ["overwrite_existing_files", "dry_run"]:
+        for key in [
+            "overwrite_existing_files",
+            "dry_run",
+            "suggest_next_sub_ses_central",
+        ]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]
 
