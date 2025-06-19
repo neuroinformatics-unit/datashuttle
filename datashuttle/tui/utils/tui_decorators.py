@@ -3,6 +3,10 @@ from __future__ import annotations
 from functools import wraps
 from time import monotonic
 
+from textual.widgets import DirectoryTree
+
+from datashuttle.tui.custom_widgets import ClickableInput
+
 # -----------------------------------------------------------------------------
 # Double-click decorator
 # -----------------------------------------------------------------------------
@@ -48,9 +52,11 @@ def require_double_click(func):
         click_time = monotonic()
         event = args[1]
 
-        if hasattr(event, "input"):
+        if isinstance(event, ClickableInput.Clicked):
             id = event.input.id
-        elif hasattr(event, "node"):
+        elif isinstance(event, DirectoryTree.FileSelected) or isinstance(
+            event, DirectoryTree.DirectorySelected
+        ):
             id = event.node.tree.id
         else:
             raise RuntimeError(

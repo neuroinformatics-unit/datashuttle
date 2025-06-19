@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from textual import events
-    from textual.widgets._tree import TreeNode
+    from textual.widgets import DirectoryTree
 
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
@@ -103,15 +103,17 @@ class LoggingTab(TabPane):
             self.push_rich_log_screen(self.latest_log_path)
 
     @require_double_click
-    def on_directory_tree_file_selected(self, node: TreeNode):
-        if not node.path.is_file():
+    def on_directory_tree_file_selected(
+        self, event: DirectoryTree.FileSelected
+    ):
+        if not event.path.is_file():
             self.mainwindow.show_modal_error_dialog(
                 "Log file no longer exists. Refresh the directory tree"
                 "by pressing CTRL and r at the same time."
             )
             return
 
-        self.push_rich_log_screen(node.path)
+        self.push_rich_log_screen(event.path)
 
     def push_rich_log_screen(self, log_path):
         self.mainwindow.push_screen(
