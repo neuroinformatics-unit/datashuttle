@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=508abd8e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=69c4b1bb" />
   
   <!-- So that users can add custom icons -->
   <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -121,7 +121,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.6.0</p>
+    <p class="title logo__title">datashuttle v0.7.0</p>
   
 </a></div>
     
@@ -136,15 +136,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="../../pages/get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="../../pages/user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pages/examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -262,15 +269,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="../../pages/get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="../../pages/user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pages/examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -430,6 +444,7 @@
     <span class="n">load_configs</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.configs.config_class</span><span class="w"> </span><span class="kn">import</span> <span class="n">Configs</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.datashuttle_functions</span><span class="w"> </span><span class="kn">import</span> <span class="n">_format_top_level_folder</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">ds_logger</span><span class="p">,</span>
     <span class="n">folders</span><span class="p">,</span>
@@ -564,27 +579,27 @@
 <span class="sd">        ----------</span>
 
 <span class="sd">        top_level_folder : TopLevelFolder</span>
-<span class="sd">                Whether to make the folders in `rawdata` or</span>
-<span class="sd">                `derivatives`.</span>
+<span class="sd">            Whether to make the folders in `rawdata` or</span>
+<span class="sd">            `derivatives`.</span>
 
 <span class="sd">        sub_names : Union[str, List[str]]</span>
-<span class="sd">                subject name / list of subject names to make</span>
-<span class="sd">                within the top-level project folder</span>
-<span class="sd">                (if not already, these will be prefixed with</span>
-<span class="sd">                &quot;sub-&quot;)</span>
+<span class="sd">            subject name / list of subject names to make</span>
+<span class="sd">            within the top-level project folder</span>
+<span class="sd">            (if not already, these will be prefixed with</span>
+<span class="sd">            &quot;sub-&quot;)</span>
 
 <span class="sd">        ses_names : Optional[Union[str, List[str]]]</span>
-<span class="sd">                (Optional). session name / list of session names.</span>
-<span class="sd">                (if not already, these will be prefixed with</span>
-<span class="sd">                &quot;ses-&quot;). If no session is provided, no session-level</span>
-<span class="sd">                folders are made.</span>
+<span class="sd">            (Optional). session name / list of session names.</span>
+<span class="sd">            (if not already, these will be prefixed with</span>
+<span class="sd">            &quot;ses-&quot;). If no session is provided, no session-level</span>
+<span class="sd">            folders are made.</span>
 
 <span class="sd">        datatype : Union[str, List[str]]</span>
-<span class="sd">                The datatype to make in the sub / ses folders.</span>
-<span class="sd">                (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;anat&quot;). If &quot;&quot; is</span>
-<span class="sd">                passed no datatype will be created. Broad or</span>
-<span class="sd">                Narrow canonical NeuroBlueprint datatypes are</span>
-<span class="sd">                accepted.</span>
+<span class="sd">            The datatype to make in the sub / ses folders.</span>
+<span class="sd">            (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;anat&quot;). If &quot;&quot; is</span>
+<span class="sd">            passed no datatype will be created. Broad or</span>
+<span class="sd">            Narrow canonical NeuroBlueprint datatypes are</span>
+<span class="sd">            accepted.</span>
 
 <span class="sd">        bypass_validation : bool</span>
 <span class="sd">            If `True`, folders will be created even if they are not</span>
@@ -608,27 +623,22 @@
 
 <span class="sd">        sub_names or ses_names may contain formatting tags</span>
 
-<span class="sd">            @TO@ :</span>
-<span class="sd">                used to make a range of subjects / sessions.</span>
-<span class="sd">                Boundaries of the range must be either side of the tag</span>
-<span class="sd">                e.g. sub-001@TO@003 will generate</span>
-<span class="sd">                 [&quot;sub-001&quot;, &quot;sub-002&quot;, &quot;sub-003&quot;]</span>
+<span class="sd">        @TO@</span>
+<span class="sd">            used to make a range of subjects / sessions.</span>
+<span class="sd">            Boundaries of the range must be either side of the tag</span>
+<span class="sd">            e.g. sub-001@TO@003 will generate [&quot;sub-001&quot;, &quot;sub-002&quot;, &quot;sub-003&quot;]</span>
 
-<span class="sd">            @DATE@, @TIME@ @DATETIME@ :</span>
-<span class="sd">                will add date-&lt;value&gt;, time-&lt;value&gt; or</span>
-<span class="sd">                date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name</span>
-<span class="sd">                is permitted.</span>
-<span class="sd">                e.g. sub-001_@DATE@ will generate sub-001_date-20220101</span>
-<span class="sd">                (on the 1st january, 2022).</span>
+<span class="sd">        @DATE@, @TIME@ @DATETIME@</span>
+<span class="sd">            will add date-&lt;value&gt;, time-&lt;value&gt; or</span>
+<span class="sd">            date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name</span>
+<span class="sd">            is permitted.</span>
+<span class="sd">            e.g. sub-001_@DATE@ will generate sub-001_date-20220101 (on the 1st january, 2022).</span>
 
 <span class="sd">        Examples</span>
 <span class="sd">        --------</span>
 <span class="sd">        project.create_folders(&quot;rawdata&quot;, &quot;sub-001&quot;, datatype=&quot;behav&quot;)</span>
 
-<span class="sd">        project.create_folders(&quot;rawdata&quot;,</span>
-<span class="sd">                             &quot;sub-002@TO@005&quot;,</span>
-<span class="sd">                             [&quot;ses-001&quot;, &quot;ses-002&quot;],</span>
-<span class="sd">                             [&quot;ephys&quot;, &quot;behav&quot;])</span>
+<span class="sd">        project.create_folders(&quot;rawdata&quot;, &quot;sub-002@TO@005&quot;, [&quot;ses-001&quot;, &quot;ses-002&quot;], [&quot;ephys&quot;, &quot;behav&quot;])</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;create-folders&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
@@ -714,7 +724,7 @@
                 <span class="n">top_level_folder</span><span class="p">,</span>
                 <span class="n">format_sub</span><span class="p">,</span>
                 <span class="n">format_ses</span><span class="p">,</span>
-                <span class="n">local_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                <span class="n">include_central</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
                 <span class="n">display_mode</span><span class="o">=</span><span class="s2">&quot;error&quot;</span><span class="p">,</span>
                 <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
                 <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
@@ -751,7 +761,7 @@
 <span class="sd">        ----------</span>
 
 <span class="sd">        top_level_folder :</span>
-<span class="sd">            The top-level folder (e.g. `rawdata`) to transfer files</span>
+<span class="sd">            The top-level folder (e.g. `&quot;rawdata&quot;`, `&quot;derivatives&quot;`) to transfer files</span>
 <span class="sd">            and folders within.</span>
 
 <span class="sd">        sub_names :</span>
@@ -1542,7 +1552,7 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
         <span class="n">return_with_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">local_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_central</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function for get_next_sub_or_ses</span>
@@ -1554,8 +1564,8 @@
 <span class="sd">        return_with_prefix : bool</span>
 <span class="sd">            If `True`, return with the &quot;sub-&quot; prefix.</span>
 
-<span class="sd">        local_only : bool</span>
-<span class="sd">            If `True, only get names from `local_path`, otherwise from</span>
+<span class="sd">        include_central : bool</span>
+<span class="sd">            If `False, only get names from `local_path`, otherwise from</span>
 <span class="sd">            `local_path` and `central_path`. If in local-project mode,</span>
 <span class="sd">            this flag is ignored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1565,13 +1575,13 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_project</span><span class="p">():</span>
-            <span class="n">local_only</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">include_central</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="n">getters</span><span class="o">.</span><span class="n">get_next_sub_or_ses</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="n">sub</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">local_only</span><span class="o">=</span><span class="n">local_only</span><span class="p">,</span>
+            <span class="n">include_central</span><span class="o">=</span><span class="n">include_central</span><span class="p">,</span>
             <span class="n">return_with_prefix</span><span class="o">=</span><span class="n">return_with_prefix</span><span class="p">,</span>
             <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;sub-*&quot;</span><span class="p">,</span>
             <span class="n">name_template_regexp</span><span class="o">=</span><span class="n">name_template_regexp</span><span class="p">,</span>
@@ -1586,7 +1596,7 @@
         <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
         <span class="n">sub</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">return_with_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">local_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">include_central</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Convenience function for get_next_sub_or_ses</span>
@@ -1604,8 +1614,8 @@
 <span class="sd">        return_with_prefix : bool</span>
 <span class="sd">            If `True`, return with the &quot;ses-&quot; prefix.</span>
 
-<span class="sd">        local_only : bool</span>
-<span class="sd">            If `True, only get names from `local_path`, otherwise from</span>
+<span class="sd">        include_central : bool</span>
+<span class="sd">            If `False, only get names from `local_path`, otherwise from</span>
 <span class="sd">            `local_path` and `central_path`. If in local-project mode,</span>
 <span class="sd">            this flag is ignored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1615,13 +1625,13 @@
         <span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_project</span><span class="p">():</span>
-            <span class="n">local_only</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">include_central</span> <span class="o">=</span> <span class="kc">False</span>
 
         <span class="k">return</span> <span class="n">getters</span><span class="o">.</span><span class="n">get_next_sub_or_ses</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
             <span class="n">top_level_folder</span><span class="p">,</span>
             <span class="n">sub</span><span class="o">=</span><span class="n">sub</span><span class="p">,</span>
-            <span class="n">local_only</span><span class="o">=</span><span class="n">local_only</span><span class="p">,</span>
+            <span class="n">include_central</span><span class="o">=</span><span class="n">include_central</span><span class="p">,</span>
             <span class="n">return_with_prefix</span><span class="o">=</span><span class="n">return_with_prefix</span><span class="p">,</span>
             <span class="n">search_str</span><span class="o">=</span><span class="s2">&quot;ses-*&quot;</span><span class="p">,</span>
             <span class="n">name_template_regexp</span><span class="o">=</span><span class="n">name_template_regexp</span><span class="p">,</span>
@@ -1702,10 +1712,11 @@
     <span class="nd">@check_configs_set</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">validate_project</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span><span class="p">,</span>
+        <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TopLevelFolder</span><span class="p">],</span>
         <span class="n">display_mode</span><span class="p">:</span> <span class="n">DisplayMode</span><span class="p">,</span>
-        <span class="n">local_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">include_central</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">strict_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform validation on the project. This checks the subject</span>
 <span class="sd">        and session level folders to ensure there are no NeuroBlueprint</span>
@@ -1714,15 +1725,38 @@
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
 
+<span class="sd">        top_level_folder : TopLevelFolder | None</span>
+<span class="sd">            Folder to check, either &quot;rawdata&quot; or &quot;derivatives&quot;. If ``None``,</span>
+<span class="sd">            will check both folders.</span>
+
 <span class="sd">        display_mode : DisplayMode</span>
 <span class="sd">            The validation issues are displayed as ``&quot;error&quot;`` (raise error)</span>
 <span class="sd">            ``&quot;warn&quot;`` (show warning) or ``&quot;print&quot;``</span>
 
-<span class="sd">        local_only : bool</span>
-<span class="sd">            If ``True``, only the local project is validated. Otherwise, both</span>
+<span class="sd">        include_central : bool</span>
+<span class="sd">            If ``False``, only the local project is validated. Otherwise, both</span>
 <span class="sd">            local and central projects are validated. If in local-project mode,</span>
 <span class="sd">            this flag is ignored.</span>
+
+<span class="sd">        strict_mode: bool</span>
+<span class="sd">            If `True`, only allow NeuroBlueprint-formatted folders to exist in</span>
+<span class="sd">            the project. By default, non-NeuroBlueprint folders (e.g. a folder</span>
+<span class="sd">            called &#39;my_stuff&#39; in the &#39;rawdata&#39;) are allowed, and only folders</span>
+<span class="sd">            starting with sub- or ses- prefix are checked. In `Strict Mode`,</span>
+<span class="sd">            any folder not prefixed with sub-, ses- or a valid datatype will</span>
+<span class="sd">            raise a validation issue.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">include_central</span> <span class="ow">and</span> <span class="n">strict_mode</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;`strict_mode` is currently only available for `include_central=False`. &quot;</span>
+                <span class="s2">&quot;Please raise a GitHub issue if you would like to use this feature.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Logs of the validation will be stored in: &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">make_and_get_logging_path</span><span class="p">()</span><span class="si">}</span><span class="se">\n\n</span><span class="s2">Validation results:&quot;</span>
+        <span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;validate-project&quot;</span><span class="p">,</span>
             <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">(),</span>
@@ -1731,17 +1765,24 @@
         <span class="n">name_templates</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name_templates</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_local_project</span><span class="p">():</span>
-            <span class="n">local_only</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="n">include_central</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="n">validation</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
-            <span class="n">top_level_folder</span><span class="p">,</span>
-            <span class="n">local_only</span><span class="o">=</span><span class="n">local_only</span><span class="p">,</span>
-            <span class="n">display_mode</span><span class="o">=</span><span class="n">display_mode</span><span class="p">,</span>
-            <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
+        <span class="n">top_level_folder_to_validate</span> <span class="o">=</span> <span class="n">_format_top_level_folder</span><span class="p">(</span>
+            <span class="n">top_level_folder</span>
         <span class="p">)</span>
 
-        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span></div>
+        <span class="n">error_messages</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">,</span>
+            <span class="n">top_level_folder_to_validate</span><span class="p">,</span>
+            <span class="n">include_central</span><span class="o">=</span><span class="n">include_central</span><span class="p">,</span>
+            <span class="n">display_mode</span><span class="o">=</span><span class="n">display_mode</span><span class="p">,</span>
+            <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
+            <span class="n">strict_mode</span><span class="o">=</span><span class="n">strict_mode</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">ds_logger</span><span class="o">.</span><span class="n">close_log_filehandler</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">error_messages</span></div>
 
 
 <div class="viewcode-block" id="DataShuttle.check_name_formatting">
@@ -1846,6 +1887,8 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_clear_temp_log_path</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">path_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span>
+
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">command_name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
@@ -2006,17 +2049,18 @@
         <span class="k">if</span> <span class="s2">&quot;tui&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="n">settings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">canonical_tui_configs</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">,</span> <span class="s2">&quot;dry_run&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;overwrite_existing_files&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;dry_run&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;suggest_next_sub_ses_central&quot;</span><span class="p">,</span>
+        <span class="p">]:</span>
             <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">]:</span>
                 <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">canonical_tui_configs</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">][</span><span class="n">key</span><span class="p">]</span>
 
-        <span class="c1"># Handle conversion to &#39;narrow datatype&#39; v0.6.0</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
-            <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;tui&quot;</span><span class="p">][</span><span class="s2">&quot;create_checkboxes_on&quot;</span><span class="p">][</span><span class="s2">&quot;behav&quot;</span><span class="p">],</span> <span class="nb">dict</span>
-        <span class="p">):</span>
-            <span class="n">canonical_configs</span><span class="o">.</span><span class="n">in_place_update_settings_for_narrow_datatype</span><span class="p">(</span>
-                <span class="n">settings</span>
-            <span class="p">)</span>
+        <span class="c1"># Handle updating with narrow datatypes</span>
+        <span class="n">canonical_configs</span><span class="o">.</span><span class="n">in_place_update_narrow_datatypes_if_required</span><span class="p">(</span>
+            <span class="n">settings</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_check_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_level_folder</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2063,7 +2107,7 @@
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.2.1.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
 <br/>
 </p>
 <p class="theme-version">

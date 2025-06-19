@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=508abd8e" />
+    <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=69c4b1bb" />
   
   <!-- So that users can add custom icons -->
   <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/design-tabs.js?v=f930bc37"></script>
@@ -50,7 +50,7 @@
     <link rel="icon" href="_static/logo_light.png"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Tutorials" href="pages/tutorials.html" />
+    <link rel="next" title="Get started" href="pages/get_started/index.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -123,7 +123,7 @@
     <img src="_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.6.0</p>
+    <p class="title logo__title">datashuttle v0.7.0</p>
   
 </a></div>
     
@@ -138,15 +138,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="pages/tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="pages/get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="pages/how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="pages/user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="pages/examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -264,15 +271,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="pages/tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="pages/get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="pages/how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="pages/user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="pages/examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -368,56 +382,84 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section class="center tex2jax_ignore mathjax_ignore" id="datashuttle">
-<h1><strong>datashuttle</strong><a class="headerlink" href="#datashuttle" title="Link to this heading">#</a></h1>
-<p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation, validation and transfer.</p>
+  <!-- We want to have a centered title, which is difficult in sphinx without centering
+the entire page. We need the title here otherwise the tab title defaults to <no-title>.
+Therefore, add the title and hide it, then add a custom centered title.
+-->
+<div style="height: 0; visibility: hidden;"><section class="tex2jax_ignore mathjax_ignore" id="datashuttle">
+<h1>datashuttle<a class="headerlink" href="#datashuttle" title="Link to this heading">#</a></h1>
+</div><p style="text-align: center; font-size: 48px;"><b>datashuttle</b></p>
+<p style="text-align: center; font-size: 22px;">Automate the creation, validation and transfer of neuroscience project folders.</p>
 <a class="logo mainlogo only-light reference internal image-reference" href="_images/datashuttle-overview-light.png"><img alt="My Logo" class="logo mainlogo only-light align-center" src="_images/datashuttle-overview-light.png" style="width: 600px;" />
 </a>
 <a class="logo mainlogo only-dark reference internal image-reference" href="_images/datashuttle-overview-dark.png"><img alt="My Logo" class="logo mainlogo only-dark align-center" src="_images/datashuttle-overview-dark.png" style="width: 600px;" />
 </a>
 <br>
 <div class="sd-container-fluid sd-sphinx-override sd-mb-4 docutils">
-<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-3 sd-g-4 sd-g-xs-4 sd-g-sm-4 sd-g-md-4 sd-g-lg-4 docutils">
+<div class="sd-row sd-row-cols-1 sd-row-cols-xs-1 sd-row-cols-sm-2 sd-row-cols-md-2 sd-row-cols-lg-4 sd-g-4 sd-g-xs-4 sd-g-sm-4 sd-g-md-4 sd-g-lg-4 docutils">
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-Tutorials</div>
-<p class="sd-card-text">Walkthrough <strong>datashuttle</strong>.</p>
+Get started</div>
+<p class="sd-card-text">Get started with <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code></p>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="pages/tutorials.html"><span class="doc">Tutorials</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="pages/get_started/index.html"><span class="doc">Get started</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
-How To</div>
-<p class="sd-card-text">Short guides on specific actions.</p>
+User guides</div>
+<p class="sd-card-text">Explore <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code>’s features</p>
 </div>
-<a class="sd-stretched-link sd-hide-link-text reference internal" href="pages/how_tos.html"><span class="doc">How To</span></a></div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="pages/user_guides/index.html"><span class="doc">User guides</span></a></div>
+</div>
+<div class="sd-col sd-d-flex-row docutils">
+<div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
+<div class="sd-card-body docutils">
+<div class="sd-card-title sd-font-weight-bold docutils">
+Examples</div>
+<p class="sd-card-text"><code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> in the real world</p>
+</div>
+<a class="sd-stretched-link sd-hide-link-text reference internal" href="pages/examples/index.html"><span class="doc">Examples</span></a></div>
 </div>
 <div class="sd-col sd-d-flex-row docutils">
 <div class="sd-card sd-sphinx-override sd-w-100 sd-shadow-sm sd-card-hover docutils">
 <div class="sd-card-body docutils">
 <div class="sd-card-title sd-font-weight-bold docutils">
 Python API</div>
-<p class="sd-card-text">Full Python reference.</p>
+<p class="sd-card-text">Full Python reference</p>
 </div>
 <a class="sd-stretched-link sd-hide-link-text reference internal" href="pages/api_index.html"><span class="doc">API Reference</span></a></div>
 </div>
 </div>
 </div>
-<p><strong>datashuttle</strong> creates and validates projects standardised to the
-<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev">NeuroBlueprint</a>
-specification.</p>
-<p>Dive right into <strong>datashuttle</strong> with our
-<a class="reference internal" href="pages/tutorials/getting_started.html#tutorial-getting-started"><span class="std std-ref">Getting Started Tutorial</span></a>
-or targeted <a class="reference internal" href="pages/how_tos.html#how-tos"><span class="std std-ref">How-To Guides</span></a>.  <br />
-It can be used through a graphical interface or Python API.</p>
-<p>Don’t hesitate to get in contact through our
-<a class="reference external" href="https://github.com/neuroinformatics-unit/datashuttle/issues">GitHub Issues</a>
-or
-<a class="reference external" href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle">Zulip Chat.</a></p>
+<p>A lack of project standardization in systems neuroscience
+<a class="reference external" href="https://neuroinformatics.dev/blog/neuroblueprint.html">hinders data sharing and collaboration</a>,
+creating barriers to reproducibility and scientific progress.</p>
+<p><code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> helps standardise experimental
+projects by automating folder creation and transfer
+during acquisition and analysis. Its graphical interface or Python API builds
+folder trees according to the <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev">NeuroBlueprint</a>
+specification. Automation and validation ensures that no errors, such as duplicate session
+names or incorrect dates, slip into the project.</p>
+<p>Data can be transferred between acquisition, storage and analysis
+machines with a single function call or button click. Standardisation makes
+folder names predictable, meaning it is easy to transfer specific combinations
+of subjects, sessions or data-types with <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code>.</p>
+<p>Folders are standardised to the
+<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev">NeuroBlueprint</a> specification:</p>
+<a class="only-dark reference internal image-reference" href="_images/NeuroBlueprint_project_tree_dark.png"><img alt="_images/NeuroBlueprint_project_tree_dark.png" class="only-dark align-center" src="_images/NeuroBlueprint_project_tree_dark.png" style="width: 550px;" />
+</a>
+<a class="only-light reference internal image-reference" href="_images/NeuroBlueprint_project_tree_light.png"><img alt="_images/NeuroBlueprint_project_tree_light.png" class="only-light align-center" src="_images/NeuroBlueprint_project_tree_light.png" style="width: 550px;" />
+</a>
+<p>Dive in with our <a class="reference internal" href="pages/get_started/index.html"><span class="doc std std-doc">Getting Started page</span></a>
+or targeted <a class="reference internal" href="pages/user_guides/index.html"><span class="doc std std-doc">User Guides</span></a>.</p>
+<p>Have questions, issues or feedback? Get in contact through
+<a class="reference external" href="https://github.com/neuroinformatics-unit/datashuttle/issues">GitHub issues</a>
+or our
+<a class="reference external" href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle">Zulip chat.</a></p>
 <div class="toctree-wrapper compound">
 </div>
 </section>
@@ -453,7 +495,7 @@ or
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.2.1.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
 <br/>
 </p>
 <p class="theme-version">

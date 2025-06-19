@@ -1,0 +1,780 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Transfer data &#8212; datashuttle</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=69c4b1bb" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'pages/user_guides/transfer-data';</script>
+    <link rel="canonical" href="https://datashuttle.neuroinformatics.dev/pages/user_guides/transfer-data.html" />
+    <link rel="icon" href="../../_static/logo_light.png"/>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Update configs" href="update-configs.html" />
+    <link rel="prev" title="Create folders" href="create-folders.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../_static/logo_light.png" class="logo__image only-light" alt=""/>
+    <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
+  
+  
+    <p class="title logo__title">datashuttle v0.7.0</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../community/index.html">
+    Community
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api_index.html">
+    API Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/neuroinformatics-unit/datashuttle" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle" title="Zulip (chat)" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-solid fa-comments fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Zulip (chat)</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">User Guides</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="choose-a-terminal.html">Choose a terminal</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validate.html">Project validation</a></li>
+
+<li class="toctree-l1"><a class="reference internal" href="create-folders.html">Create folders</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Transfer data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="update-configs.html">Update configs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="read-logs.html">Read the logs</a></li>
+<li class="toctree-l1"><a class="reference internal" href="use-name-templates.html">Name templates</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">User guides</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Transfer data</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section class="tex2jax_ignore mathjax_ignore" id="transfer-data">
+<span id="how-to-transfer-data"></span><h1>Transfer data<a class="headerlink" href="#transfer-data" title="Link to this heading">#</a></h1>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This guide assumes that you have already set up your project
+for data transfer. Please see <a class="reference internal" href="../get_started/set-up-a-project.html#set-up-a-project"><span class="std std-ref">set up a project for transfer</span></a>
+for details.</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> facilitates convenient transfer of data between
+local and central storage machines.</p>
+<p>This includes:</p>
+<ul class="simple">
+<li><p>‘Uploading’ data from an acquisition machine to central data storage.</p></li>
+<li><p>‘Downloading’ subsets of data from central storage to analysis machines.</p></li>
+</ul>
+<a class="only-light reference internal image-reference" href="../../_images/datashuttle-overview-light.png"><img alt="../../_images/datashuttle-overview-light.png" class="only-light align-center" src="../../_images/datashuttle-overview-light.png" style="width: 600px;" />
+</a>
+<a class="only-dark reference internal image-reference" href="../../_images/datashuttle-overview-dark.png"><img alt="../../_images/datashuttle-overview-dark.png" class="only-dark align-center" src="../../_images/datashuttle-overview-dark.png" style="width: 600px;" />
+</a>
+<div class="note admonition">
+<p class="admonition-title">Transfer Direction</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code>, the <em>upload</em> refers to transfer
+from a local to the central machine.
+<em>Download</em> refers to transfer from the central machine to a local machine.</p>
+</div>
+<p>There are three main methods to transfer data. These
+allow transfer across:</p>
+<ol class="arabic simple">
+<li><p>the <strong>entire project</strong> (all files in both <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>)</p></li>
+<li><p>only the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> <strong>top level folder</strong>.</p></li>
+<li><p>a <strong>custom</strong> subset of subjects / sessions / datatypes.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <strong>overwrite existing files</strong> setting is very important.
+It takes on the options <strong>never</strong>, <strong>always</strong> or <strong>if source newer</strong>.</p>
+<p>See the <a class="reference internal" href="#id1"><span class="std std-ref">transfer options</span></a> section for full details on
+this and other transfer settings.</p>
+</div>
+<section id="transfer-the-entire-project">
+<span id="transfer-entire-project"></span><h2>Transfer the entire project<a class="headerlink" href="#transfer-the-entire-project" title="Link to this heading">#</a></h2>
+<p>The first option is to transfer the entire project—all
+files in the <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> and <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>
+<a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/latest/specification.html#basic-principles">top-level-folders</a>.</p>
+<p>This includes all files inside or outside a subject, session
+or datatype folder.</p>
+<p>This mode is useful for data acquisition when <strong>overwrite existing files</strong>
+is set to <strong>never</strong>. Any new files (i.e. newly acquired data) will be transferred
+to central storage while existing files will be ignored.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-0">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-all-dark.png"><img alt="../../_images/how-to-transfer-all-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-all-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-all-light.png"><img alt="../../_images/how-to-transfer-all-light.png" class="only-light align-center" src="../../_images/how-to-transfer-all-light.png" style="width: 900px;" />
+</a>
+<br>
+<p>To transfer the entire project navigate to the <code class="docutils literal notranslate"><span class="pre">Transfer</span> <span class="pre">tab</span></code>. The
+<code class="docutils literal notranslate"><span class="pre">All</span></code> button is selected to transfer the entire project.</p>
+<p>Click <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-1">
+Python API</label><div class="sd-tab-content docutils">
+<p>The method to upload the entire project is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_entire_project</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>while the method to download the entire project is:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">download_entire_project</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="transfer-only-rawdata-or-derivatives">
+<span id="transfer-top-level-folder"></span><h2>Transfer only <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code><a class="headerlink" href="#transfer-only-rawdata-or-derivatives" title="Link to this heading">#</a></h2>
+<p>This acts almost identically to
+<a class="reference internal" href="#transfer-entire-project"><span class="std std-ref">transferring the entire project</span></a>
+but will only transfer files within a
+single top-level folder (<code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>).</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-2" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-2">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-toplevel-dark.png"><img alt="../../_images/how-to-transfer-toplevel-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-toplevel-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-toplevel-light.png"><img alt="../../_images/how-to-transfer-toplevel-light.png" class="only-light align-center" src="../../_images/how-to-transfer-toplevel-light.png" style="width: 900px;" />
+</a>
+<br>
+<p>Selecting the <code class="docutils literal notranslate"><span class="pre">Top</span> <span class="pre">Level</span></code> button on the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab will
+allow selection of <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code> to transfer.</p>
+<p>Click <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-3">
+Python API</label><div class="sd-tab-content docutils">
+<p>The <code class="docutils literal notranslate"><span class="pre">upload_rawdata()</span></code>, <code class="docutils literal notranslate"><span class="pre">upload_derivatives()</span></code> and <code class="docutils literal notranslate"><span class="pre">download_rawdata()</span></code>, <code class="docutils literal notranslate"><span class="pre">download_derivatives()</span></code>
+methods target transfer to a particular top-level folder.</p>
+<p>The below example will upload <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> then download <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_rawdata</span><span class="p">()</span>
+
+<span class="n">project</span><span class="o">.</span><span class="n">download_derivatives</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="custom-transfers">
+<span id="making-custom-transfers"></span><h2>Custom transfers<a class="headerlink" href="#custom-transfers" title="Link to this heading">#</a></h2>
+<p>Custom transfers permit full customisation of data transfer.</p>
+<p>Custom transfers can transfer select subsets of data.
+For example, you may only want download behavioural data from
+test sessions for a particular data analysis.</p>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-4" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="gui" for="sd-tab-item-4">
+Graphical Interface</label><div class="sd-tab-content docutils">
+<p>Select <code class="docutils literal notranslate"><span class="pre">Custom</span></code> on the <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> tab to open the custom transfer settings.</p>
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-custom-dark.png"><img alt="../../_images/how-to-transfer-custom-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-custom-dark.png" style="width: 900px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-custom-light.png"><img alt="../../_images/how-to-transfer-custom-light.png" class="only-light align-center" src="../../_images/how-to-transfer-custom-light.png" style="width: 900px;" />
+</a>
+<br>
+<p>The top-level folder can be set by the first dropdown menu.</p>
+<p>Next, subject and session keywords can be added to customise
+files to transfer. In this example, the first behavioural session for
+all subjects will be transferred.</p>
+<p>Subject and sessions can be added to the input boxes automatically
+by hovering over <code class="docutils literal notranslate"><span class="pre">sub-</span></code> or <code class="docutils literal notranslate"><span class="pre">ses-</span></code> folders on the <code class="docutils literal notranslate"><span class="pre">DirectoryTree</span></code>.
+Pressing <code class="docutils literal notranslate"><span class="pre">CTRL+F</span></code> will ‘fill’ the input with the foldername,
+while <code class="docutils literal notranslate"><span class="pre">CTRL+A</span></code> will ‘append’ the foldername, creating a list of
+subjects or sessions to transfer.</p>
+<a class="only-dark reference internal image-reference" href="../../_images/how-to-transfer-datatypes-dark.png"><img alt="../../_images/how-to-transfer-datatypes-dark.png" class="only-dark align-center" src="../../_images/how-to-transfer-datatypes-dark.png" style="width: 400px;" />
+</a>
+<a class="only-light reference internal image-reference" href="../../_images/how-to-transfer-datatypes-light.png"><img alt="../../_images/how-to-transfer-datatypes-light.png" class="only-light align-center" src="../../_images/how-to-transfer-datatypes-light.png" style="width: 400px;" />
+</a>
+<br>
+<p>Finally, click <code class="docutils literal notranslate"><span class="pre">Transfer</span></code> to begin.</p>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" data-sync-group="tab" data-sync-id="python" for="sd-tab-item-5">
+Python API</label><div class="sd-tab-content docutils">
+<p>The <code class="docutils literal notranslate"><span class="pre">upload_custom()</span></code> and <code class="docutils literal notranslate"><span class="pre">download_custom()</span></code> methods can be used for custom
+data transfers. For example, to perform a custom upload:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">project</span><span class="o">.</span><span class="n">upload_custom</span><span class="p">(</span>
+    <span class="n">top_level_folder</span><span class="o">=</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
+    <span class="n">sub_names</span><span class="o">=</span><span class="s2">&quot;all_sub&quot;</span><span class="p">,</span>
+    <span class="n">ses_names</span><span class="o">=</span><span class="s2">&quot;ses-001_@*@&quot;</span><span class="p">,</span>
+    <span class="n">datatype</span><span class="o">=</span><span class="s2">&quot;behav&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>In this example, the first behavioural session for
+all subjects will be transferred.</p>
+</div>
+</div>
+<section id="custom-transfer-keywords">
+<h3>Custom transfer keywords<a class="headerlink" href="#custom-transfer-keywords" title="Link to this heading">#</a></h3>
+<p>Custom transfer keywords determine how files and folders
+outside of subject, session and datatype folders are handled.</p>
+<p>Ideally, all data will be stored in datatype folders—however this
+is not always feasible.</p>
+<p>In such cases custom transfer keywords allows flexible handling of
+the transfer of non <code class="docutils literal notranslate"><span class="pre">sub-</span></code>, <code class="docutils literal notranslate"><span class="pre">ses-</span></code> prefixed or datatype folders at the
+subject, session and datatype level.</p>
+<p>Note that the <a class="reference internal" href="#dry-run-argument"><span class="std std-ref">dry run argument</span></a> can be used
+to perform a dry-run transfer to check transfers proceed as expected.</p>
+<dl class="simple myst">
+<dt>Subject level</dt><dd><p>For files and folders within top-level folders:</p>
+</dd>
+<dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> - All files and non-subject folders will be transferred.
+All subject (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">sub-</span></code>)  folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_sub</span></code> - All subject folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_non_sub</span></code> - All files and non-subject folders will be transferred.
+Subject folders will not be transferred.</p></li>
+</ul>
+</dd>
+<dt>Session Level</dt><dd><p>For sessions within subjects considered for transfer:</p>
+</dd>
+<dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All files and non-session folders will be transferred.
+All session (i.e. prefixed with <code class="docutils literal notranslate"><span class="pre">ses-</span></code>) folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_ses</span></code> : All session folders will be considered for transfer.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_non_ses</span></code> : All files and non-session folders will be transferred.
+Session folders will not be transferred.</p></li>
+</ul>
+</dd>
+<dt>Datatype Level:</dt><dd><p>For datatype folders (e.g. <code class="docutils literal notranslate"><span class="pre">behav</span></code>, <code class="docutils literal notranslate"><span class="pre">ephys</span></code>, <code class="docutils literal notranslate"><span class="pre">funcimg</span></code>, <code class="docutils literal notranslate"><span class="pre">anat</span></code>)
+within sessions considered for transfer:</p>
+</dd>
+<dd><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> : All files, datatype folders and non-datatype folders will be transferred.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_datatype</span></code> : All datatype folders will be transferred.
+Files and non-datatype folders will not be transferred.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all_non_datatype</span></code> : Files and non-datatype folders will be transferred.
+Datatype folders will not be transferred.</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="custom-transfer-convenience-tags">
+<h3>Custom transfer convenience tags<a class="headerlink" href="#custom-transfer-convenience-tags" title="Link to this heading">#</a></h3>
+<p>These tags can be included in subject or session names to
+allow further customisation of data transfer.</p>
+<dl class="simple myst" id="transfer-the-wildcard-tag">
+<dt>Wildcard</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;*&#64;</span></code> tag can be used to match any portion of a subject or session name.
+<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">ses-001_date-&#64;*&#64;</span></code> will transfer all first sessions matching all possibles date.</p>
+</dd>
+<dt>Transfer a range</dt><dd><p>The <code class="docutils literal notranslate"><span class="pre">&#64;TO&#64;</span></code> tag can be used to target a range of subjects for transfer.
+<em>e.g.</em> <code class="docutils literal notranslate"><span class="pre">sub-001&#64;TO&#64;025</span></code> will transfer the 1st to up to and including the 25th subject.</p>
+</dd>
+</dl>
+</section>
+</section>
+<section id="transfer-options">
+<h2>Transfer Options<a class="headerlink" href="#transfer-options" title="Link to this heading">#</a></h2>
+<dl class="simple myst" id="id1">
+<dt>overwrite existing files</dt><dd><p>By default this option is set to <strong>never</strong>—a transfer will never overwrite a
+file that already exists, even if the source and destination modification datetimes
+or sizes are different.</p>
+</dd>
+<dd><p>If <em>always</em>*, when there are differences in datetime or size
+between the source and destination file the destination file will be overwritten.
+This includes when the source file is older or smaller than the destination.</p>
+</dd>
+<dd><p>Finally, <strong>if source newer</strong> ensures data is only overwritten
+when the
+<a class="reference external" href="https://rclone.org/docs/#u-update">source file has a more recent modification time</a>
+than the destination.
+If modification datetimes are equal, the destination will be overwritten if the
+sizes or checksums are different.</p>
+</dd>
+<dd><p>Under the hood, transfers are made with calls to
+<a class="reference external" href="https://rclone.org/">Rclone</a>. Using <strong>never</strong>
+calls
+<a class="reference external" href="https://rclone.org/commands/rclone_copy/">Rclone’s copy</a>
+function with the flag <code class="docutils literal notranslate"><span class="pre">--ignore_existing</span></code>. Using
+<strong>always</strong> copies without this flag and (using Rclone’s default overwrite behaviour.)
+Using <strong>if source newer</strong> calls copy with the <code class="docutils literal notranslate"><span class="pre">--update</span></code> flag.</p>
+</dd>
+</dl>
+<dl class="simple myst" id="dry-run-argument">
+<dt>dry run</dt><dd><p>Performs a dry-run transfer in which no data is transferred but logs
+are saved as if a transfer had taken place.
+This is a useful way to test if a transfer will run as expected.</p>
+</dd>
+</dl>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-the-entire-project">Transfer the entire project</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-only-rawdata-or-derivatives">Transfer only <code class="docutils literal notranslate"><span class="pre">rawdata</span></code> or <code class="docutils literal notranslate"><span class="pre">derivatives</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transfers">Custom transfers</a><ul class="visible nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transfer-keywords">Custom transfer keywords</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#custom-transfer-convenience-tags">Custom transfer convenience tags</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#transfer-options">Transfer Options</a></li>
+</ul>
+  </nav></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item"><p class="sphinx-version">
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
+<br/>
+</p>
+<p class="theme-version">
+Built with the
+<a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a>
+0.16.1.
+</p></div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><div class="things-in-a-row">
+    <a href="https://www.sainsburywellcome.org/web/">
+        <img src="../../_static/light-logo-swc.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-swc.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/gatsby/gatsby-computational-neuroscience-unit">
+        <img src="../../_static/light-logo-gatsby.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-gatsby.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+    <a href="https://www.ucl.ac.uk/">
+        <img src="../../_static/light-logo-ucl.png" alt="Sponsors" class="only-light img-sponsor"/>
+        <img src="../../_static/dark-logo-ucl.png" alt="Sponsors" class="only-dark img-sponsor"/>
+    </a>
+</div></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -31,7 +31,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=508abd8e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=69c4b1bb" />
   
   <!-- So that users can add custom icons -->
   <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -121,7 +121,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.6.0</p>
+    <p class="title logo__title">datashuttle v0.7.0</p>
   
 </a></div>
     
@@ -136,15 +136,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="../../pages/get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="../../pages/user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pages/examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -262,15 +269,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="../../pages/get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../../pages/how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="../../pages/user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../pages/examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -396,10 +410,14 @@
   <h1>Source code for datashuttle.datashuttle_functions</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils.custom_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">DisplayMode</span><span class="p">,</span> <span class="n">TopLevelFolder</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">datashuttle.utils.custom_types</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+        <span class="n">DisplayMode</span><span class="p">,</span>
+        <span class="n">TopLevelFolder</span><span class="p">,</span>
+    <span class="p">)</span>
+
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">Optional</span><span class="p">,</span>
@@ -418,10 +436,11 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.quick_validate_project">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">quick_validate_project</span><span class="p">(</span>
     <span class="n">project_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
-    <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TopLevelFolder</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TopLevelFolder</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;rawdata&quot;</span><span class="p">,</span>
     <span class="n">display_mode</span><span class="p">:</span> <span class="n">DisplayMode</span> <span class="o">=</span> <span class="s2">&quot;warn&quot;</span><span class="p">,</span>
+    <span class="n">strict_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">name_templates</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<span class="p">):</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform validation on the project. This checks the subject</span>
 <span class="sd">    and session level folders to ensure there are not</span>
@@ -435,12 +454,20 @@
 <span class="sd">        name, and hold a &quot;rawdata&quot; or &quot;derivatives&quot; folder.</span>
 
 <span class="sd">    top_level_folder : TopLevelFolder</span>
-<span class="sd">        The top-level folder (&quot;rawdata&quot; or &quot;derivatives&quot; to</span>
+<span class="sd">        The top-level folder (&quot;rawdata&quot; or &quot;derivatives&quot;) to</span>
 <span class="sd">        perform validation. If `None`, both are checked.</span>
 
 <span class="sd">    display_mode : DisplayMode</span>
 <span class="sd">        The validation issues are displayed as ``&quot;error&quot;`` (raise error)</span>
 <span class="sd">        ``&quot;warn&quot;`` (show warning) or ``&quot;print&quot;``.</span>
+
+<span class="sd">    strict_mode: bool</span>
+<span class="sd">        If `True`, only allow NeuroBlueprint-formatted folders to exist in</span>
+<span class="sd">        the project. By default, non-NeuroBlueprint folders (e.g. a folder</span>
+<span class="sd">        called &#39;my_stuff&#39; in the &#39;rawdata&#39;) are allowed, and only folders</span>
+<span class="sd">        starting with sub- or ses- prefix are checked. In `Strict Mode`,</span>
+<span class="sd">        any folder not prefixed with sub-, ses- or a valid datatype will</span>
+<span class="sd">        raise a validation issue.</span>
 
 <span class="sd">    name_templates : Dict</span>
 <span class="sd">        A dictionary of templates for subject and session name</span>
@@ -453,27 +480,10 @@
     <span class="c1"># at least one top-level folder</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">project_path</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;No file or folder found at `project_path`: </span><span class="si">{</span><span class="n">project_path</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="p">)</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="ow">not</span> <span class="p">(</span><span class="n">project_path</span> <span class="o">/</span> <span class="s2">&quot;rawdata&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
-        <span class="ow">or</span> <span class="ow">not</span> <span class="p">(</span><span class="n">project_path</span> <span class="o">/</span> <span class="s2">&quot;derivatives&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">is_dir</span><span class="p">()</span>
-    <span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
-            <span class="s2">&quot;`project_path` must contain a &#39;rawdata&#39; or &#39;derivatives&#39; folder.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Cannot perform validation. No file or folder found at `project_path`: </span><span class="si">{</span><span class="n">project_path</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
 
-    <span class="c1"># Format the top-level folders into a list</span>
-    <span class="n">rawdata_and_derivatives</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span> <span class="s2">&quot;derivatives&quot;</span><span class="p">]</span>
-
-    <span class="k">if</span> <span class="n">top_level_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">top_level_folders_to_validate</span> <span class="o">=</span> <span class="n">rawdata_and_derivatives</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">top_level_folder</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rawdata_and_derivatives</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;`top_level_folder must be one of: </span><span class="si">{</span><span class="n">rawdata_and_derivatives</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span>
-        <span class="n">top_level_folders_to_validate</span> <span class="o">=</span> <span class="p">[</span><span class="n">top_level_folder</span><span class="p">]</span>
+    <span class="n">top_level_folders_to_validate</span> <span class="o">=</span> <span class="n">_format_top_level_folder</span><span class="p">(</span><span class="n">top_level_folder</span><span class="p">)</span>
 
     <span class="c1"># Create some mock configs for the validation call,</span>
     <span class="c1"># then for each top-level folder, run the validation</span>
@@ -488,15 +498,41 @@
         <span class="n">input_dict</span><span class="o">=</span><span class="n">placeholder_configs</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">folder</span> <span class="ow">in</span> <span class="n">top_level_folders_to_validate</span><span class="p">:</span>
-        <span class="n">validation</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
-            <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
-            <span class="n">top_level_folder</span><span class="o">=</span><span class="n">folder</span><span class="p">,</span>  <span class="c1"># type: ignore</span>
-            <span class="n">local_only</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-            <span class="n">display_mode</span><span class="o">=</span><span class="n">display_mode</span><span class="p">,</span>
-            <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
-        <span class="p">)</span></div>
+    <span class="n">error_messages</span> <span class="o">=</span> <span class="n">validation</span><span class="o">.</span><span class="n">validate_project</span><span class="p">(</span>
+        <span class="n">cfg</span><span class="o">=</span><span class="n">cfg</span><span class="p">,</span>
+        <span class="n">top_level_folder_list</span><span class="o">=</span><span class="n">top_level_folders_to_validate</span><span class="p">,</span>
+        <span class="n">include_central</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">display_mode</span><span class="o">=</span><span class="n">display_mode</span><span class="p">,</span>
+        <span class="n">name_templates</span><span class="o">=</span><span class="n">name_templates</span><span class="p">,</span>
+        <span class="n">strict_mode</span><span class="o">=</span><span class="n">strict_mode</span><span class="p">,</span>
+    <span class="p">)</span>
 
+    <span class="k">return</span> <span class="n">error_messages</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_top_level_folder</span><span class="p">(</span>
+    <span class="n">top_level_folder</span><span class="p">:</span> <span class="n">TopLevelFolder</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TopLevelFolder</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take a `top_level_folder` (&quot;rawdata&quot; or &quot;derivatives&quot; str) and</span>
+<span class="sd">    convert to list, if `None`, convert it to a list</span>
+<span class="sd">    of both possible top-level folders.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rawdata_and_derivatives</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TopLevelFolder</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;rawdata&quot;</span><span class="p">,</span> <span class="s2">&quot;derivatives&quot;</span><span class="p">]</span>
+
+    <span class="n">formatted_top_level_folders</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TopLevelFolder</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">top_level_folder</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">formatted_top_level_folders</span> <span class="o">=</span> <span class="n">rawdata_and_derivatives</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">top_level_folder</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">rawdata_and_derivatives</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`top_level_folder must be one of: </span><span class="si">{</span><span class="n">rawdata_and_derivatives</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="n">formatted_top_level_folders</span> <span class="o">=</span> <span class="p">[</span><span class="n">top_level_folder</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">formatted_top_level_folders</span>
 </pre></div>
 
                 </article>
@@ -529,7 +565,7 @@
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.2.1.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
 <br/>
 </p>
 <p class="theme-version">

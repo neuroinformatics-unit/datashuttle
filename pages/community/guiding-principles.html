@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=508abd8e" />
+    <link rel="stylesheet" type="text/css" href="../../_static/css/custom.css?v=69c4b1bb" />
   
   <!-- So that users can add custom icons -->
   <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -124,7 +124,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.6.0</p>
+    <p class="title logo__title">datashuttle v0.7.0</p>
   
 </a></div>
     
@@ -139,15 +139,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="../user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -267,15 +274,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="../get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="../how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="../user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -416,14 +430,14 @@
 <h1>Guiding Principles<a class="headerlink" href="#guiding-principles" title="Link to this heading">#</a></h1>
 <p>In this document we lay out our vision for
 <a class="reference external" href="https://neuroblueprint.neuroinformatics.dev/"><strong>NeuroBlueprint</strong></a>
-and <strong>datashuttle</strong> through three guiding principles.</p>
+and <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> through three guiding principles.</p>
 <p>For additional detail, please refer to our blog posts motivating
 <a class="reference external" href="https://neuroinformatics.dev/blog/neuroblueprint.html"><strong>NeuroBlueprint</strong></a>
 and
-<a class="reference external" href="https://neuroinformatics.dev/blog/datashuttle.html"><strong>datashuttle</strong></a>.</p>
+<a class="reference external" href="https://neuroinformatics.dev/blog/datashuttle.html"><code class="docutils literal notranslate"><span class="pre">datashuttle</span></code></a>.</p>
 <p>The three guiding principles driving the development of
 <strong>NeuroBlueprint</strong>
-and <strong>datashuttle</strong> are:</p>
+and <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> are:</p>
 <section id="align-with-existing-community-initiatives">
 <h2>Align with existing community initiatives<a class="headerlink" href="#align-with-existing-community-initiatives" title="Link to this heading">#</a></h2>
 <p><a class="reference external" href="https://bids.neuroimaging.io/">BIDS</a>
@@ -439,14 +453,14 @@ The guiding principle is that some standardisation is better than no standardisa
 <p><strong>NeuroBlueprint</strong> is not intended as a rival or replacement for more established
 specifications, but rather as a stepping stone towards full standardisation.
 We aim to align as closely as possible to the BIDS specification and in future
-to provide conversion to NWB through <strong>datashuttle</strong>.</p>
+to provide conversion to NWB through <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code>.</p>
 </section>
 <section id="strive-to-be-lightweight">
 <h2>Strive to be lightweight<a class="headerlink" href="#strive-to-be-lightweight" title="Link to this heading">#</a></h2>
 <p><strong>NeuroBlueprint</strong> aims to keep the specification as lightweight
 as possible. There is no benefit in the specification proliferating
 as it develops such that it ends up duplicating BIDS in scope.</p>
-<p>In the initial versions (<strong>datashuttle</strong> v0.4, <strong>NeuroBlueprint</strong> v0.2),
+<p>In the initial versions (<code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> v0.4, <strong>NeuroBlueprint</strong> v0.2),
 the goal is to have a simple organisational
 system in which the raw data for different datatypes (e.g. ephys, behaviour)
 can be automatically discovered in any given project.</p>
@@ -455,17 +469,17 @@ can be automatically discovered in any given project.</p>
 New standards will always be goal-orientated and customisable, only required
 to achieve a particular research goal. It is anticipated that as these ‘rules’
 are adopted, projects will become progressively easier to convert to BIDS or NWB.</p>
-<p>The role of <strong>datashuttle</strong> will be to enforce these rules in a flexible manner.</p>
+<p>The role of <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> will be to enforce these rules in a flexible manner.</p>
 </section>
 <section id="keep-releases-versioned-and-modular">
 <h2>Keep releases versioned and modular<a class="headerlink" href="#keep-releases-versioned-and-modular" title="Link to this heading">#</a></h2>
-<p><strong>NeuroBlueprint</strong> and <strong>datashuttle</strong> will be
+<p><strong>NeuroBlueprint</strong> and <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> will be
 properly versioned and modular, enabling smooth development over time.
 New versions will prioritize backward compatibility, with changes that break
 compatibility occurring infrequently and only aimed at enhancing alignment with existing standards.</p>
 <p>Typically, new versions will include new
 sets of standardisation rules,
-which users may choose to adopt or not. <strong>datashuttle</strong> will
+which users may choose to adopt or not. <code class="docutils literal notranslate"><span class="pre">datashuttle</span></code> will
 enforce these in a flexible way, with efforts being
 made to minimise changes to its API as much as possible.</p>
 </section>
@@ -522,7 +536,7 @@ made to minimise changes to its API as much as possible.</p>
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.2.1.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
 <br/>
 </p>
 <p class="theme-version">

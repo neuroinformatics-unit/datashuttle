@@ -32,7 +32,7 @@
 
     <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
-    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=508abd8e" />
+    <link rel="stylesheet" type="text/css" href="../_static/css/custom.css?v=69c4b1bb" />
   
   <!-- So that users can add custom icons -->
   <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=8fa8b3e9"></script>
+    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -123,7 +123,7 @@
     <img src="../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.6.0</p>
+    <p class="title logo__title">datashuttle v0.7.0</p>
   
 </a></div>
     
@@ -138,15 +138,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -266,15 +273,22 @@
   <ul class="bd-navbar-elements navbar-nav">
     
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="tutorials.html">
-    Tutorials
+  <a class="nav-link nav-internal" href="get_started/index.html">
+    Get started
   </a>
 </li>
 
 
 <li class="nav-item ">
-  <a class="nav-link nav-internal" href="how_tos.html">
-    How To
+  <a class="nav-link nav-internal" href="user_guides/index.html">
+    User guides
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
   </a>
 </li>
 
@@ -407,7 +421,7 @@
 <span id="id1"></span><h1>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">DataShuttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_startup_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">DataShuttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_startup_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle" title="Link to this definition">#</a></dt>
 <dd><p>DataShuttle is a tool for convenient scientific
 project management and data transfer in BIDS format.</p>
 <p>The expected organisation is a central repository
@@ -442,7 +456,7 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 </dd>
 </dl>
 <p class="rubric">Methods</p>
-<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.check_name_formatting" title="datashuttle.DataShuttle.check_name_formatting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_name_formatting</span></code></a>(names, prefix)</p></td>
 <td><p>Pass list of names to check how these will be auto-formatted, for example as when passed to create_folders() or upload_custom() or download()</p></td>
@@ -588,31 +602,20 @@ created, these are separated by “sub” and “ses” keys.</p>
 </dl>
 <p class="rubric">Notes</p>
 <p>sub_names or ses_names may contain formatting tags</p>
-<blockquote>
-<div><dl>
-<dt>&#64;TO&#64; :</dt><dd><p>used to make a range of subjects / sessions.
+<dl class="simple">
+<dt>&#64;TO&#64;</dt><dd><p>used to make a range of subjects / sessions.
 Boundaries of the range must be either side of the tag
-e.g. sub-001&#64;TO&#64;003 will generate</p>
-<blockquote>
-<div><p>[“sub-001”, “sub-002”, “sub-003”]</p>
-</div></blockquote>
+e.g. sub-001&#64;TO&#64;003 will generate [“sub-001”, “sub-002”, “sub-003”]</p>
 </dd>
-<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64; :</dt><dd><p>will add date-&lt;value&gt;, time-&lt;value&gt; or
+<dt>&#64;DATE&#64;, &#64;TIME&#64; &#64;DATETIME&#64;</dt><dd><p>will add date-&lt;value&gt;, time-&lt;value&gt; or
 date-&lt;value&gt;_time-&lt;value&gt; keys respectively. Only one per-name
 is permitted.
-e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101
-(on the 1st january, 2022).</p>
+e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101 (on the 1st january, 2022).</p>
 </dd>
 </dl>
-</div></blockquote>
 <p class="rubric">Examples</p>
 <p>project.create_folders(“rawdata”, “sub-001”, datatype=”behav”)</p>
-<dl class="simple">
-<dt>project.create_folders(“rawdata”,</dt><dd><p>“sub-002&#64;TO&#64;005”,
-[“ses-001”, “ses-002”],
-[“ephys”, “behav”])</p>
-</dd>
-</dl>
+<p>project.create_folders(“rawdata”, “sub-002&#64;TO&#64;005”, [“ses-001”, “ses-002”], [“ephys”, “behav”])</p>
 </dd></dl>
 
 <dl class="py method">
@@ -626,7 +629,7 @@ transfer logs are saved to the logging folder).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>rawdata</cite>) to transfer files
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>“rawdata”</cite>, <cite>“derivatives”</cite>) to transfer files
 and folders within.</p></li>
 <li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – a subject name / list of subject names. These must
 be prefixed with “sub-”, or the prefix will be
@@ -1033,7 +1036,7 @@ datashuttle files are stored.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_existing_projects">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_existing_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_existing_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_existing_projects" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_existing_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_existing_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_existing_projects" title="Link to this definition">#</a></dt>
 <dd><p>Get a list of existing project names found on the local machine.
 This is based on project folders in the “home / .datashuttle” folder
 that contain valid config.yaml files.</p>
@@ -1046,14 +1049,14 @@ that contain valid config.yaml files.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_next_sub">
-<span class="sig-name descname"><span class="pre">get_next_sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_sub" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_next_sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_sub" title="Link to this definition">#</a></dt>
 <dd><p>Convenience function for get_next_sub_or_ses
 to find the next subject number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>return_with_prefix</strong> (<em>bool</em>) – If <cite>True</cite>, return with the “sub-” prefix.</p></li>
-<li><p><strong>local_only</strong> (<em>bool</em>) – If <cite>True, only get names from `local_path</cite>, otherwise from
+<li><p><strong>include_central</strong> (<em>bool</em>) – If <cite>False, only get names from `local_path</cite>, otherwise from
 <cite>local_path</cite> and <cite>central_path</cite>. If in local-project mode,
 this flag is ignored.</p></li>
 </ul>
@@ -1066,7 +1069,7 @@ this flag is ignored.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_next_ses">
-<span class="sig-name descname"><span class="pre">get_next_ses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_ses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_ses" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">get_next_ses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_ses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_ses" title="Link to this definition">#</a></dt>
 <dd><p>Convenience function for get_next_sub_or_ses
 to find the next session number.</p>
 <dl class="field-list simple">
@@ -1075,7 +1078,7 @@ to find the next session number.</p>
 <li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – “rawdata” or “derivatives”</p></li>
 <li><p><strong>sub</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Name of the subject to find the next session of.</p></li>
 <li><p><strong>return_with_prefix</strong> (<em>bool</em>) – If <cite>True</cite>, return with the “ses-” prefix.</p></li>
-<li><p><strong>local_only</strong> (<em>bool</em>) – If <cite>True, only get names from `local_path</cite>, otherwise from
+<li><p><strong>include_central</strong> (<em>bool</em>) – If <cite>False, only get names from `local_path</cite>, otherwise from
 <cite>local_path</cite> and <cite>central_path</cite>. If in local-project mode,
 this flag is ignored.</p></li>
 </ul>
@@ -1149,29 +1152,37 @@ names respectively are validated against.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.validate_project">
-<span class="sig-name descname"><span class="pre">validate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">local_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.validate_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.validate_project" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">validate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.validate_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.validate_project" title="Link to this definition">#</a></dt>
 <dd><p>Perform validation on the project. This checks the subject
 and session level folders to ensure there are no NeuroBlueprint
 formatting issues.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>top_level_folder</strong> (<em>TopLevelFolder</em><em> | </em><em>None</em>) – Folder to check, either “rawdata” or “derivatives”. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+will check both folders.</p></li>
 <li><p><strong>display_mode</strong> (<em>DisplayMode</em>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error)
 <code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> (show warning) or <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code></p></li>
-<li><p><strong>local_only</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only the local project is validated. Otherwise, both
+<li><p><strong>include_central</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only the local project is validated. Otherwise, both
 local and central projects are validated. If in local-project mode,
 this flag is ignored.</p></li>
+<li><p><strong>strict_mode</strong> (<em>bool</em>) – If <cite>True</cite>, only allow NeuroBlueprint-formatted folders to exist in
+the project. By default, non-NeuroBlueprint folders (e.g. a folder
+called ‘my_stuff’ in the ‘rawdata’) are allowed, and only folders
+starting with sub- or ses- prefix are checked. In <cite>Strict Mode</cite>,
+any folder not prefixed with sub-, ses- or a valid datatype will
+raise a validation issue.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.check_name_formatting">
-<em class="property"><span class="k"><span class="pre">static</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_name_formatting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.check_name_formatting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.check_name_formatting" title="Link to this definition">#</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_name_formatting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.check_name_formatting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.check_name_formatting" title="Link to this definition">#</a></dt>
 <dd><p>Pass list of names to check how these will be auto-formatted,
 for example as when passed to create_folders() or upload_custom()
 or download()</p>
@@ -1195,7 +1206,7 @@ e.g. “sub-” or “ses-”</p></li>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="datashuttle.quick_validate_project">
-<span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">quick_validate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_templates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_functions.html#quick_validate_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.quick_validate_project" title="Link to this definition">#</a></dt>
+<span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">quick_validate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rawdata'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_templates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_functions.html#quick_validate_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.quick_validate_project" title="Link to this definition">#</a></dt>
 <dd><p>Perform validation on the project. This checks the subject
 and session level folders to ensure there are not
 NeuroBlueprint formatting issues.</p>
@@ -1204,14 +1215,23 @@ NeuroBlueprint formatting issues.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – Path to the project to validate. Must include the project
 name, and hold a “rawdata” or “derivatives” folder.</p></li>
-<li><p><strong>top_level_folder</strong> (<em>TopLevelFolder</em>) – The top-level folder (“rawdata” or “derivatives” to
+<li><p><strong>top_level_folder</strong> (<em>TopLevelFolder</em>) – The top-level folder (“rawdata” or “derivatives”) to
 perform validation. If <cite>None</cite>, both are checked.</p></li>
 <li><p><strong>display_mode</strong> (<em>DisplayMode</em>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error)
 <code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> (show warning) or <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code>.</p></li>
+<li><p><strong>strict_mode</strong> (<em>bool</em>) – If <cite>True</cite>, only allow NeuroBlueprint-formatted folders to exist in
+the project. By default, non-NeuroBlueprint folders (e.g. a folder
+called ‘my_stuff’ in the ‘rawdata’) are allowed, and only folders
+starting with sub- or ses- prefix are checked. In <cite>Strict Mode</cite>,
+any folder not prefixed with sub-, ses- or a valid datatype will
+raise a validation issue.</p></li>
 <li><p><strong>name_templates</strong> (<em>Dict</em>) – A dictionary of templates for subject and session name
 to validate against. See <code class="docutils literal notranslate"><span class="pre">DataShuttle.set_name_templates()</span></code>
 for details.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1300,7 +1320,7 @@ for details.</p></li>
     <div class="footer-items__start">
       
         <div class="footer-item"><p class="sphinx-version">
-Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.2.1.
+Created using <a href="https://sphinx-doc.org/">Sphinx</a> 8.1.3.
 <br/>
 </p>
 <p class="theme-version">
