@@ -102,9 +102,6 @@ class TestBackwardsCompatibility:
         config_file_path = project._config_path
         config_path = config_file_path.parent
 
-        #       (config_file_path).unlink(missing_ok=True)
-        #      (config_path / "persistent_settings.yaml").unlink(missing_ok=True)
-
         # In the current version of datashuttle, get the settings. These are
         # thus correct for the most recent datashuttle version.
         project = DataShuttle(TEST_PROJECT_NAME)
