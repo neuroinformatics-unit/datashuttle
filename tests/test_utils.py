@@ -90,10 +90,9 @@ def glob_basenames(search_path, recursive=False, exclude=None):
 
 
 def teardown_project(
-    cwd, project
+    project,
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
     """"""
-    os.chdir(cwd)
     delete_all_folders_in_project_path(project, "central")
     delete_all_folders_in_project_path(project, "local")
     delete_project_if_it_exists(project.project_name)
@@ -109,7 +108,9 @@ def delete_all_folders_in_project_path(project, local_or_central):
     """"""
     folder = f"{local_or_central}_path"
 
-    if folder == "central_path" and project.cfg[folder] is None:
+    if project.cfg is None or (
+        folder == "central_path" and project.cfg[folder] is None
+    ):
         return
 
     ds_logger.close_log_filehandler()
@@ -151,9 +152,7 @@ def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
             local_path=make_test_path(tmp_path, "local", test_project_name)
         )
 
-    cwd = os.getcwd()
-
-    return project, cwd
+    return project
 
 
 def make_test_path(base_path, local_or_central, test_project_name):
@@ -695,3 +694,8 @@ def get_task_by_name(name):
         None,
     )
     return target_task
+
+
+async def await_task_by_name_if_present(name: str) -> None:
+    if task := get_task_by_name(name):
+        await task

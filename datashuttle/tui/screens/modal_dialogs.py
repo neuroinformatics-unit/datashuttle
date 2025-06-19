@@ -7,10 +7,11 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from textual.app import ComposeResult
+    from textual.widgets import DirectoryTree
     from textual.worker import Worker
 
     from datashuttle.tui.app import TuiApp
-    from datashuttle.utils.custom_types import InterfaceOutput
+    from datashuttle.utils.custom_types import InterfaceOutput, Prefix
 
 import platform
 from pathlib import Path
@@ -28,7 +29,10 @@ from textual.widgets import (
 )
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
-from datashuttle.tui.utils.tui_decorators import require_double_click
+from datashuttle.tui.utils.tui_decorators import (
+    ClickInfo,
+    require_double_click,
+)
 
 
 class MessageBox(ModalScreen):
@@ -146,6 +150,27 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.app.show_modal_error_dialog(output)
 
 
+class SearchingCentralForNextSubSesPopup(ModalScreen):
+    """
+    A popup to show message and a loading indicator when awaiting search next sub/ses across
+    the folders present in both local and central machines. This search happens in a separate
+    thread so as to allow TUI to display the loading indicate without freezing.
+
+    Only displayed when the `include_central` flag is checked and the connection method is "ssh".
+    """
+
+    def __init__(self, sub_or_ses: Prefix) -> None:
+        super().__init__()
+        self.message = f"Searching central for next {sub_or_ses}"
+
+    def compose(self) -> ComposeResult:
+        yield Container(
+            Label(self.message, id="searching_message_label"),
+            LoadingIndicator(id="searching_animated_indicator"),
+            id="searching_top_container",
+        )
+
+
 class SelectDirectoryTreeScreen(ModalScreen):
     """
     A modal screen that includes a DirectoryTree to browse
@@ -180,7 +205,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             self.selected_drive = self.path_.drive + "\\"
         else:
             self.selected_drive = "/"
-        self.prev_click_time = 0
+        self.click_info = ClickInfo()
 
     def compose(self) -> ComposeResult:
 
@@ -238,11 +263,13 @@ class SelectDirectoryTreeScreen(ModalScreen):
         )
 
     @require_double_click
-    def on_directory_tree_directory_selected(self, node) -> None:
-        if node.path.is_file():
+    def on_directory_tree_directory_selected(
+        self, event: DirectoryTree.DirectorySelected
+    ) -> None:
+        if event.path.is_file():
             return
         else:
-            self.dismiss(node.path)
+            self.dismiss(event.path)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "cancel_button":
