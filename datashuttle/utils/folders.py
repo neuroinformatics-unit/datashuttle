@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import subprocess
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -22,7 +21,7 @@ import glob
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
-from datashuttle.utils import ssh, utils, validation
+from datashuttle.utils import rclone, ssh, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -564,16 +563,11 @@ def search_gdrive_or_aws_for_folders(
     The json contains file/folder info about each file/folder like name, type, etc.
     """
 
-    command = (
-        "rclone lsjson "
+    output = rclone.call_rclone(
+        "lsjson "
         f"{cfg.get_rclone_config_name()}:{search_path.as_posix()} "
         f'--include "{search_prefix}"',
-    )
-    output = subprocess.run(
-        command,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        shell=True,
+        pipe_std=True,
     )
 
     all_folder_names: List[str] = []

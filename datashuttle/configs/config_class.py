@@ -127,14 +127,13 @@ class Configs(UserDict):
 
         load_configs.convert_str_and_pathlib_paths(config_dict, "str_to_path")
 
-        config_dict = self.ensure_backwards_compatibilty_for_config(
-            config_dict
-        )
+        self.update_config_for_backward_compatability_if_required(config_dict)
+
         self.data = config_dict
 
-    def ensure_backwards_compatibilty_for_config(
+    def update_config_for_backward_compatability_if_required(
         self, config_dict: Dict
-    ) -> Dict:
+    ):
         canonical_config_keys_to_add = [
             "gdrive_client_id",
             "gdrive_root_folder_id",
@@ -143,15 +142,19 @@ class Configs(UserDict):
         ]
 
         # All keys shall be missing for a backwards compatibility update
-        needs_update = all(
-            key not in config_dict.keys()
-            for key in canonical_config_keys_to_add
-        )
-        if needs_update:
+        if not (
+            all(
+                key in config_dict.keys()
+                for key in canonical_config_keys_to_add
+            )
+        ):
+            assert not any(
+                key in config_dict.keys()
+                for key in canonical_config_keys_to_add
+            )
+
             for key in canonical_config_keys_to_add:
                 config_dict[key] = None
-
-        return config_dict
 
     # -------------------------------------------------------------------------
     # Utils

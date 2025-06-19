@@ -31,7 +31,7 @@ class SetupAwsScreen(ModalScreen):
         yield Container(
             Horizontal(
                 Static(
-                    "Ready to setup AWS connection. " "Press OK to proceed",
+                    "Ready to setup AWS connection. Press OK to proceed",
                     id="setup_aws_messagebox_message",
                 ),
                 id="setup_aws_messagebox_message_container",
