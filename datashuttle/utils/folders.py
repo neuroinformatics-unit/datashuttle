@@ -484,8 +484,10 @@ def search_with_tags(
             )
 
         # Use the helper function to perform the glob search
+        matching_names: List[str]
+
         if sub:
-            matching_names: List[str] = search_sub_or_ses_level(
+            matching_names = search_sub_or_ses_level(  # type: ignore
                 cfg,
                 base_folder,
                 local_or_central,
@@ -493,7 +495,7 @@ def search_with_tags(
                 search_str=search_str,
             )[0]
         else:
-            matching_names = search_sub_or_ses_level(
+            matching_names = search_sub_or_ses_level(  # type: ignore
                 cfg, base_folder, local_or_central, search_str=search_str
             )[0]
 

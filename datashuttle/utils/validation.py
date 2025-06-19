@@ -546,13 +546,15 @@ def format_and_validate_datetime_search_str(
     full_tag_regex = (
         rf"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
     )
+
     match = re.search(full_tag_regex, search_str)
 
-    if not match:
+    if match is None:
         utils.log_and_raise_error(
             f"Invalid {format_type} range format in search string: {search_str}",
             NeuroBlueprintError,
         )
+    assert match is not None, "type narrow `match`"
 
     start_str, end_str = match.groups()
 
