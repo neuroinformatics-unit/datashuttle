@@ -57,14 +57,23 @@ jobs:
           pip install .[dev]
 #      - name: Test
  #       run: pytest
-      - name: Set up Google Drive secrets
-        run: |
-          printf '%s' '${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}' > "$HOME/gdrive.json"
-          echo "GDRIVE_SERVICE_ACCOUNT_FILE=$HOME/gdrive.json" >> $GITHUB_ENV
-          echo "GDRIVE_ROOT_FOLDER_ID=${{ secrets.GDRIVE_ROOT_FOLDER_ID }}" >> $GITHUB_ENV
+  #    - name: Set up Google Drive secrets
+   #     run: |
+    #      printf '%s' '${{ secrets.GDRIVE_SERVICE_ACCOUNT_JSON }}' > "$HOME/gdrive.json"
+     #     echo "GDRIVE_SERVICE_ACCOUNT_FILE=$HOME/gdrive.json" >> $GITHUB_ENV
+      #    echo "GDRIVE_ROOT_FOLDER_ID=${{ secrets.GDRIVE_ROOT_FOLDER_ID }}" >> $GITHUB_ENV
 
-      - name: Run Google Drive tests
-        run: pytest -q -k test_gdrive_connection
+ #     - name: Run Google Drive tests
+  #      run: pytest -q -k test_gdrive_connection
+
+      - name: Set up AWS secrets
+        run: |
+          echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+          echo "AWS_ACCESS_KEY_ID_SECRET=${{ secrets.AWS_ACCESS_KEY_ID_SECRET }}" >> $GITHUB_ENV
+          echo "AWS_REGION=${{ secrets.AWS_REGION }}" >> $GITHUB_ENV
+
+      - name: Run AWS tests
+        run: pytest -q -k test_aws_connection
 
   build_sdist_wheels:
     name: Build source distribution
