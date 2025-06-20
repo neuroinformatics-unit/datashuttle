@@ -428,6 +428,13 @@ class ConfigsContent(Container):
                 "connection_method"
             ]
 
+            if not self.widget_configs_match_saved_configs():
+                self.parent_class.mainwindow.show_modal_error_dialog(
+                    "The values set above must equal the datashuttle settings. "
+                    "Either press 'Save' or reload this page."
+                )
+                return
+
             if connection_method == "ssh":
                 self.setup_ssh_connection()
             elif connection_method == "gdrive":
@@ -492,13 +499,6 @@ class ConfigsContent(Container):
         """
         assert self.interface is not None, "type narrow flexible `interface`"
 
-        if not self.widget_configs_match_saved_configs():
-            self.parent_class.mainwindow.show_modal_error_dialog(
-                "The values set above must equal the datashuttle settings. "
-                "Either press 'Save' or reload this page."
-            )
-            return
-
         self.parent_class.mainwindow.push_screen(
             setup_ssh.SetupSshScreen(self.interface)
         )
@@ -509,26 +509,12 @@ class ConfigsContent(Container):
         """
         assert self.interface is not None, "type narrow flexible `interface`"
 
-        if not self.widget_configs_match_saved_configs():
-            self.parent_class.mainwindow.show_modal_error_dialog(
-                "The values set above must equal the datashuttle settings. "
-                "Either press 'Save' or reload this page."
-            )
-            return
-
         self.parent_class.mainwindow.push_screen(
             setup_gdrive.SetupGdriveScreen(self.interface)
         )
 
     def setup_aws_connection(self) -> None:
         assert self.interface is not None, "type narrow flexible `interface`"
-
-        if not self.widget_configs_match_saved_configs():
-            self.parent_class.mainwindow.show_modal_error_dialog(
-                "The values set above must equal the datashuttle settings. "
-                "Either press 'Save' or reload this page."
-            )
-            return
 
         self.parent_class.mainwindow.push_screen(
             setup_aws.SetupAwsScreen(self.interface)
@@ -636,7 +622,6 @@ class ConfigsContent(Container):
 
         # Handle the edge case where connection method is changed after
         # saving on the 'Make New Project' screen.
-        # self.query_one("#configs_setup_ssh_connection_button").visible = True
 
         cfg_kwargs = self.get_datashuttle_inputs_from_widgets()
 
