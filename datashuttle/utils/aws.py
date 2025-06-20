@@ -14,7 +14,7 @@ def check_if_aws_bucket_exists(cfg: Configs) -> bool:
 
     names = list(map(lambda x: x.get("Name", None), files_and_folders))
 
-    bucket_name = cfg["central_path"].as_posix().strip("/").split("/")[0]
+    bucket_name = get_aws_bucket_name(cfg)
 
     if bucket_name not in names:
         return False
@@ -24,13 +24,17 @@ def check_if_aws_bucket_exists(cfg: Configs) -> bool:
 
 def raise_if_bucket_absent(cfg: Configs) -> None:
     if not check_if_aws_bucket_exists(cfg):
-        bucket_name = cfg["central_path"].as_posix().strip("/").split("/")[0]
+        bucket_name = get_aws_bucket_name(cfg)
         utils.log_and_raise_error(
             f'The bucket "{bucket_name}" does not exist.\n'
             f"For data transfer to happen, the bucket must exist.\n"
             f"Please change the bucket name in the `central_path`.",
             ConfigError,
         )
+
+
+def get_aws_bucket_name(cfg: Configs) -> str:
+    return cfg["central_path"].as_posix().strip("/").split("/")[0]
 
 
 # -----------------------------------------------------------------------------
