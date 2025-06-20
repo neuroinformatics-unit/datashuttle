@@ -64,7 +64,7 @@ jobs:
         run: |
           if [ "$RUNNER_OS" == "Linux" ]; then
              sudo service mysql stop  # free up port  3306 for ssh tests: https://github.com/orgs/community/discussions/25550
-             pytest -k "test_ssh_setup and test_combinations_ssh_transfer"
+             pytest -k "test_combinations_ssh_transfer or test_ssh_setup"
           else
              pytest -k "not test_combinations_ssh_transfer and not test_ssh_setup"
           fi
