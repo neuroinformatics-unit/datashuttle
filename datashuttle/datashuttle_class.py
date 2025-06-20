@@ -943,6 +943,8 @@ class DataShuttle:
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
+        utils.log_and_message("Google Drive Connection Successful.")
+
         ds_logger.close_log_filehandler()
 
     # -------------------------------------------------------------------------

@@ -93,8 +93,34 @@ def get_connection_secret_from_user(
     connection_method_name: str,
     key_name_full: str,
     key_name_short: str,
-    log_status: bool,
+    key_info: str | None = None,
+    log_status: bool = True,
 ) -> str:
+    """
+    This is a centralized function to get sensitive information input from
+    the user via their terminal. It checks whether the standard input (stdin)
+    is connected to a terminal or not. If not, the user is displayed a
+    warning and asked if they would like to continue.
+
+    Parameters
+    -----------
+
+    connection_method_name : a string identifying the connection method being
+        used.
+
+    key_name_full : full name of the connection secret being asked from the user.
+
+    key_name_short : short name of the connection secret to avoid repeatedly writing
+        the full name.
+
+    key_info : extra info about the connection secret that needs to intimated to the
+        user.
+
+    log_status : log if True, logger must already be initialised.
+    """
+    if key_info:
+        print_message_to_user(key_info)
+
     if not sys.stdin.isatty():
         proceed = input(
             f"\nWARNING!\nThe next step is to enter a {key_name_full}, but it is not possible\n"
