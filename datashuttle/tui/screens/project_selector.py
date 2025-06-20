@@ -50,14 +50,19 @@ class ProjectSelectorScreen(Screen):
         yield Header(id="project_select_header")
         yield Button("Main Menu", id="all_main_menu_buttons")
         yield Container(
-            *[Button(name, id=name) for name in self.project_names],
+            *[
+                Button(name, id=self.name_to_id(name))
+                for name in self.project_names
+            ],
             id="project_select_top_container",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle a button press on ProjectSelectorScreen."""
-        if event.button.id in self.project_names:
-            project_name = event.button.id
+
+        project_name = self.id_to_name(event.button.id)
+
+        if project_name in self.project_names:
 
             interface = Interface()
             success, output = interface.select_existing_project(project_name)
@@ -69,3 +74,18 @@ class ProjectSelectorScreen(Screen):
 
         elif event.button.id == "all_main_menu_buttons":
             self.dismiss(False)
+
+    @staticmethod
+    def name_to_id(name: str):
+        """
+        Textual ids cannot start with a number, so ensure
+        all ids are prefixed with text instead of the project name.
+        """
+        return f"safety_prefix_{name}"
+
+    @staticmethod
+    def id_to_name(id: str):
+        """
+        See `name_id_id()`
+        """
+        return id.replace("safety_prefix_", "")
