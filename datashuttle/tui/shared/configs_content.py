@@ -806,16 +806,18 @@ class ConfigsContent(Container):
             else:
                 widget_func(False)
 
+        has_connection_method = connection_method is not None
+
         # Central path input
         self.query_one("#configs_central_path_input").disabled = (
-            connection_method is None
+            not has_connection_method
         )
         self.query_one("#configs_central_path_select_button").disabled = (
-            connection_method is None
+            not has_connection_method
         )
 
         # Local only project
-        if not connection_method:
+        if not has_connection_method:
             self.query_one("#configs_central_path_input").value = ""
 
         setup_connection_button = self.query_one(

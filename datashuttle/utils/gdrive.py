@@ -83,10 +83,7 @@ def ask_user_for_browser(log: bool = True) -> bool:
         utils.print_message_to_user("Invalid input. Press either 'y' or 'n'.")
         input_ = utils.get_user_input(message).lower()
 
-    if input_ == "y":
-        answer = True
-    else:
-        answer = False
+    answer = input_ == "y"
 
     if log:
         utils.log(message)
