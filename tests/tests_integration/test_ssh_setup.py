@@ -26,13 +26,8 @@ class TestSSH(BaseTest):
 
         project = test_utils.setup_project_fixture(tmp_path, test_project_name)
 
-        # ssh_test_utils.setup_project_and_container_for_ssh(project)
-
         ssh_test_utils.setup_project_for_ssh(
             project,
-            central_path=f"/home/sshuser/datashuttle/{project.project_name}",
-            central_host_id="localhost",
-            central_host_username="sshuser",
         )
 
         yield project
