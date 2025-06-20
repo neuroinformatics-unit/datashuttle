@@ -166,7 +166,7 @@ class TuiBase:
         assert len(pilot.app.screen.project_names) == 1
         assert project_name in pilot.app.screen.project_names
 
-        await pilot.click(f"#{project_name}")
+        await pilot.click(f"#safety_prefix_{project_name}")
         await pilot.pause()
 
         assert isinstance(pilot.app.screen, ProjectManagerScreen)

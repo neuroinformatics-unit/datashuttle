@@ -48,10 +48,12 @@ class TestConfigs(BaseTest):
             "Use make_config_file() to setup before continuing."
         )
 
-    def test_empty_project_name(self):
+    def test_empty_project_name(self, tmp_path):
         """
         Empty project names ("") are not allowed.
         """
+        os.chdir(tmp_path)  # avoids messy backup folder creation
+
         with pytest.raises(NeuroBlueprintError) as e:
             DataShuttle("")
 
