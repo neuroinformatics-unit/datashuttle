@@ -8,7 +8,7 @@ RUN apt-get install openssh-server -y supervisor
 RUN apt-get install nano
 
 # Create an SSH user
-RUN useradd -rm -d /home/sshuser -s /bin/bash -g root -G sudo -u 1000 sshuser
+RUN useradd -rm -d /home/sshuser -s /bin/bash -g root -G sudo sshuser
 
 # Set the SSH user's password (replace "password" with your desired password)
 RUN echo "sshuser:password" | chpasswd
