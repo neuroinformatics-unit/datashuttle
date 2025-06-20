@@ -741,7 +741,7 @@ class ConfigsContent(Container):
         input = self.query_one("#configs_gdrive_client_id_input")
         value = (
             ""
-            if cfg_to_load.get("gdrive_client_id", None) is None
+            if cfg_to_load["gdrive_client_id"] is None
             else cfg_to_load["gdrive_client_id"]
         )
         input.value = value
@@ -750,7 +750,7 @@ class ConfigsContent(Container):
         input = self.query_one("#configs_gdrive_root_folder_id")
         value = (
             ""
-            if cfg_to_load.get("gdrive_root_folder_id", None) is None
+            if cfg_to_load["gdrive_root_folder_id"] is None
             else cfg_to_load["gdrive_root_folder_id"]
         )
         input.value = value
@@ -759,7 +759,7 @@ class ConfigsContent(Container):
         input = self.query_one("#configs_aws_access_key_id_input")
         value = (
             ""
-            if cfg_to_load.get("aws_access_key_id", None) is None
+            if cfg_to_load["aws_access_key_id"] is None
             else cfg_to_load["aws_access_key_id"]
         )
         input.value = value
@@ -768,13 +768,23 @@ class ConfigsContent(Container):
         select = self.query_one("#configs_aws_region_select")
         value = (
             Select.BLANK
-            if cfg_to_load.get("aws_region", None) is None
+            if cfg_to_load["aws_region"] is None
             else cfg_to_load["aws_region"]
         )
         select.value = value
 
     def setup_widgets_to_display(self, connection_method: str | None) -> None:
+        """
+        Sets up widgets to display based on the chosen `connection_method` on the
+        radiobutton. The widgets pertaining to the chosen connection method will be
+        be displayed. This is done by dedicated functions for each connection method
+        which display widgets on receiving a `True` flag.
 
+        Also, this function handles other TUI changes like displaying "setup connection"
+        button, disabling central path input in a local only project, etc.
+
+        Called on mount, on radiobuttons' switch and upon saving project configs.
+        """
         if connection_method:
             assert connection_method in [
                 "local_filesystem",
@@ -783,6 +793,7 @@ class ConfigsContent(Container):
                 "aws",
             ], "Unexpected Connection Method"
 
+        # Connection specific widgets
         connection_widget_display_functions = {
             "ssh": self.switch_ssh_widgets_display,
             "gdrive": self.switch_gdrive_widgets_display,
@@ -795,6 +806,7 @@ class ConfigsContent(Container):
             else:
                 widget_func(False)
 
+        # Central path input
         self.query_one("#configs_central_path_input").disabled = (
             connection_method is None
         )
@@ -811,6 +823,7 @@ class ConfigsContent(Container):
         )
 
         # fmt: off
+        # Setup connection button
         if (
             not connection_method
             or connection_method == "local_filesystem"
