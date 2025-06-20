@@ -1570,8 +1570,8 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_gdrive(
             self.cfg,
-            gdrive_client_secret,
             self.cfg.get_rclone_config_name("gdrive"),
+            gdrive_client_secret,
             config_token,
             log=log,
         )
@@ -1581,8 +1581,8 @@ class DataShuttle:
     ) -> None:
         rclone.setup_rclone_config_for_aws(
             self.cfg,
-            aws_secret_access_key,
             self.cfg.get_rclone_config_name("aws"),
+            aws_secret_access_key,
             log=log,
         )
 
