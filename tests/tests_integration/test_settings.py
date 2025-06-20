@@ -186,6 +186,7 @@ class TestPersistentSettings(BaseTest):
             "bypass_validation": False,
             "overwrite_existing_files": "never",
             "dry_run": False,
+            "suggest_next_sub_ses_central": False,
         }
         default_settings["create_checkboxes_on"] = {
             key: {"on": True, "displayed": True}
@@ -227,6 +228,7 @@ class TestPersistentSettings(BaseTest):
             "bypass_validation": True,
             "overwrite_existing_files": "always",
             "dry_run": True,
+            "suggest_next_sub_ses_central": True,
         }
 
         changed_settings["create_checkboxes_on"] = {

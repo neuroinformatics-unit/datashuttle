@@ -23,9 +23,7 @@ class TestSSH:
         tmp_path = tmp_path / "test with space"
 
         test_project_name = "test_ssh"
-        project, cwd = test_utils.setup_project_fixture(
-            tmp_path, test_project_name
-        )
+        project = test_utils.setup_project_fixture(tmp_path, test_project_name)
 
         ssh_test_utils.setup_project_for_ssh(
             project,
@@ -35,7 +33,7 @@ class TestSSH:
         )
 
         yield project
-        test_utils.teardown_project(cwd, project)
+        test_utils.teardown_project(project)
 
     # -----------------------------------------------------------------
     # Test Setup SSH Connection
