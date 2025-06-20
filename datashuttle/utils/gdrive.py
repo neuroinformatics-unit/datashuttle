@@ -1,6 +1,4 @@
-import getpass
 import json
-import sys
 
 from datashuttle.configs.config_class import Configs
 from datashuttle.utils import rclone, utils
@@ -112,34 +110,11 @@ def prompt_and_get_config_token(
 
 
 def get_client_secret(log: bool = True) -> str:
-    if not sys.stdin.isatty():
-        proceed = input(
-            "\nWARNING!\nThe next step is to enter a google drive client secret, but it is not possible\n"
-            "to hide your client secret while entering it in the current terminal.\n"
-            "This can occur if running the command in an IDE.\n\n"
-            "Press 'y' to proceed to client secret entry. "
-            "The characters will not be hidden!\n"
-            "Alternatively, run google drive setup after starting Python in your "
-            "system terminal \nrather than through an IDE: "
-        )
-        if proceed != "y":
-            utils.print_message_to_user(
-                "Quitting google drive setup as 'y' not pressed."
-            )
-            utils.log_and_raise_error(
-                "Google Drive setup aborted by user.", ConnectionAbortedError
-            )
-
-        gdrive_client_secret = input(
-            "Please enter your google drive client secret. Characters will not be hidden: "
-        )
-
-    else:
-        gdrive_client_secret = getpass.getpass(
-            "Please enter your google drive client secret: "
-        )
-
-    if log:
-        utils.log("Google Drive client secret entered by user.")
+    gdrive_client_secret = utils.get_connection_secret_from_user(
+        connection_method_name="Google Drive",
+        key_name_full="Google Drive client secret",
+        key_name_short="secret key",
+        log_status=log,
+    )
 
     return gdrive_client_secret.strip()
