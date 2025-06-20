@@ -37,7 +37,6 @@ class TestSSHTransfer(BaseTransfer):
     # Test Setup SSH Connection
     # -----------------------------------------------------------------
 
-    @pytest.mark.skipif("not TEST_SSH", reason="TEST_SSH is false")
     @pytest.mark.parametrize(
         "sub_names", [["all"], ["all_non_sub", "sub-002"]]
     )

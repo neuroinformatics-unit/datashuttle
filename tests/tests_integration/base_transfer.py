@@ -1,5 +1,4 @@
-"""
-"""
+""" """
 
 import copy
 from pathlib import Path
@@ -30,7 +29,7 @@ class BaseTransfer(BaseTest):
         base_path = tmp_path / "test with space"
         test_project_name = "test_file_conflicts"
 
-        project, cwd = test_utils.setup_project_fixture(
+        project = test_utils.setup_project_fixture(
             base_path, test_project_name
         )
 
@@ -40,7 +39,7 @@ class BaseTransfer(BaseTest):
 
         yield [pathtable, project]
 
-        test_utils.teardown_project(cwd, project)
+        test_utils.teardown_project(project)
 
     def get_expected_transferred_paths(
         self, pathtable, sub_names, ses_names, datatype
