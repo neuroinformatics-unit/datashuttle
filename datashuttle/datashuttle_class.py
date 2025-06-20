@@ -901,6 +901,20 @@ class DataShuttle:
 
     @check_configs_set
     def setup_google_drive_connection(self) -> None:
+        """
+        Setup a connection to Google Drive using the provided credentials.
+        Assumes `gdrive_root_folder_id` is set in configs.
+
+        First, the user will be prompted to enter their Google Drive client
+        secret if `gdrive_client_id` is set in the configs.
+
+        Next, the user will be asked if their machine has access to a browser.
+        If not, they will be prompted to input a config_token after running an
+        rclone command displayed to the user on a machine with access to a browser.
+
+        Next, with the provided credentials, the final setup will be done. This
+        opens up a browser if the user confirmed access to a browser.
+        """
         self._start_log(
             "setup-google-drive-connection-to-central-server",
             local_vars=locals(),
@@ -912,7 +926,6 @@ class DataShuttle:
             gdrive_client_secret = None
 
         browser_available = gdrive.ask_user_for_browser(log=True)
-        config_token = None
 
         if not browser_available:
             config_token = gdrive.prompt_and_get_config_token(
@@ -921,6 +934,8 @@ class DataShuttle:
                 self.cfg.get_rclone_config_name("gdrive"),
                 log=True,
             )
+        else:
+            config_token = None
 
         self._setup_rclone_gdrive_config(
             gdrive_client_secret, config_token, log=True
@@ -937,6 +952,14 @@ class DataShuttle:
     @requires_aws_configs
     @check_configs_set
     def setup_aws_connection(self) -> None:
+        """
+        Setup a connection to AWS S3 buckets using the provided credentials.
+        Assumes `aws_access_key_id` and `aws_region` are set in configs.
+
+        First, the user will be prompted to input their AWS secret access key.
+
+        Next, with the provided credentials, the final connection setup will be done.
+        """
         self._start_log(
             "setup-aws-connection-to-central-server",
             local_vars=locals(),

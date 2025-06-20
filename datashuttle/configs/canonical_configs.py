@@ -49,7 +49,6 @@ def get_canonical_configs() -> dict:
         "gdrive_root_folder_id": Optional[str],
         "aws_access_key_id": Optional[str],
         "aws_region": Optional[Literal[*get_aws_regions_list()]],
-        # "aws_s3_endpoint_url": Optional[str],
     }
 
     return canonical_configs
