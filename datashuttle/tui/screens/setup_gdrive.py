@@ -34,7 +34,7 @@ class SetupGdriveScreen(ModalScreen):
         super(SetupGdriveScreen, self).__init__()
 
         self.interface = interface
-        self.stage: float = 0
+        self.stage: int = 0
         self.setup_worker: Worker | None = None
         self.gdrive_client_secret: Optional[str] = None
 
@@ -68,8 +68,8 @@ class SetupGdriveScreen(ModalScreen):
             step that asks the user for client secret if "gdrive_client_id" is present
             in configs. And then proceeds to ask the user for browser availability.
             This is done via a `stage` variable. If asking the user for client secret,
-            the stage is incremented by 0.5 on two steps. Else, `ask_user_for_browser`
-            increments the stage directly by 1.
+            the stage is incremented by 1 on two steps. Else, `ask_user_for_browser`
+            increments the stage directly by 2.
 
         2) "yes" button : A "yes" answer to the availability of browser question. On click,
             proceeds to a browser authentication.
@@ -98,7 +98,7 @@ class SetupGdriveScreen(ModalScreen):
                 else:
                     self.ask_user_for_browser()
 
-            elif self.stage == 0.5:
+            elif self.stage == 1:
                 self.gdrive_client_secret = (
                     self.input_box.value.strip()
                     if self.input_box.value.strip()
@@ -129,9 +129,9 @@ class SetupGdriveScreen(ModalScreen):
         ok_button = self.query_one("#setup_gdrive_ok_button")
         ok_button.label = "Enter"
 
-        self.mount_input_box_before_buttons()
+        self.mount_input_box_before_buttons(is_password=True)
 
-        self.stage += 0.5
+        self.stage += 1
 
     def ask_user_for_browser(self) -> None:
         """
@@ -158,7 +158,7 @@ class SetupGdriveScreen(ModalScreen):
             yes_button, no_button, before="#setup_gdrive_cancel_button"
         )
 
-        self.stage += 0.5 if self.stage == 0.5 else 1
+        self.stage = 2
 
     def open_browser_and_setup_gdrive_connection(self) -> None:
         """
@@ -282,7 +282,10 @@ class SetupGdriveScreen(ModalScreen):
     def update_message_box_message(self, message: str) -> None:
         self.query_one("#gdrive_setup_messagebox_message").update(message)
 
-    def mount_input_box_before_buttons(self) -> None:
+    def mount_input_box_before_buttons(
+        self, is_password: bool = False
+    ) -> None:
+        self.input_box.password = is_password
         self.query_one("#setup_gdrive_screen_container").mount(
             self.input_box, before="#setup_gdrive_buttons_horizontal"
         )
