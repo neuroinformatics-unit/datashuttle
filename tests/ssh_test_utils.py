@@ -99,7 +99,7 @@ def setup_ssh_container(container_name):
             f"--name {container_name} ssh_server"
         )
     else:
-        build_command = "docker build ."
+        build_command = "docker build -t ssh_server ."
         run_command = (
             f"docker run -d -p {PORT}:22 --name {container_name}  ssh_server"
         )
