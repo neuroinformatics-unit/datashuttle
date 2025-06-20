@@ -17,6 +17,12 @@ class TestSelectTree(TuiBase):
 
         monkeypatch.setattr(
             SelectDirectoryTreeScreen,
+            "get_selected_drive",
+            staticmethod(lambda: "Drive1"),
+        )
+
+        monkeypatch.setattr(
+            SelectDirectoryTreeScreen,
             "get_drives",
             staticmethod(lambda: ["Drive1", "Drive2"]),
         )

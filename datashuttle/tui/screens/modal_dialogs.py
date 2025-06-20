@@ -176,10 +176,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             path_ = Path().home()
         self.path_ = path_
 
-        if platform.system() == "Windows":
-            self.selected_drive = self.path_.drive + "\\"
-        else:
-            self.selected_drive = "/"
+        self.selected_drive = self.get_selected_drive()
         self.prev_click_time = 0
 
     def compose(self) -> ComposeResult:
@@ -229,6 +226,13 @@ class SelectDirectoryTreeScreen(ModalScreen):
             return ["/"] + [
                 f"/{dir.name}" for dir in Path("/").iterdir() if dir.is_dir()
             ]
+
+    def get_selected_drive(self):
+        if platform.system() == "Windows":
+            selected_drive = self.path_.drive + "\\"
+        else:
+            selected_drive = "/"
+        return selected_drive
 
     def on_select_changed(self, event: Select.Changed) -> None:
         """Updates the directory tree when the drive is changed."""
