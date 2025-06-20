@@ -32,6 +32,10 @@ from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
 
+def get_connection_methods_list() -> List[str]:
+    return ["ssh", "local_filesystem", "gdrive", "aws"]
+
+
 def get_canonical_configs() -> dict:
     """
     The only permitted types for DataShuttle
@@ -40,9 +44,7 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[
-            Literal["ssh", "local_filesystem", "gdrive", "aws"]
-        ],
+        "connection_method": Optional[Literal[*get_connection_methods_list()]],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
         "gdrive_client_id": Optional[str],

@@ -25,6 +25,7 @@ from textual.widgets import (
 )
 
 from datashuttle.configs.aws_regions import get_aws_regions_list
+from datashuttle.configs.canonical_configs import get_connection_methods_list
 from datashuttle.tui.custom_widgets import ClickableInput
 from datashuttle.tui.interface import Interface
 from datashuttle.tui.screens import (
@@ -337,13 +338,7 @@ class ConfigsContent(Container):
         ]
         return (
             connection_string
-            if connection_string
-            in [
-                "ssh",
-                "gdrive",
-                "aws",
-                "local_filesystem",
-            ]
+            if connection_string in get_connection_methods_list()
             else None
         )
 
@@ -786,12 +781,9 @@ class ConfigsContent(Container):
         Called on mount, on radiobuttons' switch and upon saving project configs.
         """
         if connection_method:
-            assert connection_method in [
-                "local_filesystem",
-                "ssh",
-                "gdrive",
-                "aws",
-            ], "Unexpected Connection Method"
+            assert (
+                connection_method in get_connection_methods_list()
+            ), "Unexpected Connection Method"
 
         # Connection specific widgets
         connection_widget_display_functions = {
