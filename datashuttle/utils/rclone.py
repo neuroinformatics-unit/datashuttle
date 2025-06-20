@@ -160,7 +160,7 @@ def setup_rclone_config_for_gdrive(
     cfg: Configs,
     rclone_config_name: str,
     gdrive_client_secret: str | None,
-    config_token: Optional[str] = None,
+    service_account_filepath: Optional[str] = None,
     log: bool = True,
 ):
     """
@@ -197,10 +197,16 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
-    extra_args = (
-        f"config_is_local=false config_token={config_token}"
-        if config_token
-        else ""
+    #    extra_args = (
+    #       f"config_is_local=false config_token={config_token}"
+    #      if config_token
+    #     else ""
+    # )
+
+    service_account_filepath_arg = (
+        ""
+        if service_account_filepath is None
+        else f"service_account_file {service_account_filepath} "
     )
     output = call_rclone(
         f"config create "
@@ -210,7 +216,8 @@ def setup_rclone_config_for_gdrive(
         f"{client_secret_key_value}"
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
-        f"{extra_args}",
+        f"{service_account_filepath_arg}",
+        #        f"{extra_args}",
         pipe_std=True,
     )
 

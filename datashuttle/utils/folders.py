@@ -575,7 +575,7 @@ def search_gdrive_or_aws_for_folders(
 
     if output.returncode != 0:
         utils.log_and_message(
-            f"Error searching files at {search_path.as_posix()} \n {output.stderr.decode('utf-8') if output.stderr else ""}"
+            f"Error searching files at {search_path.as_posix()} \n {output.stderr.decode('utf-8') if output.stderr else ''}"
         )
         return all_folder_names, all_filenames
 
