@@ -27,6 +27,8 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class ValidateContent(Container):
+    """PLACEHOLDER."""
+
     def __init__(
         self,
         parent_class: Union[
@@ -41,6 +43,7 @@ class ValidateContent(Container):
         self.interface = interface
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         if platform.system() == "Windows":
             example_path = r"C:\path\to\project\project_name"
         else:
@@ -87,7 +90,7 @@ class ValidateContent(Container):
         yield Container(*widgets, id="validate_top_container")
 
     def on_mount(self) -> None:
-        """ """
+        """PLACEHOLDER."""
         for id in [
             "validate_path_input",
             "validate_top_level_folder_select",
@@ -111,10 +114,12 @@ class ValidateContent(Container):
             self.query_one("#validate_include_central_checkbox").remove()
 
     def set_select_path(self, path_):
+        """PLACEHOLDER."""
         if path_:
             self.query_one("#validate_path_input").value = path_.as_posix()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """PLACEHOLDER."""
         if event.button.id == "validate_select_button":
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.SelectDirectoryTreeScreen(
@@ -179,6 +184,7 @@ class ValidateContent(Container):
                 self.write_results_to_richlog(output)
 
     def write_results_to_richlog(self, results):
+        """PLACEHOLDER."""
         text_log = self.query_one("#validate_richlog")
         text_log.clear()
         if any(results):

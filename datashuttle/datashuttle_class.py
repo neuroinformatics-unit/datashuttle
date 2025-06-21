@@ -1045,9 +1045,7 @@ class DataShuttle:
         return_with_prefix: bool = True,
         include_central: bool = False,
     ) -> str:
-        """Convenience function for `get_next_sub_or_ses`
-
-        to find the next subject number.
+        """Convenience function for `get_next_sub_or_ses` to find the next subject number.
 
         Parameters
         ----------

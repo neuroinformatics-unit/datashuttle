@@ -314,7 +314,6 @@ def get_path_and_name(path_or_name: Path | str) -> Tuple[Optional[Path], str]:
 
 def replace_tags_in_regexp(regexp: str) -> str:
     r"""Before validation, all tags in the names are converted to
-
     their final values (e.g. @DATE@ -> _date-<date>). We also want to
     allow template to be formatted like `sub-\d\d_@DATE@` as it
     is convenient for auto-completion in the TUI.

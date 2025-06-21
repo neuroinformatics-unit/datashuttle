@@ -341,9 +341,8 @@ def quick_get_narrow_datatypes():
     return flat_narrow_datatypes
 
 
-def in_place_update_settings_for_narrow_datatype(settings: dict):
+def in_place_update_narrow_datatypes_if_required(user_settings: dict):
     """In versions < v0.6.0, only 'broad' datatypes were implemented
-
     and available in the TUI. Since, 'narrow' datatypes are introduced
     and datatype tui can be set to be both on / off but also
     displayed / not displayed.
@@ -379,7 +378,9 @@ def in_place_update_settings_for_narrow_datatype(settings: dict):
                 dtype in user_settings["tui"]["transfer_checkboxes_on"]
                 for dtype in all_narrow_datatypes
             ]
-        ), "Somehow there are datatypes missing in `transfer_checkboxes_on` but not `create_checkboxes_on`"
+        ), (
+            "Somehow there are datatypes missing in `transfer_checkboxes_on` but not `create_checkboxes_on`"
+        )
 
     if has_narrow_datatypes and is_not_missing_any_narrow_datatypes:
         return
@@ -411,15 +412,12 @@ def in_place_update_settings_for_narrow_datatype(settings: dict):
     # Copy any datatype information that exists. Broad datatypes will all be there
     # but some narrow datatypes might be missing.
     for checkbox_type in ["create_checkboxes_on", "transfer_checkboxes_on"]:
-
         datatypes_that_user_has = list(
             user_settings["tui"][checkbox_type].keys()
         )
 
         for dtype in get_datatypes():
-
             if dtype in datatypes_that_user_has:
-
                 if has_narrow_datatypes:
                     new_checkbox_configs[checkbox_type][dtype] = user_settings[
                         "tui"

@@ -155,8 +155,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
 
 class SearchingCentralForNextSubSesPopup(ModalScreen):
-    """
-    A popup to show message and a loading indicator when awaiting search next sub/ses across
+    """A popup to show message and a loading indicator when awaiting search next sub/ses across
     the folders present in both local and central machines. This search happens in a separate
     thread so as to allow TUI to display the loading indicate without freezing.
 
@@ -168,6 +167,7 @@ class SearchingCentralForNextSubSesPopup(ModalScreen):
         self.message = f"Searching central for next {sub_or_ses}"
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Container(
             Label(self.message, id="searching_message_label"),
             LoadingIndicator(id="searching_animated_indicator"),
@@ -231,8 +231,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     @staticmethod
     def get_drives():
-        """
-        Get drives available on the machine to switch between.
+        """Get drives available on the machine to switch between.
         For Windows,  use `psutil` to get the list of drives.
         Otherwise, assume root is "/" and take all folders from that level.
         """
@@ -253,8 +252,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             ]
 
     def get_selected_drive(self):
-        """
-        Get the default drive which the select starts on. For windows,
+        """Get the default drive which the select starts on. For windows,
         use the .drive attribute but for macOS and Linux this is blank.
         On these Os use the first folder (e.g. /Users) as the default drive.
         """
@@ -267,15 +265,15 @@ class SelectDirectoryTreeScreen(ModalScreen):
     def on_select_changed(self, event: Select.Changed) -> None:
         """Updates the directory tree when the drive is changed."""
         self.path_ = Path(event.value)
-        self.query_one("#select_directory_tree_directory_tree").path = (
-            self.path_
-        )
+        self.query_one(
+            "#select_directory_tree_directory_tree"
+        ).path = self.path_
 
     @require_double_click
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
     ) -> None:
-        """PLACEHOLDER"""
+        """PLACEHOLDER."""
         if event.path.is_file():
             return
         else:

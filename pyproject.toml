@@ -111,6 +111,7 @@ ignore = ["E203","E501","E731","C901","W291","W293","E402","E722",
     "D205", # 1 blank line required between summary line and description
     "D213", # multi-line-summary second line
     "D401", # first line of docstrings should be in an imperative mood
+    "D107", # Missing docstring in `__init__`
 ]
 select = [
     "I",        # isort
@@ -121,9 +122,7 @@ select = [
     "D",        # pydocstyle
 ]
 per-file-ignores = { "tests/*" = [
-    "D100", # missing docstring in public module
-    "D205", # missing blank line between summary and description
-    "D103", # missing docstring in public function
+    "D"  # ignore docstring formatting in tests for now
 ], "examples/*" = [
     "D400", # first line should end with a period.
     "D415", # first line should end with a period, question mark...

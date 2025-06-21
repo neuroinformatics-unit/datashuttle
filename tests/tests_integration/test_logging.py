@@ -141,7 +141,6 @@ class TestLogging:
         assert re.search(regex, log_filename) is not None
 
     def test_logs_make_config_file(self, clean_project_name, tmp_path):
-
         project = test_utils.make_project(clean_project_name)
 
         project.make_config_file(

@@ -28,6 +28,7 @@ class ValidateScreen(Screen):
         self.mainwindow = mainwindow
 
     def compose(self) -> ComposeResult:
+        """PLACEHOLDER."""
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
         yield validate_content.ValidateContent(
@@ -35,5 +36,6 @@ class ValidateScreen(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """PLACEHOLDER."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss(None)
