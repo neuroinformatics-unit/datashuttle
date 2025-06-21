@@ -32,7 +32,7 @@ jobs:
         # macos-14 is M1, macos-13 is intel. Run on earliest and
         # latest python versions. All python versions are tested in
         # the weekly cron job.
-        os: [ ubuntu-latest]  # [windows-latest, macos-14, macos-13] TODO: ADD BACK
+        os: [ ubuntu-latest, windows-latest, macos-14, macos-13]
         # Test all Python versions for cron job, and only first/last for other triggers
         python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12"]' || '["3.9", "3.12"]') }}
 
@@ -57,7 +57,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install .[dev]
-      - name: Test All
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
@@ -66,7 +65,7 @@ jobs:
         run: |
           sudo service mysql stop  # free up port 3306 for ssh tests
           pytest tests/tests_transfers/ssh
-      - name: Test All
+      - name: All Other Tests
         run: |
           pytest --ignore tests/tests_transfers/ssh
 
