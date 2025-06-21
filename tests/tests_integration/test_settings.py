@@ -32,8 +32,8 @@ class TestPersistentSettings(BaseTest):
         assert name_templates["ses"] is None
 
         # Set some new settings and check they become persistent
-        sub_regexp = "sub-\d_id-.?.?_random-.*"
-        ses_regexp = "ses-\d\d_id-.?.?.?_random-.*"
+        sub_regexp = r"sub-\d_id-.?.?_random-.*"
+        ses_regexp = r"ses-\d\d_id-.?.?.?_random-.*"
 
         new_name_templates = {
             "on": True,

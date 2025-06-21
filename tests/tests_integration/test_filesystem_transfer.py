@@ -336,7 +336,7 @@ class TestFileTransfer(BaseTest):
                     (base_local / "rawdata" / sub / "ses*").as_posix()
                 )
 
-                datetime_regexp = "datetime-\d{8}T\d{6}"
+                datetime_regexp = r"datetime-\d{8}T\d{6}"
 
                 assert re.fullmatch(
                     "ses-001_" + datetime_regexp, sessions_in_path[0]

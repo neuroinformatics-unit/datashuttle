@@ -717,8 +717,8 @@ class TestValidation(BaseTest):
         """
         name_templates = {
             "on": True,
-            "sub": "sub-\d\d_@DATE@",
-            "ses": "ses-\d\d\d@DATETIME@",
+            "sub": r"sub-\d\d_@DATE@",
+            "ses": r"ses-\d\d\d@DATETIME@",
         }
 
         project.set_name_templates(name_templates)
@@ -745,7 +745,7 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
         # Do a quick test for time
-        name_templates["sub"] = "sub-\d\d_@TIME@"
+        name_templates["sub"] = r"sub-\d\d_@TIME@"
         project.set_name_templates(name_templates)
 
         # use time tag, should not raise
@@ -760,22 +760,23 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
     def test_name_templates_validate_project(self, project):
-        """
-        TODO
-        """
+
+        # set up name templates
         name_templates = {
             "on": True,
-            "sub": "sub-\d\d_id-\d.?",
-            "ses": "ses-\d\d_id-\d.?",
+            "sub": r"sub-\d\d_id-\d.?",
+            "ses": r"ses-\d\d_id-\d.?",
         }
         project.set_name_templates(name_templates)
 
+        # Create names that match, check this does not error
         project.create_folders(
             "rawdata", "sub-01_id-2b", "ses-01_id-1a", bypass_validation=True
         )
 
         project.validate_project("rawdata", "error", include_central=False)
 
+        # Create names that don't match, check they error
         project.create_folders(
             "rawdata", "sub-02_id-a1", "ses-02_id-aa", bypass_validation=True
         )

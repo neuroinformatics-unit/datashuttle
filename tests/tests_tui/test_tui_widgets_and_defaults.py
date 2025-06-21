@@ -509,8 +509,8 @@ class TestTuiWidgets(TuiBase):
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
-        sub_regexp = "sub-\d\d\d"
-        ses_regexp = "ses-00\d_????"
+        sub_regexp = r"sub-\d\d\d"
+        ses_regexp = r"ses-00\d_????"
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
