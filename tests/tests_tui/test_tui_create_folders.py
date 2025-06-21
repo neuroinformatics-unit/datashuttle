@@ -365,7 +365,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).tooltip
-                == r"TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+                == "TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
 
             # It is expected that sub errors propagate to session input.
@@ -378,7 +378,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).tooltip
-                == r"TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+                == "TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
 
             # Try and make the folders, displaying a validation error.

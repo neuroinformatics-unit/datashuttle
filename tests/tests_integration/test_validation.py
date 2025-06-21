@@ -760,9 +760,8 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
     def test_name_templates_validate_project(self, project):
-        """
-        TODO
-        """
+
+        # set up name templates
         name_templates = {
             "on": True,
             "sub": r"sub-\d\d_id-\d.?",
@@ -770,12 +769,14 @@ class TestValidation(BaseTest):
         }
         project.set_name_templates(name_templates)
 
+        # Create names that match, check this does not error
         project.create_folders(
             "rawdata", "sub-01_id-2b", "ses-01_id-1a", bypass_validation=True
         )
 
         project.validate_project("rawdata", "error", include_central=False)
 
+        # Create names that don't match, check they error
         project.create_folders(
             "rawdata", "sub-02_id-a1", "ses-02_id-aa", bypass_validation=True
         )
@@ -784,11 +785,11 @@ class TestValidation(BaseTest):
             project.validate_project("rawdata", "warn", include_central=False)
 
         assert (
-            r"TEMPLATE: The name: sub-02_id-a1 does not match the template: sub-\\d\\d_id-\\d.?"
+            "TEMPLATE: The name: sub-02_id-a1 does not match the template: sub-\\d\\d_id-\\d.?"
             in str(w[0].message)
         )
         assert (
-            r"TEMPLATE: The name: ses-02_id-aa does not match the template: ses-\\d\\d_id-\\d.?"
+            "TEMPLATE: The name: ses-02_id-aa does not match the template: ses-\\d\\d_id-\\d.?"
             in str(w[1].message)
         )
 
