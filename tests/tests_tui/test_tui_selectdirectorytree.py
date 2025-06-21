@@ -15,6 +15,7 @@ class TestSelectTree(TuiBase):
         updates the DirectoryTree path as expected.
         """
 
+        # Set the Select drives to be these test cases
         monkeypatch.setattr(
             SelectDirectoryTreeScreen,
             "get_selected_drive",
@@ -30,6 +31,7 @@ class TestSelectTree(TuiBase):
         app = TuiApp()
         async with app.run_test() as pilot:
 
+            # Open the select directory tree screen
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_new_project_button"
             )
@@ -39,6 +41,7 @@ class TestSelectTree(TuiBase):
             )
             assert isinstance(pilot.app.screen, SelectDirectoryTreeScreen)
 
+            # Switch the select, and ensure the directory tree is updated as expected
             tree = pilot.app.screen.query_one(
                 "#select_directory_tree_directory_tree"
             )

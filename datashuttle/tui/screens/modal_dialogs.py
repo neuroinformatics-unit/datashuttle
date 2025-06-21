@@ -195,13 +195,10 @@ class SelectDirectoryTreeScreen(ModalScreen):
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
-        self.available_drives = self.get_drives()
-
         if path_ is None:
             path_ = Path().home()
         self.path_ = path_
 
-        self.selected_drive = self.get_selected_drive()
         self.click_info = ClickInfo()
 
     def compose(self) -> ComposeResult:
@@ -215,7 +212,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             Static(label_message, id="select_directory_tree_screen_label"),
             Select(
                 [(drive, drive) for drive in self.get_drives()],
-                value=self.selected_drive,
+                value=self.get_selected_drive(),
                 allow_blank=False,
                 id="select_directory_tree_drive_select",
             ),
@@ -230,23 +227,33 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     @staticmethod
     def get_drives():
+        """
+        Get drives available on the machine to switch between.
+        For Windows,  use `psutil` to get the list of drives.
+        Otherwise, assume root is "/" and take all folders from that level.
+        """
         operating_system = platform.system()
 
         assert operating_system in [
             "Windows",
             "Darwin",
             "Linux",
-        ], f"Unexpected operating system: {operating_system} encountered"
+        ], f"Unexpected operating system: {operating_system} encountered."
 
         if platform.system() == "Windows":
             return [disk.device for disk in psutil.disk_partitions(all=False)]
 
-        elif platform.system() in ["Darwin", "Linux"]:
+        else:
             return ["/"] + [
                 f"/{dir.name}" for dir in Path("/").iterdir() if dir.is_dir()
             ]
 
     def get_selected_drive(self):
+        """
+        Get the default drive which the select starts on. For windows,
+        use the .drive attribute but for macOS and Linux this is blank.
+        On these Os use the first folder (e.g. /Users) as the default drive.
+        """
         if platform.system() == "Windows":
             selected_drive = f"{self.path_.drive}\\"
         else:
