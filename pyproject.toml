@@ -108,10 +108,7 @@ fix = true
 ignore = ["E203","E501","E731","C901","W291","W293","E402","E722",
     "D100", # missing docstring in public module (not enforced FOR NOW)
     "D203", # one blank line before class
-    "D205", # 1 blank line required between summary line and description
     "D213", # multi-line-summary second line
-    "D401", # first line of docstrings should be in an imperative mood
-    "D107", # Missing docstring in `__init__`
 ]
 select = [
     "I",        # isort

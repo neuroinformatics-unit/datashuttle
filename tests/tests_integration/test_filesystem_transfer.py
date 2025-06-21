@@ -213,7 +213,7 @@ class TestFileTransfer(BaseTest):
             ["behav", "ephys", "funcimg", "anat"],
         ],
     )
-    @pytest.mark.parametrize("upload_or_download", ["uploaddownload"])
+    @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_empty_folder_specific_subs(
         self,
         project,
