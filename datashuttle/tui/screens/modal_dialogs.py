@@ -248,9 +248,9 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     def get_selected_drive(self):
         if platform.system() == "Windows":
-            selected_drive = self.path_.drive + "\\"
+            selected_drive = f"{self.path_.drive}\\"
         else:
-            selected_drive = "/"
+            selected_drive = f"/{self.path_.parts[1]}"
         return selected_drive
 
     def on_select_changed(self, event: Select.Changed) -> None:
