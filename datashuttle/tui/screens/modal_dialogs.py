@@ -241,7 +241,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         ], f"Unexpected operating system: {operating_system} encountered."
 
         if platform.system() == "Windows":
-            return [disk.device for disk in psutil.disk_partitions(all=False)]
+            return [disk.device for disk in psutil.disk_partitions(all=True)]
 
         else:
             return ["/"] + [
