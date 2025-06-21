@@ -4,8 +4,6 @@ from pathlib import Path
 
 import pytest
 
-from datashuttle import DataShuttle
-
 from .. import test_utils
 
 TEST_PROJECT_NAME = "test_project"
