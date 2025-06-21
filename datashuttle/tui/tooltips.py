@@ -65,6 +65,23 @@ def get_tooltip(id: str) -> str:
             "to a project folder, possibly on a mounted drive.\n\n"
         )
 
+    # Google Drive configs
+    # -------------------------------------------------------------------------
+
+    # Google Drive Client ID
+    elif id == "#configs_gdrive_client_id_input":
+        tooltip = (
+            "The Google Drive Client ID to use for authentication.\n\n"
+            "It can be obtained by creating an OAuth 2.0 client in the Google Cloud Console.\n\n"
+            "Can be left empty to use rclone's default client (slower)"
+        )
+
+    elif id == "#configs_gdrive_root_folder_id":
+        tooltip = (
+            "The Google Drive root folder ID to use for transfer.\n\n"
+            "It can be obtained by navigating to the folder in Google Drive and copying the ID from the URL.\n\n"
+        )
+
     # Settings
     # -------------------------------------------------------------------------
 

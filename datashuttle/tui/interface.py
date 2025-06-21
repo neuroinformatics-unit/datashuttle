@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import ssh
+from datashuttle.utils import aws, gdrive, rclone, ssh
 
 
 class Interface:
@@ -491,5 +491,56 @@ class Interface:
 
             return True, None
 
+        except BaseException as e:
+            return False, str(e)
+
+    # Setup Google Drive
+    # ----------------------------------------------------------------------------------
+
+    def setup_google_drive_connection(
+        self,
+        gdrive_client_secret: Optional[str] = None,
+        config_token: Optional[str] = None,
+    ) -> InterfaceOutput:
+        try:
+            self.project._setup_rclone_gdrive_config(
+                gdrive_client_secret, config_token, log=False
+            )
+            rclone.check_successful_connection_and_raise_error_on_fail(
+                self.project.cfg
+            )
+            return True, None
+        except BaseException as e:
+            return False, str(e)
+
+    def get_rclone_message_for_gdrive_without_browser(
+        self, gdrive_client_secret: Optional[str] = None
+    ) -> InterfaceOutput:
+        try:
+            output = gdrive.preliminary_for_setup_without_browser(
+                self.project.cfg,
+                gdrive_client_secret,
+                self.project.cfg.get_rclone_config_name("gdrive"),
+                log=False,
+            )
+            return True, output
+        except BaseException as e:
+            return False, str(e)
+
+    # Setup AWS
+    # ----------------------------------------------------------------------------------
+
+    def setup_aws_connection(
+        self, aws_secret_access_key: str
+    ) -> InterfaceOutput:
+        try:
+            self.project._setup_rclone_aws_config(
+                aws_secret_access_key, log=False
+            )
+            rclone.check_successful_connection_and_raise_error_on_fail(
+                self.project.cfg
+            )
+            aws.raise_if_bucket_absent(self.project.cfg)
+            return True, None
         except BaseException as e:
             return False, str(e)

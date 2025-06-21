@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import getpass
 import re
+import sys
 import traceback
 import warnings
 from typing import TYPE_CHECKING, Any, List, Literal, Union, overload
@@ -84,6 +86,44 @@ def get_user_input(message: str) -> str:
     Centralised way to get user input
     """
     input_ = input(message)
+    return input_
+
+
+def get_connection_secret_from_user(
+    connection_method_name: str,
+    key_name_full: str,
+    key_name_short: str,
+    log_status: bool,
+) -> str:
+    if not sys.stdin.isatty():
+        proceed = input(
+            f"\nWARNING!\nThe next step is to enter a {key_name_full}, but it is not possible\n"
+            f"to hide your {key_name_short} while entering it in the current terminal.\n"
+            f"This can occur if running the command in an IDE.\n\n"
+            f"Press 'y' to proceed to {key_name_short} entry. "
+            f"The characters will not be hidden!\n"
+            f"Alternatively, run {connection_method_name} setup after starting Python in your "
+            f"system terminal \nrather than through an IDE: "
+        )
+        if proceed != "y":
+            print_message_to_user(
+                f"Quitting {connection_method_name} setup as 'y' not pressed."
+            )
+            log_and_raise_error(
+                f"{connection_method_name} setup aborted by user.",
+                ConnectionAbortedError,
+            )
+
+        input_ = input(
+            f"Please enter your {key_name_full}. Characters will not be hidden: "
+        )
+
+    else:
+        input_ = getpass.getpass(f"Please enter your {key_name_full}: ")
+
+    if log_status:
+        log(f"{key_name_full} entered by user.")
+
     return input_
 
 
