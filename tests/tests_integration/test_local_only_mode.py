@@ -1,13 +1,14 @@
 import shutil
 
 import pytest
-import test_utils
-from base import BaseTest
 
 from datashuttle import DataShuttle
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
 )
+
+from .. import test_utils
+from ..base import BaseTest
 
 TEST_PROJECT_NAME = "test_project"
 

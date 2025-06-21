@@ -1,7 +1,8 @@
 import pytest
-from tui_base import TuiBase
 
 from datashuttle.tui.app import TuiApp
+
+from .tui_base import TuiBase
 
 
 class TestTuiSettings(TuiBase):

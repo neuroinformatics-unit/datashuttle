@@ -3,10 +3,11 @@ import shutil
 from pathlib import Path
 
 import pytest
-import test_utils
-from base import BaseTest
 
 from datashuttle.utils.rclone import get_local_and_central_file_differences
+
+from ... import test_utils
+from ...base import BaseTest
 
 
 class TestTransferChecks(BaseTest):

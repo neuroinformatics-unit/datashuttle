@@ -2,11 +2,12 @@ import os.path
 import shutil
 
 import pytest
-from base import BaseTest
 
 from datashuttle import quick_validate_project
 from datashuttle.utils import formatting, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
+
+from ..base import BaseTest
 
 # -----------------------------------------------------------------------------
 # Inconsistent sub or ses value lengths

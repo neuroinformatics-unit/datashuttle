@@ -1,8 +1,6 @@
 import re
 
 import pytest
-import test_utils
-from tui_base import TuiBase
 
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
@@ -10,6 +8,9 @@ from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
+
+from .. import test_utils
+from .tui_base import TuiBase
 
 
 class TestTuiCreateFolders(TuiBase):
