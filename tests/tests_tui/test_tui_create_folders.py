@@ -110,11 +110,11 @@ class TestTuiCreateFolders(TuiBase):
             sub_1_regexp = r"sub\-001_date\-\d{8}"
             sub_2_regexp = r"sub\-002_date\-\d{8}"
             sub_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + sub_1_regexp
                 + "', '"
                 + sub_2_regexp
-                + "'\]"
+                + r"'\]"
             )
             sub_tooltip = pilot.app.screen.query_one(
                 "#create_folders_subject_input"
@@ -131,13 +131,13 @@ class TestTuiCreateFolders(TuiBase):
             ses_2_regexp = r"ses\-002_date\-\d{8}"
             ses_3_regexp = r"ses\-003_date\-\d{8}"
             ses_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + ses_1_regexp
                 + "', '"
                 + ses_2_regexp
                 + "', '"
                 + ses_3_regexp
-                + "'\]"
+                + r"'\]"
             )
             ses_tooltip = pilot.app.screen.query_one(
                 "#create_folders_session_input"

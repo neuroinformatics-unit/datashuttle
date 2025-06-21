@@ -4,7 +4,6 @@ import pytest
 import test_utils
 from base import BaseTest
 
-from datashuttle import DataShuttle
 from datashuttle.utils.custom_exceptions import (
     ConfigError,
 )
@@ -21,7 +20,7 @@ class TestLocalOnlyProject(BaseTest):
         """
         local_path = tmp_path / "test_local"
 
-        project = DataShuttle("this_project_is_not_torn_down")
+        project = test_utils.make_project("this_project_is_not_torn_down")
 
         with pytest.raises(ConfigError) as e:
             project.make_config_file(

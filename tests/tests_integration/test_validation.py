@@ -1,5 +1,6 @@
 import os.path
 import shutil
+import warnings
 
 import pytest
 from base import BaseTest
@@ -408,9 +409,12 @@ class TestValidation(BaseTest):
                 "rawdata", "sub-001", bad_names, bypass_validation=True
             )
 
+        warnings.filterwarnings("ignore")
         error_messages = project.validate_project(
             "rawdata", "warn", include_central=False
         )
+        warnings.filterwarnings("default")
+
         concat_error = "".join(error_messages)
 
         assert "DATETIME" in concat_error
@@ -426,9 +430,11 @@ class TestValidation(BaseTest):
             "rawdata", sub_name, ses_name, bypass_validation=True
         )
 
+        warnings.filterwarnings("ignore")
         error_messages = project.validate_project(
             "rawdata", "warn", include_central=False
         )
+        warnings.filterwarnings("default")
 
         sub_path = error_messages[0].split("Path: ")[-1]
         ses_path = error_messages[1].split("Path: ")[-1]

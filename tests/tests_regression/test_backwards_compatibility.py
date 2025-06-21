@@ -5,8 +5,6 @@ from pathlib import Path
 import pytest
 import test_utils
 
-from datashuttle import DataShuttle
-
 TEST_PROJECT_NAME = "test_project"
 
 
@@ -20,7 +18,7 @@ class TestBackwardsCompatibility:
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
-        project = DataShuttle(TEST_PROJECT_NAME)
+        project = test_utils.make_project(TEST_PROJECT_NAME)
 
         yield project
 
@@ -104,7 +102,7 @@ class TestBackwardsCompatibility:
 
         # In the current version of datashuttle, get the settings. These are
         # thus correct for the most recent datashuttle version.
-        project = DataShuttle(TEST_PROJECT_NAME)
+        project = test_utils.make_project(TEST_PROJECT_NAME)
         project.make_config_file("cur_ver", "cur_ver", "local_filesystem")
 
         current_ver_configs = project.get_configs()
@@ -117,7 +115,7 @@ class TestBackwardsCompatibility:
         shutil.copy(old_version_path / "config.yaml", config_path)
         shutil.copy(old_version_path / "persistent_settings.yaml", config_path)
 
-        project = DataShuttle(TEST_PROJECT_NAME)
+        project = test_utils.make_project(TEST_PROJECT_NAME)
 
         reloaded_ver_configs = project.get_configs()
         reloaded_ver_persistent_settings = project._load_persistent_settings()

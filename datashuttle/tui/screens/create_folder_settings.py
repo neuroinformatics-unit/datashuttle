@@ -75,7 +75,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         sub_on = True if self.input_mode == "sub" else False
         ses_on = not sub_on
 
-        explanation = """
+        explanation = r"""
         A 'Template' can be set check subject or session names are
         formatted in a specific way.
 

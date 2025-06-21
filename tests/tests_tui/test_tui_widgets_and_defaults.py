@@ -2,9 +2,9 @@ import platform
 from typing import Union
 
 import pytest
+import test_utils
 from tui_base import TuiBase
 
-from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.create_folder_settings import (
@@ -509,8 +509,8 @@ class TestTuiWidgets(TuiBase):
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
-        sub_regexp = r"sub-\d\d\d"
-        ses_regexp = r"ses-00\d_????"
+        sub_regexp = "sub-\d\d\d"
+        ses_regexp = "ses-00\d_????"
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
@@ -1420,7 +1420,7 @@ class TestTuiWidgets(TuiBase):
 
         assert pilot.app.screen.interface.tui_settings["dry_run"] is value
 
-        project = DataShuttle(project_name)
+        project = test_utils.make_project(project_name)
         persistent_settings = project._load_persistent_settings()
         assert persistent_settings["tui"]["dry_run"] is value
 
@@ -1445,7 +1445,7 @@ class TestTuiWidgets(TuiBase):
             == format_val
         )
 
-        project = DataShuttle(project_name)
+        project = test_utils.make_project(project_name)
         persistent_settings = project._load_persistent_settings()
         assert (
             persistent_settings["tui"]["overwrite_existing_files"]

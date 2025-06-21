@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 import test_utils
 
-from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import ds_logger
@@ -154,7 +153,7 @@ class TestLogging:
 
     def test_logs_make_config_file(self, clean_project_name, tmp_path):
         """"""
-        project = DataShuttle(clean_project_name)
+        project = test_utils.make_project(clean_project_name)
 
         project.make_config_file(
             tmp_path / clean_project_name,
@@ -358,7 +357,7 @@ class TestLogging:
         logs are moved to the passed `local_path` when
         `make_config_file()` is passed.
         """
-        project = DataShuttle(clean_project_name)
+        project = test_utils.make_project(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(
             tmp_path, clean_project_name
@@ -389,7 +388,7 @@ class TestLogging:
         begins, this test checks the `_temp_log_path`
         is cleared correctly.
         """
-        project = DataShuttle(clean_project_name)
+        project = test_utils.make_project(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(
             tmp_path, clean_project_name
