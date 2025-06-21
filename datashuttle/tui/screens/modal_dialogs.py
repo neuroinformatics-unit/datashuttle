@@ -30,6 +30,7 @@ from textual.widgets import (
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
 from datashuttle.tui.utils.tui_decorators import (
+    ClickInfo,
     require_double_click,
 )
 
@@ -201,7 +202,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         self.path_ = path_
 
         self.selected_drive = self.get_selected_drive()
-        self.prev_click_time = 0
+        self.click_info = ClickInfo()
 
     def compose(self) -> ComposeResult:
 
@@ -210,17 +211,11 @@ class SelectDirectoryTreeScreen(ModalScreen):
             "If the project folder does not exist, select the parent folder and it will be created."
         )
 
-        drives = self.get_drives()
-
         yield Container(
             Static(label_message, id="select_directory_tree_screen_label"),
             Select(
                 [(drive, drive) for drive in self.get_drives()],
-                value=(
-                    self.selected_drive
-                    if self.selected_drive in drives
-                    else drives[0]
-                ),
+                value=self.selected_drive,
                 allow_blank=False,
                 id="select_directory_tree_drive_select",
             ),
