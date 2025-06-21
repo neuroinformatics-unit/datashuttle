@@ -36,9 +36,11 @@ from datashuttle.configs import (
 from datashuttle.configs.config_class import Configs
 from datashuttle.datashuttle_functions import _format_top_level_folder
 from datashuttle.utils import (
+    aws,
     ds_logger,
     folders,
     formatting,
+    gdrive,
     getters,
     rclone,
     ssh,
@@ -53,6 +55,7 @@ from datashuttle.utils.data_transfer import TransferData
 from datashuttle.utils.decorators import (  # noqa
     check_configs_set,
     check_is_not_local_project,
+    requires_aws_configs,
     requires_ssh_configs,
 )
 
@@ -893,6 +896,90 @@ class DataShuttle:
         public.close()
 
     # -------------------------------------------------------------------------
+    # Google Drive
+    # -------------------------------------------------------------------------
+
+    @check_configs_set
+    def setup_google_drive_connection(self) -> None:
+        """
+        Setup a connection to Google Drive using the provided credentials.
+        Assumes `gdrive_root_folder_id` is set in configs.
+
+        First, the user will be prompted to enter their Google Drive client
+        secret if `gdrive_client_id` is set in the configs.
+
+        Next, the user will be asked if their machine has access to a browser.
+        If not, they will be prompted to input a config_token after running an
+        rclone command displayed to the user on a machine with access to a browser.
+
+        Next, with the provided credentials, the final setup will be done. This
+        opens up a browser if the user confirmed access to a browser.
+        """
+        self._start_log(
+            "setup-google-drive-connection-to-central-server",
+            local_vars=locals(),
+        )
+
+        if self.cfg["gdrive_client_id"]:
+            gdrive_client_secret = gdrive.get_client_secret()
+        else:
+            gdrive_client_secret = None
+
+        browser_available = gdrive.ask_user_for_browser(log=True)
+
+        if not browser_available:
+            service_account_filepath = utils.get_user_input(
+                "Please input the path to your credentials json"
+            )  # TODO: add more explanation
+        #         config_token = gdrive.prompt_and_get_config_token(
+        #            self.cfg,
+        #           gdrive_client_secret,
+        #          self.cfg.get_rclone_config_name("gdrive"),
+        #         log=True,
+        #    )
+        else:
+            service_account_filepath = None
+
+        self._setup_rclone_gdrive_config(
+            gdrive_client_secret, service_account_filepath, log=True
+        )
+
+        rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
+
+        ds_logger.close_log_filehandler()
+
+    # -------------------------------------------------------------------------
+    # AWS S3
+    # -------------------------------------------------------------------------
+
+    @requires_aws_configs
+    @check_configs_set
+    def setup_aws_connection(self) -> None:
+        """
+        Setup a connection to AWS S3 buckets using the provided credentials.
+        Assumes `aws_access_key_id` and `aws_region` are set in configs.
+
+        First, the user will be prompted to input their AWS secret access key.
+
+        Next, with the provided credentials, the final connection setup will be done.
+        """
+        self._start_log(
+            "setup-aws-connection-to-central-server",
+            local_vars=locals(),
+        )
+
+        aws_secret_access_key = aws.get_aws_secret_access_key()
+
+        self._setup_rclone_aws_config(aws_secret_access_key, log=True)
+
+        rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
+        aws.raise_if_bucket_absent(self.cfg)
+
+        utils.log_and_message("AWS Connection Successful.")
+
+        ds_logger.close_log_filehandler()
+
+    # -------------------------------------------------------------------------
     # Configs
     # -------------------------------------------------------------------------
 
@@ -903,6 +990,10 @@ class DataShuttle:
         connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
+        gdrive_client_id: Optional[str] = None,
+        gdrive_root_folder_id: Optional[str] = None,
+        aws_access_key_id: Optional[str] = None,
+        aws_region: Optional[str] = None,
     ) -> None:
         """
         Initialise the configurations for datashuttle to use on the
@@ -967,6 +1058,10 @@ class DataShuttle:
                 "connection_method": connection_method,
                 "central_host_id": central_host_id,
                 "central_host_username": central_host_username,
+                "gdrive_client_id": gdrive_client_id,
+                "gdrive_root_folder_id": gdrive_root_folder_id,
+                "aws_access_key_id": aws_access_key_id,
+                "aws_region": aws_region,
             },
         )
 
@@ -1470,6 +1565,30 @@ class DataShuttle:
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
             self.cfg.get_rclone_config_name("local_filesystem"),
+        )
+
+    def _setup_rclone_gdrive_config(
+        self,
+        gdrive_client_secret: str | None,
+        service_account_filepath: str | None,
+        log: bool,
+    ) -> None:
+        rclone.setup_rclone_config_for_gdrive(
+            self.cfg,
+            self.cfg.get_rclone_config_name("gdrive"),
+            gdrive_client_secret,
+            service_account_filepath,
+            log=log,
+        )
+
+    def _setup_rclone_aws_config(
+        self, aws_secret_access_key: str, log: bool
+    ) -> None:
+        rclone.setup_rclone_config_for_aws(
+            self.cfg,
+            self.cfg.get_rclone_config_name("aws"),
+            aws_secret_access_key,
+            log=log,
         )
 
     # Persistent settings
