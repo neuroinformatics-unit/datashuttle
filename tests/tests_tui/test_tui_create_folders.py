@@ -107,14 +107,14 @@ class TestTuiCreateFolders(TuiBase):
                 "sub-001_@DATE@, sub-002_@DATE@",
             )
 
-            sub_1_regexp = "sub\-001_date\-\d{8}"
-            sub_2_regexp = "sub\-002_date\-\d{8}"
+            sub_1_regexp = r"sub\-001_date\-\d{8}"
+            sub_2_regexp = r"sub\-002_date\-\d{8}"
             sub_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + sub_1_regexp
                 + "', '"
                 + sub_2_regexp
-                + "'\]"
+                + r"'\]"
             )
             sub_tooltip = pilot.app.screen.query_one(
                 "#create_folders_subject_input"
@@ -127,17 +127,17 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_session_input", "ses-001@TO@003_@DATE@"
             )
 
-            ses_1_regexp = "ses\-001_date\-\d{8}"
-            ses_2_regexp = "ses\-002_date\-\d{8}"
-            ses_3_regexp = "ses\-003_date\-\d{8}"
+            ses_1_regexp = r"ses\-001_date\-\d{8}"
+            ses_2_regexp = r"ses\-002_date\-\d{8}"
+            ses_3_regexp = r"ses\-003_date\-\d{8}"
             ses_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + ses_1_regexp
                 + "', '"
                 + ses_2_regexp
                 + "', '"
                 + ses_3_regexp
-                + "'\]"
+                + r"'\]"
             )
             ses_tooltip = pilot.app.screen.query_one(
                 "#create_folders_session_input"
@@ -354,7 +354,7 @@ class TestTuiCreateFolders(TuiBase):
             # Set some name template and check the tooltips
             # indicate mismatches correctly
             pilot.app.screen.interface.project.set_name_templates(
-                {"on": True, "sub": "sub-\d\d\d", "ses": "ses-...."}
+                {"on": True, "sub": r"sub-\d\d\d", "ses": "ses-...."}
             )
 
             await self.fill_input(

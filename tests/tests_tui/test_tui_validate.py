@@ -1,3 +1,5 @@
+import warnings
+
 import pytest
 import textual
 from tui_base import TuiBase
@@ -187,9 +189,11 @@ class TestTuiValidate(TuiBase):
                 "quick_validate_project",
             )
 
+            warnings.filterwarnings("ignore")
             await self.scroll_to_click_pause(
                 pilot, "#validate_validate_button"
             )
+            warnings.filterwarnings("default")
 
             # Check args are passed through to function as expected
             args_, kwargs_ = spy_validate.call_args_list[0]

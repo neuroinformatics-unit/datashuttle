@@ -3,8 +3,6 @@ import warnings
 import pytest
 import test_utils
 
-from datashuttle import DataShuttle
-
 TEST_PROJECT_NAME = "test_project"
 
 
@@ -19,7 +17,7 @@ class BaseTest:
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
         warnings.filterwarnings("ignore")
-        no_cfg_project = DataShuttle(TEST_PROJECT_NAME)
+        no_cfg_project = test_utils.make_project(TEST_PROJECT_NAME)
         warnings.filterwarnings("default")
 
         yield no_cfg_project
@@ -51,7 +49,7 @@ class BaseTest:
             )
         elif project_type == "local":
             test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
-            project = DataShuttle(TEST_PROJECT_NAME)
+            project = test_utils.make_project(TEST_PROJECT_NAME)
             project.make_config_file(local_path=tmp_path / TEST_PROJECT_NAME)
 
         else:

@@ -34,15 +34,11 @@ def setup_project_default_configs(
     """
     delete_project_if_it_exists(project_name)
 
-    warnings.filterwarnings("ignore")
-
-    project = DataShuttle(project_name)
+    project = make_project(project_name)
 
     default_configs = get_test_config_arguments_dict(
         tmp_path, project_name, set_as_defaults=True
     )
-
-    #  make_project_paths(default_configs)
 
     project.make_config_file(**default_configs)
 
@@ -51,8 +47,6 @@ def setup_project_default_configs(
         project.cfg.get_rclone_config_name("ssh"),
         project.cfg.ssh_key_path,
     )
-
-    warnings.filterwarnings("default")
 
     if local_path:
         os.makedirs(local_path, exist_ok=True)
@@ -147,7 +141,7 @@ def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
             ),
         )
     elif project_type == "local":
-        project = DataShuttle(test_project_name)
+        project = make_project(test_project_name)
         project.make_config_file(
             local_path=make_test_path(tmp_path, "local", test_project_name)
         )
@@ -699,3 +693,10 @@ def get_task_by_name(name):
 async def await_task_by_name_if_present(name: str) -> None:
     if task := get_task_by_name(name):
         await task
+
+
+def make_project(project_name):
+    warnings.filterwarnings("ignore")
+    project = DataShuttle(project_name)
+    warnings.filterwarnings("default")
+    return project

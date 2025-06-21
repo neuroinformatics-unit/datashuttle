@@ -233,7 +233,7 @@ def get_num_value_digits_from_project(
 def get_num_value_digits_from_regexp(
     prefix: Prefix, name_template_regexp: str
 ) -> Union[Literal[False], int]:
-    """
+    r"""
     Given a name template regexp, find the number of values for the
     sub or ses key. These will be fixed with "\d" (digit) or ".?" (wildcard).
     If there is length-unspecific wildcard (.*) in the sub key, then skip.

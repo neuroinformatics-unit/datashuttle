@@ -71,6 +71,8 @@ class TestConfigs(BaseTest):
 
         Note pathlib strips "./" so not checked.
         """
+        os.chdir(tmp_path)
+
         if bad_pattern != ".":
             bad_pattern = f"{bad_pattern}/{project.project_name}"
         good_pattern = f"{tmp_path}/my/path/{project.project_name}"
@@ -236,7 +238,7 @@ class TestConfigs(BaseTest):
             patch_get_datashuttle_path,
         )
 
-        project_1 = DataShuttle("project_1")
+        project_1 = test_utils.make_project("project_1")
         project_1.make_config_file(
             tmp_path / "project_1",
             tmp_path / "project_1",
@@ -247,7 +249,7 @@ class TestConfigs(BaseTest):
         # have a config file.
         os.mkdir(tmp_path / "projects" / "project_2")
 
-        project_2 = DataShuttle("project_3")
+        project_2 = test_utils.make_project("project_3")
         project_2.make_config_file(
             tmp_path / "project_3",
             tmp_path / "project_3",
@@ -276,6 +278,6 @@ class TestConfigs(BaseTest):
 
         del project  # del project is almost certainly unnecessary
 
-        project = DataShuttle(project_name)
+        project = test_utils.make_project(project_name)
 
         test_utils.check_configs(project, kwargs[0])
