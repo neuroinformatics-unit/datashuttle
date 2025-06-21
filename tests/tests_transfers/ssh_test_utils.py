@@ -1,21 +1,13 @@
 import builtins
 import copy
-import os
-import platform
 import stat
 import subprocess
 import sys
 import warnings
-from pathlib import Path
 
 import paramiko
 
 from datashuttle.utils import rclone, ssh
-
-# Choose port 3306 for running on GH actions
-# suggested in https://github.com/orgs/community/discussions/25550
-PORT = 3306
-os.environ["DS_SSH_PORT"] = str(PORT)
 
 
 def setup_project_for_ssh(
@@ -77,53 +69,6 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     sys.stdin.isatty = orig_isatty
 
     return verified
-
-
-def setup_ssh_container(container_name):
-    """
-    Build and run the docker container used for
-    ssh tests.
-    """
-    assert docker_is_running(), (
-        "docker is not running, "
-        "this should be checked at the top of test script"
-    )
-
-    image_path = Path(__file__).parent / "ssh_test_images"
-    os.chdir(image_path)
-
-    if platform.system() != "Windows":
-        build_command = "sudo docker build -t ssh_server ."
-        run_command = (
-            f"sudo docker run -d -p {PORT}:22 "
-            f"--name {container_name} ssh_server"
-        )
-    else:
-        build_command = "docker build -t ssh_server ."
-        run_command = (
-            f"docker run -d -p {PORT}:22 --name {container_name}  ssh_server"
-        )
-
-    build_output = subprocess.run(
-        build_command,
-        shell=True,
-        capture_output=True,
-    )
-    assert build_output.returncode == 0, (
-        f"docker build failed with: STDOUT-{build_output.stdout} "
-        f"STDERR-{build_output.stderr}"
-    )
-
-    run_output = subprocess.run(
-        run_command,
-        shell=True,
-        capture_output=True,
-    )
-
-    assert run_output.returncode == 0, (
-        f"docker run failed with: STDOUT-{run_output.stdout} "
-        f"STDERR-{run_output.stderr}"
-    )
 
 
 def recursive_search_central(project):

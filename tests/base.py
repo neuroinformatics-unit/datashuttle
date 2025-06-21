@@ -1,8 +1,6 @@
-import subprocess
 import warnings
 
 import pytest
-import ssh_test_utils
 import test_utils
 
 TEST_PROJECT_NAME = "test_project"
@@ -71,17 +69,3 @@ class BaseTest:
         test_utils.delete_project_if_it_exists(project_name)
         yield project_name
         test_utils.delete_project_if_it_exists(project_name)
-
-    @pytest.fixture(
-        scope="class",
-    )
-    def setup_ssh_container(self):
-        """
-        Set up the Dockerfile container for SSH tests and
-        delete it on teardown.
-        """
-        container_name = "datashuttle_ssh_tests"
-        ssh_test_utils.setup_ssh_container(container_name)
-        yield
-
-        subprocess.run(f"docker rm -f {container_name}", shell=True)
