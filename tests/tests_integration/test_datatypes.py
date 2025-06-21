@@ -57,8 +57,6 @@ class TestDatatypes(BaseTest):
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
-        # Unfortunately on Windows we are encountering 'The command line is too long'
-        # and so cannot test against all datatypes here.
         narrow_datatypes = canonical_configs.quick_get_narrow_datatypes()
 
         datatypes_used = self.get_narrow_only_datatypes_used(used=False)

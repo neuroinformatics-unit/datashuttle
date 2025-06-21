@@ -126,6 +126,11 @@ def get_tooltip(id: str) -> str:
     elif id == "#create_folders_settings_toplevel_select":
         tooltip = "The top-level-folder to create folders in."
 
+    elif id == "#suggest_next_sub_ses_central_checkbox":
+        tooltip = (
+            "Search the central project folder when suggesting the next subject or session."
+            "May be slower compared than searching local only."
+        )
     # bypass validation checkbox
     elif id == "#create_folders_settings_bypass_validation_checkbox":
         tooltip = (

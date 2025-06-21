@@ -104,14 +104,14 @@ class TestTuiCreateFolders(TuiBase):
                 "sub-001_@DATE@, sub-002_@DATE@",
             )
 
-            sub_1_regexp = "sub\-001_date\-\d{8}"
-            sub_2_regexp = "sub\-002_date\-\d{8}"
+            sub_1_regexp = r"sub\-001_date\-\d{8}"
+            sub_2_regexp = r"sub\-002_date\-\d{8}"
             sub_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + sub_1_regexp
                 + "', '"
                 + sub_2_regexp
-                + "'\]"
+                + r"'\]"
             )
             sub_tooltip = pilot.app.screen.query_one(
                 "#create_folders_subject_input"
@@ -124,17 +124,17 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_session_input", "ses-001@TO@003_@DATE@"
             )
 
-            ses_1_regexp = "ses\-001_date\-\d{8}"
-            ses_2_regexp = "ses\-002_date\-\d{8}"
-            ses_3_regexp = "ses\-003_date\-\d{8}"
+            ses_1_regexp = r"ses\-001_date\-\d{8}"
+            ses_2_regexp = r"ses\-002_date\-\d{8}"
+            ses_3_regexp = r"ses\-003_date\-\d{8}"
             ses_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + ses_1_regexp
                 + "', '"
                 + ses_2_regexp
                 + "', '"
                 + ses_3_regexp
-                + "'\]"
+                + r"'\]"
             )
             ses_tooltip = pilot.app.screen.query_one(
                 "#create_folders_session_input"
@@ -345,7 +345,7 @@ class TestTuiCreateFolders(TuiBase):
             # Set some name template and check the tooltips
             # indicate mismatches correctly
             pilot.app.screen.interface.project.set_name_templates(
-                {"on": True, "sub": "sub-\d\d\d", "ses": "ses-...."}
+                {"on": True, "sub": r"sub-\d\d\d", "ses": "ses-...."}
             )
 
             await self.fill_input(
@@ -436,6 +436,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=False
             )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -448,6 +451,9 @@ class TestTuiCreateFolders(TuiBase):
             )
             await self.double_click(
                 pilot, "#create_folders_session_input", control=False
+            )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -493,6 +499,9 @@ class TestTuiCreateFolders(TuiBase):
 
             # Double click without CTRL modifier key.
             await self.double_click(pilot, "#create_folders_subject_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -504,6 +513,9 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_subject_input", "sub-001"
             )
             await self.double_click(pilot, "#create_folders_session_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -512,6 +524,102 @@ class TestTuiCreateFolders(TuiBase):
             )
 
             await pilot.pause()
+
+    @pytest.mark.asyncio
+    async def test_get_next_sub_and_ses_central_no_template(
+        self, setup_project_paths, mocker
+    ):
+        """
+        Test getting the next subject / session with the include_central option. Check the
+        checkbox widget that turns the setting on. Trigger a get next subject / session and mock
+        the underlying datashuttle function to ensure include_central is properly called.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            # Turn on the central checkbox
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#suggest_next_sub_ses_central_checkbox"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+
+            # Mock the datashuttle functions
+            spy_get_next_sub = mocker.spy(
+                pilot.app.screen.interface.project, "get_next_sub"
+            )
+            spy_get_next_ses = mocker.spy(
+                pilot.app.screen.interface.project, "get_next_ses"
+            )
+
+            # Check subject suggestion called mocked function correctly
+            await self.double_click(pilot, "#create_folders_subject_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
+
+            spy_get_next_sub.assert_called_with(
+                "rawdata", return_with_prefix=True, include_central=True
+            )
+
+            # Check session suggestion called mocked function correctly
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+            await self.double_click(pilot, "#create_folders_session_input")
+
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
+
+            spy_get_next_ses.assert_called_with(
+                "rawdata",
+                "sub-001",
+                return_with_prefix=True,
+                include_central=True,
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_next_sub_and_ses_error_popup(self, setup_project_paths):
+        """
+        Test the modal error dialog display on encountering an error
+        while suggesting next sub/ses. Since getting the suggestion happens
+        in a thread, the `dismiss_popup_and_show_modal_error_dialog_from_thread`
+        function which is used to display the modal error dialog from main thread
+        is being tested. It is done by trying to get next session suggestion without
+        inputting a subject.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            # Clear the subject input
+            await self.fill_input(pilot, "#create_folders_subject_input", "")
+
+            await self.double_click(pilot, "#create_folders_session_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
+
+            assert (
+                "Must input a subject number before suggesting next session number."
+                in pilot.app.screen.query_one(
+                    "#messagebox_message_label"
+                ).renderable
+            )
 
     # -------------------------------------------------------------------------
     # Test Top Level Folders

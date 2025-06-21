@@ -7,19 +7,32 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from textual.app import ComposeResult
+    from textual.widgets import DirectoryTree
     from textual.worker import Worker
 
     from datashuttle.tui.app import TuiApp
-    from datashuttle.utils.custom_types import InterfaceOutput
+    from datashuttle.utils.custom_types import InterfaceOutput, Prefix
 
+import platform
 from pathlib import Path
 
+import psutil
 from textual.containers import Container, Horizontal
 from textual.screen import ModalScreen
-from textual.widgets import Button, Input, Label, LoadingIndicator, Static
+from textual.widgets import (
+    Button,
+    Input,
+    Label,
+    LoadingIndicator,
+    Select,
+    Static,
+)
 
 from datashuttle.tui.custom_widgets import CustomDirectoryTree
-from datashuttle.tui.utils.tui_decorators import require_double_click
+from datashuttle.tui.utils.tui_decorators import (
+    ClickInfo,
+    require_double_click,
+)
 
 
 class MessageBox(ModalScreen):
@@ -141,6 +154,27 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.app.show_modal_error_dialog(output)
 
 
+class SearchingCentralForNextSubSesPopup(ModalScreen):
+    """
+    A popup to show message and a loading indicator when awaiting search next sub/ses across
+    the folders present in both local and central machines. This search happens in a separate
+    thread so as to allow TUI to display the loading indicate without freezing.
+
+    Only displayed when the `include_central` flag is checked and the connection method is "ssh".
+    """
+
+    def __init__(self, sub_or_ses: Prefix) -> None:
+        super().__init__()
+        self.message = f"Searching central for next {sub_or_ses}"
+
+    def compose(self) -> ComposeResult:
+        yield Container(
+            Label(self.message, id="searching_message_label"),
+            LoadingIndicator(id="searching_animated_indicator"),
+            id="searching_top_container",
+        )
+
+
 class SelectDirectoryTreeScreen(ModalScreen):
     """A modal screen that includes a DirectoryTree to browse
     and select folders. If a folder is double-clicked,
@@ -169,7 +203,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             path_ = Path().home()
         self.path_ = path_
 
-        self.prev_click_time = 0
+        self.click_info = ClickInfo()
 
     def compose(self) -> ComposeResult:
         """PLACEHOLDER."""
@@ -180,6 +214,12 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
         yield Container(
             Static(label_message, id="select_directory_tree_screen_label"),
+            Select(
+                [(drive, drive) for drive in self.get_drives()],
+                value=self.get_selected_drive(),
+                allow_blank=False,
+                id="select_directory_tree_drive_select",
+            ),
             CustomDirectoryTree(
                 self.mainwindow,
                 self.path_,
@@ -189,13 +229,57 @@ class SelectDirectoryTreeScreen(ModalScreen):
             id="select_directory_tree_container",
         )
 
+    @staticmethod
+    def get_drives():
+        """
+        Get drives available on the machine to switch between.
+        For Windows,  use `psutil` to get the list of drives.
+        Otherwise, assume root is "/" and take all folders from that level.
+        """
+        operating_system = platform.system()
+
+        assert operating_system in [
+            "Windows",
+            "Darwin",
+            "Linux",
+        ], f"Unexpected operating system: {operating_system} encountered."
+
+        if platform.system() == "Windows":
+            return [disk.device for disk in psutil.disk_partitions(all=True)]
+
+        else:
+            return ["/"] + [
+                f"/{dir.name}" for dir in Path("/").iterdir() if dir.is_dir()
+            ]
+
+    def get_selected_drive(self):
+        """
+        Get the default drive which the select starts on. For windows,
+        use the .drive attribute but for macOS and Linux this is blank.
+        On these Os use the first folder (e.g. /Users) as the default drive.
+        """
+        if platform.system() == "Windows":
+            selected_drive = f"{self.path_.drive}\\"
+        else:
+            selected_drive = f"/{self.path_.parts[1]}"
+        return selected_drive
+
+    def on_select_changed(self, event: Select.Changed) -> None:
+        """Updates the directory tree when the drive is changed."""
+        self.path_ = Path(event.value)
+        self.query_one("#select_directory_tree_directory_tree").path = (
+            self.path_
+        )
+
     @require_double_click
-    def on_directory_tree_directory_selected(self, node) -> None:
-        """PLACEHOLDER."""
-        if node.path.is_file():
+    def on_directory_tree_directory_selected(
+        self, event: DirectoryTree.DirectorySelected
+    ) -> None:
+        """PLACEHOLDER"""
+        if event.path.is_file():
             return
         else:
-            self.dismiss(node.path)
+            self.dismiss(event.path)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """PLACEHOLDER."""

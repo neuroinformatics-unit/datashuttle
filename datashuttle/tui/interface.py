@@ -418,21 +418,21 @@ class Interface:
         return cfg_to_load
 
     def get_next_sub(
-        self, top_level_folder: TopLevelFolder
+        self, top_level_folder: TopLevelFolder, include_central: bool
     ) -> InterfaceOutput:
         """PLACEHOLDER."""
         try:
             next_sub = self.project.get_next_sub(
                 top_level_folder,
                 return_with_prefix=True,
-                include_central=False,
+                include_central=include_central,
             )
             return True, next_sub
         except BaseException as e:
             return False, str(e)
 
     def get_next_ses(
-        self, top_level_folder: TopLevelFolder, sub: str
+        self, top_level_folder: TopLevelFolder, sub: str, include_central: bool
     ) -> InterfaceOutput:
         """PLACEHOLDER."""
         try:
@@ -440,7 +440,7 @@ class Interface:
                 top_level_folder,
                 sub,
                 return_with_prefix=True,
-                include_central=False,
+                include_central=include_central,
             )
             return True, next_ses
         except BaseException as e:

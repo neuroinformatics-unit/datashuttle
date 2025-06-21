@@ -22,7 +22,8 @@ dependencies = [
     "textual==3.4.0",
     "show-in-file-manager",
     "gitpython",
-    "typeguard"
+    "typeguard",
+    "psutil"
 ]
 
 classifiers = [

@@ -1,0 +1,25 @@
+tui:
+  create_checkboxes_on:
+    behav: false
+    ephys: false
+    funcimg: false
+    anat: false
+  transfer_checkboxes_on:
+    behav: false
+    ephys: false
+    funcimg: false
+    anat: false
+    all: false
+    all_datatype: false
+    all_non_datatype: false
+  top_level_folder_select:
+    create_tab: rawdata
+    toplevel_transfer: rawdata
+    custom_transfer: rawdata
+  bypass_validation: false
+  overwrite_existing_files: never
+  dry_run: false
+name_templates:
+  'on': false
+  sub: null
+  ses: null

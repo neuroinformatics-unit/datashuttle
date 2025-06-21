@@ -2,9 +2,9 @@ import platform
 from typing import Union
 
 import pytest
+import test_utils
 from tui_base import TuiBase
 
-from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.create_folder_settings import (
@@ -388,6 +388,21 @@ class TestTuiWidgets(TuiBase):
                 == "rawdata"
             )
 
+            # Search central for suggestions checkbox
+            assert (
+                pilot.app.screen.query_one(
+                    "#suggest_next_sub_ses_central_checkbox"
+                ).label._text
+                == "Search Central For Suggestions"
+            )
+            assert (
+                pilot.app.screen.query_one(
+                    "#suggest_next_sub_ses_central_checkbox"
+                ).value
+                is False
+            )
+
+            # Bypass validation checkbox
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_bypass_validation_checkbox"
@@ -401,11 +416,12 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
+            # Template validation
             assert (
                 pilot.app.screen.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).label._text
-                == "Template Validation"
+                == "Template validation"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -481,8 +497,8 @@ class TestTuiWidgets(TuiBase):
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
-        sub_regexp = "sub-\d\d\d"
-        ses_regexp = "ses-00\d_????"
+        sub_regexp = r"sub-\d\d\d"
+        ses_regexp = r"ses-00\d_????"
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
@@ -889,6 +905,87 @@ class TestTuiWidgets(TuiBase):
             ]["top_level_folder_select"][tab_name]
             == expected_val
         )
+
+    @pytest.mark.asyncio
+    async def test_search_central_for_suggestion_settings(
+        self, setup_project_paths
+    ):
+        """
+        Check the settings for the checkbox that selects include_central when
+        getting the next subject or session in the 'Create' tab and ensure that
+        the underlying settings are changed.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=False
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+
+            # Check default value
+            assert (
+                pilot.app.screen.query_one(
+                    "#suggest_next_sub_ses_central_checkbox"
+                ).value
+                is False
+            )
+            assert (
+                pilot.app.screen.interface.tui_settings[
+                    "suggest_next_sub_ses_central"
+                ]
+                is False
+            )
+
+            # Click and check the value is switched
+            await self.scroll_to_click_pause(
+                pilot, "#suggest_next_sub_ses_central_checkbox"
+            )
+
+            assert (
+                pilot.app.screen.query_one(
+                    "#suggest_next_sub_ses_central_checkbox"
+                ).value
+                is True
+            )
+            assert (
+                pilot.app.screen.interface.tui_settings[
+                    "suggest_next_sub_ses_central"
+                ]
+                is True
+            )
+
+            # Refresh the session
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+            await self.exit_to_main_menu_and_reeneter_project_manager(
+                pilot, project_name
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+
+            # Ensure settings persist
+            assert (
+                pilot.app.screen.query_one(
+                    "#suggest_next_sub_ses_central_checkbox"
+                ).value
+                is True
+            )
+            assert (
+                pilot.app.screen.interface.tui_settings[
+                    "suggest_next_sub_ses_central"
+                ]
+                is True
+            )
+
+            await pilot.pause()
 
     @pytest.mark.asyncio
     async def test_all_checkboxes(self, setup_project_paths):
@@ -1300,7 +1397,7 @@ class TestTuiWidgets(TuiBase):
 
         assert pilot.app.screen.interface.tui_settings["dry_run"] is value
 
-        project = DataShuttle(project_name)
+        project = test_utils.make_project(project_name)
         persistent_settings = project._load_persistent_settings()
         assert persistent_settings["tui"]["dry_run"] is value
 
@@ -1325,7 +1422,7 @@ class TestTuiWidgets(TuiBase):
             == format_val
         )
 
-        project = DataShuttle(project_name)
+        project = test_utils.make_project(project_name)
         persistent_settings = project._load_persistent_settings()
         assert (
             persistent_settings["tui"]["overwrite_existing_files"]

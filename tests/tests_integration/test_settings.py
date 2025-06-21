@@ -2,9 +2,9 @@ import os
 import shutil
 
 import pytest
+import test_utils
 from base import BaseTest
 
-from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
@@ -32,8 +32,8 @@ class TestPersistentSettings(BaseTest):
         assert name_templates["ses"] is None
 
         # Set some new settings and check they become persistent
-        sub_regexp = "sub-\d_id-.?.?_random-.*"
-        ses_regexp = "ses-\d\d_id-.?.?.?_random-.*"
+        sub_regexp = r"sub-\d_id-.?.?_random-.*"
+        ses_regexp = r"ses-\d\d_id-.?.?.?_random-.*"
 
         new_name_templates = {
             "on": True,
@@ -43,7 +43,7 @@ class TestPersistentSettings(BaseTest):
 
         project.set_name_templates(new_name_templates)
 
-        project_reload = DataShuttle(project.project_name)
+        project_reload = test_utils.make_project(project.project_name)
 
         reload_name_templates = project_reload.get_name_templates()
 
@@ -136,7 +136,7 @@ class TestPersistentSettings(BaseTest):
         project._update_persistent_setting("tui", new_tui_settings)
 
         # Reload and check
-        project = DataShuttle(project.project_name)
+        project = test_utils.make_project(project.project_name)
 
         reloaded_settings = project._load_persistent_settings()
         assert reloaded_settings["tui"] == new_tui_settings
@@ -152,7 +152,7 @@ class TestPersistentSettings(BaseTest):
         # should not raise
         project.create_folders("rawdata", "sub-@@@", bypass_validation=True)
 
-        project = DataShuttle(project.project_name)
+        project = test_utils.make_project(project.project_name)
 
         with pytest.raises(BaseException) as e:
             project.create_folders("rawdata", "sub-@@@")
@@ -182,6 +182,7 @@ class TestPersistentSettings(BaseTest):
             "bypass_validation": False,
             "overwrite_existing_files": "never",
             "dry_run": False,
+            "suggest_next_sub_ses_central": False,
         }
         default_settings["create_checkboxes_on"] = {
             key: {"on": True, "displayed": True}
@@ -221,6 +222,7 @@ class TestPersistentSettings(BaseTest):
             "bypass_validation": True,
             "overwrite_existing_files": "always",
             "dry_run": True,
+            "suggest_next_sub_ses_central": True,
         }
 
         changed_settings["create_checkboxes_on"] = {

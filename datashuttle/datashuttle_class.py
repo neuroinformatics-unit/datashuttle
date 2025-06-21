@@ -1045,16 +1045,17 @@ class DataShuttle:
         return_with_prefix: bool = True,
         include_central: bool = False,
     ) -> str:
-        """Convenience function for get_next_sub_or_ses
+        """Convenience function for `get_next_sub_or_ses`
+
         to find the next subject number.
 
         Parameters
         ----------
         top_level_folder
-            "rawdata" or "derivatives"
+            The top-level folder, "rawdata" or "derivatives".
 
         return_with_prefix
-            If `True`, return with the "sub-" prefix.
+            If `True`, return the subject with the "sub-" prefix.
 
         include_central
             If `False, only get names from `local_path`, otherwise from
@@ -1094,7 +1095,7 @@ class DataShuttle:
         Parameters
         ----------
         top_level_folder
-            "rawdata" or "derivatives"
+            The top-level folder, "rawdata" or "derivatives".
 
         sub
             Name of the subject to find the next session of.
@@ -1518,17 +1519,18 @@ class DataShuttle:
         if "tui" not in settings:
             settings.update(canonical_tui_configs)
 
-        for key in ["overwrite_existing_files", "dry_run"]:
+        for key in [
+            "overwrite_existing_files",
+            "dry_run",
+            "suggest_next_sub_ses_central",
+        ]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]
 
-        # Handle conversion to 'narrow datatype' v0.6.0
-        if not isinstance(
-            settings["tui"]["create_checkboxes_on"]["behav"], dict
-        ):
-            canonical_configs.in_place_update_settings_for_narrow_datatype(
-                settings
-            )
+        # Handle updating with narrow datatypes
+        canonical_configs.in_place_update_narrow_datatypes_if_required(
+            settings
+        )
 
     def _check_top_level_folder(self, top_level_folder):
         """Raise an error if ``top_level_folder`` not correct."""

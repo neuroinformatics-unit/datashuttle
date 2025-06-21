@@ -17,6 +17,7 @@ class TestUnit:
     )
     def test_datetime_string_replacement(self, key, underscore_position):
         r"""Test the function that replaces @DATE, @TIME@ or @DATETIME@
+
         keywords with the date / time / datetime. Also, it will
         pre/append underscores to the tags if they are not
         already there (e.g if user input "sub-001@DATE").

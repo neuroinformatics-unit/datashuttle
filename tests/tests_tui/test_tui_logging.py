@@ -1,7 +1,7 @@
 import pytest
+import test_utils
 from tui_base import TuiBase
 
-from datashuttle import DataShuttle
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.tabs.logging import RichLogScreen
 
@@ -20,7 +20,7 @@ class TestTuiLogging(TuiBase):
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
             # Update configs and create folders to make some logs
-            project = DataShuttle(project_name)
+            project = test_utils.make_project(project_name)
 
             # Sometimes in CI environment there is already an
             # update-config-file log here. Not sure why, it's not
