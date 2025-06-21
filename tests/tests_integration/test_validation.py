@@ -717,8 +717,8 @@ class TestValidation(BaseTest):
         """
         name_templates = {
             "on": True,
-            "sub": "sub-\d\d_@DATE@",
-            "ses": "ses-\d\d\d@DATETIME@",
+            "sub": r"sub-\d\d_@DATE@",
+            "ses": r"ses-\d\d\d@DATETIME@",
         }
 
         project.set_name_templates(name_templates)
@@ -745,7 +745,7 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
         # Do a quick test for time
-        name_templates["sub"] = "sub-\d\d_@TIME@"
+        name_templates["sub"] = r"sub-\d\d_@TIME@"
         project.set_name_templates(name_templates)
 
         # use time tag, should not raise
@@ -765,8 +765,8 @@ class TestValidation(BaseTest):
         """
         name_templates = {
             "on": True,
-            "sub": "sub-\d\d_id-\d.?",
-            "ses": "ses-\d\d_id-\d.?",
+            "sub": r"sub-\d\d_id-\d.?",
+            "ses": r"ses-\d\d_id-\d.?",
         }
         project.set_name_templates(name_templates)
 
