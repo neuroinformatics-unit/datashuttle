@@ -5,7 +5,7 @@ import platform
 import pytest
 import ssh_test_utils
 import test_utils
-from base import BaseTest
+from base_transfer import BaseTransfer
 
 from datashuttle.utils import ssh
 
@@ -16,7 +16,7 @@ TEST_SSH = ssh_test_utils.get_test_ssh()
     platform.system == "Darwin", reason="Docker set up is not robust on macOS."
 )
 @pytest.mark.skipif(not TEST_SSH, reason="TEST_SSH is false")
-class TestSSH(BaseTest):
+class TestSSH(BaseTransfer):
 
     @pytest.fixture(scope="function")
     def project(test, tmp_path, setup_ssh_container):
