@@ -784,11 +784,11 @@ class TestValidation(BaseTest):
             project.validate_project("rawdata", "warn", include_central=False)
 
         assert (
-            "TEMPLATE: The name: sub-02_id-a1 does not match the template: sub-\\d\\d_id-\\d.?"
+            r"TEMPLATE: The name: sub-02_id-a1 does not match the template: sub-\\d\\d_id-\\d.?"
             in str(w[0].message)
         )
         assert (
-            "TEMPLATE: The name: ses-02_id-aa does not match the template: ses-\\d\\d_id-\\d.?"
+            r"TEMPLATE: The name: ses-02_id-aa does not match the template: ses-\\d\\d_id-\\d.?"
             in str(w[1].message)
         )
 

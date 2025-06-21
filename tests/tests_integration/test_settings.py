@@ -65,8 +65,8 @@ class TestPersistentSettings(BaseTest):
 
         assert (
             str(e.value)
-            == "TEMPLATE: The name: sub-3_id-abC_random-helloworld "
-            "does not match the template: sub-\\d_id-.?.?_random-.*"
+            == r"TEMPLATE: The name: sub-3_id-abC_random-helloworld "
+            r"does not match the template: sub-\\d_id-.?.?_random-.*"
         )
 
         # Good sub name (should not raise)
@@ -78,8 +78,8 @@ class TestPersistentSettings(BaseTest):
 
         assert (
             str(e.value)
-            == "TEMPLATE: The name: ses-33_id-xyz_ranDUM-helloworld "
-            "does not match the template: ses-\\d\\d_id-.?.?.?_random-.*"
+            == r"TEMPLATE: The name: ses-33_id-xyz_ranDUM-helloworld "
+            r"does not match the template: ses-\\d\\d_id-.?.?.?_random-.*"
         )
 
         # Good ses name (should not raise)
