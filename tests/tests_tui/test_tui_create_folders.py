@@ -388,7 +388,7 @@ class TestTuiCreateFolders(TuiBase):
             assert pilot.app.screen.query_one(
                 "#messagebox_message_label"
             ).renderable == (
-                r"TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
+                "TEMPLATE: The name: sub-0001 does not match the template: sub-\\d\\d\\d"
             )
 
             await self.close_messagebox(pilot)
@@ -429,7 +429,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
                 ).value
-                == r"sub-\\d\\d\\d"
+                == "sub-\\d\\d\\d"
             )
 
             await self.double_click(
