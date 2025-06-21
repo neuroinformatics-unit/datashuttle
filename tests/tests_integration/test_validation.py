@@ -755,7 +755,6 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
     def test_name_templates_validate_project(self, project):
-
         # set up name templates
         name_templates = {
             "on": True,

@@ -284,8 +284,7 @@ class CreateFoldersTab(TreeAndInputTab):
     def suggest_next_sub_ses(
         self, prefix: Prefix, input_id: str, include_central: bool
     ):
-        """
-        This handles suggesting next sub/ses for the project. Shows
+        """This handles suggesting next sub/ses for the project. Shows
         a pop up screen in cases when searching for next sub/ses takes
         time such as searching central in SSH connection method.
 
@@ -317,8 +316,7 @@ class CreateFoldersTab(TreeAndInputTab):
     async def fill_suggestion_and_dismiss_popup(
         self, prefix, input_id, include_central
     ):
-        """
-        This handles running the `fill_input_with_next_sub_or_ses_template`
+        """This handles running the `fill_input_with_next_sub_or_ses_template`
         worker and waiting for it to complete. If an error occurs in
         `fill_input_with_next_sub_or_ses_template`, it dismisses the popup itself.
 
@@ -337,7 +335,7 @@ class CreateFoldersTab(TreeAndInputTab):
     def fill_input_with_next_sub_or_ses_template(
         self, prefix: Prefix, input_id: str, include_central: bool
     ) -> Worker:
-        """ Fills a sub / ses Input with a suggested name based on the
+        """Fills a sub / ses Input with a suggested name based on the
 
         next subject / session in the project (local).
 
@@ -418,8 +416,7 @@ class CreateFoldersTab(TreeAndInputTab):
     def dismiss_popup_and_show_modal_error_dialog_from_thread(
         self, message: str
     ) -> None:
-        """
-        This is a utility function that the `fill_input_with_next_sub_or_ses_template`
+        """This is a utility function that the `fill_input_with_next_sub_or_ses_template`
         worker calls to display error dialog an if an error occurs while suggesting
         the next sub/ses. Handles the TUI widget manipulation from the main thread
         when called from within a worker thread.

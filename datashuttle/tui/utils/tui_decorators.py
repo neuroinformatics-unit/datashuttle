@@ -13,14 +13,12 @@ from datashuttle.tui.custom_widgets import ClickableInput
 
 
 class ClickInfo:
-    """
-    A class to hold click-info to checking
+    """A class to hold click-info to checking
     double clicks are within the time threshold
     and match the widget id.
     """
 
     def __init__(self):
-
         self.prev_click_time = 0.0
         self.prev_click_widget_id = ""
 

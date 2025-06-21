@@ -529,8 +529,7 @@ class TestTuiCreateFolders(TuiBase):
     async def test_get_next_sub_and_ses_central_no_template(
         self, setup_project_paths, mocker
     ):
-        """
-        Test getting the next subject / session with the include_central option. Check the
+        """Test getting the next subject / session with the include_central option. Check the
         checkbox widget that turns the setting on. Trigger a get next subject / session and mock
         the underlying datashuttle function to ensure include_central is properly called.
         """
@@ -590,8 +589,7 @@ class TestTuiCreateFolders(TuiBase):
 
     @pytest.mark.asyncio
     async def test_get_next_sub_and_ses_error_popup(self, setup_project_paths):
-        """
-        Test the modal error dialog display on encountering an error
+        """Test the modal error dialog display on encountering an error
         while suggesting next sub/ses. Since getting the suggestion happens
         in a thread, the `dismiss_popup_and_show_modal_error_dialog_from_thread`
         function which is used to display the modal error dialog from main thread

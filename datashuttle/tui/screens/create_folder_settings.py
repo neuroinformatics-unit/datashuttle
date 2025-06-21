@@ -247,9 +247,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
                     "#template_settings_validation_on_checkbox"
                 ).value
 
-            self.query_one("#template_inner_container").disabled = (
-                disable_container
-            )
+            self.query_one(
+                "#template_inner_container"
+            ).disabled = disable_container
         elif event.checkbox.id == "suggest_next_sub_ses_central_checkbox":
             self.interface.save_tui_settings(
                 is_on, "suggest_next_sub_ses_central"
