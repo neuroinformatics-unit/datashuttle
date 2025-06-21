@@ -1075,16 +1075,18 @@ class DataShuttle:
         include_central: bool = False,
     ) -> str:
         """
-        Convenience function for get_next_sub_or_ses
+        Convenience function for `get_next_sub_or_ses`
         to find the next subject number.
 
         Parameters
         ----------
+        top_level_folder
+            The top-level folder, "rawdata" or "derivatives".
 
-        return_with_prefix : bool
-            If `True`, return with the "sub-" prefix.
+        return_with_prefix
+            If `True`, return the subject with the "sub-" prefix.
 
-        include_central : bool
+        include_central
             If `False, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
@@ -1122,16 +1124,16 @@ class DataShuttle:
         Parameters
         ----------
 
-        top_level_folder:
-            "rawdata" or "derivatives"
+        top_level_folder
+            The top-level folder, "rawdata" or "derivatives".
 
-        sub: Optional[str]
+        sub
             Name of the subject to find the next session of.
 
-        return_with_prefix : bool
+        return_with_prefix
             If `True`, return with the "ses-" prefix.
 
-        include_central : bool
+        include_central
             If `False, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
