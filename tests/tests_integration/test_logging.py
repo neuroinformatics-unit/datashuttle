@@ -5,7 +5,6 @@ import re
 from pathlib import Path
 
 import pytest
-import test_utils
 
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.canonical_tags import tags
@@ -14,6 +13,8 @@ from datashuttle.utils.custom_exceptions import (
     ConfigError,
     NeuroBlueprintError,
 )
+
+from .. import test_utils
 
 
 class TestLogging:

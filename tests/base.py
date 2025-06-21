@@ -1,7 +1,10 @@
 import warnings
 
 import pytest
-import test_utils
+
+from datashuttle import DataShuttle
+
+from . import test_utils
 
 TEST_PROJECT_NAME = "test_project"
 

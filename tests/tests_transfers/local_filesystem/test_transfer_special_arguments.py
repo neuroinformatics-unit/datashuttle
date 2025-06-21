@@ -4,11 +4,9 @@ import shutil
 from pathlib import Path
 
 import pytest
-import ssh_test_utils
-import test_utils
-from base_transfer import BaseTransfer
 
-TEST_SSH = ssh_test_utils.get_test_ssh()
+from ... import test_utils
+from ..base_transfer import BaseTransfer
 
 PARAM_SUBS = [
     ["all"],

@@ -12,6 +12,8 @@ from datashuttle.tui.screens.create_folder_settings import (
 )
 from datashuttle.tui.screens.new_project import NewProjectScreen
 
+from .tui_base import TuiBase
+
 
 class TestTuiWidgets(TuiBase):
     """

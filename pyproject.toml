@@ -108,6 +108,7 @@ select = ["I", "E", "F", "TCH", "TID252"]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
+"tests/**/*" = ["TID252"]
 
 [tool.ruff.lint.mccabe]
 max-complexity = 18

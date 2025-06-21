@@ -9,6 +9,8 @@ from datashuttle.configs import canonical_configs
 from datashuttle.utils import validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
+from ..base import BaseTest
+
 
 class TestPersistentSettings(BaseTest):
 
