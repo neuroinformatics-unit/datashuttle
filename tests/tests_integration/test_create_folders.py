@@ -5,11 +5,12 @@ import shutil
 from os.path import join
 
 import pytest
-import test_utils
-from base import BaseTest
 
 from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.configs.canonical_tags import tags
+
+from .. import test_utils
+from ..base import BaseTest
 
 
 class TestCreateFolders(BaseTest):

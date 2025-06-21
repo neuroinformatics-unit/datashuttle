@@ -4,12 +4,13 @@ import time
 from pathlib import Path
 
 import pytest
-import test_utils
-from base import BaseTest
 
 from datashuttle.configs import canonical_folders
 from datashuttle.configs.canonical_configs import get_broad_datatypes
 from datashuttle.configs.canonical_tags import tags
+
+from ... import test_utils
+from ...base import BaseTest
 
 
 class TestFileTransfer(BaseTest):

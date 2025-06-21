@@ -1,12 +1,13 @@
 import os
 
 import pytest
-import test_utils
-from base import BaseTest
 
 from datashuttle import DataShuttle
 from datashuttle.utils import getters
 from datashuttle.utils.custom_exceptions import ConfigError
+
+from .. import test_utils
+from ..base import BaseTest
 
 
 class TestConfigs(BaseTest):

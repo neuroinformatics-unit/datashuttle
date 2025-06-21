@@ -2,12 +2,13 @@ import os
 import shutil
 
 import pytest
-from base import BaseTest
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
+
+from ..base import BaseTest
 
 
 class TestPersistentSettings(BaseTest):

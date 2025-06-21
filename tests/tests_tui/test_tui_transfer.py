@@ -1,9 +1,10 @@
 import pytest
-import test_utils
-from tui_base import TuiBase
 
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.app import TuiApp
+
+from .. import test_utils
+from .tui_base import TuiBase
 
 
 class TestTuiTransfer(TuiBase):

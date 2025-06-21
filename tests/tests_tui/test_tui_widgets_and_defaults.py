@@ -2,7 +2,6 @@ import platform
 from typing import Union
 
 import pytest
-from tui_base import TuiBase
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs
@@ -11,6 +10,8 @@ from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
 from datashuttle.tui.screens.new_project import NewProjectScreen
+
+from .tui_base import TuiBase
 
 
 class TestTuiWidgets(TuiBase):

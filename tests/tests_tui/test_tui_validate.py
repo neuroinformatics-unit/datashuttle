@@ -1,9 +1,10 @@
 import pytest
 import textual
-from tui_base import TuiBase
 
 import datashuttle
 from datashuttle.tui.app import TuiApp
+
+from .tui_base import TuiBase
 
 
 class TestTuiValidate(TuiBase):

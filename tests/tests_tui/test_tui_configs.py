@@ -3,8 +3,6 @@ from pathlib import Path
 from time import monotonic
 
 import pytest
-import test_utils
-from tui_base import TuiBase
 
 from datashuttle.configs import load_configs
 from datashuttle.tui.app import TuiApp
@@ -12,6 +10,9 @@ from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
 )
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
+
+from .. import test_utils
+from .tui_base import TuiBase
 
 
 class TestTuiConfigs(TuiBase):
