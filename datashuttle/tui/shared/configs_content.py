@@ -31,6 +31,7 @@ from datashuttle.tui.tooltips import get_tooltip
 
 class ConfigsContent(Container):
     """Holds widgets and logic for setting datashuttle configs.
+
     It is used in `NewProjectPage` to instantiate a new project and
     initialise configs, or in `TabbedContent` to update an existing
     project's configs.
@@ -40,11 +41,20 @@ class ConfigsContent(Container):
     additional information.
 
     Otherwise, widgets are filled with the existing projects configs.
+
+    Note:
+    ----
+    The natural design would be to have two classes (one for a new project,
+    one for an existing project) with a shared base class. The issue is that
+    for a new project, the screen becomes a set-up project once the config is saved.
+    Therefore, because the class mutates from a new-project config to existing-project
+    configs, this shared design is used.
+
     """
 
     @dataclass
     class ConfigsSaved(Message):
-        """PLACEHOLDER."""
+        """An event signalling when the configs are saved."""
 
         pass
 
@@ -54,7 +64,20 @@ class ConfigsContent(Container):
         interface: Optional[Interface],
         id: str,
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise the ConfigsContent.
+
+        Parameters
+        ----------
+        parent_class
+            The Screen on which the contents container is mounted.
+
+        interface
+            Datashuttle Interface object.
+
+        id
+            Textual ID for the configs container.
+
+        """
         super(ConfigsContent, self).__init__(id=id)
 
         self.parent_class = parent_class
@@ -62,7 +85,9 @@ class ConfigsContent(Container):
         self.config_ssh_widgets: List[Any] = []
 
     def compose(self) -> ComposeResult:
-        """`self.config_ssh_widgets` are SSH-setup related widgets
+        """Set up the Configs widgets.
+
+        `self.config_ssh_widgets` are SSH-setup related widgets
         that are only required when the user selects the SSH
         connection method. These are displayed / hidden based on the
         `connection_method`.
@@ -170,7 +195,9 @@ class ConfigsContent(Container):
         yield Container(*config_screen_widgets, id="configs_container")
 
     def on_mount(self) -> None:
-        """When we have mounted the widgets, the following logic depends on whether
+        """Handle logic immediately following widget mounting.
+
+        When we have mounted the widgets, the following logic depends on whether
         we are setting up a new project (`self.project is `None`) or have
         an instantiated project.
 
@@ -222,8 +249,7 @@ class ConfigsContent(Container):
             self.query_one(id).tooltip = get_tooltip(id)
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        """Update the displayed SSH widgets when the `connection_method`
-        radiobuttons are changed.
+        """Update the SSH widgets when the `connection_method` radiobuttons are changed.
 
         When SSH is set, ssh config-setters are shown. Otherwise, these
         are hidden.
@@ -256,9 +282,7 @@ class ConfigsContent(Container):
         self.set_central_path_input_tooltip(display_ssh)
 
     def set_central_path_input_tooltip(self, display_ssh: bool) -> None:
-        """Use a different tooltip depending on whether connection method
-        is ssh or local filesystem.
-        """
+        """Set tooltip depending on whether connection method is SSH or local filesystem."""
         id = "#configs_central_path_input"
         if display_ssh:
             self.query_one(id).tooltip = get_tooltip(
@@ -272,7 +296,17 @@ class ConfigsContent(Container):
     def get_platform_dependent_example_paths(
         self, local_or_central: Literal["local", "central"], ssh: bool = False
     ) -> str:
-        """PLACEHOLDER."""
+        """Get example paths for the local or central Inputs depending on operating system.
+
+        Parameters
+        ----------
+        local_or_central
+            The "local" or "central" input to fill.
+
+        ssh
+            If the user has selected SSH (which changes the central input).
+
+        """
         assert local_or_central in ["local", "central"]
 
         # Handle the ssh central case separately
@@ -290,8 +324,10 @@ class ConfigsContent(Container):
         return example_path
 
     def switch_ssh_widgets_display(self, display_ssh: bool) -> None:
-        """Show or hide SSH-related configs based on whether the current
-        `connection_method` widget is "ssh" or "local_filesystem".
+        """Show or hide SSH-related configs.
+
+         This is based on whether the current `connection_method`
+         widget is "ssh" or "local_filesystem".
 
         Parameters
         ----------
@@ -325,8 +361,10 @@ class ConfigsContent(Container):
             ).placeholder = placeholder
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Enables the Create Folders button to read out current input values
-        and use these to call project.create_folders().
+        """Handle a button press event.
+
+        Enables the Create Folders button to read out current input
+        values and use these to call project.create_folders().
         """
         if event.button.id == "configs_save_configs_button":
             if not self.interface:
@@ -362,8 +400,7 @@ class ConfigsContent(Container):
     def handle_input_fill_from_select_directory(
         self, path_: Path, local_or_central: Literal["local", "central"]
     ) -> None:
-        """Update the `local` or `central` path inputs after
-        `SelectDirectoryTreeScreen` returns a path.
+        """Update the `local` or `central` Inputs after `SelectDirectoryTreeScreen` returns a path.
 
         Parameters
         ----------
@@ -403,9 +440,9 @@ class ConfigsContent(Container):
         )
 
     def widget_configs_match_saved_configs(self):
-        """Check that the configs currently stored in the widgets
-        on the screen match those stored in the app. This check
-        is to avoid user starting to set up SSH with unexpected
+        """Ensure configs as set on screen match those stored in the project object.
+
+        This check is to avoid user starting to set up SSH with unexpected
         settings. It is a little fiddly as the Input for local
         and central path may or may not contain the project name.
         Therefore, need to check the stored values against
@@ -425,7 +462,9 @@ class ConfigsContent(Container):
         return True
 
     def setup_configs_for_a_new_project(self) -> None:
-        """If a project does not exist, we are in NewProjectScreen.
+        """Set up configs when the project does not exist.
+
+        If a project does not exist, we are in NewProjectScreen.
         We need to instantiate a new project based on the project name,
         create configs based on the current widget settings, and display
         any errors to the user, along with confirmation and the
@@ -484,7 +523,9 @@ class ConfigsContent(Container):
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
     def setup_configs_for_an_existing_project(self) -> None:
-        """If the project already exists, we are on the TabbedContent
+        """Set up configs when the project already exists.
+
+        If the project already exists, we are on the TabbedContent
         screen. We need to get the configs to set from the current
         widget values and display the set values (or an error if
         there was a problem during setup) to the user.
@@ -512,7 +553,9 @@ class ConfigsContent(Container):
             self.parent_class.mainwindow.show_modal_error_dialog(output)
 
     def fill_widgets_with_project_configs(self) -> None:
-        """If a configured project already exists, we want to fill the
+        """Fill widgets on screen with content from the project config file.
+
+        If a configured project already exists, we want to fill the
         widgets with the current project configs. This in some instances
         requires recasting to a new type of changing the value.
 
@@ -574,9 +617,7 @@ class ConfigsContent(Container):
         input.value = value
 
     def get_datashuttle_inputs_from_widgets(self) -> Dict:
-        """Get the configs to pass to `make_config_file()` from
-        the current TUI settings.
-        """
+        """Get the configs to pass to `make_config_file()` from the current TUI settings."""
         cfg_kwargs: Dict[str, Any] = {}
 
         cfg_kwargs["local_path"] = Path(
