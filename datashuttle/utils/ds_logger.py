@@ -41,7 +41,24 @@ def start(
     variables: Optional[List[Any]],
     verbose: bool = True,
 ) -> None:
-    """Call fancylog to initialise logging."""
+    """Call fancylog to initialise logging.
+
+    Parameters
+    ----------
+    path_to_log
+        Path to save the log file to.
+
+    command_name
+        Name of the datashuttle command run, which is included
+        in the log filename.
+
+    variables
+        Local variables to log.
+
+    verbose
+        Verbosity passed to ``fancylog``.
+
+    """
     filename = get_logging_filename(command_name)
 
     fancylog.start_logging(
@@ -61,9 +78,17 @@ def start(
 
 
 def get_logging_filename(command_name: str) -> str:
-    """Get the filename to which the log will be saved. This
-    starts with ISO8601-formatted datetime, so logs are stored
-    in datetime order.
+    """Return the log filename.
+
+    This starts with ISO8601-formatted datetime, so logs
+    are stored in datetime order.
+
+    Parameters
+    ----------
+    command_name
+        Name of the datashuttle command run, which is included
+        in the log filename.
+
     """
     filename = datetime.now().strftime(f"%Y%m%dT%H%M%S_{command_name}")
     return filename
@@ -87,8 +112,10 @@ def log_names(list_of_headers: List[Any], list_of_names: List[Any]) -> None:
 
 
 def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs) -> List:
-    """Wrap the locals from the original function call to log
-    and the datashuttle.cfg in a wrapper class with __dict__
+    """Wrap the locals from the original function call for fancylog.
+
+    Fancylog will log these variables as well as the
+    datashuttle.cfg in a wrapper class with __dict__
     attribute for fancylog writing.
 
     Delete the self attribute (which is DataShuttle class)
