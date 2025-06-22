@@ -27,7 +27,19 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class ValidateContent(Container):
-    """PLACEHOLDER."""
+    """A container containing widgets for project validation.
+
+    This is shared between the Validate Project from Path
+    and validation tab on the project manager. It takes a similar
+    approach to ConfigsContent.
+
+    Todo:
+    ----
+    In contrast to ConfigsContent, these contents are always
+    split. This should probably be factored into two classes
+    with a shared base class.
+
+    """
 
     def __init__(
         self,
@@ -37,13 +49,24 @@ class ValidateContent(Container):
         interface: Optional[Interface],
         id: str,
     ) -> None:
+        """Initialise the ValidateContent class.
+
+        parent_class
+            The parent screen (project manager or validate from path).
+
+        interface
+            Datashuttle Interface class.
+
+        id
+            Textual ID for the container.
+        """
         super(ValidateContent, self).__init__(id=id)
 
         self.parent_class = parent_class
         self.interface = interface
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Set up the widgets for the container."""
         if platform.system() == "Windows":
             example_path = r"C:\path\to\project\project_name"
         else:
@@ -90,7 +113,7 @@ class ValidateContent(Container):
         yield Container(*widgets, id="validate_top_container")
 
     def on_mount(self) -> None:
-        """PLACEHOLDER."""
+        """Handle the widgets immediately after they are mounted."""
         for id in [
             "validate_path_input",
             "validate_top_level_folder_select",
@@ -113,13 +136,8 @@ class ValidateContent(Container):
         else:
             self.query_one("#validate_include_central_checkbox").remove()
 
-    def set_select_path(self, path_):
-        """PLACEHOLDER."""
-        if path_:
-            self.query_one("#validate_path_input").value = path_.as_posix()
-
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """PLACEHOLDER."""
+        """Handle a button press event."""
         if event.button.id == "validate_select_button":
             self.parent_class.mainwindow.push_screen(
                 modal_dialogs.SelectDirectoryTreeScreen(
@@ -183,8 +201,13 @@ class ValidateContent(Container):
                 )
                 self.write_results_to_richlog(output)
 
+    def set_select_path(self, path_):
+        """Fill the Input with the path_ if it is not None."""
+        if path_:
+            self.query_one("#validate_path_input").value = path_.as_posix()
+
     def write_results_to_richlog(self, results):
-        """PLACEHOLDER."""
+        """Display the validation results on the Rich Log widget."""
         text_log = self.query_one("#validate_richlog")
         text_log.clear()
         if any(results):
