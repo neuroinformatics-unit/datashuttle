@@ -1,6 +1,4 @@
-"""
-Tools for live validation of user inputs in the DataShuttle TUI.
-"""
+"""Tools for live validation of user inputs in the DataShuttle TUI."""
 
 from __future__ import annotations
 
@@ -14,21 +12,30 @@ from textual.validation import ValidationResult, Validator
 
 
 class NeuroBlueprintValidator(Validator):
+    """A textual validator subclass for validating Input text.
+
+    Takes the sub / ses prefix as input. Runs validation of
+    the name against the project and propagates
+    any error message through the Input tooltip.
+    """
+
     def __init__(self, prefix: Prefix, parent: CreateFoldersTab) -> None:
-        """
-        Custom Validator() class that takes
-        sub / ses prefix as input. Runs validation of
-        the name against the project and propagates
-        any error message through the Input tooltip.
+        """Initialise the NeuroBlueprintValidator.
+
+        prefix
+            "sub" or "ses".
+
+        parent
+            The tab on which the validated input exists.
         """
         super(NeuroBlueprintValidator, self).__init__()
         self.parent = parent
         self.prefix = prefix
 
     def validate(self, name: str) -> ValidationResult:
-        """
-        Run validation and update the tooltip with the error,
-        if no error then the formatted sub / ses name is displayed.
+        """Run validation and update the tooltip with the error.
+
+        If no error then the formatted sub / ses name is displayed.
         This is set on an Input widget.
         """
         valid, message = self.parent.run_local_validation(self.prefix)

@@ -18,9 +18,10 @@ from datashuttle.configs import links
 
 
 class GetHelpScreen(ModalScreen):
-    """ """
+    """A screen with helpful information."""
 
     def __init__(self) -> None:
+        """Initialise the GetHelpScreen."""
         super(GetHelpScreen, self).__init__()
 
         self.text = """
@@ -35,19 +36,23 @@ class GetHelpScreen(ModalScreen):
         """
 
     def action_link_docs(self) -> None:
+        """Link to datashuttle documentation."""
         webbrowser.open(links.get_docs_link())
 
     def action_link_github(self) -> None:
+        """Link to datashuttle github."""
         webbrowser.open(links.get_github_link())
 
     def action_link_github_issues(self) -> None:
+        """Link to datashuttle github issues."""
         webbrowser.open(links.get_link_github_issues())
 
-    def action_link_zulip(self):
+    def action_link_zulip(self) -> None:
+        """Link to datashuttle zulip."""
         webbrowser.open(links.get_link_zulip())
 
     def compose(self) -> ComposeResult:
-
+        """Add widgets to the GetHelpScreen."""
         yield Container(
             Static(self.text, id="get_help_label"),
             Button("Main Menu", id="all_main_menu_buttons"),
@@ -55,5 +60,6 @@ class GetHelpScreen(ModalScreen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle a button press on the GetHelpScreen."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()

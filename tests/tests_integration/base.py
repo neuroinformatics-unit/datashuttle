@@ -7,11 +7,9 @@ TEST_PROJECT_NAME = "test_project"
 
 
 class BaseTest:
-
     @pytest.fixture(scope="function")
     def no_cfg_project(test):
-        """
-        Fixture that creates an empty project. Ignore the warning
+        """Fixture that creates an empty project. Ignore the warning
         that no configs are setup yet.
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
@@ -24,8 +22,7 @@ class BaseTest:
 
     @pytest.fixture(scope="function")
     def project(self, tmp_path, request):
-        """
-        Set up a project with default configs to use for testing.
+        """Set up a project with default configs to use for testing.
 
         This fixture uses indirect parameterization to test both 'full'
         and 'local-only' (no `central_path` or `connection_method`). The
@@ -60,8 +57,7 @@ class BaseTest:
 
     @pytest.fixture(scope="function")
     def clean_project_name(self):
-        """
-        Create an empty project, but ensure no
+        """Create an empty project, but ensure no
         configs already exists, and delete created configs
         after test.
         """

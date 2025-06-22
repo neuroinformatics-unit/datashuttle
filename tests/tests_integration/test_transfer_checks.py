@@ -15,8 +15,7 @@ class TestTransferChecks(BaseTest):
         [["rawdata", "derivatives"], ["rawdata"], ["derivatives"]],
     )
     def test_rclone_check(self, project, top_level_folders):
-        """
-        Test rclone.get_local_and_central_file_differences(). This function
+        """Test rclone.get_local_and_central_file_differences(). This function
         returns a dictionary where values are list of paths and keys
         separate based on differences between local and central projects.
 
