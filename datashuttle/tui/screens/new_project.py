@@ -14,9 +14,7 @@ from datashuttle.tui.shared import configs_content
 
 
 class NewProjectScreen(Screen):
-    """Screen for setting up a new datashuttle project, by
-    inputting the desired configs. This uses the
-    ConfigsContent window to display and set the configs.
+    """Screen for setting up a new datashuttle project.
 
     If "Main Manu" button is pressed, the callback function
     returns None, so the project screen is not switched to.
@@ -25,7 +23,6 @@ class NewProjectScreen(Screen):
     project is in ConfigsContent. ConfigsContent calls
     the dismiss method of this class to return
     an initialised project to mainwindow.
-    See ConfigsContent.on_button_pressed() for more details
 
     Parameters
     ----------
@@ -37,13 +34,13 @@ class NewProjectScreen(Screen):
     TITLE = "Make New Project"
 
     def __init__(self, mainwindow: TuiApp) -> None:
-        """PLACEHOLDER."""
+        """Initialise the NewProjectScreen."""
         super(NewProjectScreen, self).__init__()
 
         self.mainwindow = mainwindow
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the NewProjectScreen."""
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
         yield configs_content.ConfigsContent(
@@ -51,6 +48,6 @@ class NewProjectScreen(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """PLACEHOLDER."""
+        """Handle a button press on the NewProjectScreen."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss(None)
