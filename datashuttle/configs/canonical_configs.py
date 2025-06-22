@@ -1,11 +1,10 @@
-"""Contains all information for the required
-format of the configs class. This is clearly defined
-as configs can be provided from file or input dynamically
-and so careful checks must be done.
+"""Contains all information defining the required format of the Configs class.
 
-If adding a new config, first add the key to
-get_canonical_configs() and type to
-get_canonical_configs()
+This format is clearly specified because configs can be supplied
+either from a file or dynamically, so careful validation is required.
+
+If adding a new config key:
+- First add the key to `get_canonical_configs()` and define its type in the same function
 """
 
 from __future__ import annotations
@@ -30,9 +29,7 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 def get_canonical_configs() -> dict:
-    """The only permitted types for DataShuttle
-    config values.
-    """
+    """Define the only permitted types for DataShuttle config values."""
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
@@ -45,9 +42,9 @@ def get_canonical_configs() -> dict:
 
 
 def keys_str_on_file_but_path_in_class() -> list[str]:
-    """All configs which are paths are converted to pathlib.Path
-    objects on load. This list indicates which config entries
-    are to be converted to Path.
+    """List all config keys that are paths but stored as str in the file.
+
+    These are converted to pathlib.Path objects when loaded.
     """
     return [
         "local_path",
@@ -61,12 +58,12 @@ def keys_str_on_file_but_path_in_class() -> list[str]:
 
 
 def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
-    """Central function for performing checks on a
-    DataShuttle Configs UserDict class. This should
-    be run after any change to the configs (e.g.
-    make_config_file, update_config_file, supply_config_file).
+    """Perform checks on a DataShuttle Configs UserDict class.
 
-    This will raise assert if condition is not met.
+    This should be run after any change to the configs
+    (e.g. make_config_file, update_config_file, supply_config_file).
+
+    This will raise an error if a condition is not met.
 
     Parameters
     ----------
@@ -139,9 +136,10 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
 
 def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
-    """There is no circumstance where one of `central_path` and `connection_method`
-    should be set and not the other. Either both are set ('full' project) or
-    neither are ('local only' project). Check this assumption here.
+    """Check that both or neither of `central_path` and `connection_method` are set.
+
+    There is no circumstance where one is set and not the other. Either both are set
+    ('full' project) or both are `None` ('local only' project).
     """
     params_are_none = local_only_configs_are_none(config_dict)
 
@@ -155,9 +153,7 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
 
 
 def local_only_configs_are_none(config_dict: Configs) -> list[bool]:
-    """Check if the central_path and connection_method config options
-    are set to `None`.
-    """
+    """Check whether `central_path` and `connection_method` are both set to None."""
     return [
         config_dict[key] is None
         for key in ["central_path", "connection_method"]
@@ -168,9 +164,7 @@ def raise_on_bad_path_syntax(
     path_name: str,
     path_type: str,
 ) -> None:
-    """Error if some common, unsupported patterns are observed
-    (e.g. ~, .) for path.
-    """
+    """Raise error if path contains unsupported patterns (e.g. ~, .)."""
     if path_name[0] == "~":
         utils.log_and_raise_error(
             f"{path_type} must contain the full folder path with no ~ syntax.",
@@ -210,13 +204,12 @@ def check_config_types(config_dict: Configs) -> None:
 
 
 def get_tui_config_defaults() -> Dict:
-    """Get the default settings for the datatype checkboxes
-    in the TUI.
+    """Return the default settings for the datatype checkboxes in the TUI.
 
-    Two sets are maintained (one for creating,
-    one for transfer) which have different defaults.
+    Two sets are maintained (one for  checkboxes on the create tab,
+    the other for transfer tab) which have different defaults.
     By default, all broad datatype checkboxes are displayed,
-    and narrow are turned off.
+    and narrow datatypes are hidden and turned off.
     """
     settings = {
         "tui": {
@@ -268,13 +261,11 @@ def get_name_templates_defaults() -> Dict:
 
 
 def get_persistent_settings_defaults() -> Dict:
-    """Persistent settings are settings that are maintained
-    across sessions. Currently, persistent settings for
-    both the API and TUI are stored in the same place.
+    """Return the default persistent settings maintained across sessions.
 
-    Currently, settings for the working top level folder,
-    TUI checkboxes and name templates (i.e. regexp
-    validation for sub and ses names) are stored.
+    Currently, these include settings for both the API and TUI, such as the
+    working top level folder, TUI checkboxes, and name templates
+    (i.e. regexp validation for sub and ses names).
     """
     settings = {}
     settings.update(get_tui_config_defaults())
@@ -298,6 +289,7 @@ def get_broad_datatypes():
 
 def get_narrow_datatypes():
     """Return the narrow datatype associated with each broad datatype.
+
     The mapping between broad and narrow datatypes is required for validation.
     """
     return {
@@ -328,8 +320,9 @@ def get_narrow_datatypes():
 
 
 def quick_get_narrow_datatypes():
-    """A convenience wrapper around `get_narrow_datatypes()`
-    to quickly get a list of all narrow datatypes.
+    """Return a flat list of all narrow datatypes.
+
+    This is a convenience wrapper around `get_narrow_datatypes()`.
     """
     all_narrow_datatypes = get_narrow_datatypes()
     top_level_keys = list(all_narrow_datatypes.keys())
@@ -342,7 +335,9 @@ def quick_get_narrow_datatypes():
 
 
 def in_place_update_narrow_datatypes_if_required(user_settings: dict):
-    """In versions < v0.6.0, only 'broad' datatypes were implemented
+    """Update legacy settings with the new version format.
+
+    In versions < v0.6.0, only 'broad' datatypes were implemented
     and available in the TUI. Since, 'narrow' datatypes are introduced
     and datatype tui can be set to be both on / off but also
     displayed / not displayed.
