@@ -47,7 +47,17 @@ class CreateFoldersTab(TreeAndInputTab):
     """Create new project files formatted according to the NeuroBlueprint specification."""
 
     def __init__(self, mainwindow: TuiApp, interface: Interface) -> None:
-        """PLACEHOLDER."""
+        """Initialise the CreateFoldersTab.
+
+        Parameters
+        ----------
+        mainwindow
+            The main TUI application.
+
+        interface
+            Datashuttle Interface object.
+
+        """
         super(CreateFoldersTab, self).__init__(
             "Create", id="tabscreen_create_tab"
         )
@@ -60,7 +70,7 @@ class CreateFoldersTab(TreeAndInputTab):
         self.click_info = ClickInfo()
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the Create Folders tab."""
         yield CustomDirectoryTree(
             self.mainwindow,
             self.interface.get_configs()["local_path"],
@@ -105,7 +115,7 @@ class CreateFoldersTab(TreeAndInputTab):
         )
 
     def on_mount(self) -> None:
-        """PLACEHOLDER."""
+        """Handle the widgets immediately after mounting."""
         if not self.interface:
             self.query_one("#configs_name_input").tooltip = get_tooltip(
                 "#configs_name_input"
@@ -122,11 +132,14 @@ class CreateFoldersTab(TreeAndInputTab):
             self.query_one(id).tooltip = get_tooltip(id)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Enables the Create Folders button to read out current input values
+        """Handle a button press event.
+
+        The Create Folders button to read out current Input values
         and use these to call project.create_folders().
 
-        `unused_bool` is necessary to get dismiss to call
-        the callback.
+        `unused_bool` is necessary as dismiss() on the pushed screen
+        returns a bool. We use this to trigger revalidation regardless
+        of the bool state.
         """
         if event.button.id == "create_folders_create_folders_button":
             self.create_folders()
@@ -144,7 +157,7 @@ class CreateFoldersTab(TreeAndInputTab):
             )
 
     async def refresh_after_datatypes_changed(self, ignore):
-        """PLACEHOLDER."""
+        """Redisplay the datatype checkboxes."""
         await self.recompose()
         self.on_mount()
 
@@ -152,9 +165,9 @@ class CreateFoldersTab(TreeAndInputTab):
     def on_clickable_input_clicked(
         self, event: ClickableInput.Clicked
     ) -> None:
-        """Handled a double click on the custom ClickableInput widget,
-        which indicates the input should be filled with a suggested value.
+        """Handle a double click on the custom ClickableInput widget.
 
+        A double click indicates the input should be filled with a suggested value.
         Determine if we have the subject or session input, and
         if it was a left or right click. Then, fill with either
         a generic suggestion or suggestion based on next sub / ses number.
@@ -175,9 +188,10 @@ class CreateFoldersTab(TreeAndInputTab):
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
     ):
-        """Handle a key press on the directory tree, which can refresh the
-        directorytree or fill / append subject/session folder name to
-        the relevant input widget.
+        """Handle a key press on the CustomDirectoryTree.
+
+        This can refresh the CustomDirectoryTree or fill / append
+        subject/session folder name to the relevant input widget.
         """
         if event.key == "ctrl+r":
             self.reload_directorytree()
@@ -193,9 +207,18 @@ class CreateFoldersTab(TreeAndInputTab):
             self.mainwindow.prompt_rename_file_or_folder(event.node_path)
 
     def fill_input_with_template(self, prefix: Prefix, input_id: str) -> None:
-        """Given the `name_template`, fill the sub or ses
-        Input with the template (based on `prefix`).
+        """Fill the sub or ses Input with the name template.
+
         If `self.templates` is off, then just suggest "sub-" or "ses-".
+
+        Parameters
+        ----------
+        prefix
+            "sub" or "ses"
+
+        input_id
+            Textual ID of the Input to fill.
+
         """
         if self.templates_on(prefix):
             fill_value = self.interface.get_name_templates()[prefix]
@@ -206,7 +229,7 @@ class CreateFoldersTab(TreeAndInputTab):
         input.value = fill_value
 
     def templates_on(self, prefix: Prefix) -> bool:
-        """PLACEHOLDER."""
+        """Return `True` if the name templates are used in the project."""
         return (
             self.interface.get_name_templates()["on"]
             and self.interface.get_name_templates()[prefix] is not None
@@ -216,9 +239,7 @@ class CreateFoldersTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def revalidate_inputs(self, all_prefixes: List[str]) -> None:
-        """Revalidate and style both subject and session
-        inputs based on their value.
-        """
+        """Revalidate and style both subject and session inputs based on their value."""
         input_names = {
             "sub": "#create_folders_subject_input",
             "ses": "#create_folders_session_input",
@@ -230,9 +251,7 @@ class CreateFoldersTab(TreeAndInputTab):
             self.query_one(key).validate(value=value)
 
     def update_input_tooltip(self, message: List[str], prefix: Prefix) -> None:
-        """Update the value of a subject or session tooltip, which
-        indicates the validation status of the input value.
-        """
+        """Update the value of a subject or session tooltip indicating the validation status."""
         id = (
             "#create_folders_subject_input"
             if prefix == "sub"
@@ -249,9 +268,7 @@ class CreateFoldersTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def create_folders(self) -> None:
-        """Create project folders based on current widget input
-        through the datashuttle API.
-        """
+        """Create project folders based on the information in TUI widgets."""
         ses_names: Optional[List[str]]
 
         sub_names, ses_names, datatype = self.get_sub_ses_names_and_datatype(
@@ -271,9 +288,13 @@ class CreateFoldersTab(TreeAndInputTab):
             self.mainwindow.show_modal_error_dialog(output)
 
     def reload_directorytree(self) -> None:
-        """Reloads the directorytree and also updates validation.
-        Not now a good method name but done for consistency with other
-        tab refresh methods.
+        """Reload the DirectoryTree and also updates validation.
+
+        Notes
+        -----
+        No longer a good method name due to extended responsibilities
+        but done for consistency with other tab refresh methods.
+
         """
         self.revalidate_inputs(["sub", "ses"])
         self.query_one("#create_folders_directorytree").reload()
@@ -284,8 +305,9 @@ class CreateFoldersTab(TreeAndInputTab):
     def suggest_next_sub_ses(
         self, prefix: Prefix, input_id: str, include_central: bool
     ):
-        """Suggests the next sub/ses name for the project. Shows
-        a pop up screen in cases when searching for next sub/ses takes
+        """Suggests the next sub/ses name for the project.
+
+        Shows a pop up screen in cases when searching for next sub/ses takes
         time such as searching central in SSH connection method.
 
         Creates an asyncio task which handles the suggestion logic and
@@ -316,9 +338,10 @@ class CreateFoldersTab(TreeAndInputTab):
     async def fill_suggestion_and_dismiss_popup(
         self, prefix, input_id, include_central
     ):
-        """Runs the `fill_input_with_next_sub_or_ses_template`
-        worker and waiting for it to complete. If an error occurs in
-        `fill_input_with_next_sub_or_ses_template`, it dismisses the popup itself.
+        """Run the `fill_input_with_next_sub_or_ses_template` worker.
+
+        Awaits completion. If an error occurs in  `fill_input_with_next_sub_or_ses_template`,
+        it dismisses the popup itself.
 
         Else, if the worker successfully exits, this function handles dismissal
         of the popup.
@@ -335,15 +358,14 @@ class CreateFoldersTab(TreeAndInputTab):
     def fill_input_with_next_sub_or_ses_template(
         self, prefix: Prefix, input_id: str, include_central: bool
     ) -> Worker:
-        """Fills a sub / ses Input with a suggested name based on the
-        next subject / session in the project (local).
+        """Fill an Input the next subject / session in the project (local).
 
         If `name_templates` are set, then the sub- or ses- first key
         of the template name will be replaced with the suggested
         sub or ses key-value. Otherwise, the sub/ses key-value pair only
         will be suggested.
 
-        It runs in a worker thread so as to allow the TUI to show a loading
+        It runs in a worker thread as to allow the TUI to show a loading
         animation.
 
         Parameters
@@ -418,10 +440,10 @@ class CreateFoldersTab(TreeAndInputTab):
     def dismiss_popup_and_show_modal_error_dialog_from_thread(
         self, message: str
     ) -> None:
-        """Utility function that the `fill_input_with_next_sub_or_ses_template`
-        worker calls to display error dialog an if an error occurs while suggesting
-        the next sub/ses. Handles the TUI widget manipulation from the main thread
-        when called from within a worker thread.
+        """Handle an error while suggesting the next session or subject.
+
+        Called by `fill_input_with_next_sub_or_ses_template`  to display error
+        dialog an if an error occurs while suggesting the next sub/ses.
         """
         if self.searching_central_popup_widget:
             self.mainwindow.call_from_thread(
@@ -435,9 +457,7 @@ class CreateFoldersTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def run_local_validation(self, prefix: Prefix):
-        """Run validation of the values stored in the
-        sub / ses Input according to the passed prefix
-        using core datashuttle functions.
+        """Run validation of the values stored in the subject / session Inputs.
 
         First, format the subject name (and session if required)
         which also performs quick name format validations. Then,
