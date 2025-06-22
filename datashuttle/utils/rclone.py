@@ -12,8 +12,7 @@ from datashuttle.utils.custom_types import TopLevelFolder
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
-    """Call rclone with the specified command. Current mode is double-verbose.
-    Return the completed process from subprocess.
+    """Call rclone with the specified command.
 
     Parameters
     ----------
@@ -36,9 +35,10 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
 
 
 def call_rclone_through_script(command: str) -> CompletedProcess:
-    """Call rclone through a script, to avoid limits on command-line calls
-    (in particular on Windows). Used for transfers due to generation of
-    large call strings.
+    """Call rclone through a script.
+
+    This is to avoid limits on command-line calls (in particular on Windows).
+    Used for transfers due to generation of large call strings.
     """
     system = platform.system()
 
@@ -82,7 +82,9 @@ def setup_rclone_config_for_local_filesystem(
     rclone_config_name: str,
     log: bool = True,
 ):
-    """RClone sets remote targets in a config file that are
+    """Set the RClone remote config for local filesystem.
+
+    RClone sets remote targets in a config file that are
     used at transfer. For local filesystem, this is essentially
     a placeholder and that is not linked to a particular filepath.
     It just tells rclone to use the local filesystem - then we
@@ -116,7 +118,9 @@ def setup_rclone_config_for_ssh(
     ssh_key_path: Path,
     log: bool = True,
 ):
-    """RClone sets remote targets in a config file that are
+    """Set the RClone remote config for ssh.
+
+    RClone sets remote targets in a config file that are
     used at transfer. For SSH, this must contain the central path,
     username and ssh key. The relative path is supplied at transfer time.
 
@@ -170,9 +174,7 @@ def check_rclone_with_default_call() -> bool:
 
 
 def prompt_rclone_download_if_does_not_exist() -> None:
-    """Check that rclone is installed. If it does not
-    (e.g. first time using datashuttle) then download.
-    """
+    """Check that rclone is installed."""
     if not check_rclone_with_default_call():
         raise BaseException(
             "RClone installation not found. Install by entering "
@@ -249,12 +251,14 @@ def get_local_and_central_file_differences(
     cfg: Configs,
     top_level_folders_to_check: List[TopLevelFolder],
 ) -> Dict:
-    """Convert the output of rclone's check (with `--combine`) flag
-    to a dictionary separating each case.
+    """Format a structure of all changes between local and central.
 
     Rclone output comes as a list of files, separated by newlines,
     with symbols indicating whether the file paths are same across
     local and central, different, or found in local / central only.
+
+    Convert the output of Rclone's check (with `--combine`) flag
+    to a dictionary separating each case.
 
     Parameters
     ----------
@@ -305,9 +309,10 @@ def get_local_and_central_file_differences(
 
 
 def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
-    """Ensure the output of Rclone check is as expected. Currently, the "error"
-    case is untested and a test case is required. Once the test case is
-    obtained this should most likely be moved to tests.
+    """Ensure the output of Rclone check is as expected.
+
+    Currently, the "error" case is untested and a test case is required.
+    Once the test case is obtained this should most likely be moved to tests.
     """
     assert result[1] == " ", (
         "`rclone check` output does not contain a "
@@ -324,7 +329,9 @@ def assert_rclone_check_output_is_as_expected(result, symbol, convert_symbols):
 def perform_rclone_check(
     cfg: Configs, top_level_folder: TopLevelFolder
 ) -> str:
-    r"""Use Rclone's `check` command to build a list of files that
+    r"""Run RClone check to find differences in files between local and central.
+
+    Use Rclone's `check` command to build a list of files that
     are the same ("="), different ("*"), found in local only ("+")
     or central only ("-"). The output is formatted as "\<symbol> \<path>\n".
     """
