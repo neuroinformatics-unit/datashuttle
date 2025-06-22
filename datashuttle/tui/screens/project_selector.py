@@ -59,11 +59,9 @@ class ProjectSelectorScreen(Screen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle a button press on ProjectSelectorScreen."""
-
         project_name = self.id_to_name(event.button.id)
 
         if project_name in self.project_names:
-
             interface = Interface()
             success, output = interface.select_existing_project(project_name)
 
@@ -77,7 +75,8 @@ class ProjectSelectorScreen(Screen):
 
     @staticmethod
     def name_to_id(name: str):
-        """
+        """Convert the project name to a textual ID.
+
         Textual ids cannot start with a number, so ensure
         all ids are prefixed with text instead of the project name.
         """
@@ -85,7 +84,5 @@ class ProjectSelectorScreen(Screen):
 
     @staticmethod
     def id_to_name(id: str):
-        """
-        See `name_id_id()`
-        """
-        return id.replace("safety_prefix_", "")
+        """See `name_to_id()`."""
+        return id[len("safety_prefix_") :]
