@@ -11,11 +11,9 @@ from .tui_base import TuiBase
 class TestSelectTree(TuiBase):
     @pytest.mark.asyncio
     async def test_select_directory_tree(self, monkeypatch):
-        """
-        Test that changing the drive in SelectDirectoryTreeScreen
+        """Test that changing the drive in SelectDirectoryTreeScreen
         updates the DirectoryTree path as expected.
         """
-
         # Set the Select drives to be these test cases
         monkeypatch.setattr(
             SelectDirectoryTreeScreen,
@@ -31,7 +29,6 @@ class TestSelectTree(TuiBase):
 
         app = TuiApp()
         async with app.run_test() as pilot:
-
             # Open the select directory tree screen
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_new_project_button"

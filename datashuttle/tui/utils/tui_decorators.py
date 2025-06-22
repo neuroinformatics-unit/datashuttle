@@ -13,22 +13,21 @@ from datashuttle.tui.custom_widgets import ClickableInput
 
 
 class ClickInfo:
-    """
-    A class to hold click-info to checking
-    double clicks are within the time threshold
-    and match the widget id.
+    """A class to hold click-info.
+
+    This stores click history to allow later checking
+    that double clicks occur within a time threshold
+    and that the same widget is clicked twice.
     """
 
     def __init__(self):
-
+        """Initialise the ClickInfo."""
         self.prev_click_time = 0.0
         self.prev_click_widget_id = ""
 
 
 def require_double_click(func):
-    """
-    A decorator that calls the decorated function
-    on a double click, otherwise will not do anything.
+    """Call the decorated function on a double click.
 
     Requires the first argument (`self` on the class) to
     have the attribute `click_info`). Any class holding a widget

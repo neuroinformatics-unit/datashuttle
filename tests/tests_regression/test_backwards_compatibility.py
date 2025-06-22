@@ -10,11 +10,9 @@ TEST_PROJECT_NAME = "test_project"
 
 
 class TestBackwardsCompatibility:
-
     @pytest.fixture(scope="function")
     def project(self):
-        """
-        Delete the project configs if they exist,
+        """Delete the project configs if they exist,
         and tear down after the test has run.
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
@@ -26,8 +24,7 @@ class TestBackwardsCompatibility:
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
     def test_v0_6_0(self, project, tmp_path):
-        """
-        v0.6.0 is the first version with narrow datatypes, and the checkboxes was refactored to
+        """v0.6.0 is the first version with narrow datatypes, and the checkboxes was refactored to
         be a {"on": bool, "displayed": bool} dict rather than a bool indicating whether the checkbox is on.
         However, this version is missing narrow datatypes added later (e.g. "motion").
         In the test file, all 'displayed' are turned off except f2pe.
@@ -54,8 +51,7 @@ class TestBackwardsCompatibility:
             assert transfer_checkboxes[key]["displayed"] is (key == "f2pe")
 
     def test_v0_5_3(self, project, tmp_path):
-        """
-        This version did not have narrow datatypes, and the persistent checkbox setting was only a
+        """This version did not have narrow datatypes, and the persistent checkbox setting was only a
         bool. Therefore, the "displayed" uses the canonical defaults (because they don't exist in the file yet).
         """
         reloaded_ver_configs, reloaded_ver_persistent_settings = (
@@ -83,8 +79,7 @@ class TestBackwardsCompatibility:
     def load_and_check_old_version_yamls(
         self, project, tmp_path, datashuttle_version
     ):
-        """
-        Load an old config file in the current datashuttle version,
+        """Load an old config file in the current datashuttle version,
         and check that the new-version ('canonical') configs
         and persistent settings match the structure of the
         files loaded from the old datashuttle version.
@@ -131,8 +126,7 @@ class TestBackwardsCompatibility:
         return reloaded_ver_configs, reloaded_ver_persistent_settings
 
     def recursive_test_dictionary(self, dict_canonical, dict_to_test):
-        """
-        A dictionary to check all keys in a nested dictionary
+        """A dictionary to check all keys in a nested dictionary
         match and all value types are the same.
         """
         keys_canonical = list(dict_canonical.keys())
@@ -145,7 +139,6 @@ class TestBackwardsCompatibility:
         )
 
         for key in dict_canonical.keys():
-
             if isinstance(dict_canonical[key], dict):
                 self.recursive_test_dictionary(
                     dict_canonical[key], dict_to_test[key]

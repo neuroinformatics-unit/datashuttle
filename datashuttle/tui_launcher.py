@@ -29,9 +29,7 @@ parser.add_argument(
 
 
 def main() -> None:
-    """
-    Launch the datashuttle tui.
-    """
+    """Launch the datashuttle tui."""
     args = parser.parse_args()
 
     if args.launch == "launch":

@@ -18,11 +18,9 @@ TEST_SSH = ssh_test_utils.get_test_ssh()
 )
 @pytest.mark.skipif(not TEST_SSH, reason="TEST_SSH is false")
 class TestSSH(BaseSSHTransfer):
-
     @pytest.fixture(scope="function")
     def project(test, tmp_path, setup_ssh_container):
-        """
-        Set up a project with configs for SSH into
+        """Set up a project with configs for SSH into
         the test Dockerfile image.
         """
         tmp_path = tmp_path / "test with space"
@@ -46,9 +44,7 @@ class TestSSH(BaseSSHTransfer):
     def test_verify_ssh_central_host_do_not_accept(
         self, capsys, project, input_
     ):
-        """
-        Test that host not accepted if input is not "y".
-        """
+        """Test that host not accepted if input is not "y"."""
         orig_builtin = copy.deepcopy(builtins.input)
         builtins.input = lambda _: input_  # type: ignore
 
@@ -61,8 +57,7 @@ class TestSSH(BaseSSHTransfer):
         assert "Host not accepted. No connection made.\n" in captured.out
 
     def test_verify_ssh_central_host_accept(self, capsys, project):
-        """
-        User is asked to accept the server hostkey. Mock this here
+        """User is asked to accept the server hostkey. Mock this here
         and check hostkey is successfully accepted and written to configs.
         """
         test_utils.clear_capsys(capsys)
@@ -76,7 +71,7 @@ class TestSSH(BaseSSHTransfer):
 
         assert captured.out == "Host accepted.\n"
 
-        with open(project.cfg.hostkeys_path, "r") as file:
+        with open(project.cfg.hostkeys_path) as file:
             hostkey = file.readlines()[0]
 
         assert (
@@ -84,14 +79,13 @@ class TestSSH(BaseSSHTransfer):
         )
 
     def test_generate_and_write_ssh_key(self, project):
-        """
-        Check ssh key for passwordless connection
-        is written to file.
+        """Check ssh key for passwordless connection is written
+        to file.
         """
         path_to_save = project.cfg["local_path"] / "test"
         ssh.generate_and_write_ssh_key(path_to_save)
 
-        with open(path_to_save, "r") as file:
+        with open(path_to_save) as file:
             first_line = file.readlines()[0]
 
         assert first_line == "-----BEGIN RSA PRIVATE KEY-----\n"

@@ -13,11 +13,9 @@ TEST_PROJECT_NAME = "test_project"
 
 
 class TestLocalOnlyProject(BaseTest):
-
     def test_bad_setup(self, tmp_path):
-        """
-        Test setup without providing both central_path and connection
-        method (distinguishing a full vs local-only project)
+        """Test setup without providing both central_path and connection
+        method (distinguishing a full vs local-only project).
         """
         local_path = tmp_path / "test_local"
 
@@ -41,8 +39,7 @@ class TestLocalOnlyProject(BaseTest):
 
     @pytest.mark.parametrize("project", ["local"], indirect=True)
     def test_full_to_local_project(self, project):
-        """
-        Make a full project a local-only project, and check the transfer
+        """Make a full project a local-only project, and check the transfer
         functionality is now restricted.
         """
         project.update_config_file(central_path=None, connection_method=None)
@@ -60,8 +57,7 @@ class TestLocalOnlyProject(BaseTest):
 
     @pytest.mark.parametrize("project", ["local"], indirect=True)
     def test_local_project_to_full(self, tmp_path, project):
-        """
-        Test updating a local-only project to a full one
+        """Test updating a local-only project to a full one
         by adding the required configs (both must be set together)
         Perform a quick check that data transfer does not error out
         now that the project is full, and the configs are set as expected.
@@ -88,8 +84,7 @@ class TestLocalOnlyProject(BaseTest):
 
     @pytest.mark.parametrize("project", ["local"], indirect=True)
     def test_local_to_full_project(self, project):
-        """
-        Change a project from local-only to a normal project by updating
+        """Change a project from local-only to a normal project by updating
         the relevant configs. Smoke test that general functionality is maintained
         and that transfers work correctly.
         """
@@ -126,8 +121,7 @@ class TestLocalOnlyProject(BaseTest):
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("project", ["full"], indirect=True)
     def test_get_next_sub_and_ses(self, project, top_level_folder):
-        """
-        Make a 'full' project with subject and session > 1 in both local
+        """Make a 'full' project with subject and session > 1 in both local
         and central projects. Then, delete the local and run get next sub / ses,
         and make the project local-only. Call validation requesting to also
         check central path, which should be ignored as we are in local-only mode.

@@ -12,11 +12,9 @@ from ..base import BaseTest
 
 
 class TestPersistentSettings(BaseTest):
-
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_persistent_settings_name_templates(self, project):
-        """
-        Test the 'name_templates' option that is stored in persistent
+        """Test the 'name_templates' option that is stored in persistent
         settings and adds a regexp to validate subject and session
         names against.
 
@@ -121,13 +119,11 @@ class TestPersistentSettings(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_persistent_settings_tui(self, project):
-        """
-        Test persistent settings for the project that
+        """Test persistent settings for the project that
         determine display of the TUI. First check defaults
         are correct, change every one and save, then check
         they are correct on re-load.
         """
-
         # test all defaults
         settings = project._load_persistent_settings()
         tui_settings = settings["tui"]
@@ -146,8 +142,7 @@ class TestPersistentSettings(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_bypass_validation(self, project):
-        """
-        Check bypass validation which will allow folder
+        """Check bypass validation which will allow folder
         creation even when validation fails. Check it is
         off by default, turn on, check bad name can be created.
         Reload, turn off, check for error on attempting to create
@@ -162,13 +157,12 @@ class TestPersistentSettings(BaseTest):
             project.create_folders("rawdata", "sub-@@@")
 
         assert (
-            "BAD_VALUE: The value for prefix sub in name sub-@@@ is not an integer."
-            == str(e.value)
+            str(e.value)
+            == "BAD_VALUE: The value for prefix sub in name sub-@@@ is not an integer."
         )
 
     def get_settings_default(self):
-        """
-        Hard-coded default settings that should mirror `canonical_configs`
+        """Hard-coded default settings that should mirror `canonical_configs`
         and should be changed whenever the canonical configs are changed.
         This is to protect against accidentally changing these configs.
         """
@@ -211,9 +205,7 @@ class TestPersistentSettings(BaseTest):
         return default_settings
 
     def get_settings_changed(self):
-        """
-        The default settings with every possible setting changed.
-        """
+        """The default settings with every possible setting changed."""
         changed_settings = {
             "create_checkboxes_on": {},
             "transfer_checkboxes_on": {

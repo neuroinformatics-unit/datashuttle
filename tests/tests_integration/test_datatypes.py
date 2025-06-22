@@ -9,15 +9,13 @@ from ..base import BaseTest
 
 
 class TestDatatypes(BaseTest):
-    """
-    Tests for creating folders and transfer (very similar to other tests)
+    """Tests for creating folders and transfer (very similar to other tests)
     however which test the creation and transfer of narrow datatypes.
     Other tests used broad datatypes.
     """
 
     def test_create_narrow_datatypes(self, project):
-        """
-        Create all narrow datatype folders and check
+        """Create all narrow datatype folders and check
         they are created as expected.
         """
         # Make folder tree including all narrow datatypes
@@ -42,8 +40,7 @@ class TestDatatypes(BaseTest):
         )
 
     def get_narrow_only_datatypes_used(self, used=True):
-        """
-        This is similar to test_utils.get_all_broad_folders_used
+        """Similar to test_utils.get_all_broad_folders_used
         but for narrow datatypes.
         """
         return {
@@ -56,8 +53,7 @@ class TestDatatypes(BaseTest):
         project,
         upload_or_download,
     ):
-        """
-        Create a project with narrow datatypes and check these
+        """Create a project with narrow datatypes and check these
         folders are transferred as expected.
         """
         subs, sessions = test_utils.get_default_sub_sessions_to_test()

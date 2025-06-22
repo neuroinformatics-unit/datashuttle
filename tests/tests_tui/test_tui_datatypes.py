@@ -8,9 +8,7 @@ from .tui_base import TuiBase
 
 
 class TestDatatypesTUI(TuiBase):
-    """
-    Test the datatype selection screen for the Create and Transfer tab.
-    """
+    """Test the datatype selection screen for the Create and Transfer tab."""
 
     @pytest.mark.asyncio
     async def test_select_displayed_datatypes_create(
@@ -20,7 +18,6 @@ class TestDatatypesTUI(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up the TUI on the 'create' tab, filling the
             # input with the subject and session folders to create.
             await self.check_and_click_onto_existing_project(
@@ -141,7 +138,6 @@ class TestDatatypesTUI(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up the TUI on the 'transfer' tab (custom) and
             # open the datatype selection screen
             await self.check_and_click_onto_existing_project(

@@ -1,8 +1,5 @@
 def get_tooltip(id: str) -> str:
-    """
-    Master function to get tooltips for all widgets,
-    based on their widget (textual) id.
-    """
+    """Return tooltip for a widget based on its textual id."""
     # Main App Window
     # -------------------------------------------------------------------------
 

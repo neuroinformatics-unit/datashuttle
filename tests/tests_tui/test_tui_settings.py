@@ -6,20 +6,16 @@ from .tui_base import TuiBase
 
 
 class TestTuiSettings(TuiBase):
-    """
-    Test the 'Settings' screen accessible from the Main Menu.
-    """
+    """Test the 'Settings' screen accessible from the Main Menu."""
 
     @pytest.mark.asyncio
     async def test_light_dark_mode(self):
-        """
-        Check the light / dark mode switch which is stored
+        """Check the light / dark mode switch which is stored
         in the global tui settings. Global refers to set
         across all projects not related to a specific project.
         """
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_settings_button"
             )
@@ -46,8 +42,7 @@ class TestTuiSettings(TuiBase):
 
     @pytest.mark.asyncio
     async def test_show_transfer_tree_status(self, setup_project_paths):
-        """
-        Check the 'show transfer tree' option that turns off transfer
+        """Check the 'show transfer tree' option that turns off transfer
         tree styling by default has the intended effects. It is
         difficult to test whether the tree is actually styled, so
         here all underlying configs + the transfer tree legend
@@ -57,7 +52,6 @@ class TestTuiSettings(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # First check the show transfer tree styling is off
             # in the project manager tab and legend does not exist.
             await self.check_and_click_onto_existing_project(

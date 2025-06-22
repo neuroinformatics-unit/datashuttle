@@ -5,9 +5,10 @@ from datashuttle.utils.utils import log_and_raise_error
 
 
 def requires_ssh_configs(func):
-    """
-    Decorator to check file is loaded. Used on Mainwindow class
-    methods only as first arg is assumed to be self (containing cfgs)
+    """Check ssh configs have been set.
+
+    Used on Mainwindow class methods only as first
+    arg is assumed to be self (containing cfgs).
     """
 
     @wraps(func)
@@ -29,11 +30,7 @@ def requires_ssh_configs(func):
 
 
 def check_configs_set(func):
-    """
-    Check that configs have been loaded (i.e.
-    project.cfg is not None) before the
-    func is run.
-    """
+    """Check configs have been set."""
 
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -50,9 +47,7 @@ def check_configs_set(func):
 
 
 def check_is_not_local_project(func):
-    """
-    Decorator to check that the project is not
-    a local project. If it is, raise.
+    """Check that the project is not a local project.
 
     This decorator should be placed above methods which
     require `central_path` and `connection_method` to be set.

@@ -25,32 +25,36 @@ from datashuttle.utils import folders, utils
 
 
 class Configs(UserDict):
-    """
-    Class to hold the datashuttle configs.
+    """Store and manage datashuttle configuration settings.
 
     The configs must match exactly the standard set
     in canonical_configs.py. If updating these configs,
     this should be done through changing canonical_configs.py
-
-    The input dict is checked that it conforms to the
-    canonical standard by calling check_dict_values_raise_on_fail()
-
-    project_name and all paths are set at runtime but not stored.
-
-    Parameters
-    ----------
-
-    file_path :
-        full filepath to save the config .yaml file to.
-
-    input_dict :
-        a dict of config key-value pairs to input dict.
-        This must contain all canonical_config keys
     """
 
     def __init__(
         self, project_name: str, file_path: Path, input_dict: Union[dict, None]
     ) -> None:
+        """Initialize the Configs class with project name, file path, and config dictionary.
+
+        Parameters
+        ----------
+        project_name
+            Name of the datashuttle project.
+
+        file_path
+            full filepath to save the config .yaml file to.
+
+        input_dict
+            a dict of config key-value pairs to input dict.
+            This must contain all canonical_config keys
+
+        The input dict is checked that it conforms to the
+        canonical standard by calling check_dict_values_raise_on_fail()
+
+        project_name and all paths are set at runtime but not stored.
+
+        """
         super(Configs, self).__init__(input_dict)
 
         self.project_name = project_name
@@ -62,12 +66,13 @@ class Configs(UserDict):
         self.project_metadata_path: Path
 
     def setup_after_load(self) -> None:
+        """Set up the config after loading it."""
         load_configs.convert_str_and_pathlib_paths(self, "str_to_path")
         self.ensure_local_and_central_path_end_in_project_name()
         self.check_dict_values_raise_on_fail()
 
-    def ensure_local_and_central_path_end_in_project_name(self):
-        """"""
+    def ensure_local_and_central_path_end_in_project_name(self) -> None:
+        """Ensure that the local and central path end in the name of the project."""
         for path_type in ["local_path", "central_path"]:
             if path_type == "central_path" and self[path_type] is None:
                 continue
@@ -81,9 +86,7 @@ class Configs(UserDict):
                 self[path_type] = self[path_type] / self.project_name
 
     def check_dict_values_raise_on_fail(self) -> None:
-        """
-        Check the values of the current dictionary are set
-        correctly and will not cause downstream errors.
+        """Validate dictionary values against canonical config requirements.
 
         This will raise an error if the dictionary
         does not match the canonical keys and value types.
@@ -91,12 +94,15 @@ class Configs(UserDict):
         canonical_configs.check_dict_values_raise_on_fail(self)
 
     def keys(self) -> KeysView:
+        """Return D.keys(), a set-like object providing a view on D's keys."""
         return self.data.keys()
 
     def items(self) -> ItemsView:
+        """Return D.items(), a set-like object providing a view on D's items."""
         return self.data.items()
 
     def values(self) -> ValuesView:
+        """Return D.values(), a set-like object providing a view on D's values."""
         return self.data.values()
 
     # -------------------------------------------------------------------------
@@ -104,9 +110,7 @@ class Configs(UserDict):
     # -------------------------------------------------------------------------
 
     def dump_to_file(self) -> None:
-        """
-        Save the dictionary to .yaml file stored in self.file_path.
-        """
+        """Save the dictionary to .yaml file stored in self.file_path."""
         cfg_to_save = copy.deepcopy(self.data)
         load_configs.convert_str_and_pathlib_paths(cfg_to_save, "path_to_str")
 
@@ -114,12 +118,12 @@ class Configs(UserDict):
             yaml.dump(cfg_to_save, config_file, sort_keys=False)
 
     def load_from_file(self) -> None:
+        """Load a config dict saved at .yaml file.
+
+        Note this will not automatically check the configs are valid,
+        this requires calling self.check_dict_values_raise_on_fail().
         """
-        Load a config dict saved at .yaml file. Note this will
-        not automatically check the configs are valid, this
-        requires calling self.check_dict_values_raise_on_fail()
-        """
-        with open(self.file_path, "r") as config_file:
+        with open(self.file_path) as config_file:
             config_dict = yaml.full_load(config_file)
 
         load_configs.convert_str_and_pathlib_paths(config_dict, "str_to_path")
@@ -136,19 +140,28 @@ class Configs(UserDict):
         sub_folders: Union[str, list],
         top_level_folder: TopLevelFolder,
     ) -> Path:
-        """
-        Function for joining relative path to base dir.
-        If path already starts with base dir, the base
-        dir will not be joined.
+        """Build a path by joining a base directory with subfolders.
+
+        If the path already starts with the base directory,
+        the base will not be joined again.
 
         Parameters
         ----------
+        base
+            "local", "central" or "datashuttle"
 
-        base: "local", "central" or "datashuttle"
-
-        sub_folders: a list (or string for 1) of
+        sub_folders
+            a list (or string for 1) of
             folder names to be joined into a path.
             If file included, must be last entry (with ext).
+
+        top_level_folder
+            either "rawdata" or "derivatives"
+
+        Returns
+        -------
+        The full path to the `sub_folders` in the project.
+
         """
         if isinstance(sub_folders, list):
             sub_folders_str = "/".join(sub_folders)
@@ -171,13 +184,19 @@ class Configs(UserDict):
         base: str,
         top_level_folder: TopLevelFolder,
     ) -> Path:
-        """
-        Convenience function to return the full base path.
+        """Return the full base path for the given top-level folder.
 
         Parameters
         ----------
+        base
+            Base path, "local", "central" or "datashuttle".
 
-        base : base path, "local", "central" or "datashuttle"
+        top_level_folder
+            Either "rawdata" or "derivatives".
+
+        Returns
+        -------
+        Full path to the local or central project top level folder.
 
         """
         if base == "local":
@@ -190,10 +209,9 @@ class Configs(UserDict):
     def get_rclone_config_name(
         self, connection_method: Optional[str] = None
     ) -> str:
-        """
-        Convenience function to get the rclone config
-        name (these configs are created by datashuttle
-        but managed and stored by rclone).
+        """Generate the rclone configuration name for the project.
+
+        These configs are created by datashuttle but managed and stored by rclone.
         """
         if connection_method is None:
             connection_method = self["connection_method"]
@@ -203,11 +221,11 @@ class Configs(UserDict):
     def make_rclone_transfer_options(
         self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
     ) -> Dict:
-        """
-        This function originally collected the relevant arguments
-        from configs. Now, all are passed via function arguments
-        However, now we fix the previously configurable arguments
-        `show_transfer_progress` and `dry_run` here.
+        """Create a dictionary of rclone transfer options.
+
+        Originally these arguments were collected from configs, but now
+        they are passed via function arguments. The `show_transfer_progress`
+        and `dry_run` options are fixed here.
         """
         allowed_overwrite = ["never", "always", "if_source_newer"]
 
@@ -227,7 +245,7 @@ class Configs(UserDict):
         }
 
     def init_paths(self) -> None:
-        """"""
+        """Initialize paths used by datashuttle."""
         self.project_metadata_path = self["local_path"] / ".datashuttle"
 
         datashuttle_path, _ = canonical_folders.get_project_datashuttle_path(
@@ -243,9 +261,9 @@ class Configs(UserDict):
     def make_and_get_logging_path(
         self,
     ) -> Path:
-        """
-        Build (and create if does not exist) the path where
-        logs are stored.
+        """Build and return the path where logs are stored.
+
+        Create the directory if it does not already exist.
         """
         logging_path = self.project_metadata_path / "logs"
         folders.create_folders(logging_path)
@@ -254,9 +272,9 @@ class Configs(UserDict):
     def get_datatype_as_dict_items(
         self, datatype: Union[str, list]
     ) -> Union[ItemsView, zip]:
-        """
-        Get the .items() structure of the datatype, either all of
-        the canonical datatypes or as a single item.
+        """Return canonical datatypes as dictionary items.
+
+        Returns all datatype items or a subset if specified.
         """
         if isinstance(datatype, str):
             datatype = [datatype]
@@ -276,7 +294,8 @@ class Configs(UserDict):
         return items
 
     def is_local_project(self):
-        """
+        """Return bool indicating if project is a local-only project.
+
         A project is 'local-only' if it has no `central_path` and `connection_method`.
         It can be used to make folders and validate, but not for transfer.
         """

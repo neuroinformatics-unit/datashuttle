@@ -10,19 +10,15 @@ from .tui_base import TuiBase
 
 
 class TestTuiValidate(TuiBase):
-
     @pytest.mark.asyncio
     async def test_validate_on_project_manager_output(
         self, setup_project_paths
     ):
-        """
-        Check that the validate RichLog is updated as expected.
-        """
+        """Check that the validate RichLog is updated as expected."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Go to the validate tab on project manager, make
             # some badly formatted files.
             await self.check_and_click_onto_existing_project(
@@ -73,15 +69,13 @@ class TestTuiValidate(TuiBase):
     async def test_validate_on_project_manager_kwargs(
         self, setup_project_paths, mocker
     ):
-        """
-        Check options are properly passed through to validate_project
+        """Check options are properly passed through to validate_project
         from the project manager validate tab (using mocker).
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up a project and open the validate tab
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
@@ -166,8 +160,7 @@ class TestTuiValidate(TuiBase):
 
     @pytest.mark.asyncio
     async def test_validate_at_path_kwargs(self, setup_project_paths, mocker):
-        """
-        Test kwargs are properly passed through from the TUI to `quick_validate_project`
+        """Test kwargs are properly passed through from the TUI to `quick_validate_project`
         with mocker. Note that the 'Select' button / directorytree is not tested here,
         as the screen is tested elsewhere and it's non-critical feature here.
         """
@@ -175,7 +168,6 @@ class TestTuiValidate(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Open the validation window and input path to project
             project_path = (tmp_path / "local" / project_name).as_posix()
 
