@@ -14,8 +14,8 @@ from datashuttle.tui.shared import validate_content
 
 
 class ValidateScreen(Screen):
-    """Screen to hold the validation window for
-    validating an existing project at a given path.
+    """Screen to the validate project from path window.
+
     All widgets are stored in `ValidateContent`, which is
     shared between here and the validation tab on the project manager.
     """
@@ -23,12 +23,13 @@ class ValidateScreen(Screen):
     TITLE = "Validate Project"
 
     def __init__(self, mainwindow: TuiApp) -> None:
+        """Initialise the ValidateScreen."""
         super(ValidateScreen, self).__init__()
 
         self.mainwindow = mainwindow
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the ValidateScreen."""
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
         yield validate_content.ValidateContent(
@@ -36,6 +37,6 @@ class ValidateScreen(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """PLACEHOLDER."""
+        """Handle button press on the ValidateScreen."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss(None)
