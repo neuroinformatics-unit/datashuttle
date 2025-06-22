@@ -17,7 +17,6 @@ TEST_SSH = ssh_test_utils.get_test_ssh()
 )
 @pytest.mark.skipif(not TEST_SSH, reason="TEST_SSH is false")
 class TestSSHTransfer(BaseSSHTransfer):
-
     @pytest.fixture(
         scope="class",
     )
