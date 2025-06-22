@@ -91,7 +91,17 @@ class DisplayedDatatypesScreen(ModalScreen):
         create_or_transfer: Literal["create", "transfer"],
         interface: Interface,
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise the DisplayedDatatypesScreen.
+
+        Parameters
+        ----------
+        create_or_transfer
+            Whether we are on the "create" or "transfer" tab.
+
+        interface
+            Datashuttle Interface object.
+
+        """
         super(DisplayedDatatypesScreen, self).__init__()
 
         self.interface = interface
@@ -104,9 +114,7 @@ class DisplayedDatatypesScreen(ModalScreen):
         )
 
     def compose(self) -> ComposeResult:
-        """Collect the datatypes names and status from
-        the persistent settings and display.
-        """
+        """Collect the datatypes names and status from the persistent settings and display."""
         selections = []
         for idx, (datatype, setting) in enumerate(
             self.datatype_config.items()
@@ -140,15 +148,10 @@ class DisplayedDatatypesScreen(ModalScreen):
             id="display_datatypes_screen_container",
         )
 
-    def on_mount(self):
-        """PLACEHOLDER."""
-        pass
-
-    #    self.query_one("#display_datatypes_screen_container").action_scroll_up()
-    # assert False, f"{dir(self.query_one('#displayed_datatypes_selection_list'))}"
-
     def on_button_pressed(self, event):
-        """When 'Save' is pressed, the configs copied on this class
+        """Handle button press on the DisplayedDatatypesScreen.
+
+        When 'Save' is pressed, the configs copied on this class
         are updated back onto the interface configs, and written to disk.
         Otherwise, close the screen without saving.
         """
@@ -164,9 +167,7 @@ class DisplayedDatatypesScreen(ModalScreen):
     def on_selection_list_selection_toggled(
         self, event: SelectionList.SelectionMessage.SelectionToggled
     ):
-        """When a selection is toggled, update the configs with
-        the 'displayed' status and save to disk.
-        """
+        """Update the configs with the 'displayed' status and save to disk when Select is changed."""
         datatype_name = event.selection.prompt.plain
         datatype_name = datatype_name.split(" ")[0]
         is_checked = not event.selection.initial_state
@@ -182,8 +183,7 @@ class DisplayedDatatypesScreen(ModalScreen):
 
 
 class DatatypeCheckboxes(Static):
-    """Dynamically-populated checkbox widget for convenient datatype
-    selection during folder creation.
+    """Dynamically-populated checkbox widget for convenient datatype selection.
 
     Parameters
     ----------
@@ -195,7 +195,7 @@ class DatatypeCheckboxes(Static):
     Attributes
     ----------
     datatype_config
-        a Dictionary containing datatype as key (e.g. "ephys", "behav")
+        A Dictionary containing datatype as key (e.g. "ephys", "behav")
         and values are `bool` indicating whether the checkbox is on / off.
         If 'transfer', then transfer datatype arguments (e.g. "all")
         are also included. This structure mirrors
@@ -216,7 +216,20 @@ class DatatypeCheckboxes(Static):
         create_or_transfer: Literal["create", "transfer"] = "create",
         id: Optional[str] = None,
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise the DatatypeCheckboxes.
+
+        Parameters
+        ----------
+        interface
+            Datashuttle Interface object.
+
+        create_or_transfer
+            Whether we are on the "create" or "transfer" tab.
+
+        id
+            Textual ID for the DatatypeCheckboxes widget.
+
+        """
         super(DatatypeCheckboxes, self).__init__(id=id)
 
         self.interface = interface
@@ -231,7 +244,7 @@ class DatatypeCheckboxes(Static):
         ]
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the DatatypeCheckboxes."""
         for datatype, setting in self.datatype_config.items():
             if setting["displayed"]:
                 yield Checkbox(
@@ -242,7 +255,9 @@ class DatatypeCheckboxes(Static):
 
     @on(Checkbox.Changed)
     def on_checkbox_changed(self) -> None:
-        """When a checkbox is changed, update the `self.datatype_config`
+        """Handle a datatype checkbox change.
+
+        When a checkbox is changed, update the `self.datatype_config`
         to contain new boolean values for each datatype. Also update
         the stored `persistent_settings`.
         """
@@ -257,7 +272,7 @@ class DatatypeCheckboxes(Static):
         )
 
     def on_mount(self) -> None:
-        """PLACEHOLDER."""
+        """Add widgets to the DatatypeCheckboxes."""
         for datatype in self.datatype_config.keys():
             if self.datatype_config[datatype]["displayed"]:
                 self.query_one(
@@ -265,9 +280,7 @@ class DatatypeCheckboxes(Static):
                 ).tooltip = tooltips[datatype]
 
     def selected_datatypes(self) -> List[str]:
-        """Get the names of the datatype options for which the
-        checkboxes are switched on.
-        """
+        """Get the names of the datatype options for which the checkboxes are switched on."""
         selected_datatypes = [
             datatype
             for datatype, settings in self.datatype_config.items()
@@ -283,14 +296,14 @@ class DatatypeCheckboxes(Static):
 def get_checkbox_name(
     create_or_transfer: Literal["create", "transfer"], datatype
 ):
-    """PLACEHOLDER."""
+    """Return a canonical formatted checkbox name."""
     return f"{create_or_transfer}_{datatype}_checkbox"
 
 
 def get_tui_settings_key_name(
     create_or_transfer: Literal["create", "transfer"],
 ) -> str:
-    """PLACEHOLDER."""
+    """Return the canonical tui settings key."""
     if create_or_transfer == "create":
         settings_key = "create_checkboxes_on"
     else:
