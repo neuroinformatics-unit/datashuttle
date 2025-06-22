@@ -29,11 +29,7 @@ def quick_validate_project(
     strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
 ) -> List[str]:
-    """Perform validation on the project.
-
-    This checks the subject
-    and session level folders to ensure there are not
-    NeuroBlueprint formatting issues.
+    """Perform validation on a NeuroBlueprint-formatted project.
 
     Parameters
     ----------
@@ -46,11 +42,11 @@ def quick_validate_project(
         perform validation. If `None`, both are checked.
 
     display_mode
-        The validation issues are displayed as ``"error"`` (raise error)
-        ``"warn"`` (show warning) or ``"print"``.
+        The validation issues are displayed as ``"error"`` (raise error),
+        ``"warn"`` (show warning), or ``"print"``.
 
     strict_mode
-        If `True`, only allow NeuroBlueprint-formatted folders to exist in
+        If ``True``, only allow NeuroBlueprint-formatted folders to exist in
         the project. By default, non-NeuroBlueprint folders (e.g. a folder
         called 'my_stuff' in the 'rawdata') are allowed, and only folders
         starting with sub- or ses- prefix are checked. In `Strict Mode`,
@@ -105,8 +101,14 @@ def _format_top_level_folder(
     """Format the top level folder.
 
     Take a `top_level_folder` ("rawdata" or "derivatives" str) and
-    convert to list, if `None`, convert it to a list
+    convert it to a list. If `None`, convert it to a list
     of both possible top-level folders.
+
+    Parameters
+    ----------
+    top_level_folder
+        The top-level folder to format. Can be "rawdata", "derivatives", or None.
+
     """
     rawdata_and_derivatives: List[TopLevelFolder] = ["rawdata", "derivatives"]
 
