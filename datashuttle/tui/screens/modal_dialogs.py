@@ -47,14 +47,24 @@ class MessageBox(ModalScreen):
     """
 
     def __init__(self, message: str, border_color: str) -> None:
-        """PLACEHOLDER."""
+        """Initialise the MessageBox.
+
+        Parameters
+        ----------
+        message
+            Message to display on the MessageBox.
+
+        border_color
+            Color of the MessageBox border (e.g. green if the message is positive).
+
+        """
         super(MessageBox, self).__init__()
 
         self.message = message
         self.border_color = border_color
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the MessageBox."""
         yield Container(
             Container(
                 Static(self.message, id="messagebox_message_label"),
@@ -65,7 +75,7 @@ class MessageBox(ModalScreen):
         )
 
     def on_mount(self) -> None:
-        """PLACEHOLDER."""
+        """Update widgets immediately after mounting."""
         if self.border_color == "red":
             color = "rgb(140, 12, 0)"
         elif self.border_color == "green":
@@ -81,7 +91,7 @@ class MessageBox(ModalScreen):
         )
 
     def on_button_pressed(self) -> None:
-        """PLACEHOLDER."""
+        """Handle button press."""
         self.dismiss(True)
 
 
@@ -98,14 +108,24 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
         message: str,
         transfer_func: Callable[[], Worker[InterfaceOutput]],
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise the ConfirmAndAwaitTransferPopup.
+
+        Parameters
+        ----------
+        message
+            Message to display while running the transfer.
+
+        transfer_func
+            Function to run in a worker that performs the transfer.
+
+        """
         super().__init__()
 
         self.transfer_func = transfer_func
         self.message = message
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the ConfirmAndAwaitTransferPopup."""
         yield Container(
             Label(self.message, id="confirm_message_label"),
             Horizontal(
@@ -117,7 +137,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """PLACEHOLDER."""
+        """Handle button press on the ConfirmAndAwaitTransferPopup."""
         if event.button.id == "confirm_ok_button":
             self.query_one("#confirm_button_container").remove()
 
@@ -134,7 +154,7 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
             self.dismiss()
 
     async def handle_transfer_and_update_ui_when_complete(self) -> None:
-        """Runs the data transfer worker and updates the UI on completion."""
+        """Run the data transfer worker and updates the UI on completion."""
         data_transfer_worker = self.transfer_func()
         await data_transfer_worker.wait()
         success, output = data_transfer_worker.result
@@ -155,19 +175,23 @@ class ConfirmAndAwaitTransferPopup(ModalScreen):
 
 
 class SearchingCentralForNextSubSesPopup(ModalScreen):
-    """A popup to show message and a loading indicator when awaiting search next sub/ses across
-    the folders present in both local and central machines. This search happens in a separate
-    thread so as to allow TUI to display the loading indicate without freezing.
+    """Show message and a loading indicator for suggesting the next subject or session.
 
-    Only displayed when the `include_central` flag is checked and the connection method is "ssh".
+    Used to await searching next sub/ses across including folders
+    present on the central machine. This search happens in a separate
+    thread to allow TUI to display the loading indicate without freezing.
+
+    Only displayed when the `include_central` flag is checked and the
+    connection method is "ssh".
     """
 
     def __init__(self, sub_or_ses: Prefix) -> None:
+        """Initialise SearchingCentralForNextSubSesPopup."""
         super().__init__()
         self.message = f"Searching central for next {sub_or_ses}"
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to SearchingCentralForNextSubSesPopup."""
         yield Container(
             Label(self.message, id="searching_message_label"),
             LoadingIndicator(id="searching_animated_indicator"),
@@ -176,10 +200,10 @@ class SearchingCentralForNextSubSesPopup(ModalScreen):
 
 
 class SelectDirectoryTreeScreen(ModalScreen):
-    """A modal screen that includes a DirectoryTree to browse
-    and select folders. If a folder is double-clicked,
-    the path to the folder is returned through 'dismiss'
-    callback mechanism.
+    """Screen that includes a DirectoryTree to browse and select folders.
+
+    If a folder is double-clicked, the path to the folder is
+    returned through 'dismiss' callback mechanism.
 
     Parameters
     ----------
@@ -195,7 +219,17 @@ class SelectDirectoryTreeScreen(ModalScreen):
     def __init__(
         self, mainwindow: TuiApp, path_: Optional[Path] = None
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise SelectDirectoryTreeScreen.
+
+        Parameters
+        ----------
+        mainwindow
+            The main TUI app.
+
+        path_
+            Root path for the DirectoryTree.
+
+        """
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
@@ -206,7 +240,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         self.click_info = ClickInfo()
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the SelectDirectoryTreeScreen."""
         label_message = (
             "Select (double click) a folder with the same name as the project.\n"
             "If the project folder does not exist, select the parent folder and it will be created."
@@ -232,6 +266,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
     @staticmethod
     def get_drives():
         """Get drives available on the machine to switch between.
+
         For Windows,  use `psutil` to get the list of drives.
         Otherwise, assume root is "/" and take all folders from that level.
         """
@@ -252,9 +287,11 @@ class SelectDirectoryTreeScreen(ModalScreen):
             ]
 
     def get_selected_drive(self):
-        """Get the default drive which the select starts on. For windows,
-        use the .drive attribute but for macOS and Linux this is blank.
-        On these Os use the first folder (e.g. /Users) as the default drive.
+        """Get the default drive which the select starts on.
+
+        For windows, use the .drive attribute but for macOS and Linux
+        this is blank. On these Os use the first folder (e.g. /Users)
+        as the default drive.
         """
         if platform.system() == "Windows":
             selected_drive = f"{self.path_.drive}\\"
@@ -263,7 +300,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
         return selected_drive
 
     def on_select_changed(self, event: Select.Changed) -> None:
-        """Updates the directory tree when the drive is changed."""
+        """Update the directory tree when the drive is changed."""
         self.path_ = Path(event.value)
         self.query_one(
             "#select_directory_tree_directory_tree"
@@ -273,30 +310,40 @@ class SelectDirectoryTreeScreen(ModalScreen):
     def on_directory_tree_directory_selected(
         self, event: DirectoryTree.DirectorySelected
     ) -> None:
-        """PLACEHOLDER."""
+        """Handle a node on the DirectoryTree selected."""
         if event.path.is_file():
             return
         else:
             self.dismiss(event.path)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """PLACEHOLDER."""
+        """Handle cancel button pressed."""
         if event.button.id == "cancel_button":
             self.dismiss(False)
 
 
 class RenameFileOrFolderScreen(ModalScreen):
-    """PLACEHOLDER."""
+    """A screen to handle the renaming of a file or folder selected through the DirectoryTree."""
 
     def __init__(self, mainwindow: TuiApp, path_: Path) -> None:
-        """PLACEHOLDER."""
+        """Initialise RenameFileOrFolderScreen.
+
+        Parameters
+        ----------
+        mainwindow
+            The main TUI app.
+
+        path_
+            Path of the file or folder to rename.
+
+        """
         super(RenameFileOrFolderScreen, self).__init__()
 
         self.mainwindow = mainwindow
         self.path_ = path_
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the RenameFileOrFolderScreen."""
         yield Container(
             Label("Input the new name:", id="rename_screen_label"),
             Input(value=self.path_.stem, id="rename_screen_input"),
@@ -309,7 +356,7 @@ class RenameFileOrFolderScreen(ModalScreen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """PLACEHOLDER."""
+        """Handle button pressed on the RenameFileOrFolderScreen."""
         if event.button.id == "rename_screen_okay_button":
             self.dismiss(self.query_one("#rename_screen_input").value)
 
