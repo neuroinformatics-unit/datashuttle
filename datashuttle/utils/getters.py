@@ -37,9 +37,11 @@ def get_next_sub_or_ses(
     default_num_value_digits: int = 3,
     name_template_regexp: Optional[str] = None,
 ) -> str:
-    """Suggest the next available subject or session number. This function will
-    search the local repository, and the central repository, for all subject
-    or session folders (subject or session depending on inputs).
+    """Suggest the next available subject or session number.
+
+    This function will search the local repository, and the central
+    repository, for all subject or session folders (subject or session
+    depending on inputs).
 
     It will take the union of all folder names, find the relevant key-value
     pair values, and return the maximum value + 1 as the new number.
@@ -56,11 +58,11 @@ def get_next_sub_or_ses(
         The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
 
     sub
-        subject name to search within if searching for sessions, otherwise None
+        Subject name to search within if searching for sessions, otherwise None
         to search for subjects
 
     search_str
-        the string to search for within the top-level or subject-level
+        The string to search for within the top-level or subject-level
         folder ("sub-*") or ("ses-*") are suggested, respectively.
 
     include_central
@@ -126,10 +128,10 @@ def get_max_sub_or_ses_num_and_value_length(
     default_num_value_digits: Optional[int] = None,
     name_template_regexp: Optional[str] = None,
 ) -> Tuple[int, int]:
-    """Given a list of BIDS-style folder names, find the maximum subject or
-    session value (sub or ses depending on `prefix`). Also, find the
-    number of value digits across the project, so a new suggested number
-    can be formatted consistency. If the list is empty, set the value
+    """Find the maximum subject or session value given a list of BIDS-style folder names.
+
+    Also, find the number of value digits across the project, so a new suggested
+    number can be formatted consistency. If the list is empty, set the value
     to 0 and a default number of value digits.
 
     Parameters
@@ -215,8 +217,15 @@ def get_num_value_digits_from_project(
     all_values_str: List[str], prefix: Prefix
 ) -> int:
     """Find the number of digits for the sub or ses key within the project.
-    `all_values_str` is a list of all the sub or ses values from within
-    the project.
+
+    Parameters
+    ----------
+    all_values_str
+        A list of all the sub or ses values from within the project.
+
+    prefix
+        "sub" or "ses".
+
     """
     all_num_value_digits = [len(value) for value in all_values_str]
 
@@ -234,8 +243,9 @@ def get_num_value_digits_from_project(
 def get_num_value_digits_from_regexp(
     prefix: Prefix, name_template_regexp: str
 ) -> Union[Literal[False], int]:
-    r"""Given a name template regexp, find the number of values for the
-    sub or ses key. These will be fixed with "\d" (digit) or ".?" (wildcard).
+    r"""Given a name template regexp, find the number of values for the sub or ses key.
+
+    These will be fixed with "\d" (digit) or ".?" (wildcard).
     If there is length-unspecific wildcard (.*) in the sub key, then skip.
     In practice, there should never really be a .* in the sub or ses
     key of a name template, but handle it just in case.
@@ -260,8 +270,9 @@ def get_num_value_digits_from_regexp(
 
 
 def get_existing_project_paths() -> List[Path]:
-    """Return full path and names of datashuttle projects on
-    this local machine. A project is determined by a project
+    """Return full path and names of datashuttle projects on this local machine.
+
+    A project is determined by a project
     folder in the home / .datashuttle folder that contains a
     config.yaml file. Returns in order of most recently modified
     first.
@@ -298,9 +309,10 @@ def get_all_sub_and_ses_paths(
     top_level_folder: TopLevelFolder,
     include_central: bool,
 ) -> Dict:
-    """Get a list of every subject and session name in the
-    local and central project folders. Local and central names are combined
-    into a single list, separately for subject and sessions.
+    """Return a dict including filepaths to all subjects and sessions.
+
+    Local and central names are combined into a single list,
+    separately for subject and sessions.
 
     Note this only finds local sub and ses names on this
     machine. Other local machines are not searched.
@@ -308,7 +320,7 @@ def get_all_sub_and_ses_paths(
     Parameters
     ----------
     cfg
-        datashuttle Configs
+        Datashuttle Configs.
 
     top_level_folder
         The top-level folder (e.g. `"rawdata"`, `"derivatives"`)
