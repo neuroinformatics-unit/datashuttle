@@ -1,6 +1,5 @@
 class Folder:
-    """Folder class used to contain details of canonical
-    folders in the project folder tree.
+    """Contains details of canonical folders in the project folder tree.
 
     see configs.canonical_folders.py for details.
     """
@@ -10,9 +9,10 @@ class Folder:
         name: str,
         level: str,
     ):
-        """Parameters
-        -------------
+        """Initialise the Folder class.
 
+        Parameters
+        ----------
         name
             the name of the folder.
 
