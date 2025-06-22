@@ -365,14 +365,13 @@ class TestTuiConfigs(TuiBase):
     # -------------------------------------------------------------------------
 
     @pytest.mark.asyncio
-    async def test_project_name_is_number(self):
+    async def test_project_name_is_number(self, empty_project_paths):
         """
         Make a project that has a number name, and check the project screen
         can be loaded.
         """
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up a project with a numerical project name
             project_name = "123"
 
