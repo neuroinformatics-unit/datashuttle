@@ -22,8 +22,9 @@ def check_and_format_names(
     name_templates: Optional[Dict] = None,
     bypass_validation: bool = False,
 ) -> List[str]:
-    """Format a list of subject or session names, e.g.
-    by ensuring all have sub- or ses- prefix, checking
+    """Format a list of subject or session names.
+
+    This ensures all have sub- or ses- prefix, checks
     for tags, that names do not include spaces and that
     there are not duplicates.
 
@@ -116,6 +117,7 @@ def update_names_with_range_to_flag(
     names: List[str], prefix: str
 ) -> List[str]:
     """Given a list of names, check if they contain the @TO@ keyword.
+
     If so, expand to a range of names. Names including the @TO@
     keyword must be in the form prefix-num1@num2. The maximum
     number of leading zeros are used to pad the output
@@ -171,9 +173,7 @@ def update_names_with_range_to_flag(
 def check_name_with_to_tag_is_formatted_correctly(
     name: str, prefix: str
 ) -> None:
-    """Check the input string is formatted with the @TO@ key
-    as expected.
-    """
+    """Check the input string is formatted with the @TO@ key as expected."""
     first_key_value_pair = name.split("_")[0]
     expected_format = re.compile(f"{prefix}-[0-9]+{tags('to')}[0-9]+")
 
@@ -189,7 +189,9 @@ def check_name_with_to_tag_is_formatted_correctly(
 def make_list_of_zero_padded_names_across_range(
     left_number: str, right_number: str, name_start_str: str, name_end_str: str
 ) -> List[str]:
-    """Numbers formatted with the @TO@ keyword need to have
+    """Make a list of subject or session names across a range.
+
+    Numbers formatted with the @TO@ keyword need to have
     standardised leading zeros on the output. Here we take
     the maximum number of leading zeros and apply for
     all numbers in the range. Note int() will strip
@@ -257,9 +259,7 @@ def replace_date_time_tags_in_name(
     date_with_key: str,
     time_with_key: str,
 ):
-    """For all names in the list, do the replacement of tags
-    with their final values.
-    """
+    """Replace tags with their final value for every name in a list."""
     for i, name in enumerate(names):
         # datetime conditional must come first.
         if tags("datetime") in name:
@@ -293,7 +293,9 @@ def format_datetime(date: str, time_: str) -> str:
 
 
 def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
-    """If names are passed with @DATE@, @TIME@, or @DATETIME@
+    """Handle tags that are not perfectly formatted with underscores.
+
+    If names are passed with @DATE@, @TIME@, or @DATETIME@
     but not surrounded by underscores, check and insert
     if required. e.g. sub-001@DATE@ becomes sub-001_@DATE@
     or sub-001@DATEid-101 becomes sub-001_@DATE_id-101.
@@ -322,11 +324,7 @@ def add_underscore_before_after_if_not_there(string: str, key: str) -> str:
 def add_missing_prefixes_to_names(
     all_names: Union[List[str], str], prefix: str
 ) -> List[str]:
-    """Make sure all elements in the list of names are
-    prefixed with the prefix, typically "sub-" or "ses-".
-
-    Use expanded list for readability
-    """
+    """Ensure all elements in the list of names are prefixed with "sub-" or "ses-"."""
     prefix = prefix + "-"
     n_chars = len(prefix)
 
