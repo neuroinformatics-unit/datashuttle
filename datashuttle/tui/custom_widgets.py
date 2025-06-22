@@ -39,14 +39,14 @@ from datashuttle.configs import canonical_folders
 # ClickableInput
 # --------------------------------------------------------------------------------------
 class ClickableInput(Input):
-    """An input widget which emits a `ClickableInput.Clicked`
-    signal when clicked, containing the input name
-    `input` and mouse button index `button`.
+    """An input widget which emits a `ClickableInput.Clicked` event when clicked.
+
+    The event contains the input name `input` and mouse button index `button`.
     """
 
     @dataclass
     class Clicked(Message):
-        """PLACEHOLDER."""
+        """The event class."""
 
         input: ClickableInput
         ctrl: bool
@@ -59,7 +59,26 @@ class ClickableInput(Input):
         validate_on: Optional[List[str]] = None,
         validators: Optional[List[Validator]] = None,
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise the Clicked event class.
+
+        Parameters
+        ----------
+        mainwindow
+            The Datashuttle TUI application
+
+        placeholder
+            Placeholder (i.e. example) text for the Input.
+
+        id
+            Textual ID of the Input.
+
+        validate_on
+            Textual keywords specifying actions to validate on (e.g. ["changed", "submitted"])
+
+        validators
+            Textual validator objects to apply.
+
+        """
         super(ClickableInput, self).__init__(
             placeholder=placeholder,
             id=id,
@@ -70,14 +89,15 @@ class ClickableInput(Input):
         self.mainwindow = mainwindow
 
     def _on_click(self, event: events.Click) -> None:
+        """Handle when the input is clicked."""
         self.post_message(self.Clicked(self, event.ctrl))
 
     def as_names_list(self) -> List[str]:
-        """PLACEHOLDER."""
+        """Return the contents of the input as a list split by ','."""
         return self.value.replace(" ", "").split(",")
 
     def on_key(self, event: events.Key) -> None:
-        """PLACEHOLDER."""
+        """Handle keyboard press on the Input."""
         if event.key == "ctrl+q":
             self.mainwindow.copy_to_clipboard(self.value)
 
@@ -91,14 +111,16 @@ class ClickableInput(Input):
 
 
 class CustomDirectoryTree(DirectoryTree):
-    """Base class for directory tree with some customised additions:
+    """Base class for a custom directory tree.
+
+     This has some customised additions:
     - filter out top-level folders that are not canonical
     - add additional keyboard shortcuts defined in `on_key`.
     """
 
     @dataclass
     class DirectoryTreeSpecialKeyPress(Message):
-        """PLACEHOLDER."""
+        """Event to handle a key press on the CustomDirectoryTree."""
 
         key: str
         node_path: Optional[Path]
@@ -106,21 +128,46 @@ class CustomDirectoryTree(DirectoryTree):
     def __init__(
         self, mainwindow: TuiApp, path: Path, id: Optional[str] = None
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise the Directory Tree.
+
+        Parameters
+        ----------
+        mainwindow
+            Datashuttle TUI application.
+
+        path
+            Root path for the CustomDirectoryTree.
+
+        id
+            Textual ID for the CustomDirectoryTree.
+
+        """
         super(CustomDirectoryTree, self).__init__(path=path, id=id)
 
         self.mainwindow = mainwindow
 
     def filter_paths(self, paths: Iterable[Path]) -> Iterable[Path]:
-        """Filter out all hidden folders and files from DirectoryTree
-        display.
+        """Filter out all hidden folders and files from CustomDirectoryTree display.
+
+        Parameters
+        ----------
+        paths
+            Paths to be filtered before being added to the CustomDirectoryTree.
+
         """
         return [path for path in paths if not path.name.startswith(".")]
 
     def on_key(self, event: events.Key) -> None:
-        """Handle key presses on the CustomDirectoryTree. Depending on the keys pressed,
-        copy the path under the cursor, refresh the directorytree or
-        emit a DirectoryTreeSpecialKeyPress event.
+        """Handle key presses on the CustomDirectoryTree.
+
+        Depending on the keys pressed, copy the path under the cursor,
+        refresh the CustomDirectoryTree or emit a DirectoryTreeSpecialKeyPress event.
+
+        Parameters
+        ----------
+        event
+            Textual event containing information on the key press.
+
         """
         if event.key == "ctrl+q":
             path_ = self.get_node_at_line(self.hover_line).data.path
@@ -148,7 +195,9 @@ class CustomDirectoryTree(DirectoryTree):
     def _render_line(
         self, y: int, x1: int, x2: int, base_style: Style
     ) -> Strip:
-        """Overridden from textual's `Tree` class to stop
+        """Overridden function that renders CustomDirectoryTree lines.
+
+        Overridden from textual's `Tree` class to stop
         CSS styling on hovering and clicking which was distracting /
         changed the default color used for transfer status, respectively.
 
@@ -199,11 +248,14 @@ class CustomDirectoryTree(DirectoryTree):
             def get_guides(style: Style) -> tuple[str, str, str, str]:
                 """Get the guide strings for a given style.
 
-                Args:
-                    style: A Style object.
+                Parameters
+                ----------
+                style
+                    A Style object.
 
-                Returns:
-                    Strings for space, vertical, terminator and cross.
+                Returns
+                -------
+                Strings for space, vertical, terminator and cross.
 
                 """
                 lines: tuple[
@@ -292,7 +344,9 @@ class CustomDirectoryTree(DirectoryTree):
 
 
 class TreeAndInputTab(TabPane):
-    """A parent class that defined common methods for screens with
+    """High level class for Custom DirectoryTrees and Inputs.
+
+    A parent class that defined common methods for screens with
     a directory tree and sub / session inputs, .e. the Create tab
     and the Transfer tab.
     """
@@ -300,7 +354,9 @@ class TreeAndInputTab(TabPane):
     def handle_fill_input_from_directorytree(
         self, sub_input_key: str, ses_input_key: str, event: events.Key
     ) -> None:
-        """When a CustomDirectoryTree key is pressed, we typically
+        """Handle interactions between CustomDirectoryTree and Inputs.
+
+        When a CustomDirectoryTree key is pressed, we typically
         want to perform an action that involves an Input. These are
         coordinated here. Note that the 'copy' and 'refresh'
         features of the tree is handled at the level of the
@@ -345,11 +401,19 @@ class TreeAndInputTab(TabPane):
     def insert_sub_or_ses_name_to_input(
         self, sub_input_key: str, ses_input_key: str, name: str
     ) -> None:
-        """See `handle_directorytree_key_pressed` for `sub_input_key` and
-        `ses_input_key`.
+        """Fill an input with the CustomDirectoryTree subject or session folder name under mouse.
+
+        Parameters
+        ----------
+        sub_input_key
+            The textual widget id for the subject input (prefixed with #)
+
+        ses_input_key
+            The textual widget id for the session input (prefixed with #)
 
         name
             The sub or ses name to append to the input.
+
         """
         if name.startswith("sub-"):
             self.query_one(sub_input_key).value = name
@@ -384,8 +448,9 @@ class TreeAndInputTab(TabPane):
 
 
 class TopLevelFolderSelect(Select):
-    """A Select widget for display and updating of top-level-folders. The
-    Create tab and transfer tabs (custom, top-level-folder) all have
+    """A Select widget for display and updating of top-level-folders.
+
+    The Create tab and transfer tabs (custom, top-level-folder) all have
     top level folder selects that perform the same function. This
     widget unifies these in a single place.
 
@@ -406,7 +471,17 @@ class TopLevelFolderSelect(Select):
     """
 
     def __init__(self, interface: Interface, id: str) -> None:
-        """PLACEHOLDER."""
+        """Initialise the TopLevelFolderSelect.
+
+        Parameters
+        ----------
+        interface
+            Datashuttle Interface object.
+
+        id
+            Textual id for the Select widget.
+
+        """
         self.interface = interface
 
         top_level_folders = [
@@ -438,8 +513,9 @@ class TopLevelFolderSelect(Select):
         )
 
     def get_top_level_folder(self, init: bool = False) -> str:
-        """Get the top level folder from `persistent_settings`,
-        performing a confidence-check that it matches the textual display.
+        """Get the top level folder from `persistent_settings`.
+
+        Performs a confidence-check that it matches the textual display.
         """
         top_level_folder = self.interface.tui_settings[
             "top_level_folder_select"
@@ -453,9 +529,7 @@ class TopLevelFolderSelect(Select):
         return top_level_folder
 
     def get_displayed_top_level_folder(self) -> str:
-        """Get the top level folder that is currently selected
-        on the select widget.
-        """
+        """Get the top level folder that is currently selected on the select widget."""
         assert self.value in canonical_folders.get_top_level_folders()
         return self.value
 
