@@ -36,8 +36,9 @@ def create_folder_trees(
     datatype: Union[List[str], str],
     log: bool = True,
 ) -> Dict[str, List[Path]]:
-    """Entry method to make a full folder tree. It will
-    iterate through all passed subjects, then sessions, then
+    """Entry method to make a full folder tree.
+
+    Iterate through all passed subjects, then sessions, then
     subfolders within a datatype folder. This
     permits flexible creation of folders (e.g.
     to make subject only, do not pass session name.
@@ -128,9 +129,10 @@ def make_datatype_folders(
     save_paths: Dict,
     log: bool = True,
 ):
-    """Make datatype folder (e.g. behav) at the sub or ses
-    level. Checks folder_class.Folders attributes,
-    whether the datatype is used and at the current level.
+    """Make datatype folder (e.g. behav) at the sub or ses level.
+
+    Checks folder_class.Folders attributes, whether the datatype
+    is used and at the current level.
 
     Parameters
     ----------
@@ -180,8 +182,7 @@ def make_datatype_folders(
 
 
 def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
-    """For path or list of paths, make them if
-    they do not already exist.
+    """Make a path or list of paths if they do not already exist.
 
     Parameters
     ----------
@@ -219,10 +220,11 @@ def search_project_for_sub_or_ses_names(
     include_central: bool,
     return_full_path: bool = False,
 ) -> Dict:
-    """If sub is None, the top-level level folder will be
-    searched (i.e. for subjects). The search string "sub-*" is suggested
-    in this case. Otherwise, the subject, level folder for the specified
-    subject will be searched. The search_str "ses-*" is suggested in this case.
+    """If sub is None, the top-level level folder will be searched (i.e. for subjects).
+
+    The search string "sub-*" is suggested in this case. Otherwise, the subject,
+    level folder for the specified subject will be searched.
+    The search_str "ses-*" is suggested in this case.
 
     Note `verbose` argument of `search_sub_or_ses_level()` is set to `False`,
     as session folders for local subjects that are not yet on central
@@ -270,12 +272,12 @@ def items_from_datatype_input(
     sub: str,
     ses: Optional[str] = None,
 ) -> Union[ItemsView, zip]:
-    """Get the list of datatypes to transfer, either
-    directly from user input, or by searching
+    """Get the list of datatypes to transfer.
+
+    Take these directly from user input, or by searching
     what is available if "all" is passed.
 
-    see _transfer_datatype() for full
-    parameters list.
+    see _transfer_datatype() for full parameters list.
     """
     base_folder = cfg.get_base_folder(local_or_central, top_level_folder)
 
@@ -307,8 +309,9 @@ def search_for_datatype_folders(
     sub: str,
     ses: Optional[str] = None,
 ) -> zip:
-    """Search a subject or session folder specifically
-    for datatypes. First searches for all folders / files
+    """Search a subject or session folder specifically for datatypes.
+
+    First searches for all folders / files
     in the folder, and then returns any folders that
     match datatype name.
 
@@ -336,9 +339,9 @@ def process_glob_to_find_datatype_folders(
     folder_names: list,
     datatype_folders: dict,
 ) -> zip:
-    """Process the results of glob on a sub or session level,
-    which could contain any kind of folder / file.
+    """Process the results of glob on a sub or session level.
 
+    The results could contain any type of folder / file.
     see project.search_sub_or_ses_level() for inputs.
 
     Returns
@@ -456,7 +459,6 @@ def search_sub_or_ses_level(
     return_full_path: bool = False,
 ) -> Tuple[List[str] | List[Path], List[str]]:
     """Search project folder at the subject or session level.
-    Only returns folders.
 
     Parameters
     ----------
@@ -527,8 +529,7 @@ def search_for_folders(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """Wrapper to determine the method used to search for search
-    prefix folders in the search path.
+    """Determine the method used to search for search prefix folders in the search path.
 
     Parameters
     ----------
@@ -578,7 +579,9 @@ def search_for_folders(
 def search_filesystem_path_for_folders(
     search_path_with_prefix: Path, return_full_path: bool = False
 ) -> Tuple[List[Path | str], List[Path | str]]:
-    """Use glob to search the full search path (including prefix) with glob.
+    """Search a folder through the local filesystem.
+
+    Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning folders only.
     """
     all_folder_names = []
