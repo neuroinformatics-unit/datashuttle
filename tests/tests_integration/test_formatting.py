@@ -6,8 +6,6 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestFormatting(BaseTest):
-    """PLACEHOLDER."""
-
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     @pytest.mark.parametrize(
         "input", [1, {"test": "one"}, 1.0, ["1", "2", ["three"]]]
@@ -65,7 +63,6 @@ class TestFormatting(BaseTest):
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_warning_non_consecutive_numbers(self, project, top_level_folder):
-        """PLACEHOLDER."""
         project.create_folders(
             top_level_folder,
             ["sub-01", "sub-02", "sub-04"],

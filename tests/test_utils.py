@@ -95,7 +95,6 @@ def delete_all_folders_in_local_path(project):
 
 
 def delete_all_folders_in_project_path(project, local_or_central):
-    """PLACEHOLDER."""
     folder = f"{local_or_central}_path"
 
     if project.cfg is None or (
@@ -112,7 +111,6 @@ def delete_all_folders_in_project_path(project, local_or_central):
 
 
 def delete_project_if_it_exists(project_name):
-    """PLACEHOLDER."""
     config_path, _ = canonical_folders.get_project_datashuttle_path(
         project_name
     )
@@ -149,7 +147,6 @@ def make_test_path(base_path, local_or_central, test_project_name):
 
 
 def create_all_pathtable_files(pathtable):
-    """PLACEHOLDER."""
     for i in range(pathtable.shape[0]):
         filepath = pathtable["base_folder"][i] / pathtable["path"][i]
         filepath.parents[0].mkdir(parents=True, exist_ok=True)
@@ -389,7 +386,6 @@ def make_local_folders_with_files_in(
 
 
 def check_configs(project, kwargs, config_path=None):
-    """PLACEHOLDER."""
     if config_path is None:
         config_path = project._config_path
 
@@ -424,7 +420,6 @@ def check_project_configs(
 
 
 def check_config_file(config_path, *kwargs):
-    """PLACEHOLDER."""
     with open(config_path) as config_file:
         config_yaml = yaml.full_load(config_file)
 
@@ -440,7 +435,6 @@ def check_config_file(config_path, *kwargs):
 def get_top_level_folder_path(
     project, local_or_central="local", folder_name="rawdata"
 ):
-    """PLACEHOLDER."""
     assert folder_name in canonical_folders.get_top_level_folders(), (
         "folder_name must be canonical e.g. rawdata"
     )
@@ -486,7 +480,6 @@ def handle_upload_or_download(
 def get_transfer_func(
     project, upload_or_download, transfer_method, top_level_folder=None
 ):
-    """PLACEHOLDER."""
     if transfer_method == "top_level_folder":
         assert top_level_folder is not None, "must pass top-level-folder"
     assert top_level_folder in [None, "rawdata", "derivatives"]

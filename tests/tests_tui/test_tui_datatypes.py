@@ -13,7 +13,6 @@ class TestDatatypesTUI(TuiBase):
     async def test_select_displayed_datatypes_create(
         self, setup_project_paths
     ):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -134,7 +133,6 @@ class TestDatatypesTUI(TuiBase):
     async def test_select_displayed_datatypes_transfer(
         self, setup_project_paths, mocker
     ):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()

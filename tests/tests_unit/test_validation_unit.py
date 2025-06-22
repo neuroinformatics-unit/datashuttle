@@ -4,8 +4,6 @@ from datashuttle.utils import formatting, validation
 
 
 class TestValidationUnit:
-    """PLACEHOLDER."""
-
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_more_than_one_instance(self, prefix):
         """Check that any duplicate sub or ses values are caught
@@ -17,7 +15,7 @@ class TestValidationUnit:
 
         assert len(error_message) == 1
         assert (
-            f"DUPLICATE_PREFIX: The name: {prefix}-99_date-20231214_{prefix}-98 of "
+            f"DUPLICATE_PREFIX: The name: {prefix}-99_date-20231214_{prefix}-98 "
             f"contains more than one instance of the prefix {prefix}."
             == error_message[0]
         )
@@ -71,7 +69,6 @@ class TestValidationUnit:
         ],
     )
     def test_prefix_is_not_an_integer(self, prefix_and_names):
-        """PLACEHOLDER."""
         prefix, names = prefix_and_names
 
         error_messages = validation.validate_list_of_names(names, prefix)
@@ -251,7 +248,6 @@ class TestValidationUnit:
         )
 
     def test_handle_path(self):
-        """PLACEHOLDER."""
         output = validation.handle_path("message", None)
         assert output == "message"
 
@@ -263,7 +259,6 @@ class TestValidationUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_datetime_iso_format(self, prefix):
-        """PLACEHOLDER."""
         # Test dates
         error_messages = validation.validate_list_of_names(
             [

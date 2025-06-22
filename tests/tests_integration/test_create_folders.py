@@ -13,8 +13,6 @@ from datashuttle.configs.canonical_tags import tags
 
 
 class TestCreateFolders(BaseTest):
-    """PLACEHOLDER."""
-
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_generate_folders_default_ses(self, project):
         """Make a subject folders with full tree. Don't specify
@@ -485,12 +483,10 @@ class TestCreateFolders(BaseTest):
     # ----------------------------------------------------------------------------------
 
     def get_formatted_date_and_time(self):
-        """PLACEHOLDER."""
         date = str(datetime.datetime.now().date())
         date = date.replace("-", "")
         time_ = datetime.datetime.now().time().strftime("%Hh%Mm")
         return date, time_
 
     def broad_datatypes(self):
-        """PLACEHOLDER."""
         return canonical_configs.get_broad_datatypes()

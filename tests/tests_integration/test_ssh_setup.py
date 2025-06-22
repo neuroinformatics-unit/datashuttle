@@ -13,8 +13,6 @@ from datashuttle.utils import ssh
 
 @pytest.mark.skipif(ssh_config.TEST_SSH is False, reason="TEST_SSH is false")
 class TestSSH:
-    """PLACEHOLDER."""
-
     @pytest.fixture(scope="function")
     def project(test, tmp_path):
         """Make a project as per usual, but now add

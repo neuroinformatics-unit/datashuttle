@@ -45,7 +45,6 @@ class TestUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_to_keyword_in_sub_input(self, prefix):
-        """PLACEHOLDER."""
         results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
@@ -94,7 +93,6 @@ class TestUnit:
     def test_process_to_keyword_bad_input_raises_error(
         self, prefix, bad_input
     ):
-        """PLACEHOLDER."""
         bad_input = bad_input.replace("prefix", prefix)
 
         with pytest.raises(ValueError) as e:

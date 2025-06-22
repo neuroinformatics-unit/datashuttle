@@ -208,7 +208,6 @@ class TestTuiWidgets(TuiBase):
     async def check_new_project_ssh_widgets(
         self, configs_content, ssh_on, save_pressed=False
     ):
-        """PLACEHOLDER."""
         assert configs_content.query_one(
             "#configs_setup_ssh_connection_button"
         ).visible is (
@@ -1085,7 +1084,6 @@ class TestTuiWidgets(TuiBase):
             await pilot.pause()
 
     def check_datatype_checkboxes(self, pilot, tab, expected_on):
-        """PLACEHOLDER."""
         assert tab in ["create", "transfer"]
         if tab == "create":
             id = "#create_folders_datatype_checkboxes"
@@ -1109,7 +1107,6 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_all_transfer_widgets(self, setup_project_paths):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -1295,7 +1292,6 @@ class TestTuiWidgets(TuiBase):
 
     @pytest.mark.asyncio
     async def test_overwrite_existing_files(self, setup_project_paths):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -1387,7 +1383,6 @@ class TestTuiWidgets(TuiBase):
     # combine.
 
     def check_dry_run(self, pilot, project_name, value):
-        """PLACEHOLDER."""
         assert (
             pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox").value
             == value
@@ -1402,7 +1397,6 @@ class TestTuiWidgets(TuiBase):
     def check_overwrite_existing_files_configs(
         self, pilot, project_name, value
     ):
-        """PLACEHOLDER."""
         assert (
             pilot.app.screen.query_one("#transfer_tab_overwrite_select").value
             == value

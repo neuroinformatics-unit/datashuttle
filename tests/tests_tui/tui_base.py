@@ -177,13 +177,10 @@ class TuiBase:
         )
 
     async def change_checkbox(self, pilot, id):
-        """PLACEHOLDER."""
         pilot.app.screen.query_one(id).toggle()
         await pilot.pause()
 
     async def switch_tab(self, pilot, tab):
-        """PLACEHOLDER."""
-        assert tab in ["create", "transfer", "configs", "logging"]
         assert tab in ["create", "transfer", "configs", "logging", "validate"]
 
         content_tab = ContentTab.add_prefix(f"tabscreen_{tab}_tab")
@@ -237,7 +234,6 @@ class TuiBase:
         await pilot.pause()
 
     async def click_and_await_transfer(self, pilot):
-        """PLACEHOLDER."""
         await self.scroll_to_click_pause(pilot, "#transfer_transfer_button")
         await self.scroll_to_click_pause(pilot, "#confirm_ok_button")
 

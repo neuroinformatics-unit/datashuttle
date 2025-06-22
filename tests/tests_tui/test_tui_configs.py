@@ -15,8 +15,6 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiConfigs(TuiBase):
-    """PLACEHOLDER."""
-
     # -------------------------------------------------------------------------
     # Test New Project Configs
     # -------------------------------------------------------------------------
@@ -340,7 +338,6 @@ class TestTuiConfigs(TuiBase):
 
     @pytest.mark.asyncio
     async def test_bad_configs_screen_input(self, empty_project_paths):
-        """PLACEHOLDER."""
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
             # Select a new project, check NewProjectScreen is displayed correctly.

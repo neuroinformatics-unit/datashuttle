@@ -151,7 +151,6 @@ class TestTuiCreateDirectoryTree(TuiBase):
     async def test_failed_pyperclip_copy(
         self, setup_project_paths, monkeypatch
     ):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -244,7 +243,6 @@ class TestTuiCreateDirectoryTree(TuiBase):
     async def test_create_folders_directorytree_rename(
         self, setup_project_paths
     ):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         rawdata_path = tmp_path / "local" / project_name / "rawdata"

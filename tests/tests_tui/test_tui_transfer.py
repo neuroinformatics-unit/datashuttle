@@ -17,7 +17,6 @@ class TestTuiTransfer(TuiBase):
     async def test_transfer_entire_project(
         self, setup_project_paths, upload_or_download
     ):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -68,7 +67,6 @@ class TestTuiTransfer(TuiBase):
         )
 
     async def set_overwrite_checkbox(self, pilot, overwrite_setting):
-        """PLACEHOLDER."""
         all_positions = {"never": None, "always": 5, "if_source_newer": 6}
         position = all_positions[overwrite_setting]
 
@@ -78,7 +76,6 @@ class TestTuiTransfer(TuiBase):
             )
 
     async def set_transfer_tab_dry_run_checkbox(self, pilot, dry_run_setting):
-        """PLACEHOLDER."""
         if (
             pilot.app.screen.query_one("#transfer_tab_dry_run_checkbox")
             is not dry_run_setting
@@ -109,7 +106,6 @@ class TestTuiTransfer(TuiBase):
     async def test_transfer_top_level_folder(
         self, setup_project_paths, top_level_folder, upload_or_download
     ):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -155,7 +151,6 @@ class TestTuiTransfer(TuiBase):
     async def test_transfer_custom(
         self, setup_project_paths, top_level_folder, upload_or_download
     ):
-        """PLACEHOLDER."""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
@@ -225,7 +220,6 @@ class TestTuiTransfer(TuiBase):
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):
-        """PLACEHOLDER."""
         if top_level_folder == "rawdata":
             assert pilot.app.screen.query_one(id).value == "rawdata"
         else:
@@ -233,7 +227,6 @@ class TestTuiTransfer(TuiBase):
             assert pilot.app.screen.query_one(id).value == "derivatives"
 
     async def run_transfer(self, pilot, upload_or_download):
-        """PLACEHOLDER."""
         # Check assumed default is correct on the transfer switch
         assert pilot.app.screen.query_one("#transfer_switch").value is False
 
@@ -250,7 +243,6 @@ class TestTuiTransfer(TuiBase):
         top_level_folder_list,
         upload_or_download,
     ):
-        """PLACEHOLDER."""
         for top_level_folder in top_level_folder_list:
             test_utils.make_and_check_local_project_folders(
                 project,

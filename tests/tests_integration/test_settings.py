@@ -11,8 +11,6 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestPersistentSettings(BaseTest):
-    """PLACEHOLDER."""
-
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_persistent_settings_name_templates(self, project):
         """Test the 'name_templates' option that is stored in persistent

@@ -17,8 +17,6 @@ from datashuttle.utils.custom_exceptions import (
 
 
 class TestLogging:
-    """PLACEHOLDER."""
-
     @pytest.fixture(scope="function")
     def teardown_logger(self):
         """Ensure the logger is deleted at the end of each test."""
@@ -161,7 +159,6 @@ class TestLogging:
         assert "Update successful. New config file:" in log
 
     def test_logs_update_config_file(self, project):
-        """PLACEHOLDER."""
         project.update_config_file(central_host_id="test_id")
 
         log = test_utils.read_log_file(project.cfg.logging_path)
@@ -176,7 +173,6 @@ class TestLogging:
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_create_folders(self, project):
-        """PLACEHOLDER."""
         subs = ["sub-111", f"sub-002{tags('to')}004"]
 
         ses = ["ses-123", "ses-101"]
@@ -404,7 +400,6 @@ class TestLogging:
     # ----------------------------------------------------------------------------------
 
     def test_logs_check_update_config_error(self, project):
-        """PLACEHOLDER."""
         with pytest.raises(ConfigError):
             project.update_config_file(
                 connection_method="ssh", central_host_username=None
@@ -423,7 +418,6 @@ class TestLogging:
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_logs_bad_create_folders_error(self, project):
-        """PLACEHOLDER."""
         project.create_folders("rawdata", "sub-001", datatype="all")
         test_utils.delete_log_files(project.cfg.logging_path)
 

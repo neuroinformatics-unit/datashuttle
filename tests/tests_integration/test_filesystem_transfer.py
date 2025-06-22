@@ -13,8 +13,6 @@ from datashuttle.configs.canonical_tags import tags
 
 
 class TestFileTransfer(BaseTest):
-    """PLACEHOLDER."""
-
     @pytest.mark.parametrize(
         "top_level_folder", canonical_folders.get_top_level_folders()
     )
@@ -59,7 +57,6 @@ class TestFileTransfer(BaseTest):
         )
 
     def test_empty_folder_is_not_transferred(self, project):
-        """PLACEHOLDER."""
         project.create_folders("rawdata", "sub-001")
         project.upload_rawdata()
         assert not (
@@ -130,7 +127,6 @@ class TestFileTransfer(BaseTest):
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_transfer_all_top_level_folders(self, project, upload_or_download):
-        """PLACEHOLDER."""
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         for top_level_folder in canonical_folders.get_top_level_folders():
@@ -612,7 +608,6 @@ class TestFileTransfer(BaseTest):
             assert test_utils.read_file(central_file_path) == ["file earlier"]
 
     def get_paths_to_a_local_and_central_file(self, project, top_level_folder):
-        """PLACEHOLDER."""
         path_to_test_file = (
             Path(top_level_folder)
             / "sub-001"
@@ -629,7 +624,6 @@ class TestFileTransfer(BaseTest):
     def setup_overwrite_file_tests(
         self, upload_or_download, top_level_folder, project
     ):
-        """PLACEHOLDER."""
         local_file_path, central_file_path = (
             self.get_paths_to_a_local_and_central_file(
                 project, top_level_folder
@@ -737,7 +731,6 @@ class TestFileTransfer(BaseTest):
         assert transferred_files == to_test_against
 
     def setup_specific_file_or_folder_files(self, project, top_level_folder):
-        """PLACEHOLDER."""
         project.create_folders(
             top_level_folder,
             ["sub-001", "sub-002"],

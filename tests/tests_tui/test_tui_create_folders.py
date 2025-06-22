@@ -13,8 +13,6 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiCreateFolders(TuiBase):
-    """PLACEHOLDER."""
-
     # -------------------------------------------------------------------------
     # General test Create Folders
     # -------------------------------------------------------------------------
@@ -222,11 +220,12 @@ class TestTuiCreateFolders(TuiBase):
                 ).tooltip
                 == "Formatted names: ['sub-001']"
             )
+
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).tooltip
-                == "DUPLICATE_PREFIX: The name: ses-001_ses-001 of contains more than one instance of the prefix ses."
+                == "DUPLICATE_PREFIX: The name: ses-001_ses-001 contains more than one instance of the prefix ses."
             )
 
             await self.fill_input(
@@ -708,7 +707,6 @@ class TestTuiCreateFolders(TuiBase):
     async def iterate_and_check_all_datatype_folders(
         self, pilot, subs, sessions
     ):
-        """PLACEHOLDER."""
         project = pilot.app.screen.interface.project
         folder_used = test_utils.get_all_broad_folders_used(value=False)
 
@@ -726,7 +724,6 @@ class TestTuiCreateFolders(TuiBase):
     async def create_folders_and_check_output(
         self, pilot, project, subs, sessions, folder_used
     ):
-        """PLACEHOLDER."""
         await self.scroll_to_click_pause(
             pilot,
             "#create_folders_create_folders_button",

@@ -15,8 +15,6 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestValidation(BaseTest):
-    """PLACEHOLDER."""
-
     @pytest.mark.parametrize(
         "sub_name",
         ["sub-001", "sub-999_@DATE@", "sub-001_random-tag_another-tag"],
@@ -158,7 +156,6 @@ class TestValidation(BaseTest):
     def check_inconsistent_sub_or_ses_value_length_warning(
         self, project, warn_idx=0, include_central=True
     ):
-        """PLACEHOLDER."""
         with pytest.warns(UserWarning) as w:
             project.validate_project(
                 "rawdata", display_mode="warn", include_central=include_central
@@ -383,7 +380,6 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_validate_project_returned_list(self, project, prefix):
-        """PLACEHOLDER."""
         bad_names = [
             f"{prefix}-001",
             f"{prefix}-001_@DATE@",
@@ -415,7 +411,6 @@ class TestValidation(BaseTest):
         assert "VALUE_LENGTH" in concat_error
 
     def test_output_paths_are_valid(self, project):
-        """PLACEHOLDER."""
         sub_name = "sub-001x"
         ses_name = "ses-001x"
         project.create_folders(
@@ -792,7 +787,6 @@ class TestValidation(BaseTest):
     # ----------------------------------------------------------------------------------
 
     def test_quick_validation(self, mocker, project):
-        """PLACEHOLDER."""
         project.create_folders("rawdata", "sub-1")
         os.makedirs(project.cfg["local_path"] / "rawdata" / "sub-02")
         project.create_folders("derivatives", "sub-1")
@@ -849,7 +843,6 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     def test_strict_mode_validation(self, project, top_level_folder):
-        """PLACEHOLDER."""
         project.create_folders(
             top_level_folder,
             ["sub-001", "sub-002"],

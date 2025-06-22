@@ -10,8 +10,6 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 class TestConfigs(BaseTest):
-    """PLACEHOLDER."""
-
     # Test Errors
     # -------------------------------------------------------------
 

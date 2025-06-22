@@ -13,8 +13,6 @@ from pytest import ssh_config
 
 
 class TestFileTransfer:
-    """PLACEHOLDER."""
-
     @pytest.fixture(
         scope="class",
         params=[  # Set running SSH or local filesystem (see docstring).
@@ -115,7 +113,6 @@ class TestFileTransfer:
     # -------------------------------------------------------------------------
 
     def central_from_local(self, path_):
-        """PLACEHOLDER."""
         return Path(str(copy.copy(path_)).replace("local", "central"))
 
     # -------------------------------------------------------------------------

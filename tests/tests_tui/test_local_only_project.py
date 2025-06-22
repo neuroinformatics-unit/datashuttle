@@ -5,8 +5,6 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestTuiLocalOnlyProject(TuiBase):
-    """PLACEHOLDER."""
-
     @pytest.mark.asyncio
     async def test_local_only_make_project(
         self,

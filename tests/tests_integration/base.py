@@ -7,8 +7,6 @@ TEST_PROJECT_NAME = "test_project"
 
 
 class BaseTest:
-    """PLACEHOLDER."""
-
     @pytest.fixture(scope="function")
     def no_cfg_project(test):
         """Fixture that creates an empty project. Ignore the warning
