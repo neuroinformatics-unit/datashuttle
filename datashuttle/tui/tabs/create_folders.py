@@ -156,7 +156,7 @@ class CreateFoldersTab(TreeAndInputTab):
                 lambda unused_bool: self.revalidate_inputs(["sub", "ses"]),
             )
 
-    async def refresh_after_datatypes_changed(self, ignore):
+    async def refresh_after_datatypes_changed(self, ignore) -> None:
         """Redisplay the datatype checkboxes."""
         await self.recompose()
         self.on_mount()
@@ -187,7 +187,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
-    ):
+    ) -> None:
         """Handle a key press on the CustomDirectoryTree.
 
         This can refresh the CustomDirectoryTree or fill / append
@@ -250,7 +250,7 @@ class CreateFoldersTab(TreeAndInputTab):
             value = self.query_one(key).value
             self.query_one(key).validate(value=value)
 
-    def update_input_tooltip(self, message: List[str], prefix: Prefix) -> None:
+    def update_input_tooltip(self, message: str, prefix: Prefix) -> None:
         """Update the value of a subject or session tooltip indicating the validation status."""
         id = (
             "#create_folders_subject_input"
@@ -258,7 +258,7 @@ class CreateFoldersTab(TreeAndInputTab):
             else "#create_folders_session_input"
         )
         input = self.query_one(id)
-        input.tooltip = message if any(message) else None
+        input.tooltip = message
 
     # ----------------------------------------------------------------------------------
     # Datashuttle Callers
@@ -304,7 +304,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
     def suggest_next_sub_ses(
         self, prefix: Prefix, input_id: str, include_central: bool
-    ):
+    ) -> None:
         """Suggests the next sub/ses name for the project.
 
         Shows a pop up screen in cases when searching for next sub/ses takes
@@ -312,6 +312,18 @@ class CreateFoldersTab(TreeAndInputTab):
 
         Creates an asyncio task which handles the suggestion logic and
         dismissing the pop up.
+
+        Parameters
+        ----------
+        prefix
+            Suggest the next "sub" or "ses".
+
+        input_id
+            Textual ID of the widget in which to fill the suggested sub or ses.
+
+        include_central
+            If `True`, search central project as well to generate the suggestion.
+
         """
         assert self.interface.project.cfg["connection_method"] in [
             None,
@@ -337,7 +349,7 @@ class CreateFoldersTab(TreeAndInputTab):
 
     async def fill_suggestion_and_dismiss_popup(
         self, prefix, input_id, include_central
-    ):
+    ) -> None:
         """Run the `fill_input_with_next_sub_or_ses_template` worker.
 
         Awaits completion. If an error occurs in  `fill_input_with_next_sub_or_ses_template`,
@@ -345,6 +357,8 @@ class CreateFoldersTab(TreeAndInputTab):
 
         Else, if the worker successfully exits, this function handles dismissal
         of the popup.
+
+        see `suggest_next_sub_ses()` for parameters.
         """
         worker = self.fill_input_with_next_sub_or_ses_template(
             prefix, input_id, include_central
@@ -357,7 +371,7 @@ class CreateFoldersTab(TreeAndInputTab):
     @work(exclusive=True, thread=True)
     def fill_input_with_next_sub_or_ses_template(
         self, prefix: Prefix, input_id: str, include_central: bool
-    ) -> Worker:
+    ) -> Worker[None]:
         """Fill an Input the next subject / session in the project (local).
 
         If `name_templates` are set, then the sub- or ses- first key
@@ -378,6 +392,10 @@ class CreateFoldersTab(TreeAndInputTab):
 
         include_central
             If `True`, the central project is also validated.
+
+        Returns
+        -------
+        A textual Worker object for the thread in which the function is run.
 
         """
         top_level_folder = self.interface.tui_settings[
@@ -456,7 +474,7 @@ class CreateFoldersTab(TreeAndInputTab):
     # Validation
     # ----------------------------------------------------------------------------------
 
-    def run_local_validation(self, prefix: Prefix):
+    def run_local_validation(self, prefix: Prefix) -> tuple[bool, str]:
         """Run validation of the values stored in the subject / session Inputs.
 
         First, format the subject name (and session if required)
@@ -477,7 +495,15 @@ class CreateFoldersTab(TreeAndInputTab):
         Parameters
         ----------
         prefix
-            Whether to run validation on the subject or session Input
+            Whether to run validation on the "sub" or "ses".
+
+        Returns
+        -------
+        bool
+            Indicate whether validation passed successfully.
+            If `False`, there was a validation error.
+        output
+            Str containing the validation error, or successfully formatted name.
 
         """
         sub_names = self.query_one(
@@ -506,5 +532,5 @@ class CreateFoldersTab(TreeAndInputTab):
         return True, f"Formatted names: {names}"
 
     def update_directorytree_root(self, new_root_path: Path) -> None:
-        """Will automatically refresh the tree through the reactive attribute `path`."""
+        """Refresh the tree through the reactive attribute `path`."""
         self.query_one("#create_folders_directorytree").path = new_root_path

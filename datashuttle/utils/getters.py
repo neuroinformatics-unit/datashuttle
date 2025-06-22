@@ -216,7 +216,7 @@ def get_max_sub_or_ses_num_and_value_length(
 def get_num_value_digits_from_project(
     all_values_str: List[str], prefix: Prefix
 ) -> int:
-    """Find the number of digits for the sub or ses key within the project.
+    """Return the number of digits for the sub or ses key within the project.
 
     Parameters
     ----------
@@ -249,6 +249,20 @@ def get_num_value_digits_from_regexp(
     If there is length-unspecific wildcard (.*) in the sub key, then skip.
     In practice, there should never really be a .* in the sub or ses
     key of a name template, but handle it just in case.
+
+    Parameters
+    ----------
+    prefix
+        "sub" or "ses".
+
+    name_template_regexp
+        Regexp for the name template to validate against.
+
+    Returns
+    -------
+    num_digits
+        Number of digits in the sub- or ses- value, or `False` if wildcard searching.
+
     """
     all_values_str = utils.get_values_from_bids_formatted_name(
         [name_template_regexp], prefix, return_as_int=False
@@ -328,6 +342,11 @@ def get_all_sub_and_ses_paths(
     include_central
         If `False, only get names from `local_path`, otherwise from
         `local_path` and `central_path`.
+
+    Returns
+    -------
+    A dictionary with "sub" key (path to all subject folders)
+    and "ses" key (path to all session folders).
 
     """
     sub_folder_paths = folders.search_project_for_sub_or_ses_names(

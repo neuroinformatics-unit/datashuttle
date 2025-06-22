@@ -369,6 +369,12 @@ class TransferTab(TreeAndInputTab):
         This function is passed to `ConfirmAndAwaitTransferPopup` which calls it to handle
         data transfer in a worker thread. The UI updates during and after transfer are
         handled by `ConfirmAndAwaitTransferPopup`.
+
+        Returns
+        -------
+        An InterfaceOutput object that indicates whether the transfer was a success.
+        Wrapped in an awaitable Textual Worker for the thread in the function is run.
+
         """
         upload = not self.query_one("#transfer_switch").value
 

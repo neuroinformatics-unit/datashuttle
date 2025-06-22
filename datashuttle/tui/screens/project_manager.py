@@ -125,7 +125,7 @@ class ProjectManagerScreen(Screen):
                     "#tabscreen_logging_tab"
                 ).update_most_recent_label()
 
-    def update_active_tab_tree(self):
+    def update_active_tab_tree(self) -> None:
         """Reload the CustomDirectoryTree on the now-active tab."""
         active_tab_id = self.query_one("#tabscreen_tabbed_content").active
         self.query_one(f"#{active_tab_id}").reload_directorytree()
@@ -172,7 +172,7 @@ class ProjectManagerScreen(Screen):
                 self.wrap_dismiss,
             )
 
-    def wrap_dismiss(self, _):
+    def wrap_dismiss(self, _) -> None:
         """Wrap the dismiss function for push screen callbacks.
 
         Need to wrap dismiss as cannot include it directly in

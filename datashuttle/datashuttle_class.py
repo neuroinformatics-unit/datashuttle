@@ -435,7 +435,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
+    ) -> None:
         """Upload all files in the `rawdata` top level folder.
 
         Parameters
@@ -465,7 +465,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
+    ) -> None:
         """Upload all files in the `derivatives` top level folder.
 
         Parameters
@@ -495,7 +495,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
+    ) -> None:
         """Download all files in the `rawdata` top level folder.
 
         Parameters
@@ -525,7 +525,7 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
+    ) -> None:
         """Download all files in the `derivatives` top level folder.
 
         Parameters
@@ -699,7 +699,7 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-    ):
+    ) -> None:
         """Upload or download files within a particular top-level-folder.
 
         A centralised function to upload or download data within
@@ -731,7 +731,7 @@ class DataShuttle:
 
     def _transfer_specific_file_or_folder(
         self, upload_or_download, filepath, overwrite_existing_files, dry_run
-    ):
+    ) -> None:
         """Core function for upload/download_specific_folder_or_file()."""
         if isinstance(filepath, str):
             filepath = Path(filepath)
@@ -952,13 +952,13 @@ class DataShuttle:
 
     @check_configs_set
     def get_local_path(self) -> Path:
-        """Get the projects local path."""
+        """Return the projects local path."""
         return self.cfg["local_path"]
 
     @check_configs_set
     @check_is_not_local_project
     def get_central_path(self) -> Path:
-        """Get the project central path."""
+        """Return the project central path."""
         return self.cfg["central_path"]
 
     def get_datashuttle_path(self) -> Path:
@@ -970,22 +970,22 @@ class DataShuttle:
 
     @check_configs_set
     def get_config_path(self) -> Path:
-        """Get the full path to the DataShuttle config file."""
+        """Return the full path to the DataShuttle config file."""
         return self._config_path
 
     @check_configs_set
     def get_configs(self) -> Configs:
-        """Get the datashuttle configs."""
+        """Return the datashuttle configs."""
         return self.cfg
 
     @check_configs_set
     def get_logging_path(self) -> Path:
-        """Get the path where datashuttle logs are written."""
+        """Return the path where datashuttle logs are written."""
         return self.cfg.logging_path
 
     @staticmethod
     def get_existing_projects() -> List[Path]:
-        """Get a list of existing project names found on the local machine.
+        """Return a list of existing project names found on the local machine.
 
         This is based on project folders in the "home / .datashuttle" folder
         that contain valid config.yaml files.
@@ -1013,6 +1013,10 @@ class DataShuttle:
             If `False, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
+
+        Returns
+        -------
+        The next subject ID.
 
         """
         name_template = self.get_name_templates()
@@ -1058,6 +1062,10 @@ class DataShuttle:
             If ``False``, only get names from ``local_path``, otherwise from
             ``local_path`` and ``central_path``. If in local-project mode,
             this flag is ignored.
+
+        Returns
+        -------
+        The next session ID.
 
         """
         name_template = self.get_name_templates()
@@ -1169,6 +1177,11 @@ class DataShuttle:
             starting with sub- or ses- prefix are checked. In ``Strict Mode``,
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
+
+        Returns
+        -------
+        error_messages
+            A list of validation errors found in the project.
 
         """
         if include_central and strict_mode:
@@ -1366,7 +1379,7 @@ class DataShuttle:
         )
 
     def _get_json_dumps_config(self) -> str:
-        """Get the config dictionary formatted as json.dumps() which allows well formatted printing."""
+        """Return the config dictionary formatted as json.dumps() which allows well formatted printing."""
         copy_dict = copy.deepcopy(self.cfg.data)
         load_configs.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         return json.dumps(copy_dict, indent=4)
@@ -1434,7 +1447,7 @@ class DataShuttle:
             yaml.dump(settings, settings_file, sort_keys=False)
 
     def _load_persistent_settings(self) -> Dict:
-        """Load settings that are stored persistently across datashuttle sessions."""
+        """Return settings that are stored persistently across datashuttle sessions."""
         if not self._persistent_settings_path.is_file():
             self._init_persistent_settings()
 
@@ -1445,7 +1458,7 @@ class DataShuttle:
 
         return settings
 
-    def _update_settings_with_new_canonical_keys(self, settings: Dict):
+    def _update_settings_with_new_canonical_keys(self, settings: Dict) -> None:
         """Check and update keys within persistent settings if missing.
 
         Perform a check on the keys within persistent settings.
@@ -1478,7 +1491,7 @@ class DataShuttle:
             settings
         )
 
-    def _check_top_level_folder(self, top_level_folder):
+    def _check_top_level_folder(self, top_level_folder) -> None:
         """Raise an error if ``top_level_folder`` not correct."""
         canonical_top_level_folders = canonical_folders.get_top_level_folders()
 

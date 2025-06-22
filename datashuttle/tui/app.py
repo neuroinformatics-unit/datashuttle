@@ -175,10 +175,15 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
             self.show_modal_error_dialog(message)
 
-    def prompt_rename_file_or_folder(self, path_):
+    def prompt_rename_file_or_folder(self, path_) -> None:
         """Display pop-up window to rename a file or folder in a tab DirectoryTree.
 
-        Todo:
+        Parameters
+        ----------
+        path_
+            Path to the file or folder to rename.
+
+        TODO
         ----
         Can this not be moved to the relevant tab page?
 
@@ -188,7 +193,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             lambda new_name: self.rename_file_or_folder(path_, new_name),
         )
 
-    def rename_file_or_folder(self, path_, new_name):
+    def rename_file_or_folder(self, path_, new_name) -> None:
         """Rename a file or folder within the project.
 
         Parameters
@@ -228,7 +233,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     # Global Settings ---------------------------------------------------------
 
     def load_global_settings(self) -> Dict:
-        """Load the 'global settings' for the TUI.
+        """Return the loaded 'global settings' for the TUI.
 
         These settings determine project-independent settings
         that are persistent across sessions. These are stored
@@ -267,10 +272,16 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         with open(settings_path, "w") as file:
             yaml.dump(global_settings, file, sort_keys=False)
 
-    def copy_to_clipboard(self, value):
+    def copy_to_clipboard(self, value) -> None:
         """Centralized function to copy to clipboard.
 
         This may fail in headless mode on an HPC.
+
+        Parameters
+        ----------
+        value
+            Value to copy to clipboard.
+
         """
         try:
             pyperclip.copy(value)

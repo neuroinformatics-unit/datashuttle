@@ -22,6 +22,10 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     pipe_std
         if True, do not output anything to stdout.
 
+    Returns
+    -------
+    subprocess.CompletedProcess with `stdout` and `stderr` attributes.
+
     """
     command = "rclone " + command
     if pipe_std:
@@ -39,6 +43,16 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
 
     This is to avoid limits on command-line calls (in particular on Windows).
     Used for transfers due to generation of large call strings.
+
+    Parameters
+    ----------
+    command
+        Full command to run with RClone.
+
+    Returns
+    -------
+    subprocess.CompletedProcess with `stdout` and `stderr` attributes.
+
     """
     system = platform.system()
 
@@ -81,7 +95,7 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
 def setup_rclone_config_for_local_filesystem(
     rclone_config_name: str,
     log: bool = True,
-):
+) -> None:
     """Set the RClone remote config for local filesystem.
 
     RClone sets remote targets in a config file that are
@@ -117,7 +131,7 @@ def setup_rclone_config_for_ssh(
     rclone_config_name: str,
     ssh_key_path: Path,
     log: bool = True,
-):
+) -> None:
     """Set the RClone remote config for ssh.
 
     RClone sets remote targets in a config file that are
@@ -156,7 +170,7 @@ def setup_rclone_config_for_ssh(
         log_rclone_config_output()
 
 
-def log_rclone_config_output():
+def log_rclone_config_output() -> None:
     """Log the output from creating Rclone config."""
     output = call_rclone("config file", pipe_std=True)
     utils.log(
@@ -165,7 +179,7 @@ def log_rclone_config_output():
 
 
 def check_rclone_with_default_call() -> bool:
-    """Check to see whether rclone is installed."""
+    """Return a bool indicating whether rclone is installed."""
     try:
         output = call_rclone("-h", pipe_std=True)
     except FileNotFoundError:
@@ -215,6 +229,10 @@ def transfer_data(
     rclone_options
         A list of options to pass to Rclone's copy function.
         see `cfg.make_rclone_transfer_options()`.
+
+    Returns
+    -------
+    subprocess.CompletedProcess with `stdout` and `stderr` attributes.
 
     """
     assert upload_or_download in [
@@ -356,7 +374,22 @@ def perform_rclone_check(
 def handle_rclone_arguments(
     rclone_options: Dict, include_list: List[str]
 ) -> str:
-    """Construct the extra arguments to pass to RClone."""
+    """Construct the extra arguments to pass to RClone.
+
+    Parameters
+    ----------
+    rclone_options
+        A list of option keywords to be passed to
+
+    include_list
+        The (already formatted) list of filepaths for the
+        rclone `--include` option.
+
+    Returns
+    -------
+    A full list of arguments to pass to rclone.
+
+    """
     extra_arguments_list = []
 
     extra_arguments_list += ["-" + rclone_options["transfer_verbosity"]]
@@ -386,7 +419,7 @@ def handle_rclone_arguments(
 
 
 def rclone_args(name: str) -> str:
-    """Central function to hold rclone commands."""
+    """Return list of Rclone commands."""
     valid_names = [
         "dry_run",
         "copy",

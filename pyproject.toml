@@ -96,8 +96,6 @@ line-length = 79
 exclude = ["__init__.py","build",".eggs"]
 fix = true
 
-
-
 # Ruff config is not exactly the same as in the movement repo, as
 # currently we are only adding linting enforcement to docstrings.
 # Other ruff rules that are also present in movement repo can be
@@ -105,10 +103,19 @@ fix = true
 
 [tool.ruff.lint]
 # See https://docs.astral.sh/ruff/rules/
-ignore = ["E203","E501","E731","C901","W291","W293","E402","E722",
-    "D100", # missing docstring in public module (not enforced FOR NOW)
-    "D203", # one blank line before class
-    "D213", # multi-line-summary second line
+
+ignore = [
+    "E203",  # whitespace before ':' (conflicts with Black)
+    "E501",  # line too long (handled by Black)
+    "E731",  # do not assign a lambda expression, use a def
+    "C901",  # function is too complex
+    "W291",  # trailing whitespace
+    "W293",  # blank line contains whitespace
+    "E402",  # module level import not at top of file
+    "E722",  # do not use bare 'except'
+    "D100",  # missing docstring in public module
+    "D203",  # 1 blank line required before class docstring (conflicts with D211)
+    "D213",  # multi-line docstring summary should start at the second line (conflicts with D212)
 ]
 select = [
     "I",        # isort
@@ -124,11 +131,7 @@ per-file-ignores = { "tests/*" = [
     "D400", # first line should end with a period.
     "D415", # first line should end with a period, question mark...
     "D205", # missing blank line between summary and description
-], "__init__.py" = [
-    # This was part of the old config
-    # Is this needed? __init__.py is already part of tool.ruff.exclude
-    "F401", # auto remove unused imports
-] }
+]}
 
 [tool.ruff.format]
 docstring-code-format = true # Also format code in docstrings

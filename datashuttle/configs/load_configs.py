@@ -33,6 +33,10 @@ def attempt_load_configs(
     verbose
         If True, warnings and error messages will be printed.
 
+    Returns
+    -------
+    The loaded config, or `None` if it could not be loaded.
+
     """
     exists = config_path.is_file()
 

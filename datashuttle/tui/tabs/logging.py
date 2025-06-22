@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from textual import events
+    from textual.app import ComposeResult
     from textual.widgets import DirectoryTree
 
     from datashuttle import DataShuttle
@@ -34,19 +35,19 @@ class RichLogScreen(ModalScreen):
         with open(log_file) as file:
             self.log_contents = "".join(file.readlines())
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Set the widgets for the screen."""
         yield Container(
             RichLog(highlight=True, markup=True, id="richlog_screen_rich_log"),
             Button("Close", id="richlog_screen_close_button"),
         )
 
-    def on_mount(self):
+    def on_mount(self) -> None:
         """Update widgets immediately after mount."""
         text_log = self.query_one(RichLog)
         text_log.write(self.log_contents)
 
-    def on_button_pressed(self, event):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle a button press on the screen."""
         if event.button.id == "richlog_screen_close_button":
             self.dismiss()
@@ -95,7 +96,7 @@ class LoggingTab(TabPane):
             else Path("None found.")
         )
 
-    def compose(self):
+    def compose(self) -> ComposeResult:
         """Set with widgets on the LoggingTab."""
         yield Container(
             Label(
@@ -132,7 +133,7 @@ class LoggingTab(TabPane):
         )
         self.refresh()
 
-    def on_button_pressed(self, event):
+    def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle button press on the tab."""
         if event.button.id == "logging_tab_open_most_recent_button":
             self.push_rich_log_screen(self.latest_log_path)
@@ -140,7 +141,7 @@ class LoggingTab(TabPane):
     @require_double_click
     def on_directory_tree_file_selected(
         self, event: DirectoryTree.FileSelected
-    ):
+    ) -> None:
         """Handle a click on the DirectoryTree showing the log files."""
         if not event.path.is_file():
             self.mainwindow.show_modal_error_dialog(
@@ -159,10 +160,12 @@ class LoggingTab(TabPane):
             )
         )
 
-    def reload_directorytree(self):
+    def reload_directorytree(self) -> None:
         """Refresh the DirectoryTree (e.g. if a new log file is saved)."""
         self.query_one("#logging_tab_custom_directory_tree").reload()
 
-    def on_custom_directory_tree_directory_tree_special_key_press(self):
+    def on_custom_directory_tree_directory_tree_special_key_press(
+        self,
+    ) -> None:
         """Handle the CTRL+R refresh of the directory tree."""
         self.reload_directorytree()

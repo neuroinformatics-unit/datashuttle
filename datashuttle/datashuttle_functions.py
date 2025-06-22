@@ -58,6 +58,11 @@ def quick_validate_project(
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.
 
+    Returns
+    -------
+    error_messages
+        A list of validation errors found in the project.
+
     """
     project_path = Path(project_path)
 
@@ -108,6 +113,10 @@ def _format_top_level_folder(
     ----------
     top_level_folder
         The top-level folder to format. Can be "rawdata", "derivatives", or None.
+
+    Returns
+    -------
+    A list of top-level folder names (e.g. ["rawdata"]).
 
     """
     rawdata_and_derivatives: List[TopLevelFolder] = ["rawdata", "derivatives"]

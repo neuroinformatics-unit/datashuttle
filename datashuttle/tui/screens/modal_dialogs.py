@@ -38,12 +38,15 @@ from datashuttle.tui.utils.tui_decorators import (
 class MessageBox(ModalScreen):
     """A screen for rendering error messages.
 
+    Parameters
+    ----------
     message
         The message to display in the message box
 
     border_color
         The color to pass to the `border` style on the widget. Note that the
         keywords 'red' 'grey' 'green' are overridden for custom style.
+
     """
 
     def __init__(self, message: str, border_color: str) -> None:
@@ -264,8 +267,8 @@ class SelectDirectoryTreeScreen(ModalScreen):
         )
 
     @staticmethod
-    def get_drives():
-        """Get drives available on the machine to switch between.
+    def get_drives() -> list[str]:
+        """Return drives available on the machine to switch between.
 
         For Windows,  use `psutil` to get the list of drives.
         Otherwise, assume root is "/" and take all folders from that level.
@@ -286,8 +289,8 @@ class SelectDirectoryTreeScreen(ModalScreen):
                 f"/{dir.name}" for dir in Path("/").iterdir() if dir.is_dir()
             ]
 
-    def get_selected_drive(self):
-        """Get the default drive which the select starts on.
+    def get_selected_drive(self) -> str:
+        """Return the default drive which the select starts on.
 
         For windows, use the .drive attribute but for macOS and Linux
         this is blank. On these Os use the first folder (e.g. /Users)
@@ -297,6 +300,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
             selected_drive = f"{self.path_.drive}\\"
         else:
             selected_drive = f"/{self.path_.parts[1]}"
+
         return selected_drive
 
     def on_select_changed(self, event: Select.Changed) -> None:

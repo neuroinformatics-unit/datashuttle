@@ -47,7 +47,7 @@ class GetHelpScreen(ModalScreen):
         """Link to datashuttle github issues."""
         webbrowser.open(links.get_link_github_issues())
 
-    def action_link_zulip(self):
+    def action_link_zulip(self) -> None:
         """Link to datashuttle zulip."""
         webbrowser.open(links.get_link_zulip())
 

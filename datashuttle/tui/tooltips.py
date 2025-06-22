@@ -1,12 +1,5 @@
 def get_tooltip(id: str) -> str:
-    """Return tooltip for a widget based on its textual id.
-
-    Parameters
-    ----------
-    id
-        Textual widget i.d. (e.g. "#configs_local_path_input").
-
-    """
+    """Return tooltip for a widget based on its textual id."""
     # Main App Window
     # -------------------------------------------------------------------------
 

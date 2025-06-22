@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, List, Optional
 
 if TYPE_CHECKING:
+    from logging import Logger
     from pathlib import Path
 
     from datashuttle.configs.configs import Configs
@@ -17,18 +18,18 @@ import datashuttle as package_to_log
 from datashuttle.utils import utils
 
 
-def get_logger_name():
+def get_logger_name() -> str:
     """Return the name of the logger."""
     return "datashuttle"
 
 
-def get_logger():
+def get_logger() -> Logger:
     """Return the instance of the logger object."""
     return logging.getLogger(get_logger_name())
 
 
-def logging_is_active():
-    """Check if the logger is active."""
+def logging_is_active() -> bool:
+    """Return a bool indicating if the logger is active."""
     logger_exists = get_logger_name() in logging.root.manager.loggerDict
     if logger_exists and get_logger().handlers != []:
         return True
@@ -120,6 +121,12 @@ def wrap_variables_for_fancylog(local_vars: dict, cfg: Configs) -> List:
 
     Delete the self attribute (which is DataShuttle class)
     to keep the logs neat, as it adds no information.
+
+    Returns
+    -------
+    A list holding a wrapper class that holds all variable
+    state for fancylog to log.
+
     """
 
     class VariablesState:

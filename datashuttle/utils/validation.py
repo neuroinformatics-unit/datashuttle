@@ -166,6 +166,11 @@ def validate_list_of_names(
         If `True`, check that the prefix-<value> value lengths
         are consistent across the passed list.
 
+    Returns
+    -------
+    error_messages
+        A list of found validation errors.
+
     """
     if len(path_or_name_list) == 0:
         return []
@@ -220,6 +225,22 @@ def prefix_is_duplicate_or_has_bad_values(
 
     Ensure it is found only once in the name and
     that its value can be converted to integer.
+
+    Parameters
+    ----------
+    name
+        Name to check against template.
+
+    prefix
+        "sub" or "ses"
+
+    path_
+        Path to the folder that is being checked.
+
+    Returns
+    -------
+        A list of validation errors.
+
     """
     value = re.findall(f"{prefix}(.*?)(?=_|$)", name)
 
@@ -248,6 +269,22 @@ def new_name_duplicates_existing(
     (for example, when making sessions). However, if "sub-001_another-tag" exists,
     we should throw an error, because this shares the same subject id but refers
     to a different subject.
+
+    Parameters
+    ----------
+    new_name
+        The name to check against all existing names.
+
+    existing_path_or_name_list
+        A list of existing names to check against.
+
+    prefix
+        "sub" or "ses"
+
+    Returns
+    -------
+        A list of validation errors.
+
     """
     # Make a list of matches between `new_name` and any in `existing_names`
     new_name_id = utils.get_values_from_bids_formatted_name(
@@ -278,7 +315,27 @@ def names_dont_match_templates(
     prefix: Prefix,
     name_templates: Optional[Dict] = None,
 ) -> List[str]:
-    """Validate a list of sub/ses names against the respective regexp `name_templates`."""
+    """Validate a list of sub/ses names against the respective regexp `name_templates`.
+
+    Parameters
+    ----------
+    name
+        Name to check against template.
+
+    path_
+        Path to the folder that is being checked.
+
+    prefix
+        "sub" or "ses"
+
+    name_templates
+        Datashuttle's Name Templates dictionary defining the templates used.
+
+    Returns
+    -------
+    A list of validation errors.
+
+    """
     if name_templates is None:
         return []
 
@@ -315,6 +372,16 @@ def replace_tags_in_regexp(regexp: str) -> str:
     in the regexp with their actual regexp equivalent before comparison.
 
     Note `replace_date_time_tags_in_name()` operates in place on a list.
+
+    Parameters
+    ----------
+    regexp
+        The name template regexp in which to replace tags.
+
+    Returns
+    -------
+    The regexp with tags (e.g. @DATE@) formatted properly.
+
     """
     regexp_list = [regexp]
     date_regexp = r"\d\d\d\d\d\d\d\d"
@@ -332,7 +399,24 @@ def replace_tags_in_regexp(regexp: str) -> str:
 def name_begins_with_bad_key(
     name: str, prefix: Prefix, path_: Path | None
 ) -> List[str]:
-    """Check that a list of NeuroBlueprint names begin with the required prefix (sub- or ses-)."""
+    """Check that a list of NeuroBlueprint names begin with the required prefix (sub- or ses-).
+
+    Parameters
+    ----------
+    name
+        Name of the folder to validate.
+
+    prefix
+        "sub" or "ses".
+
+    path_
+        Path to the folder that is being validated.
+
+    Returns
+    -------
+    A list of validation errors.
+
+    """
     if name[:4] != f"{prefix}-":
         return [get_name_error(name, prefix, path_)]
     else:
@@ -345,6 +429,19 @@ def names_include_special_characters(
     """Check that a list of NeuroBlueprint formatted names do not contain special characters.
 
     Special characters are characters that are not integers, letters, dash or underscore.
+
+    Parameters
+    ----------
+    name
+        Name of the folder to validate
+
+    path_
+        Path of the folder that is being validated.
+
+    Returns
+    -------
+    A list of validation errors.
+
     """
     if name_has_special_character(name):
         return [get_special_char_error(name, path_)]
@@ -353,17 +450,30 @@ def names_include_special_characters(
 
 
 def name_has_special_character(name: str) -> bool:
-    """Check if the name contains special characters."""
+    """Return a bool indicating if the name contains special characters."""
     return not re.match("^[A-Za-z0-9_-]*$", name)
 
 
 def dashes_and_underscore_alternate_incorrectly(
     name: str, path_: Path | None
 ) -> List[str]:
-    """Check a list of NeuroBlueprint formatted names.
+    """Check a list of names for expected Neuroblueprint underscore-dash order.
 
     Names should have the "-" and "-" ordered correctly. Names should be
     key-value pairs separated by underscores e.g. sub-001_ses-001.
+
+    Parameters
+    ----------
+    name
+        Name of the folder to validate
+
+    path_
+        Path of the folder that is being validated.
+
+    Returns
+    -------
+    A list of validation errors.
+
     """
     discrim = {"-": 1, "_": -1}
 
@@ -392,6 +502,19 @@ def value_lengths_are_inconsistent(
     """Determine if there are inconsistent value lengths for the sub or ses key in a list of names.
 
     For example, ["sub-01", "sub-001"] is an error.
+
+    Parameters
+    ----------
+    path_or_names_list
+        A path of names of folders to validate, or path to folders to validate.
+
+    prefix
+        "sub" or "ses"
+
+    Returns
+    -------
+    A list of validation errors.
+
     """
     names_list = [
         path_or_name if isinstance(path_or_name, str) else path_or_name.name
@@ -420,7 +543,22 @@ def datetime_are_iso_format(
     name: str,
     path_: Path | None,
 ) -> List[str]:
-    """Check formatting for date-, time-, or datetime- tags."""
+    """Check formatting for date-, time-, or datetime- tags.
+
+    Parameters
+    ----------
+    name
+        Name of the folder to validate
+
+    path_
+        Path of the folder that is being validated.
+
+    Returns
+    -------
+    error_message
+        A list of validation errors.
+
+    """
     formats = {
         "datetime": "%Y%m%dT%H%M%S",
         "time": "%H%M%S",
@@ -458,6 +596,18 @@ def raise_display_mode(
     """Show a message by raising an error, displaying warning, or printing.
 
     Optionally log with the current datashuttle logger.
+
+    Parameters
+    ----------
+    message
+        Message to display.
+
+    display_mode
+        Mode to display, "error", "warn" or "print".
+
+    log
+        If `True`, log the message.
+
     """
     if display_mode == "error":
         utils.log_and_raise_error(message, NeuroBlueprintError)
@@ -521,6 +671,11 @@ def validate_project(
         starting with sub- or ses- prefix are checked. In `Strict Mode`,
         any folder not prefixed with sub-, ses- or a valid datatype will
         raise a validation issue.
+
+    Returns
+    -------
+    error_messages
+        A list of validation errors.
 
     """
     error_messages = []
@@ -731,6 +886,20 @@ def check_high_level_project_structure(
 
     This includes checking that the project folder name is valid, and that the
     project folder contains either a "rawdata" or "derivatives" folder.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs class.
+
+    include_central
+        If `True`, the central project is also checked.
+
+    Returns
+    -------
+    error_messages
+        A list of validation errors.
+
     """
     # To avoid circular imports
     from datashuttle.utils.folders import search_for_folders
@@ -801,6 +970,23 @@ def check_strict_mode(
     prefix typos and other issues (e.g. if subs-extra is a folder, or "rat1",
     how do we know if it is intended to be a subject folder and validate it,
     or just an auxiliary folder.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs class.
+
+    top_level_folder
+        "rawdata" or "derivatives".
+
+    include_central
+        If `True`, the central project is also checked.
+
+    Returns
+    -------
+    error_messages
+        A list of validation errors.
+
     """
     # For circular imports
     from datashuttle.utils import folders
@@ -899,6 +1085,20 @@ def strip_uncheckable_names(
     This is necessary as some validation steps (e.g. checking duplicate names)
     requires conversion to `int` and will fail for this reason if
     these bad names are not removed.
+
+    Parameters
+    ----------
+    path_or_names_list
+        A path of names of folders to validate, or path to folders to validate.
+
+    prefix
+        "sub" or "ses".
+
+    Returns
+    -------
+    List of path or names which the uncheckable ones (e.g. that are too broken
+    to be validated against) removed.
+
     """
     new_list = []
 
@@ -928,7 +1128,23 @@ def strip_uncheckable_names(
 def check_datatypes_are_valid(
     datatype: Union[List[str], str], allow_all: bool = False
 ) -> str | None:
-    """Check a datatype of list of datatypes is a valid NeuroBlueprint datatype."""
+    """Check a datatype of list of datatypes is a valid NeuroBlueprint datatype.
+
+    Parameters
+    ----------
+    datatype
+        A str or a list of str where str is a NeuroBlueprint datatype.
+
+    allow_all
+        At this stage, "all" may still be included in the list of datatypes.
+        This is valid in some cases as it indicates all datatypes.
+
+    Returns
+    -------
+    message
+        An error message or None if no errors found.
+
+    """
     datatype_folders = canonical_folders.get_datatype_folders()
 
     if isinstance(datatype, str):

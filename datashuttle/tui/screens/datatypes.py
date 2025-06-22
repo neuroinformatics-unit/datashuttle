@@ -280,7 +280,7 @@ class DatatypeCheckboxes(Static):
                 ).tooltip = tooltips[datatype]
 
     def selected_datatypes(self) -> List[str]:
-        """Get the names of the datatype options for which the checkboxes are switched on."""
+        """Return the names of the datatype options for which the checkboxes are switched on."""
         selected_datatypes = [
             datatype
             for datatype, settings in self.datatype_config.items()
@@ -295,7 +295,7 @@ class DatatypeCheckboxes(Static):
 
 def get_checkbox_name(
     create_or_transfer: Literal["create", "transfer"], datatype
-):
+) -> str:
     """Return a canonical formatted checkbox name."""
     return f"{create_or_transfer}_{datatype}_checkbox"
 
@@ -308,4 +308,5 @@ def get_tui_settings_key_name(
         settings_key = "create_checkboxes_on"
     else:
         settings_key = "transfer_checkboxes_on"
+
     return settings_key

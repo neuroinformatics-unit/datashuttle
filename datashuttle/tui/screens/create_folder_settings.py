@@ -57,11 +57,14 @@ class CreateFoldersSettingsScreen(ModalScreen):
     def __init__(self, mainwindow: TuiApp, interface: Interface) -> None:
         """Initialise the CreateFoldersSettingsScreen.
 
+        Parameters
+        ----------
         mainwindow
             The main TUI app.
 
         interface
             Datashuttle Interface object.
+
         """
         super(CreateFoldersSettingsScreen, self).__init__()
 
@@ -226,7 +229,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             self.interface.save_tui_settings(False, "bypass_validation")
 
     def make_name_templates_from_widgets(self) -> Dict:
-        """Create a canonical `name_templates` entry based on the current widget settings."""
+        """Return a canonical `name_templates` entry based on the current widget settings."""
         return {
             "on": self.query_one(
                 "#template_settings_validation_on_checkbox"

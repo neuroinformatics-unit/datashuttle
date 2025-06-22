@@ -198,6 +198,14 @@ class Interface:
         strict_mode
             If `True`, validation will be run in strict mode.
 
+        Returns
+        -------
+        success
+            A bool inicating whether the validation was run successfully
+
+        issues
+            A message or list of discovered validation issues.
+
         """
         try:
             results = self.project.validate_project(
@@ -340,7 +348,7 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def get_name_templates(self) -> Dict:
-        """Get the `name_templates` defining templates to validate against.
+        """Return the `name_templates` defining templates to validate against.
 
         These are stored in a variable to avoid constantly
         reading these values from disk where they are stored in
@@ -367,7 +375,7 @@ class Interface:
             return False, str(e)
 
     def get_tui_settings(self) -> Dict:
-        """Get the "tui" field of `persistent_settings`.
+        """Return the "tui" field of `persistent_settings`.
 
         Similar to `get_name_templates`, there are held on the
         class to avoid constantly reading from disk.
@@ -407,15 +415,15 @@ class Interface:
     # ----------------------------------------------------------------------------------
 
     def get_central_host_id(self) -> str:
-        """Get the central host id for ssh."""
+        """Return the central host id for ssh."""
         return self.project.cfg["central_host_id"]
 
     def get_configs(self) -> Configs:
-        """Get Datashuttle Configs."""
+        """Return Datashuttle Configs."""
         return self.project.cfg
 
     def get_textual_compatible_project_configs(self) -> Configs:
-        """Datashuttle configs keeps paths saved as pathlib.Path objects.
+        """Return Datashuttle configs with paths stored as str.
 
         In some cases textual requires str representation. This method
         returns datashuttle configs with all paths that are Path
@@ -428,7 +436,7 @@ class Interface:
     def get_next_sub(
         self, top_level_folder: TopLevelFolder, include_central: bool
     ) -> InterfaceOutput:
-        """Get the next subject ID in the project."""
+        """Return the next subject ID in the project."""
         try:
             next_sub = self.project.get_next_sub(
                 top_level_folder,
@@ -442,7 +450,7 @@ class Interface:
     def get_next_ses(
         self, top_level_folder: TopLevelFolder, sub: str, include_central: bool
     ) -> InterfaceOutput:
-        """Get the next session ID for the `sub` in the project."""
+        """Return the next session ID for the `sub` in the project."""
         try:
             next_ses = self.project.get_next_ses(
                 top_level_folder,
@@ -455,7 +463,7 @@ class Interface:
             return False, str(e)
 
     def get_ssh_hostkey(self) -> InterfaceOutput:
-        """Get the SSH remote server host key."""
+        """Return the SSH remote server host key."""
         try:
             key = ssh.get_remote_server_key(
                 self.project.cfg["central_host_id"]

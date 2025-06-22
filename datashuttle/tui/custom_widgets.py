@@ -154,6 +154,10 @@ class CustomDirectoryTree(DirectoryTree):
         paths
             Paths to be filtered before being added to the CustomDirectoryTree.
 
+        Returns
+        -------
+        A list of filtered paths
+
         """
         return [path for path in paths if not path.name.startswith(".")]
 
@@ -513,7 +517,7 @@ class TopLevelFolderSelect(Select):
         )
 
     def get_top_level_folder(self, init: bool = False) -> str:
-        """Get the top level folder from `persistent_settings`.
+        """Return the top level folder from `persistent_settings`.
 
         Performs a confidence-check that it matches the textual display.
         """
@@ -529,7 +533,7 @@ class TopLevelFolderSelect(Select):
         return top_level_folder
 
     def get_displayed_top_level_folder(self) -> str:
-        """Get the top level folder that is currently selected on the select widget."""
+        """Return the top level folder that is currently selected on the select widget."""
         assert self.value in canonical_folders.get_top_level_folders()
         return self.value
 

@@ -192,7 +192,7 @@ class TransferData:
     def make_include_arg(
         self, list_of_paths: List[str], recursive: bool = True
     ) -> List[str]:
-        """Format the list of paths to rclone's required `--include` flag format."""
+        """Return the list of paths formatted to rclone's required `--include` flag format."""
         if not any(list_of_paths):
             return []
 
@@ -351,7 +351,7 @@ class TransferData:
     # -------------------------------------------------------------------------
 
     def to_list(self, names: Union[str, List[str]]) -> List[str]:
-        """Convert a name or list of names to a list."""
+        """Return a name or list of names as a list."""
         if isinstance(names, str):
             names = [names]
         return names
@@ -436,6 +436,11 @@ class TransferData:
 
         see transfer_sub_ses_data() for list of parameters.
 
+        Returns
+        -------
+        A list of folder names generated from the original
+        names list that included search wildcards, "all" keys etc.
+
         """
         prefix: Prefix
         if sub is None:
@@ -475,7 +480,7 @@ class TransferData:
         return processed_names
 
     def transfer_non_datatype(self, datatype_checked: List[str]) -> bool:
-        """Return bool if all non-datatype folders are to be transferred."""
+        """Return bool indicating whether all non-datatype folders are to be transferred."""
         return any(
             [name in ["all_non_datatype", "all"] for name in datatype_checked]
         )

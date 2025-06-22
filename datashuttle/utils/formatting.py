@@ -53,6 +53,10 @@ def check_and_format_names(
         If `True`, NeuroBlueprint validation will be performed
         on the passed names.
 
+    Returns
+    -------
+    A list of formatted names.
+
     """
     if isinstance(names, str):
         names = [names]
@@ -93,6 +97,10 @@ def format_names(names: List, prefix: Prefix) -> List[str]:
 
     prefix
         "sub" or "ses" - this defines the prefix checks.
+
+    Returns
+    -------
+    A list of formatted names.
 
     """
     assert prefix in ["sub", "ses"], "`prefix` must be 'sub' or 'ses'."
@@ -212,6 +220,12 @@ def make_list_of_zero_padded_names_across_range(
         rest of the name after the flag, i.e. all other
         key-value pairs.
 
+    Returns
+    -------
+    A list of subject or session names expanded across a range.
+    e.g. sub-001@TO@002_date-20220101 becomes
+        ["sub-001_date-20220101", "sub-002_date-20220101"].
+
     """
     max_leading_zeros = max(
         utils.num_leading_zeros(left_number),
@@ -238,6 +252,7 @@ def make_list_of_zero_padded_names_across_range(
 def update_names_with_datetime(names: List[str]) -> None:
     """Replace @DATE@ and @DATETIME@ flag with date and datetime respectively.
 
+    `names` is a list of subject or session names.
     Format using key-value pair for bids, i.e. date-20221223_time-
     """
     date = str(datetime.datetime.now().date().strftime("%Y%m%d"))
@@ -258,8 +273,24 @@ def replace_date_time_tags_in_name(
     datetime_with_key: str,
     date_with_key: str,
     time_with_key: str,
-):
-    """Replace tags with their final value for every name in a list."""
+) -> None:
+    """Replace tags with their final value for every name in a list.
+
+    Parameters
+    ----------
+    names
+        A list of subject or session names.
+
+    datetime_with_key
+        Formatted datetime key-value pair .e.g datetime-20220101T010101.
+
+    date_with_key
+        Formatted date key-value pair .e.g date-20220101.
+
+    time_with_key
+        Formatted time key-value pair .e.g time-010101.
+
+    """
     for i, name in enumerate(names):
         # datetime conditional must come first.
         if tags("datetime") in name:
@@ -278,17 +309,17 @@ def replace_date_time_tags_in_name(
 
 
 def format_date(date: str) -> str:
-    """Format the `date` as `date-<date>`."""
+    """Return the date formatted as `date-<date>`."""
     return f"date-{date}"
 
 
 def format_time(time_: str) -> str:
-    """Format the `time_` as `time-<time_>`."""
+    """Return the time `time_` formatted as `time-<time_>`."""
     return f"time-{time_}"
 
 
 def format_datetime(date: str, time_: str) -> str:
-    """Format the `date` and `time_` as `datetime-<date>T<time_>`."""
+    """Return the `date` and `time_` formatted as `datetime-<date>T<time_>`."""
     return f"datetime-{date}T{time_}"
 
 

@@ -28,7 +28,7 @@ def connect_client_core(
     client: paramiko.SSHClient,
     cfg: Configs,
     password: Optional[str] = None,
-):
+) -> None:
     """Connect to the client.
 
     A centralised function to connect to a paramiko client.
@@ -64,7 +64,20 @@ def connect_client_core(
 def add_public_key_to_central_authorized_keys(
     cfg: Configs, password: str, log=True
 ) -> None:
-    """Append the public part of key to central server ~/.ssh/authorized_keys."""
+    """Append the public part of key to central server ~/.ssh/authorized_keys.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs object.
+
+    password
+        Password to the central server.
+
+    log
+        If `True`, log the client connection process.
+
+    """
     generate_and_write_ssh_key(cfg.ssh_key_path)
 
     key = paramiko.RSAKey.from_private_key_file(cfg.ssh_key_path.as_posix())
@@ -312,18 +325,16 @@ def search_ssh_central_for_folders(
 ) -> Tuple[List[Any], List[Any]]:
     """Search for the search prefix in the search path over SSH.
 
-    Returns the list of matching folders, files are filtered out.
-
     Parameters
     ----------
     search_path
-        path to search for folders in
+        Path to search for folders in.
 
     search_prefix
-        search prefix for folder names e.g. "sub-*"
+        Search prefix for folder names e.g. "sub-*".
 
     cfg
-        see connect_client_with_logging()
+        See connect_client_with_logging().
 
     verbose
         If `True`, if a search folder cannot be found, a message
@@ -331,6 +342,10 @@ def search_ssh_central_for_folders(
 
     return_full_path
         include the search_path in the returned paths
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
 
     """
     client: paramiko.SSHClient
@@ -366,14 +381,14 @@ def get_list_of_folder_names_over_sftp(
     Parameters
     ----------
     sftp
-        connected paramiko stfp object
-        (see search_ssh_central_for_folders())
+        Connected paramiko stfp object
+        (see search_ssh_central_for_folders()).
 
     search_path
-        path to search for folders in
+        Path to search for folders in.
 
     search_prefix
-        prefix (can include wildcards)
+        Prefix (can include wildcards)
         to search folder names.
 
     verbose
@@ -381,7 +396,11 @@ def get_list_of_folder_names_over_sftp(
         will be printed with the un-found path.
 
     return_full_path
-        include the search_path in the returned paths
+        include the search_path in the returned paths.
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
 
     """
     all_folder_names = []

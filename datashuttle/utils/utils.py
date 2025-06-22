@@ -110,7 +110,7 @@ def get_user_input(message: str) -> str:
 
 
 def path_starts_with_base_folder(base_folder: Path, path_: Path) -> bool:
-    """Check whether the path starts with the base folder path."""
+    """Return a bool indicating whether the path starts with the base folder path."""
     return path_.as_posix().startswith(base_folder.as_posix())
 
 
@@ -159,6 +159,11 @@ def get_values_from_bids_formatted_name(
     sort
         If True, results are sorted before being returned.
 
+    Returns
+    -------
+    all_values
+        The values of the corresponding `key` extracted from the name.
+
     Notes
     -----
     This function does not raise through datashuttle because we
@@ -196,7 +201,7 @@ def get_values_from_bids_formatted_name(
 
 
 def sub_or_ses_value_to_int(value: str) -> int:
-    """Convert a subject or session value to an integer."""
+    """Return a subject or session value converted to an integer."""
     try:
         int_value = int(value)
     except ValueError:
@@ -207,7 +212,7 @@ def sub_or_ses_value_to_int(value: str) -> int:
 
 
 def get_value_from_key_regexp(name: str, key: str) -> List[str]:
-    """Find the value related to the key in a BIDS-style key-value pair name.
+    """Return the value related to the key in a BIDS-style key-value pair name.
 
     e.g. sub-001_ses-312 would find 312 for key "ses".
     """
@@ -220,36 +225,36 @@ def get_value_from_key_regexp(name: str, key: str) -> List[str]:
 
 
 def integers_are_consecutive(list_of_ints: List[int]) -> bool:
-    """Check if a list of integers is consecutive."""
+    """Return a bool indicating whether a list of integers is consecutive."""
     diff_between_ints = diff(list_of_ints)
     return all([diff == 1 for diff in diff_between_ints])
 
 
 def diff(x: List) -> List:
-    """Differentiate list of numbers.
+    """Return differentiated list of numbers.
 
     Slow, only to avoid adding numpy as a dependency.
     """
     return [x[i + 1] - x[i] for i in range(len(x) - 1)]
 
 
-def num_leading_zeros(string: str) -> int:
+def num_leading_zeros(name: str) -> int:
     """Return the number of leading zeros in a sub- or ses- id.
 
     e.g. sub-001 has 2 leading zeros.
     int() strips leading zeros.
     """
-    if string[:4] in ["sub-", "ses-"]:
-        string = string[4:]
+    if name[:4] in ["sub-", "ses-"]:
+        name = name[4:]
 
-    return len(string) - len(str(int(string)))
+    return len(name) - len(str(int(name)))
 
 
 def all_unique(list_: List) -> bool:
-    """Check that all values in a list are different."""
+    """Return bool indicating whether all values in a list are different."""
     return len(list_) == len(set(list_))
 
 
 def all_identical(list_: List) -> bool:
-    """Check that all values in a list are identical."""
+    """Return bool indicating whether all values in a list are identical."""
     return len(set(list_)) == 1

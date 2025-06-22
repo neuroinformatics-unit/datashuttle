@@ -230,6 +230,33 @@ def search_project_for_sub_or_ses_names(
     as session folders for local subjects that are not yet on central
     will be searched for on central, showing a confusing 'folder not found'
     message.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs object.
+
+    top_level_folder
+        "rawdata" or "derivatives".
+
+    sub
+        Subject name (if provided, search for a session within that sub)
+
+    search_str
+        Glob-style search to perform e.g. "sub-*"
+
+    include_central
+        If `True`, central project is also searched.
+
+    return_full_path
+        If True, the full path to the discovered folders is provided.
+        Otherwise, just the name.
+
+    Returns
+    -------
+    A dictionary with "local" and "central" keys, where values
+    are the discovered folders. "central" is `None` if include_central is `False`.
+
     """
     # Search local and central for folders that begin with "sub-*"
     local_foldernames, _ = search_sub_or_ses_level(
@@ -272,12 +299,19 @@ def items_from_datatype_input(
     sub: str,
     ses: Optional[str] = None,
 ) -> Union[ItemsView, zip]:
-    """Get the list of datatypes to transfer.
+    """Return the list of datatypes to transfer.
 
     Take these directly from user input, or by searching
     what is available if "all" is passed.
 
     see _transfer_datatype() for full parameters list.
+
+    Returns
+    -------
+    Datatypes as a dictionary items() or zip that mimics that structure.
+    The dictionary is in the form datatype name: Folder() struct.
+    See `canonical_folders.py`.
+
     """
     base_folder = cfg.get_base_folder(local_or_central, top_level_folder)
 
@@ -386,10 +420,6 @@ def search_for_wildcards(
     if sub is None it is assumed all_names are sub names and
     the level above is searched.
 
-    Outputs a new list of names including all original names
-    but where @*@-containing names have been replaced with
-    search results.
-
     Parameters
     ----------
     cfg
@@ -414,6 +444,13 @@ def search_for_wildcards(
     sub
         optional subject to search for sessions in. If not provided,
         will search for subjects rather than sessions.
+
+    Returns
+    -------
+    new_all_names
+        A new list of names including all original names
+        but where @*@-containing names have been replaced with
+        search results.
 
     """
     new_all_names: List[str] = []
@@ -496,6 +533,10 @@ def search_sub_or_ses_level(
     return_full_path
         include the search_path in the returned paths
 
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     if ses and not sub:
         utils.log_and_raise_error(
@@ -552,6 +593,10 @@ def search_for_folders(
     return_full_path
         include the search_path in the returned paths
 
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     if local_or_central == "central" and cfg["connection_method"] == "ssh":
         all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
@@ -579,10 +624,24 @@ def search_for_folders(
 def search_filesystem_path_for_folders(
     search_path_with_prefix: Path, return_full_path: bool = False
 ) -> Tuple[List[Path | str], List[Path | str]]:
-    """Search a folder through the local filesystem.
+    r"""Search a folder through the local filesystem.
 
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning folders only.
+
+    Parameters
+    ----------
+    search_path_with_prefix
+        Path to search along with search prefix e.g. "C:\drive\project\sub-*"
+
+    return_full_path
+        If `True` returns the path to the discovered folder or file,
+        otherwise just the name.
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     all_folder_names = []
     all_filenames = []

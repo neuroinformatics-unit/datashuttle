@@ -29,7 +29,7 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 def get_canonical_configs() -> dict:
-    """Define the only permitted types for DataShuttle config values."""
+    """Return the only permitted types for DataShuttle config values."""
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
@@ -42,7 +42,7 @@ def get_canonical_configs() -> dict:
 
 
 def keys_str_on_file_but_path_in_class() -> list[str]:
-    """List all config keys that are paths but stored as str in the file.
+    """Return a list of all config keys that are paths but stored as str in the file.
 
     These are converted to pathlib.Path objects when loaded.
     """
@@ -256,7 +256,7 @@ def get_tui_config_defaults() -> Dict:
 
 
 def get_name_templates_defaults() -> Dict:
-    """Get the default values for name_templates."""
+    """Return the default values for name_templates."""
     return {"name_templates": {"on": False, "sub": None, "ses": None}}
 
 
@@ -275,7 +275,7 @@ def get_persistent_settings_defaults() -> Dict:
 
 
 def get_datatypes() -> List[str]:
-    """Canonical list of datatype flags based on NeuroBlueprint.
+    """Return canonical list of datatype flags based on NeuroBlueprint.
 
     This must be kept up to date with the datatypes in the NeuroBlueprint specification.
     """

@@ -71,7 +71,7 @@ class Configs(UserDict):
         self.ensure_local_and_central_path_end_in_project_name()
         self.check_dict_values_raise_on_fail()
 
-    def ensure_local_and_central_path_end_in_project_name(self):
+    def ensure_local_and_central_path_end_in_project_name(self) -> None:
         """Ensure that the local and central path end in the name of the project."""
         for path_type in ["local_path", "central_path"]:
             if path_type == "central_path" and self[path_type] is None:
@@ -94,15 +94,15 @@ class Configs(UserDict):
         canonical_configs.check_dict_values_raise_on_fail(self)
 
     def keys(self) -> KeysView:
-        """D.keys() -> a set-like object providing a view on D's keys."""
+        """Return D.keys(), a set-like object providing a view on D's keys."""
         return self.data.keys()
 
     def items(self) -> ItemsView:
-        """D.items() -> a set-like object providing a view on D's items."""
+        """Return D.items(), a set-like object providing a view on D's items."""
         return self.data.items()
 
     def values(self) -> ValuesView:
-        """D.values() -> a set-like object providing a view on D's values."""
+        """Return D.values(), a set-like object providing a view on D's values."""
         return self.data.values()
 
     # -------------------------------------------------------------------------
@@ -158,6 +158,10 @@ class Configs(UserDict):
         top_level_folder
             either "rawdata" or "derivatives"
 
+        Returns
+        -------
+        The full path to the `sub_folders` in the project.
+
         """
         if isinstance(sub_folders, list):
             sub_folders_str = "/".join(sub_folders)
@@ -189,6 +193,10 @@ class Configs(UserDict):
 
         top_level_folder
             Either "rawdata" or "derivatives".
+
+        Returns
+        -------
+        Full path to the local or central project top level folder.
 
         """
         if base == "local":
@@ -286,7 +294,7 @@ class Configs(UserDict):
         return items
 
     def is_local_project(self):
-        """Check if project is a local-only project.
+        """Return bool indicating if project is a local-only project.
 
         A project is 'local-only' if it has no `central_path` and `connection_method`.
         It can be used to make folders and validate, but not for transfer.
