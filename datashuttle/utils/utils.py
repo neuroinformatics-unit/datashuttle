@@ -19,9 +19,7 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 def log(message: str) -> None:
-    """Log the message to the main initialised
-    logger.
-    """
+    """Log the message to the main initialised logger."""
     if ds_logger.logging_is_active():
         logger = ds_logger.get_logger()
         logger.debug(message)
@@ -29,7 +27,15 @@ def log(message: str) -> None:
 
 def log_and_message(message: str, use_rich: bool = False) -> None:
     """Log the message and send it to user.
-    use_rich : is True, use rich's print() function.
+
+    Parameters
+    ----------
+    message
+        Message to log and print to user.
+
+    use_rich
+        If True, use rich's print() function.
+
     """
     log(message)
     print_message_to_user(message, use_rich)
@@ -45,7 +51,17 @@ def log_and_raise_error(message: str, exception: Any) -> None:
 
 
 def warn(message: str, log: bool) -> None:
-    """PLACEHOLDER."""
+    """Send a warning.
+
+    Parameters
+    ----------
+    message
+        Message to warn.
+
+    log
+        If True, log at WARNING level.
+
+    """
     if log and ds_logger.logging_is_active():
         logger = ds_logger.get_logger()
         logger.warning(message)
@@ -53,9 +69,10 @@ def warn(message: str, log: bool) -> None:
 
 
 def raise_error(message: str, exception) -> None:
-    """Centralized way to raise an error. The logger is closed
-    to ensure it is not still running if a function call
-    raises an exception in a python environment.
+    """Centralized way to raise an error.
+
+    The logger is closed to ensure it is not still running
+    if a function call raises an exception in a python environment.
     """
     ds_logger.close_log_filehandler()
     raise exception(message)
@@ -65,7 +82,15 @@ def print_message_to_user(
     message: Union[str, list], use_rich: bool = False
 ) -> None:
     """Centralised way to send message.
-    use_rich :  use rich's print() function.
+
+    Parameters
+    ----------
+    message
+        Message to print.
+
+    use_rich
+        If True, use rich's print() function.
+
     """
     if use_rich:
         rich_print(message)
@@ -85,7 +110,7 @@ def get_user_input(message: str) -> str:
 
 
 def path_starts_with_base_folder(base_folder: Path, path_: Path) -> bool:
-    """PLACEHOLDER."""
+    """Check whether the path starts with the base folder path."""
     return path_.as_posix().startswith(base_folder.as_posix())
 
 
@@ -118,9 +143,21 @@ def get_values_from_bids_formatted_name(
     return_as_int: bool = False,
     sort: bool = False,
 ) -> Union[List[int], List[str]]:
-    """Find the values associated with a key from a list of all
-    BIDS-formatted file / folder names. This is typically used to
-    find sub / ses values.
+    """Find the values associated with a key in a BIDS-style name.
+
+    Parameters
+    ----------
+    all_names
+        A list of names from which to find the value associated with the key.
+
+    key
+        Key from which to associate the values e.g. "sub")
+
+    return_as_int
+        If True and the value can be cast to int (e.g. `sub-001`), return as `int`.
+
+    sort
+        If True, results are sorted before being returned.
 
     Notes
     -----
@@ -170,10 +207,9 @@ def sub_or_ses_value_to_int(value: str) -> int:
 
 
 def get_value_from_key_regexp(name: str, key: str) -> List[str]:
-    """Find the value related to the key in a
-    BIDS-style key-value pair name.
-    e.g. sub-001_ses-312 would find
-    312 for key "ses".
+    """Find the value related to the key in a BIDS-style key-value pair name.
+
+    e.g. sub-001_ses-312 would find 312 for key "ses".
     """
     return re.findall(f"{key}-(.*?)(?=_|$)", name)
 
@@ -190,14 +226,19 @@ def integers_are_consecutive(list_of_ints: List[int]) -> bool:
 
 
 def diff(x: List) -> List:
-    """slow, custom differentiator for small inputs, to avoid
-    adding numpy as a dependency.
+    """Differentiate list of numbers.
+
+    Slow, only to avoid adding numpy as a dependency.
     """
     return [x[i + 1] - x[i] for i in range(len(x) - 1)]
 
 
 def num_leading_zeros(string: str) -> int:
-    """int() strips leading zeros."""
+    """Return the number of leading zeros in a sub- or ses- id.
+
+    e.g. sub-001 has 2 leading zeros.
+    int() strips leading zeros.
+    """
     if string[:4] in ["sub-", "ses-"]:
         string = string[4:]
 
