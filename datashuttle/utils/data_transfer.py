@@ -12,8 +12,10 @@ from datashuttle.utils.custom_types import (
 
 
 class TransferData:
-    """Class to perform data transfers. This works by first building
-    a large list of all files to transfer. Then, rclone is called
+    """Class to perform data transfers.
+
+    This works by first building a large list of all
+    files to transfer. Then, rclone is called
     once with this list to perform the transfer.
 
     The properties on this class are to be read during generation
@@ -33,7 +35,9 @@ class TransferData:
         dry_run: bool,
         log: bool,
     ):
-        """Parameters
+        """Initialise TransferData.
+
+        Parameters
         ----------
         cfg
             datashuttle configs UserDict.
@@ -57,18 +61,19 @@ class TransferData:
             specified. Can include datatype-level tranfser keywords.
 
         overwrite_existing_files
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
         dry_run
-            If `True`, transfer will not actually occur but will be logged
-            as if it did (to see what would happen for a transfer).
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
 
         log
             if `True`, log and print the transfer output.
+
         """
         self.__cfg = cfg
         self.__upload_or_download = upload_or_download
@@ -110,8 +115,7 @@ class TransferData:
     # -------------------------------------------------------------------------
 
     def build_a_list_of_all_files_and_folders_to_transfer(self) -> List[str]:
-        """Build a list of every file to transfer based on the user-passed
-        arguments.
+        """Build a list of every file to transfer based on the user-passed arguments.
 
         This cycles through every subject, session and datatype
         and adds the outputs to three lists:
@@ -188,9 +192,7 @@ class TransferData:
     def make_include_arg(
         self, list_of_paths: List[str], recursive: bool = True
     ) -> List[str]:
-        """Format the list of paths to rclone's required
-        `--include` flag format.
-        """
+        """Format the list of paths to rclone's required `--include` flag format."""
         if not any(list_of_paths):
             return []
 
@@ -213,8 +215,9 @@ class TransferData:
     def update_list_with_non_sub_top_level_folders(
         self, extra_folder_names: List[str], extra_filenames: List[str]
     ) -> None:
-        """Search the subject level for all files and folders in the
-        top-level-folder. Split the output based onto files / folders
+        """Search the subject level for all files and folders in the top-level-folder.
+
+        Splits the output based onto files / folders
         within "sub-" prefixed folders or not.
         """
         top_level_folders: List[str]
@@ -240,9 +243,7 @@ class TransferData:
         extra_filenames: List[str],
         sub: str,
     ) -> None:
-        """For the subject, get a list of files / folders that are
-        not within "ses-" prefixed folders.
-        """
+        """Get a list of files / folders that for the subject that are not within "ses-" prefixed folders."""
         sub_level_folders: List[str]
         sub_level_folders, sub_level_files = folders.search_sub_or_ses_level(  # type: ignore
             self.__cfg,
@@ -276,7 +277,9 @@ class TransferData:
         sub: str,
         ses: str,
     ) -> None:
-        """For a specific subject and session, get a list of files / folders
+        """Return non-datatype files and folders.
+
+        Returns a list of files / folders for a specific subject and session
         that are not in canonical datashuttle datatype folders.
         """
         ses_level_folders: List[str]
@@ -320,9 +323,7 @@ class TransferData:
         sub: str,
         ses: Optional[str] = None,
     ) -> None:
-        """Given a particular subject and session, get a list of all
-        canonical datatype folders.
-        """
+        """Get a list of all canonical datatype folders for a particular subject and session."""
         datatype = list(filter(lambda x: x != "all_non_datatype", datatype))
 
         datatype_items = folders.items_from_datatype_input(
@@ -358,10 +359,12 @@ class TransferData:
     def check_input_arguments(
         self,
     ) -> None:
-        """Check the sub / session names passed. The checking here
-        is stricter than for create_folders / formatting.check_and_format_names
-        because we want to ensure that a) non-datatype arguments are not
-        passed at the wrong input (e.g. all_non_ses as a subject name).
+        """Check the sub / session names passed.
+
+        The checking here is stricter than for create_folders and
+        formatting.check_and_format_names because we want to ensure that
+        non-datatype arguments are not passed at the wrong input
+        (e.g. all_non_ses as a subject name).
 
         We also want to limit the possible combinations of inputs, such
         that is a user inputs "all" subjects,  or "all_sub", they should
@@ -420,6 +423,7 @@ class TransferData:
         sub: Optional[str] = None,
     ) -> List[str]:
         """Process the list of subject session names.
+
         If they are pre-defined (e.g. ["sub-001", "sub-002"])
         they will be checked and formatted as per
         formatting.check_and_format_names() and
@@ -471,9 +475,7 @@ class TransferData:
         return processed_names
 
     def transfer_non_datatype(self, datatype_checked: List[str]) -> bool:
-        """Convenience function, bool if all non-datatype folders
-        are to be transferred.
-        """
+        """Return bool if all non-datatype folders are to be transferred."""
         return any(
             [name in ["all_non_datatype", "all"] for name in datatype_checked]
         )
