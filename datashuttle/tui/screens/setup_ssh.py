@@ -18,10 +18,10 @@ from textual.widgets import (
 
 
 class SetupSshScreen(ModalScreen):
-    """Dialog window that handles the TUI equivalent of API's
-    setup_ssh_connection(). This asks to
-    confirm the central hostkey, and takes password to setup
-    SSH key pair.
+    """Dialog window that sets up an SSH connection.
+
+    This asks to confirm the central hostkey, and takes password to setup
+    SSH key pair. Under the hood uses `project.setup_ssh_connection()`.
 
     This is the one instance in which it is not possible for
     the TUI to nearly wrap the API, because the logic flow is
@@ -29,7 +29,7 @@ class SetupSshScreen(ModalScreen):
     """
 
     def __init__(self, interface: Interface) -> None:
-        """PLACEHOLDER."""
+        """Initialise the SetupSshScreen."""
         super(SetupSshScreen, self).__init__()
 
         self.interface = interface
@@ -39,7 +39,7 @@ class SetupSshScreen(ModalScreen):
         self.key: paramiko.RSAKey
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the SetupSshScreen."""
         yield Container(
             Horizontal(
                 Static(
@@ -58,11 +58,13 @@ class SetupSshScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
-        """PLACEHOLDER."""
+        """Update widgets immediately after they are mounted."""
         self.query_one("#setup_ssh_password_input").visible = False
 
     def on_button_pressed(self, event: Button.pressed) -> None:
-        """When each stage is successfully progressed by clicking the "ok" button,
+        """Handle button press on the SetupSshScreen.
+
+        When each stage is successfully progressed by clicking the "ok" button,
         `self.stage` is iterated by 1. For saving and excepting hostkey,
         if there is a problem (error or user declines) the 'OK' button
         is frozen so it is not possible to proceed. For accepting password
@@ -85,7 +87,8 @@ class SetupSshScreen(ModalScreen):
                 self.dismiss()
 
     def ask_user_to_accept_hostkeys(self) -> None:
-        """The central server is identified by a hostkey.
+        """Ask the user to accept the hostkey that identifies the central server.
+
         Get this hostkey and present it to user, clicking 'OK' is
         they are happy. If there is an error, block process (because it
         most likely is necessary to edit the central host id) and
@@ -116,9 +119,10 @@ class SetupSshScreen(ModalScreen):
         self.stage += 1
 
     def save_hostkeys_and_prompt_password_input(self) -> None:
-        """Once the hostkey is accepted, get the user password
-        for the central server. When 'OK' is pressed we go
-        straight to 'use_password_to_setup_ssh_key_pairs'.
+        """Get the user password for the central server.
+
+        When 'OK' is pressed we go straight to
+        'use_password_to_setup_ssh_key_pairs'.
         """
         success, output = self.interface.save_hostkey_locally(self.key)
 
@@ -140,9 +144,10 @@ class SetupSshScreen(ModalScreen):
         self.stage += 1
 
     def use_password_to_setup_ssh_key_pairs(self) -> None:
-        """Get the user password for the central server. If correct,
-        SSH key pair is setup and 'OK' button changed to 'Finish'.
-        Otherwise, continue allowing failed password attempts.
+        """Get the user password for the central server.
+
+        If correct, SSH key pair is set up and 'OK' button changed
+        to 'Finish'. Otherwise, continue allowing failed password attempts.
         """
         password = self.query_one("#setup_ssh_password_input").value
 
