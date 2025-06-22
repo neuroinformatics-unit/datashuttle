@@ -43,37 +43,12 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class TransferTab(TreeAndInputTab):
-    """Handles the upload / download of files between local
+    """The Project Manager's Transfer tab.
+
+    Handles the upload / download of files between local
     and central folders. It contains a TransferDirectoryTree that
     displays the transfer status of the files in the local folder,
     and calls underlying datashuttle transfer functions.
-
-    Parameters
-    ----------
-    title
-        The title of the tab
-
-    mainwindow
-        The main TUI app
-
-    interface
-        TUI-datashuttle interface object
-
-    id
-        The textual widget id.
-
-    Attributes
-    ----------
-    show_legend
-        Convenience attribute linked to a global setting exists that
-        turns off / on styling of directorytree nodes based on transfer status. `
-
-        `self.mainwindow.load_global_settings()[
-            "show_transfer_tree_status"
-        ]`
-
-        When on, the legend must be hidden.
-
     """
 
     def __init__(
@@ -83,7 +58,34 @@ class TransferTab(TreeAndInputTab):
         interface: Interface,
         id: Optional[str] = None,
     ) -> None:
-        """PLACEHOLDER."""
+        """Initialise the TransferTab.
+
+        Parameters
+        ----------
+        title
+            The title of the tab
+
+        mainwindow
+            The main TUI app
+
+        interface
+            TUI-datashuttle interface object
+
+        id
+            The textual widget id.
+
+        Attributes
+        ----------
+        show_legend
+            Convenience attribute linked to a global setting exists that
+            turns off / on styling of DirectoryTree nodes based on transfer status. `
+
+            `self.mainwindow.load_global_settings()[
+                "show_transfer_tree_status"
+            ]`
+            When on, the legend must be hidden.
+
+        """
         super(TransferTab, self).__init__(title, id=id)
         self.mainwindow = mainwindow
         self.interface = interface
@@ -96,7 +98,7 @@ class TransferTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Set the widgets on the Transfer Tab."""
         self.transfer_all_widgets = [
             Label(
                 "All data from: \n\n - Rawdata \n - Derivatives \n\nwill be transferred.",
@@ -210,7 +212,7 @@ class TransferTab(TreeAndInputTab):
             yield Label("⭕ Legend", id="transfer_legend")
 
     def on_mount(self) -> None:
-        """PLACEHOLDER."""
+        """Update the widgets immediately after mounting."""
         for id in [
             "#transfer_directorytree",
             "#transfer_switch_container",
@@ -242,7 +244,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_select_changed(self, event: Select.Changed) -> None:
-        """PLACEHOLDER."""
+        """Handle a Select widget changed on the tab."""
         if event.select.id == "transfer_tab_overwrite_select":
             assert event.select.value in ["Never", "Always", "If Source Newer"]
             format_select = event.select.value.lower().replace(" ", "_")
@@ -252,7 +254,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """PLACEHOLDER."""
+        """Handle a Checkbox widget changed on the tab."""
         if event.checkbox.id == "transfer_tab_dry_run_checkbox":
             self.interface.save_tui_settings(
                 event.checkbox.value,
@@ -263,8 +265,9 @@ class TransferTab(TreeAndInputTab):
     # ----------------------------------------------------------------------------------
 
     def switch_transfer_widgets_display(self) -> None:
-        """Show or hide transfer parameters based on whether the transfer mode
-        currently selected in `transfer_radioset`.
+        """Show or hide transfer parameters based on whether the transfer mode.
+
+        The transfer mode is selected by the radiobutton e.g. Custom.
         """
         for widget in self.transfer_all_widgets:
             widget.display = self.query_one("#transfer_all_radiobutton").value
@@ -280,15 +283,15 @@ class TransferTab(TreeAndInputTab):
             ).value
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        """Update the displayed transfer parameter widgets when the
-        `transfer_radioset` radiobuttons are changed.
-        """
+        """Update the transfer parameter widgets when the `transfer_radioset` are changed."""
         label = str(event.pressed.label)
         assert label in ["All", "Top Level", "Custom"], "Unexpected label."
         self.switch_transfer_widgets_display()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """If the Transfer button is clicked, opens a modal dialog
+        """Handle a button press on a tab.
+
+        If the Transfer button is clicked, opens a modal dialog
         to confirm that the user wishes to transfer their data
         (in the direction selected). If "Yes" is selected,
         `self.transfer_data` (see below) is run.
@@ -322,7 +325,7 @@ class TransferTab(TreeAndInputTab):
             )
 
     async def refresh_after_datatype_changed(self, ignore):
-        """PLACEHOLDER."""
+        """Refresh Checkboxes after the shown datatypes have changed."""
         await self.recompose()
         self.on_mount()
         self.query_one("#transfer_custom_radiobutton").value = True
@@ -331,7 +334,7 @@ class TransferTab(TreeAndInputTab):
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
     ) -> None:
-        """PLACEHOLDER."""
+        """Handle a key press on the CustomDirectoryTree."""
         if event.key == "ctrl+r":
             self.reload_directorytree()
 
@@ -345,13 +348,11 @@ class TransferTab(TreeAndInputTab):
             self.reload_directorytree()
 
     def reload_directorytree(self) -> None:
-        """PLACEHOLDER."""
+        """Refresh the CustomDirectoryTree."""
         self.query_one("#transfer_directorytree").update_transfer_tree()
 
     def update_directorytree_root(self, new_root_path: Path) -> None:
-        """Automatically refreshes the tree through the
-        reactive variable `path`.
-        """
+        """Automatically refresh the tree through the reactive variable `path`."""
         self.query_one("#transfer_directorytree").path = new_root_path
 
     # Transfer
@@ -359,7 +360,7 @@ class TransferTab(TreeAndInputTab):
 
     @work(exclusive=True, thread=True)
     def transfer_data(self) -> Worker[InterfaceOutput]:
-        """A threaded worker to transfer data.
+        """Transfer data in a threaded worker.
 
         This function transfers data based on the config provided by the radio buttons
         such as a) the data to be transferred (all / top-level-folders / custom) b) the
