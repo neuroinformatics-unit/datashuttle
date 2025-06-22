@@ -18,8 +18,9 @@ from datashuttle.utils.getters import (
 
 
 class ProjectSelectorScreen(Screen):
-    """The project selection screen. Finds and displays DataShuttle
-    projects present on the local system.
+    """The project selection screen.
+
+    Finds and displays DataShuttle projects present on the local system.
 
     `self.dismiss()` returns an initialised project if initialisation
     was successful. Otherwise, in case `Main Menu` button is pressed,
@@ -36,7 +37,7 @@ class ProjectSelectorScreen(Screen):
     TITLE = "Select Project"
 
     def __init__(self, mainwindow: TuiApp) -> None:
-        """PLACEHOLDER."""
+        """Initialise the ProjectSelectorScreen."""
         super(ProjectSelectorScreen, self).__init__()
 
         self.project_names = [
@@ -45,7 +46,7 @@ class ProjectSelectorScreen(Screen):
         self.mainwindow = mainwindow
 
     def compose(self) -> ComposeResult:
-        """PLACEHOLDER."""
+        """Add widgets to the ProjectSelectorScreen."""
         yield Header(id="project_select_header")
         yield Button("Main Menu", id="all_main_menu_buttons")
         yield Container(
@@ -54,7 +55,7 @@ class ProjectSelectorScreen(Screen):
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """PLACEHOLDER."""
+        """Handle a button press on ProjectSelectorScreen."""
         if event.button.id in self.project_names:
             project_name = event.button.id
 
