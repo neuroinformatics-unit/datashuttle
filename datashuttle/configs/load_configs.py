@@ -17,21 +17,21 @@ def attempt_load_configs(
     config_path: Path,
     verbose: bool = True,
 ) -> Optional[Configs]:
-    """Try to load an existing config file, that was previously
-    saved by Datashuttle. This should always work, unless
-    not already initialised (prompt) or these have been
-    changed manually.
+    """Try to load an existing config file previously saved by Datashuttle.
+
+    This should always work unless the config is not initialized or has been
+    manually changed.
 
     Parameters
     ----------
     project_name
-        name of project
+        Name of the project.
 
     config_path
-        path to datashuttle config .yaml file
+        Path to the datashuttle config .yaml file.
 
     verbose
-        warnings and error messages will be printed.
+        If True, warnings and error messages will be printed.
 
     """
     exists = config_path.is_file()
@@ -68,16 +68,18 @@ def attempt_load_configs(
 def convert_str_and_pathlib_paths(
     config_dict: Union["Configs", dict], direction: str
 ) -> None:
-    """Config paths are stored as str in the .yaml but used as Path
-    in the module, so make the conversion here.
+    """Convert config paths between strings and pathlib.Path objects.
+
+    Paths are stored as strings in the .yaml file but used as Path objects in
+    the module. This function performs the conversion.
 
     Parameters
     ----------
     config_dict
-        DataShuttle.cfg dict of configs
+        DataShuttle.cfg dict of configs.
 
     direction
-        "path_to_str" or "str_to_path"
+        Direction of conversion: "path_to_str" or "str_to_path".
 
     """
     for path_key in canonical_configs.keys_str_on_file_but_path_in_class():
