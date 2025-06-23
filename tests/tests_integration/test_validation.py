@@ -1,5 +1,6 @@
 import os.path
 import shutil
+import warnings
 
 import pytest
 from base import BaseTest
@@ -14,7 +15,6 @@ from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 
 class TestValidation(BaseTest):
-
     @pytest.mark.parametrize(
         "sub_name",
         ["sub-001", "sub-999_@DATE@", "sub-001_random-tag_another-tag"],
@@ -34,8 +34,7 @@ class TestValidation(BaseTest):
     def test_warn_on_inconsistent_sub_value_lengths(
         self, project, sub_name, bad_sub_name
     ):
-        """
-        This test checks that inconsistent sub value lengths are properly
+        """Checks that inconsistent sub value lengths are properly
         detected across the project. This is performed with an assortment
         of possible filenames and leading zero conflicts.
 
@@ -94,8 +93,7 @@ class TestValidation(BaseTest):
     def test_warn_on_inconsistent_ses_value_lengths(
         self, project, ses_name, bad_ses_name
     ):
-        """
-        This function is exactly the same as
+        """Exactly the same as
         `test_warn_on_inconsistent_sub_value_lengths()` but operates at the
         session level. This is extreme code duplication, but
         factoring the main logic out got very messy and hard to follow.
@@ -139,8 +137,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_warn_on_inconsistent_sub_and_ses_value_lengths(self, project):
-        """
-        Test that warning is shown for both subject and session when
+        """Test that warning is shown for both subject and session when
         inconsistent zeros are found in both.
         """
         os.makedirs(
@@ -159,7 +156,6 @@ class TestValidation(BaseTest):
     def check_inconsistent_sub_or_ses_value_length_warning(
         self, project, warn_idx=0, include_central=True
     ):
-        """"""
         with pytest.warns(UserWarning) as w:
             project.validate_project(
                 "rawdata", display_mode="warn", include_central=include_central
@@ -173,8 +169,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_duplicate_ses_or_sub_key_value_pair(self, project):
-        """
-        Test the check that if a duplicate key is attempt to be made
+        """Test the check that if a duplicate key is attempt to be made
         when making a folder e.g. sub-001 exists, then make sub-001_id-123.
         After this check, make a folder that can be made (e.g. sub-003)
         just to make sure it does not raise error.
@@ -207,8 +202,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_duplicate_sub_and_ses_num_leading_zeros(self, project):
-        """
-        Very similar to test_duplicate_ses_or_sub_key_value_pair(),
+        """Very similar to test_duplicate_ses_or_sub_key_value_pair(),
         but explicitly check that error is raised if the same
         number is used with different number of leading zeros.
         """
@@ -228,8 +222,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_duplicate_sub_when_creating_session(self, project):
-        """
-        Check the unique case that a duplicate subject is
+        """Check the unique case that a duplicate subject is
         introduced when the session is made.
         """
         project.create_folders("rawdata", "sub-001")
@@ -273,8 +266,7 @@ class TestValidation(BaseTest):
         assert "DUPLICATE_NAME" in str(e.value)
 
     def test_duplicate_ses_across_subjects(self, project):
-        """
-        Quick test that duplicate session folders only raise
+        """Quick test that duplicate session folders only raise
         an error when they are in the same subject.
         """
         project.create_folders("rawdata", "sub-001", "ses-001")
@@ -293,8 +285,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_invalid_sub_and_ses_name(self, project):
-        """
-        This is a slightly weird case, the name is successfully
+        """Slightly weird case, the name is successfully
         prefixed as 'sub-sub_100` but when the value if `sub-` is
         extracted, it is also "sub" and so an error is raised.
         """
@@ -302,16 +293,16 @@ class TestValidation(BaseTest):
             project.create_folders("rawdata", "sub_100")
 
         assert (
-            "BAD_VALUE: The value for prefix sub in name sub-sub_100 is not an integer."
-            == str(e.value)
+            str(e.value)
+            == "BAD_VALUE: The value for prefix sub in name sub-sub_100 is not an integer."
         )
 
         with pytest.raises(NeuroBlueprintError) as e:
             project.create_folders("rawdata", "sub-001", "ses_100")
 
         assert (
-            "BAD_VALUE: The value for prefix ses in name ses-ses_100 is not an integer."
-            == str(e.value)
+            str(e.value)
+            == "BAD_VALUE: The value for prefix ses in name ses-ses_100 is not an integer."
         )
 
     # -------------------------------------------------------------------------
@@ -319,8 +310,7 @@ class TestValidation(BaseTest):
     # -------------------------------------------------------------------------
 
     def test_validate_project(self, project):
-        """
-        Test the `validate_project` function over all it's arguments.
+        """Test the `validate_project` function over all it's arguments.
         Note not every validation case is tested exhaustively, these
         are tested in `test_validation_unit.py` elsewhere here.
         """
@@ -390,7 +380,6 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_validate_project_returned_list(self, project, prefix):
-        """ """
         bad_names = [
             f"{prefix}-001",
             f"{prefix}-001_@DATE@",
@@ -408,9 +397,12 @@ class TestValidation(BaseTest):
                 "rawdata", "sub-001", bad_names, bypass_validation=True
             )
 
+        warnings.filterwarnings("ignore")
         error_messages = project.validate_project(
             "rawdata", "warn", include_central=False
         )
+        warnings.filterwarnings("default")
+
         concat_error = "".join(error_messages)
 
         assert "DATETIME" in concat_error
@@ -419,16 +411,17 @@ class TestValidation(BaseTest):
         assert "VALUE_LENGTH" in concat_error
 
     def test_output_paths_are_valid(self, project):
-        """ """
         sub_name = "sub-001x"
         ses_name = "ses-001x"
         project.create_folders(
             "rawdata", sub_name, ses_name, bypass_validation=True
         )
 
+        warnings.filterwarnings("ignore")
         error_messages = project.validate_project(
             "rawdata", "warn", include_central=False
         )
+        warnings.filterwarnings("default")
 
         sub_path = error_messages[0].split("Path: ")[-1]
         ses_path = error_messages[1].split("Path: ")[-1]
@@ -452,8 +445,7 @@ class TestValidation(BaseTest):
     def test_validate_names_against_project_with_bad_existing_names(
         self, project
     ):
-        """
-        When using `validate_names_against_project()` there are
+        """When using `validate_names_against_project()` there are
         three possible classes of error:
         1) error in the passed names.
         2) an error already exists in the project.
@@ -583,8 +575,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_validate_names_against_project_interactions(self, project):
-        """
-        Check that interactions between the list of names and existing
+        """Check that interactions between the list of names and existing
         project are caught. This includes duplicate subject / session
         names as well as inconsistent subject / session value lengths.
         """
@@ -706,8 +697,7 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_tags_in_name_templates_pass_validation(self, project):
-        """
-        It is useful to allow tags in the `name_templates` as it means
+        """It is useful to allow tags in the `name_templates` as it means
         auto-completion in the TUI can use tags for automatic name
         generation. Because all subject and session names are
         fully formatted (e.g. @DATE@ converted to actual dates)
@@ -717,8 +707,8 @@ class TestValidation(BaseTest):
         """
         name_templates = {
             "on": True,
-            "sub": "sub-\d\d_@DATE@",
-            "ses": "ses-\d\d\d@DATETIME@",
+            "sub": r"sub-\d\d_@DATE@",
+            "ses": r"ses-\d\d\d@DATETIME@",
         }
 
         project.set_name_templates(name_templates)
@@ -745,7 +735,7 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
         # Do a quick test for time
-        name_templates["sub"] = "sub-\d\d_@TIME@"
+        name_templates["sub"] = r"sub-\d\d_@TIME@"
         project.set_name_templates(name_templates)
 
         # use time tag, should not raise
@@ -760,22 +750,22 @@ class TestValidation(BaseTest):
         assert "TEMPLATE: The name: ses-001_datex-20241212" in str(e.value)
 
     def test_name_templates_validate_project(self, project):
-        """
-        TODO
-        """
+        # set up name templates
         name_templates = {
             "on": True,
-            "sub": "sub-\d\d_id-\d.?",
-            "ses": "ses-\d\d_id-\d.?",
+            "sub": r"sub-\d\d_id-\d.?",
+            "ses": r"ses-\d\d_id-\d.?",
         }
         project.set_name_templates(name_templates)
 
+        # Create names that match, check this does not error
         project.create_folders(
             "rawdata", "sub-01_id-2b", "ses-01_id-1a", bypass_validation=True
         )
 
         project.validate_project("rawdata", "error", include_central=False)
 
+        # Create names that don't match, check they error
         project.create_folders(
             "rawdata", "sub-02_id-a1", "ses-02_id-aa", bypass_validation=True
         )
@@ -797,7 +787,6 @@ class TestValidation(BaseTest):
     # ----------------------------------------------------------------------------------
 
     def test_quick_validation(self, mocker, project):
-        """ """
         project.create_folders("rawdata", "sub-1")
         os.makedirs(project.cfg["local_path"] / "rawdata" / "sub-02")
         project.create_folders("derivatives", "sub-1")
@@ -835,8 +824,7 @@ class TestValidation(BaseTest):
         assert kwargs["name_templates"] == {"on": False}
 
     def test_quick_validation_top_level_folder(self, project):
-        """
-        Test that errors are raised as expected on
+        """Test that errors are raised as expected on
         bad project path input.
         """
         with pytest.raises(FileNotFoundError) as e:
@@ -855,7 +843,6 @@ class TestValidation(BaseTest):
 
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     def test_strict_mode_validation(self, project, top_level_folder):
-        """ """
         project.create_folders(
             top_level_folder,
             ["sub-001", "sub-002"],
@@ -924,10 +911,7 @@ class TestValidation(BaseTest):
     def test_check_high_level_project_structure(
         self, project, top_level_folder
     ):
-        """
-        Check that local and central project names are properly formatted
-        and that
-        """
+        """Check that local and central project names are properly formatted."""
         with pytest.warns(UserWarning) as w:
             project.validate_project(
                 top_level_folder, "warn", include_central=True

@@ -1,5 +1,6 @@
 import copy
 from pathlib import Path
+from time import monotonic
 
 import pytest
 import test_utils
@@ -14,7 +15,6 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiConfigs(TuiBase):
-
     # -------------------------------------------------------------------------
     # Test New Project Configs
     # -------------------------------------------------------------------------
@@ -26,8 +26,7 @@ class TestTuiConfigs(TuiBase):
         empty_project_paths,
         kwargs_set,
     ):
-        """
-        Check the ConfigsContent when making a new project. This contains
+        """Check the ConfigsContent when making a new project. This contains
         many widgets shared with the ConfigsContent on the tab page, however
         also includes an additional information banner and input for the
         project name.
@@ -67,7 +66,6 @@ class TestTuiConfigs(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Select a new project, check NewProjectScreen is
             # displayed correctly.
             await self.scroll_to_click_pause(
@@ -158,8 +156,7 @@ class TestTuiConfigs(TuiBase):
     async def test_update_config_on_project_manager_screen(
         self, setup_project_paths
     ):
-        """
-        Test the ConfigsContent on the project manager tab screen.
+        """Test the ConfigsContent on the project manager tab screen.
         The project is set up in the fixture, navigate to the project page.
         Check that the default configs are displayed. Change all the configs,
         save, and check these are updated on the config file and on the
@@ -172,7 +169,6 @@ class TestTuiConfigs(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Navigate to the existing project and click onto the
             # configs tab.
             await self.check_and_click_onto_existing_project(
@@ -214,7 +210,7 @@ class TestTuiConfigs(TuiBase):
                 "central_host_username": "random_username",
             }
 
-            for key in new_kwargs.keys():
+            for key in new_kwargs:
                 # The purpose is to update to completely new configs
                 assert new_kwargs[key] != project_cfg[key]
 
@@ -267,8 +263,7 @@ class TestTuiConfigs(TuiBase):
 
     @pytest.mark.asyncio
     async def test_configs_select_path(self, monkeypatch):
-        """
-        Test the 'Select' buttons / DirectoryTree on the ConfigsContent.
+        """Test the 'Select' buttons / DirectoryTree on the ConfigsContent.
         These are used to select folders that are filled into the Input.
         Open the select dialog, select a folder, check the path is
         filled into the Input. There is one for both local
@@ -281,7 +276,6 @@ class TestTuiConfigs(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Select the page and ConfigsContent for setting up new project
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_new_project_button"
@@ -316,11 +310,11 @@ class TestTuiConfigs(TuiBase):
                 )
                 root_path = tree.root.data.path
 
-                import time
+                pilot.app.screen.click_info.prev_click_widget_id = tree.id
+                pilot.app.screen.click_info.prev_click_time = monotonic()
 
-                pilot.app.screen.prev_click_time = time.time()
                 pilot.app.screen.on_directory_tree_directory_selected(
-                    tree.root.data
+                    tree.DirectorySelected(tree.root, root_path)
                 )
                 await pilot.pause()
 
@@ -344,10 +338,8 @@ class TestTuiConfigs(TuiBase):
 
     @pytest.mark.asyncio
     async def test_bad_configs_screen_input(self, empty_project_paths):
-
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Select a new project, check NewProjectScreen is displayed correctly.
             await self.scroll_to_click_pause(
                 pilot, "#mainwindow_new_project_button"
@@ -375,11 +367,9 @@ class TestTuiConfigs(TuiBase):
     async def check_configs_widgets_match_configs(
         self, configs_content, kwargs
     ):
-        """
-        Check that the widgets of the TUI configs match those found
+        """Check that the widgets of the TUI configs match those found
         in `kwargs`.
         """
-
         # Local Path ----------------------------------------------------------
 
         assert (
@@ -397,12 +387,11 @@ class TestTuiConfigs(TuiBase):
         assert (
             configs_content.query_one(
                 "#configs_connect_method_radioset"
-            ).pressed_button.label._text[0]
+            ).pressed_button.label._text
             == label
         )
 
         if kwargs["connection_method"] == "ssh":
-
             # Central Host ID -------------------------------------------------
 
             assert (
@@ -429,11 +418,9 @@ class TestTuiConfigs(TuiBase):
         )
 
     async def set_configs_content_widgets(self, pilot, kwargs):
-        """
-        Given a dict of options that can be set on the configs TUI
+        """Given a dict of options that can be set on the configs TUI
         in kwargs, set all configs widgets according to kwargs.
         """
-
         # Local Path ----------------------------------------------------------
 
         await self.fill_input(
@@ -443,7 +430,6 @@ class TestTuiConfigs(TuiBase):
         # Connection Method ---------------------------------------------------
 
         if kwargs["connection_method"] == "ssh":
-
             await self.scroll_to_click_pause(pilot, "#configs_ssh_radiobutton")
 
             # Central Host ID -------------------------------------------------
@@ -471,8 +457,7 @@ class TestTuiConfigs(TuiBase):
     async def check_new_project_configs(
         self, pilot, project_name, configs_content, kwargs
     ):
-        """
-        Check the configs displayed on the TUI match those found in `kwargs`.
+        """Check the configs displayed on the TUI match those found in `kwargs`.
         Also, check the widgets unique to ConfigsContent on the
         configs selection for a new project.
         """

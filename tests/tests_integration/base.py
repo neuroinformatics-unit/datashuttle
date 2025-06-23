@@ -1,34 +1,28 @@
-import os
 import warnings
 
 import pytest
 import test_utils
 
-from datashuttle import DataShuttle
-
 TEST_PROJECT_NAME = "test_project"
 
 
 class BaseTest:
-
     @pytest.fixture(scope="function")
     def no_cfg_project(test):
-        """
-        Fixture that creates an empty project. Ignore the warning
+        """Fixture that creates an empty project. Ignore the warning
         that no configs are setup yet.
         """
         test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
 
         warnings.filterwarnings("ignore")
-        no_cfg_project = DataShuttle(TEST_PROJECT_NAME)
+        no_cfg_project = test_utils.make_project(TEST_PROJECT_NAME)
         warnings.filterwarnings("default")
 
         yield no_cfg_project
 
     @pytest.fixture(scope="function")
     def project(self, tmp_path, request):
-        """
-        Set up a project with default configs to use for testing.
+        """Set up a project with default configs to use for testing.
 
         This fixture uses indirect parameterization to test both 'full'
         and 'local-only' (no `central_path` or `connection_method`). The
@@ -52,20 +46,18 @@ class BaseTest:
             )
         elif project_type == "local":
             test_utils.delete_project_if_it_exists(TEST_PROJECT_NAME)
-            project = DataShuttle(TEST_PROJECT_NAME)
+            project = test_utils.make_project(TEST_PROJECT_NAME)
             project.make_config_file(local_path=tmp_path / TEST_PROJECT_NAME)
 
         else:
             raise ValueError("`parametrized value must be 'full' or 'local'")
 
-        cwd = os.getcwd()
         yield project
-        test_utils.teardown_project(cwd, project)
+        test_utils.teardown_project(project)
 
     @pytest.fixture(scope="function")
     def clean_project_name(self):
-        """
-        Create an empty project, but ensure no
+        """Create an empty project, but ensure no
         configs already exists, and delete created configs
         after test.
         """

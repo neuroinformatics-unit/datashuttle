@@ -37,9 +37,9 @@ def create_folder_trees(
     datatype: Union[List[str], str],
     log: bool = True,
 ) -> Dict[str, List[Path]]:
-    """
-    Entry method to make a full folder tree. It will
-    iterate through all passed subjects, then sessions, then
+    """Entry method to make a full folder tree.
+
+    Iterate through all passed subjects, then sessions, then
     subfolders within a datatype folder. This
     permits flexible creation of folders (e.g.
     to make subject only, do not pass session name.
@@ -49,11 +49,19 @@ def create_folder_trees(
 
     Parameters
     ----------
+    cfg
+        datashuttle config UserDict
 
-    sub_names, ses_names, datatype : see create_folders()
+    top_level_folder
+        either "rawdata" or "derivatives"
 
-    log : whether to log or not. If True, logging must
+    sub_names, ses_names, datatype
+        see create_folders()
+
+    log
+        whether to log or not. If True, logging must
         already be initialised.
+
     """
     datatype_passed = datatype not in [[""], ""]
 
@@ -122,36 +130,42 @@ def make_datatype_folders(
     save_paths: Dict,
     log: bool = True,
 ):
-    """
-    Make datatype folder (e.g. behav) at the sub or ses
-    level. Checks folder_class.Folders attributes,
-    whether the datatype is used and at the current level.
+    """Make datatype folder (e.g. behav) at the sub or ses level.
+
+    Checks folder_class.Folders attributes, whether the datatype
+    is used and at the current level.
 
     Parameters
     ----------
-    cfg : ConfigsClass
+    cfg
+        datashuttle configs
 
-    datatype : datatype (e.g. "behav", "all") to use. Use
+    datatype
+        datatype (e.g. "behav", "all") to use. Use
         empty string ("") for none.
 
-    sub_or_ses_level_path : Full path to the subject
+    sub_or_ses_level_path
+        Full path to the subject
         or session folder where the new folder
         will be written.
 
-    level : The folder level that the
+    level
+        The folder level that the
         folder will be made at, "sub" or "ses"
 
-    save_paths : A dictionary, which will be filled
+    save_paths
+        A dictionary, which will be filled
         with created paths split by datatype name.
 
-    log : whether to log on or not (if True, logging must
+    log
+        whether to log on or not (if True, logging must
         already be initialised).
+
     """
     datatype_items = cfg.get_datatype_as_dict_items(datatype)
 
     for datatype_key, datatype_folder in datatype_items:  # type: ignore
         if datatype_folder.level == level:
-
             datatype_name = datatype_folder.name
 
             datatype_path = sub_or_ses_level_path / datatype_name
@@ -169,17 +183,17 @@ def make_datatype_folders(
 
 
 def create_folders(paths: Union[Path, List[Path]], log: bool = True) -> None:
-    """
-    For path or list of paths, make them if
-    they do not already exist.
+    """Make a path or list of paths if they do not already exist.
 
     Parameters
     ----------
+    paths
+        Path or list of Paths to create
 
-    paths : Path or list of Paths to create
-
-    log : if True, log all made folders. This
+    log
+        if True, log all made folders. This
         requires the logger to already be initialised.
+
     """
     if isinstance(paths, Path):
         paths = [paths]
@@ -207,18 +221,44 @@ def search_project_for_sub_or_ses_names(
     include_central: bool,
     return_full_path: bool = False,
 ) -> Dict:
-    """
-    If sub is None, the top-level level folder will be
-    searched (i.e. for subjects). The search string "sub-*" is suggested
-    in this case. Otherwise, the subject, level folder for the specified
-    subject will be searched. The search_str "ses-*" is suggested in this case.
+    """If sub is None, the top-level level folder will be searched (i.e. for subjects).
+
+    The search string "sub-*" is suggested in this case. Otherwise, the subject,
+    level folder for the specified subject will be searched.
+    The search_str "ses-*" is suggested in this case.
 
     Note `verbose` argument of `search_sub_or_ses_level()` is set to `False`,
     as session folders for local subjects that are not yet on central
     will be searched for on central, showing a confusing 'folder not found'
     message.
-    """
 
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs object.
+
+    top_level_folder
+        "rawdata" or "derivatives".
+
+    sub
+        Subject name (if provided, search for a session within that sub)
+
+    search_str
+        Glob-style search to perform e.g. "sub-*"
+
+    include_central
+        If `True`, central project is also searched.
+
+    return_full_path
+        If True, the full path to the discovered folders is provided.
+        Otherwise, just the name.
+
+    Returns
+    -------
+    A dictionary with "local" and "central" keys, where values
+    are the discovered folders. "central" is `None` if include_central is `False`.
+
+    """
     # Search local and central for folders that begin with "sub-*"
     local_foldernames, _ = search_sub_or_ses_level(
         cfg,
@@ -260,15 +300,19 @@ def items_from_datatype_input(
     sub: str,
     ses: Optional[str] = None,
 ) -> Union[ItemsView, zip]:
-    """
-    Get the list of datatypes to transfer, either
-    directly from user input, or by searching
+    """Return the list of datatypes to transfer.
+
+    Take these directly from user input, or by searching
     what is available if "all" is passed.
 
-    Parameters
-    ----------
+    see _transfer_datatype() for full parameters list.
 
-    see _transfer_datatype() for parameters.
+    Returns
+    -------
+    Datatypes as a dictionary items() or zip that mimics that structure.
+    The dictionary is in the form datatype name: Folder() struct.
+    See `canonical_folders.py`.
+
     """
     base_folder = cfg.get_base_folder(local_or_central, top_level_folder)
 
@@ -300,9 +344,9 @@ def search_for_datatype_folders(
     sub: str,
     ses: Optional[str] = None,
 ) -> zip:
-    """
-    Search a subject or session folder specifically
-    for datatypes. First searches for all folders / files
+    """Search a subject or session folder specifically for datatypes.
+
+    First searches for all folders / files
     in the folder, and then returns any folders that
     match datatype name.
 
@@ -313,6 +357,7 @@ def search_for_datatype_folders(
     -------
     Find the datatype files and return in
     a format that mirrors dict.items()
+
     """
     search_results = search_sub_or_ses_level(
         cfg, base_folder, local_or_central, sub, ses
@@ -329,16 +374,16 @@ def process_glob_to_find_datatype_folders(
     folder_names: list,
     datatype_folders: dict,
 ) -> zip:
-    """
-    Process the results of glob on a sub or session level,
-    which could contain any kind of folder / file.
+    """Process the results of glob on a sub or session level.
 
+    The results could contain any type of folder / file.
     see project.search_sub_or_ses_level() for inputs.
 
     Returns
     -------
     Find the datatype files and return in
     a format that mirrors dict.items()
+
     """
     ses_folder_keys = []
     ses_folder_values = []
@@ -367,8 +412,7 @@ def search_for_wildcards(
     all_names: List[str],
     sub: Optional[str] = None,
 ) -> List[str]:
-    """
-    Handle wildcard flag in upload or download.
+    """Handle wildcard flag in upload or download.
 
     All names in name are searched for @*@ string, and replaced
     with single * for glob syntax. If sub is passed, it is
@@ -377,27 +421,37 @@ def search_for_wildcards(
     if sub is None it is assumed all_names are sub names and
     the level above is searched.
 
-    Outputs a new list of names including all original names
-    but where @*@-containing names have been replaced with
-    search results.
-
     Parameters
     ----------
+    cfg
+        datashuttle configs
 
-    project : initialised datashuttle project
+    project
+        initialised datashuttle project
 
-    base_folder : folder to search for wildcards in
+    base_folder
+        folder to search for wildcards in
 
-    local_or_central : "local" or "central" project path to
+    local_or_central
+        "local" or "central" project path to
         search in
 
-    all_names : list of subject or session names that
+    all_names
+        list of subject or session names that
         may or may not include the wildcard flag. If sub (below)
         is passed, it is assumed these are session names. Otherwise,
         it is assumed these are subject names.
 
-    sub : optional subject to search for sessions in. If not provided,
+    sub
+        optional subject to search for sessions in. If not provided,
         will search for subjects rather than sessions.
+
+    Returns
+    -------
+    new_all_names
+        A new list of names including all original names
+        but where @*@-containing names have been replaced with
+        search results.
 
     """
     new_all_names: List[str] = []
@@ -442,38 +496,52 @@ def search_sub_or_ses_level(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[str] | List[Path], List[str]]:
-    """
-    Search project folder at the subject or session level.
-    Only returns folders
+    """Search project folder at the subject or session level.
 
     Parameters
     ----------
-
-    cfg : datashuttle project cfg. Currently, this is used
+    cfg
+        datashuttle project cfg. Currently, this is used
         as a holder for  ssh configs to avoid too many
         arguments, but this is not nice and breaks the
         general rule that these functions should operate
         project-agnostic.
 
-    local_or_central : search in local or central project
+    base_folder
+        the path to the base folder. If sub is None, the search is
+        performed on this folder
 
-    sub : either a subject name (string) or None. If None, the search
-        is performed at the top_level_folder level
+    local_or_central
+        search in local or central project
 
-    ses : either a session name (string) or None, This must not
+    sub
+        either a subject name (string) or None. If None, the search
+        is performed at the base_folder level
+
+    ses
+        either a session name (string) or None, This must not
         be a session name if sub is None. If provided (with sub)
         then the session folder is searched
 
-    str : glob-format search string to search at the
+    search_str
+        glob-format search string to search at the
         folder level.
 
-    verbose : If `True`, if a search folder cannot be found, a message
-              will be printed with the un-found path.
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
+
+    return_full_path
+        include the search_path in the returned paths
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     if ses and not sub:
         utils.log_and_raise_error(
-            "cannot pass session to "
-            "search_sub_or_ses_level() without subject",
+            "cannot pass session to search_sub_or_ses_level() without subject",
             ValueError,
         )
 
@@ -503,18 +571,33 @@ def search_for_folders(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """
-    Wrapper to determine the method used to search for search
-    prefix folders in the search path.
+    """Determine the method used to search for search prefix folders in the search path.
 
     Parameters
     ----------
+    cfg
+        datashuttle configs
 
-    local_or_central : "local" or "central"
-    search_path : full filepath to search in
-    search_prefix : file / folder name to search (e.g. "sub-*")
-    verbose : If `True`, when a search folder cannot be found, a message
-          will be printed with the missing path.
+    local_or_central
+        "local" or "central"
+
+    search_path
+        full filepath to search in
+
+    search_prefix
+        file / folder name to search (e.g. "sub-*")
+
+    verbose
+        If `True`, when a search folder cannot be found, a message
+        will be printed with the missing path.
+
+    return_full_path
+        include the search_path in the returned paths
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     if local_or_central == "central" and cfg["connection_method"] in [
         "ssh",
@@ -607,9 +690,24 @@ def search_gdrive_or_aws_for_folders(
 def search_filesystem_path_for_folders(
     search_path_with_prefix: Path, return_full_path: bool = False
 ) -> Tuple[List[Path | str], List[Path | str]]:
-    """
+    r"""Search a folder through the local filesystem.
+
     Use glob to search the full search path (including prefix) with glob.
     Files are filtered out of results, returning folders only.
+
+    Parameters
+    ----------
+    search_path_with_prefix
+        Path to search along with search prefix e.g. "C:\drive\project\sub-*"
+
+    return_full_path
+        If `True` returns the path to the discovered folder or file,
+        otherwise just the name.
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     all_folder_names = []
     all_filenames = []
@@ -618,7 +716,6 @@ def search_filesystem_path_for_folders(
     sorter_files_and_folders = sorted(all_files_and_folders)
 
     for file_or_folder_str in sorter_files_and_folders:
-
         file_or_folder = Path(file_or_folder_str)
 
         if file_or_folder.is_dir():

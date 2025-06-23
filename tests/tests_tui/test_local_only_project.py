@@ -5,14 +5,12 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestTuiLocalOnlyProject(TuiBase):
-
     @pytest.mark.asyncio
     async def test_local_only_make_project(
         self,
         empty_project_paths,
     ):
-        """
-        Test a local-only project, where the only set config is `local_path`.
+        """Test a local-only project, where the only set config is `local_path`.
         Set up a local project, and check the 'Transfer' tab is disabled and
         set configs are propagated.
         """
@@ -21,7 +19,6 @@ class TestTuiLocalOnlyProject(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.setup_and_check_local_only_project(
                 pilot, project_name, local_path
             )
@@ -49,8 +46,7 @@ class TestTuiLocalOnlyProject(TuiBase):
         self,
         empty_project_paths,
     ):
-        """
-        It is possible to switch between a 'local-only' project (`local_path`
+        """It is possible to switch between a 'local-only' project (`local_path`
         only set) and a full project with all configs set, where transfer is allowed.
         Here start as a local project then set configs so we become a full project.
         """
@@ -60,7 +56,6 @@ class TestTuiLocalOnlyProject(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up a local-only project
             await self.setup_and_check_local_only_project(
                 pilot, project_name, local_path
@@ -125,8 +120,7 @@ class TestTuiLocalOnlyProject(TuiBase):
         self,
         setup_project_paths,
     ):
-        """
-        Very similar to `test_check_local_only_project_to_full()`, but
+        """Very similar to `test_check_local_only_project_to_full()`, but
         going from a full project to a local only. This still requires
         a refresh so the full transfer tab can be set to a placeholder.
         """
@@ -135,7 +129,6 @@ class TestTuiLocalOnlyProject(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Fixture generated a full project, switch to it's
             # project manager screen here.
             await self.check_and_click_onto_existing_project(
@@ -187,8 +180,7 @@ class TestTuiLocalOnlyProject(TuiBase):
     async def setup_and_check_local_only_project(
         self, pilot, project_name, local_path
     ):
-        """
-        Set up a local-only project by filling in the `local_path` and setting
+        """Set up a local-only project by filling in the `local_path` and setting
         the radio button to the no-connection option.
         """
         # Move to configs window

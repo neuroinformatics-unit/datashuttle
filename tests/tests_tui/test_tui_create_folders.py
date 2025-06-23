@@ -13,7 +13,6 @@ from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 
 class TestTuiCreateFolders(TuiBase):
-
     # -------------------------------------------------------------------------
     # General test Create Folders
     # -------------------------------------------------------------------------
@@ -23,9 +22,7 @@ class TestTuiCreateFolders(TuiBase):
     async def test_create_folders_sub_and_ses(
         self, setup_project_paths, test_multi_input
     ):
-        """
-        Basic test that folders are created as expected through the TUI.
-        """
+        """Basic test that folders are created as expected through the TUI."""
         # Define folders to create
         if test_multi_input:
             sub_text = "sub-001, sub-002"
@@ -42,7 +39,6 @@ class TestTuiCreateFolders(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up the TUI on the 'create' tab, filling the
             # input with the subject and session folders to create.
             await self.check_and_click_onto_existing_project(
@@ -87,8 +83,7 @@ class TestTuiCreateFolders(TuiBase):
 
     @pytest.mark.asyncio
     async def test_create_folders_formatted_names(self, setup_project_paths):
-        """
-        Test preview tooltips and create folders with _@DATE@ formatting.
+        """Test preview tooltips and create folders with _@DATE@ formatting.
         The @TO@ key is not tested.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
@@ -107,14 +102,14 @@ class TestTuiCreateFolders(TuiBase):
                 "sub-001_@DATE@, sub-002_@DATE@",
             )
 
-            sub_1_regexp = "sub\-001_date\-\d{8}"
-            sub_2_regexp = "sub\-002_date\-\d{8}"
+            sub_1_regexp = r"sub\-001_date\-\d{8}"
+            sub_2_regexp = r"sub\-002_date\-\d{8}"
             sub_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + sub_1_regexp
                 + "', '"
                 + sub_2_regexp
-                + "'\]"
+                + r"'\]"
             )
             sub_tooltip = pilot.app.screen.query_one(
                 "#create_folders_subject_input"
@@ -127,17 +122,17 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_session_input", "ses-001@TO@003_@DATE@"
             )
 
-            ses_1_regexp = "ses\-001_date\-\d{8}"
-            ses_2_regexp = "ses\-002_date\-\d{8}"
-            ses_3_regexp = "ses\-003_date\-\d{8}"
+            ses_1_regexp = r"ses\-001_date\-\d{8}"
+            ses_2_regexp = r"ses\-002_date\-\d{8}"
+            ses_3_regexp = r"ses\-003_date\-\d{8}"
             ses_tooltip_regexp = (
-                "Formatted names: \['"
+                r"Formatted names: \['"
                 + ses_1_regexp
                 + "', '"
                 + ses_2_regexp
                 + "', '"
                 + ses_3_regexp
-                + "'\]"
+                + r"'\]"
             )
             ses_tooltip = pilot.app.screen.query_one(
                 "#create_folders_session_input"
@@ -181,15 +176,13 @@ class TestTuiCreateFolders(TuiBase):
     async def test_create_folders_bad_validation_tooltips(
         self, setup_project_paths
     ):
-        """
-        Check that correct tooltips are displayed when
+        """Check that correct tooltips are displayed when
         various invalid subject or session names are provided.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -227,11 +220,12 @@ class TestTuiCreateFolders(TuiBase):
                 ).tooltip
                 == "Formatted names: ['sub-001']"
             )
+
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).tooltip
-                == "DUPLICATE_PREFIX: The name: ses-001_ses-001 of contains more than one instance of the prefix ses."
+                == "DUPLICATE_PREFIX: The name: ses-001_ses-001 contains more than one instance of the prefix ses."
             )
 
             await self.fill_input(
@@ -259,8 +253,7 @@ class TestTuiCreateFolders(TuiBase):
     async def test_validation_error_and_bypass_validation(
         self, setup_project_paths
     ):
-        """
-        Test validation and bypass validation options by
+        """Test validation and bypass validation options by
         first trying to create an invalid folder name, and
         checking an error displays. Next, turn on 'bypass validation'
         and check the folders are created despite being invalid.
@@ -269,7 +262,6 @@ class TestTuiCreateFolders(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -338,15 +330,13 @@ class TestTuiCreateFolders(TuiBase):
     async def test_name_template_next_sub_or_ses_and_validation(
         self, setup_project_paths
     ):
-        """
-        Test validation and double-click for next sub / ses
+        """Test validation and double-click for next sub / ses
         values when 'name templates' is set in the 'Settings' window.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -354,7 +344,7 @@ class TestTuiCreateFolders(TuiBase):
             # Set some name template and check the tooltips
             # indicate mismatches correctly
             pilot.app.screen.interface.project.set_name_templates(
-                {"on": True, "sub": "sub-\d\d\d", "ses": "ses-...."}
+                {"on": True, "sub": r"sub-\d\d\d", "ses": "ses-...."}
             )
 
             await self.fill_input(
@@ -445,6 +435,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=False
             )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -458,6 +451,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_session_input", control=False
             )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -468,15 +464,13 @@ class TestTuiCreateFolders(TuiBase):
 
     @pytest.mark.asyncio
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
-        """
-        Test the double click on Input correctly fills with the
+        """Test the double click on Input correctly fills with the
         next sub or ses (or prefix only when CTRL is pressed).
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=True
             )
@@ -504,6 +498,9 @@ class TestTuiCreateFolders(TuiBase):
 
             # Double click without CTRL modifier key.
             await self.double_click(pilot, "#create_folders_subject_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -515,6 +512,9 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_subject_input", "sub-001"
             )
             await self.double_click(pilot, "#create_folders_session_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -524,6 +524,100 @@ class TestTuiCreateFolders(TuiBase):
 
             await pilot.pause()
 
+    @pytest.mark.asyncio
+    async def test_get_next_sub_and_ses_central_no_template(
+        self, setup_project_paths, mocker
+    ):
+        """Test getting the next subject / session with the include_central option. Check the
+        checkbox widget that turns the setting on. Trigger a get next subject / session and mock
+        the underlying datashuttle function to ensure include_central is properly called.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            # Turn on the central checkbox
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#suggest_next_sub_ses_central_checkbox"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+
+            # Mock the datashuttle functions
+            spy_get_next_sub = mocker.spy(
+                pilot.app.screen.interface.project, "get_next_sub"
+            )
+            spy_get_next_ses = mocker.spy(
+                pilot.app.screen.interface.project, "get_next_ses"
+            )
+
+            # Check subject suggestion called mocked function correctly
+            await self.double_click(pilot, "#create_folders_subject_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
+
+            spy_get_next_sub.assert_called_with(
+                "rawdata", return_with_prefix=True, include_central=True
+            )
+
+            # Check session suggestion called mocked function correctly
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-001"
+            )
+            await self.double_click(pilot, "#create_folders_session_input")
+
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
+
+            spy_get_next_ses.assert_called_with(
+                "rawdata",
+                "sub-001",
+                return_with_prefix=True,
+                include_central=True,
+            )
+
+    @pytest.mark.asyncio
+    async def test_get_next_sub_and_ses_error_popup(self, setup_project_paths):
+        """Test the modal error dialog display on encountering an error
+        while suggesting next sub/ses. Since getting the suggestion happens
+        in a thread, the `dismiss_popup_and_show_modal_error_dialog_from_thread`
+        function which is used to display the modal error dialog from main thread
+        is being tested. It is done by trying to get next session suggestion without
+        inputting a subject.
+        """
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.setup_existing_project_create_tab_filled_sub_and_ses(
+                pilot, project_name, create_folders=True
+            )
+
+            # Clear the subject input
+            await self.fill_input(pilot, "#create_folders_subject_input", "")
+
+            await self.double_click(pilot, "#create_folders_session_input")
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
+            )
+
+            assert (
+                "Must input a subject number before suggesting next session number."
+                in pilot.app.screen.query_one(
+                    "#messagebox_message_label"
+                ).renderable
+            )
+
     # -------------------------------------------------------------------------
     # Test Top Level Folders
     # -------------------------------------------------------------------------
@@ -532,15 +626,13 @@ class TestTuiCreateFolders(TuiBase):
     async def test_create_folders_settings_top_level_folder(
         self, setup_project_paths
     ):
-        """
-        Check the folders are created in the correct top level
+        """Check the folders are created in the correct top level
         folder when this is changed in the 'Settings' screen.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Open the CreateFoldersSettingsScreen
             await self.setup_existing_project_create_tab_filled_sub_and_ses(
                 pilot, project_name, create_folders=False
@@ -619,7 +711,6 @@ class TestTuiCreateFolders(TuiBase):
         folder_used = test_utils.get_all_broad_folders_used(value=False)
 
         for datatype in canonical_configs.get_broad_datatypes():
-
             await self.scroll_to_click_pause(
                 pilot,
                 f"#create_{datatype}_checkbox",

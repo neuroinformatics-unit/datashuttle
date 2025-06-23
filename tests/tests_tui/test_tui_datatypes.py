@@ -7,9 +7,7 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestDatatypesTUI(TuiBase):
-    """
-    Test the datatype selection screen for the Create and Transfer tab.
-    """
+    """Test the datatype selection screen for the Create and Transfer tab."""
 
     @pytest.mark.asyncio
     async def test_select_displayed_datatypes_create(
@@ -19,7 +17,6 @@ class TestDatatypesTUI(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up the TUI on the 'create' tab, filling the
             # input with the subject and session folders to create.
             await self.check_and_click_onto_existing_project(
@@ -50,7 +47,9 @@ class TestDatatypesTUI(TuiBase):
 
             for datatype in narrow_datatype_names:
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
@@ -96,7 +95,9 @@ class TestDatatypesTUI(TuiBase):
             for datatype in broad_datatype_names:
                 # check all are shown and False again (because False on reset)
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
@@ -116,13 +117,15 @@ class TestDatatypesTUI(TuiBase):
             for datatype in broad_datatype_names:
                 # check all are shown and False again
                 assert (
-                    pilot.app.query_one(f"#create_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#create_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 
             # Confirm also that narrow datatypes are not shown.
             with pytest.raises(BaseException):
-                pilot.app.query_one(
+                pilot.app.screen.query_one(
                     f"#create_{narrow_datatype_names[0]}_checkbox"
                 )
 
@@ -134,7 +137,6 @@ class TestDatatypesTUI(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             # Set up the TUI on the 'transfer' tab (custom) and
             # open the datatype selection screen
             await self.check_and_click_onto_existing_project(
@@ -165,7 +167,9 @@ class TestDatatypesTUI(TuiBase):
 
             for datatype in narrow_datatype_names:
                 assert (
-                    pilot.app.query_one(f"#transfer_{datatype}_checkbox").value
+                    pilot.app.screen.query_one(
+                        f"#transfer_{datatype}_checkbox"
+                    ).value
                     is False
                 )
 

@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
-
     from textual.app import ComposeResult
 
     from datashuttle.tui.app import TuiApp
@@ -28,8 +27,9 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class CreateFoldersSettingsScreen(ModalScreen):
-    """
-    This screen handles setting datashuttle's `name_template`'s, as well
+    """Settings for the Create Folders tab.
+
+    Handles setting datashuttle's `name_template`, as well
     as the top-level-folder select and option to bypass all validation.
 
     Name Templates
@@ -46,15 +46,26 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
     Attributes
     ----------
-
     Because the Input for `name_templates` is shared between subject
     and session, the values are held in the `input_values` attribute.
     These are loaded from `persistent_settings` on init.
+
     """
 
     TITLE = "Create Folders Settings"
 
     def __init__(self, mainwindow: TuiApp, interface: Interface) -> None:
+        """Initialise the CreateFoldersSettingsScreen.
+
+        Parameters
+        ----------
+        mainwindow
+            The main TUI app.
+
+        interface
+            Datashuttle Interface object.
+
+        """
         super(CreateFoldersSettingsScreen, self).__init__()
 
         self.mainwindow = mainwindow
@@ -69,13 +80,15 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def action_link_docs(self) -> None:
+        """Link to datashuttle documentation."""
         webbrowser.open(links.get_docs_link())
 
     def compose(self) -> ComposeResult:
+        """Add widgets to the CreateFoldersSettingsScreen."""
         sub_on = True if self.input_mode == "sub" else False
         ses_on = not sub_on
 
-        explanation = """
+        explanation = r"""
         A 'Template' can be set check subject or session names are
         formatted in a specific way.
 
@@ -86,6 +99,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
+        suggest_next_sub_ses_central = self.interface.tui_settings[
+            "suggest_next_sub_ses_central"
+        ]
 
         yield Container(
             Horizontal(
@@ -97,43 +113,52 @@ class CreateFoldersSettingsScreen(ModalScreen):
                     self.interface,
                     id="create_folders_settings_toplevel_select",
                 ),
-            ),
-            Checkbox(
-                "Bypass validation",
-                value=bypass_validation,
-                id="create_folders_settings_bypass_validation_checkbox",
+                id="toplevel_folder_select_container",
             ),
             Container(
-                Horizontal(
-                    Checkbox(
-                        "Template Validation",
-                        id="template_settings_validation_on_checkbox",
-                        value=self.interface.get_name_templates()["on"],
-                    ),
-                    id="template_inner_horizontal_container",
+                Checkbox(
+                    "Search Central For Suggestions",
+                    value=suggest_next_sub_ses_central,
+                    id="suggest_next_sub_ses_central_checkbox",
+                ),
+                Checkbox(
+                    "Bypass validation",
+                    value=bypass_validation,
+                    id="create_folders_settings_bypass_validation_checkbox",
                 ),
                 Container(
-                    Label(explanation, id="template_message_label"),
-                    Container(
-                        RadioSet(
-                            RadioButton(
-                                "Subject",
-                                id="template_settings_subject_radiobutton",
-                                value=sub_on,
-                            ),
-                            RadioButton(
-                                "Session",
-                                id="template_settings_session_radiobutton",
-                                value=ses_on,
-                            ),
-                            id="template_settings_radioset",
+                    Horizontal(
+                        Checkbox(
+                            "Template validation",
+                            id="template_settings_validation_on_checkbox",
+                            value=self.interface.get_name_templates()["on"],
                         ),
-                        Input(id="template_settings_input"),
-                        id="template_other_widgets_container",
+                        id="template_inner_horizontal_container",
                     ),
-                    id="template_inner_container",
+                    Container(
+                        Label(explanation, id="template_message_label"),
+                        Container(
+                            RadioSet(
+                                RadioButton(
+                                    "Subject",
+                                    id="template_settings_subject_radiobutton",
+                                    value=sub_on,
+                                ),
+                                RadioButton(
+                                    "Session",
+                                    id="template_settings_session_radiobutton",
+                                    value=ses_on,
+                                ),
+                                id="template_settings_radioset",
+                            ),
+                            Input(id="template_settings_input"),
+                            id="template_other_widgets_container",
+                        ),
+                        id="template_inner_container",
+                    ),
+                    id="template_top_container",
                 ),
-                id="template_top_container",
+                id="checkbox_container",
             ),
             Container(),
             Button("Close", id="create_folders_settings_close_button"),
@@ -141,10 +166,12 @@ class CreateFoldersSettingsScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
+        """Update widgets immediately after mounting."""
         for id in [
             "#create_folders_settings_toplevel_select",
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
+            "#suggest_next_sub_ses_central_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -153,21 +180,23 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.switch_template_container_disabled()
 
     def init_input_values_holding_variable(self) -> None:
+        """Add the project Name Templates to the relevant Inputs."""
         name_templates = self.interface.get_name_templates()
         self.input_values["sub"] = name_templates["sub"]
         self.input_values["ses"] = name_templates["ses"]
 
     def switch_template_container_disabled(self) -> None:
+        """Switch the name template widgets disabled / enabled."""
         is_on = self.query_one(
             "#template_settings_validation_on_checkbox"
         ).value
         self.query_one("#template_inner_container").disabled = not is_on
 
     def fill_input_from_template(self) -> None:
-        """
-        Fill the `name_templates` Input, that is shared
-        between subject and session, depending on the
-        current radioset value.
+        """Fill the `name_templates` Input.
+
+        The Input is shared between subject and session,
+        depending on the current RadioSet value.
         """
         input = self.query_one("#template_settings_input")
         value = self.input_values[self.input_mode]
@@ -179,7 +208,8 @@ class CreateFoldersSettingsScreen(ModalScreen):
             input.value = value
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
+        """Handle button press on the screen.
+
         On close, update the `name_templates` stored in
         `persistent_settings` with those set on the TUI.
 
@@ -199,6 +229,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             self.interface.save_tui_settings(False, "bypass_validation")
 
     def make_name_templates_from_widgets(self) -> Dict:
+        """Return a canonical `name_templates` entry based on the current widget settings."""
         return {
             "on": self.query_one(
                 "#template_settings_validation_on_checkbox"
@@ -208,9 +239,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         }
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
-        """
-        Turn `name_templates` on or off and update the TUI accordingly.
-        """
+        """Turn `name_templates` on or off and update the TUI accordingly."""
         is_on = event.value
 
         if event.checkbox.id == "template_settings_validation_on_checkbox":
@@ -232,13 +261,19 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 disable_container = not self.query_one(
                     "#template_settings_validation_on_checkbox"
                 ).value
-            self.query_one("#template_inner_container").disabled = (
-                disable_container
+
+            self.query_one(
+                "#template_inner_container"
+            ).disabled = disable_container
+        elif event.checkbox.id == "suggest_next_sub_ses_central_checkbox":
+            self.interface.save_tui_settings(
+                is_on, "suggest_next_sub_ses_central"
             )
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
-        """
-        Update the displayed SSH widgets when the `connection_method`
+        """Update the displayed SSH widgets.
+
+        These are updated when the `connection_method`
         radiobuttons are changed.
         """
         label = str(event.pressed.label)
@@ -248,6 +283,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         self.fill_input_from_template()
 
     def on_input_changed(self, message: Input.Changed) -> None:
+        """Store the current Input value in the attribute to be saved later."""
         if message.input.id == "template_settings_input":
             val = None if message.value == "" else message.value
             self.input_values[self.input_mode] = val

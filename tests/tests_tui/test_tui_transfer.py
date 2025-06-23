@@ -7,8 +7,7 @@ from datashuttle.tui.app import TuiApp
 
 
 class TestTuiTransfer(TuiBase):
-    """
-    Test transferring through the TUI (entire project, top
+    """Test transferring through the TUI (entire project, top
     level only or custom). This class leverages the underlying
     test utils that check API transfers.
     """
@@ -24,7 +23,6 @@ class TestTuiTransfer(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -57,8 +55,7 @@ class TestTuiTransfer(TuiBase):
             await pilot.pause()
 
     async def check_persistent_settings(self, pilot):
-        """
-        Run transfer with each overwrite setting and check it is propagated
+        """Run transfer with each overwrite setting and check it is propagated
         to datashuttle methods.
         """
         await self.set_and_check_persistent_settings(pilot, "never", True)
@@ -70,7 +67,6 @@ class TestTuiTransfer(TuiBase):
         )
 
     async def set_overwrite_checkbox(self, pilot, overwrite_setting):
-        """"""
         all_positions = {"never": None, "always": 5, "if_source_newer": 6}
         position = all_positions[overwrite_setting]
 
@@ -89,8 +85,7 @@ class TestTuiTransfer(TuiBase):
     async def set_and_check_persistent_settings(
         self, pilot, overwrite_setting, dry_run_setting
     ):
-        """
-        Run transfer with an overwrite setting and check it is propagated
+        """Run transfer with an overwrite setting and check it is propagated
         to datashuttle methods by checking the logs.
         """
         await self.set_overwrite_checkbox(pilot, overwrite_setting)
@@ -111,14 +106,12 @@ class TestTuiTransfer(TuiBase):
     async def test_transfer_top_level_folder(
         self, setup_project_paths, top_level_folder, upload_or_download
     ):
-        """"""
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         subs, sessions = test_utils.get_default_sub_sessions_to_test()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -167,7 +160,6 @@ class TestTuiTransfer(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-
             await self.check_and_click_onto_existing_project(
                 pilot, project_name
             )
@@ -228,7 +220,6 @@ class TestTuiTransfer(TuiBase):
     async def switch_top_level_folder_select(
         self, pilot, id, top_level_folder
     ):
-
         if top_level_folder == "rawdata":
             assert pilot.app.screen.query_one(id).value == "rawdata"
         else:
@@ -236,7 +227,6 @@ class TestTuiTransfer(TuiBase):
             assert pilot.app.screen.query_one(id).value == "derivatives"
 
     async def run_transfer(self, pilot, upload_or_download):
-        """"""
         # Check assumed default is correct on the transfer switch
         assert pilot.app.screen.query_one("#transfer_switch").value is False
 
@@ -253,7 +243,6 @@ class TestTuiTransfer(TuiBase):
         top_level_folder_list,
         upload_or_download,
     ):
-        """"""
         for top_level_folder in top_level_folder_list:
             test_utils.make_and_check_local_project_folders(
                 project,

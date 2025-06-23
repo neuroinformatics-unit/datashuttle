@@ -7,9 +7,8 @@ from datashuttle.utils import rclone, ssh
 def setup_project_for_ssh(
     project, central_path, central_host_id, central_host_username
 ):
-    """
-    Set up the project configs to use SSH connection
-    to central
+    """Set up the project configs to use SSH connection
+    to central.
     """
     project.update_config_file(
         central_path=central_path,
@@ -26,11 +25,10 @@ def setup_project_for_ssh(
 
 
 def setup_mock_input(input_):
-    """
-    This is very similar to pytest monkeypatch but
+    """Very similar to pytest monkeypatch but
     using that was giving me very strange output,
     monkeypatch.setattr('builtins.input', lambda _: "n")
-    i.e. pdb went deep into some unrelated code stack
+    i.e. pdb went deep into some unrelated code stack.
     """
     orig_builtin = copy.deepcopy(builtins.input)
     builtins.input = lambda _: input_  # type: ignore
@@ -38,16 +36,12 @@ def setup_mock_input(input_):
 
 
 def restore_mock_input(orig_builtin):
-    """
-    orig_builtin: the copied, original builtins.input
-    """
+    """orig_builtin: the copied, original builtins.input."""
     builtins.input = orig_builtin
 
 
 def setup_hostkeys(project):
-    """
-    Convenience function to verify the server hostkey.
-    """
+    """Convenience function to verify the server hostkey."""
     orig_builtin = setup_mock_input(input_="y")
     ssh.verify_ssh_central_host(
         project.cfg["central_host_id"], project.cfg.hostkeys_path, log=True

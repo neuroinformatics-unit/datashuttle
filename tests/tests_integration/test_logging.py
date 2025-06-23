@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 import test_utils
 
-from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs
 from datashuttle.configs.canonical_tags import tags
 from datashuttle.utils import ds_logger
@@ -18,12 +17,9 @@ from datashuttle.utils.custom_exceptions import (
 
 
 class TestLogging:
-
     @pytest.fixture(scope="function")
     def teardown_logger(self):
-        """
-        Ensure the logger is deleted at the end of each test.
-        """
+        """Ensure the logger is deleted at the end of each test."""
         yield
         if "datashuttle" in logging.root.manager.loggerDict:
             logging.root.manager.loggerDict.pop("datashuttle")
@@ -33,14 +29,11 @@ class TestLogging:
     # -------------------------------------------------------------------------
 
     def test_logger_name(self):
-        """
-        Check the canonical logger name.
-        """
+        """Check the canonical logger name."""
         assert ds_logger.get_logger_name() == "datashuttle"
 
     def test_start_logging(self, tmp_path, teardown_logger):
-        """
-        Test that the central `start` logging function
+        """Test that the central `start` logging function
         starts the named logger with the expected handlers.
         """
         assert ds_logger.logging_is_active() is False
@@ -57,9 +50,7 @@ class TestLogging:
         assert isinstance(logger.handlers[0], logging.FileHandler)
 
     def test_shutdown_logger(self, tmp_path, teardown_logger):
-        """
-        Check the log handler remover indeed removes the handles.
-        """
+        """Check the log handler remover indeed removes the handles."""
         assert ds_logger.logging_is_active() is False
 
         ds_logger.start(tmp_path, "test-command", variables=[])
@@ -72,9 +63,7 @@ class TestLogging:
         assert ds_logger.logging_is_active() is False
 
     def test_logging_an_error(self, project, teardown_logger):
-        """
-        Check that errors are caught and logged properly.
-        """
+        """Check that errors are caught and logged properly."""
         with pytest.raises(NeuroBlueprintError):
             project.create_folders("rawdata", "sob-001")
 
@@ -89,8 +78,7 @@ class TestLogging:
 
     @pytest.fixture(scope="function")
     def clean_project_name(self):
-        """
-        Create an empty project, but ensure no
+        """Create an empty project, but ensure no
         configs already exists, and delete created configs
         after test.
 
@@ -107,8 +95,7 @@ class TestLogging:
 
     @pytest.fixture(scope="function")
     def project(self, tmp_path, clean_project_name, request):
-        """
-        Set `up a project with default configs to use
+        """Set `up a project with default configs to use
         for testing. This fixture is distinct
         from the base.py fixture as requires
         additional logging setup / teardown.
@@ -118,7 +105,7 @@ class TestLogging:
         """
         project_type = getattr(request, "param", "full")
 
-        project, cwd = test_utils.setup_project_fixture(
+        project = test_utils.setup_project_fixture(
             tmp_path, clean_project_name, project_type
         )
 
@@ -128,7 +115,7 @@ class TestLogging:
 
         yield project
 
-        test_utils.teardown_project(cwd, project)
+        test_utils.teardown_project(project)
         test_utils.set_datashuttle_loggers(disable=True)
 
     # ----------------------------------------------------------------------------------------------------------
@@ -137,24 +124,22 @@ class TestLogging:
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_log_filename(self, project):
-        """
-        Check the log filename is formatted correctly, for
-        `update_config_file`, an arbitrary command
+        """Check the log filename is formatted correctly, for
+        `update_config_file`, an arbitrary command.
         """
         project.update_config_file(central_host_id="test_id")
 
         log_search = list(project.cfg.logging_path.glob("*.log"))
-        assert (
-            len(log_search) == 1
-        ), "should only be 1 log in this test environment."
+        assert len(log_search) == 1, (
+            "should only be 1 log in this test environment."
+        )
         log_filename = log_search[0].name
 
         regex = re.compile(r"\d{8}T\d{6}_update-config-file.log")
         assert re.search(regex, log_filename) is not None
 
     def test_logs_make_config_file(self, clean_project_name, tmp_path):
-        """"""
-        project = DataShuttle(clean_project_name)
+        project = test_utils.make_project(clean_project_name)
 
         project.make_config_file(
             tmp_path / clean_project_name,
@@ -254,8 +239,7 @@ class TestLogging:
     def test_logs_upload_and_download(
         self, project, upload_or_download, transfer_method
     ):
-        """
-        Set transfer verbosity and progress settings so
+        """Set transfer verbosity and progress settings so
         maximum output is produced to test against.
         """
         subs = ["sub-11"]
@@ -311,8 +295,7 @@ class TestLogging:
     def test_logs_upload_and_download_folder_or_file(
         self, project, upload_or_download
     ):
-        """
-        Set transfer verbosity and progress settings so
+        """Set transfer verbosity and progress settings so
         maximum output is produced to test against.
         """
         test_utils.make_and_check_local_project_folders(
@@ -353,12 +336,11 @@ class TestLogging:
     def test_temp_log_folder_moved_make_config_file(
         self, clean_project_name, tmp_path
     ):
-        """
-        Check that
+        """Check that
         logs are moved to the passed `local_path` when
         `make_config_file()` is passed.
         """
-        project = DataShuttle(clean_project_name)
+        project = test_utils.make_project(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(
             tmp_path, clean_project_name
@@ -379,8 +361,7 @@ class TestLogging:
         assert "make-config-file" in project_path_logs[0]
 
     def test_clear_logging_path(self, clean_project_name, tmp_path):
-        """
-        The temporary logging path holds logs which are all
+        """The temporary logging path holds logs which are all
         transferred to a new `local_path` when configs
         are updated. This should only ever be the most
         recent log action, and not others which may
@@ -389,7 +370,7 @@ class TestLogging:
         begins, this test checks the `_temp_log_path`
         is cleared correctly.
         """
-        project = DataShuttle(clean_project_name)
+        project = test_utils.make_project(clean_project_name)
 
         configs = test_utils.get_test_config_arguments_dict(
             tmp_path, clean_project_name
@@ -419,7 +400,6 @@ class TestLogging:
     # ----------------------------------------------------------------------------------
 
     def test_logs_check_update_config_error(self, project):
-        """"""
         with pytest.raises(ConfigError):
             project.update_config_file(
                 connection_method="ssh", central_host_username=None
@@ -438,7 +418,6 @@ class TestLogging:
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_logs_bad_create_folders_error(self, project):
-        """"""
         project.create_folders("rawdata", "sub-001", datatype="all")
         test_utils.delete_log_files(project.cfg.logging_path)
 
@@ -455,8 +434,7 @@ class TestLogging:
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_validate_project_logging(self, project):
-        """
-        Test that `validate_project` logs errors
+        """Test that `validate_project` logs errors
         and warnings to file.
         """
         # Make conflicting subject folders
@@ -489,8 +467,7 @@ class TestLogging:
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_validate_names_against_project_logging(self, project):
-        """
-        Implicitly test `validate_names_against_project` called when
+        """Implicitly test `validate_names_against_project` called when
         `make_project_folders` is called, that it logs errors
         to file. Warnings are not tested.
         """

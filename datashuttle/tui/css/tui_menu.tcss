@@ -390,9 +390,16 @@ CreateFoldersSettingsScreen {
     width: 80%;
     background: $primary-background;
     border: tall $panel-lighten-3;
- }
+}
+#checkbox_container {
+    height: 65%;
+    overflow: hidden auto;
+}
+#toplevel_folder_select_container {
+    height: 15%;
+}
 #template_top_container {
-    height: 50%;
+    height: 70%;
     background: $primary-background;
     border: tall $panel-lighten-3;
     overflow: hidden auto;
@@ -506,6 +513,41 @@ ConfirmAndAwaitTransferPopup {
 }
 
 #loading_indicator {
+    align: center middle;
+    padding: 0;
+    height: 3;
+    margin: 1 0 0 0;
+    content-align: center middle;
+}
+
+/* Suggest next subject / session loading pop up --------------------------------------------------- */
+
+SearchingCentralForNextSubSesPopup {
+    align: center middle;
+}
+
+#searching_top_container {
+    align: center middle;
+    height: 15;
+    width: 65;
+    border: tall $panel-lighten-1;
+    background: $primary-background;
+ }
+
+#searching_top_container:light {
+    background: $boost;
+    border: tall $panel-darken-3;
+}
+
+#searching_message_label {
+    align: center middle;
+    text-align: center;
+    overflow: hidden auto;
+    width: 100%;
+    margin: 1 0 0 0;
+}
+
+#searching_animated_indicator {
     align: center middle;
     padding: 0;
     height: 3;

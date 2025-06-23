@@ -1,12 +1,10 @@
-"""
-This module contains all information for the required
-format of the configs class. This is clearly defined
-as configs can be provided from file or input dynamically
-and so careful checks must be done.
+"""Contains all information defining the required format of the Configs class.
 
-If adding a new config, first add the key to
-get_canonical_configs() and type to
-get_canonical_configs()
+This format is clearly specified because configs can be supplied
+either from a file or dynamically, so careful validation is required.
+
+If adding a new config key:
+- First add the key to `get_canonical_configs()` and define its type in the same function
 """
 
 from __future__ import annotations
@@ -22,7 +20,6 @@ from typing import (
 
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
-import copy
 from pathlib import Path
 
 import typeguard
@@ -37,10 +34,7 @@ def get_connection_methods_list() -> List[str]:
 
 
 def get_canonical_configs() -> dict:
-    """
-    The only permitted types for DataShuttle
-    config values.
-    """
+    """Return the only permitted types for DataShuttle config values."""
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
@@ -57,10 +51,9 @@ def get_canonical_configs() -> dict:
 
 
 def keys_str_on_file_but_path_in_class() -> list[str]:
-    """
-    All configs which are paths are converted to pathlib.Path
-    objects on load. This list indicates which config entries
-    are to be converted to Path.
+    """Return a list of all config keys that are paths but stored as str in the file.
+
+    These are converted to pathlib.Path objects when loaded.
     """
     return [
         "local_path",
@@ -74,18 +67,18 @@ def keys_str_on_file_but_path_in_class() -> list[str]:
 
 
 def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
-    """
-    Central function for performing checks on a
-    DataShuttle Configs UserDict class. This should
-    be run after any change to the configs (e.g.
-    make_config_file, update_config_file, supply_config_file).
+    """Perform checks on a DataShuttle Configs UserDict class.
 
-    This will raise assert if condition is not met.
+    This should be run after any change to the configs
+    (e.g. make_config_file, update_config_file, supply_config_file).
+
+    This will raise an error if a condition is not met.
 
     Parameters
     ----------
+    config_dict
+        datashuttle config UserDict
 
-    config_dict : datashuttle config UserDict
     """
     canonical_dict = get_canonical_configs()
 
@@ -175,10 +168,10 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
 
 def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
-    """
-    There is no circumstance where one of `central_path` and `connection_method`
-    should be set and not the other. Either both are set ('full' project) or
-    neither are ('local only' project). Check this assumption here.
+    """Check that both or neither of `central_path` and `connection_method` are set.
+
+    There is no circumstance where one is set and not the other. Either both are set
+    ('full' project) or both are `None` ('local only' project).
     """
     params_are_none = local_only_configs_are_none(config_dict)
 
@@ -192,6 +185,7 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
 
 
 def local_only_configs_are_none(config_dict: Configs) -> list[bool]:
+    """Check whether `central_path` and `connection_method` are both set to None."""
     return [
         config_dict[key] is None
         for key in ["central_path", "connection_method"]
@@ -202,14 +196,10 @@ def raise_on_bad_path_syntax(
     path_name: str,
     path_type: str,
 ) -> None:
-    """
-    Error if some common, unsupported patterns are observed
-    (e.g. ~, .) for path.
-    """
+    """Raise error if path contains unsupported patterns (e.g. ~, .)."""
     if path_name[0] == "~":
         utils.log_and_raise_error(
-            f"{path_type} must contain the full folder path "
-            "with no ~ syntax.",
+            f"{path_type} must contain the full folder path with no ~ syntax.",
             ConfigError,
         )
 
@@ -224,13 +214,10 @@ def raise_on_bad_path_syntax(
 
 
 def check_config_types(config_dict: Configs) -> None:
-    """
-    Check the type of passed configs matches the canonical types.
-    """
+    """Check the type of passed configs matches the canonical types."""
     required_types = get_canonical_configs()
 
     for key in config_dict.keys():
-
         expected_type = required_types[key]
         try:
             typeguard.check_type(config_dict[key], expected_type)
@@ -249,14 +236,12 @@ def check_config_types(config_dict: Configs) -> None:
 
 
 def get_tui_config_defaults() -> Dict:
-    """
-    Get the default settings for the datatype checkboxes
-    in the TUI.
+    """Return the default settings for the datatype checkboxes in the TUI.
 
-    Two sets are maintained (one for creating,
-    one for transfer) which have different defaults.
+    Two sets are maintained (one for  checkboxes on the create tab,
+    the other for transfer tab) which have different defaults.
     By default, all broad datatype checkboxes are displayed,
-    and narrow are turned off.
+    and narrow datatypes are hidden and turned off.
     """
     settings = {
         "tui": {
@@ -274,12 +259,12 @@ def get_tui_config_defaults() -> Dict:
             "bypass_validation": False,
             "overwrite_existing_files": "never",
             "dry_run": False,
+            "suggest_next_sub_ses_central": False,
         }
     }
 
     # Fill all datatype options
     for broad_key in get_broad_datatypes():
-
         settings["tui"]["create_checkboxes_on"][broad_key] = {  # type: ignore
             "on": True,
             "displayed": True,
@@ -303,18 +288,16 @@ def get_tui_config_defaults() -> Dict:
 
 
 def get_name_templates_defaults() -> Dict:
+    """Return the default values for name_templates."""
     return {"name_templates": {"on": False, "sub": None, "ses": None}}
 
 
 def get_persistent_settings_defaults() -> Dict:
-    """
-    Persistent settings are settings that are maintained
-    across sessions. Currently, persistent settings for
-    both the API and TUI are stored in the same place.
+    """Return the default persistent settings maintained across sessions.
 
-    Currently, settings for the working top level folder,
-    TUI checkboxes and name templates (i.e. regexp
-    validation for sub and ses names) are stored.
+    Currently, these include settings for both the API and TUI, such as the
+    working top level folder, TUI checkboxes, and name templates
+    (i.e. regexp validation for sub and ses names).
     """
     settings = {}
     settings.update(get_tui_config_defaults())
@@ -324,8 +307,7 @@ def get_persistent_settings_defaults() -> Dict:
 
 
 def get_datatypes() -> List[str]:
-    """
-    Canonical list of datatype flags based on NeuroBlueprint.
+    """Return canonical list of datatype flags based on NeuroBlueprint.
 
     This must be kept up to date with the datatypes in the NeuroBlueprint specification.
     """
@@ -333,16 +315,18 @@ def get_datatypes() -> List[str]:
 
 
 def get_broad_datatypes():
+    """Return a list of broad datatypes."""
     return ["ephys", "behav", "funcimg", "anat"]
 
 
 def get_narrow_datatypes():
-    """
-    Return the narrow datatype associated with each broad datatype.
+    """Return the narrow datatype associated with each broad datatype.
+
     The mapping between broad and narrow datatypes is required for validation.
     """
     return {
-        "ephys": ["ecephys", "icephys"],
+        "behav": ["motion"],
+        "ephys": ["ecephys", "icephys", "emg"],
         "funcimg": ["cscope", "f2pe", "fmri", "fusi"],
         "anat": [
             "2pe",
@@ -368,9 +352,9 @@ def get_narrow_datatypes():
 
 
 def quick_get_narrow_datatypes():
-    """
-    A convenience wrapper around `get_narrow_datatypes()`
-    to quickly get a list of all narrow datatypes.
+    """Return a flat list of all narrow datatypes.
+
+    This is a convenience wrapper around `get_narrow_datatypes()`.
     """
     all_narrow_datatypes = get_narrow_datatypes()
     top_level_keys = list(all_narrow_datatypes.keys())
@@ -382,8 +366,9 @@ def quick_get_narrow_datatypes():
     return flat_narrow_datatypes
 
 
-def in_place_update_settings_for_narrow_datatype(settings: dict):
-    """
+def in_place_update_narrow_datatypes_if_required(user_settings: dict):
+    """Update legacy settings with the new version format.
+
     In versions < v0.6.0, only 'broad' datatypes were implemented
     and available in the TUI. Since, 'narrow' datatypes are introduced
     and datatype tui can be set to be both on / off but also
@@ -391,29 +376,88 @@ def in_place_update_settings_for_narrow_datatype(settings: dict):
 
     This function converts the old format to the new format so that
     all broad datatype settings (on / off) are maintained in
-    then new version.
+    then new version. It does this by copying the full default
+    parameters and overwriting them with the available user-set
+    defaults. This is the best approach, as it maintains the
+    order of the datatypes (otherwise, inserting non-existing
+    datatypes into the user datatype dict results in the wrong order).
+
     """
+    # Find out what is included in the loaded config file,
+    # that determines its version
+
+    has_narrow_datatypes = isinstance(
+        user_settings["tui"]["create_checkboxes_on"]["behav"], dict
+    )  # added 'narrow datatype' v0.6.0 with major refactor to dict
+
+    all_narrow_datatypes = quick_get_narrow_datatypes()
+
+    is_not_missing_any_narrow_datatypes = all(
+        [
+            dtype in user_settings["tui"]["create_checkboxes_on"]
+            for dtype in all_narrow_datatypes
+        ]
+    )
+
+    if is_not_missing_any_narrow_datatypes:
+        assert all(
+            [
+                dtype in user_settings["tui"]["transfer_checkboxes_on"]
+                for dtype in all_narrow_datatypes
+            ]
+        ), (
+            "Somehow there are datatypes missing in `transfer_checkboxes_on` but not `create_checkboxes_on`"
+        )
+
+    if has_narrow_datatypes and is_not_missing_any_narrow_datatypes:
+        return
+
+    # Make a dictionary of the canonical configs to fill in with whatever
+    # user data exists. This ensures the order of the keys is always the same.
     canonical_tui_configs = get_tui_config_defaults()
 
-    new_create_checkbox_configs = copy.deepcopy(
-        canonical_tui_configs["tui"]["create_checkboxes_on"]
-    )
-    new_transfer_checkbox_configs = copy.deepcopy(
-        canonical_tui_configs["tui"]["transfer_checkboxes_on"]
-    )
+    new_checkbox_configs = {
+        "create_checkboxes_on": (
+            canonical_tui_configs["tui"]["create_checkboxes_on"]
+        ),
+        "transfer_checkboxes_on": (
+            canonical_tui_configs["tui"]["transfer_checkboxes_on"]
+        ),
+    }
 
-    for key in ["behav", "ephys", "funcimg", "anat"]:
-        new_create_checkbox_configs[key]["on"] = settings["tui"][
-            "create_checkboxes_on"
-        ][key]
-        new_transfer_checkbox_configs[key]["on"] = settings["tui"][
-            "transfer_checkboxes_on"
-        ][key]
-
+    # Copy the pre-existing settings unique to the transfer checkboxes
     for key in ["all", "all_datatype", "all_non_datatype"]:
-        new_transfer_checkbox_configs[key]["on"] = settings["tui"][
-            "transfer_checkboxes_on"
-        ][key]
+        if has_narrow_datatypes:
+            new_checkbox_configs["transfer_checkboxes_on"][key] = (
+                user_settings["tui"]["transfer_checkboxes_on"][key]
+            )
+        else:
+            new_checkbox_configs["transfer_checkboxes_on"][key]["on"] = (
+                user_settings["tui"]["transfer_checkboxes_on"][key]
+            )
 
-    settings["tui"]["create_checkboxes_on"] = new_create_checkbox_configs
-    settings["tui"]["transfer_checkboxes_on"] = new_transfer_checkbox_configs
+    # Copy any datatype information that exists. Broad datatypes will all be there
+    # but some narrow datatypes might be missing.
+    for checkbox_type in ["create_checkboxes_on", "transfer_checkboxes_on"]:
+        datatypes_that_user_has = list(
+            user_settings["tui"][checkbox_type].keys()
+        )
+
+        for dtype in get_datatypes():
+            if dtype in datatypes_that_user_has:
+                if has_narrow_datatypes:
+                    new_checkbox_configs[checkbox_type][dtype] = user_settings[
+                        "tui"
+                    ][checkbox_type][dtype]
+                else:
+                    # in versions < 0.6.0 the datatype settings was only a bool
+                    # indicating whether the checkbox is on or not. New versions
+                    # are a dictionary indicating if the checkbox is on ("on")
+                    # and displayed ("displayed").
+                    new_checkbox_configs[checkbox_type][dtype]["on"] = (
+                        user_settings["tui"][checkbox_type][dtype]
+                    )
+
+        user_settings["tui"][checkbox_type] = new_checkbox_configs[
+            checkbox_type
+        ]

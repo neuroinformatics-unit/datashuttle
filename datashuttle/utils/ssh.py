@@ -26,7 +26,23 @@ def connect_client_core(
     client: paramiko.SSHClient,
     cfg: Configs,
     password: Optional[str] = None,
-):
+) -> None:
+    """Connect to the client.
+
+    A centralised function to connect to a paramiko client.
+
+    Parameters
+    ----------
+    client
+        Paramiko client to connect to.
+
+    cfg
+        Datashuttle Configs.
+
+    password
+        Password (if required) to establish the connection.
+
+    """
     client.get_host_keys().load(cfg.hostkeys_path.as_posix())
     client.set_missing_host_key_policy(paramiko.RejectPolicy())
 
@@ -46,8 +62,19 @@ def connect_client_core(
 def add_public_key_to_central_authorized_keys(
     cfg: Configs, password: str, log=True
 ) -> None:
-    """
-    Append the public part of key to central server ~/.ssh/authorized_keys.
+    """Append the public part of key to central server ~/.ssh/authorized_keys.
+
+    Parameters
+    ----------
+    cfg
+        Datashuttle Configs object.
+
+    password
+        Password to the central server.
+
+    log
+        If `True`, log the client connection process.
+
     """
     generate_and_write_ssh_key(cfg.ssh_key_path)
 
@@ -71,14 +98,26 @@ def add_public_key_to_central_authorized_keys(
 
 
 def generate_and_write_ssh_key(ssh_key_path: Path) -> None:
+    """Generate an RSA SSH key and save it to the specified file path.
+
+    Parameters
+    ----------
+    ssh_key_path
+        The full file path where the private SSH key will be saved.
+
+    """
     key = paramiko.RSAKey.generate(4096)
     key.write_private_key_file(ssh_key_path.as_posix())
 
 
 def get_remote_server_key(central_host_id: str):
-    """
-    Get the remove server host key for validation before
-    connection.
+    """Get the remove server host key for validation before connection.
+
+    Parameters
+    ----------
+    central_host_id
+        The hostname or IP address of the central host.
+
     """
     transport: paramiko.Transport
     with paramiko.Transport(central_host_id) as transport:
@@ -88,6 +127,24 @@ def get_remote_server_key(central_host_id: str):
 
 
 def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
+    """Save the SSH host key locally to the specified hostkeys file.
+
+    The host key uniquely identifies the SSH server to prevent
+    man-in-the-middle attacks by verifying the server's identity
+    on future connections.
+
+    Parameters
+    ----------
+    key
+        The SSH host key to save.
+
+    central_host_id
+        The hostname or IP address of the central host.
+
+    hostkeys_path
+        The file path where host keys are stored locally.
+
+    """
     client = paramiko.SSHClient()
     client.get_host_keys().add(central_host_id, key.get_name(), key)
     client.get_host_keys().save(hostkeys_path.as_posix())
@@ -104,26 +161,28 @@ def setup_ssh_key(
     cfg: Configs,
     log: bool = True,
 ) -> None:
-    """
-    Set up an SSH private / public key pair with
-    central server. First, a private key is generated
-    and saved in the .datashuttle config path.
-    Next a connection requiring input
-    password made, and the public part of the key
+    """Set up an SSH private / public key pair with central server.
+
+    First, a private key is generated and saved in the .datashuttle config path.
+    Next a connection requiring input password made, and the public part of the key
     added to ~/.ssh/authorized_keys.
 
     Parameters
-    -----------
+    ----------
+    ssh_key_path
+        path to the ssh private key
 
-    ssh_key_path : path to the ssh private key
-
-    hostkeys_path : path to the ssh host key, once the user
+    hostkeys_path
+        path to the ssh host key, once the user
         has confirmed the key ID this is saved so verification
         is not required each time.
 
-    cfg : datashuttle config UserDict
+    cfg
+        datashuttle config UserDict
 
-    log : log if True, logger must already be initialised.
+    log
+        log if True, logger must already be initialised.
+
     """
     password = utils.get_connection_secret_from_user(
         connection_method_name="SSH",
@@ -155,8 +214,8 @@ def connect_client_with_logging(
     password: Optional[str] = None,
     message_on_sucessful_connection: bool = True,
 ) -> None:
-    """
-    Connect client to central server using paramiko.
+    """Connect client to central server using paramiko.
+
     Accept either password or path to private key, but not both.
     Paramiko does not support pathlib.
     """
@@ -164,7 +223,7 @@ def connect_client_with_logging(
         connect_client_core(client, cfg, password)
         if message_on_sucessful_connection:
             utils.print_message_to_user(
-                f"Connection to { cfg['central_host_id']} made successfully."
+                f"Connection to {cfg['central_host_id']} made successfully."
             )
 
     except Exception:
@@ -183,10 +242,28 @@ def connect_client_with_logging(
 def verify_ssh_central_host(
     central_host_id: str, hostkeys_path: Path, log: bool = True
 ) -> bool:
-    """
-    Similar to connecting with other SSH manager e.g. putty,
-    get the server key and present when connecting
-    for manual validation.
+    """Prompt the user to verify and cache the SSH server's host key.
+
+    This function retrieves the SSH server's key and asks the user to
+    manually validate and accept it. Accepting the key caches it locally
+    to ensure secure future connections.
+
+    Parameters
+    ----------
+    central_host_id
+        Hostname or IP address of the SSH server.
+
+    hostkeys_path
+        Path to the local file where known host keys are stored.
+
+    log
+        Whether to log the verification messages.
+
+    Returns
+    -------
+    bool
+        True if the host key was accepted and saved, False otherwise.
+
     """
     key = get_remote_server_key(central_host_id)
 
@@ -230,21 +307,30 @@ def search_ssh_central_for_folders(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """
-    Search for the search prefix in the search path over SSH.
-    Returns the list of matching folders, files are filtered out.
+    """Search for the search prefix in the search path over SSH.
 
     Parameters
-    -----------
+    ----------
+    search_path
+        Path to search for folders in.
 
-    search_path : path to search for folders in
+    search_prefix
+        Search prefix for folder names e.g. "sub-*".
 
-    search_prefix : search prefix for folder names e.g. "sub-*"
+    cfg
+        See connect_client_with_logging().
 
-    cfg : see connect_client_with_logging()
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
 
-    verbose : If `True`, if a search folder cannot be found, a message
-              will be printed with the un-found path.
+    return_full_path
+        include the search_path in the returned paths
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     client: paramiko.SSHClient
     with paramiko.SSHClient() as client:
@@ -272,29 +358,39 @@ def get_list_of_folder_names_over_sftp(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """
-    Use paramiko's sftp to search a path
-    over ssh for folders. Return the folder names.
+    """Use paramiko's sftp to search a path over ssh for folders.
+
+    Return the folder names.
 
     Parameters
     ----------
+    sftp
+        Connected paramiko stfp object
+        (see search_ssh_central_for_folders()).
 
-    stfp : connected paramiko stfp object
-        (see search_ssh_central_for_folders())
+    search_path
+        Path to search for folders in.
 
-    search_path : path to search for folders in
-
-    search_prefix : prefix (can include wildcards)
+    search_prefix
+        Prefix (can include wildcards)
         to search folder names.
 
-    verbose : If `True`, if a search folder cannot be found, a message
-          will be printed with the un-found path.
+    verbose
+        If `True`, if a search folder cannot be found, a message
+        will be printed with the un-found path.
+
+    return_full_path
+        include the search_path in the returned paths.
+
+    Returns
+    -------
+    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+
     """
     all_folder_names = []
     all_filenames = []
     try:
         for file_or_folder in sftp.listdir_attr(search_path.as_posix()):
-
             if file_or_folder.st_mode is not None and fnmatch.fnmatch(
                 file_or_folder.filename, search_prefix
             ):

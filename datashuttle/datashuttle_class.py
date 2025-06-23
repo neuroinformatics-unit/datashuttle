@@ -65,49 +65,22 @@ from datashuttle.utils.decorators import (  # noqa
 
 
 class DataShuttle:
-    """
-    DataShuttle is a tool for convenient scientific
-    project management and data transfer in BIDS format.
-
-    The expected organisation is a central repository
-    on a central machine  ('central') that contains all
-    project data. This is connected to multiple local
-    machines ('local'). These can each contain a subset of
-    the full project (e.g. machine for electrophysiology
-    collection, machine for behavioural collection).
-
-    On first use on a new profile, show warning prompting
-    to set configurations with the function make_config_file().
-
-    Datashuttle will save logs to a .datashuttle folder
-    in the main local project. These logs contain
-    detailed information on folder creation / transfer.
-    To get the path to datashuttle logs, use
-    cfgs.make_and_get_logging_path().
-
-    For transferring data between a central data storage
-    with SSH, use setup setup_ssh_connection().
-    This will allow you to check the server key, add host key to
-    profile if accepted, and setup ssh key pair.
-
-    Parameters
-    ----------
-
-    project_name : The project name to use the datashuttle
-                   Folders containing all project files
-                   and folders are specified in make_config_file().
-                   Datashuttle-related files are stored in
-                   a .datashuttle folder in the user home
-                   folder. Use get_datashuttle_path() to
-                   see the path to this folder.
-
-    print_startup_message : If `True`, a start-up message displaying the
-                            current state of the program (e.g. persistent
-                            settings such as the 'top-level folder') is shown.
-    """
+    """DataShuttle is a tool for neuroscience project management and data transfer."""
 
     def __init__(self, project_name: str, print_startup_message: bool = True):
+        """Initialise ``DataShuttle``.
 
+        Parameters
+        ----------
+        project_name
+            The project name.
+
+        print_startup_message
+            If `True`, a start-up message displaying the
+            current state of the program (e.g. persistent
+            settings such as the 'top-level folder') is shown.
+
+        """
         self._error_on_base_project_name(project_name)
         self.project_name = project_name
         (
@@ -134,10 +107,7 @@ class DataShuttle:
             rclone.prompt_rclone_download_if_does_not_exist()
 
     def _set_attributes_after_config_load(self) -> None:
-        """
-        Once config file is loaded, update all private attributes
-        according to config contents.
-        """
+        """Update all private attributes according to config contents."""
         self.cfg.init_paths()
 
         self._make_project_metadata_if_does_not_exist()
@@ -156,50 +126,45 @@ class DataShuttle:
         bypass_validation: bool = False,
         log: bool = True,
     ) -> Dict[str, List[Path]]:
-        """
-        Create a subject / session folder tree in the project
-        folder. The passed subject / session names are
-        formatted and validated. If this succeeds, fully
-        validation against all subject / session folders in
-        the local project is performed before making the
-        folders.
+        """Create a folder tree in the project folder.
+
+        The passed names are initially formatted and validated,
+        then folders are created.
 
         Parameters
         ----------
-
-        top_level_folder : TopLevelFolder
-            Whether to make the folders in `rawdata` or
+        top_level_folder
+            Whether to make the folders within `rawdata` or
             `derivatives`.
 
-        sub_names : Union[str, List[str]]
+        sub_names
             subject name / list of subject names to make
             within the top-level project folder
             (if not already, these will be prefixed with
             "sub-")
 
-        ses_names : Optional[Union[str, List[str]]]
-            (Optional). session name / list of session names.
+        ses_names
+            session name / list of session names.
             (if not already, these will be prefixed with
             "ses-"). If no session is provided, no session-level
             folders are made.
 
-        datatype : Union[str, List[str]]
+        datatype
             The datatype to make in the sub / ses folders.
             (e.g. "ephys", "behav", "anat"). If "" is
             passed no datatype will be created. Broad or
-            Narrow canonical NeuroBlueprint datatypes are
-            accepted.
+            Narrow NeuroBlueprint datatypes are accepted.
 
-        bypass_validation : bool
+        bypass_validation
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
 
-        log : bool
+        log
             If `True`, details of folder creation will be logged.
 
         Returns
         -------
-        created_paths :
+        created_paths
             A dictionary of the full filepaths made during folder creation,
             where the keys are the type of folder made and the values are a
             list of created folder paths (Path objects). If datatype were
@@ -209,7 +174,6 @@ class DataShuttle:
 
         Notes
         -----
-
         sub_names or ses_names may contain formatting tags
 
         @TO@
@@ -228,6 +192,7 @@ class DataShuttle:
         project.create_folders("rawdata", "sub-001", datatype="behav")
 
         project.create_folders("rawdata", "sub-002@TO@005", ["ses-001", "ses-002"], ["ephys", "behav"])
+
         """
         if log:
             self._start_log("create-folders", local_vars=locals())
@@ -290,11 +255,7 @@ class DataShuttle:
         bypass_validation: bool,
         log: bool = True,
     ) -> Tuple[List[str], List[str]]:
-        """
-        A central method for the formatting and validation of subject / session
-        names for folder creation. This is called by both DataShuttle and
-        during TUI validation.
-        """
+        """Central method to format and validate subject and session names."""
         format_sub = formatting.check_and_format_names(
             sub_names, "sub", name_templates, bypass_validation
         )
@@ -336,50 +297,44 @@ class DataShuttle:
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
-        """
-        Upload data from a local project to the central project
-        folder. In the case that a file / folder exists on
-        the central and local, the central will not be overwritten
-        even if the central file is an older version. Data
-        transfer logs are saved to the logging folder).
+        """Upload data from a local project to the central project folder.
 
         Parameters
         ----------
+        top_level_folder
+            The top-level folder (e.g. `"rawdata"`, `"derivatives"`) to transfer within.
 
-        top_level_folder :
-            The top-level folder (e.g. `"rawdata"`, `"derivatives"`) to transfer files
-            and folders within.
-
-        sub_names :
-            a subject name / list of subject names. These must
-            be prefixed with "sub-", or the prefix will be
-            automatically added. "@*@" can be used as a wildcard.
+        sub_names
+            A subject name / list of subject names. These must
+            be prefixed with ``"sub-"``, or the prefix will be
+            automatically added. ``"@*@"`` can be used as a wildcard.
             "all" will search for all sub-folders in the
             datatype folder to upload.
 
-        ses_names :
-            a session name / list of session names, similar to
-            sub_names but requiring a "ses-" prefix.
+        ses_names
+            A session name / list of session names, similar to
+            sub_names but requiring a ``"ses-"`` prefix.
 
-        datatype :
+        datatype
             The (broad or narrow) NeuroBlueprint datatypes to transfer.
-            If "all", any broad or narrow datatype folder will be transferred.
+            If ``"all"``, any broad or narrow datatype folder will be transferred.
 
-        overwrite_existing_files :
-            If `False`, files on central will never be overwritten
-            by files transferred from local. If `True`, central files
-            will be overwritten if there is any difference (date, size)
-            between central and local files.
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
+            there is any difference in date or size.
+            If ``"if_source_newer"`` files on target will only be overwritten
+            by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
 
-        init_log :
-            (Optional). Whether to handle logging. This should
-            always be True, unless logger is handled elsewhere
+        init_log
+            Whether to handle logging. This should
+            always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
+
         """
         if init_log:
             self._start_log("upload-custom", local_vars=locals())
@@ -413,47 +368,44 @@ class DataShuttle:
         dry_run: bool = False,
         init_log: bool = True,
     ) -> None:
-        """
-        Download data from the central project folder to the
-        local project folder.
+        """Download data from the central project to the local project folder.
 
         Parameters
         ----------
+        top_level_folder
+            The top-level folder (e.g. `"rawdata"`, `"derivatives"`) to transfer within.
 
-        top_level_folder :
-            The top-level folder (e.g. `rawdata`) to transfer files
-            and folders within.
-
-        sub_names :
-            a subject name / list of subject names. These must
-            be prefixed with "sub-", or the prefix will be
-            automatically added. "@*@" can be used as a wildcard.
+        sub_names
+            A subject name / list of subject names. These must
+            be prefixed with ``"sub-"``, or the prefix will be
+            automatically added. ``"@*@"`` can be used as a wildcard.
             "all" will search for all sub-folders in the
             datatype folder to upload.
 
-        ses_names :
-            a session name / list of session names, similar to
-            sub_names but requiring a "ses-" prefix.
+        ses_names
+            A session name / list of session names, similar to
+            sub_names but requiring a ``"ses-"`` prefix.
 
-        datatype :
-            see create_folders()
+        datatype
+            The (broad or narrow) NeuroBlueprint datatypes to transfer.
+            If ``"all"``, any broad or narrow datatype folder will be transferred.
 
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
 
-        init_log :
-            (Optional). Whether to handle logging. This should
-            always be True, unless logger is handled elsewhere
+        init_log
+            Whether to handle logging. This should
+            always be ``True``, unless logger is handled elsewhere
             (e.g. in a calling function).
+
         """
         if init_log:
             self._start_log("download-custom", local_vars=locals())
@@ -486,24 +438,22 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
-        """
-        Upload files in the `rawdata` top level folder.
+    ) -> None:
+        """Upload all files in the `rawdata` top level folder.
 
         Parameters
         ----------
-
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
+
         """
         self._transfer_top_level_folder(
             "upload",
@@ -518,24 +468,22 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
-        """
-        Upload files in the `derivatives` top level folder.
+    ) -> None:
+        """Upload all files in the `derivatives` top level folder.
 
         Parameters
         ----------
-
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
+
         """
         self._transfer_top_level_folder(
             "upload",
@@ -550,24 +498,22 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
-        """
-        Download files in the `rawdata` top level folder.
+    ) -> None:
+        """Download all files in the `rawdata` top level folder.
 
         Parameters
         ----------
-
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved..
+
         """
         self._transfer_top_level_folder(
             "download",
@@ -582,24 +528,22 @@ class DataShuttle:
         self,
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
-    ):
-        """
-        Download files in the `derivatives` top level folder.
+    ) -> None:
+        """Download all files in the `derivatives` top level folder.
 
         Parameters
         ----------
-
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
+
         """
         self._transfer_top_level_folder(
             "download",
@@ -615,25 +559,23 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
-        """
-        Upload the entire project (from 'local' to 'central'),
-        i.e. including every top level folder (e.g. 'rawdata',
-        'derivatives', 'code', 'analysis').
+        """Upload the entire project.
+
+        Includes every top level folder (e.g. ``rawdata``, ``derivatives``).
 
         Parameters
         ----------
-
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
+
         """
         self._start_log("upload-entire-project", local_vars=locals())
         self._transfer_entire_project(
@@ -648,25 +590,23 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
-        """
-        Download the entire project (from 'central' to 'local'),
-        i.e. including every top level folder (e.g. 'rawdata',
-        'derivatives', 'code', 'analysis').
+        """Download the entire project.
+
+        Includes every top level folder (e.g. ``rawdata``, ``derivatives``).
 
         Parameters
         ----------
-
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
+
         """
         self._start_log("download-entire-project", local_vars=locals())
         self._transfer_entire_project(
@@ -682,31 +622,28 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
-        """
-        Upload a specific file or folder. If transferring
-        a single file, the path including the filename is
-        required (see 'filepath' input). If a folder,
-        wildcards "*" or "**" must be used to transfer
-        all files in the folder ("*") or all files
-        and sub-folders ("**").
+        """Upload a specific file or folder.
+
+        If transferring a single file, the path including the filename is
+        required (see 'filepath' input). If a folder, wildcards "*" or "**" must be used to transfer
+        all files in the folder ("*") or all files and sub-folders ("**").
 
         Parameters
         ----------
-
-        filepath :
+        filepath
             a string containing the full filepath.
 
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
+
         """
         self._start_log("upload-specific-folder-or-file", local_vars=locals())
 
@@ -724,31 +661,29 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
     ) -> None:
-        """
-        Download a specific file or folder. If transferring
-        a single file, the path including the filename is
-        required (see 'filepath' input). If a folder,
-        wildcards "*" or "**" must be used to transfer
-        all files in the folder ("*") or all files
+        """Download a specific file or folder.
+
+        If transferring a single file, the path including the filename is
+        required (see 'filepath' input). If a folder, wildcards "*" or "**"
+        must be used to transfer all files in the folder ("*") or all files
         and sub-folders ("**").
 
         Parameters
         ----------
-
-        filepath :
+        filepath
             a string containing the full filepath.
 
-        overwrite_existing_files :
-            If "never" files on target will never be overwritten by source.
-            If "always" files on target will be overwritten by source if
+        overwrite_existing_files
+            If ``"never"`` files on target will never be overwritten by source.
+            If ``"always"`` files on target will be overwritten by source if
             there is any difference in date or size.
-            If "if_source_newer" files on target will only be overwritten
+            If ``"if_source_newer"`` files on target will only be overwritten
             by files on source with newer creation / modification datetime.
 
-        dry_run :
-            perform a dry-run of transfer. This will output as if file
-            transfer was taking place, but no files will be moved. Useful
-            to check which files will be moved on data transfer.
+        dry_run
+            Perform a dry-run of transfer. This will output as if file
+            transfer was taking place, but no files will be moved.
+
         """
         self._start_log(
             "download-specific-folder-or-file", local_vars=locals()
@@ -767,10 +702,11 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles = "never",
         dry_run: bool = False,
         init_log: bool = True,
-    ):
-        """
-        Core function to upload / download files within a
-        particular top-level-folder. e.g. `upload_rawdata().`
+    ) -> None:
+        """Upload or download files within a particular top-level-folder.
+
+        A centralised function to upload or download data within
+        a particular top level folder (e.g. ``rawdata``, ``derivatives``).
         """
         if init_log:
             self._start_log(
@@ -798,10 +734,8 @@ class DataShuttle:
 
     def _transfer_specific_file_or_folder(
         self, upload_or_download, filepath, overwrite_existing_files, dry_run
-    ):
-        """
-        Core function for upload/download_specific_folder_or_file().
-        """
+    ) -> None:
+        """Core function for upload/download_specific_folder_or_file()."""
         if isinstance(filepath, str):
             filepath = Path(filepath)
 
@@ -842,11 +776,10 @@ class DataShuttle:
     @requires_ssh_configs
     @check_is_not_local_project
     def setup_ssh_connection(self) -> None:
-        """
-        Setup a connection to the central server using SSH.
-        Assumes the central_host_id and central_host_username
-        are set in configs (see make_config_file() and update_config_file())
+        """Set up a connection to the central server using SSH.
 
+        Assumes the central_host_id and central_host_username
+        are set in configs (see make_config_file() and update_config_file()).
         First, the server key will be displayed, requiring
         verification of the server ID. This will store the
         hostkey for all future use.
@@ -874,17 +807,18 @@ class DataShuttle:
     @requires_ssh_configs
     @check_is_not_local_project
     def write_public_key(self, filepath: str) -> None:
-        """
-        By default, the SSH private key only is stored, in
-        the datashuttle configs folder. Use this function
-        to save the public key.
+        """Save the public SSH key to a specified filepath.
+
+        By default, only the SSH private key is stored in the
+        datashuttle configs folder. Use this function to save
+        the public key.
 
         Parameters
         ----------
-
-        filepath :
-            full filepath (inc filename) to write the
+        filepath
+            Full filepath (including filename) to write the
             public key to.
+
         """
         key: paramiko.RSAKey
         key = paramiko.RSAKey.from_private_key_file(
@@ -994,46 +928,45 @@ class DataShuttle:
         aws_access_key_id: Optional[str] = None,
         aws_region: Optional[str] = None,
     ) -> None:
-        """
-        Initialise the configurations for datashuttle to use on the
-        local machine. Once initialised, these settings will be
-        used each time the datashuttle is opened. This method
-        can also be used to completely overwrite existing configs.
+        """Initialize the configurations for datashuttle on the local machine.
+
+        Once initialised, these settings will be used each
+        time the datashuttle is opened.
 
         These settings are stored in a config file on the
-        datashuttle path (not in the project folder)
-        on the local machine. Use get_config_path() to
-        get the full path to the saved config file.
+        datashuttle path (not in the project folder) on the
+        local machine. Use ``get_config_path()`` to get the
+        full path to the saved config file.
 
-        Use update_config_file() to selectively update settings.
+        Use ``update_config_file()`` to selectively update settings.
 
         Parameters
         ----------
-
-        local_path :
+        local_path
             path to project folder on local machine
 
-        central_path :
+        central_path
             Filepath to central project.
-            If this is local (i.e. connection_method = "local_filesystem"),
+            If this is local (i.e. ``connection_method = "local_filesystem"``),
             this is the full path on the local filesystem
-            Otherwise, if this is via ssh (i.e. connection method = "ssh"),
+            Otherwise, if this is via ssh (i.e. ``connection method = "ssh"``),
             this is the path to the project folder on central machine.
             This should be a full path to central folder i.e. this cannot
             include ~ home folder syntax, must contain the full path
-            (e.g. /nfs/nhome/live/jziminski)
+            (e.g. ``/nfs/nhome/live/jziminski``)
 
-        connection_method :
+        connection_method
             The method used to connect to the central project filesystem,
-            e.g. "local_filesystem" (e.g. mounted drive) or "ssh"
+            e.g. ``"local_filesystem"`` (e.g. mounted drive) or ``"ssh"``
 
-        central_host_id :
+        central_host_id
             server address for central host for ssh connection
-            e.g. "ssh.swc.ucl.ac.uk"
+            e.g. ``"ssh.swc.ucl.ac.uk"``
 
-        central_host_username :
+        central_host_username
             username for which to log in to central host.
-            e.g. "jziminski"
+            e.g. ``"jziminski"``
+
         """
         self._start_log(
             "make-config-file",
@@ -1085,7 +1018,7 @@ class DataShuttle:
         ds_logger.close_log_filehandler()
 
     def update_config_file(self, **kwargs) -> None:
-        """ """
+        """Update the configuration file."""
         if not self.cfg:
             utils.log_and_raise_error(
                 "Must have a config loaded before updating configs.",
@@ -1113,49 +1046,41 @@ class DataShuttle:
 
     @check_configs_set
     def get_local_path(self) -> Path:
-        """
-        Get the projects local path.
-        """
+        """Return the projects local path."""
         return self.cfg["local_path"]
 
     @check_configs_set
     @check_is_not_local_project
     def get_central_path(self) -> Path:
-        """
-        Get the project central path.
-        """
+        """Return the project central path."""
         return self.cfg["central_path"]
 
     def get_datashuttle_path(self) -> Path:
-        """
-        Get the path to the local datashuttle
-        folder where configs and other
-        datashuttle files are stored.
+        """Return the path to the local datashuttle folder.
+
+        This is where configs and other datashuttle files are stored.
         """
         return self._datashuttle_path
 
     @check_configs_set
     def get_config_path(self) -> Path:
-        """
-        Get the full path to the DataShuttle config file.
-        """
+        """Return the full path to the DataShuttle config file."""
         return self._config_path
 
     @check_configs_set
     def get_configs(self) -> Configs:
+        """Return the datashuttle configs."""
         return self.cfg
 
     @check_configs_set
     def get_logging_path(self) -> Path:
-        """
-        Get the path where datashuttle logs are written.
-        """
+        """Return the path where datashuttle logs are written."""
         return self.cfg.logging_path
 
     @staticmethod
     def get_existing_projects() -> List[Path]:
-        """
-        Get a list of existing project names found on the local machine.
+        """Return a list of existing project names found on the local machine.
+
         This is based on project folders in the "home / .datashuttle" folder
         that contain valid config.yaml files.
         """
@@ -1168,20 +1093,25 @@ class DataShuttle:
         return_with_prefix: bool = True,
         include_central: bool = False,
     ) -> str:
-        """
-        Convenience function for get_next_sub_or_ses
-        to find the next subject number.
+        """Return the next subject number.
 
         Parameters
         ----------
+        top_level_folder
+            The top-level folder, "rawdata" or "derivatives".
 
-        return_with_prefix : bool
-            If `True`, return with the "sub-" prefix.
+        return_with_prefix
+            If `True`, return the subject with the "sub-" prefix.
 
-        include_central : bool
+        include_central
             If `False, only get names from `local_path`, otherwise from
             `local_path` and `central_path`. If in local-project mode,
             this flag is ignored.
+
+        Returns
+        -------
+        The next subject ID.
+
         """
         name_template = self.get_name_templates()
         name_template_regexp = (
@@ -1209,26 +1139,28 @@ class DataShuttle:
         return_with_prefix: bool = True,
         include_central: bool = False,
     ) -> str:
-        """
-        Convenience function for get_next_sub_or_ses
-        to find the next session number.
+        """Return the next session number.
 
         Parameters
         ----------
+        top_level_folder
+            The top-level folder, "rawdata" or "derivatives".
 
-        top_level_folder:
-            "rawdata" or "derivatives"
-
-        sub: Optional[str]
+        sub
             Name of the subject to find the next session of.
 
-        return_with_prefix : bool
+        return_with_prefix
             If `True`, return with the "ses-" prefix.
 
-        include_central : bool
-            If `False, only get names from `local_path`, otherwise from
-            `local_path` and `central_path`. If in local-project mode,
+        include_central
+            If ``False``, only get names from ``local_path``, otherwise from
+            ``local_path`` and ``central_path``. If in local-project mode,
             this flag is ignored.
+
+        Returns
+        -------
+        The next session ID.
+
         """
         name_template = self.get_name_templates()
         name_template_regexp = (
@@ -1250,8 +1182,9 @@ class DataShuttle:
 
     @check_configs_set
     def is_local_project(self) -> bool:
-        """
-        A project is 'local-only' if it has no `central_path` and `connection_method`.
+        """Return a bool indicating whether the project is 'local only'.
+
+        A project is 'local-only' if it has no ``central_path`` and ``connection_method``.
         It can be used to make folders and validate, but not for transfer.
         """
         return self.cfg.is_local_project()
@@ -1260,33 +1193,33 @@ class DataShuttle:
     # -------------------------------------------------------------------------
 
     def get_name_templates(self) -> Dict:
-        """
-        Get the regexp templates used for validation. If
-        the "on" key is set to `False`, template validation is not performed.
+        """Return the regexp templates used for validation.
+
+        If the "on" key is set to `False`, template validation is not performed.
 
         Returns
         -------
-
-        name_templates : Dict
+        name_templates
             e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
+
         """
         settings = self._load_persistent_settings()
         return settings["name_templates"]
 
     def set_name_templates(self, new_name_templates: Dict) -> None:
-        """
-        Update the persistent settings with new name templates.
+        """Update the persistent settings with new name templates.
 
-        Name templates are regexp for that, when name_templates["on"] is
-        set to `True`, "sub" and "ses" names are validated against
+        Name templates are regexp for that, when ``name_templates["on"]`` is
+        set to ``True``, ``"sub"`` and ``"ses"`` names are validated against
         the regexp contained in the dict.
 
         Parameters
         ----------
-        new_name_templates : Dict
-            e.g. {"name_templates": {"on": False, "sub": None, "ses": None}}
-            where "sub" or "ses" can be a regexp that subject and session
+        new_name_templates
+            e.g. ``{"name_templates": {"on": False, "sub": None, "ses": None}}``
+            where ``"sub"`` or ``"ses"`` can be a regexp that subject and session
             names respectively are validated against.
+
         """
         self._update_persistent_setting("name_templates", new_name_templates)
 
@@ -1296,9 +1229,7 @@ class DataShuttle:
 
     @check_configs_set
     def show_configs(self) -> None:
-        """
-        Print the current configs to the terminal.
-        """
+        """Print the current configs to the terminal."""
         utils.print_message_to_user(self._get_json_dumps_config())
 
     # -------------------------------------------------------------------------
@@ -1313,34 +1244,39 @@ class DataShuttle:
         include_central: bool = False,
         strict_mode: bool = False,
     ) -> List[str]:
-        """
-        Perform validation on the project. This checks the subject
-        and session level folders to ensure there are no NeuroBlueprint
-        formatting issues.
+        """Perform validation on the project.
+
+        This checks the subject and session level folders to
+        ensure there are no NeuroBlueprint formatting issues.
 
         Parameters
         ----------
-
-        top_level_folder : TopLevelFolder | None
-            Folder to check, either "rawdata" or "derivatives". If ``None``,
+        top_level_folder
+            Folder to check, either ``"rawdata"`` or ``"derivatives"``. If ``None``,
             will check both folders.
 
-        display_mode : DisplayMode
+        display_mode
             The validation issues are displayed as ``"error"`` (raise error)
             ``"warn"`` (show warning) or ``"print"``
 
-        include_central : bool
+        include_central
             If ``False``, only the local project is validated. Otherwise, both
             local and central projects are validated. If in local-project mode,
             this flag is ignored.
 
-        strict_mode: bool
-            If `True`, only allow NeuroBlueprint-formatted folders to exist in
+        strict_mode
+            If ``True``, only allow NeuroBlueprint-formatted folders to exist in
             the project. By default, non-NeuroBlueprint folders (e.g. a folder
-            called 'my_stuff' in the 'rawdata') are allowed, and only folders
-            starting with sub- or ses- prefix are checked. In `Strict Mode`,
+            called '`my_stuff'` in the '`rawdata'`) are allowed, and only folders
+            starting with sub- or ses- prefix are checked. In ``Strict Mode``,
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
+
+        Returns
+        -------
+        error_messages
+            A list of validation errors found in the project.
+
         """
         if include_central and strict_mode:
             raise ValueError(
@@ -1382,22 +1318,23 @@ class DataShuttle:
 
     @staticmethod
     def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
-        """
+        """Format a list of subject or session names.
+
         Pass list of names to check how these will be auto-formatted,
-        for example as when passed to create_folders() or upload_custom()
-        or download()
+        for example as when passed to ``create_folders()`` or ``upload_custom()``
 
         Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.
-        This method will print the formatted list of names,
+        This method will print the formatted list of names.
 
         Parameters
         ----------
-
-        names :
+        names
             A string or list of subject or session names.
-        prefix:
+
+        prefix
             The relevant subject or session prefix,
-            e.g. "sub-" or "ses-"
+            e.g. ``"sub-"`` or ``"ses-"``
+
         """
         if prefix not in ["sub", "ses"]:
             utils.log_and_raise_error(
@@ -1421,18 +1358,12 @@ class DataShuttle:
         overwrite_existing_files: OverwriteExistingFiles,
         dry_run: bool,
     ) -> None:
-        """
-        Transfer (i.e. upload or download) the entire project (i.e.
-        every 'top level folder' (e.g. 'rawdata', 'derivatives').
+        """Transfer the entire project.
 
-        Parameters
-        ----------
-
-        upload_or_download : direction to transfer the data, either "upload" (from
-                    local to central) or "download" (from central to local).
+        i.e. every 'top level folder' (e.g. 'rawdata', 'derivatives').
+        See ``upload_custom()`` or ``download_custom()`` for parameters.
         """
         for top_level_folder in canonical_folders.get_top_level_folders():
-
             utils.log_and_message(f"Transferring `{top_level_folder}`")
 
             self._transfer_top_level_folder(
@@ -1450,22 +1381,27 @@ class DataShuttle:
         store_in_temp_folder: bool = False,
         verbose: bool = True,
     ) -> None:
-        """
-        Initialize the logger. This is typically called at
-        the start of public methods to initialize logging
-        for a specific function call.
+        """Initialize the logger.
+
+        This is typically called at the start of public
+        methods to initialize logging for a specific function call.
 
         Parameters
         ----------
+        command_name
+            Name of the command, for the log output files.
 
-        command_name : name of the command, for the log output files.
+        local_vars
+            local_vars are passed to fancylog variables argument.
+            see ds_logger.wrap_variables_for_fancylog for more info
 
-        local_vars : local_vars are passed to fancylog variables argument.
-                 see ds_logger.wrap_variables_for_fancylog for more info
-
-        store_in_temp_folder :
-            if `False`, existing logging path will be used
+        store_in_temp_folder
+            If `False`, existing logging path will be used
             (local project .datashuttle).
+
+        verbose
+            Print warnings and error messages.
+
         """
         if local_vars is None:
             variables = None
@@ -1485,7 +1421,8 @@ class DataShuttle:
         ds_logger.start(path_to_save, command_name, variables, verbose)
 
     def _move_logs_from_temp_folder(self) -> None:
-        """
+        """Create a temporary logging folder when the project folder is unknown.
+
         Logs are stored within the project folder. Although
         in some instances, when setting configs, we do not know what
         the project folder is. In this case, make the logs
@@ -1510,7 +1447,7 @@ class DataShuttle:
             )
 
     def _clear_temp_log_path(self) -> None:
-        """"""
+        """Delete temporary log files."""
         log_files = glob.glob(str(self._temp_log_path / "*.log"))
         for file in log_files:
             os.remove(file)
@@ -1523,8 +1460,8 @@ class DataShuttle:
             )
 
     def _log_successful_config_change(self, message: bool = False) -> None:
-        """
-        Log the entire config at the time of config change.
+        """Log the entire config at the time of config change.
+
         If messaged, just message "update successful" rather than
         print the entire configs as it becomes confusing.
         """
@@ -1536,16 +1473,14 @@ class DataShuttle:
         )
 
     def _get_json_dumps_config(self) -> str:
-        """
-        Get the config dictionary formatted as json.dumps()
-        which allows well formatted printing.
-        """
+        """Return the config dictionary formatted as json.dumps() which allows well formatted printing."""
         copy_dict = copy.deepcopy(self.cfg.data)
         load_configs.convert_str_and_pathlib_paths(copy_dict, "path_to_str")
         return json.dumps(copy_dict, indent=4)
 
     def _make_project_metadata_if_does_not_exist(self) -> None:
-        """
+        """Locate the .datashuttle folder within the project local_path.
+
         Within the project local_path is also a .datashuttle
         folder that contains additional information, e.g. logs.
         """
@@ -1594,21 +1529,24 @@ class DataShuttle:
     def _update_persistent_setting(
         self, setting_name: str, setting_value: Any
     ) -> None:
-        """
-        Load settings that are stored persistently across datashuttle
-        sessions. These are stored in yaml dumped to dictionary.
+        """Load settings that are stored persistently across datashuttle sessions.
+
+        These are stored in yaml dumped to dictionary.
 
         Parameters
         ----------
-        setting_name : dictionary key of the persistent setting to change
-        setting_value : value to change the persistent setting to
+        setting_name
+            dictionary key of the persistent setting to change
+
+        setting_value
+            value to change the persistent setting to
+
         """
         settings = self._load_persistent_settings()
 
         if setting_name not in settings:
             utils.log_and_raise_error(
-                f"Setting key {setting_name} not found in "
-                f"settings dictionary",
+                f"Setting key {setting_name} not found in settings dictionary",
                 KeyError,
             )
 
@@ -1617,39 +1555,32 @@ class DataShuttle:
         self._save_persistent_settings(settings)
 
     def _init_persistent_settings(self) -> None:
-        """
-        Initialise the default persistent settings
-        and save to file.
-        """
+        """Initialise the default persistent settings and save to file."""
         settings = canonical_configs.get_persistent_settings_defaults()
         self._save_persistent_settings(settings)
 
     def _save_persistent_settings(self, settings: Dict) -> None:
-        """
-        Save the settings dict to file as .yaml
-        """
+        """Save the settings dict to file as ".yaml"."""
         with open(self._persistent_settings_path, "w") as settings_file:
             yaml.dump(settings, settings_file, sort_keys=False)
 
     def _load_persistent_settings(self) -> Dict:
-        """
-        Load settings that are stored persistently across
-        datashuttle sessions.
-        """
+        """Return settings that are stored persistently across datashuttle sessions."""
         if not self._persistent_settings_path.is_file():
             self._init_persistent_settings()
 
-        with open(self._persistent_settings_path, "r") as settings_file:
+        with open(self._persistent_settings_path) as settings_file:
             settings = yaml.full_load(settings_file)
 
         self._update_settings_with_new_canonical_keys(settings)
 
         return settings
 
-    def _update_settings_with_new_canonical_keys(self, settings: Dict):
-        """
+    def _update_settings_with_new_canonical_keys(self, settings: Dict) -> None:
+        """Check and update keys within persistent settings if missing.
+
         Perform a check on the keys within persistent settings.
-        If they do not exist, persistent settings is from older version
+        If they do not exist, persistent settings is from an older version
         and the new keys need adding.
         If changing keys within the top level (e.g. a dict entry in
         "tui") this method will need to be extended.
@@ -1665,22 +1596,21 @@ class DataShuttle:
         if "tui" not in settings:
             settings.update(canonical_tui_configs)
 
-        for key in ["overwrite_existing_files", "dry_run"]:
+        for key in [
+            "overwrite_existing_files",
+            "dry_run",
+            "suggest_next_sub_ses_central",
+        ]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]
 
-        # Handle conversion to 'narrow datatype' v0.6.0
-        if not isinstance(
-            settings["tui"]["create_checkboxes_on"]["behav"], dict
-        ):
-            canonical_configs.in_place_update_settings_for_narrow_datatype(
-                settings
-            )
+        # Handle updating with narrow datatypes
+        canonical_configs.in_place_update_narrow_datatypes_if_required(
+            settings
+        )
 
-    def _check_top_level_folder(self, top_level_folder):
-        """
-        Raise an error if ``top_level_folder`` not correct.
-        """
+    def _check_top_level_folder(self, top_level_folder) -> None:
+        """Raise an error if ``top_level_folder`` not correct."""
         canonical_top_level_folders = canonical_folders.get_top_level_folders()
 
         if top_level_folder not in canonical_top_level_folders:
