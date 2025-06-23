@@ -30,6 +30,7 @@ def requires_ssh_configs(func):
 
 
 def requires_aws_configs(func):
+    """Check Amazon Web Service configs have been set."""
 
     @wraps(func)
     def wrapper(*args, **kwargs):

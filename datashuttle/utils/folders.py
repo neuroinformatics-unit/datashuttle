@@ -640,12 +640,11 @@ def search_gdrive_or_aws_for_folders(
     cfg: Configs,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """
-    Searches for files and folders in central path using `rclone lsjson` command.
+    """Search for files and folders in central path using `rclone lsjson` command.
+
     This command lists all the files and folders in the central path in a json format.
     The json contains file/folder info about each file/folder like name, type, etc.
     """
-
     output = rclone.call_rclone(
         "lsjson "
         f"{cfg.get_rclone_config_name()}:{search_path.as_posix()} "
@@ -658,7 +657,7 @@ def search_gdrive_or_aws_for_folders(
 
     if output.returncode != 0:
         utils.log_and_message(
-            f"Error searching files at {search_path.as_posix()} \n {output.stderr.decode('utf-8') if output.stderr else ""}"
+            f"Error searching files at {search_path.as_posix()} \n {output.stderr.decode('utf-8') if output.stderr else ''}"
         )
         return all_folder_names, all_filenames
 

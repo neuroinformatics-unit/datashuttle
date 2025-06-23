@@ -30,6 +30,7 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 def get_connection_methods_list() -> List[str]:
+    """Return the canonical connection methods."""
     return ["ssh", "local_filesystem", "gdrive", "aws"]
 
 

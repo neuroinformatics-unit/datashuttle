@@ -13,21 +13,23 @@ from textual.widgets import Button, Input, Static
 
 
 class SetupAwsScreen(ModalScreen):
-    """
-    This dialog window handles the TUI equivalent of API's
-    `setup_aws_connection()`. This asks the user for confirmation
-    to proceed with the setup, and then prompts the user for the AWS Secret Access Key.
-    The secret access key is then used to setup rclone config for AWS S3.
-    Works similar to `SetupSshScreen`.
+    """Dialog window that sets up connection to an Amazon Web Service S3 bucket.
+
+    This asks the user for confirmation to proceed with the setup,
+    and then prompts the user for the AWS Secret Access Key.
+
+    The secret access key is then used to set up rclone config for AWS S3.
     """
 
     def __init__(self, interface: Interface) -> None:
+        """Initialise the SetupAwsScreen."""
         super(SetupAwsScreen, self).__init__()
 
         self.interface = interface
         self.stage = 0
 
     def compose(self) -> ComposeResult:
+        """Set widgets on the SetupAwsScreen."""
         yield Container(
             Horizontal(
                 Static(
@@ -46,10 +48,11 @@ class SetupAwsScreen(ModalScreen):
         )
 
     def on_mount(self) -> None:
+        """Update widgets immediately after mounting."""
         self.query_one("#setup_aws_secret_access_key_input").visible = False
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """ """
+        """Handle button press on the screen."""
         if event.button.id == "setup_aws_cancel_button":
             self.dismiss()
 
@@ -64,6 +67,7 @@ class SetupAwsScreen(ModalScreen):
                 self.dismiss()
 
     def prompt_user_for_aws_secret_access_key(self) -> None:
+        """Set widgets for user to input AWS key."""
         message = "Please Enter your AWS Secret Access Key"
 
         self.query_one("#setup_aws_messagebox_message").update(message)
@@ -72,6 +76,7 @@ class SetupAwsScreen(ModalScreen):
         self.stage += 1
 
     def use_secret_access_key_to_setup_aws_connection(self) -> None:
+        """Set up the AWS connection and inform user of success or failure."""
         secret_access_key = self.query_one(
             "#setup_aws_secret_access_key_input"
         ).value
@@ -82,18 +87,18 @@ class SetupAwsScreen(ModalScreen):
 
         if success:
             message = "AWS Connection Successful!"
-            self.query_one("#setup_aws_secret_access_key_input").visible = (
-                False
-            )
+            self.query_one(
+                "#setup_aws_secret_access_key_input"
+            ).visible = False
 
         else:
             message = (
                 f"AWS setup failed. Please check your configs and secret access key"
                 f"\n\n Traceback: {output}"
             )
-            self.query_one("#setup_aws_secret_access_key_input").disabled = (
-                True
-            )
+            self.query_one(
+                "#setup_aws_secret_access_key_input"
+            ).disabled = True
 
         self.query_one("#setup_aws_ok_button").label = "Finish"
         self.query_one("#setup_aws_messagebox_message").update(message)

@@ -113,27 +113,30 @@ def get_connection_secret_from_user(
     key_info: str | None = None,
     log_status: bool = True,
 ) -> str:
-    """
-    This is a centralized function to get sensitive information input from
-    the user via their terminal. It checks whether the standard input (stdin)
-    is connected to a terminal or not. If not, the user is displayed a
-    warning and asked if they would like to continue.
+    """Get sensitive information input from the user via their terminal.
+
+    This is a centralised function shared across connection methods.
+    It checks whether the standard input (stdin) is connected to a
+    terminal or not. If not, the user is displayed a warning and asked
+    if they would like to continue.
 
     Parameters
-    -----------
+    ----------
+    connection_method_name
+        A string identifying the connection method being used.
 
-    connection_method_name : a string identifying the connection method being
-        used.
+    key_name_full
+        Full name of the connection secret being asked from the user.
 
-    key_name_full : full name of the connection secret being asked from the user.
+    key_name_short
+        Short name of the connection secret to avoid repeatedly writing the full name.
 
-    key_name_short : short name of the connection secret to avoid repeatedly writing
-        the full name.
+    key_info
+        Extra info about the connection secret that needs to intimated to the user.
 
-    key_info : extra info about the connection secret that needs to intimated to the
-        user.
+    log_status
+        Log if `True`, logger must already be initialised.
 
-    log_status : log if True, logger must already be initialised.
     """
     if key_info:
         print_message_to_user(key_info)

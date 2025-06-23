@@ -835,8 +835,8 @@ class DataShuttle:
 
     @check_configs_set
     def setup_google_drive_connection(self) -> None:
-        """
-        Setup a connection to Google Drive using the provided credentials.
+        """Set up a connection to Google Drive using the provided credentials.
+
         Assumes `gdrive_root_folder_id` is set in configs.
 
         First, the user will be prompted to enter their Google Drive client
@@ -888,8 +888,8 @@ class DataShuttle:
     @requires_aws_configs
     @check_configs_set
     def setup_aws_connection(self) -> None:
-        """
-        Setup a connection to AWS S3 buckets using the provided credentials.
+        """Set up a connection to AWS S3 buckets using the provided credentials.
+
         Assumes `aws_access_key_id` and `aws_region` are set in configs.
 
         First, the user will be prompted to input their AWS secret access key.
@@ -966,6 +966,26 @@ class DataShuttle:
         central_host_username
             username for which to log in to central host.
             e.g. ``"jziminski"``
+
+        gdrive_client_id
+            The client ID used to authenticate with the Google Drive API via OAuth 2.0.
+            This is obtained from the Google Cloud Console when setting up API credentials.
+            e.g. "1234567890-abc123def456.apps.googleusercontent.com"
+
+        gdrive_root_folder_id
+            The folder ID for the Google Drive folder to connect to. This can be copied
+            directly from your browser when on the folder in Google Drive.
+            e.g. 1eoAnopd2ZHOd87LgiPtgViFE7u3R9sSw
+
+        aws_access_key_id
+            The AWS access key ID used to authenticate requests to AWS services.
+            This is part of your AWS credentials and can be generated via the AWS IAM console.
+            e.g. "AKIAIOSFODNN7EXAMPLE"
+
+        aws_region
+            The AWS region in which your resources are located.
+            This determines the data center your requests are routed to.
+            e.g. "us-west-2"
 
         """
         self._start_log(

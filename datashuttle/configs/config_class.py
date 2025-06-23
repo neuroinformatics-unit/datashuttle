@@ -139,6 +139,7 @@ class Configs(UserDict):
     def update_config_for_backward_compatability_if_required(
         self, config_dict: Dict
     ):
+        """Add keys introduced in later Datashuttle versions if they are missing."""
         canonical_config_keys_to_add = [
             "gdrive_client_id",
             "gdrive_root_folder_id",

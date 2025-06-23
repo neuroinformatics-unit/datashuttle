@@ -348,14 +348,13 @@ class ConfigsContent(Container):
     def radiobutton_id_from_connection_method(
         self, connection_method: str
     ) -> str:
+        """Create a canonical radiobutton textual ID from the connection method."""
         return f"configs_{connection_method}_radiobutton"
 
     def connection_method_from_radiobutton_id(
         self, radiobutton_id: str
     ) -> str | None:
-        """
-        Get the connection method from the radiobutton id.
-        """
+        """Convert back from radiobutton Textual ID to connection method."""
         assert radiobutton_id.startswith("configs_")
         assert radiobutton_id.endswith("_radiobutton")
 
@@ -435,10 +434,12 @@ class ConfigsContent(Container):
             ).placeholder = placeholder
 
     def switch_gdrive_widgets_display(self, display_gdrive: bool) -> None:
+        """Show or hide widgets related to Google Drive connection."""
         for widget in self.config_gdrive_widgets:
             widget.display = display_gdrive
 
     def switch_aws_widgets_display(self, display_aws: bool) -> None:
+        """Show or hide widgets related to AWS connection."""
         for widget in self.config_aws_widgets:
             widget.display = display_aws
 
@@ -455,9 +456,9 @@ class ConfigsContent(Container):
                 self.setup_configs_for_an_existing_project()
 
         elif event.button.id == "configs_setup_connection_button":
-            assert (
-                self.interface is not None
-            ), "type narrow flexible `interface`"
+            assert self.interface is not None, (
+                "type narrow flexible `interface`"
+            )
 
             connection_method = self.interface.get_configs()[
                 "connection_method"
@@ -527,7 +528,7 @@ class ConfigsContent(Container):
             ).value = path_.as_posix()
 
     def setup_ssh_connection(self) -> None:
-        """Set up the `SetupSshScreen` screen."""
+        """Run the SSH set up in a new screen."""
         assert self.interface is not None, "type narrow flexible `interface`"
 
         self.parent_class.mainwindow.push_screen(
@@ -535,9 +536,7 @@ class ConfigsContent(Container):
         )
 
     def setup_gdrive_connection(self) -> None:
-        """
-        Set up the `SetupGdriveScreen` screen,
-        """
+        """Run the Google Drive set up in a new screen."""
         assert self.interface is not None, "type narrow flexible `interface`"
 
         self.parent_class.mainwindow.push_screen(
@@ -545,6 +544,7 @@ class ConfigsContent(Container):
         )
 
     def setup_aws_connection(self) -> None:
+        """Run the AWS set up in a new screen."""
         assert self.interface is not None, "type narrow flexible `interface`"
 
         self.parent_class.mainwindow.push_screen(
@@ -712,9 +712,9 @@ class ConfigsContent(Container):
         self.fill_inputs_with_project_configs()
 
     def fill_inputs_with_project_configs(self) -> None:
-        """
-        This fills the input widgets with the current project configs. It is
-        used while setting up widgets for the project while mounting the current
+        """Fill the input widgets with the current project configs.
+
+        It is used while setting up widgets for the project while mounting the current
         tab and also to repopulate input widgets when the radio buttons change.
         """
         assert self.interface is not None, "type narrow flexible `interface`"
@@ -786,10 +786,10 @@ class ConfigsContent(Container):
         select.value = value
 
     def setup_widgets_to_display(self, connection_method: str | None) -> None:
-        """
-        Sets up widgets to display based on the chosen `connection_method` on the
-        radiobutton. The widgets pertaining to the chosen connection method will be
-        be displayed. This is done by dedicated functions for each connection method
+        """Set up widgets to display based on the chosen `connection_method` on the radiobutton.
+
+        The widgets pertaining to the chosen connection method will be displayed.
+        This is done by dedicated functions for each connection method
         which display widgets on receiving a `True` flag.
 
         Also, this function handles other TUI changes like displaying "setup connection"
@@ -798,9 +798,9 @@ class ConfigsContent(Container):
         Called on mount, on radiobuttons' switch and upon saving project configs.
         """
         if connection_method:
-            assert (
-                connection_method in get_connection_methods_list()
-            ), "Unexpected Connection Method"
+            assert connection_method in get_connection_methods_list(), (
+                "Unexpected Connection Method"
+            )
 
         # Connection specific widgets
         connection_widget_display_functions = {
@@ -818,12 +818,12 @@ class ConfigsContent(Container):
         has_connection_method = connection_method is not None
 
         # Central path input
-        self.query_one("#configs_central_path_input").disabled = (
-            not has_connection_method
-        )
-        self.query_one("#configs_central_path_select_button").disabled = (
-            not has_connection_method
-        )
+        self.query_one(
+            "#configs_central_path_input"
+        ).disabled = not has_connection_method
+        self.query_one(
+            "#configs_central_path_select_button"
+        ).disabled = not has_connection_method
 
         # Local only project
         if not has_connection_method:
@@ -930,6 +930,7 @@ class ConfigsContent(Container):
     def get_config_value_from_input_value(
         self, input_box_selector: str
     ) -> str | None:
+        """Format the Input value from string to string or `None`."""
         input_value = self.query_one(input_box_selector).value
 
         return None if input_value == "" else input_value

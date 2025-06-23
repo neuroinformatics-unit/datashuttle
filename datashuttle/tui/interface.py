@@ -344,7 +344,7 @@ class Interface:
         except BaseException as e:
             return False, str(e)
 
-    # Setup SSH
+    # Name templates
     # ----------------------------------------------------------------------------------
 
     def get_name_templates(self) -> Dict:
@@ -508,6 +508,7 @@ class Interface:
         gdrive_client_secret: Optional[str] = None,
         config_token: Optional[str] = None,
     ) -> InterfaceOutput:
+        """Try to set up and validate connection to Google Drive."""
         try:
             self.project._setup_rclone_gdrive_config(
                 gdrive_client_secret, config_token, log=False
@@ -522,6 +523,7 @@ class Interface:
     def get_rclone_message_for_gdrive_without_browser(
         self, gdrive_client_secret: Optional[str] = None
     ) -> InterfaceOutput:
+        """Start process for authenticating Google Drive without a browser."""
         try:
             output = gdrive.preliminary_for_setup_without_browser(
                 self.project.cfg,
@@ -539,6 +541,7 @@ class Interface:
     def setup_aws_connection(
         self, aws_secret_access_key: str
     ) -> InterfaceOutput:
+        """Set up the Amazon Web Service connection."""
         try:
             self.project._setup_rclone_aws_config(
                 aws_secret_access_key, log=False

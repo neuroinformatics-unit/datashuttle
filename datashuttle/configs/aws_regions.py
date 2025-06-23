@@ -8,6 +8,7 @@ from typing import Dict, List
 
 
 def get_aws_regions() -> Dict[str, str]:
+    """Return a dict of available AWS S3 bucket regions."""
     aws_regions = {
         "US_EAST_1": "us-east-1",
         "US_EAST_2": "us-east-2",
@@ -40,4 +41,5 @@ def get_aws_regions() -> Dict[str, str]:
 
 
 def get_aws_regions_list() -> List[str]:
+    """Return AWS S3 bucket regions as a list."""
     return list(get_aws_regions().values())

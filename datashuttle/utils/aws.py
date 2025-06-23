@@ -6,6 +6,10 @@ from datashuttle.utils.custom_exceptions import ConfigError
 
 
 def check_if_aws_bucket_exists(cfg: Configs) -> bool:
+    """Determine whether the AWS bucket actually exists on the server.
+
+    The first part of`cfg["central_path"] should be an existing bucket name.
+    """
     output = rclone.call_rclone(
         f"lsjson {cfg.get_rclone_config_name()}:", pipe_std=True
     )
@@ -23,6 +27,7 @@ def check_if_aws_bucket_exists(cfg: Configs) -> bool:
 
 
 def raise_if_bucket_absent(cfg: Configs) -> None:
+    """Raise and log error if the AWS bucket is not found on the server."""
     if not check_if_aws_bucket_exists(cfg):
         bucket_name = get_aws_bucket_name(cfg)
         utils.log_and_raise_error(
@@ -34,6 +39,7 @@ def raise_if_bucket_absent(cfg: Configs) -> None:
 
 
 def get_aws_bucket_name(cfg: Configs) -> str:
+    """Return the formatted AWS bucket name from the `central_path`."""
     return cfg["central_path"].as_posix().strip("/").split("/")[0]
 
 
@@ -43,6 +49,7 @@ def get_aws_bucket_name(cfg: Configs) -> str:
 
 
 def get_aws_secret_access_key(log: bool = True) -> str:
+    """Return the user-input AWS secret access key."""
     aws_secret_access_key = utils.get_connection_secret_from_user(
         connection_method_name="AWS",
         key_name_full="AWS secret access key",
