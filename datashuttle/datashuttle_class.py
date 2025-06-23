@@ -1364,6 +1364,10 @@ class DataShuttle:
                 "The project name must contain alphanumeric characters only.",
                 ValueError,
             )
+        if project_name == "":
+            utils.log_and_raise_error(
+                "The project name cannot be empty.", NeuroBlueprintError
+            )
 
     def _log_successful_config_change(self, message: bool = False) -> None:
         """Log the entire config at the time of config change.

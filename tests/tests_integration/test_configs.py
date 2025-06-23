@@ -6,7 +6,10 @@ from base import BaseTest
 
 from datashuttle import DataShuttle
 from datashuttle.utils import getters
-from datashuttle.utils.custom_exceptions import ConfigError
+from datashuttle.utils.custom_exceptions import (
+    ConfigError,
+    NeuroBlueprintError,
+)
 
 
 class TestConfigs(BaseTest):
@@ -44,6 +47,17 @@ class TestConfigs(BaseTest):
             == "Configuration file has not been initialized. "
             "Use make_config_file() to setup before continuing."
         )
+
+    def test_empty_project_name(self, tmp_path):
+        """
+        Empty project names ("") are not allowed.
+        """
+        os.chdir(tmp_path)  # avoids messy backup folder creation
+
+        with pytest.raises(NeuroBlueprintError) as e:
+            DataShuttle("")
+
+        assert str(e.value) == "The project name cannot be empty."
 
     @pytest.mark.parametrize(
         "bad_pattern",
