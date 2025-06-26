@@ -233,6 +233,10 @@ MessageBox:light > #messagebox_top_container {
     dock: left;
 }
 
+#setup_buttons_container {
+    height: 100%;
+}
+
 #setup_buttons_container > Button {
     margin: 2 1 0 0;
     dock: left;
