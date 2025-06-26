@@ -123,7 +123,8 @@ def get_test_ssh():
     docker_installed = docker_is_running()
     if not docker_installed:
         warnings.warn(
-            "SSH tests are not run as docker either not installed or running."
+            "SSH tests are not run as docker is either not installed, "
+            "running or current user is not in the docker group."
         )
     return docker_installed
 
