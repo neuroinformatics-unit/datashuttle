@@ -103,8 +103,7 @@ class BaseTransfer(BaseTest):
                             else:
                                 sub_ses_dtype_arguments += [
                                     f"(parent_sub == '{sub}' & parent_ses == '{ses}' "
-                                    f"& (parent_datatype == '{dtype}' "
-                                    f"| parent_datatype == '{dtype}'))"
+                                    f"& parent_datatype == '{dtype}' )"
                                 ]
 
         return sub_ses_dtype_arguments, extra_arguments
@@ -144,11 +143,7 @@ class BaseTransfer(BaseTest):
             ]
             entries = list(set(entries))
             if list_of_names == ["all"]:
-                entries += (
-                    [f"all_non_{field}"]
-                    if field != "datatype"
-                    else ["all_non_datatype"]
-                )
+                entries += [f"all_non_{field}"]
             list_of_names = entries
         return list_of_names
 
