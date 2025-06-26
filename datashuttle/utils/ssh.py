@@ -152,8 +152,12 @@ def save_hostkey_locally(key, central_host_id, hostkeys_path) -> None:
 
     """
     client = paramiko.SSHClient()
+
+    port = canonical_configs.get_default_ssh_port()
+    host_key = f"[{central_host_id}]:{port}" if port != 22 else central_host_id
+
     client.get_host_keys().add(
-        f"[{central_host_id}]:{canonical_configs.get_default_ssh_port()}",
+        host_key,
         key.get_name(),
         key,
     )
