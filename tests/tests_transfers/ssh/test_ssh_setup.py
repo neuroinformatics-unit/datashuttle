@@ -10,13 +10,17 @@ from ... import test_utils
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
 
-TEST_SSH = ssh_test_utils.get_test_ssh()
+TEST_SSH = ssh_test_utils.docker_is_running()
 
 
 @pytest.mark.skipif(
     platform.system == "Darwin", reason="Docker set up is not robust on macOS."
 )
-@pytest.mark.skipif(not TEST_SSH, reason="TEST_SSH is false")
+@pytest.mark.skipif(
+    not TEST_SSH,
+    reason="SSH tests are not run as docker is either not installed, "
+    "running or current user is not in the docker group.",
+)
 class TestSSH(BaseSSHTransfer):
     @pytest.fixture(scope="function")
     def project(test, tmp_path, setup_ssh_container):

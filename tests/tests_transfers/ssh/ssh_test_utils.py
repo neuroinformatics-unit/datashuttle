@@ -3,7 +3,6 @@ import copy
 import stat
 import subprocess
 import sys
-import warnings
 
 import paramiko
 
@@ -113,20 +112,6 @@ def sftp_recursive_file_search(sftp, path_, all_filenames):
             )
         else:
             all_filenames.append(path_ + "/" + file_or_folder.filename)
-
-
-def get_test_ssh():
-    """
-    Return bool indicating whether Docker is installed and running,
-    which is required for ssh tests.
-    """
-    docker_installed = docker_is_running()
-    if not docker_installed:
-        warnings.warn(
-            "SSH tests are not run as docker is either not installed, "
-            "running or current user is not in the docker group."
-        )
-    return docker_installed
 
 
 def docker_is_running():
