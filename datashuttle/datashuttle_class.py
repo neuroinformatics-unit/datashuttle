@@ -843,8 +843,7 @@ class DataShuttle:
         secret if `gdrive_client_id` is set in the configs.
 
         Next, the user will be asked if their machine has access to a browser.
-        If not, they will be prompted to input a config_token after running an
-        rclone command displayed to the user on a machine with access to a browser.
+        If not, they will be prompted to input their service account file path.
 
         Next, with the provided credentials, the final setup will be done. This
         opens up a browser if the user confirmed access to a browser.
@@ -862,12 +861,6 @@ class DataShuttle:
         browser_available = gdrive.ask_user_for_browser(log=True)
 
         if not browser_available:
-            # config_token = gdrive.prompt_and_get_config_token(
-            #     self.cfg,
-            #     gdrive_client_secret,
-            #     self.cfg.get_rclone_config_name("gdrive"),
-            #     log=True,
-            # )
             service_account_filepath = (
                 gdrive.prompt_and_get_service_account_filepath(
                     log=True,
