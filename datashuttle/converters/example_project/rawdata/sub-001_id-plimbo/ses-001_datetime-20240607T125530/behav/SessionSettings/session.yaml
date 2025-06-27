@@ -1,0 +1,49 @@
+# yaml-language-server: $schema=schema.json
+
+animalId: plimbo
+drawUntilPositionOffset: 5
+drawSetsWhenDistanceFromEndReached: 20
+availableRewardPositions: 4
+corridorWidth: 2
+
+trial: {
+  randomiseSequence: true,
+  offsets: [0, 1, 5],
+  landmarks: [
+    [{size: 3, texture: grating1, odour: odour1, rewardSequencePosition: 0}],
+    [{size: 3, texture: logs, odour: odour0, rewardSequencePosition: -1}, {size: 3, texture: bark, odour: odour0, rewardSequencePosition: -1}],
+    [{size: 3, texture: grating1, odour: odour2, rewardSequencePosition: 1}],
+    [{size: 3, texture: logs, odour: odour0, rewardSequencePosition: -1}, {size: 3, texture: bark, odour: odour0, rewardSequencePosition: -1}],
+    [{size: 3, texture: grating1, odour: odour3, rewardSequencePosition: 2}],
+    [{size: 3, texture: logs, odour: odour0, rewardSequencePosition: -1}, {size: 3, texture: bark, odour: odour0, rewardSequencePosition: -1}],
+    [{size: 3, texture: grating1, odour: odour4, rewardSequencePosition: 3}],
+    [{size: 3, texture: logs, odour: odour0, rewardSequencePosition: -1}, {size: 3, texture: bark, odour: odour0, rewardSequencePosition: -1}],
+  ]
+}
+
+olfactometerCommands: [
+  {
+    alias: odour1,
+    prepareCommand: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    releaseCommand: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    flushCommand:   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+  },
+  {
+    alias: odour2,
+    prepareCommand: [0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    releaseCommand: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    flushCommand:   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0]
+  },
+  {
+    alias: odour3,
+    prepareCommand: [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+    releaseCommand: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    flushCommand:   [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1]
+  },
+  {
+    alias: odour4,
+    prepareCommand: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0],
+    releaseCommand: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    flushCommand:   [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+  }
+]
