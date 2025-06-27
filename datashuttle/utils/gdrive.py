@@ -110,6 +110,14 @@ def prompt_and_get_config_token(
     return input_
 
 
+def prompt_and_get_service_account_filepath(log: bool = True):
+    """Get service account filepath from user."""
+    input_ = utils.get_user_input(
+        "Please enter your service account file path: "
+    ).strip()
+    return input_
+
+
 def get_client_secret(log: bool = True) -> str:
     """Prompt the user for their Google Drive client secret key."""
     gdrive_client_secret = utils.get_connection_secret_from_user(
