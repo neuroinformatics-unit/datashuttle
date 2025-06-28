@@ -290,13 +290,23 @@ def setup_rclone_config_for_aws(
 
 
 def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
-    """Check for a successful connection by executing an `ls` command.
+    """Check for a successful connection by creating a file on the remote.
 
-    It pings the central host to list files and folders in the root directory.
-    If the command fails, it raises a ConnectionError.
+    If the command fails, it raises a ConnectionError. The created file is
+    deleted thereafter.
     """
-    output = call_rclone(f"ls {cfg.get_rclone_config_name()}:", pipe_std=True)
+    tempfile_path = (cfg["central_path"] / "temp.txt").as_posix()
+    output = call_rclone(
+        f"touch {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+    )
+    if output.returncode != 0:
+        utils.log_and_raise_error(
+            output.stderr.decode("utf-8"), ConnectionError
+        )
 
+    output = call_rclone(
+        f"delete {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
+    )
     if output.returncode != 0:
         utils.log_and_raise_error(
             output.stderr.decode("utf-8"), ConnectionError
