@@ -108,7 +108,7 @@ class SetupGdriveScreen(ModalScreen):
 
         elif event.button.id == "setup_gdrive_no_button":
             self.remove_yes_no_buttons()
-            self.prompt_user_for_config_token()
+            self.prompt_user_for_service_account_filepath()
 
         elif event.button.id == "setup_gdrive_enter_button":
             if self.is_browser_available:
@@ -126,7 +126,7 @@ class SetupGdriveScreen(ModalScreen):
                     if self.input_box.value.strip()
                     else None
                 )
-                self.setup_gdrive_connection_using_config_token(
+                self.setup_gdrive_connection_using_service_account(
                     service_account_filepath
                 )
 
@@ -186,7 +186,7 @@ class SetupGdriveScreen(ModalScreen):
             )
         )
 
-    def prompt_user_for_config_token(self) -> None:
+    def prompt_user_for_service_account_filepath(self) -> None:
         """Set up widgets and prompt user for their token for browser-less connection."""
         message = "Please enter your service account file path."
 
@@ -197,7 +197,7 @@ class SetupGdriveScreen(ModalScreen):
         )
         self.mount_input_box_before_buttons()
 
-    def setup_gdrive_connection_using_config_token(
+    def setup_gdrive_connection_using_service_account(
         self, service_account_filepath: Optional[str] = None
     ) -> None:
         """Disable the enter button, set up the Google Drive connection and show success message."""
