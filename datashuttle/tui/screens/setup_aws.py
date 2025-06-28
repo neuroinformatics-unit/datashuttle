@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
     from datashuttle.tui.interface import Interface
 
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Button, Input, Static
 
@@ -31,14 +31,14 @@ class SetupAwsScreen(ModalScreen):
     def compose(self) -> ComposeResult:
         """Set widgets on the SetupAwsScreen."""
         yield Container(
-            Horizontal(
+            Vertical(
                 Static(
                     "Ready to setup AWS connection. Press OK to proceed",
                     id="setup_aws_messagebox_message",
                 ),
+                Input(password=True, id="setup_aws_secret_access_key_input"),
                 id="setup_aws_messagebox_message_container",
             ),
-            Input(password=True, id="setup_aws_secret_access_key_input"),
             Horizontal(
                 Button("OK", id="setup_aws_ok_button"),
                 Button("Cancel", id="setup_aws_cancel_button"),

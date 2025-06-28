@@ -160,6 +160,7 @@ MessageBox:light > #messagebox_top_container {
 }
 
 #setup_aws_messagebox_message_container {
+    height: 70%;
     align: center middle;
     overflow: hidden auto;
     margin: 0 1;
@@ -168,6 +169,10 @@ MessageBox:light > #messagebox_top_container {
 #setup_aws_messagebox_message {
     text-align: center;
     padding: 0 2;
+}
+
+#setup_aws_secret_access_key_input {
+    dock: bottom;
 }
 
 #setup_aws_ok_button {
