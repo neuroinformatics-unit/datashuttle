@@ -125,17 +125,17 @@ class ConfigsContent(Container):
         ]
 
         self.config_gdrive_widgets = [
-            Label("Client ID", id="configs_gdrive_client_id_label"),
-            ClickableInput(
-                self.parent_class.mainwindow,
-                placeholder="Google Drive Client ID",
-                id="configs_gdrive_client_id_input",
-            ),
             Label("Root Folder ID", id="configs_gdrive_root_folder_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
                 placeholder="Google Drive Root Folder ID",
                 id="configs_gdrive_root_folder_id",
+            ),
+            Label("Client ID (Optional)", id="configs_gdrive_client_id_label"),
+            ClickableInput(
+                self.parent_class.mainwindow,
+                placeholder="Google Drive Client ID (Optional)",
+                id="configs_gdrive_client_id_input",
             ),
         ]
 
@@ -158,7 +158,9 @@ class ConfigsContent(Container):
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('local')}",
+                    placeholder=self.get_platform_dependent_example_paths(
+                        "local", "local_filesystem"
+                    ),
                     id="configs_local_path_input",
                 ),
                 Button("Select", id="configs_local_path_select_button"),
@@ -196,7 +198,9 @@ class ConfigsContent(Container):
             Horizontal(
                 ClickableInput(
                     self.parent_class.mainwindow,
-                    placeholder=f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}",
+                    placeholder=self.get_platform_dependent_example_paths(
+                        "central", "local_filesystem"
+                    ),
                     id="configs_central_path_input",
                 ),
                 Button("Select", id="configs_central_path_select_button"),
@@ -287,12 +291,6 @@ class ConfigsContent(Container):
                 self.query_one("#configs_local_filesystem_radiobutton").value
                 is True
             )
-            self.set_central_path_input_tooltip(display_ssh=False)
-        else:
-            display_ssh = (
-                self.interface.project.cfg["connection_method"] == "ssh"
-            )
-            self.set_central_path_input_tooltip(display_ssh)
 
         for id in [
             "#configs_local_path_input",
@@ -334,16 +332,13 @@ class ConfigsContent(Container):
         connection_method = self.connection_method_from_radiobutton_id(
             radiobutton_id
         )
-        display_ssh = (
-            True if connection_method == "ssh" else False
-        )  # temporarily, for tooltips
 
         if self.interface:
             self.fill_inputs_with_project_configs()
 
         self.setup_widgets_to_display(connection_method)
 
-        self.set_central_path_input_tooltip(display_ssh)
+        self.set_central_path_input_tooltip(connection_method)
 
     def radiobutton_id_from_connection_method(
         self, connection_method: str
@@ -367,20 +362,24 @@ class ConfigsContent(Container):
             else None
         )
 
-    def set_central_path_input_tooltip(self, display_ssh: bool) -> None:
+    def set_central_path_input_tooltip(
+        self, connection_method: str | None
+    ) -> None:
         """Set tooltip depending on whether connection method is SSH or local filesystem."""
-        id = "#configs_central_path_input"
-        if display_ssh:
-            self.query_one(id).tooltip = get_tooltip(
-                "config_central_path_input_mode-ssh"
-            )
-        else:
-            self.query_one(id).tooltip = get_tooltip(
+        if connection_method is None:
+            tooltip = get_tooltip(
                 "config_central_path_input_mode-local_filesystem"
             )
+        else:
+            tooltip = get_tooltip(
+                f"config_central_path_input_mode-{connection_method}"
+            )
+        self.query_one("#configs_central_path_input").tooltip = tooltip
 
     def get_platform_dependent_example_paths(
-        self, local_or_central: Literal["local", "central"], ssh: bool = False
+        self,
+        local_or_central: Literal["local", "central"],
+        connection_method: str,
     ) -> str:
         """Get example paths for the local or central Inputs depending on operating system.
 
@@ -389,16 +388,23 @@ class ConfigsContent(Container):
         local_or_central
             The "local" or "central" input to fill.
 
-        ssh
-            If the user has selected SSH (which changes the central input).
+        connection_method
+            Connection method e.g. "local_filesystem"
 
         """
         assert local_or_central in ["local", "central"]
 
         # Handle the ssh central case separately
         # because it is always the same
-        if local_or_central == "central" and ssh:
-            example_path = "/nfs/path_on_server/myprojects/central"
+        if (
+            local_or_central == "central"
+            and connection_method != "local_filesystem"
+        ):
+            if connection_method == "ssh":
+                example_path = "/nfs/path_on_server/myprojects/central"
+            elif connection_method in ["aws", "gdrive"]:
+                example_path = ""
+
         else:
             if platform.system() == "Windows":
                 example_path = rf"C:\path\to\{local_or_central}\my_projects\my_first_project"
@@ -408,40 +414,6 @@ class ConfigsContent(Container):
                 )
 
         return example_path
-
-    def switch_ssh_widgets_display(self, display_ssh: bool) -> None:
-        """Show or hide SSH-related configs.
-
-         This is based on whether the current `connection_method`
-         widget is "ssh" or "local_filesystem".
-
-        Parameters
-        ----------
-        display_ssh
-            If `True`, display the SSH-related widgets.
-
-        """
-        for widget in self.config_ssh_widgets:
-            widget.display = display_ssh
-
-        if not self.query_one("#configs_central_path_input").value:
-            if display_ssh:
-                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=True)}"
-            else:
-                placeholder = f"e.g. {self.get_platform_dependent_example_paths('central', ssh=False)}"
-            self.query_one(
-                "#configs_central_path_input"
-            ).placeholder = placeholder
-
-    def switch_gdrive_widgets_display(self, display_gdrive: bool) -> None:
-        """Show or hide widgets related to Google Drive connection."""
-        for widget in self.config_gdrive_widgets:
-            widget.display = display_gdrive
-
-    def switch_aws_widgets_display(self, display_aws: bool) -> None:
-        """Show or hide widgets related to AWS connection."""
-        for widget in self.config_aws_widgets:
-            widget.display = display_aws
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Handle a button press event.
@@ -804,16 +776,17 @@ class ConfigsContent(Container):
 
         # Connection specific widgets
         connection_widget_display_functions = {
-            "ssh": self.switch_ssh_widgets_display,
-            "gdrive": self.switch_gdrive_widgets_display,
-            "aws": self.switch_aws_widgets_display,
+            "ssh": self.config_ssh_widgets,
+            "gdrive": self.config_gdrive_widgets,
+            "aws": self.config_aws_widgets,
         }
 
-        for name, widget_func in connection_widget_display_functions.items():
-            if connection_method == name:
-                widget_func(True)
-            else:
-                widget_func(False)
+        for (
+            name,
+            connection_widgets,
+        ) in connection_widget_display_functions.items():
+            for widget in connection_widgets:
+                widget.display = connection_method == name
 
         has_connection_method = connection_method is not None
 
@@ -826,8 +799,23 @@ class ConfigsContent(Container):
         ).disabled = not has_connection_method
 
         # Local only project
-        if not has_connection_method:
+        if connection_method is None:
             self.query_one("#configs_central_path_input").value = ""
+            self.query_one("#configs_central_path_input").placeholder = ""
+        else:
+            placeholder = self.get_platform_dependent_example_paths(
+                "central",
+                connection_method,
+            )
+            self.query_one(
+                "#configs_central_path_input"
+            ).placeholder = placeholder
+
+        central_path_label = self.query_one("#configs_central_path_label")
+        if connection_method in ["gdrive", "aws"]:
+            central_path_label.update(content="Central Path (Optional)")
+        else:
+            central_path_label.update(content="Central Path")
 
         setup_connection_button = self.query_one(
             "#configs_setup_connection_button"

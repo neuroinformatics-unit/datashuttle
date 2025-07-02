@@ -234,7 +234,11 @@ class Configs(UserDict):
         if base == "local":
             base_folder = self["local_path"] / top_level_folder
         elif base == "central":
-            base_folder = self["central_path"] / top_level_folder
+            if self["central_path"] is None:
+                assert self["connection_method"] in ["aws", "gdrive"]
+                base_folder = Path(top_level_folder)
+            else:
+                base_folder = self["central_path"] / top_level_folder
 
         return base_folder
 
@@ -331,8 +335,4 @@ class Configs(UserDict):
         A project is 'local-only' if it has no `central_path` and `connection_method`.
         It can be used to make folders and validate, but not for transfer.
         """
-        canonical_configs.raise_on_bad_local_only_project_configs(self)
-
-        params_are_none = canonical_configs.local_only_configs_are_none(self)
-
-        return all(params_are_none)
+        return self["connection_method"] is None

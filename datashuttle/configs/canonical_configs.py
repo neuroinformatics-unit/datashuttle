@@ -102,7 +102,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     check_config_types(config_dict)
 
-    raise_on_bad_local_only_project_configs(config_dict)
+    if config_dict["connection_method"] not in ["aws", "gdrive"]:
+        raise_on_bad_local_only_project_configs(config_dict)
 
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(

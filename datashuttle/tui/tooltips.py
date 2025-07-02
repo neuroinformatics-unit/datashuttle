@@ -62,6 +62,17 @@ def get_tooltip(id: str) -> str:
             "to a project folder, possibly on a mounted drive.\n\n"
         )
 
+    elif id == "config_central_path_input_mode-aws":
+        tooltip = (
+            "The path to the project folder within the aws bucket.\n"
+            "Leave blank if the aws bucket is the project folder."
+        )
+
+    elif id == "config_central_path_input_mode-gdrive":
+        tooltip = (
+            "The path to the project folder within the google drive folder.\n"
+            "Leave blank if the google drive folder is the project folder."
+        )
     # Google Drive configs
     # -------------------------------------------------------------------------
 
