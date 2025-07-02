@@ -9,6 +9,7 @@ If adding a new config key:
 
 from __future__ import annotations
 
+import os
 from typing import (
     TYPE_CHECKING,
     Dict,
@@ -50,6 +51,14 @@ def keys_str_on_file_but_path_in_class() -> list[str]:
         "local_path",
         "central_path",
     ]
+
+
+def get_default_ssh_port() -> int:
+    """Get the default port used for SSH connections."""
+    if "DS_SSH_PORT" in os.environ:
+        return int(os.environ["DS_SSH_PORT"])
+    else:
+        return 22
 
 
 # -----------------------------------------------------------------------------

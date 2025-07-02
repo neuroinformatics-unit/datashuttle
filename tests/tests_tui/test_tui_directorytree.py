@@ -2,9 +2,10 @@ from pathlib import Path
 
 import pyperclip
 import pytest
-from tui_base import TuiBase
 
 from datashuttle.tui.app import TuiApp
+
+from .tui_base import TuiBase
 
 try:
     pyperclip.paste()

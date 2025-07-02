@@ -1,10 +1,11 @@
 import os
 
 import pytest
-import test_utils
-from base import BaseTest
 
 from datashuttle.configs import canonical_configs
+
+from .. import test_utils
+from ..base import BaseTest
 
 
 class TestDatatypes(BaseTest):

@@ -1,7 +1,8 @@
 import warnings
 
 import pytest
-import test_utils
+
+from . import test_utils
 
 TEST_PROJECT_NAME = "test_project"
 
