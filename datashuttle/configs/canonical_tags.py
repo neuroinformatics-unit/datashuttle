@@ -18,16 +18,25 @@ def tags(tag_name: str) -> str:
     return tags[tag_name]
 
 
-_DATETIME_FORMATS = {
-    "datetime": "%Y%m%dT%H%M%S",
-    "time": "%H%M%S",
-    "date": "%Y%m%d",
-}
+def get_datetime_formats() -> dict:
+    """
+    Get all datetime format strings.
+
+    Returns
+    -------
+    dict
+        A dictionary containing format strings for datetime, time, and date
+    """
+    return {
+        "datetime": "%Y%m%dT%H%M%S",
+        "time": "%H%M%S",
+        "date": "%Y%m%d",
+    }
 
 
 def get_datetime_format(format_type: str) -> str:
     """
-    Get the datetime format string for a given format type.
+    Get the datetime format string for a specific format type.
 
     Parameters
     ----------
@@ -37,14 +46,8 @@ def get_datetime_format(format_type: str) -> str:
     Returns
     -------
     str
-        The format string for the specified type
-
-    Raises
-    ------
-    ValueError
-        If format_type is not one of the supported types
+        The format string for the specified format type
     """
-    if format_type not in _DATETIME_FORMATS:
-        raise ValueError(f"Invalid format type: {format_type}. Must be one of {list(_DATETIME_FORMATS.keys())}")
-    return _DATETIME_FORMATS[format_type]
+    formats = get_datetime_formats()
+    return formats[format_type]
 

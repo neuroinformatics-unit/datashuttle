@@ -65,19 +65,18 @@ def create_folder_trees(
             "datatype is deprecated in 0.6.0"
         )
 
+    # Initialize all_paths with required keys
+    all_paths = {
+        "sub": [],
+        "ses": [],
+    }
+
     if datatype_passed:
         error_message = validation.check_datatypes_are_valid(
             datatype, allow_all=True
         )
         if error_message:
             utils.log_and_raise_error(error_message, NeuroBlueprintError)
-
-        all_paths: Dict = {}
-    else:
-        all_paths = {
-            "sub": [],
-            "ses": [],
-        }
 
     for sub in sub_names:
         sub_path = cfg.build_project_path(
@@ -358,8 +357,133 @@ def process_glob_to_find_datatype_folders(
     return zip(ses_folder_keys, ses_folder_values)
 
 
+# -----------------------------------------------------------------------------
 # Wildcards
 # -----------------------------------------------------------------------------
+
+
+def search_with_tags(
+    cfg: Configs,
+    base_folder: Path,
+    local_or_central: str,
+    all_names: List[str],
+    sub: Optional[str] = None,
+) -> List[str]:
+    """
+    Handle wildcard and datetime range searching in names during upload or download.
+
+    There are two types of special patterns that can be used in names:
+    1. Wildcards: Names containing @*@ will be replaced with "*" for glob pattern matching
+    2. Datetime ranges: Names containing @DATETO@, @TIMETO@, or @DATETIMETO@ will be used
+       to filter folders within a specific datetime range
+
+    For datetime ranges, the format must be:
+    - date: YYYYMMDD@DATETO@YYYYMMDD (e.g., "20240101@DATETO@20241231")
+    - time: HHMMSS@TIMETO@HHMMSS (e.g., "000000@TIMETO@235959")
+    - datetime: YYYYMMDDTHHMMss@DATETIMETO@YYYYMMDDTHHMMss
+
+    Parameters
+    ----------
+    cfg : Configs
+        datashuttle project configuration
+    base_folder : Path
+        folder to search for wildcards in
+    local_or_central : str
+        "local" or "central" project path to search in
+    all_names : List[str]
+        list of names that may contain wildcards or datetime ranges. If sub is
+        passed, these are treated as session names. If sub is None, they are
+        treated as subject names
+    sub : Optional[str]
+        optional subject to search for sessions in. If not provided,
+        will search for subjects rather than sessions
+
+    Returns
+    -------
+    List[str]
+        A list of matched folder names after wildcard expansion and datetime filtering.
+        For datetime ranges, only folders with timestamps within the specified range
+        will be included.
+
+    Examples
+    --------
+    Wildcards:
+    >>> search_with_tags(cfg, path, "local", ["sub-@*@"])
+    ["sub-001", "sub-002", "sub-003"]
+
+    Date range:
+    >>> search_with_tags(cfg, path, "local", ["sub-001_20240101@DATETO@20241231_id-*"])
+    ["sub-001_20240315_id-1", "sub-001_20240401_id-2"]
+
+    Time range:
+    >>> search_with_tags(cfg, path, "local", ["sub-002_000000@TIMETO@120000"])
+    ["sub-002_083000", "sub-002_113000"]
+    """
+    new_all_names: List[str] = []
+    for name in all_names:
+        if not (canonical_tags.tags("*") in name or
+                canonical_tags.tags("DATETO") in name or
+                canonical_tags.tags("TIMETO") in name or
+                canonical_tags.tags("DATETIMETO") in name):
+            # If no special tags, just add the name as is
+            if "_date-" in name or "_time-" in name or "_datetime-" in name:
+                # For simple date/time formatted names, add them directly
+                new_all_names.append(name)
+            else:
+                # For regular names, just append them
+                new_all_names.append(name)
+            continue
+
+        # Handle wildcard replacement first if present
+        search_str = name
+        if canonical_tags.tags("*") in name:
+            search_str = search_str.replace(canonical_tags.tags("*"), "*")
+
+        # Handle datetime ranges
+        format_type = None
+        tag = None
+        if (tag := canonical_tags.tags("DATETO")) in search_str:
+            format_type = "date"
+        elif (tag := canonical_tags.tags("TIMETO")) in search_str:
+            format_type = "time"
+        elif (tag := canonical_tags.tags("DATETIMETO")) in search_str:
+            format_type = "datetime"
+
+        if format_type is not None:
+            assert tag is not None
+            search_str = format_and_validate_datetime_search_str(search_str, format_type, tag)
+
+            # Use the helper function to perform the glob search
+            if sub:
+                matching_names = search_sub_or_ses_level(
+                    cfg, base_folder, local_or_central, sub, search_str=search_str
+                )[0]
+            else:
+                matching_names = search_sub_or_ses_level(
+                    cfg, base_folder, local_or_central, search_str=search_str
+                )[0]
+
+            # Filter results by datetime range
+            start_timepoint, end_timepoint = strip_start_end_date_from_datetime_tag(
+                name, format_type, tag
+            )
+            matching_names = filter_names_by_datetime_range(
+                matching_names, format_type, start_timepoint, end_timepoint
+            )
+            new_all_names.extend(matching_names)
+        else:
+            # No datetime range, just perform the glob search with wildcards
+            if sub:
+                matching_names = search_sub_or_ses_level(
+                    cfg, base_folder, local_or_central, sub, search_str=search_str
+                )[0]
+            else:
+                matching_names = search_sub_or_ses_level(
+                    cfg, base_folder, local_or_central, search_str=search_str
+                )[0]
+            new_all_names.extend(matching_names)
+
+    return list(set(new_all_names))  # Remove duplicates
 
 
 def filter_names_by_datetime_range(
@@ -388,125 +512,197 @@ def filter_names_by_datetime_range(
     -------
     List[str]
         Filtered list of names that fall within the datetime range
+
+    Raises
+    ------
+    ValueError
+        If any datetime value does not match the expected ISO format
     """
     filtered_names: List[str] = []
     for candidate in names:
         candidate_basename = candidate if isinstance(candidate, str) else candidate.name
         value = get_values_from_bids_formatted_name([candidate_basename], format_type)[0]
+
         try:
-            candidate_timepoint = datetime.strptime(
-                value, canonical_tags.get_datetime_format(format_type)
-            )
-            if start_timepoint <= candidate_timepoint <= end_timepoint:
-                filtered_names.append(candidate)
+            candidate_timepoint = datetime_object_from_string(value, format_type)
         except ValueError:
-            continue
+            utils.log_and_raise_error(
+                f"Invalid {format_type} format in name {candidate_basename}. "
+                f"Expected ISO format: {canonical_tags.get_datetime_format(format_type)}",
+                ValueError,
+            )
+
+        if start_timepoint <= candidate_timepoint <= end_timepoint:
+            filtered_names.append(candidate)
+
     return filtered_names
 
 
-def search_with_tags(
-    cfg: Configs,
-    base_folder: Path,
-    local_or_central: str,
-    all_names: List[str],
-    sub: Optional[str] = None,
-) -> List[str]:
+# -----------------------------------------------------------------------------
+# Datetime Tag Functions
+# -----------------------------------------------------------------------------
+
+
+def get_expected_datetime_len(format_type: str) -> int:
     """
-    Handle wildcard flag in upload or download.
-
-    All names in name are searched for @*@ string, and replaced
-    with single * for glob syntax. If sub is passed, it is
-    assumes all_names is ses_names and the sub folder is searched
-    for ses_names matching the name including wildcard. Otherwise,
-    if sub is None it is assumed all_names are sub names and
-    the level above is searched.
-
-    Outputs a new list of names including all original names
-    but where @*@-containing names have been replaced with
-    search results.
+    Get the expected length of characters for a datetime format.
 
     Parameters
     ----------
+    format_type : str
+        One of "datetime", "time", or "date"
 
-    project : initialised datashuttle project
-
-    base_folder : folder to search for wildcards in
-
-    local_or_central : "local" or "central" project path to
-        search in
-
-    all_names : list of subject or session names that
-        may or may not include the wildcard flag. If sub (below)
-        is passed, it is assumed these are session names. Otherwise,
-        it is assumed these are subject names.
-
-    sub : optional subject to search for sessions in. If not provided,
-        will search for subjects rather than sessions.
+    Returns
+    -------
+    int
+        The number of characters expected for the format
     """
-    new_all_names: List[str] = []
-    for name in all_names:
-        if not (canonical_tags.tags("*") in name or
-                canonical_tags.tags("DATETO") in name or
-                canonical_tags.tags("TIMETO") in name or
-                canonical_tags.tags("DATETIMETO") in name):
-            new_all_names.append(name)
-            continue
+    format_str = canonical_tags.get_datetime_format(format_type)
+    today = datetime.now()
+    return len(today.strftime(format_str))
 
-        # Initialize search string
-        search_str = name
 
-        # Handle wildcard replacement first if present
-        if canonical_tags.tags("*") in name:
-            search_str = search_str.replace(canonical_tags.tags("*"), "*")
+def find_datetime_in_name(name: str, format_type: str, tag: str) -> tuple[str, str] | None:
+    """
+    Find and extract datetime values from a name using a regex pattern.
 
-        # Handle datetime ranges
-        format_type = tag = None
-        if canonical_tags.tags("DATETO") in search_str:
-            format_type = "date"
-            tag = canonical_tags.tags("DATETO")
-        elif canonical_tags.tags("TIMETO") in search_str:
-            format_type = "time"
-            tag = canonical_tags.tags("TIMETO")
-        elif canonical_tags.tags("DATETIMETO") in search_str:
-            format_type = "datetime"
-            tag = canonical_tags.tags("DATETIMETO")
+    Parameters
+    ----------
+    name : str
+        The name containing the datetime range
+        e.g. "sub-001_20240101@DATETO@20250101_id-*"
+    format_type : str
+        One of "datetime", "time", or "date"
+    tag : str
+        The tag used for the range (e.g. @DATETO@)
 
-        if format_type is not None:
-            assert tag is not None, "format and tag should be set together"
-            search_str = validation.format_and_validate_datetime_search_str(search_str, format_type, tag)
+    Returns
+    -------
+    tuple[str, str] | None
+        A tuple containing (start_datetime_str, end_datetime_str) if found,
+        None if no match is found
+    """
+    expected_len = get_expected_datetime_len(format_type)
+    full_tag_regex = fr"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    match = re.search(full_tag_regex, name)
+    return match.groups() if match else None
 
-        # Use the helper function to perform the glob search
-        if sub:
-            matching_names: List[str] = search_sub_or_ses_level(
-                cfg,
-                base_folder,
-                local_or_central,
-                sub,
-                search_str=search_str,
-            )[0]
-        else:
-            matching_names = search_sub_or_ses_level(
-                cfg, base_folder, local_or_central, search_str=search_str
-            )[0]
 
-        # Filter results by datetime range if one was present
-        if format_type is not None and tag is not None:
-            expected_values = validation.get_expected_num_datetime_values(format_type)
-            full_tag_regex = fr"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
-            match = re.search(full_tag_regex, name)
-            if match:  # We know this is true because format_and_validate_datetime_search_str succeeded
-                start_str, end_str = match.groups()
-                start_timepoint = datetime.strptime(start_str, canonical_tags.get_datetime_format(format_type))
-                end_timepoint = datetime.strptime(end_str, canonical_tags.get_datetime_format(format_type))
-                matching_names = filter_names_by_datetime_range(
-                    matching_names, format_type, start_timepoint, end_timepoint
-                )
+def strip_start_end_date_from_datetime_tag(
+    search_str: str, format_type: str, tag: str
+) -> tuple[datetime, datetime]:
+    """
+    Extract and validate start and end datetime values from a search string.
 
-        new_all_names.extend(matching_names)
+    Parameters
+    ----------
+    search_str : str
+        The search string containing the datetime range
+        e.g. "sub-001_20240101T000000@DATETIMETO@20250101T235959"
+    format_type : str
+        One of "datetime", "time", or "date"
+    tag : str
+        The tag used for the range (e.g. @DATETIMETO@)
 
-    # Remove duplicates in case of wildcard overlap
-    new_all_names = list(set(new_all_names))
-    return new_all_names
+    Returns
+    -------
+    tuple[datetime, datetime]
+        A tuple containing (start_timepoint, end_timepoint)
+
+    Raises
+    ------
+    NeuroBlueprintError
+        If the datetime format is invalid, the range is malformed,
+        or end datetime is before start datetime
+    """
+    expected_len = get_expected_datetime_len(format_type)
+    full_tag_regex = fr"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    match = re.search(full_tag_regex, search_str)
+
+    if not match:
+        utils.log_and_raise_error(
+            f"Invalid {format_type} range format in search string: {search_str}. Ensure the format matches the expected pattern: {canonical_tags.get_datetime_format(format_type)}.",
+            NeuroBlueprintError,
+        )
+
+    start_str, end_str = match.groups()
+
+    try:
+        start_timepoint = datetime_object_from_string(start_str, format_type)
+        end_timepoint = datetime_object_from_string(end_str, format_type)
+    except ValueError as e:
+        utils.log_and_raise_error(
+            f"Invalid {format_type} format in search string: {search_str}. Error: {str(e)}",
+            NeuroBlueprintError,
+        )
+
+    if end_timepoint < start_timepoint:
+        utils.log_and_raise_error(
+            f"End {format_type} is before start {format_type}. Ensure the end datetime is after the start datetime.",
+            NeuroBlueprintError,
+        )
+
+    return start_timepoint, end_timepoint
+
+
+def format_and_validate_datetime_search_str(search_str: str, format_type: str, tag: str) -> str:
+    """
+    Validate and format a search string containing a datetime range.
+
+    Parameters
+    ----------
+    search_str : str
+        The search string containing the datetime range
+        e.g. "sub-001_20240101@DATETO@20250101_id-*" or "sub-002_000000@TIMETO@235959"
+    format_type : str
+        One of "datetime", "time", or "date"
+    tag : str
+        The tag used for the range (e.g. @DATETO@)
+
+    Returns
+    -------
+    str
+        The formatted search string with datetime range replaced
+        e.g. "sub-001_date-*_id-*" or "sub-002_time-*"
+
+    Raises
+    ------
+    NeuroBlueprintError
+        If the datetime format is invalid or the range is malformed
+    """
+    # Extract and validate datetime range
+    strip_start_end_date_from_datetime_tag(search_str, format_type, tag)
+
+    # Replace datetime range with wildcard pattern
+    expected_len = get_expected_datetime_len(format_type)
+    full_tag_regex = fr"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    return re.sub(full_tag_regex, f"{format_type}-*", search_str)
+
+
+def datetime_object_from_string(datetime_string: str, format_type: str) -> datetime:
+    """
+    Convert a datetime string to a datetime object using the appropriate format.
+
+    Parameters
+    ----------
+    datetime_string : str
+        The string to convert to a datetime object
+    format_type : str
+        One of "datetime", "time", or "date"
+
+    Returns
+    -------
+    datetime
+        The parsed datetime object
+
+    Raises
+    ------
+    ValueError
+        If the string cannot be parsed using the specified format
+    """
+    return datetime.strptime(
+        datetime_string, canonical_tags.get_datetime_format(format_type)
+    )
 
 
 # -----------------------------------------------------------------------------

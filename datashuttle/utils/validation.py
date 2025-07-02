@@ -322,7 +322,7 @@ def replace_tags_in_regexp(regexp: str) -> str:
     """
     regexp_list = [regexp]
     date_regexp = r"\d{8}"
-    time_regexp = "\d\d\d\d\d\d"
+    time_regexp = r"\d{6}"
 
     formatting.replace_date_time_tags_in_name(
         regexp_list,
@@ -361,7 +361,7 @@ def names_include_special_characters(
 
 
 def name_has_special_character(name: str) -> bool:
-    return not re.match("^[A-Za-z0-9_-]*$", name)
+    return not re.match(r"^[A-Za-z0-9_-]*$", name)
 
 
 def dashes_and_underscore_alternate_incorrectly(
@@ -432,7 +432,8 @@ def datetime_are_iso_format(
     """
     Check formatting for date-, time-, or datetime- tags.
     """
-    key = next((key for key in ["datetime", "time", "date"] if key in name), None)
+    datetime_keys = list(canonical_tags.get_datetime_formats().keys())
+    key = next((key for key in datetime_keys if key in name), None)
 
     error_message: List[str]
     if not key:
@@ -445,24 +446,19 @@ def datetime_are_iso_format(
         except:
             return []
 
-        try:
-            if not validate_datetime(format_to_check, key):
-                error_message = [get_datetime_error(
-                    key, name, canonical_tags.get_datetime_format(key), path_
-                )]
-            else:
-                error_message = []
-        except ValueError:
+        if datetime_value_str_is_iso_format(format_to_check, key):
+            error_message = []
+        else:
             error_message = [get_datetime_error(
-                key, name, canonical_tags.get_datetime_format(key), path_
+                key, name, canonical_tags.get_datetime_formats()[key], path_
             )]
 
     return error_message
 
 
-def validate_datetime(datetime_str: str, format_type: str) -> bool:
+def datetime_value_str_is_iso_format(datetime_str: str, format_type: str) -> bool:
     """
-    Validate that a datetime string matches the expected format.
+    Validate that a datetime string matches the expected ISO format.
 
     Parameters
     ----------
@@ -474,91 +470,13 @@ def validate_datetime(datetime_str: str, format_type: str) -> bool:
     Returns
     -------
     bool
-        True if valid, False otherwise
+        True if the string matches the ISO format, False otherwise
     """
     try:
-        datetime.strptime(datetime_str, canonical_tags.get_datetime_format(format_type))
+        datetime.strptime(datetime_str, canonical_tags.get_datetime_formats()[format_type])
         return True
     except ValueError:
         return False
-
-
-def get_expected_num_datetime_values(format_type: str) -> int:
-    """
-    Get the expected number of characters for a datetime format.
-
-    Parameters
-    ----------
-    format_type : str
-        One of "datetime", "time", or "date"
-
-    Returns
-    -------
-    int
-        The number of characters expected for the format
-    """
-    format_str = canonical_tags.get_datetime_format(format_type)
-    today = datetime.now()
-    return len(today.strftime(format_str))
-
-
-def format_and_validate_datetime_search_str(search_str: str, format_type: str, tag: str) -> str:
-    """
-    Validate and format a search string containing a datetime range.
-
-    Parameters
-    ----------
-    search_str : str
-        The search string containing the datetime range
-    format_type : str
-        One of "datetime", "time", or "date"
-    tag : str
-        The tag used for the range (e.g. @DATETO@)
-
-    Returns
-    -------
-    str
-        The formatted search string with datetime range replaced
-
-    Raises
-    ------
-    NeuroBlueprintError
-        If the datetime format is invalid or the range is malformed
-    """
-    expected_values = get_expected_num_datetime_values(format_type)
-    full_tag_regex = fr"(\d{{{expected_values}}}){re.escape(tag)}(\d{{{expected_values}}})"
-    match = re.search(full_tag_regex, search_str)
-
-    if not match:
-        utils.log_and_raise_error(
-            f"Invalid {format_type} range format in search string: {search_str}",
-            NeuroBlueprintError,
-        )
-
-    start_str, end_str = match.groups()
-
-    if not validate_datetime(start_str, format_type):
-        utils.log_and_raise_error(
-            f"Invalid start {format_type} format: {start_str}",
-            NeuroBlueprintError,
-        )
-
-    if not validate_datetime(end_str, format_type):
-        utils.log_and_raise_error(
-            f"Invalid end {format_type} format: {end_str}",
-            NeuroBlueprintError,
-        )
-
-    start_timepoint = datetime.strptime(start_str, canonical_tags.get_datetime_format(format_type))
-    end_timepoint = datetime.strptime(end_str, canonical_tags.get_datetime_format(format_type))
-
-    if end_timepoint < start_timepoint:
-        utils.log_and_raise_error(
-            f"End {format_type} is before start {format_type}",
-            NeuroBlueprintError,
-        )
-
-    return re.sub(full_tag_regex, f"{format_type}-*", search_str)
 
 
 def raise_display_mode(
