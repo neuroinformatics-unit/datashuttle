@@ -218,6 +218,10 @@ class Configs(UserDict):
     ) -> Path:
         """Return the full base path for the given top-level folder.
 
+        If the connection method is `aws` or `drive`, the base path
+        might be `None` (e.g. if the Google Drive is the project folder).
+        In this case, the base path is ignored.
+
         Parameters
         ----------
         base
@@ -235,6 +239,7 @@ class Configs(UserDict):
             base_folder = self["local_path"] / top_level_folder
         elif base == "central":
             if self["central_path"] is None:
+                # This path should never be triggered for local-only
                 assert self["connection_method"] in ["aws", "gdrive"]
                 base_folder = Path(top_level_folder)
             else:
