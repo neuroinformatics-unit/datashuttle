@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import glob
+import importlib
 import json
 import os
 import shutil
@@ -832,8 +833,8 @@ class DataShuttle:
 
     def make_config_file(
         self,
-        local_path: str,
-        central_path: str | None = None,
+        local_path: Path | str,
+        central_path: Path | str | None = None,
         connection_method: str | None = None,
         central_host_id: Optional[str] = None,
         central_host_username: Optional[str] = None,
@@ -991,6 +992,63 @@ class DataShuttle:
         that contain valid config.yaml files.
         """
         return getters.get_existing_project_paths()
+
+    @check_configs_set
+    def get_sub_names_from_key_value_pair(
+        self, key, value, include_central=False
+    ):
+        """TODO: PLACEHOLDER."""
+        all_subs = folders.search_project_for_sub_or_ses_names(
+            self.cfg, "rawdata", None, "sub-*", include_central=include_central
+        )
+
+        all_subject_names = []
+
+        for sub in all_subs["local"]:
+            try:
+                sub_value = utils.get_values_from_bids_formatted_name(
+                    [sub], key
+                )[0]
+            except NeuroBlueprintError:  # check error
+                utils.warn(
+                    f"The key: {key} was not found in subject name: {sub}",
+                    log=False,
+                )
+                continue
+
+            if sub_value == value:
+                all_subject_names.append(sub)
+
+        return all_subject_names
+
+    def log_and_message(
+        self, message
+    ):  # TODO: fix naming, maybe def message(log=True) is better
+        # TODO: assert a logger is running
+        """TODO: PLACEHOLDER."""
+        utils.log_and_message(message)
+
+    def log_and_raise_error(self, message, exception):
+        """TODO: PLACEHOLDER."""
+        utils.log_and_raise_error(message, exception)
+
+    def convert(self, custom_converter_path: Path):
+        """TODO: PLACEHOLDER."""
+        if isinstance(custom_converter_path, str):
+            custom_converter_path = Path(custom_converter_path)
+
+        spec = importlib.util.spec_from_file_location(
+            "mod", custom_converter_path
+        )
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        converter_func = getattr(mod, "converter_func")
+
+        self._start_log(f"convert_{custom_converter_path.name}")
+
+        converter_func(self)
+
+        ds_logger.close_log_filehandler()
 
     @check_configs_set
     def get_next_sub(
