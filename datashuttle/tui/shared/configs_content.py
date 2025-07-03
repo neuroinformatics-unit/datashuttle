@@ -317,10 +317,6 @@ class ConfigsContent(Container):
         label = str(event.pressed.label)
         radiobutton_id = event.pressed.id
 
-        connection_method = self.connection_method_from_radiobutton_id(
-            radiobutton_id
-        )
-
         assert label in [
             "SSH",
             "Local Filesystem",
@@ -332,9 +328,6 @@ class ConfigsContent(Container):
         connection_method = self.connection_method_from_radiobutton_id(
             radiobutton_id
         )
-
-        if self.interface:
-            self.fill_inputs_with_project_configs()
 
         self.setup_widgets_to_display(connection_method)
 
@@ -401,17 +394,15 @@ class ConfigsContent(Container):
             and connection_method != "local_filesystem"
         ):
             if connection_method == "ssh":
-                example_path = "/nfs/path_on_server/myprojects/central"
+                example_path = "e.g. /nfs/path_on_server/myprojects/central"
             elif connection_method in ["aws", "gdrive"]:
                 example_path = ""
 
         else:
             if platform.system() == "Windows":
-                example_path = rf"C:\path\to\{local_or_central}\my_projects\my_first_project"
+                example_path = rf"e.g. C:\path\to\{local_or_central}\my_projects\my_first_project"
             else:
-                example_path = (
-                    f"/path/to/{local_or_central}/my_projects/my_first_project"
-                )
+                example_path = f"e.g. /path/to/{local_or_central}/my_projects/my_first_project"
 
         return example_path
 
@@ -686,8 +677,7 @@ class ConfigsContent(Container):
     def fill_inputs_with_project_configs(self) -> None:
         """Fill the input widgets with the current project configs.
 
-        It is used while setting up widgets for the project while mounting the current
-        tab and also to repopulate input widgets when the radio buttons change.
+        It is used while setting up widgets for the project while mounting the current tab.
         """
         assert self.interface is not None, "type narrow flexible `interface`"
 
@@ -790,7 +780,7 @@ class ConfigsContent(Container):
 
         has_connection_method = connection_method is not None
 
-        # Central path input
+        # Central Path Input
         self.query_one(
             "#configs_central_path_input"
         ).disabled = not has_connection_method
@@ -798,7 +788,7 @@ class ConfigsContent(Container):
             "#configs_central_path_select_button"
         ).disabled = not has_connection_method
 
-        # Local only project
+        # Central Path Input Placeholder
         if connection_method is None:
             self.query_one("#configs_central_path_input").value = ""
             self.query_one("#configs_central_path_input").placeholder = ""
@@ -811,18 +801,29 @@ class ConfigsContent(Container):
                 "#configs_central_path_input"
             ).placeholder = placeholder
 
+        # Central Path Label
         central_path_label = self.query_one("#configs_central_path_label")
         if connection_method in ["gdrive", "aws"]:
             central_path_label.update(content="Central Path (Optional)")
         else:
             central_path_label.update(content="Central Path")
 
+        # Central Path Select Button
+        show_central_path_select = connection_method not in [
+            "ssh",
+            "aws",
+            "gdrive",
+        ]
+        self.query_one(
+            "#configs_central_path_select_button"
+        ).display = show_central_path_select
+
+        # fmt: off
+        # Setup connection button
         setup_connection_button = self.query_one(
             "#configs_setup_connection_button"
         )
 
-        # fmt: off
-        # Setup connection button
         if (
             not connection_method
             or connection_method == "local_filesystem"

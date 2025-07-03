@@ -209,7 +209,7 @@ class TestTuiWidgets(TuiBase):
         self, configs_content, ssh_on, save_pressed=False
     ):
         assert configs_content.query_one(
-            "#configs_setup_ssh_connection_button"
+            "#configs_setup_connection_button"
         ).visible is (
             ssh_on and save_pressed
         )  # Only enabled after project creation.
