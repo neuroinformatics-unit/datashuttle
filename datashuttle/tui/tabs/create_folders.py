@@ -20,12 +20,12 @@ from textual.widgets import (
     Label,
 )
 
+from datashuttle.configs import canonical_configs
 from datashuttle.tui.custom_widgets import (
     ClickableInput,
     CustomDirectoryTree,
     TreeAndInputTab,
 )
-from datashuttle.configs import canonical_configs
 from datashuttle.tui.screens.create_folder_settings import (
     CreateFoldersSettingsScreen,
 )
@@ -326,7 +326,10 @@ class CreateFoldersTab(TreeAndInputTab):
             If `True`, search central project as well to generate the suggestion.
 
         """
-        assert self.interface.project.cfg["connection_method"] in canonical_configs.get_connection_methods_list()
+        assert (
+            self.interface.project.cfg["connection_method"]
+            in canonical_configs.get_connection_methods_list()
+        )
 
         if (
             include_central
