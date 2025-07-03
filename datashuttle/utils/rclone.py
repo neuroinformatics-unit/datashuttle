@@ -14,6 +14,7 @@ import subprocess
 import tempfile
 from subprocess import CompletedProcess
 
+from datashuttle.configs import canonical_configs
 from datashuttle.utils import utils
 
 
@@ -167,7 +168,7 @@ def setup_rclone_config_for_ssh(
         f"sftp "
         f"host {cfg['central_host_id']} "
         f"user {cfg['central_host_username']} "
-        f"port 22 "
+        f"port {canonical_configs.get_default_ssh_port()} "
         f"key_file {ssh_key_path.as_posix()}",
         pipe_std=True,
     )

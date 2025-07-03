@@ -1,10 +1,11 @@
 import pytest
-from tui_base import TuiBase
 
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
 )
+
+from .tui_base import TuiBase
 
 
 class TestSelectTree(TuiBase):

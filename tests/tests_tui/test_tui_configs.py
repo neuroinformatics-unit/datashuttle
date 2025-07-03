@@ -3,8 +3,6 @@ from pathlib import Path
 from time import monotonic
 
 import pytest
-import test_utils
-from tui_base import TuiBase
 
 from datashuttle.configs import load_configs
 from datashuttle.tui.app import TuiApp
@@ -12,6 +10,9 @@ from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
 )
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
+
+from .. import test_utils
+from .tui_base import TuiBase
 
 
 class TestTuiConfigs(TuiBase):
@@ -358,6 +359,43 @@ class TestTuiConfigs(TuiBase):
                 ).renderable
                 == "The project name must contain alphanumeric characters only."
             )
+            await pilot.pause()
+
+    # -------------------------------------------------------------------------
+    # Test project name is number
+    # -------------------------------------------------------------------------
+
+    @pytest.mark.asyncio
+    async def test_project_name_is_number(self, empty_project_paths):
+        """
+        Make a project that has a number name, and check the project screen
+        can be loaded.
+        """
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            # Set up a project with a numerical project name
+            project_name = "123"
+
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
+
+            await self.fill_input(pilot, "#configs_name_input", project_name)
+            await self.fill_input(pilot, "#configs_local_path_input", "a")
+            await self.fill_input(pilot, "#configs_central_path_input", "b")
+            await self.scroll_to_click_pause(
+                pilot, "#configs_save_configs_button"
+            )
+
+            # Go back to main menu and load the project screen
+            await self.close_messagebox(pilot)
+
+            await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
+
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
             await pilot.pause()
 
     # -------------------------------------------------------------------------

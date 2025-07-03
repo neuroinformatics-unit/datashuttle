@@ -1,9 +1,10 @@
 import pytest
-import test_utils
-from tui_base import TuiBase
 
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.tabs.logging import RichLogScreen
+
+from .. import test_utils
+from .tui_base import TuiBase
 
 
 class TestTuiLogging(TuiBase):

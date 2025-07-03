@@ -126,7 +126,8 @@ select = [
     "D",        # pydocstyle
 ]
 per-file-ignores = { "tests/*" = [
-    "D"  # ignore docstring formatting in tests for now
+    "D",  # ignore docstring formatting in tests for now
+    "TID252"
 ], "examples/*" = [
     "D400", # first line should end with a period.
     "D415", # first line should end with a period, question mark...

@@ -3,7 +3,8 @@ import shutil
 from pathlib import Path
 
 import pytest
-import test_utils
+
+from .. import test_utils
 
 TEST_PROJECT_NAME = "test_project"
 

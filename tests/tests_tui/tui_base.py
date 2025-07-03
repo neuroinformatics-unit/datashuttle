@@ -1,10 +1,11 @@
 import pytest_asyncio
-import test_utils
 from textual.widgets._tabbed_content import ContentTab
 
 from datashuttle.configs import canonical_configs
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 from datashuttle.tui.screens.project_selector import ProjectSelectorScreen
+
+from .. import test_utils
 
 
 class TuiBase:
@@ -166,7 +167,7 @@ class TuiBase:
         assert len(pilot.app.screen.project_names) == 1
         assert project_name in pilot.app.screen.project_names
 
-        await pilot.click(f"#{project_name}")
+        await pilot.click(f"#safety_prefix_{project_name}")
         await pilot.pause()
 
         assert isinstance(pilot.app.screen, ProjectManagerScreen)
