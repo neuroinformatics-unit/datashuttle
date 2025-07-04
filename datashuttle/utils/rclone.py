@@ -10,6 +10,7 @@ if TYPE_CHECKING:
 
 import os
 import platform
+import shlex
 import subprocess
 import tempfile
 from subprocess import CompletedProcess
@@ -92,6 +93,35 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
         os.remove(tmp_script_path)
 
     return output
+
+
+def call_rclone_with_popen(command: str) -> subprocess.Popen:
+    """Call rclone using `subprocess.Popen` for control over process termination.
+
+    It is not possible to kill a process while running it using `subprocess.run`.
+    """
+    command = "rclone " + command
+    process = subprocess.Popen(
+        shlex.split(command), stdout=subprocess.PIPE, stderr=subprocess.PIPE
+    )
+    return process
+
+
+def await_call_rclone_with_popen_raise_on_fail(
+    process: subprocess.Popen, log: bool = True
+):
+    """Await rclone the subprocess.Popen call.
+
+    Calling `process.communicate()` waits for the process to complete and returns
+    the stdout and stderr.
+    """
+    stdout, stderr = process.communicate()
+
+    if process.returncode != 0:
+        utils.log_and_raise_error(stderr.decode("utf-8"), ConnectionError)
+
+    if log:
+        log_rclone_config_output()
 
 
 # -----------------------------------------------------------------------------
@@ -182,9 +212,14 @@ def setup_rclone_config_for_gdrive(
     rclone_config_name: str,
     gdrive_client_secret: str | None,
     service_account_filepath: Optional[str] = None,
-    log: bool = True,
-):
+) -> subprocess.Popen:
     """Set up rclone config for connections to Google Drive.
+
+    This function uses `call_rclone_with_popen` instead of `call_rclone`. This
+    is done to have more control over the setup process in case the user wishes to
+    cancel the setup. Since the rclone setup for google drive uses a local web server
+    for authentication to google drive, the running process must be killed before the
+    setup can be started again.
 
     Parameters
     ----------
@@ -202,9 +237,6 @@ def setup_rclone_config_for_gdrive(
 
     service_account_filepath : path to service account file path for connection
         without browser
-
-    log
-        Whether to log, if `True` logger must already be initialised.
 
     """
     client_id_key_value = (
@@ -224,7 +256,7 @@ def setup_rclone_config_for_gdrive(
         else f"service_account_file {service_account_filepath}"
     )
 
-    output = call_rclone(
+    process = call_rclone_with_popen(
         f"config create "
         f"{rclone_config_name} "
         f"drive "
@@ -233,16 +265,9 @@ def setup_rclone_config_for_gdrive(
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
         f"{service_account_filepath_arg}",
-        pipe_std=True,
     )
 
-    if output.returncode != 0:
-        utils.log_and_raise_error(
-            output.stderr.decode("utf-8"), ConnectionError
-        )
-
-    if log:
-        log_rclone_config_output()
+    return process
 
 
 def setup_rclone_config_for_aws(

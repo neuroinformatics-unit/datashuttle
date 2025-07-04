@@ -4,8 +4,6 @@ from typing import Dict, List
 # AWS regions
 # -----------------------------------------------------------------------------
 
-# These function are used for type checking and providing intellisense to the developer
-
 
 def get_aws_regions() -> Dict[str, str]:
     """Return a dict of available AWS S3 bucket regions."""

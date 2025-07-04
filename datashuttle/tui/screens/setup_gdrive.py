@@ -89,6 +89,7 @@ class SetupGdriveScreen(ModalScreen):
         ):
             if self.setup_worker and self.setup_worker.is_running:
                 self.setup_worker.cancel()  # fix
+                self.interface.terminate_google_drive_setup()
             self.dismiss()
 
         elif event.button.id == "setup_gdrive_ok_button":
@@ -197,6 +198,9 @@ class SetupGdriveScreen(ModalScreen):
         self, service_account_filepath: Optional[str] = None
     ) -> None:
         """Set up the Google Drive connection using service account and show success message."""
+        message = "Setting up connection."
+        self.update_message_box_message(message)
+
         asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
                 service_account_filepath=service_account_filepath

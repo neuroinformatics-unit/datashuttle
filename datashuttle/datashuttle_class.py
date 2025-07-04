@@ -18,6 +18,8 @@ from typing import (
 )
 
 if TYPE_CHECKING:
+    import subprocess
+
     from datashuttle.utils.custom_types import (
         DisplayMode,
         OverwriteExistingFiles,
@@ -853,25 +855,26 @@ class DataShuttle:
             local_vars=locals(),
         )
 
-        if self.cfg["gdrive_client_id"]:
-            gdrive_client_secret = gdrive.get_client_secret()
-        else:
-            gdrive_client_secret = None
-
         browser_available = gdrive.ask_user_for_browser(log=True)
 
-        if not browser_available:
+        service_account_filepath = None
+        gdrive_client_secret = None
+
+        if browser_available and self.cfg["gdrive_client_id"]:
+            gdrive_client_secret = gdrive.get_client_secret()
+
+        elif not browser_available:
             service_account_filepath = (
                 gdrive.prompt_and_get_service_account_filepath(
                     log=True,
                 )
             )
-        else:
-            service_account_filepath = None
 
-        self._setup_rclone_gdrive_config(
-            gdrive_client_secret, service_account_filepath, log=True
+        process = self._setup_rclone_gdrive_config(
+            gdrive_client_secret, service_account_filepath
         )
+
+        rclone.await_call_rclone_with_popen_raise_on_fail(process, log=True)
 
         rclone.check_successful_connection_and_raise_error_on_fail(self.cfg)
 
@@ -1525,14 +1528,12 @@ class DataShuttle:
         self,
         gdrive_client_secret: str | None,
         service_account_filepath: str | None,
-        log: bool,
-    ) -> None:
-        rclone.setup_rclone_config_for_gdrive(
+    ) -> subprocess.Popen:
+        return rclone.setup_rclone_config_for_gdrive(
             self.cfg,
             self.cfg.get_rclone_config_name("gdrive"),
             gdrive_client_secret,
             service_account_filepath,
-            log=log,
         )
 
     def _setup_rclone_aws_config(

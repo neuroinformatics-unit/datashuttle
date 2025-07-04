@@ -4,6 +4,8 @@ import copy
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 if TYPE_CHECKING:
+    import subprocess
+
     import paramiko
 
     from datashuttle.configs.config_class import Configs
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
 
 from datashuttle import DataShuttle
 from datashuttle.configs import load_configs
-from datashuttle.utils import aws, rclone, ssh
+from datashuttle.utils import aws, rclone, ssh, utils
 
 
 class Interface:
@@ -35,6 +37,9 @@ class Interface:
         self.project: DataShuttle
         self.name_templates: Dict = {}
         self.tui_settings: Dict = {}
+
+        self.google_drive_rclone_setup_process: subprocess.Popen | None = None
+        self.gdrive_setup_process_killed: bool = False
 
     def select_existing_project(self, project_name: str) -> InterfaceOutput:
         """Load an existing project into `self.project`.
@@ -510,15 +515,45 @@ class Interface:
     ) -> InterfaceOutput:
         """Try to set up and validate connection to Google Drive."""
         try:
-            self.project._setup_rclone_gdrive_config(
-                gdrive_client_secret, service_account_filepath, log=False
+            process = self.project._setup_rclone_gdrive_config(
+                gdrive_client_secret, service_account_filepath
             )
-            rclone.check_successful_connection_and_raise_error_on_fail(
-                self.project.cfg
+            self.google_drive_rclone_setup_process = process
+            self.gdrive_setup_process_killed = False
+
+            self.await_successful_gdrive_connection_setup_raise_on_fail(
+                process
             )
+
             return True, None
         except BaseException as e:
             return False, str(e)
+
+    def terminate_google_drive_setup(self) -> None:
+        """Terminate rclone setup for google drive."""
+        assert self.google_drive_rclone_setup_process is not None
+
+        process = self.google_drive_rclone_setup_process
+
+        if process.poll() is not None:
+            self.gdrive_setup_process_killed = True
+            process.kill()
+
+    def await_successful_gdrive_connection_setup_raise_on_fail(
+        self, process: subprocess.Popen
+    ):
+        """Wait for rclone setup for google drive to finish and verify successful connection."""
+        stdout, stderr = process.communicate()
+
+        if not self.gdrive_setup_process_killed:
+            if process.returncode != 0:
+                utils.log_and_raise_error(
+                    stderr.decode("utf-8"), ConnectionError
+                )
+
+            rclone.check_successful_connection_and_raise_error_on_fail(
+                self.project.cfg
+            )
 
     # Setup AWS
     # ----------------------------------------------------------------------------------
