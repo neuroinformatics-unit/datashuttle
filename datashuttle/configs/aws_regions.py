@@ -1,43 +1,39 @@
-from typing import Dict, List
+from typing import List, Literal, get_args
 
 # -----------------------------------------------------------------------------
 # AWS regions
 # -----------------------------------------------------------------------------
 
-
-def get_aws_regions() -> Dict[str, str]:
-    """Return a dict of available AWS S3 bucket regions."""
-    aws_regions = {
-        "US_EAST_1": "us-east-1",
-        "US_EAST_2": "us-east-2",
-        "US_WEST_1": "us-west-1",
-        "US_WEST_2": "us-west-2",
-        "CA_CENTRAL_1": "ca-central-1",
-        "EU_WEST_1": "eu-west-1",
-        "EU_WEST_2": "eu-west-2",
-        "EU_WEST_3": "eu-west-3",
-        "EU_NORTH_1": "eu-north-1",
-        "EU_SOUTH_1": "eu-south-1",
-        "EU_CENTRAL_1": "eu-central-1",
-        "AP_SOUTHEAST_1": "ap-southeast-1",
-        "AP_SOUTHEAST_2": "ap-southeast-2",
-        "AP_NORTHEAST_1": "ap-northeast-1",
-        "AP_NORTHEAST_2": "ap-northeast-2",
-        "AP_NORTHEAST_3": "ap-northeast-3",
-        "AP_SOUTH_1": "ap-south-1",
-        "AP_EAST_1": "ap-east-1",
-        "SA_EAST_1": "sa-east-1",
-        "IL_CENTRAL_1": "il-central-1",
-        "ME_SOUTH_1": "me-south-1",
-        "AF_SOUTH_1": "af-south-1",
-        "CN_NORTH_1": "cn-north-1",
-        "CN_NORTHWEST_1": "cn-northwest-1",
-        "US_GOV_EAST_1": "us-gov-east-1",
-        "US_GOV_WEST_1": "us-gov-west-1",
-    }
-    return aws_regions
+AwsRegion = Literal[
+    "us-east-1",
+    "us-east-2",
+    "us-west-1",
+    "us-west-2",
+    "ca-central-1",
+    "eu-west-1",
+    "eu-west-2",
+    "eu-west-3",
+    "eu-north-1",
+    "eu-south-1",
+    "eu-central-1",
+    "ap-southeast-1",
+    "ap-southeast-2",
+    "ap-northeast-1",
+    "ap-northeast-2",
+    "ap-northeast-3",
+    "ap-south-1",
+    "ap-east-1",
+    "sa-east-1",
+    "il-central-1",
+    "me-south-1",
+    "af-south-1",
+    "cn-north-1",
+    "cn-northwest-1",
+    "us-gov-east-1",
+    "us-gov-west-1",
+]
 
 
 def get_aws_regions_list() -> List[str]:
     """Return AWS S3 bucket regions as a list."""
-    return list(get_aws_regions().values())
+    return list(get_args(AwsRegion))
