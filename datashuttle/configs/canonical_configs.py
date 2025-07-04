@@ -17,6 +17,7 @@ from typing import (
     Literal,
     Optional,
     Union,
+    get_args,
 )
 
 if TYPE_CHECKING:
@@ -29,10 +30,12 @@ from datashuttle.configs.aws_regions import AwsRegion
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
 
+connection_methods = Literal["ssh", "local_filesystem", "gdrive", "aws"]
+
 
 def get_connection_methods_list() -> List[str]:
     """Return the canonical connection methods."""
-    return ["ssh", "local_filesystem", "gdrive", "aws"]
+    return list(get_args(connection_methods))
 
 
 def get_canonical_configs() -> dict:
@@ -40,7 +43,7 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal[*get_connection_methods_list()]],
+        "connection_method": Optional[connection_methods],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
         "gdrive_client_id": Optional[str],
