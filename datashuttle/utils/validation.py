@@ -433,7 +433,7 @@ def datetime_are_iso_format(
     Check formatting for date-, time-, or datetime- tags.
     """
     datetime_keys = list(canonical_tags.get_datetime_formats().keys())
-    key = next((key for key in datetime_keys if key in name), None)
+    key = next((key for key in datetime_keys if f"_{key}-" in name), None)
 
     error_message: List[str]
     if not key:
