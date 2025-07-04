@@ -380,7 +380,7 @@ def search_with_tags(
     For datetime ranges, the format must be:
     - date: YYYYMMDD@DATETO@YYYYMMDD (e.g., "20240101@DATETO@20241231")
     - time: HHMMSS@TIMETO@HHMMSS (e.g., "000000@TIMETO@235959")
-    - datetime: YYYYMMDDTHHMMss@DATETIMETO@YYYYMMDDTHHMMss
+    - datetime: YYYYMMDDTHHMMSS@DATETIMETO@YYYYMMDDTHHMMSS
 
     Parameters
     ----------
