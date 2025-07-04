@@ -413,7 +413,7 @@ def search_with_tags(
 
     Date range:
     >>> search_with_tags(cfg, path, "local", ["sub-001_20240101@DATETO@20241231_id-*"])
-    ["sub-001_20240315_id-1", "sub-001_20240401_id-2"]
+    ["sub-001_date-20240315_id-1", "sub-001_date-20240401_id-2"]
 
     Time range:
     >>> search_with_tags(cfg, path, "local", ["sub-002_000000@TIMETO@120000"])
