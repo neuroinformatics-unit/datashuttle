@@ -32,22 +32,3 @@ def get_datetime_formats() -> dict:
         "time": "%H%M%S",
         "date": "%Y%m%d",
     }
-
-
-def get_datetime_format(format_type: str) -> str:
-    """
-    Get the datetime format string for a specific format type.
-
-    Parameters
-    ----------
-    format_type : str
-        One of "datetime", "time", or "date"
-
-    Returns
-    -------
-    str
-        The format string for the specified format type
-    """
-    formats = get_datetime_formats()
-    return formats[format_type]
-

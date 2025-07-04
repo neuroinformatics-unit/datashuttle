@@ -384,17 +384,17 @@ def search_with_tags(
 
     Parameters
     ----------
-    cfg : Configs
+    cfg
         datashuttle project configuration
-    base_folder : Path
+    base_folder
         folder to search for wildcards in
-    local_or_central : str
+    local_or_central
         "local" or "central" project path to search in
-    all_names : List[str]
+    all_names
         list of names that may contain wildcards or datetime ranges. If sub is
         passed, these are treated as session names. If sub is None, they are
         treated as subject names
-    sub : Optional[str]
+    sub
         optional subject to search for sessions in. If not provided,
         will search for subjects rather than sessions
 
@@ -426,12 +426,7 @@ def search_with_tags(
                 canonical_tags.tags("TIMETO") in name or
                 canonical_tags.tags("DATETIMETO") in name):
             # If no special tags, just add the name as is
-            if "_date-" in name or "_time-" in name or "_datetime-" in name:
-                # For simple date/time formatted names, add them directly
-                new_all_names.append(name)
-            else:
-                # For regular names, just append them
-                new_all_names.append(name)
+            new_all_names.append(name)
             continue
 
         # Handle wildcard replacement first if present
@@ -442,11 +437,14 @@ def search_with_tags(
         # Handle datetime ranges
         format_type = None
         tag = None
-        if (tag := canonical_tags.tags("DATETO")) in search_str:
+        if canonical_tags.tags("DATETO") in search_str:
+            tag = canonical_tags.tags("DATETO")
             format_type = "date"
-        elif (tag := canonical_tags.tags("TIMETO")) in search_str:
+        elif canonical_tags.tags("TIMETO") in search_str:
+            tag = canonical_tags.tags("TIMETO")
             format_type = "time"
-        elif (tag := canonical_tags.tags("DATETIMETO")) in search_str:
+        elif canonical_tags.tags("DATETIMETO") in search_str:
+            tag = canonical_tags.tags("DATETIMETO")
             format_type = "datetime"
 
         if format_type is not None:
@@ -499,13 +497,13 @@ def filter_names_by_datetime_range(
 
     Parameters
     ----------
-    names : List[str]
+    names
         List of names to filter, all containing the datetime pattern
-    format_type : str
+    format_type
         One of "datetime", "time", or "date"
-    start_timepoint : datetime
+    start_timepoint
         Start of the datetime range
-    end_timepoint : datetime
+    end_timepoint
         End of the datetime range
 
     Returns
@@ -528,7 +526,7 @@ def filter_names_by_datetime_range(
         except ValueError:
             utils.log_and_raise_error(
                 f"Invalid {format_type} format in name {candidate_basename}. "
-                f"Expected ISO format: {canonical_tags.get_datetime_format(format_type)}",
+                f"Expected ISO format: {canonical_tags.get_datetime_formats()[format_type]}",
                 ValueError,
             )
 
@@ -549,7 +547,7 @@ def get_expected_datetime_len(format_type: str) -> int:
 
     Parameters
     ----------
-    format_type : str
+    format_type
         One of "datetime", "time", or "date"
 
     Returns
@@ -557,7 +555,7 @@ def get_expected_datetime_len(format_type: str) -> int:
     int
         The number of characters expected for the format
     """
-    format_str = canonical_tags.get_datetime_format(format_type)
+    format_str = canonical_tags.get_datetime_formats()[format_type]
     today = datetime.now()
     return len(today.strftime(format_str))
 
@@ -568,12 +566,12 @@ def find_datetime_in_name(name: str, format_type: str, tag: str) -> tuple[str, s
 
     Parameters
     ----------
-    name : str
+    name
         The name containing the datetime range
         e.g. "sub-001_20240101@DATETO@20250101_id-*"
-    format_type : str
+    format_type
         One of "datetime", "time", or "date"
-    tag : str
+    tag
         The tag used for the range (e.g. @DATETO@)
 
     Returns
@@ -596,12 +594,12 @@ def strip_start_end_date_from_datetime_tag(
 
     Parameters
     ----------
-    search_str : str
+    search_str
         The search string containing the datetime range
         e.g. "sub-001_20240101T000000@DATETIMETO@20250101T235959"
-    format_type : str
+    format_type
         One of "datetime", "time", or "date"
-    tag : str
+    tag
         The tag used for the range (e.g. @DATETIMETO@)
 
     Returns
@@ -621,7 +619,7 @@ def strip_start_end_date_from_datetime_tag(
 
     if not match:
         utils.log_and_raise_error(
-            f"Invalid {format_type} range format in search string: {search_str}. Ensure the format matches the expected pattern: {canonical_tags.get_datetime_format(format_type)}.",
+            f"Invalid {format_type} range format in search string: {search_str}. Ensure the format matches the expected pattern: {canonical_tags.get_datetime_formats()[format_type]}.",
             NeuroBlueprintError,
         )
 
@@ -651,12 +649,12 @@ def format_and_validate_datetime_search_str(search_str: str, format_type: str, t
 
     Parameters
     ----------
-    search_str : str
+    search_str
         The search string containing the datetime range
         e.g. "sub-001_20240101@DATETO@20250101_id-*" or "sub-002_000000@TIMETO@235959"
-    format_type : str
+    format_type
         One of "datetime", "time", or "date"
-    tag : str
+    tag
         The tag used for the range (e.g. @DATETO@)
 
     Returns
@@ -670,7 +668,7 @@ def format_and_validate_datetime_search_str(search_str: str, format_type: str, t
     NeuroBlueprintError
         If the datetime format is invalid or the range is malformed
     """
-    # Extract and validate datetime range
+    # Validate the datetime range format
     strip_start_end_date_from_datetime_tag(search_str, format_type, tag)
 
     # Replace datetime range with wildcard pattern
@@ -685,10 +683,8 @@ def datetime_object_from_string(datetime_string: str, format_type: str) -> datet
 
     Parameters
     ----------
-    datetime_string : str
-        The string to convert to a datetime object
-    format_type : str
-        One of "datetime", "time", or "date"
+    datetime_string : The string to convert to a datetime object
+    format_type : One of "datetime", "time", or "date"
 
     Returns
     -------
@@ -701,7 +697,7 @@ def datetime_object_from_string(datetime_string: str, format_type: str) -> datet
         If the string cannot be parsed using the specified format
     """
     return datetime.strptime(
-        datetime_string, canonical_tags.get_datetime_format(format_type)
+        datetime_string, canonical_tags.get_datetime_formats()[format_type]
     )
 
 
