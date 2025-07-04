@@ -1,12 +1,25 @@
 # -*- mode: python ; coding: utf-8 -*-
 
 
+# Include .tcss files
+tcss_files = [
+    (f, os.path.join("datashuttle", "tui", "css"))
+    for f in glob("../datashuttle/tui/css/*.tcss")
+]
+
+
 a = Analysis(
     ['tui_launcher.py'],
     pathex=[],
     binaries=[],
-    datas=[],
-    hiddenimports=[],
+    datas=tcss_files,
+    hiddenimports=[
+        'datashuttle.tui_launcher',
+        'datashuttle.tui.app',
+        'textual.widgets._tab_pane',
+        'textual.widgets._input',
+        'textual.widgets._tree_control',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
