@@ -380,7 +380,7 @@ def search_with_tags(
     For datetime ranges, the format must be:
     - date: YYYYMMDD@DATETO@YYYYMMDD (e.g., "20240101@DATETO@20241231")
     - time: HHMMSS@TIMETO@HHMMSS (e.g., "000000@TIMETO@235959")
-    - datetime: YYYYMMDDTHHMMss@DATETIMETO@YYYYMMDDTHHMMss
+    - datetime: YYYYMMDDTHHMMSS@DATETIMETO@YYYYMMDDTHHMMSS
 
     Parameters
     ----------
@@ -413,11 +413,11 @@ def search_with_tags(
 
     Date range:
     >>> search_with_tags(cfg, path, "local", ["sub-001_20240101@DATETO@20241231_id-*"])
-    ["sub-001_20240315_id-1", "sub-001_20240401_id-2"]
+    ["sub-001_date-20240315_id-1", "sub-001_date-20240401_id-2"]
 
     Time range:
     >>> search_with_tags(cfg, path, "local", ["sub-002_000000@TIMETO@120000"])
-    ["sub-002_083000", "sub-002_113000"]
+    ["sub-002_time-083000", "sub-002_time-113000"]
     """
     new_all_names: List[str] = []
     for name in all_names:
@@ -634,7 +634,7 @@ def strip_start_end_date_from_datetime_tag(
             NeuroBlueprintError,
         )
 
-    if end_timepoint < start_timepoint:
+    if end_timepoint <= start_timepoint:
         utils.log_and_raise_error(
             f"End {format_type} is before start {format_type}. Ensure the end datetime is after the start datetime.",
             NeuroBlueprintError,
