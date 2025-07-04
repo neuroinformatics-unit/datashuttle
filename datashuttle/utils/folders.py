@@ -636,7 +636,7 @@ def strip_start_end_date_from_datetime_tag(
             NeuroBlueprintError,
         )
 
-    if end_timepoint < start_timepoint:
+    if end_timepoint <= start_timepoint:
         utils.log_and_raise_error(
             f"End {format_type} is before start {format_type}. Ensure the end datetime is after the start datetime.",
             NeuroBlueprintError,
