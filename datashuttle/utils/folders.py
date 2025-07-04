@@ -417,7 +417,7 @@ def search_with_tags(
 
     Time range:
     >>> search_with_tags(cfg, path, "local", ["sub-002_000000@TIMETO@120000"])
-    ["sub-002_083000", "sub-002_113000"]
+    ["sub-002_time-083000", "sub-002_time-113000"]
     """
     new_all_names: List[str] = []
     for name in all_names:
