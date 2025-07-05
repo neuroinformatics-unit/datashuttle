@@ -107,9 +107,9 @@ class TestTuiConfigs(TuiBase):
                 await self.close_messagebox(pilot)
                 assert (
                     pilot.app.screen.query_one(
-                        "#configs_setup_ssh_connection_button"
-                    ).visible
-                    is True
+                        "#configs_setup_connection_button"
+                    ).label
+                    == "Setup SSH Connection"
                 )
             else:
                 assert (

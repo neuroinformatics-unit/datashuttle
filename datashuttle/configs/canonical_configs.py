@@ -17,6 +17,7 @@ from typing import (
     Literal,
     Optional,
     Union,
+    get_args,
 )
 
 if TYPE_CHECKING:
@@ -25,8 +26,16 @@ from pathlib import Path
 
 import typeguard
 
+from datashuttle.configs.aws_regions import AwsRegion
 from datashuttle.utils import folders, utils
 from datashuttle.utils.custom_exceptions import ConfigError
+
+connection_methods = Literal["ssh", "local_filesystem", "gdrive", "aws"]
+
+
+def get_connection_methods_list() -> List[str]:
+    """Return the canonical connection methods."""
+    return list(get_args(connection_methods))
 
 
 def get_canonical_configs() -> dict:
@@ -34,9 +43,13 @@ def get_canonical_configs() -> dict:
     canonical_configs = {
         "local_path": Union[str, Path],
         "central_path": Optional[Union[str, Path]],
-        "connection_method": Optional[Literal["ssh", "local_filesystem"]],
+        "connection_method": Optional[connection_methods],
         "central_host_id": Optional[str],
         "central_host_username": Optional[str],
+        "gdrive_client_id": Optional[str],
+        "gdrive_root_folder_id": Optional[str],
+        "aws_access_key_id": Optional[str],
+        "aws_region": Optional[AwsRegion],
     }
 
     return canonical_configs
@@ -101,7 +114,8 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     check_config_types(config_dict)
 
-    raise_on_bad_local_only_project_configs(config_dict)
+    if config_dict["connection_method"] not in ["aws", "gdrive"]:
+        raise_on_bad_local_only_project_configs(config_dict)
 
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
@@ -127,6 +141,29 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
         utils.log_and_raise_error(
             "'central_host_id' and 'central_host_username' are "
             "required if 'connection_method' is 'ssh'.",
+            ConfigError,
+        )
+
+    # Check gdrive settings
+    elif config_dict["connection_method"] == "gdrive":
+        if not config_dict["gdrive_root_folder_id"]:
+            utils.log_and_raise_error(
+                "'gdrive_root_folder_id' is required if 'connection_method' "
+                "is 'gdrive'.",
+                ConfigError,
+            )
+
+        if not config_dict["gdrive_client_id"]:
+            utils.log_and_message(
+                "`gdrive_client_id` not found in config. default rlcone client will be used (slower)."
+            )
+
+    # Check AWS settings
+    elif config_dict["connection_method"] == "aws" and (
+        not config_dict["aws_access_key_id"] or not config_dict["aws_region"]
+    ):
+        utils.log_and_raise_error(
+            "Both aws_access_key_id and aws_region must be present for AWS connection.",
             ConfigError,
         )
 
