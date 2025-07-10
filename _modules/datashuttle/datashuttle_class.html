@@ -39,7 +39,7 @@
   <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="../../_static/documentation_options.js?v=5a057da9"></script>
     <script src="../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../../_static/design-tabs.js?v=f930bc37"></script>
@@ -121,7 +121,7 @@
     <img src="../../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.7.0</p>
+    <p class="title logo__title">datashuttle v0.7.1</p>
   
 </a></div>
     
@@ -474,49 +474,22 @@
 <div class="viewcode-block" id="DataShuttle">
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DataShuttle</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    DataShuttle is a tool for convenient scientific</span>
-<span class="sd">    project management and data transfer in BIDS format.</span>
-
-<span class="sd">    The expected organisation is a central repository</span>
-<span class="sd">    on a central machine  (&#39;central&#39;) that contains all</span>
-<span class="sd">    project data. This is connected to multiple local</span>
-<span class="sd">    machines (&#39;local&#39;). These can each contain a subset of</span>
-<span class="sd">    the full project (e.g. machine for electrophysiology</span>
-<span class="sd">    collection, machine for behavioural collection).</span>
-
-<span class="sd">    On first use on a new profile, show warning prompting</span>
-<span class="sd">    to set configurations with the function make_config_file().</span>
-
-<span class="sd">    Datashuttle will save logs to a .datashuttle folder</span>
-<span class="sd">    in the main local project. These logs contain</span>
-<span class="sd">    detailed information on folder creation / transfer.</span>
-<span class="sd">    To get the path to datashuttle logs, use</span>
-<span class="sd">    cfgs.make_and_get_logging_path().</span>
-
-<span class="sd">    For transferring data between a central data storage</span>
-<span class="sd">    with SSH, use setup setup_ssh_connection().</span>
-<span class="sd">    This will allow you to check the server key, add host key to</span>
-<span class="sd">    profile if accepted, and setup ssh key pair.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-
-<span class="sd">    project_name : The project name to use the datashuttle</span>
-<span class="sd">                   Folders containing all project files</span>
-<span class="sd">                   and folders are specified in make_config_file().</span>
-<span class="sd">                   Datashuttle-related files are stored in</span>
-<span class="sd">                   a .datashuttle folder in the user home</span>
-<span class="sd">                   folder. Use get_datashuttle_path() to</span>
-<span class="sd">                   see the path to this folder.</span>
-
-<span class="sd">    print_startup_message : If `True`, a start-up message displaying the</span>
-<span class="sd">                            current state of the program (e.g. persistent</span>
-<span class="sd">                            settings such as the &#39;top-level folder&#39;) is shown.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DataShuttle is a tool for neuroscience project management and data transfer.&quot;&quot;&quot;</span>
 
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">project_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">print_startup_message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise ``DataShuttle``.</span>
 
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        project_name</span>
+<span class="sd">            The project name.</span>
+
+<span class="sd">        print_startup_message</span>
+<span class="sd">            If `True`, a start-up message displaying the</span>
+<span class="sd">            current state of the program (e.g. persistent</span>
+<span class="sd">            settings such as the &#39;top-level folder&#39;) is shown.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_error_on_base_project_name</span><span class="p">(</span><span class="n">project_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">project_name</span> <span class="o">=</span> <span class="n">project_name</span>
         <span class="p">(</span>
@@ -543,10 +516,7 @@
             <span class="n">rclone</span><span class="o">.</span><span class="n">prompt_rclone_download_if_does_not_exist</span><span class="p">()</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_set_attributes_after_config_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Once config file is loaded, update all private attributes</span>
-<span class="sd">        according to config contents.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update all private attributes according to config contents.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">init_paths</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_make_project_metadata_if_does_not_exist</span><span class="p">()</span>
@@ -567,50 +537,45 @@
         <span class="n">bypass_validation</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Create a subject / session folder tree in the project</span>
-<span class="sd">        folder. The passed subject / session names are</span>
-<span class="sd">        formatted and validated. If this succeeds, fully</span>
-<span class="sd">        validation against all subject / session folders in</span>
-<span class="sd">        the local project is performed before making the</span>
-<span class="sd">        folders.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a folder tree in the project folder.</span>
+
+<span class="sd">        The passed names are initially formatted and validated,</span>
+<span class="sd">        then folders are created.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        top_level_folder : TopLevelFolder</span>
-<span class="sd">            Whether to make the folders in `rawdata` or</span>
+<span class="sd">        top_level_folder</span>
+<span class="sd">            Whether to make the folders within `rawdata` or</span>
 <span class="sd">            `derivatives`.</span>
 
-<span class="sd">        sub_names : Union[str, List[str]]</span>
+<span class="sd">        sub_names</span>
 <span class="sd">            subject name / list of subject names to make</span>
 <span class="sd">            within the top-level project folder</span>
 <span class="sd">            (if not already, these will be prefixed with</span>
 <span class="sd">            &quot;sub-&quot;)</span>
 
-<span class="sd">        ses_names : Optional[Union[str, List[str]]]</span>
-<span class="sd">            (Optional). session name / list of session names.</span>
+<span class="sd">        ses_names</span>
+<span class="sd">            session name / list of session names.</span>
 <span class="sd">            (if not already, these will be prefixed with</span>
 <span class="sd">            &quot;ses-&quot;). If no session is provided, no session-level</span>
 <span class="sd">            folders are made.</span>
 
-<span class="sd">        datatype : Union[str, List[str]]</span>
+<span class="sd">        datatype</span>
 <span class="sd">            The datatype to make in the sub / ses folders.</span>
 <span class="sd">            (e.g. &quot;ephys&quot;, &quot;behav&quot;, &quot;anat&quot;). If &quot;&quot; is</span>
 <span class="sd">            passed no datatype will be created. Broad or</span>
-<span class="sd">            Narrow canonical NeuroBlueprint datatypes are</span>
-<span class="sd">            accepted.</span>
+<span class="sd">            Narrow NeuroBlueprint datatypes are accepted.</span>
 
-<span class="sd">        bypass_validation : bool</span>
+<span class="sd">        bypass_validation</span>
 <span class="sd">            If `True`, folders will be created even if they are not</span>
 <span class="sd">            valid to NeuroBlueprint style.</span>
 
-<span class="sd">        log : bool</span>
+<span class="sd">        log</span>
 <span class="sd">            If `True`, details of folder creation will be logged.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-<span class="sd">        created_paths :</span>
+<span class="sd">        created_paths</span>
 <span class="sd">            A dictionary of the full filepaths made during folder creation,</span>
 <span class="sd">            where the keys are the type of folder made and the values are a</span>
 <span class="sd">            list of created folder paths (Path objects). If datatype were</span>
@@ -620,7 +585,6 @@
 
 <span class="sd">        Notes</span>
 <span class="sd">        -----</span>
-
 <span class="sd">        sub_names or ses_names may contain formatting tags</span>
 
 <span class="sd">        @TO@</span>
@@ -639,6 +603,7 @@
 <span class="sd">        project.create_folders(&quot;rawdata&quot;, &quot;sub-001&quot;, datatype=&quot;behav&quot;)</span>
 
 <span class="sd">        project.create_folders(&quot;rawdata&quot;, &quot;sub-002@TO@005&quot;, [&quot;ses-001&quot;, &quot;ses-002&quot;], [&quot;ephys&quot;, &quot;behav&quot;])</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;create-folders&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
@@ -702,11 +667,7 @@
         <span class="n">bypass_validation</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
         <span class="n">log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A central method for the formatting and validation of subject / session</span>
-<span class="sd">        names for folder creation. This is called by both DataShuttle and</span>
-<span class="sd">        during TUI validation.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Central method to format and validate subject and session names.&quot;&quot;&quot;</span>
         <span class="n">format_sub</span> <span class="o">=</span> <span class="n">formatting</span><span class="o">.</span><span class="n">check_and_format_names</span><span class="p">(</span>
             <span class="n">sub_names</span><span class="p">,</span> <span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="n">name_templates</span><span class="p">,</span> <span class="n">bypass_validation</span>
         <span class="p">)</span>
@@ -750,50 +711,44 @@
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload data from a local project to the central project</span>
-<span class="sd">        folder. In the case that a file / folder exists on</span>
-<span class="sd">        the central and local, the central will not be overwritten</span>
-<span class="sd">        even if the central file is an older version. Data</span>
-<span class="sd">        transfer logs are saved to the logging folder).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload data from a local project to the central project folder.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        top_level_folder</span>
+<span class="sd">            The top-level folder (e.g. `&quot;rawdata&quot;`, `&quot;derivatives&quot;`) to transfer within.</span>
 
-<span class="sd">        top_level_folder :</span>
-<span class="sd">            The top-level folder (e.g. `&quot;rawdata&quot;`, `&quot;derivatives&quot;`) to transfer files</span>
-<span class="sd">            and folders within.</span>
-
-<span class="sd">        sub_names :</span>
-<span class="sd">            a subject name / list of subject names. These must</span>
-<span class="sd">            be prefixed with &quot;sub-&quot;, or the prefix will be</span>
-<span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
+<span class="sd">        sub_names</span>
+<span class="sd">            A subject name / list of subject names. These must</span>
+<span class="sd">            be prefixed with ``&quot;sub-&quot;``, or the prefix will be</span>
+<span class="sd">            automatically added. ``&quot;@*@&quot;`` can be used as a wildcard.</span>
 <span class="sd">            &quot;all&quot; will search for all sub-folders in the</span>
 <span class="sd">            datatype folder to upload.</span>
 
-<span class="sd">        ses_names :</span>
-<span class="sd">            a session name / list of session names, similar to</span>
-<span class="sd">            sub_names but requiring a &quot;ses-&quot; prefix.</span>
+<span class="sd">        ses_names</span>
+<span class="sd">            A session name / list of session names, similar to</span>
+<span class="sd">            sub_names but requiring a ``&quot;ses-&quot;`` prefix.</span>
 
-<span class="sd">        datatype :</span>
+<span class="sd">        datatype</span>
 <span class="sd">            The (broad or narrow) NeuroBlueprint datatypes to transfer.</span>
-<span class="sd">            If &quot;all&quot;, any broad or narrow datatype folder will be transferred.</span>
+<span class="sd">            If ``&quot;all&quot;``, any broad or narrow datatype folder will be transferred.</span>
 
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If `False`, files on central will never be overwritten</span>
-<span class="sd">            by files transferred from local. If `True`, central files</span>
-<span class="sd">            will be overwritten if there is any difference (date, size)</span>
-<span class="sd">            between central and local files.</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
+<span class="sd">            there is any difference in date or size.</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
+<span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
 
-<span class="sd">        init_log :</span>
-<span class="sd">            (Optional). Whether to handle logging. This should</span>
-<span class="sd">            always be True, unless logger is handled elsewhere</span>
+<span class="sd">        init_log</span>
+<span class="sd">            Whether to handle logging. This should</span>
+<span class="sd">            always be ``True``, unless logger is handled elsewhere</span>
 <span class="sd">            (e.g. in a calling function).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-custom&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
@@ -830,47 +785,44 @@
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download data from the central project folder to the</span>
-<span class="sd">        local project folder.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download data from the central project to the local project folder.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        top_level_folder</span>
+<span class="sd">            The top-level folder (e.g. `&quot;rawdata&quot;`, `&quot;derivatives&quot;`) to transfer within.</span>
 
-<span class="sd">        top_level_folder :</span>
-<span class="sd">            The top-level folder (e.g. `rawdata`) to transfer files</span>
-<span class="sd">            and folders within.</span>
-
-<span class="sd">        sub_names :</span>
-<span class="sd">            a subject name / list of subject names. These must</span>
-<span class="sd">            be prefixed with &quot;sub-&quot;, or the prefix will be</span>
-<span class="sd">            automatically added. &quot;@*@&quot; can be used as a wildcard.</span>
+<span class="sd">        sub_names</span>
+<span class="sd">            A subject name / list of subject names. These must</span>
+<span class="sd">            be prefixed with ``&quot;sub-&quot;``, or the prefix will be</span>
+<span class="sd">            automatically added. ``&quot;@*@&quot;`` can be used as a wildcard.</span>
 <span class="sd">            &quot;all&quot; will search for all sub-folders in the</span>
 <span class="sd">            datatype folder to upload.</span>
 
-<span class="sd">        ses_names :</span>
-<span class="sd">            a session name / list of session names, similar to</span>
-<span class="sd">            sub_names but requiring a &quot;ses-&quot; prefix.</span>
+<span class="sd">        ses_names</span>
+<span class="sd">            A session name / list of session names, similar to</span>
+<span class="sd">            sub_names but requiring a ``&quot;ses-&quot;`` prefix.</span>
 
-<span class="sd">        datatype :</span>
-<span class="sd">            see create_folders()</span>
+<span class="sd">        datatype</span>
+<span class="sd">            The (broad or narrow) NeuroBlueprint datatypes to transfer.</span>
+<span class="sd">            If ``&quot;all&quot;``, any broad or narrow datatype folder will be transferred.</span>
 
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
 
-<span class="sd">        init_log :</span>
-<span class="sd">            (Optional). Whether to handle logging. This should</span>
-<span class="sd">            always be True, unless logger is handled elsewhere</span>
+<span class="sd">        init_log</span>
+<span class="sd">            Whether to handle logging. This should</span>
+<span class="sd">            always be ``True``, unless logger is handled elsewhere</span>
 <span class="sd">            (e.g. in a calling function).</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-custom&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
@@ -906,24 +858,22 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload files in the `rawdata` top level folder.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload all files in the `rawdata` top level folder.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
@@ -941,24 +891,22 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload files in the `derivatives` top level folder.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload all files in the `derivatives` top level folder.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;upload&quot;</span><span class="p">,</span>
@@ -976,24 +924,22 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download files in the `rawdata` top level folder.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download all files in the `rawdata` top level folder.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved..</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span>
@@ -1011,24 +957,22 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download files in the `derivatives` top level folder.</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download all files in the `derivatives` top level folder.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
             <span class="s2">&quot;download&quot;</span><span class="p">,</span>
@@ -1047,25 +991,23 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload the entire project (from &#39;local&#39; to &#39;central&#39;),</span>
-<span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
-<span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload the entire project.</span>
+
+<span class="sd">        Includes every top level folder (e.g. ``rawdata``, ``derivatives``).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
@@ -1083,25 +1025,23 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download the entire project (from &#39;central&#39; to &#39;local&#39;),</span>
-<span class="sd">        i.e. including every top level folder (e.g. &#39;rawdata&#39;,</span>
-<span class="sd">        &#39;derivatives&#39;, &#39;code&#39;, &#39;analysis&#39;).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download the entire project.</span>
+
+<span class="sd">        Includes every top level folder (e.g. ``rawdata``, ``derivatives``).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;download-entire-project&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_entire_project</span><span class="p">(</span>
@@ -1120,31 +1060,28 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Upload a specific file or folder. If transferring</span>
-<span class="sd">        a single file, the path including the filename is</span>
-<span class="sd">        required (see &#39;filepath&#39; input). If a folder,</span>
-<span class="sd">        wildcards &quot;*&quot; or &quot;**&quot; must be used to transfer</span>
-<span class="sd">        all files in the folder (&quot;*&quot;) or all files</span>
-<span class="sd">        and sub-folders (&quot;**&quot;).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload a specific file or folder.</span>
+
+<span class="sd">        If transferring a single file, the path including the filename is</span>
+<span class="sd">        required (see &#39;filepath&#39; input). If a folder, wildcards &quot;*&quot; or &quot;**&quot; must be used to transfer</span>
+<span class="sd">        all files in the folder (&quot;*&quot;) or all files and sub-folders (&quot;**&quot;).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        filepath :</span>
+<span class="sd">        filepath</span>
 <span class="sd">            a string containing the full filepath.</span>
 
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span><span class="s2">&quot;upload-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">())</span>
 
@@ -1165,31 +1102,29 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Download a specific file or folder. If transferring</span>
-<span class="sd">        a single file, the path including the filename is</span>
-<span class="sd">        required (see &#39;filepath&#39; input). If a folder,</span>
-<span class="sd">        wildcards &quot;*&quot; or &quot;**&quot; must be used to transfer</span>
-<span class="sd">        all files in the folder (&quot;*&quot;) or all files</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Download a specific file or folder.</span>
+
+<span class="sd">        If transferring a single file, the path including the filename is</span>
+<span class="sd">        required (see &#39;filepath&#39; input). If a folder, wildcards &quot;*&quot; or &quot;**&quot;</span>
+<span class="sd">        must be used to transfer all files in the folder (&quot;*&quot;) or all files</span>
 <span class="sd">        and sub-folders (&quot;**&quot;).</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        filepath :</span>
+<span class="sd">        filepath</span>
 <span class="sd">            a string containing the full filepath.</span>
 
-<span class="sd">        overwrite_existing_files :</span>
-<span class="sd">            If &quot;never&quot; files on target will never be overwritten by source.</span>
-<span class="sd">            If &quot;always&quot; files on target will be overwritten by source if</span>
+<span class="sd">        overwrite_existing_files</span>
+<span class="sd">            If ``&quot;never&quot;`` files on target will never be overwritten by source.</span>
+<span class="sd">            If ``&quot;always&quot;`` files on target will be overwritten by source if</span>
 <span class="sd">            there is any difference in date or size.</span>
-<span class="sd">            If &quot;if_source_newer&quot; files on target will only be overwritten</span>
+<span class="sd">            If ``&quot;if_source_newer&quot;`` files on target will only be overwritten</span>
 <span class="sd">            by files on source with newer creation / modification datetime.</span>
 
-<span class="sd">        dry_run :</span>
-<span class="sd">            perform a dry-run of transfer. This will output as if file</span>
-<span class="sd">            transfer was taking place, but no files will be moved. Useful</span>
-<span class="sd">            to check which files will be moved on data transfer.</span>
+<span class="sd">        dry_run</span>
+<span class="sd">            Perform a dry-run of transfer. This will output as if file</span>
+<span class="sd">            transfer was taking place, but no files will be moved.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;download-specific-folder-or-file&quot;</span><span class="p">,</span> <span class="n">local_vars</span><span class="o">=</span><span class="nb">locals</span><span class="p">()</span>
@@ -1209,10 +1144,11 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span> <span class="o">=</span> <span class="s2">&quot;never&quot;</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">init_log</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Core function to upload / download files within a</span>
-<span class="sd">        particular top-level-folder. e.g. `upload_rawdata().`</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Upload or download files within a particular top-level-folder.</span>
+
+<span class="sd">        A centralised function to upload or download data within</span>
+<span class="sd">        a particular top level folder (e.g. ``rawdata``, ``derivatives``).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">init_log</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
@@ -1240,10 +1176,8 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_transfer_specific_file_or_folder</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">upload_or_download</span><span class="p">,</span> <span class="n">filepath</span><span class="p">,</span> <span class="n">overwrite_existing_files</span><span class="p">,</span> <span class="n">dry_run</span>
-    <span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Core function for upload/download_specific_folder_or_file().</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Core function for upload/download_specific_folder_or_file().&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">filepath</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span>
 
@@ -1286,11 +1220,10 @@
     <span class="nd">@requires_ssh_configs</span>
     <span class="nd">@check_is_not_local_project</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">setup_ssh_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Setup a connection to the central server using SSH.</span>
-<span class="sd">        Assumes the central_host_id and central_host_username</span>
-<span class="sd">        are set in configs (see make_config_file() and update_config_file())</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Set up a connection to the central server using SSH.</span>
 
+<span class="sd">        Assumes the central_host_id and central_host_username</span>
+<span class="sd">        are set in configs (see make_config_file() and update_config_file()).</span>
 <span class="sd">        First, the server key will be displayed, requiring</span>
 <span class="sd">        verification of the server ID. This will store the</span>
 <span class="sd">        hostkey for all future use.</span>
@@ -1321,17 +1254,18 @@
     <span class="nd">@requires_ssh_configs</span>
     <span class="nd">@check_is_not_local_project</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">write_public_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        By default, the SSH private key only is stored, in</span>
-<span class="sd">        the datashuttle configs folder. Use this function</span>
-<span class="sd">        to save the public key.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the public SSH key to a specified filepath.</span>
+
+<span class="sd">        By default, only the SSH private key is stored in the</span>
+<span class="sd">        datashuttle configs folder. Use this function to save</span>
+<span class="sd">        the public key.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        filepath :</span>
-<span class="sd">            full filepath (inc filename) to write the</span>
+<span class="sd">        filepath</span>
+<span class="sd">            Full filepath (including filename) to write the</span>
 <span class="sd">            public key to.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">key</span><span class="p">:</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">RSAKey</span>
         <span class="n">key</span> <span class="o">=</span> <span class="n">paramiko</span><span class="o">.</span><span class="n">RSAKey</span><span class="o">.</span><span class="n">from_private_key_file</span><span class="p">(</span>
@@ -1357,46 +1291,45 @@
         <span class="n">central_host_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">central_host_username</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialise the configurations for datashuttle to use on the</span>
-<span class="sd">        local machine. Once initialised, these settings will be</span>
-<span class="sd">        used each time the datashuttle is opened. This method</span>
-<span class="sd">        can also be used to completely overwrite existing configs.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the configurations for datashuttle on the local machine.</span>
+
+<span class="sd">        Once initialised, these settings will be used each</span>
+<span class="sd">        time the datashuttle is opened.</span>
 
 <span class="sd">        These settings are stored in a config file on the</span>
-<span class="sd">        datashuttle path (not in the project folder)</span>
-<span class="sd">        on the local machine. Use get_config_path() to</span>
-<span class="sd">        get the full path to the saved config file.</span>
+<span class="sd">        datashuttle path (not in the project folder) on the</span>
+<span class="sd">        local machine. Use ``get_config_path()`` to get the</span>
+<span class="sd">        full path to the saved config file.</span>
 
-<span class="sd">        Use update_config_file() to selectively update settings.</span>
+<span class="sd">        Use ``update_config_file()`` to selectively update settings.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        local_path :</span>
+<span class="sd">        local_path</span>
 <span class="sd">            path to project folder on local machine</span>
 
-<span class="sd">        central_path :</span>
+<span class="sd">        central_path</span>
 <span class="sd">            Filepath to central project.</span>
-<span class="sd">            If this is local (i.e. connection_method = &quot;local_filesystem&quot;),</span>
+<span class="sd">            If this is local (i.e. ``connection_method = &quot;local_filesystem&quot;``),</span>
 <span class="sd">            this is the full path on the local filesystem</span>
-<span class="sd">            Otherwise, if this is via ssh (i.e. connection method = &quot;ssh&quot;),</span>
+<span class="sd">            Otherwise, if this is via ssh (i.e. ``connection method = &quot;ssh&quot;``),</span>
 <span class="sd">            this is the path to the project folder on central machine.</span>
 <span class="sd">            This should be a full path to central folder i.e. this cannot</span>
 <span class="sd">            include ~ home folder syntax, must contain the full path</span>
-<span class="sd">            (e.g. /nfs/nhome/live/jziminski)</span>
+<span class="sd">            (e.g. ``/nfs/nhome/live/jziminski``)</span>
 
-<span class="sd">        connection_method :</span>
+<span class="sd">        connection_method</span>
 <span class="sd">            The method used to connect to the central project filesystem,</span>
-<span class="sd">            e.g. &quot;local_filesystem&quot; (e.g. mounted drive) or &quot;ssh&quot;</span>
+<span class="sd">            e.g. ``&quot;local_filesystem&quot;`` (e.g. mounted drive) or ``&quot;ssh&quot;``</span>
 
-<span class="sd">        central_host_id :</span>
+<span class="sd">        central_host_id</span>
 <span class="sd">            server address for central host for ssh connection</span>
-<span class="sd">            e.g. &quot;ssh.swc.ucl.ac.uk&quot;</span>
+<span class="sd">            e.g. ``&quot;ssh.swc.ucl.ac.uk&quot;``</span>
 
-<span class="sd">        central_host_username :</span>
+<span class="sd">        central_host_username</span>
 <span class="sd">            username for which to log in to central host.</span>
-<span class="sd">            e.g. &quot;jziminski&quot;</span>
+<span class="sd">            e.g. ``&quot;jziminski&quot;``</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_start_log</span><span class="p">(</span>
             <span class="s2">&quot;make-config-file&quot;</span><span class="p">,</span>
@@ -1447,7 +1380,7 @@
 <div class="viewcode-block" id="DataShuttle.update_config_file">
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.update_config_file">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">update_config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot; &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the configuration file.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
                 <span class="s2">&quot;Must have a config loaded before updating configs.&quot;</span><span class="p">,</span>
@@ -1478,9 +1411,7 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_local_path">[docs]</a>
     <span class="nd">@check_configs_set</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_local_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the projects local path.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the projects local path.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;local_path&quot;</span><span class="p">]</span></div>
 
 
@@ -1489,19 +1420,16 @@
     <span class="nd">@check_configs_set</span>
     <span class="nd">@check_is_not_local_project</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_central_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the project central path.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the project central path.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="p">[</span><span class="s2">&quot;central_path&quot;</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="DataShuttle.get_datashuttle_path">
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_datashuttle_path">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_datashuttle_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the path to the local datashuttle</span>
-<span class="sd">        folder where configs and other</span>
-<span class="sd">        datashuttle files are stored.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the path to the local datashuttle folder.</span>
+
+<span class="sd">        This is where configs and other datashuttle files are stored.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datashuttle_path</span></div>
 
@@ -1510,9 +1438,7 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_config_path">[docs]</a>
     <span class="nd">@check_configs_set</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the full path to the DataShuttle config file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the full path to the DataShuttle config file.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_path</span></div>
 
 
@@ -1520,6 +1446,7 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_configs">[docs]</a>
     <span class="nd">@check_configs_set</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Configs</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the datashuttle configs.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span></div>
 
 
@@ -1527,9 +1454,7 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_logging_path">[docs]</a>
     <span class="nd">@check_configs_set</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_logging_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the path where datashuttle logs are written.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the path where datashuttle logs are written.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">logging_path</span></div>
 
 
@@ -1537,8 +1462,8 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_existing_projects">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_existing_projects</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a list of existing project names found on the local machine.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a list of existing project names found on the local machine.</span>
+
 <span class="sd">        This is based on project folders in the &quot;home / .datashuttle&quot; folder</span>
 <span class="sd">        that contain valid config.yaml files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1554,20 +1479,25 @@
         <span class="n">return_with_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_central</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convenience function for get_next_sub_or_ses</span>
-<span class="sd">        to find the next subject number.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the next subject number.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        top_level_folder</span>
+<span class="sd">            The top-level folder, &quot;rawdata&quot; or &quot;derivatives&quot;.</span>
 
-<span class="sd">        return_with_prefix : bool</span>
-<span class="sd">            If `True`, return with the &quot;sub-&quot; prefix.</span>
+<span class="sd">        return_with_prefix</span>
+<span class="sd">            If `True`, return the subject with the &quot;sub-&quot; prefix.</span>
 
-<span class="sd">        include_central : bool</span>
+<span class="sd">        include_central</span>
 <span class="sd">            If `False, only get names from `local_path`, otherwise from</span>
 <span class="sd">            `local_path` and `central_path`. If in local-project mode,</span>
 <span class="sd">            this flag is ignored.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The next subject ID.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name_templates</span><span class="p">()</span>
         <span class="n">name_template_regexp</span> <span class="o">=</span> <span class="p">(</span>
@@ -1598,26 +1528,28 @@
         <span class="n">return_with_prefix</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">include_central</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Convenience function for get_next_sub_or_ses</span>
-<span class="sd">        to find the next session number.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the next session number.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        top_level_folder</span>
+<span class="sd">            The top-level folder, &quot;rawdata&quot; or &quot;derivatives&quot;.</span>
 
-<span class="sd">        top_level_folder:</span>
-<span class="sd">            &quot;rawdata&quot; or &quot;derivatives&quot;</span>
-
-<span class="sd">        sub: Optional[str]</span>
+<span class="sd">        sub</span>
 <span class="sd">            Name of the subject to find the next session of.</span>
 
-<span class="sd">        return_with_prefix : bool</span>
+<span class="sd">        return_with_prefix</span>
 <span class="sd">            If `True`, return with the &quot;ses-&quot; prefix.</span>
 
-<span class="sd">        include_central : bool</span>
-<span class="sd">            If `False, only get names from `local_path`, otherwise from</span>
-<span class="sd">            `local_path` and `central_path`. If in local-project mode,</span>
+<span class="sd">        include_central</span>
+<span class="sd">            If ``False``, only get names from ``local_path``, otherwise from</span>
+<span class="sd">            ``local_path`` and ``central_path``. If in local-project mode,</span>
 <span class="sd">            this flag is ignored.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        The next session ID.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name_template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_name_templates</span><span class="p">()</span>
         <span class="n">name_template_regexp</span> <span class="o">=</span> <span class="p">(</span>
@@ -1642,8 +1574,9 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.is_local_project">[docs]</a>
     <span class="nd">@check_configs_set</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">is_local_project</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        A project is &#39;local-only&#39; if it has no `central_path` and `connection_method`.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return a bool indicating whether the project is &#39;local only&#39;.</span>
+
+<span class="sd">        A project is &#39;local-only&#39; if it has no ``central_path`` and ``connection_method``.</span>
 <span class="sd">        It can be used to make folders and validate, but not for transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">is_local_project</span><span class="p">()</span></div>
@@ -1655,15 +1588,15 @@
 <div class="viewcode-block" id="DataShuttle.get_name_templates">
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.get_name_templates">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_name_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the regexp templates used for validation. If</span>
-<span class="sd">        the &quot;on&quot; key is set to `False`, template validation is not performed.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the regexp templates used for validation.</span>
+
+<span class="sd">        If the &quot;on&quot; key is set to `False`, template validation is not performed.</span>
 
 <span class="sd">        Returns</span>
 <span class="sd">        -------</span>
-
-<span class="sd">        name_templates : Dict</span>
+<span class="sd">        name_templates</span>
 <span class="sd">            e.g. {&quot;name_templates&quot;: {&quot;on&quot;: False, &quot;sub&quot;: None, &quot;ses&quot;: None}}</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_persistent_settings</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">settings</span><span class="p">[</span><span class="s2">&quot;name_templates&quot;</span><span class="p">]</span></div>
@@ -1672,19 +1605,19 @@
 <div class="viewcode-block" id="DataShuttle.set_name_templates">
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.set_name_templates">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">set_name_templates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">new_name_templates</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Update the persistent settings with new name templates.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update the persistent settings with new name templates.</span>
 
-<span class="sd">        Name templates are regexp for that, when name_templates[&quot;on&quot;] is</span>
-<span class="sd">        set to `True`, &quot;sub&quot; and &quot;ses&quot; names are validated against</span>
+<span class="sd">        Name templates are regexp for that, when ``name_templates[&quot;on&quot;]`` is</span>
+<span class="sd">        set to ``True``, ``&quot;sub&quot;`` and ``&quot;ses&quot;`` names are validated against</span>
 <span class="sd">        the regexp contained in the dict.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        new_name_templates : Dict</span>
-<span class="sd">            e.g. {&quot;name_templates&quot;: {&quot;on&quot;: False, &quot;sub&quot;: None, &quot;ses&quot;: None}}</span>
-<span class="sd">            where &quot;sub&quot; or &quot;ses&quot; can be a regexp that subject and session</span>
+<span class="sd">        new_name_templates</span>
+<span class="sd">            e.g. ``{&quot;name_templates&quot;: {&quot;on&quot;: False, &quot;sub&quot;: None, &quot;ses&quot;: None}}``</span>
+<span class="sd">            where ``&quot;sub&quot;`` or ``&quot;ses&quot;`` can be a regexp that subject and session</span>
 <span class="sd">            names respectively are validated against.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_persistent_setting</span><span class="p">(</span><span class="s2">&quot;name_templates&quot;</span><span class="p">,</span> <span class="n">new_name_templates</span><span class="p">)</span></div>
 
@@ -1697,9 +1630,7 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.show_configs">[docs]</a>
     <span class="nd">@check_configs_set</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">show_configs</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Print the current configs to the terminal.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Print the current configs to the terminal.&quot;&quot;&quot;</span>
         <span class="n">utils</span><span class="o">.</span><span class="n">print_message_to_user</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_json_dumps_config</span><span class="p">())</span></div>
 
 
@@ -1717,34 +1648,39 @@
         <span class="n">include_central</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">strict_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Perform validation on the project. This checks the subject</span>
-<span class="sd">        and session level folders to ensure there are no NeuroBlueprint</span>
-<span class="sd">        formatting issues.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform validation on the project.</span>
+
+<span class="sd">        This checks the subject and session level folders to</span>
+<span class="sd">        ensure there are no NeuroBlueprint formatting issues.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        top_level_folder : TopLevelFolder | None</span>
-<span class="sd">            Folder to check, either &quot;rawdata&quot; or &quot;derivatives&quot;. If ``None``,</span>
+<span class="sd">        top_level_folder</span>
+<span class="sd">            Folder to check, either ``&quot;rawdata&quot;`` or ``&quot;derivatives&quot;``. If ``None``,</span>
 <span class="sd">            will check both folders.</span>
 
-<span class="sd">        display_mode : DisplayMode</span>
+<span class="sd">        display_mode</span>
 <span class="sd">            The validation issues are displayed as ``&quot;error&quot;`` (raise error)</span>
 <span class="sd">            ``&quot;warn&quot;`` (show warning) or ``&quot;print&quot;``</span>
 
-<span class="sd">        include_central : bool</span>
+<span class="sd">        include_central</span>
 <span class="sd">            If ``False``, only the local project is validated. Otherwise, both</span>
 <span class="sd">            local and central projects are validated. If in local-project mode,</span>
 <span class="sd">            this flag is ignored.</span>
 
-<span class="sd">        strict_mode: bool</span>
-<span class="sd">            If `True`, only allow NeuroBlueprint-formatted folders to exist in</span>
+<span class="sd">        strict_mode</span>
+<span class="sd">            If ``True``, only allow NeuroBlueprint-formatted folders to exist in</span>
 <span class="sd">            the project. By default, non-NeuroBlueprint folders (e.g. a folder</span>
-<span class="sd">            called &#39;my_stuff&#39; in the &#39;rawdata&#39;) are allowed, and only folders</span>
-<span class="sd">            starting with sub- or ses- prefix are checked. In `Strict Mode`,</span>
+<span class="sd">            called &#39;`my_stuff&#39;` in the &#39;`rawdata&#39;`) are allowed, and only folders</span>
+<span class="sd">            starting with sub- or ses- prefix are checked. In ``Strict Mode``,</span>
 <span class="sd">            any folder not prefixed with sub-, ses- or a valid datatype will</span>
 <span class="sd">            raise a validation issue.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        error_messages</span>
+<span class="sd">            A list of validation errors found in the project.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">include_central</span> <span class="ow">and</span> <span class="n">strict_mode</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
@@ -1789,22 +1725,23 @@
 <a class="viewcode-back" href="../../pages/api_index.html#datashuttle.DataShuttle.check_name_formatting">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">check_name_formatting</span><span class="p">(</span><span class="n">names</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">],</span> <span class="n">prefix</span><span class="p">:</span> <span class="n">Prefix</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Format a list of subject or session names.</span>
+
 <span class="sd">        Pass list of names to check how these will be auto-formatted,</span>
-<span class="sd">        for example as when passed to create_folders() or upload_custom()</span>
-<span class="sd">        or download()</span>
+<span class="sd">        for example as when passed to ``create_folders()`` or ``upload_custom()``</span>
 
 <span class="sd">        Useful for checking tags e.g. @TO@, @DATE@, @DATETIME@, @DATE@.</span>
-<span class="sd">        This method will print the formatted list of names,</span>
+<span class="sd">        This method will print the formatted list of names.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-
-<span class="sd">        names :</span>
+<span class="sd">        names</span>
 <span class="sd">            A string or list of subject or session names.</span>
-<span class="sd">        prefix:</span>
+
+<span class="sd">        prefix</span>
 <span class="sd">            The relevant subject or session prefix,</span>
-<span class="sd">            e.g. &quot;sub-&quot; or &quot;ses-&quot;</span>
+<span class="sd">            e.g. ``&quot;sub-&quot;`` or ``&quot;ses-&quot;``</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">prefix</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;sub&quot;</span><span class="p">,</span> <span class="s2">&quot;ses&quot;</span><span class="p">]:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
@@ -1829,18 +1766,12 @@
         <span class="n">overwrite_existing_files</span><span class="p">:</span> <span class="n">OverwriteExistingFiles</span><span class="p">,</span>
         <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Transfer (i.e. upload or download) the entire project (i.e.</span>
-<span class="sd">        every &#39;top level folder&#39; (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Transfer the entire project.</span>
 
-<span class="sd">        Parameters</span>
-<span class="sd">        ----------</span>
-
-<span class="sd">        upload_or_download : direction to transfer the data, either &quot;upload&quot; (from</span>
-<span class="sd">                    local to central) or &quot;download&quot; (from central to local).</span>
+<span class="sd">        i.e. every &#39;top level folder&#39; (e.g. &#39;rawdata&#39;, &#39;derivatives&#39;).</span>
+<span class="sd">        See ``upload_custom()`` or ``download_custom()`` for parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">top_level_folder</span> <span class="ow">in</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folders</span><span class="p">():</span>
-
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_message</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transferring `</span><span class="si">{</span><span class="n">top_level_folder</span><span class="si">}</span><span class="s2">`&quot;</span><span class="p">)</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_transfer_top_level_folder</span><span class="p">(</span>
@@ -1858,22 +1789,27 @@
         <span class="n">store_in_temp_folder</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialize the logger. This is typically called at</span>
-<span class="sd">        the start of public methods to initialize logging</span>
-<span class="sd">        for a specific function call.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the logger.</span>
+
+<span class="sd">        This is typically called at the start of public</span>
+<span class="sd">        methods to initialize logging for a specific function call.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
+<span class="sd">        command_name</span>
+<span class="sd">            Name of the command, for the log output files.</span>
 
-<span class="sd">        command_name : name of the command, for the log output files.</span>
+<span class="sd">        local_vars</span>
+<span class="sd">            local_vars are passed to fancylog variables argument.</span>
+<span class="sd">            see ds_logger.wrap_variables_for_fancylog for more info</span>
 
-<span class="sd">        local_vars : local_vars are passed to fancylog variables argument.</span>
-<span class="sd">                 see ds_logger.wrap_variables_for_fancylog for more info</span>
-
-<span class="sd">        store_in_temp_folder :</span>
-<span class="sd">            if `False`, existing logging path will be used</span>
+<span class="sd">        store_in_temp_folder</span>
+<span class="sd">            If `False`, existing logging path will be used</span>
 <span class="sd">            (local project .datashuttle).</span>
+
+<span class="sd">        verbose</span>
+<span class="sd">            Print warnings and error messages.</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">local_vars</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">variables</span> <span class="o">=</span> <span class="kc">None</span>
@@ -1893,7 +1829,8 @@
         <span class="n">ds_logger</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">path_to_save</span><span class="p">,</span> <span class="n">command_name</span><span class="p">,</span> <span class="n">variables</span><span class="p">,</span> <span class="n">verbose</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_move_logs_from_temp_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Create a temporary logging folder when the project folder is unknown.</span>
+
 <span class="sd">        Logs are stored within the project folder. Although</span>
 <span class="sd">        in some instances, when setting configs, we do not know what</span>
 <span class="sd">        the project folder is. In this case, make the logs</span>
@@ -1918,7 +1855,7 @@
             <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_clear_temp_log_path</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Delete temporary log files.&quot;&quot;&quot;</span>
         <span class="n">log_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_temp_log_path</span> <span class="o">/</span> <span class="s2">&quot;*.log&quot;</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">log_files</span><span class="p">:</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
@@ -1929,10 +1866,14 @@
                 <span class="s2">&quot;The project name must contain alphanumeric characters only.&quot;</span><span class="p">,</span>
                 <span class="ne">ValueError</span><span class="p">,</span>
             <span class="p">)</span>
+        <span class="k">if</span> <span class="n">project_name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
+                <span class="s2">&quot;The project name cannot be empty.&quot;</span><span class="p">,</span> <span class="n">NeuroBlueprintError</span>
+            <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_log_successful_config_change</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Log the entire config at the time of config change.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Log the entire config at the time of config change.</span>
+
 <span class="sd">        If messaged, just message &quot;update successful&quot; rather than</span>
 <span class="sd">        print the entire configs as it becomes confusing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1944,16 +1885,14 @@
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_get_json_dumps_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get the config dictionary formatted as json.dumps()</span>
-<span class="sd">        which allows well formatted printing.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the config dictionary formatted as json.dumps() which allows well formatted printing.&quot;&quot;&quot;</span>
         <span class="n">copy_dict</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cfg</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="n">load_configs</span><span class="o">.</span><span class="n">convert_str_and_pathlib_paths</span><span class="p">(</span><span class="n">copy_dict</span><span class="p">,</span> <span class="s2">&quot;path_to_str&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">copy_dict</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_make_project_metadata_if_does_not_exist</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Locate the .datashuttle folder within the project local_path.</span>
+
 <span class="sd">        Within the project local_path is also a .datashuttle</span>
 <span class="sd">        folder that contains additional information, e.g. logs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -1978,21 +1917,24 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">_update_persistent_setting</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">setting_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">setting_value</span><span class="p">:</span> <span class="n">Any</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load settings that are stored persistently across datashuttle</span>
-<span class="sd">        sessions. These are stored in yaml dumped to dictionary.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load settings that are stored persistently across datashuttle sessions.</span>
+
+<span class="sd">        These are stored in yaml dumped to dictionary.</span>
 
 <span class="sd">        Parameters</span>
 <span class="sd">        ----------</span>
-<span class="sd">        setting_name : dictionary key of the persistent setting to change</span>
-<span class="sd">        setting_value : value to change the persistent setting to</span>
+<span class="sd">        setting_name</span>
+<span class="sd">            dictionary key of the persistent setting to change</span>
+
+<span class="sd">        setting_value</span>
+<span class="sd">            value to change the persistent setting to</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_persistent_settings</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">setting_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">settings</span><span class="p">:</span>
             <span class="n">utils</span><span class="o">.</span><span class="n">log_and_raise_error</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;Setting key </span><span class="si">{</span><span class="n">setting_name</span><span class="si">}</span><span class="s2"> not found in &quot;</span>
-                <span class="sa">f</span><span class="s2">&quot;settings dictionary&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;Setting key </span><span class="si">{</span><span class="n">setting_name</span><span class="si">}</span><span class="s2"> not found in settings dictionary&quot;</span><span class="p">,</span>
                 <span class="ne">KeyError</span><span class="p">,</span>
             <span class="p">)</span>
 
@@ -2001,39 +1943,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_persistent_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_init_persistent_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Initialise the default persistent settings</span>
-<span class="sd">        and save to file.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise the default persistent settings and save to file.&quot;&quot;&quot;</span>
         <span class="n">settings</span> <span class="o">=</span> <span class="n">canonical_configs</span><span class="o">.</span><span class="n">get_persistent_settings_defaults</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_save_persistent_settings</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_save_persistent_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Save the settings dict to file as .yaml</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Save the settings dict to file as &quot;.yaml&quot;.&quot;&quot;&quot;</span>
         <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">settings_file</span><span class="p">:</span>
             <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">settings</span><span class="p">,</span> <span class="n">settings_file</span><span class="p">,</span> <span class="n">sort_keys</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_load_persistent_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Load settings that are stored persistently across</span>
-<span class="sd">        datashuttle sessions.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return settings that are stored persistently across datashuttle sessions.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_init_persistent_settings</span><span class="p">()</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">settings_file</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_persistent_settings_path</span><span class="p">)</span> <span class="k">as</span> <span class="n">settings_file</span><span class="p">:</span>
             <span class="n">settings</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">full_load</span><span class="p">(</span><span class="n">settings_file</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_settings_with_new_canonical_keys</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">settings</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_update_settings_with_new_canonical_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_settings_with_new_canonical_keys</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">settings</span><span class="p">:</span> <span class="n">Dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check and update keys within persistent settings if missing.</span>
+
 <span class="sd">        Perform a check on the keys within persistent settings.</span>
-<span class="sd">        If they do not exist, persistent settings is from older version</span>
+<span class="sd">        If they do not exist, persistent settings is from an older version</span>
 <span class="sd">        and the new keys need adding.</span>
 <span class="sd">        If changing keys within the top level (e.g. a dict entry in</span>
 <span class="sd">        &quot;tui&quot;) this method will need to be extended.</span>
@@ -2062,10 +1997,8 @@
             <span class="n">settings</span>
         <span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_level_folder</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Raise an error if ``top_level_folder`` not correct.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_top_level_folder</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">top_level_folder</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Raise an error if ``top_level_folder`` not correct.&quot;&quot;&quot;</span>
         <span class="n">canonical_top_level_folders</span> <span class="o">=</span> <span class="n">canonical_folders</span><span class="o">.</span><span class="n">get_top_level_folders</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="n">top_level_folder</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">canonical_top_level_folders</span><span class="p">:</span>

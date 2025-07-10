@@ -40,7 +40,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=fe7df9b0"></script>
+    <script src="../_static/documentation_options.js?v=5a057da9"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/design-tabs.js?v=f930bc37"></script>
@@ -123,7 +123,7 @@
     <img src="../_static/logo_dark.png" class="logo__image only-dark pst-js-only" alt=""/>
   
   
-    <p class="title logo__title">datashuttle v0.7.0</p>
+    <p class="title logo__title">datashuttle v0.7.1</p>
   
 </a></div>
     
@@ -422,116 +422,90 @@
 <dl class="py class">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">DataShuttle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">print_startup_message</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle" title="Link to this definition">#</a></dt>
-<dd><p>DataShuttle is a tool for convenient scientific
-project management and data transfer in BIDS format.</p>
-<p>The expected organisation is a central repository
-on a central machine  (‘central’) that contains all
-project data. This is connected to multiple local
-machines (‘local’). These can each contain a subset of
-the full project (e.g. machine for electrophysiology
-collection, machine for behavioural collection).</p>
-<p>On first use on a new profile, show warning prompting
-to set configurations with the function make_config_file().</p>
-<p>Datashuttle will save logs to a .datashuttle folder
-in the main local project. These logs contain
-detailed information on folder creation / transfer.
-To get the path to datashuttle logs, use
-cfgs.make_and_get_logging_path().</p>
-<p>For transferring data between a central data storage
-with SSH, use setup setup_ssh_connection().
-This will allow you to check the server key, add host key to
-profile if accepted, and setup ssh key pair.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>project_name</strong> (<em>The project name to use the datashuttle</em>) – Folders containing all project files
-and folders are specified in make_config_file().
-Datashuttle-related files are stored in
-a .datashuttle folder in the user home
-folder. Use get_datashuttle_path() to
-see the path to this folder.</p></li>
-<li><p><strong>print_startup_message</strong> (If <cite>True</cite>, a start-up message displaying the) – current state of the program (e.g. persistent
-settings such as the ‘top-level folder’) is shown.</p></li>
-</ul>
-</dd>
-</dl>
+<dd><p>DataShuttle is a tool for neuroscience project management and data transfer.</p>
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.check_name_formatting" title="datashuttle.DataShuttle.check_name_formatting"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_name_formatting</span></code></a>(names, prefix)</p></td>
-<td><p>Pass list of names to check how these will be auto-formatted, for example as when passed to create_folders() or upload_custom() or download()</p></td>
+<td><p>Format a list of subject or session names.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.create_folders" title="datashuttle.DataShuttle.create_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_folders</span></code></a>(top_level_folder, sub_names)</p></td>
-<td><p>Create a subject / session folder tree in the project folder.</p></td>
+<td><p>Create a folder tree in the project folder.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_custom" title="datashuttle.DataShuttle.download_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_custom</span></code></a>(top_level_folder, sub_names, ...)</p></td>
-<td><p>Download data from the central project folder to the local project folder.</p></td>
+<td><p>Download data from the central project to the local project folder.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_derivatives" title="datashuttle.DataShuttle.download_derivatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_derivatives</span></code></a>([...])</p></td>
-<td><p>Download files in the <cite>derivatives</cite> top level folder.</p></td>
+<td><p>Download all files in the <cite>derivatives</cite> top level folder.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_entire_project" title="datashuttle.DataShuttle.download_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_entire_project</span></code></a>([...])</p></td>
-<td><p>Download the entire project (from 'central' to 'local'), i.e. including every top level folder (e.g. 'rawdata', 'derivatives', 'code', 'analysis').</p></td>
+<td><p>Download the entire project.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_rawdata" title="datashuttle.DataShuttle.download_rawdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_rawdata</span></code></a>([overwrite_existing_files, ...])</p></td>
-<td><p>Download files in the <cite>rawdata</cite> top level folder.</p></td>
+<td><p>Download all files in the <cite>rawdata</cite> top level folder.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.download_specific_folder_or_file" title="datashuttle.DataShuttle.download_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">download_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
 <td><p>Download a specific file or folder.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_central_path" title="datashuttle.DataShuttle.get_central_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_central_path</span></code></a>()</p></td>
-<td><p>Get the project central path.</p></td>
+<td><p>Return the project central path.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_config_path" title="datashuttle.DataShuttle.get_config_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_config_path</span></code></a>()</p></td>
-<td><p>Get the full path to the DataShuttle config file.</p></td>
+<td><p>Return the full path to the DataShuttle config file.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_datashuttle_path" title="datashuttle.DataShuttle.get_datashuttle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datashuttle_path</span></code></a>()</p></td>
-<td><p>Get the path to the local datashuttle folder where configs and other datashuttle files are stored.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_configs" title="datashuttle.DataShuttle.get_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_configs</span></code></a>()</p></td>
+<td><p>Return the datashuttle configs.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_existing_projects" title="datashuttle.DataShuttle.get_existing_projects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_projects</span></code></a>()</p></td>
-<td><p>Get a list of existing project names found on the local machine.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_datashuttle_path" title="datashuttle.DataShuttle.get_datashuttle_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_datashuttle_path</span></code></a>()</p></td>
+<td><p>Return the path to the local datashuttle folder.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_local_path" title="datashuttle.DataShuttle.get_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_local_path</span></code></a>()</p></td>
-<td><p>Get the projects local path.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_existing_projects" title="datashuttle.DataShuttle.get_existing_projects"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_existing_projects</span></code></a>()</p></td>
+<td><p>Return a list of existing project names found on the local machine.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_logging_path" title="datashuttle.DataShuttle.get_logging_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logging_path</span></code></a>()</p></td>
-<td><p>Get the path where datashuttle logs are written.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_local_path" title="datashuttle.DataShuttle.get_local_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_local_path</span></code></a>()</p></td>
+<td><p>Return the projects local path.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_name_templates" title="datashuttle.DataShuttle.get_name_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_name_templates</span></code></a>()</p></td>
-<td><p>Get the regexp templates used for validation.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_logging_path" title="datashuttle.DataShuttle.get_logging_path"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_logging_path</span></code></a>()</p></td>
+<td><p>Return the path where datashuttle logs are written.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_next_ses" title="datashuttle.DataShuttle.get_next_ses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_ses</span></code></a>(top_level_folder, sub[, ...])</p></td>
-<td><p>Convenience function for get_next_sub_or_ses to find the next session number.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_name_templates" title="datashuttle.DataShuttle.get_name_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_name_templates</span></code></a>()</p></td>
+<td><p>Return the regexp templates used for validation.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_next_sub" title="datashuttle.DataShuttle.get_next_sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_sub</span></code></a>(top_level_folder[, ...])</p></td>
-<td><p>Convenience function for get_next_sub_or_ses to find the next subject number.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_next_ses" title="datashuttle.DataShuttle.get_next_ses"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_ses</span></code></a>(top_level_folder, sub[, ...])</p></td>
+<td><p>Return the next session number.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.is_local_project" title="datashuttle.DataShuttle.is_local_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_local_project</span></code></a>()</p></td>
-<td><p>A project is 'local-only' if it has no <cite>central_path</cite> and <cite>connection_method</cite>.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.get_next_sub" title="datashuttle.DataShuttle.get_next_sub"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_next_sub</span></code></a>(top_level_folder[, ...])</p></td>
+<td><p>Return the next subject number.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.make_config_file" title="datashuttle.DataShuttle.make_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_config_file</span></code></a>(local_path[, central_path, ...])</p></td>
-<td><p>Initialise the configurations for datashuttle to use on the local machine.</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.is_local_project" title="datashuttle.DataShuttle.is_local_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">is_local_project</span></code></a>()</p></td>
+<td><p>Return a bool indicating whether the project is 'local only'.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.set_name_templates" title="datashuttle.DataShuttle.set_name_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_name_templates</span></code></a>(new_name_templates)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.make_config_file" title="datashuttle.DataShuttle.make_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">make_config_file</span></code></a>(local_path[, central_path, ...])</p></td>
+<td><p>Initialize the configurations for datashuttle on the local machine.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.set_name_templates" title="datashuttle.DataShuttle.set_name_templates"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_name_templates</span></code></a>(new_name_templates)</p></td>
 <td><p>Update the persistent settings with new name templates.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.setup_ssh_connection" title="datashuttle.DataShuttle.setup_ssh_connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_ssh_connection</span></code></a>()</p></td>
-<td><p>Setup a connection to the central server using SSH.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.setup_ssh_connection" title="datashuttle.DataShuttle.setup_ssh_connection"><code class="xref py py-obj docutils literal notranslate"><span class="pre">setup_ssh_connection</span></code></a>()</p></td>
+<td><p>Set up a connection to the central server using SSH.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.show_configs" title="datashuttle.DataShuttle.show_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_configs</span></code></a>()</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.show_configs" title="datashuttle.DataShuttle.show_configs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">show_configs</span></code></a>()</p></td>
 <td><p>Print the current configs to the terminal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.update_config_file" title="datashuttle.DataShuttle.update_config_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_config_file</span></code></a>(**kwargs)</p></td>
+<td><p>Update the configuration file.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_custom" title="datashuttle.DataShuttle.upload_custom"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_custom</span></code></a>(top_level_folder, sub_names, ...)</p></td>
 <td><p>Upload data from a local project to the central project folder.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_derivatives" title="datashuttle.DataShuttle.upload_derivatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_derivatives</span></code></a>([...])</p></td>
-<td><p>Upload files in the <cite>derivatives</cite> top level folder.</p></td>
+<td><p>Upload all files in the <cite>derivatives</cite> top level folder.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_entire_project" title="datashuttle.DataShuttle.upload_entire_project"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_entire_project</span></code></a>([...])</p></td>
-<td><p>Upload the entire project (from 'local' to 'central'), i.e. including every top level folder (e.g. 'rawdata', 'derivatives', 'code', 'analysis').</p></td>
+<td><p>Upload the entire project.</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_rawdata" title="datashuttle.DataShuttle.upload_rawdata"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_rawdata</span></code></a>([overwrite_existing_files, ...])</p></td>
-<td><p>Upload files in the <cite>rawdata</cite> top level folder.</p></td>
+<td><p>Upload all files in the <cite>rawdata</cite> top level folder.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.upload_specific_folder_or_file" title="datashuttle.DataShuttle.upload_specific_folder_or_file"><code class="xref py py-obj docutils literal notranslate"><span class="pre">upload_specific_folder_or_file</span></code></a>(filepath[, ...])</p></td>
 <td><p>Upload a specific file or folder.</p></td>
@@ -540,18 +514,7 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <td><p>Perform validation on the project.</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="#datashuttle.DataShuttle.write_public_key" title="datashuttle.DataShuttle.write_public_key"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_public_key</span></code></a>(filepath)</p></td>
-<td><p>By default, the SSH private key only is stored, in the datashuttle configs folder.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="pst-scrollable-table-container"><table class="table">
-<tbody>
-<tr class="row-odd"><td><p><strong>get_configs</strong></p></td>
-<td></td>
-</tr>
-<tr class="row-even"><td><p><strong>update_config_file</strong></p></td>
-<td></td>
+<td><p>Save the public SSH key to a specified filepath.</p></td>
 </tr>
 </tbody>
 </table>
@@ -559,33 +522,29 @@ settings such as the ‘top-level folder’) is shown.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.create_folders">
 <span class="sig-name descname"><span class="pre">create_folders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bypass_validation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.create_folders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.create_folders" title="Link to this definition">#</a></dt>
-<dd><p>Create a subject / session folder tree in the project
-folder. The passed subject / session names are
-formatted and validated. If this succeeds, fully
-validation against all subject / session folders in
-the local project is performed before making the
-folders.</p>
+<dd><p>Create a folder tree in the project folder.</p>
+<p>The passed names are initially formatted and validated,
+then folders are created.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>top_level_folder</strong> (<em>TopLevelFolder</em>) – Whether to make the folders in <cite>rawdata</cite> or
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – Whether to make the folders within <cite>rawdata</cite> or
 <cite>derivatives</cite>.</p></li>
-<li><p><strong>sub_names</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – subject name / list of subject names to make
+<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – subject name / list of subject names to make
 within the top-level project folder
 (if not already, these will be prefixed with
 “sub-“)</p></li>
-<li><p><strong>ses_names</strong> (<em>Optional</em><em>[</em><em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em><em>]</em>) – (Optional). session name / list of session names.
+<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>]</span>) – session name / list of session names.
 (if not already, these will be prefixed with
 “ses-“). If no session is provided, no session-level
 folders are made.</p></li>
-<li><p><strong>datatype</strong> (<em>Union</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>str</em><em>]</em><em>]</em>) – The datatype to make in the sub / ses folders.
+<li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</span>) – The datatype to make in the sub / ses folders.
 (e.g. “ephys”, “behav”, “anat”). If “” is
 passed no datatype will be created. Broad or
-Narrow canonical NeuroBlueprint datatypes are
-accepted.</p></li>
-<li><p><strong>bypass_validation</strong> (<em>bool</em>) – If <cite>True</cite>, folders will be created even if they are not
+Narrow NeuroBlueprint datatypes are accepted.</p></li>
+<li><p><strong>bypass_validation</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, folders will be created even if they are not
 valid to NeuroBlueprint style.</p></li>
-<li><p><strong>log</strong> (<em>bool</em>) – If <cite>True</cite>, details of folder creation will be logged.</p></li>
+<li><p><strong>log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, details of folder creation will be logged.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -621,34 +580,29 @@ e.g. sub-001_&#64;DATE&#64; will generate sub-001_date-20220101 (on the 1st janu
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_custom">
 <span class="sig-name descname"><span class="pre">upload_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_custom" title="Link to this definition">#</a></dt>
-<dd><p>Upload data from a local project to the central project
-folder. In the case that a file / folder exists on
-the central and local, the central will not be overwritten
-even if the central file is an older version. Data
-transfer logs are saved to the logging folder).</p>
+<dd><p>Upload data from a local project to the central project folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>“rawdata”</cite>, <cite>“derivatives”</cite>) to transfer files
-and folders within.</p></li>
-<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – a subject name / list of subject names. These must
-be prefixed with “sub-”, or the prefix will be
-automatically added. “&#64;*&#64;” can be used as a wildcard.
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>“rawdata”</cite>, <cite>“derivatives”</cite>) to transfer within.</p></li>
+<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – A subject name / list of subject names. These must
+be prefixed with <code class="docutils literal notranslate"><span class="pre">&quot;sub-&quot;</span></code>, or the prefix will be
+automatically added. <code class="docutils literal notranslate"><span class="pre">&quot;&#64;*&#64;&quot;</span></code> can be used as a wildcard.
 “all” will search for all sub-folders in the
 datatype folder to upload.</p></li>
-<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – a session name / list of session names, similar to
-sub_names but requiring a “ses-” prefix.</p></li>
+<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – A session name / list of session names, similar to
+sub_names but requiring a <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code> prefix.</p></li>
 <li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The (broad or narrow) NeuroBlueprint datatypes to transfer.
-If “all”, any broad or narrow datatype folder will be transferred.</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <cite>False</cite>, files on central will never be overwritten
-by files transferred from local. If <cite>True</cite>, central files
-will be overwritten if there is any difference (date, size)
-between central and local files.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
-<li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – (Optional). Whether to handle logging. This should
-always be True, unless logger is handled elsewhere
+If <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, any broad or narrow datatype folder will be transferred.</p></li>
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
+there is any difference in date or size.
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
+by files on source with newer creation / modification datetime.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+<li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
+always be <code class="docutils literal notranslate"><span class="pre">True</span></code>, unless logger is handled elsewhere
 (e.g. in a calling function).</p></li>
 </ul>
 </dd>
@@ -661,31 +615,29 @@ always be True, unless logger is handled elsewhere
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.download_custom">
 <span class="sig-name descname"><span class="pre">download_custom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ses_names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">datatype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'all'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init_log</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_custom"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_custom" title="Link to this definition">#</a></dt>
-<dd><p>Download data from the central project folder to the
-local project folder.</p>
+<dd><p>Download data from the central project to the local project folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>rawdata</cite>) to transfer files
-and folders within.</p></li>
-<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – a subject name / list of subject names. These must
-be prefixed with “sub-”, or the prefix will be
-automatically added. “&#64;*&#64;” can be used as a wildcard.
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder (e.g. <cite>“rawdata”</cite>, <cite>“derivatives”</cite>) to transfer within.</p></li>
+<li><p><strong>sub_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – A subject name / list of subject names. These must
+be prefixed with <code class="docutils literal notranslate"><span class="pre">&quot;sub-&quot;</span></code>, or the prefix will be
+automatically added. <code class="docutils literal notranslate"><span class="pre">&quot;&#64;*&#64;&quot;</span></code> can be used as a wildcard.
 “all” will search for all sub-folders in the
 datatype folder to upload.</p></li>
-<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – a session name / list of session names, similar to
-sub_names but requiring a “ses-” prefix.</p></li>
-<li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – see create_folders()</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>ses_names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – A session name / list of session names, similar to
+sub_names but requiring a <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code> prefix.</p></li>
+<li><p><strong>datatype</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – The (broad or narrow) NeuroBlueprint datatypes to transfer.
+If <code class="docutils literal notranslate"><span class="pre">&quot;all&quot;</span></code>, any broad or narrow datatype folder will be transferred.</p></li>
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
-<li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – (Optional). Whether to handle logging. This should
-always be True, unless logger is handled elsewhere
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
+<li><p><strong>init_log</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Whether to handle logging. This should
+always be <code class="docutils literal notranslate"><span class="pre">True</span></code>, unless logger is handled elsewhere
 (e.g. in a calling function).</p></li>
 </ul>
 </dd>
@@ -698,19 +650,21 @@ always be True, unless logger is handled elsewhere
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_rawdata">
 <span class="sig-name descname"><span class="pre">upload_rawdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_rawdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_rawdata" title="Link to this definition">#</a></dt>
-<dd><p>Upload files in the <cite>rawdata</cite> top level folder.</p>
+<dd><p>Upload all files in the <cite>rawdata</cite> top level folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -718,19 +672,21 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_derivatives">
 <span class="sig-name descname"><span class="pre">upload_derivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_derivatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_derivatives" title="Link to this definition">#</a></dt>
-<dd><p>Upload files in the <cite>derivatives</cite> top level folder.</p>
+<dd><p>Upload all files in the <cite>derivatives</cite> top level folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -738,19 +694,21 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.download_rawdata">
 <span class="sig-name descname"><span class="pre">download_rawdata</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_rawdata"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_rawdata" title="Link to this definition">#</a></dt>
-<dd><p>Download files in the <cite>rawdata</cite> top level folder.</p>
+<dd><p>Download all files in the <cite>rawdata</cite> top level folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved..</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -758,19 +716,21 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.download_derivatives">
 <span class="sig-name descname"><span class="pre">download_derivatives</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_derivatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_derivatives" title="Link to this definition">#</a></dt>
-<dd><p>Download files in the <cite>derivatives</cite> top level folder.</p>
+<dd><p>Download all files in the <cite>derivatives</cite> top level folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
 </dl>
 </dd></dl>
@@ -778,20 +738,18 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_entire_project">
 <span class="sig-name descname"><span class="pre">upload_entire_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_entire_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_entire_project" title="Link to this definition">#</a></dt>
-<dd><p>Upload the entire project (from ‘local’ to ‘central’),
-i.e. including every top level folder (e.g. ‘rawdata’,
-‘derivatives’, ‘code’, ‘analysis’).</p>
+<dd><p>Upload the entire project.</p>
+<p>Includes every top level folder (e.g. <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>, <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -803,20 +761,18 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.download_entire_project">
 <span class="sig-name descname"><span class="pre">download_entire_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_entire_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_entire_project" title="Link to this definition">#</a></dt>
-<dd><p>Download the entire project (from ‘central’ to ‘local’),
-i.e. including every top level folder (e.g. ‘rawdata’,
-‘derivatives’, ‘code’, ‘analysis’).</p>
+<dd><p>Download the entire project.</p>
+<p>Includes every top level folder (e.g. <code class="docutils literal notranslate"><span class="pre">rawdata</span></code>, <code class="docutils literal notranslate"><span class="pre">derivatives</span></code>).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -828,24 +784,21 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.upload_specific_folder_or_file">
 <span class="sig-name descname"><span class="pre">upload_specific_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.upload_specific_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.upload_specific_folder_or_file" title="Link to this definition">#</a></dt>
-<dd><p>Upload a specific file or folder. If transferring
-a single file, the path including the filename is
-required (see ‘filepath’ input). If a folder,
-wildcards “*” or “**” must be used to transfer
-all files in the folder (“*”) or all files
-and sub-folders (“**”).</p>
+<dd><p>Upload a specific file or folder.</p>
+<p>If transferring a single file, the path including the filename is
+required (see ‘filepath’ input). If a folder, wildcards “*” or “**” must be used to transfer
+all files in the folder (“*”) or all files and sub-folders (“**”).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</span>) – a string containing the full filepath.</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -857,24 +810,22 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.download_specific_folder_or_file">
 <span class="sig-name descname"><span class="pre">download_specific_folder_or_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite_existing_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'never'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.download_specific_folder_or_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.download_specific_folder_or_file" title="Link to this definition">#</a></dt>
-<dd><p>Download a specific file or folder. If transferring
-a single file, the path including the filename is
-required (see ‘filepath’ input). If a folder,
-wildcards “*” or “**” must be used to transfer
-all files in the folder (“*”) or all files
+<dd><p>Download a specific file or folder.</p>
+<p>If transferring a single file, the path including the filename is
+required (see ‘filepath’ input). If a folder, wildcards “*” or “**”
+must be used to transfer all files in the folder (“*”) or all files
 and sub-folders (“**”).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code>]</span>) – a string containing the full filepath.</p></li>
-<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If “never” files on target will never be overwritten by source.
-If “always” files on target will be overwritten by source if
+<li><p><strong>overwrite_existing_files</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'never'</span></code>, <code class="docutils literal notranslate"><span class="pre">'always'</span></code>, <code class="docutils literal notranslate"><span class="pre">'if_source_newer'</span></code>]</span>) – If <code class="docutils literal notranslate"><span class="pre">&quot;never&quot;</span></code> files on target will never be overwritten by source.
+If <code class="docutils literal notranslate"><span class="pre">&quot;always&quot;</span></code> files on target will be overwritten by source if
 there is any difference in date or size.
-If “if_source_newer” files on target will only be overwritten
+If <code class="docutils literal notranslate"><span class="pre">&quot;if_source_newer&quot;</span></code> files on target will only be overwritten
 by files on source with newer creation / modification datetime.</p></li>
-<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – perform a dry-run of transfer. This will output as if file
-transfer was taking place, but no files will be moved. Useful
-to check which files will be moved on data transfer.</p></li>
+<li><p><strong>dry_run</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – Perform a dry-run of transfer. This will output as if file
+transfer was taking place, but no files will be moved.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -886,10 +837,10 @@ to check which files will be moved on data transfer.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.setup_ssh_connection">
 <span class="sig-name descname"><span class="pre">setup_ssh_connection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.setup_ssh_connection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.setup_ssh_connection" title="Link to this definition">#</a></dt>
-<dd><p>Setup a connection to the central server using SSH.
-Assumes the central_host_id and central_host_username
-are set in configs (see make_config_file() and update_config_file())</p>
-<p>First, the server key will be displayed, requiring
+<dd><p>Set up a connection to the central server using SSH.</p>
+<p>Assumes the central_host_id and central_host_username
+are set in configs (see make_config_file() and update_config_file()).
+First, the server key will be displayed, requiring
 verification of the server ID. This will store the
 hostkey for all future use.</p>
 <p>Next, prompt to input their password for the central
@@ -905,12 +856,13 @@ will be setup.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.write_public_key">
 <span class="sig-name descname"><span class="pre">write_public_key</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.write_public_key"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.write_public_key" title="Link to this definition">#</a></dt>
-<dd><p>By default, the SSH private key only is stored, in
-the datashuttle configs folder. Use this function
-to save the public key.</p>
+<dd><p>Save the public SSH key to a specified filepath.</p>
+<p>By default, only the SSH private key is stored in the
+datashuttle configs folder. Use this function to save
+the public key.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – full filepath (inc filename) to write the
+<dd class="field-odd"><p><strong>filepath</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Full filepath (including filename) to write the
 public key to.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -922,33 +874,32 @@ public key to.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.make_config_file">
 <span class="sig-name descname"><span class="pre">make_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">connection_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">central_host_username</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.make_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.make_config_file" title="Link to this definition">#</a></dt>
-<dd><p>Initialise the configurations for datashuttle to use on the
-local machine. Once initialised, these settings will be
-used each time the datashuttle is opened. This method
-can also be used to completely overwrite existing configs.</p>
+<dd><p>Initialize the configurations for datashuttle on the local machine.</p>
+<p>Once initialised, these settings will be used each
+time the datashuttle is opened.</p>
 <p>These settings are stored in a config file on the
-datashuttle path (not in the project folder)
-on the local machine. Use get_config_path() to
-get the full path to the saved config file.</p>
-<p>Use update_config_file() to selectively update settings.</p>
+datashuttle path (not in the project folder) on the
+local machine. Use <code class="docutils literal notranslate"><span class="pre">get_config_path()</span></code> to get the
+full path to the saved config file.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">update_config_file()</span></code> to selectively update settings.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>local_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – path to project folder on local machine</p></li>
 <li><p><strong>central_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – Filepath to central project.
-If this is local (i.e. connection_method = “local_filesystem”),
+If this is local (i.e. <code class="docutils literal notranslate"><span class="pre">connection_method</span> <span class="pre">=</span> <span class="pre">&quot;local_filesystem&quot;</span></code>),
 this is the full path on the local filesystem
-Otherwise, if this is via ssh (i.e. connection method = “ssh”),
+Otherwise, if this is via ssh (i.e. <code class="docutils literal notranslate"><span class="pre">connection</span> <span class="pre">method</span> <span class="pre">=</span> <span class="pre">&quot;ssh&quot;</span></code>),
 this is the path to the project folder on central machine.
 This should be a full path to central folder i.e. this cannot
 include ~ home folder syntax, must contain the full path
-(e.g. /nfs/nhome/live/jziminski)</p></li>
+(e.g. <code class="docutils literal notranslate"><span class="pre">/nfs/nhome/live/jziminski</span></code>)</p></li>
 <li><p><strong>connection_method</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span>) – The method used to connect to the central project filesystem,
-e.g. “local_filesystem” (e.g. mounted drive) or “ssh”</p></li>
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;local_filesystem&quot;</span></code> (e.g. mounted drive) or <code class="docutils literal notranslate"><span class="pre">&quot;ssh&quot;</span></code></p></li>
 <li><p><strong>central_host_id</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – server address for central host for ssh connection
-e.g. “ssh.swc.ucl.ac.uk”</p></li>
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;ssh.swc.ucl.ac.uk&quot;</span></code></p></li>
 <li><p><strong>central_host_username</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span>) – username for which to log in to central host.
-e.g. “jziminski”</p></li>
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;jziminski&quot;</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -960,7 +911,8 @@ e.g. “jziminski”</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.update_config_file">
 <span class="sig-name descname"><span class="pre">update_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.update_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.update_config_file" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Update the configuration file.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
 </dd>
@@ -970,7 +922,7 @@ e.g. “jziminski”</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_local_path">
 <span class="sig-name descname"><span class="pre">get_local_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_local_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_local_path" title="Link to this definition">#</a></dt>
-<dd><p>Get the projects local path.</p>
+<dd><p>Return the projects local path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
@@ -981,7 +933,7 @@ e.g. “jziminski”</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_central_path">
 <span class="sig-name descname"><span class="pre">get_central_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_central_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_central_path" title="Link to this definition">#</a></dt>
-<dd><p>Get the project central path.</p>
+<dd><p>Return the project central path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
@@ -992,9 +944,8 @@ e.g. “jziminski”</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_datashuttle_path">
 <span class="sig-name descname"><span class="pre">get_datashuttle_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_datashuttle_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_datashuttle_path" title="Link to this definition">#</a></dt>
-<dd><p>Get the path to the local datashuttle
-folder where configs and other
-datashuttle files are stored.</p>
+<dd><p>Return the path to the local datashuttle folder.</p>
+<p>This is where configs and other datashuttle files are stored.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
@@ -1005,7 +956,7 @@ datashuttle files are stored.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_config_path">
 <span class="sig-name descname"><span class="pre">get_config_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_config_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_config_path" title="Link to this definition">#</a></dt>
-<dd><p>Get the full path to the DataShuttle config file.</p>
+<dd><p>Return the full path to the DataShuttle config file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
@@ -1016,7 +967,8 @@ datashuttle files are stored.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_configs">
 <span class="sig-name descname"><span class="pre">get_configs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_configs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_configs" title="Link to this definition">#</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Return the datashuttle configs.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Configs</span></code></span></p>
 </dd>
@@ -1026,7 +978,7 @@ datashuttle files are stored.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_logging_path">
 <span class="sig-name descname"><span class="pre">get_logging_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_logging_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_logging_path" title="Link to this definition">#</a></dt>
-<dd><p>Get the path where datashuttle logs are written.</p>
+<dd><p>Return the path where datashuttle logs are written.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span></p>
@@ -1037,8 +989,8 @@ datashuttle files are stored.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_existing_projects">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_existing_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_existing_projects"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_existing_projects" title="Link to this definition">#</a></dt>
-<dd><p>Get a list of existing project names found on the local machine.
-This is based on project folders in the “home / .datashuttle” folder
+<dd><p>Return a list of existing project names found on the local machine.</p>
+<p>This is based on project folders in the “home / .datashuttle” folder
 that contain valid config.yaml files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1050,19 +1002,19 @@ that contain valid config.yaml files.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_next_sub">
 <span class="sig-name descname"><span class="pre">get_next_sub</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_sub"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_sub" title="Link to this definition">#</a></dt>
-<dd><p>Convenience function for get_next_sub_or_ses
-to find the next subject number.</p>
+<dd><p>Return the next subject number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>return_with_prefix</strong> (<em>bool</em>) – If <cite>True</cite>, return with the “sub-” prefix.</p></li>
-<li><p><strong>include_central</strong> (<em>bool</em>) – If <cite>False, only get names from `local_path</cite>, otherwise from
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder, “rawdata” or “derivatives”.</p></li>
+<li><p><strong>return_with_prefix</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, return the subject with the “sub-” prefix.</p></li>
+<li><p><strong>include_central</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>False, only get names from `local_path</cite>, otherwise from
 <cite>local_path</cite> and <cite>central_path</cite>. If in local-project mode,
 this flag is ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+<dd class="field-even"><p>The next subject ID.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1070,21 +1022,20 @@ this flag is ignored.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_next_ses">
 <span class="sig-name descname"><span class="pre">get_next_ses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_with_prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_next_ses"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_next_ses" title="Link to this definition">#</a></dt>
-<dd><p>Convenience function for get_next_sub_or_ses
-to find the next session number.</p>
+<dd><p>Return the next session number.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – “rawdata” or “derivatives”</p></li>
-<li><p><strong>sub</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – Name of the subject to find the next session of.</p></li>
-<li><p><strong>return_with_prefix</strong> (<em>bool</em>) – If <cite>True</cite>, return with the “ses-” prefix.</p></li>
-<li><p><strong>include_central</strong> (<em>bool</em>) – If <cite>False, only get names from `local_path</cite>, otherwise from
-<cite>local_path</cite> and <cite>central_path</cite>. If in local-project mode,
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]</span>) – The top-level folder, “rawdata” or “derivatives”.</p></li>
+<li><p><strong>sub</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span>) – Name of the subject to find the next session of.</p></li>
+<li><p><strong>return_with_prefix</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <cite>True</cite>, return with the “ses-” prefix.</p></li>
+<li><p><strong>include_central</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only get names from <code class="docutils literal notranslate"><span class="pre">local_path</span></code>, otherwise from
+<code class="docutils literal notranslate"><span class="pre">local_path</span></code> and <code class="docutils literal notranslate"><span class="pre">central_path</span></code>. If in local-project mode,
 this flag is ignored.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></span></p>
+<dd class="field-even"><p>The next session ID.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1092,7 +1043,8 @@ this flag is ignored.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.is_local_project">
 <span class="sig-name descname"><span class="pre">is_local_project</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.is_local_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.is_local_project" title="Link to this definition">#</a></dt>
-<dd><p>A project is ‘local-only’ if it has no <cite>central_path</cite> and <cite>connection_method</cite>.
+<dd><p>Return a bool indicating whether the project is ‘local only’.</p>
+<p>A project is ‘local-only’ if it has no <code class="docutils literal notranslate"><span class="pre">central_path</span></code> and <code class="docutils literal notranslate"><span class="pre">connection_method</span></code>.
 It can be used to make folders and validate, but not for transfer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -1104,18 +1056,14 @@ It can be used to make folders and validate, but not for transfer.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.get_name_templates">
 <span class="sig-name descname"><span class="pre">get_name_templates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.get_name_templates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.get_name_templates" title="Link to this definition">#</a></dt>
-<dd><p>Get the regexp templates used for validation. If
-the “on” key is set to <cite>False</cite>, template validation is not performed.</p>
+<dd><p>Return the regexp templates used for validation.</p>
+<p>If the “on” key is set to <cite>False</cite>, template validation is not performed.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></span></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>e.g. {“name_templates”: {“on”: False, “sub”: None, “ses”: None}}</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><ul class="simple">
-<li></li>
-<li><p><strong>name_templates</strong> (<em>Dict</em>) – e.g. {“name_templates”: {“on”: False, “sub”: None, “ses”: None}}</p></li>
-</ul>
-</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>name_templates</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1124,13 +1072,13 @@ the “on” key is set to <cite>False</cite>, template validation is not perfor
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.set_name_templates">
 <span class="sig-name descname"><span class="pre">set_name_templates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_name_templates</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.set_name_templates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.set_name_templates" title="Link to this definition">#</a></dt>
 <dd><p>Update the persistent settings with new name templates.</p>
-<p>Name templates are regexp for that, when name_templates[“on”] is
-set to <cite>True</cite>, “sub” and “ses” names are validated against
+<p>Name templates are regexp for that, when <code class="docutils literal notranslate"><span class="pre">name_templates[&quot;on&quot;]</span></code> is
+set to <code class="docutils literal notranslate"><span class="pre">True</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;sub&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;ses&quot;</span></code> names are validated against
 the regexp contained in the dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>new_name_templates</strong> (<em>Dict</em>) – e.g. {“name_templates”: {“on”: False, “sub”: None, “ses”: None}}
-where “sub” or “ses” can be a regexp that subject and session
+<dd class="field-odd"><p><strong>new_name_templates</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code></span>) – e.g. <code class="docutils literal notranslate"><span class="pre">{&quot;name_templates&quot;:</span> <span class="pre">{&quot;on&quot;:</span> <span class="pre">False,</span> <span class="pre">&quot;sub&quot;:</span> <span class="pre">None,</span> <span class="pre">&quot;ses&quot;:</span> <span class="pre">None}}</span></code>
+where <code class="docutils literal notranslate"><span class="pre">&quot;sub&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ses&quot;</span></code> can be a regexp that subject and session
 names respectively are validated against.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1153,29 +1101,32 @@ names respectively are validated against.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.validate_project">
 <span class="sig-name descname"><span class="pre">validate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_central</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.validate_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.validate_project" title="Link to this definition">#</a></dt>
-<dd><p>Perform validation on the project. This checks the subject
-and session level folders to ensure there are no NeuroBlueprint
-formatting issues.</p>
+<dd><p>Perform validation on the project.</p>
+<p>This checks the subject and session level folders to
+ensure there are no NeuroBlueprint formatting issues.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>top_level_folder</strong> (<em>TopLevelFolder</em><em> | </em><em>None</em>) – Folder to check, either “rawdata” or “derivatives”. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]]</span>) – Folder to check, either <code class="docutils literal notranslate"><span class="pre">&quot;rawdata&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;derivatives&quot;</span></code>. If <code class="docutils literal notranslate"><span class="pre">None</span></code>,
 will check both folders.</p></li>
-<li><p><strong>display_mode</strong> (<em>DisplayMode</em>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error)
+<li><p><strong>display_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'error'</span></code>, <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>, <code class="docutils literal notranslate"><span class="pre">'print'</span></code>]</span>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error)
 <code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> (show warning) or <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code></p></li>
-<li><p><strong>include_central</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only the local project is validated. Otherwise, both
+<li><p><strong>include_central</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, only the local project is validated. Otherwise, both
 local and central projects are validated. If in local-project mode,
 this flag is ignored.</p></li>
-<li><p><strong>strict_mode</strong> (<em>bool</em>) – If <cite>True</cite>, only allow NeuroBlueprint-formatted folders to exist in
+<li><p><strong>strict_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only allow NeuroBlueprint-formatted folders to exist in
 the project. By default, non-NeuroBlueprint folders (e.g. a folder
-called ‘my_stuff’ in the ‘rawdata’) are allowed, and only folders
-starting with sub- or ses- prefix are checked. In <cite>Strict Mode</cite>,
+called ‘<cite>my_stuff’</cite> in the ‘<cite>rawdata’</cite>) are allowed, and only folders
+starting with sub- or ses- prefix are checked. In <code class="docutils literal notranslate"><span class="pre">Strict</span> <span class="pre">Mode</span></code>,
 any folder not prefixed with sub-, ses- or a valid datatype will
 raise a validation issue.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of validation errors found in the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>error_messages</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1183,17 +1134,17 @@ raise a validation issue.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="datashuttle.DataShuttle.check_name_formatting">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_name_formatting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefix</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_class.html#DataShuttle.check_name_formatting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.DataShuttle.check_name_formatting" title="Link to this definition">#</a></dt>
-<dd><p>Pass list of names to check how these will be auto-formatted,
-for example as when passed to create_folders() or upload_custom()
-or download()</p>
+<dd><p>Format a list of subject or session names.</p>
+<p>Pass list of names to check how these will be auto-formatted,
+for example as when passed to <code class="docutils literal notranslate"><span class="pre">create_folders()</span></code> or <code class="docutils literal notranslate"><span class="pre">upload_custom()</span></code></p>
 <p>Useful for checking tags e.g. &#64;TO&#64;, &#64;DATE&#64;, &#64;DATETIME&#64;, &#64;DATE&#64;.
-This method will print the formatted list of names,</p>
+This method will print the formatted list of names.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>names</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code>]</span>) – A string or list of subject or session names.</p></li>
 <li><p><strong>prefix</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'sub'</span></code>, <code class="docutils literal notranslate"><span class="pre">'ses'</span></code>]</span>) – The relevant subject or session prefix,
-e.g. “sub-” or “ses-”</p></li>
+e.g. <code class="docutils literal notranslate"><span class="pre">&quot;sub-&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;ses-&quot;</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -1207,31 +1158,32 @@ e.g. “sub-” or “ses-”</p></li>
 <dl class="py function">
 <dt class="sig sig-object py" id="datashuttle.quick_validate_project">
 <span class="sig-prename descclassname"><span class="pre">datashuttle.</span></span><span class="sig-name descname"><span class="pre">quick_validate_project</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_level_folder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'rawdata'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">display_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'warn'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">strict_mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_templates</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/datashuttle/datashuttle_functions.html#quick_validate_project"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#datashuttle.quick_validate_project" title="Link to this definition">#</a></dt>
-<dd><p>Perform validation on the project. This checks the subject
-and session level folders to ensure there are not
-NeuroBlueprint formatting issues.</p>
+<dd><p>Perform validation on a NeuroBlueprint-formatted project.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>project_path</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code> | <code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></span>) – Path to the project to validate. Must include the project
 name, and hold a “rawdata” or “derivatives” folder.</p></li>
-<li><p><strong>top_level_folder</strong> (<em>TopLevelFolder</em>) – The top-level folder (“rawdata” or “derivatives”) to
+<li><p><strong>top_level_folder</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'rawdata'</span></code>, <code class="docutils literal notranslate"><span class="pre">'derivatives'</span></code>]]</span>) – The top-level folder (“rawdata” or “derivatives”) to
 perform validation. If <cite>None</cite>, both are checked.</p></li>
-<li><p><strong>display_mode</strong> (<em>DisplayMode</em>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error)
-<code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> (show warning) or <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code>.</p></li>
-<li><p><strong>strict_mode</strong> (<em>bool</em>) – If <cite>True</cite>, only allow NeuroBlueprint-formatted folders to exist in
+<li><p><strong>display_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code>[<code class="docutils literal notranslate"><span class="pre">'error'</span></code>, <code class="docutils literal notranslate"><span class="pre">'warn'</span></code>, <code class="docutils literal notranslate"><span class="pre">'print'</span></code>]</span>) – The validation issues are displayed as <code class="docutils literal notranslate"><span class="pre">&quot;error&quot;</span></code> (raise error),
+<code class="docutils literal notranslate"><span class="pre">&quot;warn&quot;</span></code> (show warning), or <code class="docutils literal notranslate"><span class="pre">&quot;print&quot;</span></code>.</p></li>
+<li><p><strong>strict_mode</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span>) – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, only allow NeuroBlueprint-formatted folders to exist in
 the project. By default, non-NeuroBlueprint folders (e.g. a folder
 called ‘my_stuff’ in the ‘rawdata’) are allowed, and only folders
 starting with sub- or ses- prefix are checked. In <cite>Strict Mode</cite>,
 any folder not prefixed with sub-, ses- or a valid datatype will
 raise a validation issue.</p></li>
-<li><p><strong>name_templates</strong> (<em>Dict</em>) – A dictionary of templates for subject and session name
+<li><p><strong>name_templates</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>]</span>) – A dictionary of templates for subject and session name
 to validate against. See <code class="docutils literal notranslate"><span class="pre">DataShuttle.set_name_templates()</span></code>
 for details.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]</span></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of validation errors found in the project.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>error_messages</p>
 </dd>
 </dl>
 </dd></dl>
