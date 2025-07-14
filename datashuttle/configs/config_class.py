@@ -206,10 +206,10 @@ class Configs(UserDict):
 
         return base_folder
 
-    def get_rclone_config_name(
+    def get_rclone_config_name_central(
         self, connection_method: Optional[str] = None
     ) -> str:
-        """Generate the rclone configuration name for the project.
+        """Generate the rclone configuration name for the central project.
 
         These configs are created by datashuttle but managed and stored by rclone.
         """
@@ -217,6 +217,10 @@ class Configs(UserDict):
             connection_method = self["connection_method"]
 
         return f"central_{self.project_name}_{connection_method}"
+
+    def get_rclone_config_name_central_local(self):
+        """Generate the rclone configuration name for the local project."""
+        return f"local_{self.project_name}_local_filesystem"
 
     def make_rclone_transfer_options(
         self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool

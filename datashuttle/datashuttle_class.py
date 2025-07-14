@@ -1399,14 +1399,14 @@ class DataShuttle:
     def _setup_rclone_central_ssh_config(self, log: bool) -> None:
         rclone.setup_rclone_config_for_ssh(
             self.cfg,
-            self.cfg.get_rclone_config_name("ssh"),
+            self.cfg.get_rclone_config_name_central("ssh"),
             self.cfg.ssh_key_path,
             log=log,
         )
 
     def _setup_rclone_central_local_filesystem_config(self) -> None:
         rclone.setup_rclone_config_for_local_filesystem(
-            self.cfg.get_rclone_config_name("local_filesystem"),
+            self.cfg.get_rclone_config_name_central("local_filesystem"),
         )
 
     # Persistent settings
