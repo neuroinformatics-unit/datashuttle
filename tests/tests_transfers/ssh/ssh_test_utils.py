@@ -64,7 +64,7 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
 
     rclone.setup_rclone_config_for_ssh(
         project.cfg,
-        project.cfg.get_rclone_config_name("ssh"),
+        project.cfg.get_rclone_config_name_central("ssh"),
         project.cfg.ssh_key_path,
     )
 
