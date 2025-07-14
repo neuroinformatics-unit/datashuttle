@@ -545,7 +545,8 @@ class Interface:
 
         process = self.google_drive_rclone_setup_process
 
-        if process.poll() is not None:
+        # Check if the process is still running
+        if process.poll() is None:
             self.gdrive_setup_process_killed = True
             process.kill()
 
