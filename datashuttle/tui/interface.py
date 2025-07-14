@@ -513,7 +513,17 @@ class Interface:
         gdrive_client_secret: Optional[str] = None,
         service_account_filepath: Optional[str] = None,
     ) -> InterfaceOutput:
-        """Try to set up and validate connection to Google Drive."""
+        """Try to set up and validate connection to Google Drive.
+
+        This is done by running the rclone setup function which returns a
+        subprocess.Popen object. The process object is stored in
+        `self.google_drive_rclone_setup_process` to allow for termination
+        of the process if needed. The `self.gdrive_setup_process_killed`
+        flag is set to false to signal normal operation. The process is then
+        awaited to ensure it completes successfully. If the process is killed
+        manually, the `self.gdrive_setup_process_killed` flag is set to True
+        to prevent raising an error when the process is killed.
+        """
         try:
             process = self.project._setup_rclone_gdrive_config(
                 gdrive_client_secret, service_account_filepath
@@ -530,7 +540,7 @@ class Interface:
             return False, str(e)
 
     def terminate_google_drive_setup(self) -> None:
-        """Terminate rclone setup for google drive."""
+        """Terminate rclone setup for google drive by killing the rclone process."""
         assert self.google_drive_rclone_setup_process is not None
 
         process = self.google_drive_rclone_setup_process
@@ -542,14 +552,16 @@ class Interface:
     def await_successful_gdrive_connection_setup_raise_on_fail(
         self, process: subprocess.Popen
     ):
-        """Wait for rclone setup for google drive to finish and verify successful connection."""
+        """Wait for rclone setup for google drive to finish and verify successful connection.
+
+        The `self.gdrive_setup_process_killed` flag helps prevent raising errors in case the
+        process was killed manually.
+        """
         stdout, stderr = process.communicate()
 
         if not self.gdrive_setup_process_killed:
             if process.returncode != 0:
-                utils.log_and_raise_error(
-                    stderr.decode("utf-8"), ConnectionError
-                )
+                utils.raise_error(stderr.decode("utf-8"), ConnectionError)
 
             rclone.check_successful_connection_and_raise_error_on_fail(
                 self.project.cfg

@@ -99,6 +99,10 @@ def call_rclone_with_popen(command: str) -> subprocess.Popen:
     """Call rclone using `subprocess.Popen` for control over process termination.
 
     It is not possible to kill a process while running it using `subprocess.run`.
+    Killing a process might be required when running rclone setup in a thread worker
+    to allow the user to cancel the setup process. In such a case, cancelling the
+    thread worker alone will not kill the rclone process, so we need to kill the
+    process explicitly.
     """
     command = "rclone " + command
     process = subprocess.Popen(

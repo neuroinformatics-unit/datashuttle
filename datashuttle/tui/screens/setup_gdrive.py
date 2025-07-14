@@ -87,6 +87,7 @@ class SetupGdriveScreen(ModalScreen):
             event.button.id == "setup_gdrive_cancel_button"
             or event.button.id == "setup_gdrive_finish_button"
         ):
+            # see setup_gdrive_connection_and_update_ui()
             if self.setup_worker and self.setup_worker.is_running:
                 self.setup_worker.cancel()  # fix
                 self.interface.terminate_google_drive_setup()
@@ -214,8 +215,18 @@ class SetupGdriveScreen(ModalScreen):
     ) -> None:
         """Start the Google Drive connection setup in a separate thread.
 
-        This requires asynchronous processing and awaits for its completion.
-        After completion, it displays a success / failure screen.
+        The setup is run in a worker thread to avoid blocking the UI so that
+        the user can cancel the setup if needed. This function starts the worker
+        thread for google drive setup, sets `self.setup_worker` to the worker and
+        awaits the worker to finish. After completion, it displays a
+        success / failure screen. The setup on the lower level is a bit complicated.
+        The worker thread runs the `setup_google_drive_connection` method of the
+        `Interface` class which spawns an rclone process to set up the connection.
+        The rclone process object is stored in the `Interface` class to handle closing
+        the process as the thread does not kill the process itself upon cancellation and
+        the process is awaited ensure that the process finishes and any raised errors are caught.
+        Therefore, the worker thread thread and the rclone process are separately cancelled
+        when the user presses the cancel button. (see `on_button_pressed`)
         """
         self.input_box.disabled = True
         self.enter_button.disabled = True
