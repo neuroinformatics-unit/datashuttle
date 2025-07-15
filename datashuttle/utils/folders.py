@@ -21,7 +21,7 @@ import json
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
-from datashuttle.utils import rclone, utils, validation
+from datashuttle.utils import utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -651,6 +651,10 @@ def search_local_or_remote(
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
+    from datashuttle.utils import (
+        rclone,  # imported here to avoid circular reference
+    )
+
     config_prefix = "" if rclone_config_name else f"{rclone_config_name}:"
 
     output = rclone.call_rclone(
