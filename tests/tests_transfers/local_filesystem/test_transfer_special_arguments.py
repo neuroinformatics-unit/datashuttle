@@ -82,7 +82,9 @@ class TestFileTransfer(BaseTransfer):
             pass
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_wildcards_1(self, pathtable_and_project, upload_or_download):
+    def test_local_filesystem_wildcards_1(
+        self, pathtable_and_project, upload_or_download
+    ):
         pathtable, project = pathtable_and_project
 
         sub_names = ["@*@date@*@"]
@@ -110,7 +112,9 @@ class TestFileTransfer(BaseTransfer):
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_wildcards_2(self, pathtable_and_project, upload_or_download):
+    def test_local_filesystem_wildcards_2(
+        self, pathtable_and_project, upload_or_download
+    ):
         pathtable, project = pathtable_and_project
 
         sub_names = ["all_sub"]
@@ -138,7 +142,9 @@ class TestFileTransfer(BaseTransfer):
         )
 
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
-    def test_wildcards_3(self, pathtable_and_project, upload_or_download):
+    def test_local_filesystem_wildcards_3(
+        self, pathtable_and_project, upload_or_download
+    ):
         pathtable, project = pathtable_and_project
 
         sub_names = ["sub-002@TO@003_@*@"]

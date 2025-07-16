@@ -1,3 +1,4 @@
+import fnmatch
 import platform
 import shutil
 
@@ -74,6 +75,96 @@ class TestSSHTransfer(BaseSSHTransfer):
         """
         pathtable, project = ssh_setup
 
+        expected_transferred_paths = self.get_expected_transferred_paths(
+            pathtable, sub_names, ses_names, datatype
+        )
+
+        self.check_transfer_ssh(
+            project, sub_names, ses_names, datatype, expected_transferred_paths
+        )
+
+    def test_ssh_wildcards_1(self, ssh_setup):
+        pathtable, project = ssh_setup
+
+        sub_names = ["@*@date@*@"]
+        ses_names = ["all_ses"]
+        datatype = ["funcimg"]
+
+        pathtable = pathtable[
+            pathtable["parent_sub"]
+            .fillna("")
+            .apply(lambda x: fnmatch.fnmatch(x, "*date*"))
+        ]
+
+        pathtable = pathtable[
+            pathtable["parent_datatype"].apply(lambda x: x == "funcimg")
+        ]
+
+        expected_transferred_paths = sorted(pathtable["path"])
+
+        self.check_transfer_ssh(
+            project, sub_names, ses_names, datatype, expected_transferred_paths
+        )
+
+    def test_ssh_wildcards_2(self, ssh_setup):
+        pathtable, project = ssh_setup
+
+        sub_names = ["all_sub"]
+        ses_names = ["ses-003@*@"]
+        datatype = ["all_non_datatype"]
+
+        pathtable = pathtable[
+            pathtable["parent_ses"]
+            .fillna("")
+            .apply(lambda x: fnmatch.fnmatch(x, "ses-003*"))
+        ]
+
+        pathtable = pathtable[
+            pathtable["parent_datatype"].apply(lambda x: x is None)
+        ]
+
+        expected_transferred_paths = sorted(pathtable["path"])
+
+        self.check_transfer_ssh(
+            project, sub_names, ses_names, datatype, expected_transferred_paths
+        )
+
+    def test_ssh_wildcards_3(self, ssh_setup):
+        pathtable, project = ssh_setup
+
+        sub_names = ["sub-002@TO@003_@*@"]
+        ses_names = ["ses-001"]
+        datatype = ["all"]
+
+        pathtable = pathtable[
+            pathtable["parent_sub"]
+            .fillna("")
+            .apply(
+                lambda x: fnmatch.fnmatch(x, "sub-002*")
+                or fnmatch.fnmatch(x, "sub-003*")
+            )
+        ]
+
+        pathtable = pathtable[
+            pathtable["parent_ses"]
+            .fillna("")
+            .apply(lambda x: fnmatch.fnmatch(x, "ses-001*"))
+        ]
+
+        expected_transferred_paths = sorted(pathtable["path"])
+
+        self.check_transfer_ssh(
+            project, sub_names, ses_names, datatype, expected_transferred_paths
+        )
+
+    def check_transfer_ssh(
+        self,
+        project,
+        sub_names,
+        ses_names,
+        datatype,
+        expected_transferred_paths,
+    ):
         # Upload data from the setup local project to a temporary
         # central directory.
         true_central_path = project.cfg["central_path"]
@@ -86,10 +177,6 @@ class TestSSHTransfer(BaseSSHTransfer):
 
         project.upload_custom(
             "rawdata", sub_names, ses_names, datatype, init_log=False
-        )
-
-        expected_transferred_paths = self.get_expected_transferred_paths(
-            pathtable, sub_names, ses_names, datatype
         )
 
         # Search the paths that were transferred and tidy them up,
