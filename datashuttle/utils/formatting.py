@@ -64,7 +64,13 @@ def check_and_format_names(
     names_to_format, reserved_keywords = [], []
     for name in names:
         if name in canonical_reserved_keywords() or tags("*") in name:
-            reserved_keywords.append(name)
+            if tags("to") in name:
+                # handle an edge case where use searches with both tags
+                reserved_keywords += update_names_with_range_to_flag(
+                    [name], prefix
+                )
+            else:
+                reserved_keywords.append(name)
         else:
             names_to_format.append(name)
 

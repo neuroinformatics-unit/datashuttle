@@ -655,7 +655,7 @@ def search_local_or_remote(
         rclone,  # imported here to avoid circular reference
     )
 
-    config_prefix = "" if rclone_config_name else f"{rclone_config_name}:"
+    config_prefix = "" if not rclone_config_name else f"{rclone_config_name}:"
 
     output = rclone.call_rclone(
         f'lsjson {config_prefix}"{search_path.as_posix()}"',
