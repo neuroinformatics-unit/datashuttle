@@ -148,17 +148,27 @@ class TestFileTransfer(BaseTransfer):
         paths_to_transferred_files = self.perform_transfer(
             project, upload_or_download, sub_names, ses_names, datatype
         )
-        breakpoint()
 
-    #        pathtable = pathtable[pathtable["parent_ses"].fillna("").apply(
-    #           lambda x: fnmatch.fnmatch(x, "ses-002*") or fnmatch.fnmatch(x, "ses-003*")
-    #      )]
+        pathtable = pathtable[
+            pathtable["parent_sub"]
+            .fillna("")
+            .apply(
+                lambda x: fnmatch.fnmatch(x, "sub-002*")
+                or fnmatch.fnmatch(x, "sub-003*")
+            )
+        ]
 
-    #   pathtable = pathtable[pathtable["parent_datatype"].apply(lambda x: x is not None)]
+        pathtable = pathtable[
+            pathtable["parent_ses"]
+            .fillna("")
+            .apply(lambda x: fnmatch.fnmatch(x, "ses-001*"))
+        ]
 
-    #     expected_transferred_paths = sorted(pathtable["path"])
-    #    breakpoint()
-    #   assert sorted(paths_to_transferred_files) == sorted(expected_transferred_paths)
+        expected_transferred_paths = sorted(pathtable["path"])
+
+        assert sorted(paths_to_transferred_files) == sorted(
+            expected_transferred_paths
+        )
 
     def perform_transfer(
         self, project, upload_or_download, sub_names, ses_names, datatype
