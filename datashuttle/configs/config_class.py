@@ -218,10 +218,6 @@ class Configs(UserDict):
 
         return f"central_{self.project_name}_{connection_method}"
 
-    def get_rclone_config_name_central_local(self):
-        """Generate the rclone configuration name for the local project."""
-        return f"local_{self.project_name}_local_filesystem"
-
     def make_rclone_transfer_options(
         self, overwrite_existing_files: OverwriteExistingFiles, dry_run: bool
     ) -> Dict:
