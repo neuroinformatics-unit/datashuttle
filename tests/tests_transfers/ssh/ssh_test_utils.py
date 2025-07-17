@@ -6,7 +6,7 @@ import sys
 
 import paramiko
 
-from datashuttle.utils import rclone, ssh
+from datashuttle.utils import rclone, ssh, utils
 
 
 def setup_project_for_ssh(
@@ -43,8 +43,8 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
     orig_builtin = copy.deepcopy(builtins.input)
     builtins.input = lambda _: "y"  # type: ignore
 
-    orig_getpass = copy.deepcopy(ssh.getpass.getpass)
-    ssh.getpass.getpass = lambda _: "password"  # type: ignore
+    orig_get_secret = copy.deepcopy(utils.get_connection_secret_from_user)
+    utils.get_connection_secret_from_user = lambda *args, **kwargs: "password"  # type: ignore
 
     orig_isatty = copy.deepcopy(sys.stdin.isatty)
     sys.stdin.isatty = lambda: True
@@ -59,7 +59,7 @@ def setup_ssh_connection(project, setup_ssh_key_pair=True):
 
     # Restore functions
     builtins.input = orig_builtin
-    ssh.getpass.getpass = orig_getpass
+    utils.get_connection_secret_from_user = orig_get_secret
     sys.stdin.isatty = orig_isatty
 
     rclone.setup_rclone_config_for_ssh(

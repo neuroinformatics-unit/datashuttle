@@ -62,6 +62,34 @@ def get_tooltip(id: str) -> str:
             "to a project folder, possibly on a mounted drive.\n\n"
         )
 
+    elif id == "config_central_path_input_mode-aws":
+        tooltip = (
+            "The path to the project folder within the aws bucket.\n"
+            "Leave blank if the aws bucket is the project folder."
+        )
+
+    elif id == "config_central_path_input_mode-gdrive":
+        tooltip = (
+            "The path to the project folder within the google drive folder.\n"
+            "Leave blank if the google drive folder is the project folder."
+        )
+    # Google Drive configs
+    # -------------------------------------------------------------------------
+
+    # Google Drive Client ID
+    elif id == "#configs_gdrive_client_id_input":
+        tooltip = (
+            "The Google Drive Client ID to use for authentication.\n\n"
+            "It can be obtained by creating an OAuth 2.0 client in the Google Cloud Console.\n\n"
+            "Can be left empty to use rclone's default client (slower)"
+        )
+
+    elif id == "#configs_gdrive_root_folder_id":
+        tooltip = (
+            "The Google Drive root folder ID to use for transfer.\n\n"
+            "It can be obtained by navigating to the folder in Google Drive and copying the ID from the URL.\n\n"
+        )
+
     # Settings
     # -------------------------------------------------------------------------
 
