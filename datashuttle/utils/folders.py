@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
 import fnmatch
 import json
+import fnmatch
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
