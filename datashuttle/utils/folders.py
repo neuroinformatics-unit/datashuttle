@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -20,7 +21,7 @@ import glob
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
-from datashuttle.utils import ssh, utils, validation
+from datashuttle.utils import rclone, ssh, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -598,14 +599,27 @@ def search_for_folders(
     Discovered folders (`all_folder_names`) and files (`all_filenames`).
 
     """
-    if local_or_central == "central" and cfg["connection_method"] == "ssh":
-        all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
-            search_path,
-            search_prefix,
-            cfg,
-            verbose,
-            return_full_path,
-        )
+    if local_or_central == "central" and cfg["connection_method"] in [
+        "ssh",
+        "gdrive",
+        "aws",
+    ]:
+        if cfg["connection_method"] == "ssh":
+            all_folder_names, all_filenames = (
+                ssh.search_ssh_central_for_folders(
+                    search_path,
+                    search_prefix,
+                    cfg,
+                    verbose,
+                    return_full_path,
+                )
+            )
+
+        else:
+            all_folder_names, all_filenames = search_gdrive_or_aws_for_folders(
+                search_path, search_prefix, cfg, return_full_path
+            )
+
     else:
         if not search_path.exists():
             if verbose:
@@ -617,6 +631,57 @@ def search_for_folders(
         all_folder_names, all_filenames = search_filesystem_path_for_folders(
             search_path / search_prefix, return_full_path
         )
+    return all_folder_names, all_filenames
+
+
+def search_gdrive_or_aws_for_folders(
+    search_path: Path,
+    search_prefix: str,
+    cfg: Configs,
+    return_full_path: bool = False,
+) -> Tuple[List[Any], List[Any]]:
+    """Search for files and folders in central path using `rclone lsjson` command.
+
+    This command lists all the files and folders in the central path in a json format.
+    The json contains file/folder info about each file/folder like name, type, etc.
+    """
+    output = rclone.call_rclone(
+        "lsjson "
+        f"{cfg.get_rclone_config_name()}:{search_path.as_posix()} "
+        f'--include "{search_prefix}"',
+        pipe_std=True,
+    )
+
+    all_folder_names: List[str] = []
+    all_filenames: List[str] = []
+
+    if output.returncode != 0:
+        utils.log_and_message(
+            f"Error searching files at {search_path.as_posix()} \n {output.stderr.decode('utf-8') if output.stderr else ''}"
+        )
+        return all_folder_names, all_filenames
+
+    files_and_folders = json.loads(output.stdout)
+
+    try:
+        for file_or_folder in files_and_folders:
+            name = file_or_folder["Name"]
+            is_dir = file_or_folder.get("IsDir", False)
+
+            to_append = (
+                (search_path / name).as_posix() if return_full_path else name
+            )
+
+            if is_dir:
+                all_folder_names.append(to_append)
+            else:
+                all_filenames.append(to_append)
+
+    except Exception:
+        utils.log_and_message(
+            f"Error searching files at {search_path.as_posix()}"
+        )
+
     return all_folder_names, all_filenames
 
 

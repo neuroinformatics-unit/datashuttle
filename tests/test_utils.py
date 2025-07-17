@@ -659,3 +659,21 @@ def make_project(project_name):
     project = DataShuttle(project_name)
     warnings.filterwarnings("default")
     return project
+
+
+def monkeypatch_get_datashuttle_path(tmp_config_path, _monkeypatch):
+    """Monkeypatch the function that creates a hidden datashuttle folder.
+
+    By default, datashuttle saves project folders to
+    Path.home() / .datashuttle. In order to not mess with
+    the home directory during this test the `get_datashuttle_path()`
+    function is monkeypatched in order to point to a tmp_path.
+    """
+
+    def mock_get_datashuttle_path():
+        return tmp_config_path
+
+    _monkeypatch.setattr(
+        "datashuttle.configs.canonical_folders.get_datashuttle_path",
+        mock_get_datashuttle_path,
+    )

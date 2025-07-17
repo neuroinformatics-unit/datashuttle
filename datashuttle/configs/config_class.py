@@ -120,15 +120,47 @@ class Configs(UserDict):
     def load_from_file(self) -> None:
         """Load a config dict saved at .yaml file.
 
-        Note this will not automatically check the configs are valid,
-        this requires calling self.check_dict_values_raise_on_fail().
+        This will do a minimal backwards compatibility check and
+        add config keys to ensure backwards compatibility with new connection
+        methods added to Datashuttle.
+
+        However, this will not automatically check the configs are valid, this
+        requires calling self.check_dict_values_raise_on_fail()
         """
         with open(self.file_path) as config_file:
             config_dict = yaml.full_load(config_file)
 
         load_configs.convert_str_and_pathlib_paths(config_dict, "str_to_path")
 
+        self.update_config_for_backward_compatability_if_required(config_dict)
+
         self.data = config_dict
+
+    def update_config_for_backward_compatability_if_required(
+        self, config_dict: Dict
+    ):
+        """Add keys introduced in later Datashuttle versions if they are missing."""
+        canonical_config_keys_to_add = [
+            "gdrive_client_id",
+            "gdrive_root_folder_id",
+            "aws_access_key_id",
+            "aws_region",
+        ]
+
+        # All keys shall be missing for a backwards compatibility update
+        if not (
+            all(
+                key in config_dict.keys()
+                for key in canonical_config_keys_to_add
+            )
+        ):
+            assert not any(
+                key in config_dict.keys()
+                for key in canonical_config_keys_to_add
+            )
+
+            for key in canonical_config_keys_to_add:
+                config_dict[key] = None
 
     # -------------------------------------------------------------------------
     # Utils
@@ -186,6 +218,10 @@ class Configs(UserDict):
     ) -> Path:
         """Return the full base path for the given top-level folder.
 
+        If the connection method is `aws` or `drive`, the base path
+        might be `None` (e.g. if the Google Drive is the project folder).
+        In this case, the base path is ignored.
+
         Parameters
         ----------
         base
@@ -202,7 +238,12 @@ class Configs(UserDict):
         if base == "local":
             base_folder = self["local_path"] / top_level_folder
         elif base == "central":
-            base_folder = self["central_path"] / top_level_folder
+            if self["central_path"] is None:
+                # This path should never be triggered for local-only
+                assert self["connection_method"] in ["aws", "gdrive"]
+                base_folder = Path(top_level_folder)
+            else:
+                base_folder = self["central_path"] / top_level_folder
 
         return base_folder
 
@@ -299,8 +340,4 @@ class Configs(UserDict):
         A project is 'local-only' if it has no `central_path` and `connection_method`.
         It can be used to make folders and validate, but not for transfer.
         """
-        canonical_configs.raise_on_bad_local_only_project_configs(self)
-
-        params_are_none = canonical_configs.local_only_configs_are_none(self)
-
-        return all(params_are_none)
+        return self["connection_method"] is None

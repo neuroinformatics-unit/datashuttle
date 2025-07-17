@@ -64,6 +64,12 @@ SettingsScreen {
 GetHelpScreen {
     align: center middle;
 }
+SetupGdriveScreen {
+    align: center middle;
+}
+SetupAwsScreen {
+    align: center middle;
+}
 #get_help_label {
     align: center middle;
     text-align: center;
@@ -114,6 +120,74 @@ MessageBox:light > #messagebox_top_container {
     align: center middle;
  }
 
+#setup_gdrive_screen_container {
+    height: 75%;
+    width: 80%;
+    align: center middle;
+    border: thick $panel-lighten-1;
+}
+
+#gdrive_setup_messagebox_message_container {
+    height: 60%;
+    align: center middle;
+    overflow: hidden auto;
+    margin: 0 1;
+}
+
+#gdrive_setup_messagebox_message {
+    text-align: center;
+    padding: 0 2;
+}
+
+#setup_gdrive_ok_button {
+    align: center bottom;
+    height: 3;
+}
+
+#setup_gdrive_cancel_button {
+    align: center bottom;
+}
+
+#setup_gdrive_buttons_horizontal {
+    align: center middle;
+}
+
+#setup_aws_screen_container {
+    height: 75%;
+    width: 80%;
+    align: center middle;
+    border: thick $panel-lighten-1;
+}
+
+#setup_aws_messagebox_message_container {
+    height: 70%;
+    align: center middle;
+    overflow: hidden auto;
+    margin: 0 1;
+}
+
+#setup_aws_messagebox_message {
+    text-align: center;
+    padding: 0 2;
+}
+
+#setup_aws_secret_access_key_input {
+    dock: bottom;
+}
+
+#setup_aws_ok_button {
+    align: center bottom;
+    height: 3;
+}
+
+#setup_aws_cancel_button {
+    align: center bottom;
+}
+
+#setup_aws_buttons_horizontal {
+    align: center middle;
+}
+
  /* Configs Content ----------------------------------------------------------------- */
 
 #configs_container {
@@ -161,11 +235,19 @@ MessageBox:light > #messagebox_top_container {
     padding: 0 4 0 4;
     width: 26;
     color: $success;  /* unsure about this */
+    dock: left;
 }
 
-#configs_setup_ssh_connection_button {
-    margin: 2 1 0 0;
+#setup_buttons_container {
+    height: 100%;
 }
+
+#setup_buttons_container > Button {
+    margin: 2 1 0 0;
+    dock: left;
+}
+
+
 #configs_go_to_project_screen_button {
     margin: 2 1 0 0;
 }
@@ -202,6 +284,10 @@ MessageBox:light > #messagebox_top_container {
 }
 #configs_bottom_buttons_horizontal {
     padding: 0 0 2 0;
+}
+
+#configs_aws_region_select {
+    width: 70%;
 }
 
 /* This Horizontal wrapper container is necessary to make the
