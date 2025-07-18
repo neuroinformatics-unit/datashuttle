@@ -55,11 +55,7 @@ class TestFileTransfer(BaseTransfer):
         upload_or_download,
     ):
         """
-        Test many combinations of possible file transfer commands. The
-        entire test project is created in the original `local_path`
-        and subset of it is uploaded and tested against. To test
-        upload vs. download, the `local_path` and `central_path`
-        locations are swapped.
+        Test many combinations of possible file transfer commands.
         """
         pathtable, project = pathtable_and_project
 
@@ -75,10 +71,17 @@ class TestFileTransfer(BaseTransfer):
             expected_transferred_paths
         )
 
+    # Test Wildcards
+    # ----------------------------------------------------------------------------------
+    # It is very difficult to test wildcards using the original machinery
+    # for testing keywords such as "all", "all_sub" etc as used in test_combinations_filesystem_transfer().
+    # Therefore, test a few specific cases here.
+
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_local_filesystem_wildcards_1(
         self, pathtable_and_project, upload_or_download
     ):
+        """Test a single custom transfer that combines different special keywords."""
         pathtable, project = pathtable_and_project
 
         sub_names = ["@*@date@*@"]
@@ -109,6 +112,7 @@ class TestFileTransfer(BaseTransfer):
     def test_local_filesystem_wildcards_2(
         self, pathtable_and_project, upload_or_download
     ):
+        """Test a single custom transfer that combines different special keywords."""
         pathtable, project = pathtable_and_project
 
         sub_names = ["all_sub"]
@@ -139,6 +143,7 @@ class TestFileTransfer(BaseTransfer):
     def test_local_filesystem_wildcards_3(
         self, pathtable_and_project, upload_or_download
     ):
+        """Test a single custom transfer that combines different special keywords."""
         pathtable, project = pathtable_and_project
 
         sub_names = ["sub-002@TO@003_@*@"]
@@ -176,6 +181,11 @@ class TestFileTransfer(BaseTransfer):
         """Transfer the data, swapping the paths to move a subset of
         files from the already set up directory to a new directory
         using upload or download.
+
+        The entire test project is created in the original `local_path`
+        and subset of it is uploaded and tested against. To test
+        upload vs. download, the `local_path` and `central_path`
+        locations are swapped.
         """
         transfer_function = test_utils.handle_upload_or_download(
             project,

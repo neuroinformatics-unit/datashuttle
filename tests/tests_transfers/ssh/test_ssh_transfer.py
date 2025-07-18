@@ -67,11 +67,6 @@ class TestSSHTransfer(BaseSSHTransfer):
         to a container. This is very slow, due to the rclone ssh transfer (which
         is performed twice in this test, once for upload, once for download), around
         8 seconds per parameterization.
-
-        In test setup, the entire project is created in the `local_path` and
-        is uploaded to `central_path`. So we only need to set up once per test,
-        upload and download is to temporary folders and these temporary folders
-        are cleaned at the end of each parameterization.
         """
         pathtable, project = ssh_setup
 
@@ -83,7 +78,15 @@ class TestSSHTransfer(BaseSSHTransfer):
             project, sub_names, ses_names, datatype, expected_transferred_paths
         )
 
+    # Test Wildcards
+    # ----------------------------------------------------------------------------------
+    # It is very difficult to test wildcards using the original machinery
+    # for testing keywords such as "all", "all_sub" etc as used in test_combinations_ssh_transfer().
+    # Therefore, test a few specific cases here by manually chopping down the pathtable based
+    # on the sub / ses /datatype names to test the expected paths.
+
     def test_ssh_wildcards_1(self, ssh_setup):
+        """Test a single custom transfer that combines different special keywords."""
         pathtable, project = ssh_setup
 
         sub_names = ["@*@date@*@"]
@@ -107,6 +110,7 @@ class TestSSHTransfer(BaseSSHTransfer):
         )
 
     def test_ssh_wildcards_2(self, ssh_setup):
+        """Test a single custom transfer that combines different special keywords."""
         pathtable, project = ssh_setup
 
         sub_names = ["all_sub"]
@@ -130,6 +134,7 @@ class TestSSHTransfer(BaseSSHTransfer):
         )
 
     def test_ssh_wildcards_3(self, ssh_setup):
+        """Test a single custom transfer that combines different special keywords."""
         pathtable, project = ssh_setup
 
         sub_names = ["sub-002@TO@003_@*@"]
@@ -165,6 +170,14 @@ class TestSSHTransfer(BaseSSHTransfer):
         datatype,
         expected_transferred_paths,
     ):
+        """Transfer the data and check the transferred files match the
+        `expected_transferred_paths`.
+
+        In test setup, the entire project is created in the `local_path` and
+        is uploaded to `central_path`. So we only need to set up once per test,
+        upload and download is to temporary folders and these temporary folders
+        are cleaned at the end of each parameterization.
+        """
         # Upload data from the setup local project to a temporary
         # central directory.
         true_central_path = project.cfg["central_path"]
