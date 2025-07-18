@@ -610,7 +610,7 @@ def search_for_folders(
     if local_or_central == "local":
         rclone_config_name = None
     else:
-        rclone_config_name = cfg.get_rclone_config_name_central(
+        rclone_config_name = cfg.get_rclone_config_name(
             cfg["connection_method"]
         )
 

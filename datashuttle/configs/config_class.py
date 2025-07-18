@@ -206,7 +206,7 @@ class Configs(UserDict):
 
         return base_folder
 
-    def get_rclone_config_name_central(
+    def get_rclone_config_name(
         self, connection_method: Optional[str] = None
     ) -> str:
         """Generate the rclone configuration name for the central project.
