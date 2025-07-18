@@ -75,12 +75,6 @@ class TestFileTransfer(BaseTransfer):
             expected_transferred_paths
         )
 
-        # Teardown here, because we have session scope.
-        try:
-            shutil.rmtree(self.central_from_local(project.cfg["local_path"]))
-        except FileNotFoundError:
-            pass
-
     @pytest.mark.parametrize("upload_or_download", ["upload", "download"])
     def test_local_filesystem_wildcards_1(
         self, pathtable_and_project, upload_or_download
@@ -213,5 +207,11 @@ class TestFileTransfer(BaseTransfer):
         paths_to_transferred_files = self.remove_path_before_rawdata(
             paths_to_transferred_files
         )
+
+        # Teardown here, because we have session scope.
+        try:
+            shutil.rmtree(self.central_from_local(project.cfg["local_path"]))
+        except FileNotFoundError:
+            pass
 
         return paths_to_transferred_files
