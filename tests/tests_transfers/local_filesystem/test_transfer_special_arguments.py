@@ -166,7 +166,7 @@ class TestFileTransfer(BaseTransfer):
         pathtable = pathtable[
             pathtable["parent_ses"]
             .fillna("")
-            .apply(lambda x: fnmatch.fnmatch(x, "ses-001*"))
+            .apply(lambda x: fnmatch.fnmatch(x, "ses-001"))
         ]
 
         expected_transferred_paths = pathtable["path"]
