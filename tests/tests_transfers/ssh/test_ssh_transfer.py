@@ -103,7 +103,7 @@ class TestSSHTransfer(BaseSSHTransfer):
             pathtable["parent_datatype"].apply(lambda x: x == "funcimg")
         ]
 
-        expected_transferred_paths = sorted(pathtable["path"])
+        expected_transferred_paths = pathtable["path"]
 
         self.check_transfer_ssh(
             project, sub_names, ses_names, datatype, expected_transferred_paths
@@ -127,7 +127,7 @@ class TestSSHTransfer(BaseSSHTransfer):
             pathtable["parent_datatype"].apply(lambda x: x is None)
         ]
 
-        expected_transferred_paths = sorted(pathtable["path"])
+        expected_transferred_paths = pathtable["path"]
 
         self.check_transfer_ssh(
             project, sub_names, ses_names, datatype, expected_transferred_paths
@@ -156,7 +156,7 @@ class TestSSHTransfer(BaseSSHTransfer):
             .apply(lambda x: fnmatch.fnmatch(x, "ses-001*"))
         ]
 
-        expected_transferred_paths = sorted(pathtable["path"])
+        expected_transferred_paths = pathtable["path"]
 
         self.check_transfer_ssh(
             project, sub_names, ses_names, datatype, expected_transferred_paths

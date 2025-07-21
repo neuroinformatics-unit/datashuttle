@@ -102,7 +102,7 @@ class TestFileTransfer(BaseTransfer):
             pathtable["parent_datatype"].apply(lambda x: x == "funcimg")
         ]
 
-        expected_transferred_paths = sorted(pathtable["path"])
+        expected_transferred_paths = pathtable["path"]
 
         assert sorted(paths_to_transferred_files) == sorted(
             expected_transferred_paths
@@ -133,7 +133,7 @@ class TestFileTransfer(BaseTransfer):
             pathtable["parent_datatype"].apply(lambda x: x is None)
         ]
 
-        expected_transferred_paths = sorted(pathtable["path"])
+        expected_transferred_paths = pathtable["path"]
 
         assert sorted(paths_to_transferred_files) == sorted(
             expected_transferred_paths
@@ -169,7 +169,7 @@ class TestFileTransfer(BaseTransfer):
             .apply(lambda x: fnmatch.fnmatch(x, "ses-001*"))
         ]
 
-        expected_transferred_paths = sorted(pathtable["path"])
+        expected_transferred_paths = pathtable["path"]
 
         assert sorted(paths_to_transferred_files) == sorted(
             expected_transferred_paths
