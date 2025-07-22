@@ -1,3 +1,8 @@
+# Packaging
+package/dist
+package/build
+package/_vendored
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
