@@ -1,13 +1,14 @@
-import requests
-import zipfile
 import subprocess
+
+import requests
+
 
 def get_wezterm_version():
     return "20240203-110809-5046fc22"
 
+
 def download_wezterm(vendored_dir, wezterm_foldername):
-    """
-    """
+    """ """
     wezterm_url = f"https://github.com/wezterm/wezterm/releases/download/{get_wezterm_version()}/{wezterm_foldername}.zip"
 
     wezterm_extracted_dir = vendored_dir / wezterm_foldername
@@ -24,7 +25,10 @@ def download_wezterm(vendored_dir, wezterm_foldername):
                     f.write(chunk)
 
         print("📦 Extracting WezTerm with system unzip...")
-        subprocess.run(["unzip", "-q", str(wezterm_zip_path), "-d", str(vendored_dir)], check=True)
+        subprocess.run(
+            ["unzip", "-q", str(wezterm_zip_path), "-d", str(vendored_dir)],
+            check=True,
+        )
 
         wezterm_zip_path.unlink()  # Optional: clean up ZIP
         print("✅ WezTerm ready.")
