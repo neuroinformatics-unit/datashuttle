@@ -4,6 +4,7 @@ import os
 import sys
 import platform
 from glob import glob
+from pathlib import Path
 
 # Include .tcss files
 tcss_files = [
@@ -28,7 +29,7 @@ if not os.path.isfile(rclone_src):
 binaries = [(rclone_src, '.')]
 
 a = Analysis(
-    ['datashuttle_launcher.py'],
+    ['datashuttle_launcher.py'],  # terminal_launcher
     pathex=[os.path.abspath('..')],
     binaries=binaries,
     datas=tcss_files,
@@ -52,14 +53,27 @@ pyz = PYZ(a.pure)
 exe = EXE(
     pyz,
     a.scripts,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
+    [],
+    exclude_binaries=True,
     name='datashuttle',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
     upx=True,
     console=True,
-    onefile=True,  # <-- enables one-file mode
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=None,
+    codesign_identity=None,
+    entitlements_file=None,
+)
+
+coll = COLLECT(
+    exe,
+    a.binaries,
+    a.datas,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    name='datashuttle'
 )

@@ -42,3 +42,23 @@ coll = COLLECT(
     upx_exclude=[],
     name='terminal_launcher',
 )
+
+app = BUNDLE(
+    exe,
+    a.binaries,
+    a.datas,
+    name='datashuttle.app',  # <- the app bundle name
+    icon=None,                     # <- optional .icns file here
+    bundle_identifier="com.yourdomain.terminal_launcher",  # optional
+    info_plist={
+        'NSHighResolutionCapable': 'True',
+        'CFBundleDisplayName': 'Datashuttle',
+        'CFBundleName': 'Datashuttle',
+        'CFBundleIdentifier': 'com.yourdomain.datashuttle',
+        'CFBundleVersion': '0.1.0',
+        'CFBundleShortVersionString': '0.1.0',
+        'NSPrincipalClass': 'NSApplication',
+        'LSMinimumSystemVersion': '10.13.0',
+    }
+)
+
