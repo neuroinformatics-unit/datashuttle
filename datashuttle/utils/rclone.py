@@ -30,11 +30,26 @@ import subprocess
 import tempfile
 from pathlib import Path
 from subprocess import CompletedProcess
+from typing import Dict, List, Literal
+import sys
+import os
 
 from datashuttle.configs import canonical_configs
 from datashuttle.utils import rclone_encryption, utils
 from datashuttle.utils.transfer_output_class import TransferOutput
 
+
+def get_rclone_name() -> str:
+    """
+    """
+    if getattr(sys, 'frozen', False):
+        # PyInstaller: binary extracted to _MEIPASS
+        rclone_bin = os.path.join(sys._MEIPASS, 'rclone.exe' if sys.platform.startswith('win') else 'rclone')
+    else:
+        # Normal Python execution: use PATH or fixed path
+        rclone_bin = 'rclone'  # or provide full path if needed
+
+    return rclone_bin
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     """Call rclone with the specified command.
@@ -52,7 +67,8 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     subprocess.CompletedProcess with `stdout` and `stderr` attributes.
 
     """
-    command = "rclone " + command
+    command = f"{get_rclone_name()} {command}"
+
     if pipe_std:
         output = subprocess.run(
             command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
@@ -104,7 +120,7 @@ def call_rclone_through_script_for_central_connection(
     """
     system = platform.system()
 
-    command = "rclone " + command
+    command = f"{get_rclone_name()} {command}"
 
     if system == "Windows":
         suffix = ".bat"
