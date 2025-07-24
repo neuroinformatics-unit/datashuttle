@@ -1,10 +1,7 @@
-import platform
 import shutil
 import subprocess
-import zipfile
 from pathlib import Path
 
-import requests
 import packaging_utils
 
 # Constants
@@ -26,7 +23,9 @@ if (dist_path := project_root / "dist").exists():
 
 # Step 2: Run PyInstaller builds
 subprocess.run(f"pyinstaller {project_root / 'datashuttle.spec'}", shell=True)
-subprocess.run(f"pyinstaller {project_root / 'terminal_launcher.spec'}", shell=True)
+subprocess.run(
+    f"pyinstaller {project_root / 'terminal_launcher.spec'}", shell=True
+)
 
 shutil.copy(
     base_path / "wezterm_config.lua", vendored_dir / WEZTERM_FOLDERNAME
@@ -52,4 +51,3 @@ for item in terminal_launcher_dist_dir.iterdir():
         shutil.copy2(item, target)
 
 shutil.rmtree(terminal_launcher_dist_dir)
-

@@ -2,5 +2,3 @@ TODO:
 1) write package script for macOS and organise code and outputs properly.
 2) go back to windows and rework everything
 3) text on linux
-
-
