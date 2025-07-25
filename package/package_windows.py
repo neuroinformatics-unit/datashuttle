@@ -11,9 +11,10 @@ WEZTERM_URL = f"https://github.com/wezterm/wezterm/releases/download/{WEZTERM_VE
 
 # Paths
 project_root = Path(__file__).parent
-vendored_dir = base_path / "_vendored"
+vendored_dir = project_root / "_vendored"
 
-packaging_utils.download_wezterm(vendored_dir, WEZTERM_FOLDERNAME)
+if not (vendored_dir / WEZTERM_FOLDERNAME).exists():
+    packaging_utils.download_wezterm(vendored_dir, WEZTERM_FOLDERNAME)
 
 if (build_path := project_root / "build").exists():
     shutil.rmtree(build_path)
@@ -24,30 +25,15 @@ if (dist_path := project_root / "dist").exists():
 # Step 2: Run PyInstaller builds
 subprocess.run(f"pyinstaller {project_root / 'datashuttle.spec'}", shell=True)
 subprocess.run(
-    f"pyinstaller {project_root / 'terminal_launcher.spec'}", shell=True
-)
-
-shutil.copy(
-    base_path / "wezterm_config.lua", vendored_dir / WEZTERM_FOLDERNAME
+    f"pyinstaller {project_root / 'terminal_launcher_windows.spec'}",
+    shell=True,
 )
 
 # Step 3: Copy WezTerm into dist/_vendored
-dist_dir = base_path / "dist"
+dist_dir = project_root / "dist"
 terminal_launcher_dist_dir = dist_dir / "terminal_launcher"
-vendored_output_path = dist_dir / "_vendored" / wezterm_extracted_dir.name
-
-dist_dir.mkdir(exist_ok=True)
+vendored_output_path = dist_dir / "_vendored" / WEZTERM_FOLDERNAME
 
 shutil.copytree(
-    wezterm_extracted_dir, vendored_output_path, dirs_exist_ok=True
+    vendored_dir / WEZTERM_FOLDERNAME, vendored_output_path, dirs_exist_ok=True
 )
-
-# Step 4: Merge terminal_launcher build contents into dist/
-for item in terminal_launcher_dist_dir.iterdir():
-    target = dist_dir / item.name
-    if item.is_dir():
-        shutil.copytree(item, target, dirs_exist_ok=True)
-    else:
-        shutil.copy2(item, target)
-
-shutil.rmtree(terminal_launcher_dist_dir)
