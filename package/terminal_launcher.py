@@ -36,7 +36,7 @@ def main():
         # This is a hot mess, almost direct copy from above.
         if getattr(sys, "frozen", False):
             # Running as a bundled executable
-            base_path = Path(sys.executable).parent.parent
+            base_path = Path(sys.executable).parent.parent / "Resources"
         else:
             # Running as a script
             base_path = Path(__file__).resolve().parent.parent
