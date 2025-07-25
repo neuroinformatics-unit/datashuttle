@@ -1,4 +1,6 @@
 import subprocess
+import zipfile
+from sys import platform
 
 import requests
 
@@ -25,10 +27,21 @@ def download_wezterm(vendored_dir, wezterm_foldername):
                     f.write(chunk)
 
         print("📦 Extracting WezTerm with system unzip...")
-        subprocess.run(
-            ["unzip", "-q", str(wezterm_zip_path), "-d", str(vendored_dir)],
-            check=True,
-        )
+
+        if platform == "darwin":  ## TODO always use same way
+            subprocess.run(
+                [
+                    "unzip",
+                    "-q",
+                    str(wezterm_zip_path),
+                    "-d",
+                    str(vendored_dir),
+                ],
+                check=True,
+            )
+        else:
+            with zipfile.ZipFile(wezterm_zip_path, "r") as zip_ref:
+                zip_ref.extractall(vendored_dir)
 
         wezterm_zip_path.unlink()  # Optional: clean up ZIP
         print("✅ WezTerm ready.")
