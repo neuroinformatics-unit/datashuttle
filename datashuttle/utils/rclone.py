@@ -38,19 +38,20 @@ from datashuttle.utils import rclone_encryption, utils
 from datashuttle.utils.transfer_output_class import TransferOutput
 
 
-def get_rclone_name() -> str:
+def get_command(command: str) -> str:
     """ """
     if getattr(sys, "frozen", False):
         # PyInstaller: binary extracted to _MEIPASS
-        rclone_bin = os.path.join(
-            sys._MEIPASS,
-            "rclone.exe" if sys.platform.startswith("win") else "rclone",
-        )
+
+        if sys.platform == "win32":
+            format_command = f'"{sys._MEIPASS}/rclone.exe" {command}'
+        else:
+            format_command = f"{sys._MEIPASS}/rclone {command}"
     else:
         # Normal Python execution: use PATH or fixed path
-        rclone_bin = "rclone"  # or provide full path if needed
+        format_command = f"rclone {command}"  # or provide full path if needed
 
-    return rclone_bin
+    return format_command
 
 
 def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
@@ -69,14 +70,17 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     subprocess.CompletedProcess with `stdout` and `stderr` attributes.
 
     """
-    command = f"{get_rclone_name()} {command}"
+    format_command = get_command(command)
 
     if pipe_std:
         output = subprocess.run(
-            command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True
+            format_command,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
         )
     else:
-        output = subprocess.run(command, shell=True)
+        output = subprocess.run(format_command, shell=True)
 
     if output.returncode != 0:
         prompt_rclone_download_if_does_not_exist()
@@ -122,18 +126,18 @@ def call_rclone_through_script_for_central_connection(
     """
     system = platform.system()
 
-    command = f"{get_rclone_name()} {command}"
-
     if system == "Windows":
         suffix = ".bat"
     else:
         suffix = ".sh"
         command = "#!/bin/bash\n" + command
 
+    format_command = get_command(command)
+
     with tempfile.NamedTemporaryFile(
         mode="w", suffix=suffix, delete=False
     ) as tmp_script:
-        tmp_script.write(command)
+        tmp_script.write(format_command)
         tmp_script_path = tmp_script.name
 
     try:
