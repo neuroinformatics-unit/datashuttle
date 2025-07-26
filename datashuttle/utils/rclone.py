@@ -215,7 +215,7 @@ def setup_rclone_config_for_gdrive(
     cfg: Configs,
     rclone_config_name: str,
     gdrive_client_secret: str | None,
-    service_account_filepath: Optional[str] = None,
+    config_token: Optional[str] = None,
 ) -> subprocess.Popen:
     """Set up rclone config for connections to Google Drive.
 
@@ -239,8 +239,8 @@ def setup_rclone_config_for_gdrive(
     gdrive_client_secret
         Google Drive client secret, mandatory when using a Google Drive client.
 
-    service_account_filepath : path to service account file path for connection
-        without browser
+    config_token : a token to setup rclone config without opening a browser,
+        needed if the user's machine doesn't have access to a browser.
 
     """
     client_id_key_value = (
@@ -254,10 +254,10 @@ def setup_rclone_config_for_gdrive(
         else ""
     )
 
-    service_account_filepath_arg = (
-        ""
-        if service_account_filepath is None
-        else f"service_account_file {service_account_filepath}"
+    extra_args = (
+        f"config_is_local=false config_token={config_token}"
+        if config_token
+        else ""
     )
 
     process = call_rclone_with_popen(
@@ -268,7 +268,7 @@ def setup_rclone_config_for_gdrive(
         f"{client_secret_key_value}"
         f"scope drive "
         f"root_folder_id {cfg['gdrive_root_folder_id']} "
-        f"{service_account_filepath_arg}",
+        f"{extra_args}",
     )
 
     return process

@@ -845,7 +845,8 @@ class DataShuttle:
         secret if `gdrive_client_id` is set in the configs.
 
         Next, the user will be asked if their machine has access to a browser.
-        If not, they will be prompted to input their service account file path.
+        If not, they will be prompted to input a config_token after running an
+        rclone command displayed to the user on a machine with access to a browser.
 
         Next, with the provided credentials, the final setup will be done. This
         opens up a browser if the user confirmed access to a browser.
@@ -855,23 +856,25 @@ class DataShuttle:
             local_vars=locals(),
         )
 
+        if self.cfg["gdrive_client_id"]:
+            gdrive_client_secret = gdrive.get_client_secret()
+        else:
+            gdrive_client_secret = None
+
         browser_available = gdrive.ask_user_for_browser(log=True)
 
-        service_account_filepath = None
-        gdrive_client_secret = None
-
-        if browser_available and self.cfg["gdrive_client_id"]:
-            gdrive_client_secret = gdrive.get_client_secret()
-
-        elif not browser_available:
-            service_account_filepath = (
-                gdrive.prompt_and_get_service_account_filepath(
-                    log=True,
-                )
+        if not browser_available:
+            config_token = gdrive.prompt_and_get_config_token(
+                self.cfg,
+                gdrive_client_secret,
+                self.cfg.get_rclone_config_name("gdrive"),
+                log=True,
             )
+        else:
+            config_token = None
 
         process = self._setup_rclone_gdrive_config(
-            gdrive_client_secret, service_account_filepath
+            gdrive_client_secret, config_token
         )
 
         rclone.await_call_rclone_with_popen_raise_on_fail(process, log=True)
@@ -1527,13 +1530,13 @@ class DataShuttle:
     def _setup_rclone_gdrive_config(
         self,
         gdrive_client_secret: str | None,
-        service_account_filepath: str | None,
+        config_token: str | None,
     ) -> subprocess.Popen:
         return rclone.setup_rclone_config_for_gdrive(
             self.cfg,
             self.cfg.get_rclone_config_name("gdrive"),
             gdrive_client_secret,
-            service_account_filepath,
+            config_token,
         )
 
     def _setup_rclone_aws_config(

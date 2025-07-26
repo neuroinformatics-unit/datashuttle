@@ -25,8 +25,8 @@ class SetupGdriveScreen(ModalScreen):
 
     If the config contains a "gdrive_client_id", the user is prompted
     to enter a client secret. If the user has access to a browser, a Google Drive
-    authentication page will open. Otherwise, the user is asked to enter path to a
-    service account file.
+    authentication page will open. Otherwise, the user is asked to run an rclone command
+    and input a config token.
     """
 
     def __init__(self, interface: Interface) -> None:
@@ -37,6 +37,7 @@ class SetupGdriveScreen(ModalScreen):
         self.stage: int = 0
         self.setup_worker: Worker | None = None
         self.is_browser_available: bool = True
+        self.gdrive_client_secret: Optional[str] = None
 
         # For handling credential inputs
         self.input_box: Input = Input(
@@ -75,9 +76,9 @@ class SetupGdriveScreen(ModalScreen):
             and proceeds to a browser authentication.
 
         3) "no" button : A "no" answer to the availability of browser question. On click,
-            prompts the user to enter path to their service account file.
+            prompts the user to enter a config token by running an rclone command.
 
-        4) "enter" button : To enter the client secret or service account file path.
+        4) "enter" button : To enter the client secret or config token.
 
         5) "finish" button : To finish the setup.
 
@@ -94,39 +95,44 @@ class SetupGdriveScreen(ModalScreen):
             self.dismiss()
 
         elif event.button.id == "setup_gdrive_ok_button":
-            self.ask_user_for_browser()
-
-        elif event.button.id == "setup_gdrive_yes_button":
-            self.remove_yes_no_buttons()
+            self.query_one("#setup_gdrive_ok_button").remove()
 
             if self.interface.project.cfg["gdrive_client_id"]:
                 self.ask_user_for_gdrive_client_secret()
             else:
-                self.open_browser_and_setup_gdrive_connection()
+                self.ask_user_for_browser()
+
+        elif event.button.id == "setup_gdrive_yes_button":
+            self.remove_yes_no_buttons()
+            self.open_browser_and_setup_gdrive_connection(
+                self.gdrive_client_secret
+            )
 
         elif event.button.id == "setup_gdrive_no_button":
             self.is_browser_available = False
             self.remove_yes_no_buttons()
-            self.prompt_user_for_service_account_filepath()
+            self.prompt_user_for_config_token()
 
         elif event.button.id == "setup_gdrive_enter_button":
-            if self.is_browser_available:
-                gdrive_client_secret = (
+            if (
+                self.interface.project.cfg["gdrive_client_id"]
+                and self.stage == 0
+            ):
+                self.gdrive_client_secret = (
                     self.input_box.value.strip()
                     if self.input_box.value.strip()
                     else None
                 )
-                self.open_browser_and_setup_gdrive_connection(
-                    gdrive_client_secret
-                )
+                self.stage += 1
+                self.ask_user_for_browser()
             else:
-                service_account_filepath = (
+                config_token = (
                     self.input_box.value.strip()
                     if self.input_box.value.strip()
                     else None
                 )
-                self.setup_gdrive_connection_using_service_account(
-                    service_account_filepath
+                self.setup_gdrive_connection_using_config_token(
+                    self.gdrive_client_secret, config_token
                 )
 
     def ask_user_for_browser(self) -> None:
@@ -137,7 +143,11 @@ class SetupGdriveScreen(ModalScreen):
         )
         self.update_message_box_message(message)
 
-        self.query_one("#setup_gdrive_ok_button").remove()
+        if self.enter_button.is_mounted:
+            self.enter_button.remove()
+
+        if self.input_box.is_mounted:
+            self.input_box.visible = False
 
         # Mount the Yes and No buttons
         yes_button = Button("Yes", id="setup_gdrive_yes_button")
@@ -184,34 +194,46 @@ class SetupGdriveScreen(ModalScreen):
             )
         )
 
-    def prompt_user_for_service_account_filepath(self) -> None:
-        """Set up widgets and prompt user for their service account file path for browser-less connection."""
-        message = "Please enter your service account file path."
+    def prompt_user_for_config_token(self) -> None:
+        """Prompt the user for the rclone config token for Google Drive setup."""
+        success, message = (
+            self.interface.get_rclone_message_for_gdrive_without_browser(
+                self.gdrive_client_secret
+            )
+        )
 
-        self.update_message_box_message(message)
+        if not success:
+            self.display_failed(message)
+            return
 
+        self.update_message_box_message(
+            message + "\nPress shift+click to copy."
+        )
+
+        self.enter_button = Button("Enter", id="setup_gdrive_enter_button")
         self.query_one("#setup_gdrive_buttons_horizontal").mount(
             self.enter_button, before="#setup_gdrive_cancel_button"
         )
         self.mount_input_box_before_buttons()
 
-    def setup_gdrive_connection_using_service_account(
-        self, service_account_filepath: Optional[str] = None
+    def setup_gdrive_connection_using_config_token(
+        self, gdrive_client_secret: str | None, config_token: str | None
     ) -> None:
-        """Set up the Google Drive connection using service account and show success message."""
+        """Set up the Google Drive connection using rclone config token."""
         message = "Setting up connection."
         self.update_message_box_message(message)
 
         asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
-                service_account_filepath=service_account_filepath
+                gdrive_client_secret=gdrive_client_secret,
+                config_token=config_token,
             )
         )
 
     async def setup_gdrive_connection_and_update_ui(
         self,
         gdrive_client_secret: Optional[str] = None,
-        service_account_filepath: Optional[str] = None,
+        config_token: Optional[str] = None,
     ) -> None:
         """Start the Google Drive connection setup in a separate thread.
 
@@ -232,7 +254,7 @@ class SetupGdriveScreen(ModalScreen):
         self.enter_button.disabled = True
 
         worker = self.setup_gdrive_connection(
-            gdrive_client_secret, service_account_filepath
+            gdrive_client_secret, config_token
         )
         self.setup_worker = worker
         if worker.is_running:
@@ -250,7 +272,7 @@ class SetupGdriveScreen(ModalScreen):
     def setup_gdrive_connection(
         self,
         gdrive_client_secret: Optional[str] = None,
-        service_account_filepath: Optional[str] = None,
+        config_token: Optional[str] = None,
     ) -> Worker[InterfaceOutput]:
         """Authenticate the Google Drive connection.
 
@@ -260,7 +282,7 @@ class SetupGdriveScreen(ModalScreen):
         with Google Drive.
         """
         success, output = self.interface.setup_google_drive_connection(
-            gdrive_client_secret, service_account_filepath
+            gdrive_client_secret, config_token
         )
         return success, output
 
@@ -302,6 +324,8 @@ class SetupGdriveScreen(ModalScreen):
         self.query_one("#gdrive_setup_messagebox_message_container").mount(
             self.input_box, after="#gdrive_setup_messagebox_message"
         )
+        self.input_box.visible = True
+        self.input_box.value = ""
 
     def remove_yes_no_buttons(self) -> None:
         """Remove yes and no buttons."""
