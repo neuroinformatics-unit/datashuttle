@@ -530,7 +530,7 @@ class ConfigsContent(Container):
         for key, value in cfg_kwargs.items():
             saved_val = self.interface.get_configs()[key]
             if key in ["central_path", "local_path"]:
-                if value.name != project_name:
+                if value is not None and value.name != project_name:
                     value = value / project_name
             if saved_val != value:
                 return False
