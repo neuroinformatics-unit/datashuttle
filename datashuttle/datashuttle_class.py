@@ -746,17 +746,25 @@ class DataShuttle:
         else:
             base_path = self.cfg["central_path"]
 
-        if not utils.path_starts_with_base_folder(base_path, filepath):
-            utils.log_and_raise_error(
-                "Transfer failed. "
-                "Must pass the full filepath to file or folder to transfer.",
-                ValueError,
+        if base_path is not None:
+            if not utils.path_starts_with_base_folder(base_path, filepath):
+                utils.log_and_raise_error(
+                    "Transfer failed. "
+                    "Must pass the full filepath to file or folder to transfer.",
+                    ValueError,
+                )
+
+            processed_filepath = filepath.relative_to(base_path)
+
+            top_level_folder = processed_filepath.parts[0]
+            processed_filepath = Path(*processed_filepath.parts[1:])
+
+        else:
+            assert self.cfg["connection_method"] == "gdrive", (
+                "`None` only permitted for gdrive or local only mode."
             )
 
-        processed_filepath = filepath.relative_to(base_path)
-
-        top_level_folder = processed_filepath.parts[0]
-        processed_filepath = Path(*processed_filepath.parts[1:])
+            processed_filepath = filepath
 
         include_list = [f"--include /{processed_filepath.as_posix()}"]
         output = rclone.transfer_data(

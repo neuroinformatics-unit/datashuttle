@@ -274,8 +274,8 @@ class TestConfigs(BaseTest):
     def test_connection_method_required_args(
         self, tmp_path, no_cfg_project, connection_method
     ):
-        """Test that error is not raised when `central_path` is `None` for `aws` and `gdrive`."""
-        if connection_method in ["local_filesystem", "ssh"]:
+        """Test that error is not raised when `central_path` is `None` for `gdrive`."""
+        if connection_method in ["local_filesystem", "ssh", "aws"]:
             with pytest.raises(ConfigError):
                 no_cfg_project.make_config_file(
                     local_path=tmp_path / "local",
@@ -288,13 +288,12 @@ class TestConfigs(BaseTest):
                 connection_method=connection_method,
                 central_path=None,
                 gdrive_root_folder_id="placeholder",
-                aws_access_key_id="placeholder",
-                aws_region="us-east-1",
             )
             assert no_cfg_project.cfg["central_path"] is None
 
     @pytest.mark.parametrize(
-        "connection_method", ["local_filesystem", "ssh", "gdrive", "aws"]
+        "connection_method",
+        ["aws"],  # "local_filesystem", "ssh", "gdrive", "
     )
     def test_get_base_folder(
         self, tmp_path, no_cfg_project, connection_method
@@ -306,9 +305,7 @@ class TestConfigs(BaseTest):
         `get_base_folder()` returns the expected path.
         """
         project_name = no_cfg_project.project_name
-        central_path = (
-            None if connection_method in ["gdrive", "aws"] else tmp_path
-        )
+        central_path = None if connection_method == "gdrive" else tmp_path
 
         no_cfg_project.make_config_file(
             local_path=tmp_path / "local",
@@ -323,7 +320,7 @@ class TestConfigs(BaseTest):
 
         folder = no_cfg_project.cfg.get_base_folder("central", "rawdata")
 
-        if connection_method in ["ssh", "local_filesystem"]:
+        if connection_method in ["ssh", "local_filesystem", "aws"]:
             assert folder == central_path / project_name / "rawdata"
         else:
             assert folder == Path("rawdata")

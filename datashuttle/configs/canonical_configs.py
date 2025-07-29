@@ -114,8 +114,18 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
 
     check_config_types(config_dict)
 
-    if config_dict["connection_method"] not in ["aws", "gdrive"]:
-        raise_on_bad_local_only_project_configs(config_dict)
+    if config_dict["connection_method"] != "gdrive":
+        if (
+            config_dict["connection_method"] == "aws"
+            and config_dict["central_path"] is None
+        ):
+            utils.log_and_raise_error(
+                "`central_path` cannot be `None` when `connection_method` is 'aws'. "
+                "`central_path` must include the s3 bucket name.",
+                ConfigError,
+            )
+        else:
+            raise_on_bad_local_only_project_configs(config_dict)
 
     if list(config_dict.keys()) != list(canonical_dict.keys()):
         utils.log_and_raise_error(
@@ -187,7 +197,10 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
     There is no circumstance where one is set and not the other. Either both are set
     ('full' project) or both are `None` ('local only' project).
     """
-    params_are_none = local_only_configs_are_none(config_dict)
+    params_are_none = [
+        config_dict[key] is None
+        for key in ["central_path", "connection_method"]
+    ]
 
     if any(params_are_none):
         if not all(params_are_none):
@@ -196,14 +209,6 @@ def raise_on_bad_local_only_project_configs(config_dict: Configs) -> None:
                 "or must both be `None` (for local-project mode).",
                 ConfigError,
             )
-
-
-def local_only_configs_are_none(config_dict: Configs) -> list[bool]:
-    """Check whether `central_path` and `connection_method` are both set to None."""
-    return [
-        config_dict[key] is None
-        for key in ["central_path", "connection_method"]
-    ]
 
 
 def raise_on_bad_path_syntax(

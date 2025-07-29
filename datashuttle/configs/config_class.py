@@ -240,7 +240,7 @@ class Configs(UserDict):
         elif base == "central":
             if self["central_path"] is None:
                 # This path should never be triggered for local-only
-                assert self["connection_method"] in ["aws", "gdrive"]
+                assert self["connection_method"] == "gdrive"
                 base_folder = Path(top_level_folder)
             else:
                 base_folder = self["central_path"] / top_level_folder
