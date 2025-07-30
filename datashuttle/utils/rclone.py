@@ -325,11 +325,7 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     If the command fails, it raises a ConnectionError. The created file is
     deleted thereafter.
     """
-    if cfg["central_path"] is None:
-        tempfile_path = "temp.txt"
-    else:
-        tempfile_path = (cfg["central_path"] / "temp.txt").as_posix()
-
+    tempfile_path = (cfg["central_path"] / "temp.txt").as_posix()
     output = call_rclone(
         f"touch {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
     )
