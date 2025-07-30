@@ -24,7 +24,11 @@ from datetime import datetime
 from itertools import chain
 from pathlib import Path
 
-from datashuttle.configs import canonical_configs, canonical_folders, canonical_tags
+from datashuttle.configs import (
+    canonical_configs,
+    canonical_folders,
+    canonical_tags,
+)
 from datashuttle.utils import formatting, getters, utils
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
@@ -576,16 +580,22 @@ def datetime_are_iso_format(
         if datetime_value_str_is_iso_format(format_to_check, key):
             error_message = []
         else:
-            error_message = [get_datetime_error(
-                key, name, canonical_tags.get_datetime_formats()[key], path_
-            )]
+            error_message = [
+                get_datetime_error(
+                    key,
+                    name,
+                    canonical_tags.get_datetime_formats()[key],
+                    path_,
+                )
+            ]
 
     return error_message
 
 
-def datetime_value_str_is_iso_format(datetime_str: str, format_type: str) -> bool:
-    """
-    Validate that a datetime string matches the expected ISO format.
+def datetime_value_str_is_iso_format(
+    datetime_str: str, format_type: str
+) -> bool:
+    """Validate that a datetime string matches the expected ISO format.
 
     Parameters
     ----------
@@ -598,9 +608,12 @@ def datetime_value_str_is_iso_format(datetime_str: str, format_type: str) -> boo
     -------
     bool
         True if the string matches the ISO format, False otherwise
+
     """
     try:
-        datetime.strptime(datetime_str, canonical_tags.get_datetime_formats()[format_type])
+        datetime.strptime(
+            datetime_str, canonical_tags.get_datetime_formats()[format_type]
+        )
         return True
     except ValueError:
         return False
@@ -1185,5 +1198,3 @@ def check_datatypes_are_valid(
         return message
 
     return None
-
-

@@ -17,13 +17,13 @@ def tags(tag_name: str) -> str:
 
 
 def get_datetime_formats() -> dict:
-    """
-    Get all datetime format strings.
+    """Get all datetime format strings.
 
     Returns
     -------
     dict
         A dictionary containing format strings for datetime, time, and date
+
     """
     return {
         "datetime": "%Y%m%dT%H%M%S",

@@ -5,9 +5,11 @@ from typing import (
     Any,
     Dict,
     List,
+    Literal,
     Optional,
     Tuple,
     Union,
+    overload,
 )
 
 if TYPE_CHECKING:
@@ -16,13 +18,10 @@ if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
     from datashuttle.utils.custom_types import TopLevelFolder
 
-import glob
-import re
-
-from datetime import datetime
 import fnmatch
 import json
-
+import re
+from datetime import datetime
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
@@ -78,7 +77,7 @@ def create_folder_trees(
         )
 
     # Initialize all_paths with required keys
-    all_paths = {
+    all_paths: dict = {
         "sub": [],
         "ses": [],
     }
@@ -265,7 +264,7 @@ def search_project_for_sub_or_ses_names(
 
     """
     # Search local and central for folders that begin with "sub-*"
-    local_foldernames, _ = search_sub_or_ses_level(
+    local_foldernames, _ = search_sub_or_ses_level(  # type: ignore
         cfg,
         cfg.get_base_folder("local", top_level_folder),
         "local",
@@ -278,7 +277,7 @@ def search_project_for_sub_or_ses_names(
     central_foldernames: List
 
     if include_central:
-        central_foldernames, _ = search_sub_or_ses_level(
+        central_foldernames, _ = search_sub_or_ses_level(  # type: ignore
             cfg,
             cfg.get_base_folder("central", top_level_folder),
             "central",
@@ -418,8 +417,7 @@ def search_with_tags(
     all_names: List[str],
     sub: Optional[str] = None,
 ) -> List[str]:
-    """
-    Handle wildcard and datetime range searching in names during upload or download.
+    """Handle wildcard and datetime range searching in names during upload or download.
 
     There are two types of special patterns that can be used in names:
     1. Wildcards: Names containing @*@ will be replaced with "*" for glob pattern matching
@@ -461,13 +459,16 @@ def search_with_tags(
     ["sub-001", "sub-002", "sub-003"]
 
     Date range:
-    >>> search_with_tags(cfg, path, "local", ["sub-001_20240101@DATETO@20241231_id-*"])
+    >>> search_with_tags(
+    ...     cfg, path, "local", ["sub-001_20240101@DATETO@20241231_id-*"]
+    ... )
     ["sub-001_date-20240315_id-1", "sub-001_date-20240401_id-2"]
 
     Time range:
     >>> search_with_tags(cfg, path, "local", ["sub-002_000000@TIMETO@120000"])
     ["sub-002_time-083000", "sub-002_time-113000"]
-=======
+    =======
+
     Parameters
     ----------
     cfg
@@ -500,14 +501,17 @@ def search_with_tags(
         but where @*@-containing names have been replaced with
         search results.
 
->>>>>>> upstream/main
+    >>>>>>> upstream/main
+
     """
     new_all_names: List[str] = []
     for name in all_names:
-        if not (canonical_tags.tags("*") in name or
-                canonical_tags.tags("DATETO") in name or
-                canonical_tags.tags("TIMETO") in name or
-                canonical_tags.tags("DATETIMETO") in name):
+        if not (
+            canonical_tags.tags("*") in name
+            or canonical_tags.tags("DATETO") in name
+            or canonical_tags.tags("TIMETO") in name
+            or canonical_tags.tags("DATETIMETO") in name
+        ):
             # If no special tags, just add the name as is
             new_all_names.append(name)
             continue
@@ -532,12 +536,20 @@ def search_with_tags(
 
         if format_type is not None:
             assert tag is not None
-            search_str = format_and_validate_datetime_search_str(search_str, format_type, tag)
+            search_str = format_and_validate_datetime_search_str(
+                search_str, format_type, tag
+            )
+
+            matching_names: List[str]
 
             # Use the helper function to perform the glob search
             if sub:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_folder, local_or_central, sub, search_str=search_str
+                    cfg,
+                    base_folder,
+                    local_or_central,
+                    sub,
+                    search_str=search_str,
                 )[0]
             else:
                 matching_names = search_sub_or_ses_level(
@@ -545,8 +557,8 @@ def search_with_tags(
                 )[0]
 
             # Filter results by datetime range
-            start_timepoint, end_timepoint = strip_start_end_date_from_datetime_tag(
-                name, format_type, tag
+            start_timepoint, end_timepoint = (
+                strip_start_end_date_from_datetime_tag(name, format_type, tag)
             )
             matching_names = filter_names_by_datetime_range(
                 matching_names, format_type, start_timepoint, end_timepoint
@@ -556,7 +568,11 @@ def search_with_tags(
             # No datetime range, just perform the glob search with wildcards
             if sub:
                 matching_names = search_sub_or_ses_level(
-                    cfg, base_folder, local_or_central, sub, search_str=search_str
+                    cfg,
+                    base_folder,
+                    local_or_central,
+                    sub,
+                    search_str=search_str,
                 )[0]
             else:
                 matching_names = search_sub_or_ses_level(
@@ -573,8 +589,8 @@ def filter_names_by_datetime_range(
     start_timepoint: datetime,
     end_timepoint: datetime,
 ) -> List[str]:
-    """
-    Filter a list of names based on a datetime range.
+    """Filter a list of names based on a datetime range.
+
     Assumes all names contain the format_type pattern (e.g., date-*, time-*)
     as they were searched using this pattern.
 
@@ -598,14 +614,21 @@ def filter_names_by_datetime_range(
     ------
     ValueError
         If any datetime value does not match the expected ISO format
+
     """
     filtered_names: List[str] = []
     for candidate in names:
-        candidate_basename = candidate if isinstance(candidate, str) else candidate.name
-        value = get_values_from_bids_formatted_name([candidate_basename], format_type)[0]
+        candidate_basename = (
+            candidate if isinstance(candidate, str) else candidate.name
+        )
+        value = get_values_from_bids_formatted_name(
+            [candidate_basename], format_type
+        )[0]
 
         try:
-            candidate_timepoint = datetime_object_from_string(value, format_type)
+            candidate_timepoint = datetime_object_from_string(
+                value, format_type
+            )
         except ValueError:
             utils.log_and_raise_error(
                 f"Invalid {format_type} format in name {candidate_basename}. "
@@ -625,8 +648,7 @@ def filter_names_by_datetime_range(
 
 
 def get_expected_datetime_len(format_type: str) -> int:
-    """
-    Get the expected length of characters for a datetime format.
+    """Get the expected length of characters for a datetime format.
 
     Parameters
     ----------
@@ -637,15 +659,17 @@ def get_expected_datetime_len(format_type: str) -> int:
     -------
     int
         The number of characters expected for the format
+
     """
     format_str = canonical_tags.get_datetime_formats()[format_type]
     today = datetime.now()
     return len(today.strftime(format_str))
 
 
-def find_datetime_in_name(name: str, format_type: str, tag: str) -> tuple[str, str] | None:
-    """
-    Find and extract datetime values from a name using a regex pattern.
+def find_datetime_in_name(
+    name: str, format_type: str, tag: str
+) -> tuple[str | Any, ...] | None:
+    """Find and extract datetime values from a name using a regex pattern.
 
     Parameters
     ----------
@@ -662,9 +686,12 @@ def find_datetime_in_name(name: str, format_type: str, tag: str) -> tuple[str, s
     tuple[str, str] | None
         A tuple containing (start_datetime_str, end_datetime_str) if found,
         None if no match is found
+
     """
     expected_len = get_expected_datetime_len(format_type)
-    full_tag_regex = fr"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    full_tag_regex = (
+        rf"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    )
     match = re.search(full_tag_regex, name)
     return match.groups() if match else None
 
@@ -672,8 +699,7 @@ def find_datetime_in_name(name: str, format_type: str, tag: str) -> tuple[str, s
 def strip_start_end_date_from_datetime_tag(
     search_str: str, format_type: str, tag: str
 ) -> tuple[datetime, datetime]:
-    """
-    Extract and validate start and end datetime values from a search string.
+    """Extract and validate start and end datetime values from a search string.
 
     Parameters
     ----------
@@ -695,9 +721,12 @@ def strip_start_end_date_from_datetime_tag(
     NeuroBlueprintError
         If the datetime format is invalid, the range is malformed,
         or end datetime is before start datetime
+
     """
     expected_len = get_expected_datetime_len(format_type)
-    full_tag_regex = fr"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    full_tag_regex = (
+        rf"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    )
     match = re.search(full_tag_regex, search_str)
 
     if not match:
@@ -706,6 +735,7 @@ def strip_start_end_date_from_datetime_tag(
             NeuroBlueprintError,
         )
 
+    assert match is not None, "type narrow `match`"
     start_str, end_str = match.groups()
 
     try:
@@ -726,9 +756,10 @@ def strip_start_end_date_from_datetime_tag(
     return start_timepoint, end_timepoint
 
 
-def format_and_validate_datetime_search_str(search_str: str, format_type: str, tag: str) -> str:
-    """
-    Validate and format a search string containing a datetime range.
+def format_and_validate_datetime_search_str(
+    search_str: str, format_type: str, tag: str
+) -> str:
+    """Validate and format a search string containing a datetime range.
 
     Parameters
     ----------
@@ -750,24 +781,31 @@ def format_and_validate_datetime_search_str(search_str: str, format_type: str, t
     ------
     NeuroBlueprintError
         If the datetime format is invalid or the range is malformed
+
     """
     # Validate the datetime range format
     strip_start_end_date_from_datetime_tag(search_str, format_type, tag)
 
     # Replace datetime range with wildcard pattern
     expected_len = get_expected_datetime_len(format_type)
-    full_tag_regex = fr"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    full_tag_regex = (
+        rf"(\d{{{expected_len}}}){re.escape(tag)}(\d{{{expected_len}}})"
+    )
     return re.sub(full_tag_regex, f"{format_type}-*", search_str)
 
 
-def datetime_object_from_string(datetime_string: str, format_type: str) -> datetime:
-    """
-    Convert a datetime string to a datetime object using the appropriate format.
+def datetime_object_from_string(
+    datetime_string: str, format_type: str
+) -> datetime:
+    """Convert a datetime string to a datetime object using the appropriate format.
 
     Parameters
     ----------
-    datetime_string : The string to convert to a datetime object
-    format_type : One of "datetime", "time", or "date"
+    datetime_string :
+        The string to convert to a datetime object
+
+    format_type :
+        One of "datetime", "time", or "date"
 
     Returns
     -------
@@ -778,6 +816,7 @@ def datetime_object_from_string(datetime_string: str, format_type: str) -> datet
     ------
     ValueError
         If the string cannot be parsed using the specified format
+
     """
     return datetime.strptime(
         datetime_string, canonical_tags.get_datetime_formats()[format_type]
@@ -789,7 +828,32 @@ def datetime_object_from_string(datetime_string: str, format_type: str) -> datet
 # -----------------------------------------------------------------------------
 
 
-# @overload: Cannot get type overloading to work with this function.
+@overload
+def search_sub_or_ses_level(
+    cfg: Configs,
+    base_folder: Path,
+    local_or_central: str,
+    sub: Optional[str] = ...,
+    ses: Optional[str] = ...,
+    search_str: str = ...,
+    verbose: bool = ...,
+    return_full_path: Literal[False] = ...,
+) -> Tuple[List[str], List[str]]: ...
+
+
+@overload
+def search_sub_or_ses_level(
+    cfg: Configs,
+    base_folder: Path,
+    local_or_central: str,
+    sub: Optional[str] = ...,
+    ses: Optional[str] = ...,
+    search_str: str = ...,
+    verbose: bool = ...,
+    return_full_path: Literal[True] = ...,
+) -> Tuple[List[Path], List[str]]: ...
+
+
 def search_sub_or_ses_level(
     cfg: Configs,
     base_folder: Path,
