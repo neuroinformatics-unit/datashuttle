@@ -293,9 +293,9 @@ def get_existing_project_paths() -> List[Path]:
     """
     datashuttle_path = canonical_folders.get_datashuttle_path()
 
-    all_folders, _ = folders.search_filesystem_path_for_folders(
-        datashuttle_path / "*"
-    )
+    all_folders = [
+        path_ for path_ in datashuttle_path.glob("*") if path_.is_dir()
+    ]
 
     existing_project_paths = []
     for folder_name in all_folders:
