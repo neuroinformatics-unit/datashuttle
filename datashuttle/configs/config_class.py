@@ -209,7 +209,7 @@ class Configs(UserDict):
     def get_rclone_config_name(
         self, connection_method: Optional[str] = None
     ) -> str:
-        """Generate the rclone configuration name for the project.
+        """Generate the rclone configuration name for the central project.
 
         These configs are created by datashuttle but managed and stored by rclone.
         """

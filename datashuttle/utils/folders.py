@@ -16,11 +16,12 @@ if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
     from datashuttle.utils.custom_types import TopLevelFolder
 
-import glob
+import fnmatch
+import json
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
-from datashuttle.utils import ssh, utils, validation
+from datashuttle.utils import rclone, utils, validation
 from datashuttle.utils.custom_exceptions import NeuroBlueprintError
 
 # -----------------------------------------------------------------------------
@@ -598,67 +599,90 @@ def search_for_folders(
     Discovered folders (`all_folder_names`) and files (`all_filenames`).
 
     """
-    if local_or_central == "central" and cfg["connection_method"] == "ssh":
-        all_folder_names, all_filenames = ssh.search_ssh_central_for_folders(
-            search_path,
-            search_prefix,
-            cfg,
-            verbose,
-            return_full_path,
-        )
-    else:
-        if not search_path.exists():
-            if verbose:
-                utils.log_and_message(
-                    f"No file found at {search_path.as_posix()}"
-                )
-            return [], []
+    if (
+        local_or_central == "local"
+        or cfg["connection_method"] == "local_filesystem"
+    ) and not search_path.exists():
+        if verbose:
+            utils.log_and_message(f"No file found at {search_path.as_posix()}")
+        return [], []
 
-        all_folder_names, all_filenames = search_filesystem_path_for_folders(
-            search_path / search_prefix, return_full_path
+    if local_or_central == "local":
+        rclone_config_name = None
+    else:
+        rclone_config_name = cfg.get_rclone_config_name(
+            cfg["connection_method"]
         )
+
+    all_folder_names, all_filenames = search_local_or_remote(
+        search_path,
+        search_prefix,
+        rclone_config_name,
+        return_full_path,
+    )
+
     return all_folder_names, all_filenames
 
 
-# Actual function implementation
-def search_filesystem_path_for_folders(
-    search_path_with_prefix: Path, return_full_path: bool = False
-) -> Tuple[List[Path | str], List[Path | str]]:
-    r"""Search a folder through the local filesystem.
+def search_local_or_remote(
+    search_path: Path,
+    search_prefix: str,
+    rclone_config_name: str | None,
+    return_full_path: bool = False,
+) -> Tuple[List[Any], List[Any]]:
+    """Search for files and folders in central path using `rclone lsjson` command.
 
-    Use glob to search the full search path (including prefix) with glob.
-    Files are filtered out of results, returning folders only.
+    This command lists all the files and folders in the central path in a json format.
+    The json contains file/folder info about each file/folder like name, type, etc.
 
     Parameters
     ----------
-    search_path_with_prefix
-        Path to search along with search prefix e.g. "C:\drive\project\sub-*"
-
+    search_path
+        The path to search (relative to the local or remote drive). For example,
+        for "local_filesystem" this is the path on the local machine. For "ssh", this
+        is the path on the machine that has been connected to.
+    search_prefix
+        The search string e.g. "sub-*".
+    rclone_config_name
+        Name of the rclone config for the remote (not set for local). `rclone config`
+        can be used in the terminal to see how rclone has stored these. In datashuttle,
+        these are managed by `Configs`.
     return_full_path
-        If `True` returns the path to the discovered folder or file,
-        otherwise just the name.
-
-    Returns
-    -------
-    Discovered folders (`all_folder_names`) and files (`all_filenames`).
+        If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
-    all_folder_names = []
-    all_filenames = []
+    config_prefix = "" if not rclone_config_name else f"{rclone_config_name}:"
 
-    all_files_and_folders = list(glob.glob(search_path_with_prefix.as_posix()))
-    sorter_files_and_folders = sorted(all_files_and_folders)
+    output = rclone.call_rclone(
+        f'lsjson {config_prefix}"{search_path.as_posix()}"',
+        pipe_std=True,
+    )
 
-    for file_or_folder_str in sorter_files_and_folders:
-        file_or_folder = Path(file_or_folder_str)
+    all_folder_names: List[str] = []
+    all_filenames: List[str] = []
 
-        if file_or_folder.is_dir():
-            all_folder_names.append(
-                file_or_folder if return_full_path else file_or_folder.name
-            )
+    if output.returncode != 0:
+        utils.log_and_message(
+            f"Error searching files at {search_path.as_posix()}\n"
+            f"{output.stderr.decode('utf-8') if output.stderr else ''}"
+        )
+        return all_folder_names, all_filenames
+
+    files_and_folders = json.loads(output.stdout)
+
+    for file_or_folder in files_and_folders:
+        name = file_or_folder["Name"]
+
+        if not fnmatch.fnmatch(name, search_prefix):
+            continue
+
+        is_dir = file_or_folder.get("IsDir", False)
+
+        to_append = search_path / name if return_full_path else name
+
+        if is_dir:
+            all_folder_names.append(to_append)
         else:
-            all_filenames.append(
-                file_or_folder if return_full_path else file_or_folder.name
-            )
+            all_filenames.append(to_append)
 
     return all_folder_names, all_filenames
