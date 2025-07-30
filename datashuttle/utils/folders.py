@@ -540,8 +540,6 @@ def search_with_tags(
                 search_str, format_type, tag
             )
 
-            matching_names: List[str]
-
             # Use the helper function to perform the glob search
             if sub:
                 matching_names = search_sub_or_ses_level(
