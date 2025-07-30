@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -219,9 +219,7 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     """
 
-    def __init__(
-        self, mainwindow: TuiApp, path_: Optional[Path] = None
-    ) -> None:
+    def __init__(self, mainwindow: TuiApp) -> None:
         """Initialise SelectDirectoryTreeScreen.
 
         Parameters
@@ -236,11 +234,13 @@ class SelectDirectoryTreeScreen(ModalScreen):
         super(SelectDirectoryTreeScreen, self).__init__()
         self.mainwindow = mainwindow
 
-        if path_ is None:
-            path_ = Path().home()
-        self.path_ = path_
+        self.path_ = Path().home()
 
         self.click_info = ClickInfo()
+
+        # Flag as the Select triggers `on_select_change` during set up
+        # which results setting tree back to default drive not home.
+        self.skip_first_select_trigger = True
 
     def compose(self) -> ComposeResult:
         """Add widgets to the SelectDirectoryTreeScreen."""
@@ -305,10 +305,13 @@ class SelectDirectoryTreeScreen(ModalScreen):
 
     def on_select_changed(self, event: Select.Changed) -> None:
         """Update the directory tree when the drive is changed."""
-        self.path_ = Path(event.value)
-        self.query_one(
-            "#select_directory_tree_directory_tree"
-        ).path = self.path_
+        if self.skip_first_select_trigger:
+            self.skip_first_select_trigger = False
+        else:
+            self.path_ = Path(event.value)
+            self.query_one(
+                "#select_directory_tree_directory_tree"
+            ).path = self.path_
 
     @require_double_click
     def on_directory_tree_directory_selected(
