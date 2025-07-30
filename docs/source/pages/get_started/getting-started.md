@@ -435,7 +435,7 @@ by right-clicking each file and selecting "Download (or) Save Link As...".
 Alternatively you can create them in your favourite text editor.
 
 Next, hover over the `behav` folder the `Directory Tree` with your
-mouse and and press `CTRL+O` to open the folder in your file browser.
+mouse and press `CTRL+O` to open the folder in your file browser.
 Move the mock behavioural data file (`sub-001_ses-001_camera-top.mp4`)
 into the `behav` datatype folder.
 
