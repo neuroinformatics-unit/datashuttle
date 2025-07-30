@@ -10,7 +10,6 @@ from os.path import join
 from pathlib import Path
 
 import yaml
-from file_conflicts_pathtable import get_pathtable
 
 from datashuttle import DataShuttle
 from datashuttle.configs import canonical_configs, canonical_folders
@@ -27,22 +26,16 @@ def setup_project_default_configs(
     local_path=False,
     central_path=False,
 ):
-    """
-    Set up a fresh project to test on
-
-    local_path / central_path: provide the config paths to set
+    """Set up a fresh project to test on
+    local_path / central_path: provide the config paths to set.
     """
     delete_project_if_it_exists(project_name)
 
-    warnings.filterwarnings("ignore")
-
-    project = DataShuttle(project_name)
+    project = make_project(project_name)
 
     default_configs = get_test_config_arguments_dict(
         tmp_path, project_name, set_as_defaults=True
     )
-
-    #  make_project_paths(default_configs)
 
     project.make_config_file(**default_configs)
 
@@ -51,8 +44,6 @@ def setup_project_default_configs(
         project.cfg.get_rclone_config_name("ssh"),
         project.cfg.ssh_key_path,
     )
-
-    warnings.filterwarnings("default")
 
     if local_path:
         os.makedirs(local_path, exist_ok=True)
@@ -76,8 +67,7 @@ def make_project_paths(config_dict):
 
 
 def glob_basenames(search_path, recursive=False, exclude=None):
-    """
-    Use glob to search but strip the full path, including
+    """Use glob to search but strip the full path, including
     only the base name (lowest level).
     """
     paths_ = glob.glob(search_path, recursive=recursive)
@@ -90,10 +80,8 @@ def glob_basenames(search_path, recursive=False, exclude=None):
 
 
 def teardown_project(
-    cwd, project
+    project,
 ):  # 99% sure these are unnecessary with pytest tmp_path but keep until SSH testing.
-    """"""
-    os.chdir(cwd)
     delete_all_folders_in_project_path(project, "central")
     delete_all_folders_in_project_path(project, "local")
     delete_project_if_it_exists(project.project_name)
@@ -106,10 +94,11 @@ def delete_all_folders_in_local_path(project):
 
 
 def delete_all_folders_in_project_path(project, local_or_central):
-    """"""
     folder = f"{local_or_central}_path"
 
-    if folder == "central_path" and project.cfg[folder] is None:
+    if project.cfg is None or (
+        folder == "central_path" and project.cfg[folder] is None
+    ):
         return
 
     ds_logger.close_log_filehandler()
@@ -121,7 +110,6 @@ def delete_all_folders_in_project_path(project, local_or_central):
 
 
 def delete_project_if_it_exists(project_name):
-    """"""
     config_path, _ = canonical_folders.get_project_datashuttle_path(
         project_name
     )
@@ -131,8 +119,7 @@ def delete_project_if_it_exists(project_name):
 
 
 def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
-    """
-    Set up a project, either in full mode or local-only mode. This is
+    """Set up a project, either in full mode or local-only mode. This is
     very similar to the `BaseTest` fixture but is designed for
     use in other fixtures that require additional boilerplate e.g. logging.
     """
@@ -146,31 +133,16 @@ def setup_project_fixture(tmp_path, test_project_name, project_type="full"):
             ),
         )
     elif project_type == "local":
-        project = DataShuttle(test_project_name)
+        project = make_project(test_project_name)
         project.make_config_file(
             local_path=make_test_path(tmp_path, "local", test_project_name)
         )
 
-    cwd = os.getcwd()
-
-    return project, cwd
+    return project
 
 
 def make_test_path(base_path, local_or_central, test_project_name):
     return Path(base_path) / local_or_central / test_project_name
-
-
-def create_all_pathtable_files(pathtable):
-    """ """
-    for i in range(pathtable.shape[0]):
-        filepath = pathtable["base_folder"][i] / pathtable["path"][i]
-        filepath.parents[0].mkdir(parents=True, exist_ok=True)
-        write_file(filepath, contents="test_entry")
-
-
-def quick_create_project(base_path):
-    pathtable = get_pathtable(base_path)
-    create_all_pathtable_files(pathtable)
 
 
 # -----------------------------------------------------------------------------
@@ -184,8 +156,7 @@ def get_test_config_arguments_dict(
     set_as_defaults=False,
     required_arguments_only=False,
 ):
-    """
-    Retrieve configs, either the required configs
+    """Retrieve configs, either the required configs
     (for project.make_config_file()), all configs (default)
     or non-default configs. Note that default configs here
     are the expected default arguments in project.make_config_file().
@@ -227,8 +198,7 @@ def get_test_config_arguments_dict(
 
 
 def get_all_broad_folders_used(value=True):
-    """
-    The `folders_used` construct tells the tests which
+    """The `folders_used` construct tells the tests which
     folders were used (e.g. created or transferred) and
     which are not. This means the expected datatypes
     can be checked.
@@ -253,8 +223,7 @@ def get_all_broad_folders_used(value=True):
 def check_folder_tree_is_correct(
     base_folder, subs, sessions, folder_used, created_folder_dict=None
 ):
-    """
-    Automated test that folders are made based
+    """Automated test that folders are made based
     on the structure specified on project itself.
 
     Cycle through all datatypes (defined in
@@ -282,7 +251,7 @@ def check_folder_tree_is_correct(
                 key,
                 folder,
             ) in canonical_folders.get_datatype_folders().items():
-                assert key in folder_used.keys(), (
+                assert key in folder_used, (
                     "Key not found in folder_used. "
                     "Update folder used and hard-coded tests: "
                     "test_custom_folder_names(), test_explicitly_session_list()"
@@ -316,8 +285,7 @@ def check_folder_tree_is_correct(
 
 
 def check_and_cd_folder(path_):
-    """
-    Check a folder exists and CD to it if it does.
+    """Check a folder exists and CD to it if it does.
 
     Use the pytest -s flag to print all tested paths
     """
@@ -331,8 +299,7 @@ def check_datatype_sub_ses_uploaded_correctly(
     subs_to_upload=None,
     ses_to_upload=None,
 ):
-    """
-    Iterate through the project (datatype > ses > sub) and
+    """Iterate through the project (datatype > ses > sub) and
     check that the folders at each level match those that are
     expected (passed in datatype / sub / ses to upload). Folders
     are searched with wildcard glob.
@@ -368,8 +335,7 @@ def check_datatype_sub_ses_uploaded_correctly(
 def make_and_check_local_project_folders(
     project, top_level_folder, subs, sessions, datatype, datatypes_used=None
 ):
-    """
-    Make a local project folder tree with the specified datatype,
+    """Make a local project folder tree with the specified datatype,
     subs, sessions and check it is made successfully.
 
     Since empty folders are not transferred, it is necessary
@@ -407,7 +373,6 @@ def make_local_folders_with_files_in(
 
 
 def check_configs(project, kwargs, config_path=None):
-    """"""
     if config_path is None:
         config_path = project._config_path
 
@@ -422,8 +387,7 @@ def check_project_configs(
     project,
     *kwargs,
 ):
-    """
-    Core function for checking the config against
+    """Core function for checking the config against
     provided configs (kwargs). Open the config.yaml file
     and check the config values stored there,
     and in project.cfg, against the provided configs.
@@ -443,8 +407,7 @@ def check_project_configs(
 
 
 def check_config_file(config_path, *kwargs):
-    """"""
-    with open(config_path, "r") as config_file:
+    with open(config_path) as config_file:
         config_yaml = yaml.full_load(config_file)
 
         for name, value in kwargs[0].items():
@@ -459,11 +422,9 @@ def check_config_file(config_path, *kwargs):
 def get_top_level_folder_path(
     project, local_or_central="local", folder_name="rawdata"
 ):
-    """"""
-
-    assert (
-        folder_name in canonical_folders.get_top_level_folders()
-    ), "folder_name must be canonical e.g. rawdata"
+    assert folder_name in canonical_folders.get_top_level_folders(), (
+        "folder_name must be canonical e.g. rawdata"
+    )
 
     if local_or_central == "local":
         base_path = project.cfg["local_path"]
@@ -480,8 +441,7 @@ def handle_upload_or_download(
     top_level_folder=None,
     swap_last_folder_only=False,
 ):
-    """
-    To keep things consistent and avoid the pain of writing
+    """To keep things consistent and avoid the pain of writing
     files over SSH, to test download just swap the central
     and local server (so things are still transferred from
     local machine to central, but using the download function).
@@ -507,7 +467,6 @@ def handle_upload_or_download(
 def get_transfer_func(
     project, upload_or_download, transfer_method, top_level_folder=None
 ):
-    """"""
     if transfer_method == "top_level_folder":
         assert top_level_folder is not None, "must pass top-level-folder"
     assert top_level_folder in [None, "rawdata", "derivatives"]
@@ -537,8 +496,7 @@ def get_transfer_func(
 
 
 def swap_local_and_central_paths(project, swap_last_folder_only=False):
-    """
-    When testing upload vs. download, the most convenient way
+    """When testing upload vs. download, the most convenient way
     to test download is to swap the paths. In this case, we 'download'
     from local to central. It much simplifies creating the folders
     to transfer (which are created locally), and is fully required
@@ -584,25 +542,21 @@ def swap_local_and_central_paths(project, swap_last_folder_only=False):
 
 
 def get_default_sub_sessions_to_test():
-    """
-    Canonical subs / sessions for these tests
-    """
+    """Canonical subs / sessions for these tests."""
     subs = ["sub-001", "sub-002", "sub-003"]
     sessions = ["ses-001_datetime-20220516T135022", "ses-002", "ses-003"]
     return subs, sessions
 
 
 def move_some_keys_to_end_of_dict(config):
-    """
-    Need to move connection method to the end
+    """Need to move connection method to the end
     so ssh opts are already set before it is changed.
     """
     config["connection_method"] = config.pop("connection_method")
 
 
 def clear_capsys(capsys):
-    """
-    read from capsys clears it, so new
+    """Read from capsys clears it, so new
     print statements are clearer to read.
     """
     capsys.readouterr()
@@ -619,14 +573,13 @@ def write_file(path_, contents="", append=False):
 
 
 def read_file(path_):
-    with open(path_, "r") as file:
+    with open(path_) as file:
         contents = file.readlines()
     return contents
 
 
 def set_datashuttle_loggers(disable):
-    """
-    Turn off or on datashuttle logs, if these are
+    """Turn off or on datashuttle logs, if these are
     on when testing with pytest they will be propagated
     to pytest's output, making it difficult to read.
 
@@ -643,8 +596,7 @@ def set_datashuttle_loggers(disable):
 def check_working_top_level_folder_only_exists(
     folder_name, base_path_to_check, subs, sessions, folders_used=None
 ):
-    """
-    Check that the folder tree made in the 'folder_name'
+    """Check that the folder tree made in the 'folder_name'
     (e.g. 'rawdata') top level folder is correct. Additionally,
     check that no other top-level folders exist. This is to ensure
     that folders made / transferred from one top-level folder
@@ -672,11 +624,11 @@ def read_log_file(logging_path):
     log_filepath = list(glob.glob(str(logging_path / "*.log")))
 
     assert len(log_filepath) == 1, (
-        f"there should only be one log " f"in log output path {logging_path}"
+        f"there should only be one log in log output path {logging_path}"
     )
     log_filepath = log_filepath[0]
 
-    with open(log_filepath, "r") as file:
+    with open(log_filepath) as file:
         log = file.read()
 
     return log
@@ -684,7 +636,7 @@ def read_log_file(logging_path):
 
 def delete_log_files(logging_path):
     ds_logger.close_log_filehandler()
-    for log in glob.glob((str(logging_path / "*.log"))):
+    for log in glob.glob(str(logging_path / "*.log")):
         os.remove(log)
 
 
@@ -695,3 +647,15 @@ def get_task_by_name(name):
         None,
     )
     return target_task
+
+
+async def await_task_by_name_if_present(name: str) -> None:
+    if task := get_task_by_name(name):
+        await task
+
+
+def make_project(project_name):
+    warnings.filterwarnings("ignore")
+    project = DataShuttle(project_name)
+    warnings.filterwarnings("default")
+    return project

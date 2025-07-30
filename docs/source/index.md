@@ -1,9 +1,20 @@
 :html_theme.sidebar_secondary.remove:
 
-{.center}
-# **datashuttle**
+<!-- We want to have a centered title, which is difficult in sphinx without centering
+the entire page. We need the title here otherwise the tab title defaults to <no-title>.
+Therefore, add the title and hide it, then add a custom centered title.
+-->
 
-<p style="text-align: center; font-size: 22px;">The tool to automate neuroscience project folder creation, validation and transfer.</p>
+```{raw} html
+<div style="height: 0; visibility: hidden;">
+```
+# datashuttle
+```{raw} html
+</div>
+```
+
+<p style="text-align: center; font-size: 48px;"><b>datashuttle</b></p>
+<p style="text-align: center; font-size: 22px;">Automate the creation, validation and transfer of neuroscience project folders.</p>
 
 ```{image} _static/datashuttle-overview-light.png
 :alt: My Logo
@@ -19,53 +30,88 @@
 ```
 <br>
 
-::::{grid} 1 2 2 3
+
+::::{grid} 1 2 2 4
 :gutter: 4
 
-:::{grid-item-card} Tutorials
-:link: pages/tutorials
+
+:::{grid-item-card} Get started
+:link: pages/get_started/index
 :link-type: doc
 
-Walkthrough **datashuttle**.
+Get started with ``datashuttle``
 :::
 
-:::{grid-item-card} How To
-:link: pages/how_tos
+
+:::{grid-item-card} User guides
+:link: pages/user_guides/index
 :link-type: doc
 
-Short guides on specific actions.
+Explore ``datashuttle``'s features
+:::
+
+:::{grid-item-card} Examples
+:link: pages/examples/index
+:link-type: doc
+
+``datashuttle`` in the real world
 :::
 
 :::{grid-item-card} Python API
 :link: pages/api_index
 :link-type: doc
 
-Full Python reference.
+Full Python reference
 :::
+
 ::::
 
-**datashuttle** creates and validates projects standardised to the
-[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
-specification.
+A lack of project standardization in systems neuroscience
+[hinders data sharing and collaboration](https://neuroinformatics.dev/blog/neuroblueprint.html),
+creating barriers to reproducibility and scientific progress.
 
-Dive right into **datashuttle** with our
-[Getting Started Tutorial](tutorial-getting-started)
-or targeted [How-To Guides](how-tos).  \
-It can be used through a graphical interface or Python API.
+``datashuttle`` helps standardise experimental
+projects by automating folder creation and transfer
+during acquisition and analysis. Its graphical interface or Python API builds
+folder trees according to the [NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev)
+specification. Automation and validation ensures that no errors, such as duplicate session
+names or incorrect dates, slip into the project.
 
-Don't hesitate to get in contact through our
-[GitHub Issues](https://github.com/neuroinformatics-unit/datashuttle/issues)
-or
-[Zulip Chat.](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle)
+Data can be transferred between acquisition, storage and analysis
+machines with a single function call or button click. Standardisation makes
+folder names predictable, meaning it is easy to transfer specific combinations
+of subjects, sessions or data-types with ``datashuttle``.
 
+Folders are standardised to the
+[NeuroBlueprint](https://neuroblueprint.neuroinformatics.dev) specification:
+
+```{image} /_static/NeuroBlueprint_project_tree_dark.png
+   :align: center
+   :class: only-dark
+   :width: 550px
+```
+```{image} /_static/NeuroBlueprint_project_tree_light.png
+   :align: center
+   :class: only-light
+   :width: 550px
+```
+
+Dive in with our [Getting Started page](pages/get_started/index)
+or targeted [User Guides](pages/user_guides/index).
+
+Have questions, issues or feedback? Get in contact through
+[GitHub issues](https://github.com/neuroinformatics-unit/datashuttle/issues)
+or our
+[Zulip chat.](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle)
 
 ```{toctree}
 :maxdepth: 2
 :caption: index
 :hidden:
 
-pages/tutorials
-pages/how_tos
-pages/community/index.md
+pages/get_started/index
+pages/user_guides/index
+pages/examples/index
+pages/community/index
 pages/api_index
 ```

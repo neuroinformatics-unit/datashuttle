@@ -33,8 +33,7 @@ from datashuttle.tui.tooltips import get_tooltip
 
 
 class TuiApp(App, inherit_bindings=False):  # type: ignore
-    """
-    The main app page for the DataShuttle TUI.
+    """The main app page for the DataShuttle TUI.
 
     This class acts as a base class from which all windows
     (select existing project, make new project, settings and
@@ -50,6 +49,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     ]
 
     def compose(self) -> ComposeResult:
+        """Set up widgets for the main window."""
         yield Container(
             Label("datashuttle", id="mainwindow_banner_label"),
             Button(
@@ -67,17 +67,26 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         )
 
     def on_mount(self) -> None:
+        """Update widgets immediately after creation."""
         self.set_dark_mode(self.load_global_settings()["dark_mode"])
         id = "#mainwindow_validate_from_project_path"
         self.query_one(id).tooltip = get_tooltip(id)
 
     def set_dark_mode(self, dark_mode: bool) -> None:
+        """Set the color theme for the application."""
         self.theme = "textual-dark" if dark_mode else "textual-light"
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        Raise the relevant screen after button press. `push_screen`
-        second argument is a callback function returned after screen closes.
+        """Handle a button press on the main window and raise a new screen.
+
+        Note that`push_screen` second argument is a callback function returned
+        after screen closes.
+
+        Parameters
+        ----------
+        event
+            A textual event containing information about the  button press.
+
         """
         if event.button.id == "mainwindow_existing_project_button":
             self.push_screen(
@@ -105,6 +114,16 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             self.push_screen(validate_at_path.ValidateScreen(self))
 
     def load_project_page(self, interface: Interface) -> None:
+        """Load the project manager page.
+
+        This page contains a list of all existing projects.
+
+        Parameters
+        ----------
+        interface
+            Datashuttle tui Interface object.
+
+        """
         if interface:
             self.push_screen(
                 project_manager.ProjectManagerScreen(
@@ -113,13 +132,24 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             )
 
     def show_modal_error_dialog(self, message: str) -> None:
+        """Show an error in a pop-up window.
+
+        The pop-up window has a red border and is modal (cannot click
+        elsewhere on the application when it is shown).
+
+        Parameter
+        ---------
+        message
+            Error message to display.
+        """
         self.push_screen(modal_dialogs.MessageBox(message, border_color="red"))
 
+    def show_modal_error_dialog_from_main_thread(self, message: str) -> None:
+        """Call`show_modal_error_dialog from main thread when executing in another thread."""
+        self.call_from_thread(self.show_modal_error_dialog, message)
+
     def handle_open_filesystem_browser(self, path_: Path) -> None:
-        """
-        Open the system file browser to the path with the `showinfm`
-        package, performing checks that the path exists prior to opening.
-        """
+        """Open the system file browser to the path with the `showinfm` package."""
         if not path_.exists():
             self.show_modal_error_dialog(
                 f"{path_.as_posix()} cannot be opened as it "
@@ -145,15 +175,36 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
             self.show_modal_error_dialog(message)
 
-    def prompt_rename_file_or_folder(self, path_):
-        """ """
+    def prompt_rename_file_or_folder(self, path_) -> None:
+        """Display pop-up window to rename a file or folder in a tab DirectoryTree.
+
+        Parameters
+        ----------
+        path_
+            Path to the file or folder to rename.
+
+        TODO
+        ----
+        Can this not be moved to the relevant tab page?
+
+        """
         self.push_screen(
             modal_dialogs.RenameFileOrFolderScreen(self, path_),
             lambda new_name: self.rename_file_or_folder(path_, new_name),
         )
 
-    def rename_file_or_folder(self, path_, new_name):
-        """ """
+    def rename_file_or_folder(self, path_, new_name) -> None:
+        """Rename a file or folder within the project.
+
+        Parameters
+        ----------
+        path_
+            Path to the file or folder to rename.
+
+        new_name
+            New name for the file or folder.
+
+        """
         if new_name is False:
             return
         try:
@@ -166,7 +217,11 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
                     path_.as_posix(),
                     path_.parent / f"{new_name}{path_.suffix}",
                 )
-            self.query_one("#project_manager_screen").update_active_tab_tree()
+            assert isinstance(
+                self.screen, project_manager.ProjectManagerScreen
+            )
+            self.screen.update_active_tab_tree()
+
         except BaseException as e:
             self.show_modal_error_dialog(
                 f"Could not rename the file or folder."
@@ -178,11 +233,11 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     # Global Settings ---------------------------------------------------------
 
     def load_global_settings(self) -> Dict:
-        """
-        Load the 'global settings' for the TUI that determine
-        project-independent settings that are persistent across
-        sessions. These are stored in the canonical
-        .datashuttle folder (see `get_global_settings_path`).
+        """Return the loaded 'global settings' for the TUI.
+
+        These settings determine project-independent settings
+        that are persistent across sessions. These are stored
+        in the canonical .datashuttle folder (see `get_global_settings_path`).
         """
         settings_path = self.get_global_settings_path()
 
@@ -190,25 +245,25 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             global_settings = self.get_default_global_settings()
             self.save_global_settings(global_settings)
         else:
-            with open(settings_path, "r") as file:
+            with open(settings_path) as file:
                 global_settings = yaml.full_load(file)
 
         return global_settings
 
     def get_global_settings_path(self) -> Path:
-        """
-        The canonical path for the TUI's global settings.
-        """
+        """Return the canonical path for the TUI global settings."""
         path_ = canonical_folders.get_datashuttle_path()
         return path_ / "global_tui_settings.yaml"
 
     def get_default_global_settings(self) -> Dict:
+        """Return placeholder default global settings for the TUI."""
         return {
             "dark_mode": True,
             "show_transfer_tree_status": False,
         }
 
     def save_global_settings(self, global_settings: Dict) -> None:
+        """Save the TUI global settings to disk."""
         settings_path = self.get_global_settings_path()
 
         if not settings_path.parent.is_dir():
@@ -217,10 +272,16 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         with open(settings_path, "w") as file:
             yaml.dump(global_settings, file, sort_keys=False)
 
-    def copy_to_clipboard(self, value):
-        """
-        Centralized function to copy to clipboard.
-        This may fail under some circumstances (e.g., in headless mode on an HPC).
+    def copy_to_clipboard(self, value) -> None:
+        """Centralized function to copy to clipboard.
+
+        This may fail in headless mode on an HPC.
+
+        Parameters
+        ----------
+        value
+            Value to copy to clipboard.
+
         """
         try:
             pyperclip.copy(value)
@@ -231,6 +292,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
 
 def main():
+    """Start the application."""
     TuiApp().run()
 
 

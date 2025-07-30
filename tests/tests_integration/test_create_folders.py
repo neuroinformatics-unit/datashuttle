@@ -5,19 +5,18 @@ import shutil
 from os.path import join
 
 import pytest
-import test_utils
-from base import BaseTest
 
 from datashuttle.configs import canonical_configs, canonical_folders
 from datashuttle.configs.canonical_tags import tags
 
+from .. import test_utils
+from ..base import BaseTest
+
 
 class TestCreateFolders(BaseTest):
-
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_generate_folders_default_ses(self, project):
-        """
-        Make a subject folders with full tree. Don't specify
+        """Make a subject folders with full tree. Don't specify
         session name (it will default to no sessions).
 
         Check that the folder tree is created correctly. Pass
@@ -37,8 +36,7 @@ class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_explicitly_session_list(self, project):
-        """
-        Perform an alternative test where the output is tested explicitly.
+        """Perform an alternative test where the output is tested explicitly.
         This is some redundancy to ensure tests are working correctly and
         make explicit the expected folder tree.
 
@@ -83,8 +81,7 @@ class TestCreateFolders(BaseTest):
     def test_every_broad_datatype_passed(
         self, project, behav, ephys, funcimg, anat
     ):
-        """
-        Check every combination of data type used and ensure only the
+        """Check every combination of data type used and ensure only the
         correct ones are made.
 
         NOTE: This test could be refactored to reduce code reuse.
@@ -121,8 +118,7 @@ class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_custom_folder_names(self, project, monkeypatch):
-        """
-        Change folder names to custom (non-default) and
+        """Change folder names to custom (non-default) and
         ensure they are made correctly.
         """
         new_name_datafolders = canonical_folders.get_datatype_folders()
@@ -178,8 +174,7 @@ class TestCreateFolders(BaseTest):
     )
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_datatypes_subsection(self, project, files_to_test):
-        """
-        Check that combinations of datatypes passed to make file folder
+        """Check that combinations of datatypes passed to make file folder
         make the correct combination of datatypes.
 
         Note this will fail when new top level folders are added, and should be
@@ -207,9 +202,8 @@ class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_date_flags_in_session(self, project):
-        """
-        Check that @DATE@ is converted into current date
-        in generated folder names
+        """Check that @DATE@ is converted into current date
+        in generated folder names.
         """
         date, time_ = self.get_formatted_date_and_time()
 
@@ -230,9 +224,8 @@ class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_datetime_flag_in_session(self, project):
-        """
-        Check that @DATETIME@ is converted to datetime
-        in generated folder names
+        """Check that @DATETIME@ is converted to datetime
+        in generated folder names.
         """
         date, time_ = self.get_formatted_date_and_time()
 
@@ -257,8 +250,7 @@ class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_created_paths_dict_sub_or_ses_only(self, project):
-        """
-        Test that the `created_folders` dictionary returned by
+        """Test that the `created_folders` dictionary returned by
         `create_folders` correctly splits paths when only
         subject or session is passed. The `datatype` case is
         tested in `test_utils.check_folder_tree_is_correct()`.
@@ -292,8 +284,7 @@ class TestCreateFolders(BaseTest):
     )
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_all_top_level_folders(self, project, top_level_folder):
-        """
-        Check that when switching the top level folder (e.g. rawdata, derivatives)
+        """Check that when switching the top level folder (e.g. rawdata, derivatives)
         new folders are made in the correct folder.
         """
         subs = ["sub-001", "sub-002"]
@@ -319,8 +310,7 @@ class TestCreateFolders(BaseTest):
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("return_with_prefix", [True, False])
     def test_get_next_sub(self, project, return_with_prefix, top_level_folder):
-        """
-        Test that the next subject number is suggested correctly.
+        """Test that the next subject number is suggested correctly.
         This takes the union of subjects available in the local and
         central repository. As such test the case where either are
         empty, or when they have different subjects in.
@@ -373,8 +363,7 @@ class TestCreateFolders(BaseTest):
     @pytest.mark.parametrize("top_level_folder", ["rawdata", "derivatives"])
     @pytest.mark.parametrize("return_with_prefix", [True, False])
     def test_get_next_ses(self, project, return_with_prefix, top_level_folder):
-        """
-        Almost identical to test_get_next_sub() but with calls
+        """Almost identical to test_get_next_sub() but with calls
         for searching sessions. This could be combined with
         above but reduces readability, so leave with some duplication.
 
@@ -443,8 +432,7 @@ class TestCreateFolders(BaseTest):
 
     @pytest.mark.parametrize("project", ["local", "full"], indirect=True)
     def test_get_next_sub_and_ses_name_template(self, project):
-        """
-        In the case where a name template exists, these getters should use the
+        """In the case where a name template exists, these getters should use the
         number of digits on the template (even if these are different
         within the project!).
         """

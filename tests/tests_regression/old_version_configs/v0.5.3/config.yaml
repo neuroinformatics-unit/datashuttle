@@ -1,0 +1,5 @@
+local_path: old_ver
+central_path: old_ver
+connection_method: local_filesystem
+central_host_id: null
+central_host_username: null

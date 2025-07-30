@@ -7,9 +7,7 @@ from datashuttle.utils import formatting, getters, utils
 
 
 class TestUnit:
-    """
-    Currently contains misc. unit tests.
-    """
+    """Currently contains misc. unit tests."""
 
     @pytest.mark.parametrize(
         "underscore_position", ["left", "right", "both", "none"]
@@ -18,13 +16,12 @@ class TestUnit:
         "key", [tags("date"), tags("time"), tags("datetime")]
     )
     def test_datetime_string_replacement(self, key, underscore_position):
-        """
-        Test the function that replaces @DATE, @TIME@ or @DATETIME@
-        keywords with the date / time / datetime. Also, it will
-        pre/append underscores to the tags if they are not
-        already there (e.g if user input "sub-001@DATE").
-        Note cannot use regex \d{8} format because we are in an
-        f-string.
+        r"""Test the function that replaces @DATE, @TIME@ or @DATETIME@
+        keywords with the date / time / datetime.
+
+        Also, it will pre/append underscores to the tags if they are not
+        already there (e.g if user input "sub-001@DATE").  Note cannot use
+        regex \d{8} format because we are in an f-string.
         """
         start = "sub-001"
         end = "other-tag"
@@ -42,13 +39,12 @@ class TestUnit:
         name_list = [name]
         formatting.update_names_with_datetime(name_list)
 
-        assert (
-            re.search(regex, name_list[0]) is not None
-        ), "datetime formatting is incorrect."
+        assert re.search(regex, name_list[0]) is not None, (
+            "datetime formatting is incorrect."
+        )
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_process_to_keyword_in_sub_input(self, prefix):
-        """ """
         results = formatting.update_names_with_range_to_flag(
             [f"{prefix}-001", f"{prefix}-01{tags('to')}123"], prefix
         )
@@ -109,8 +105,7 @@ class TestUnit:
         )
 
     def test_get_value_from_bids_name_regexp(self):
-        """
-        Test the regexp that finds the value from a BIDS-name
+        """Test the regexp that finds the value from a BIDS-name
         key-value pair.
         """
         bids_name = "sub-0123125_ses-11312_datetime-5345323_id-3asd@523"
@@ -128,8 +123,7 @@ class TestUnit:
         assert id == "3asd@523"
 
     def test_num_leading_zeros(self):
-        """
-        Check num_leading_zeros handles prefixed and non-prefixed
+        """Check num_leading_zeros handles prefixed and non-prefixed
         case from -1 to -(101x 0)1.
         """
         for i in range(101):
@@ -145,10 +139,9 @@ class TestUnit:
     def test_get_max_sub_or_ses_num_and_value_length_empty(
         self, prefix, default_num_value_digits
     ):
-        """
-        When the list of sub or ses names is empty, the returned max number
+        """When the list of sub or ses names is empty, the returned max number
         should be zero and the `default_num_value_digits`
-        be set to the passed default
+        be set to the passed default.
         """
         (
             max_value,
@@ -162,8 +155,7 @@ class TestUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_get_max_sub_or_ses_num_and_value_length_error(self, prefix):
-        """
-        An error will be shown if the sub or ses value digits are inconsistent,
+        """An error will be shown if the sub or ses value digits are inconsistent,
         because it is not possible to return the number of values required.
 
         A warning should be shown in that the number of value digits are
@@ -213,8 +205,7 @@ class TestUnit:
     def test_get_max_sub_or_ses_num_and_value_length(
         self, prefix, test_max_num, test_num_digits
     ):
-        """
-        Test many combinations of subject names
+        """Test many combinations of subject names
         and number of digits for a project,
         e.g. `names = ["sub-001", ... "sub-101"]`.
         """
@@ -235,9 +226,7 @@ class TestUnit:
 
     @pytest.mark.parametrize("prefix", ["sub", "ses"])
     def test_get_max_sub_or_ses_num_and_value_length_edge_case(self, prefix):
-        """
-        Test the edge case where the subject number does not start at 1.
-        """
+        """Test the edge case where the subject number does not start at 1."""
         names = [f"{prefix}-09", f"{prefix}-10", f"{prefix}-11"]
 
         max_num, num_digits = getters.get_max_sub_or_ses_num_and_value_length(
@@ -252,8 +241,7 @@ class TestUnit:
     # -------------------------------------------------------------------------
 
     def make_name(self, key, underscore_position, start, end):
-        """
-        Make name with / without underscore to test every
+        """Make name with / without underscore to test every
         possibility.
         """
         if underscore_position == "left":

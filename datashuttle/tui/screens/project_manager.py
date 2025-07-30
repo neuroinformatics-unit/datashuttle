@@ -23,10 +23,10 @@ from datashuttle.tui.tabs import create_folders, logging, transfer
 
 
 class ProjectManagerScreen(Screen):
-    """
-    Screen containing the Create, Transfer and Configs tabs. This is
-    the primary screen within which the user interacts with
-    a pre-configured project.
+    """Screen containing the Create, Transfer and Configs tabs.
+
+    This is the primary screen within which the user interacts
+    with a pre-configured project.
 
     The 'Create' tab interacts with Datashuttle's `create_folders()`
     method to create new project folders.
@@ -43,6 +43,7 @@ class ProjectManagerScreen(Screen):
     """
 
     def __init__(self, mainwindow: TuiApp, interface: Interface, id) -> None:
+        """Initialise the ProjectManagerScreen."""
         super(ProjectManagerScreen, self).__init__(id=id)
 
         self.mainwindow = mainwindow
@@ -53,6 +54,7 @@ class ProjectManagerScreen(Screen):
         self.tabbed_content_mount_signal = True
 
     def compose(self) -> ComposeResult:
+        """Add widgets to the ProjectManagerScreen."""
         yield Header()
         yield Button("Main Menu", id="all_main_menu_buttons")
         with TabbedContent(
@@ -90,23 +92,21 @@ class ProjectManagerScreen(Screen):
             )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        """
-        Dismisses the TabScreen (and returns to the main menu) once
-        the 'Main Menu' button is pressed.
-        """
+        """Dismiss the TabScreen and return to the main menu."""
         if event.button.id == "all_main_menu_buttons":
             self.dismiss()
 
     def on_tabbed_content_tab_activated(
         self, event: TabbedContent.TabActivated
     ) -> None:
-        """
-        Refresh the directorytree for create or transfer tabs whenever
-        the tabbedcontent is switched to one of these tabs.
+        """Handle a tab switch.
+
+        Refresh the DirectoryTree for create or transfer tabs whenever
+        the TabbedContent is switched to one of these tabs.
 
         This is also triggered on mount, leading to it being reloaded
         twice, leading to a strange flicker. Ideally no trigger
-        would be sent on mount. Therefore the ugly `tabbed_content_mount_signal`
+        would be sent on mount. Therefore, the ugly `tabbed_content_mount_signal`
         variable is introduced to track this.
         """
         if self.tabbed_content_mount_signal:
@@ -125,12 +125,14 @@ class ProjectManagerScreen(Screen):
                     "#tabscreen_logging_tab"
                 ).update_most_recent_label()
 
-    def update_active_tab_tree(self):
+    def update_active_tab_tree(self) -> None:
+        """Reload the CustomDirectoryTree on the now-active tab."""
         active_tab_id = self.query_one("#tabscreen_tabbed_content").active
         self.query_one(f"#{active_tab_id}").reload_directorytree()
 
     def on_configs_content_configs_saved(self) -> None:
-        """
+        """Handle saving of the configs tab.
+
         When configs are saved, we may switch between a 'full' project
         and a 'local only' project (no `central_path` or `connection_method` set).
         In such a case we need to refresh the ProjectManager screen to add / remove
@@ -153,7 +155,6 @@ class ProjectManagerScreen(Screen):
         )
 
         if old_project_type == project_type:
-
             if project_type == "full":
                 self.query_one(
                     "#tabscreen_transfer_tab"
@@ -171,9 +172,10 @@ class ProjectManagerScreen(Screen):
                 self.wrap_dismiss,
             )
 
-    def wrap_dismiss(self, _):
-        """
-        Need to wrap dismiss as cannot include it directly
-        in push_screen callback, or even wrapped in lambda.
+    def wrap_dismiss(self, _) -> None:
+        """Wrap the dismiss function for push screen callbacks.
+
+        Need to wrap dismiss as cannot include it directly in
+        push_screen callback, or even wrapped in lambda.
         """
         self.dismiss()

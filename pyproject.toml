@@ -19,10 +19,11 @@ dependencies = [
     "fancylog>=0.4.2",
     "simplejson",
     "pyperclip",
-    "textual<=1.0.0",
+    "textual==3.4.0",
     "show-in-file-manager",
     "gitpython",
-    "typeguard"
+    "typeguard",
+    "psutil"
 ]
 
 classifiers = [
@@ -33,6 +34,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
     "License :: OSI Approved :: BSD License",
 ]
@@ -51,7 +53,6 @@ dev = [
     "pytest-mock",
     "coverage",
     "tox",
-    "black",
     "mypy",
     "pre-commit",
     "ruff",
@@ -91,22 +92,51 @@ exclude = ["tests*", "docs*"]
 [tool.pytest.ini_options]
 addopts = "--cov=datashuttle"
 
-[tool.black]
-target-version = ['py39', 'py310', 'py311', 'py312']
-skip-string-normalization = false
-line-length = 79
-
 [tool.ruff]
 line-length = 79
 exclude = ["__init__.py","build",".eggs"]
 fix = true
 
-[tool.ruff.lint]
-ignore = ["E203","E501","E731","C901","W291","W293","E402","E722"]
-select = ["I", "E", "F", "TCH", "TID252"]
+# Ruff config is not exactly the same as in the movement repo, as
+# currently we are only adding linting enforcement to docstrings.
+# Other ruff rules that are also present in movement repo can be
+# added here in a separate PR after these changes have been merged.
 
-[tool.ruff.lint.per-file-ignores]
-"__init__.py" = ["F401"]
+[tool.ruff.lint]
+# See https://docs.astral.sh/ruff/rules/
+
+ignore = [
+    "E203",  # whitespace before ':' (conflicts with Black)
+    "E501",  # line too long (handled by Black)
+    "E731",  # do not assign a lambda expression, use a def
+    "C901",  # function is too complex
+    "W291",  # trailing whitespace
+    "W293",  # blank line contains whitespace
+    "E402",  # module level import not at top of file
+    "E722",  # do not use bare 'except'
+    "D100",  # missing docstring in public module
+    "D203",  # 1 blank line required before class docstring (conflicts with D211)
+    "D213",  # multi-line docstring summary should start at the second line (conflicts with D212)
+]
+select = [
+    "I",        # isort
+    "E",        # pycodestyle errors
+    "F",        # Pyflakes
+    "TC",       # flake8-type-checking
+    "TID252",   # flake8-tidy-imports relative-imports
+    "D",        # pydocstyle
+]
+per-file-ignores = { "tests/*" = [
+    "D",  # ignore docstring formatting in tests for now
+    "TID252"
+], "examples/*" = [
+    "D400", # first line should end with a period.
+    "D415", # first line should end with a period, question mark...
+    "D205", # missing blank line between summary and description
+]}
+
+[tool.ruff.format]
+docstring-code-format = true # Also format code in docstrings
 
 [tool.ruff.lint.mccabe]
 max-complexity = 18

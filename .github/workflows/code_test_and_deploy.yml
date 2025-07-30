@@ -32,9 +32,9 @@ jobs:
         # macos-14 is M1, macos-13 is intel. Run on earliest and
         # latest python versions. All python versions are tested in
         # the weekly cron job.
-        os: [windows-latest, ubuntu-latest, macos-14, macos-13]
+        os: [ ubuntu-latest, windows-latest, macos-14, macos-13]
         # Test all Python versions for cron job, and only first/last for other triggers
-        python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12"]' || '["3.9", "3.12"]') }}
+        python-version: ${{ fromJson(github.event_name == 'schedule' && '["3.9", "3.10", "3.11", "3.12", "3.13"]' || '["3.9", "3.13"]') }}
 
     steps:
       - uses: actions/checkout@v4
@@ -45,18 +45,29 @@ jobs:
           auto-update-conda: true
           channels: conda-forge
           activate-environment: "datashuttle-test"
-      - name: Install datashuttle with conda
+
+      # The recommended installation is via conda, but we need to test
+      # against dependencies from the pyproject.toml on the branch
+      # to ensure dependency changes in a PR are reflected.
+      - name: Install rclone
         run: |
           conda activate datashuttle-test
-          conda install -c conda-forge datashuttle
-      - name: Install local datashuttle for testing
+          conda install -c conda-forge rclone
+      - name: Install datashuttle from repo
         run: |
-          # --force will only uninstall datashuttle not dependencies
-          conda uninstall datashuttle --force
           python -m pip install --upgrade pip
           pip install .[dev]
-      - name: Test
-        run: pytest
+        # run SSH tests only on Linux because Windows and macOS
+        # are already run within a virtual container and so cannot
+        # run Linux containers because nested containerisation is disabled.
+      - name: Test SSH (Linux only)
+        if: runner.os == 'Linux'
+        run: |
+          sudo service mysql stop  # free up port 3306 for ssh tests
+          pytest tests/tests_transfers/ssh
+      - name: All Other Tests
+        run: |
+          pytest --ignore tests/tests_transfers/ssh
 
   build_sdist_wheels:
     name: Build source distribution
