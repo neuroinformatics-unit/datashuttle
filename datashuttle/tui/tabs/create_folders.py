@@ -96,7 +96,8 @@ class CreateFoldersTab(TreeAndInputTab):
         yield Container(
             DatatypeCheckboxes(
                 self.interface, id="create_folders_datatype_checkboxes"
-            )
+            ),
+            id="create_folders_datatype_container",  #
         )
         yield Horizontal(
             Button(
@@ -158,8 +159,18 @@ class CreateFoldersTab(TreeAndInputTab):
 
     async def refresh_after_datatypes_changed(self, ignore) -> None:
         """Redisplay the datatype checkboxes."""
-        await self.recompose()
-        self.on_mount()
+        container = self.query_one(
+            "#create_folders_datatype_container", Container
+        )
+        container.query_one("#create_folders_datatype_checkboxes").remove()
+
+        await container.mount(
+            DatatypeCheckboxes(
+                self.interface,
+                create_or_transfer="create",
+                id="create_folders_datatype_checkboxes",
+            )
+        )
 
     @require_double_click
     def on_clickable_input_clicked(
