@@ -63,8 +63,7 @@ def preliminary_for_setup_without_browser(
         pipe_std=True,
     )
 
-    # TODO: make this more robust
-    # extracting rclone's message from the json
+    # Extracting rclone's message from the json
     output_json = json.loads(output.stdout)
     message = output_json["Option"]["Help"]
 
