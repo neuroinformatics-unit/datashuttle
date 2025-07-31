@@ -141,15 +141,8 @@ class TransferTab(TreeAndInputTab):
             ),
             # These are almost identical to create tab
             Label("Datatype(s)", id="transfer_datatype_label"),
-            DatatypeCheckboxes(
-                self.interface,
-                create_or_transfer="transfer",
-                id="transfer_custom_datatype_checkboxes",
-            ),
-            Button(
-                "Displayed Datatypes",
-                id="transfer_tab_displayed_datatypes_button",
-            ),
+            self.get_datatypes_checkboxes_widget(),
+            self.get_displayed_datatypes_button(),
         ]
 
         yield TransferStatusTree(
@@ -325,11 +318,28 @@ class TransferTab(TreeAndInputTab):
             )
 
     async def refresh_after_datatype_changed(self, ignore):
-        """Refresh Checkboxes after the shown datatypes have changed."""
-        await self.recompose()
-        self.on_mount()
-        self.query_one("#transfer_custom_radiobutton").value = True
-        self.switch_transfer_widgets_display()
+        """Refresh Checkboxes after the shown datatypes have changed.
+
+        The widget must be completely removed and reinitialised.
+        This means the button underneath it must also be removed and
+        re-added, or it ends up above the datatype checkbox widget.
+        """
+        container = self.query_one("#transfer_params_container")
+        await container.query_one(
+            "#transfer_custom_datatype_checkboxes"
+        ).remove()
+        await container.query_one(
+            "#transfer_tab_displayed_datatypes_button"
+        ).remove()
+
+        (
+            Button(
+                "Displayed Datatypes",
+                id="transfer_tab_displayed_datatypes_button",
+            ),
+        )
+        await container.mount(self.get_datatypes_checkboxes_widget())
+        await container.mount(self.get_displayed_datatypes_button())
 
     def on_custom_directory_tree_directory_tree_special_key_press(
         self, event: CustomDirectoryTree.DirectoryTreeSpecialKeyPress
@@ -411,3 +421,18 @@ class TransferTab(TreeAndInputTab):
         self.app.call_from_thread(self.reload_directorytree)
 
         return success, output
+
+    def get_datatypes_checkboxes_widget(self):
+        """Create the datatype checkboxes, centralised as used in multiple places."""
+        return DatatypeCheckboxes(
+            self.interface,
+            create_or_transfer="transfer",
+            id="transfer_custom_datatype_checkboxes",
+        )
+
+    def get_displayed_datatypes_button(self):
+        """Create the datatype button, centralised as used in multiple places."""
+        return Button(
+            "Displayed Datatypes",
+            id="transfer_tab_displayed_datatypes_button",
+        )
