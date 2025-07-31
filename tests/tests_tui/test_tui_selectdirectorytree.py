@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pytest
 
 from datashuttle.tui.app import TuiApp
@@ -47,9 +49,7 @@ class TestSelectTree(TuiBase):
                 "#select_directory_tree_drive_select"
             )
 
-            select.value = "Drive1"
-            await pilot.pause()
-            assert str(tree.path) == "Drive1"
+            assert tree.path == Path().home()
 
             select.value = "Drive2"
             await pilot.pause()
