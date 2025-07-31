@@ -159,10 +159,11 @@ class CreateFoldersTab(TreeAndInputTab):
 
     async def refresh_after_datatypes_changed(self, ignore) -> None:
         """Redisplay the datatype checkboxes."""
-        container = self.query_one(
-            "#create_folders_datatype_container", Container
-        )
-        container.query_one("#create_folders_datatype_checkboxes").remove()
+        container = self.query_one("#create_folders_datatype_container")
+
+        await container.query_one(
+            "#create_folders_datatype_checkboxes"
+        ).remove()
 
         await container.mount(
             DatatypeCheckboxes(

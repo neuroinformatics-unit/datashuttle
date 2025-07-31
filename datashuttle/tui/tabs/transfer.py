@@ -326,18 +326,32 @@ class TransferTab(TreeAndInputTab):
 
     async def refresh_after_datatype_changed(self, ignore):
         """Refresh Checkboxes after the shown datatypes have changed."""
-        """Redisplay the datatype checkboxes."""
-        container = self.query_one(
-            "#create_folders_datatype_container", Container
-        )
-        container.query_one("#create_folders_datatype_checkboxes").remove()
+        container = self.query_one("#transfer_params_container")
+        await container.query_one(
+            "#transfer_custom_datatype_checkboxes"
+        ).remove()
+        await container.query_one(
+            "#transfer_tab_displayed_datatypes_button"
+        ).remove()
 
+        (
+            Button(
+                "Displayed Datatypes",
+                id="transfer_tab_displayed_datatypes_button",
+            ),
+        )
         await container.mount(
             DatatypeCheckboxes(
                 self.interface,
                 create_or_transfer="transfer",
-                id="create_folders_datatype_checkboxes",
+                id="transfer_custom_datatype_checkboxes",
             )
+        )
+        await container.mount(
+            Button(
+                "Displayed Datatypes",
+                id="transfer_tab_displayed_datatypes_button",
+            ),
         )
 
     def on_custom_directory_tree_directory_tree_special_key_press(
