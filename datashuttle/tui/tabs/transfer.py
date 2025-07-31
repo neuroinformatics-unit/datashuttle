@@ -141,7 +141,7 @@ class TransferTab(TreeAndInputTab):
             ),
             # These are almost identical to create tab
             Label("Datatype(s)", id="transfer_datatype_label"),
-            self.get_datatypes_widget(),
+            self.get_datatypes_checkboxes_widget(),
             self.get_displayed_datatypes_button(),
         ]
 
