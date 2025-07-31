@@ -198,10 +198,12 @@ def check_rclone_with_default_call() -> bool:
 def prompt_rclone_download_if_does_not_exist() -> None:
     """Check that rclone is installed."""
     if not check_rclone_with_default_call():
+        newline = "\n" if "PYTEST_CURRENT_TEST" not in os.environ else ""
+
         raise BaseException(
-            "RClone installation not found. Install by entering "
-            "the following into your terminal:\n"
-            " conda install -c conda-forge rclone"
+            f"RClone installation not found. Install by entering "
+            f"the following into your terminal:{newline}"
+            f"  conda install -c conda-forge rclone"
         )
 
 
