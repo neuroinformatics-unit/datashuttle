@@ -11,8 +11,4 @@ on the
 We're keen to hear your experiences with **datashuttle**, please don't hesitate to raise an issue
 or drop into our [Zulip chat](https://neuroinformatics.zulipchat.com/#narrow/stream/405999-DataShuttle) with any questions, comments or feedback.
 
-> [!WARNING]
-> **datashuttle** is currently in the [beta](https://en.wikipedia.org/wiki/Software_release_life_cycle#Beta) release phase. Please
-> get in contact if you experience any bugs or unexpected behaviour.
-
 ![datashuttle-overview-light](https://github.com/neuroinformatics-unit/datashuttle/assets/55797454/fd96f383-738f-46e8-92c0-686deba5c57a#gh-dark-light-only)
