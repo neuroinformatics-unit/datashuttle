@@ -35,6 +35,10 @@ class TestTuiLocalOnlyProject(TuiBase):
                 "connection_method": None,
                 "central_host_id": None,
                 "central_host_username": None,
+                "gdrive_client_id": None,
+                "gdrive_root_folder_id": None,
+                "aws_access_key_id": None,
+                "aws_region": None,
             }
             assert pilot.app.screen.query_one(
                 "#placeholder_transfer_tab"
@@ -112,6 +116,10 @@ class TestTuiLocalOnlyProject(TuiBase):
                 "connection_method": "ssh",
                 "central_host_id": "some_host",
                 "central_host_username": "some_username",
+                "gdrive_client_id": None,
+                "gdrive_root_folder_id": None,
+                "aws_access_key_id": None,
+                "aws_region": None,
             }
 
             await pilot.pause()
@@ -174,6 +182,10 @@ class TestTuiLocalOnlyProject(TuiBase):
                 "connection_method": None,
                 "central_host_id": None,
                 "central_host_username": None,
+                "gdrive_client_id": None,
+                "gdrive_root_folder_id": None,
+                "aws_access_key_id": None,
+                "aws_region": None,
             }
 
             await pilot.pause()
