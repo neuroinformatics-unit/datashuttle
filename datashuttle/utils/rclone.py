@@ -198,7 +198,7 @@ def check_rclone_with_default_call() -> bool:
 def prompt_rclone_download_if_does_not_exist() -> None:
     """Check that rclone is installed."""
     if not check_rclone_with_default_call():
-        newline = "\n" if "PYTEST_CURRENT_TEST" not in os.environ else ""
+        newline = "" if "PYTEST_CURRENT_TEST" in os.environ else "\n"
 
         raise BaseException(
             f"RClone installation not found. Install by entering "
