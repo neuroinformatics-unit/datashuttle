@@ -167,6 +167,6 @@ ignore = [
 datashuttle = "datashuttle.tui_launcher:main"
 
 [tool.codespell]
-skip = '.git,*.pdf,*.svg,*.yml'
+skip = '.git,*.pdf,*.svg,*.yml,*.bib'
 #
 # ignore-words-list = ''
