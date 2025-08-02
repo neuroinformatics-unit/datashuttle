@@ -1,10 +1,13 @@
 """ """
 
 import copy
+import shutil
 from pathlib import Path
 
 import pandas as pd
 import pytest
+
+from datashuttle.utils import rclone
 
 from .. import test_utils
 from ..base import BaseTest
@@ -159,3 +162,81 @@ class BaseTransfer(BaseTest):
 
     def central_from_local(self, path_):
         return Path(str(copy.copy(path_)).replace("local", "central"))
+
+    # -------------------------------------------------------------------------
+    # Transfer
+    # -------------------------------------------------------------------------
+
+    def run_and_check_transfers(
+        self, project, pathtable, sub_names, ses_names, datatype
+    ):
+        true_central_path = project.cfg["central_path"]
+        tmp_central_path = (
+            project.cfg["central_path"] / "tmp" / project.project_name
+        )
+        self.remake_logging_path(project)
+
+        project.update_config_file(central_path=tmp_central_path)
+
+        project.upload_custom(
+            "rawdata", sub_names, ses_names, datatype, init_log=False
+        )
+
+        expected_transferred_paths = self.get_expected_transferred_paths(
+            pathtable, sub_names, ses_names, datatype
+        )
+
+        transferred_files = test_utils.recursive_search_central(project)
+        paths_to_transferred_files = self.remove_path_before_rawdata(
+            transferred_files
+        )
+
+        assert sorted(paths_to_transferred_files) == sorted(
+            expected_transferred_paths
+        )
+
+        # Now, move data from the central path where the project is
+        # setup, to a temp local folder to test download.
+        true_local_path = project.cfg["local_path"]
+        tmp_local_path = (
+            project.cfg["local_path"] / "tmp" / project.project_name
+        )
+        tmp_local_path.mkdir(exist_ok=True, parents=True)
+
+        project.update_config_file(local_path=tmp_local_path)
+        project.update_config_file(central_path=true_central_path)
+
+        project.download_custom(
+            "rawdata", sub_names, ses_names, datatype, init_log=False
+        )
+
+        # Find the transferred paths, tidy them up
+        # and check expected paths were transferred.
+        all_transferred = list((tmp_local_path / "rawdata").glob("**/*"))
+        all_transferred = [
+            path_ for path_ in all_transferred if path_.is_file()
+        ]
+
+        paths_to_transferred_files = self.remove_path_before_rawdata(
+            all_transferred
+        )
+
+        assert sorted(paths_to_transferred_files) == sorted(
+            expected_transferred_paths
+        )
+
+        rclone.call_rclone(
+            f"purge {project.cfg.get_rclone_config_name()}:{tmp_central_path.as_posix()}"
+        )
+
+        shutil.rmtree(tmp_local_path)
+
+        self.remake_logging_path(project)
+        project.update_config_file(local_path=true_local_path)
+
+    def remake_logging_path(self, project):
+        """
+        Need to do this to compensate for switching
+        local_path location in the test environment.
+        """
+        project.get_logging_path().mkdir(parents=True, exist_ok=True)
