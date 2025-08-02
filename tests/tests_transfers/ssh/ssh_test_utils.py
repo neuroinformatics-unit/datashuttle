@@ -94,8 +94,7 @@ def recursive_search_central(project):
 
 
 def sftp_recursive_file_search(sftp, path_, all_filenames):
-    """
-    Append all filenames found within a folder,
+    """Append all filenames found within a folder,
     when searching over a sftp connection.
     """
     try:
