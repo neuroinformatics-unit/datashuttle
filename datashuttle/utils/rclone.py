@@ -43,6 +43,9 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     else:
         output = subprocess.run(command, shell=True)
 
+    if output.returncode == 1:
+        prompt_rclone_download_if_does_not_exist()
+
     return output
 
 
@@ -88,6 +91,9 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
             stderr=subprocess.PIPE,
             shell=False,
         )
+
+        if output.returncode == 1:
+            prompt_rclone_download_if_does_not_exist()
 
     finally:
         os.remove(tmp_script_path)
@@ -186,15 +192,6 @@ def log_rclone_config_output() -> None:
     )
 
 
-def check_rclone_with_default_call() -> bool:
-    """Return a bool indicating whether rclone is installed."""
-    try:
-        output = call_rclone("-h", pipe_std=True)
-    except FileNotFoundError:
-        return False
-    return True if output.returncode == 0 else False
-
-
 def prompt_rclone_download_if_does_not_exist() -> None:
     """Check that rclone is installed."""
     if not check_rclone_with_default_call():
@@ -205,6 +202,15 @@ def prompt_rclone_download_if_does_not_exist() -> None:
             f"the following into your terminal:{newline}"
             f"  conda install -c conda-forge rclone"
         )
+
+
+def check_rclone_with_default_call() -> bool:
+    """Return a bool indicating whether rclone is installed."""
+    try:
+        output = call_rclone("-h", pipe_std=True)
+    except FileNotFoundError:
+        return False
+    return True if output.returncode == 0 else False
 
 
 # -----------------------------------------------------------------------------
