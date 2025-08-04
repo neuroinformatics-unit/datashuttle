@@ -573,6 +573,10 @@ def search_for_folders(
 ) -> Tuple[List[Any], List[Any]]:
     """Determine the method used to search for search prefix folders in the search path.
 
+    If local filesystem, use a bespoke function because it is faster. `rclone`
+    can be used to search local filesystem, but it is slow because a new process
+    must be created. These functions are tested against each-other.
+
     Parameters
     ----------
     cfg
@@ -602,38 +606,36 @@ def search_for_folders(
     if (
         local_or_central == "local"
         or cfg["connection_method"] == "local_filesystem"
-    ) and not search_path.exists():
-        if verbose:
-            utils.log_and_message(f"No file found at {search_path.as_posix()}")
-        return [], []
+    ):
+        if not search_path.exists():
+            if verbose:
+                utils.log_and_message(
+                    f"No file found at {search_path.as_posix()}"
+                )
+            return [], []
 
-    if local_or_central == "local":
-        rclone_config_name = None
-    else:
-        rclone_config_name = cfg.get_rclone_config_name(
-            cfg["connection_method"]
+        all_folder_names, all_filenames = search_local_filesystem(
+            search_path, search_prefix, return_full_path
         )
 
-    all_folder_names, all_filenames = search_local_or_remote(
-        search_path,
-        search_prefix,
-        rclone_config_name,
-        return_full_path,
-    )
+    else:
+        all_folder_names, all_filenames = search_central_via_connection(
+            cfg,
+            search_path,
+            search_prefix,
+            return_full_path,
+        )
 
     return all_folder_names, all_filenames
 
 
-def search_local_or_remote(
-    search_path: Path,
-    search_prefix: str,
-    rclone_config_name: str | None,
-    return_full_path: bool = False,
-) -> Tuple[List[Any], List[Any]]:
-    """Search for files and folders in central path using `rclone lsjson` command.
+def search_local_filesystem(
+    search_path: Path, search_prefix: str, return_full_path: bool = False
+) -> tuple[List[Any], List[Any]]:
+    """Search local filesystem recursively.
 
-    This command lists all the files and folders in the central path in a json format.
-    The json contains file/folder info about each file/folder like name, type, etc.
+    Partner function to `search_central_via_connection()` for use
+    locally as is much faster than calling `rclone` through a new process.
 
     Parameters
     ----------
@@ -643,32 +645,67 @@ def search_local_or_remote(
         is the path on the machine that has been connected to.
     search_prefix
         The search string e.g. "sub-*".
-    rclone_config_name
-        Name of the rclone config for the remote (not set for local). `rclone config`
-        can be used in the terminal to see how rclone has stored these. In datashuttle,
-        these are managed by `Configs`.
     return_full_path
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
     """
-    config_prefix = "" if not rclone_config_name else f"{rclone_config_name}:"
+    all_folder_names = []
+    all_filenames = []
+
+    for item in search_path.glob(search_prefix):
+        to_append = item if return_full_path else item.name
+
+        if item.is_dir():
+            all_folder_names.append(to_append)
+        elif item.is_file():
+            all_filenames.append(to_append)
+
+    return all_folder_names, all_filenames
+
+
+def search_central_via_connection(
+    cfg: Configs,
+    search_path: Path,
+    search_prefix: str,
+    return_full_path: bool = False,
+) -> tuple[List[Any], List[Any]]:
+    """Search for files and folders in central path using `rclone lsjson` command.
+
+    This command lists all the files and folders in the central path in a json format.
+    The json contains file/folder info about each file/folder like name, type, etc.
+
+    Parameters
+    ----------
+    cfg
+        datashuttle Configs class.
+    search_path
+        The path to search (relative to the local or remote drive). For example,
+        for "local_filesystem" this is the path on the local machine. For "ssh", this
+        is the path on the machine that has been connected to.
+    search_prefix
+        The search string e.g. "sub-*".
+    return_full_path
+        If `True`, return the full filepath, otherwise return only the folder/file name.
+
+    """
+    rclone_config_name = cfg.get_rclone_config_name(cfg["connection_method"])
 
     output = rclone.call_rclone(
-        f'lsjson {config_prefix}"{search_path.as_posix()}"',
+        f'lsjson {rclone_config_name}:"{search_path.as_posix()}"',
         pipe_std=True,
     )
 
-    all_folder_names: List[str] = []
-    all_filenames: List[str] = []
-
     if output.returncode != 0:
-        utils.log_and_message(
+        utils.log_and_raise_error(
             f"Error searching files at {search_path.as_posix()}\n"
-            f"{output.stderr.decode('utf-8') if output.stderr else ''}"
+            f"{output.stderr.decode('utf-8') if output.stderr else ''}",
+            RuntimeError,
         )
-        return all_folder_names, all_filenames
 
     files_and_folders = json.loads(output.stdout)
+
+    all_folder_names = []
+    all_filenames = []
 
     for file_or_folder in files_and_folders:
         name = file_or_folder["Name"]
