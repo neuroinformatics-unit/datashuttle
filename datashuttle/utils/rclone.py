@@ -43,7 +43,7 @@ def call_rclone(command: str, pipe_std: bool = False) -> CompletedProcess:
     else:
         output = subprocess.run(command, shell=True)
 
-    if output.returncode == 1:
+    if output.returncode != 0:
         prompt_rclone_download_if_does_not_exist()
 
     return output
@@ -92,7 +92,7 @@ def call_rclone_through_script(command: str) -> CompletedProcess:
             shell=False,
         )
 
-        if output.returncode == 1:
+        if output.returncode != 0:
             prompt_rclone_download_if_does_not_exist()
 
     finally:
