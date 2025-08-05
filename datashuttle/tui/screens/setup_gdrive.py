@@ -191,7 +191,8 @@ class SetupGdriveScreen(ModalScreen):
         asyncio.create_task(
             self.setup_gdrive_connection_and_update_ui(
                 gdrive_client_secret=gdrive_client_secret
-            )
+            ),
+            name="setup_gdrive_connection_with_browser_task",
         )
 
     def prompt_user_for_config_token(self) -> None:
@@ -227,7 +228,8 @@ class SetupGdriveScreen(ModalScreen):
             self.setup_gdrive_connection_and_update_ui(
                 gdrive_client_secret=gdrive_client_secret,
                 config_token=config_token,
-            )
+            ),
+            name="setup_gdrive_connection_without_browser_task",
         )
 
     async def setup_gdrive_connection_and_update_ui(
