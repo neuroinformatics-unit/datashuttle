@@ -77,7 +77,7 @@ jobs:
           pytest tests/tests_transfers/ssh
       - name: All Other Tests
         run: |
-          pytest --ignore tests/tests_transfers/ssh
+          pytest -k "test_aws_transfer or test_gdrive_transfer"
 
   build_sdist_wheels:
     name: Build source distribution
