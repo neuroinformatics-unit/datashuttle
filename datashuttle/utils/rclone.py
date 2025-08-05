@@ -205,9 +205,17 @@ def prompt_rclone_download_if_does_not_exist() -> None:
 
 
 def check_rclone_with_default_call() -> bool:
-    """Return a bool indicating whether rclone is installed."""
+    """Return a bool indicating whether rclone is installed.
+
+    Must not use `call_rclone` or leads to recursion.
+    """
     try:
-        output = call_rclone("-h", pipe_std=True)
+        output = subprocess.run(
+            "rclone -h",
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            shell=True,
+        )
     except FileNotFoundError:
         return False
     return True if output.returncode == 0 else False
