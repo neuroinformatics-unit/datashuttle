@@ -305,8 +305,8 @@ def setup_rclone_config_for_aws(
         "s3 provider AWS "
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
-        f"region {cfg['aws_region']} "
-        f"location_constraint {cfg['aws_region']}",
+        f"region {cfg['aws_region']}",
+        # f"location_constraint {cfg['aws_region']}",
         pipe_std=True,
     )
 
@@ -325,7 +325,10 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     If the command fails, it raises a ConnectionError. The created file is
     deleted thereafter.
     """
-    tempfile_path = (cfg["central_path"] / "temp.txt").as_posix()
+    tempfile_path = (
+        cfg["central_path"] / "temp.txt"
+    ).as_posix()  # TODO: handle None
+
     output = call_rclone(
         f"touch {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
     )
