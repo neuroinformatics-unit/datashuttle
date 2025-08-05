@@ -26,7 +26,7 @@ class TestGdriveTransfer(BaseTransfer):
         yield [pathtable, project]
 
         rclone.call_rclone(
-            f"purge central_{project.project_name}_gdrive:{project.cfg['central_path']}"
+            f"purge central_{project.project_name}_gdrive:{project.cfg['central_path'].parent}"
         )
 
     @pytest.mark.parametrize(
