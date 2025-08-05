@@ -195,10 +195,11 @@ def log_rclone_config_output() -> None:
 def prompt_rclone_download_if_does_not_exist() -> None:
     """Check that rclone is installed."""
     if not check_rclone_with_default_call():
-        raise BaseException(
+        utils.log_and_raise_error(
             "RClone installation not found. Install by entering "
             "the following into your terminal:\n"
-            " conda install -c conda-forge rclone"
+            " conda install -c conda-forge rclone",
+            RuntimeError,
         )
 
 
