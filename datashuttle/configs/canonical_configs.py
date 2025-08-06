@@ -276,6 +276,7 @@ def get_tui_config_defaults() -> Dict:
                 "custom_transfer": "rawdata",
             },
             "bypass_validation": False,
+            "ALLOW_ALPHANUMERIC": False,
             "overwrite_existing_files": "never",
             "dry_run": False,
             "suggest_next_sub_ses_central": False,

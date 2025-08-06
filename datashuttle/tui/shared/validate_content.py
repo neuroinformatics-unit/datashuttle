@@ -103,6 +103,11 @@ class ValidateContent(Container):
                     value=False,
                     id="validate_strict_mode_checkbox",
                 ),
+                Checkbox(
+                    "ALLOW_ALPHANUMERIC",
+                    value=False,
+                    id="ALLOW_ALPHANUMERIC_checkbox",
+                ),
                 id="validate_arguments_horizontal",
             ),
             RichLog(highlight=True, markup=True, id="validate_richlog"),
@@ -150,9 +155,15 @@ class ValidateContent(Container):
             select_value = self.query_one(
                 "#validate_top_level_folder_select"
             ).value
+
             top_level_folder = None if select_value == "both" else select_value
+
             strict_mode = self.query_one(
                 "#validate_strict_mode_checkbox"
+            ).value
+
+            ALLOW_ALPHANUMERIC = self.query_one(
+                "#ALLOW_ALPHANUMERIC_checkbox"
             ).value
 
             if self.interface:
@@ -167,6 +178,7 @@ class ValidateContent(Container):
                     top_level_folder=top_level_folder,
                     include_central=include_central,
                     strict_mode=strict_mode,
+                    ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
                 )
                 if not success:
                     self.parent_class.mainwindow.show_modal_error_dialog(
@@ -196,6 +208,7 @@ class ValidateContent(Container):
                     path_,
                     top_level_folder=top_level_folder,
                     strict_mode=strict_mode,
+                    ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
                 )
                 self.write_results_to_richlog(output)
 

@@ -28,6 +28,7 @@ def quick_validate_project(
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
+    ALLOW_ALPHANUMERIC: bool = False,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -95,6 +96,7 @@ def quick_validate_project(
         display_mode=display_mode,
         name_templates=name_templates,
         strict_mode=strict_mode,
+        ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
     )
 
     return error_messages
