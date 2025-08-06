@@ -115,11 +115,14 @@ def check_dict_values_raise_on_fail(config_dict: Configs) -> None:
     check_config_types(config_dict)
 
     if config_dict["connection_method"] != "gdrive":
-        if config_dict["connection_method"] == "aws":
+        if (
+            config_dict["connection_method"] == "aws"
+            and config_dict["central_path"] is None
+        ):
             utils.log_and_raise_error(
                 "`central_path` cannot be `None` when `connection_method` is 'aws'. "
                 "`central_path` must include the s3 bucket name.",
-                ValueError,
+                ConfigError,
             )
         else:
             raise_on_bad_local_only_project_configs(config_dict)
