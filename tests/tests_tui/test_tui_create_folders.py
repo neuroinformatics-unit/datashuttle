@@ -496,7 +496,8 @@ class TestTuiCreateFolders(TuiBase):
                 ).value
                 == "ses-"
             )
-
+            pilot.app.screen.query_one("#create_folders_subject_input").clear()
+            pilot.app.screen.query_one("#create_folders_session_input").clear()
             await pilot.pause()
 
             # Double click without CTRL modifier key.
