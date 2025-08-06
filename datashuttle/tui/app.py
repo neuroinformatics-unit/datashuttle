@@ -120,7 +120,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         self.notify(
             "Use CTRL+Q to copy from Inputs and DirectoryTrees.\n"
             "Use ESC or the 'Exit' button to quit the application.\n"
-            "CTRL+Q can be used to copy after highlighting text with the mouse while pressing 'shift'.",
+            "CTRL+C can be used to copy after highlighting text with the mouse while pressing 'shift'.",
             timeout=6,
         )
 
