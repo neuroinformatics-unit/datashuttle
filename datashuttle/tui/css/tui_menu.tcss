@@ -4,12 +4,14 @@
 #mainwindow_contents_container {
     align: center top;
     padding: 1 0 0 0;
+    width: 100%
 }
+
 #mainwindow_contents_container > Button {
     width: 50%;
-    content-align: center middle;
-    margin: 0 0 1 0;
+    margin: 1 0 0 0;
 }
+
 #mainwindow_banner_label {
     border: hkey $primary;
     content-align: center middle;
@@ -18,21 +20,6 @@
     width: 50%;
     height: 5;
     margin: 2 0 2 0;
-}
-
-#mainwindow_contents_container > Button#mainwindow_exit_button {
-    height: auto;
-    margin: 0 0 0 0;
-    width: 50%;
-    align: center middle;
-    content-align: center middle;
-}
-
-#mainwindow_horizontal {
-    width: auto;
-    align: center middle;
-    content-align: center middle;
-    margin: 0 0 1 0;
 }
 
 /* Project Select ------------------------------------------------------------------- */

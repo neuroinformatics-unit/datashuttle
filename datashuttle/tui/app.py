@@ -12,8 +12,7 @@ import pyperclip
 import showinfm
 import yaml
 from textual.app import App, ComposeResult
-from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Container
 from textual.widgets import Button, Label
 
 from datashuttle.configs import canonical_folders
@@ -41,10 +40,6 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
     ENABLE_COMMAND_PALETTE = False
 
-    BINDINGS = [
-        Binding("ctrl+c", "app.quit", "Exit app", priority=True),
-    ]
-
     def compose(self) -> ComposeResult:
         """Set up widgets for the main window."""
         yield Container(
@@ -60,10 +55,7 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             ),
             Button("Settings", id="mainwindow_settings_button"),
             Button("Get Help", id="mainwindow_get_help_button"),
-            Horizontal(
-                Button("Exit", id="mainwindow_exit_button"),
-                id="mainwindow_horizontal",
-            ),
+            Button("Exit", id="mainwindow_exit_button"),
             id="mainwindow_contents_container",
         )
 
@@ -113,6 +105,9 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
         elif event.button.id == "mainwindow_validate_from_project_path":
             self.push_screen(validate_at_path.ValidateScreen(self))
+
+        elif event.button.id == "mainwindow_exit_button":
+            self.app.exit()
 
     def load_project_page(self, interface: Interface) -> None:
         """Load the project manager page.
