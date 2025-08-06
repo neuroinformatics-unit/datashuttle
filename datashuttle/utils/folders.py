@@ -695,17 +695,17 @@ def search_central_via_connection(
         pipe_std=True,
     )
 
+    all_folder_names: list = []
+    all_filenames: list = []
+
     if output.returncode != 0:
-        utils.log_and_raise_error(
+        utils.log_and_message(
             f"Error searching files at {search_path.as_posix()}\n"
-            f"{output.stderr.decode('utf-8') if output.stderr else ''}",
-            RuntimeError,
+            f"{output.stderr.decode('utf-8') if output.stderr else ''}"
         )
+        return all_folder_names, all_filenames
 
     files_and_folders = json.loads(output.stdout)
-
-    all_folder_names = []
-    all_filenames = []
 
     for file_or_folder in files_and_folders:
         name = file_or_folder["Name"]
