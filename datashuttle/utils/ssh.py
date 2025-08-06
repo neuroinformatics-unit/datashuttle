@@ -5,8 +5,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from datashuttle.configs.config_class import Configs
 
-import getpass
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -196,30 +194,16 @@ def setup_ssh_key(
         log if True, logger must already be initialised.
 
     """
-    if not sys.stdin.isatty():
-        proceed = input(
-            "\nWARNING!\nThe next step is to enter a password, but it is not possible\n"
-            "to hide your password while entering it in the current terminal.\n"
-            "This can occur if running the command in an IDE.\n\n"
-            "Press 'y' to proceed to password entry. "
-            "The characters will not be hidden!\n"
-            "Alternatively, run ssh setup after starting Python in your "
-            "system terminal \nrather than through an IDE: "
-        )
-        if proceed != "y":
-            utils.print_message_to_user(
-                "Quitting SSH setup as 'y' not pressed."
-            )
-            return
-
-        password = input(
-            "Please enter your password. Characters will not be hidden: "
-        )
-    else:
-        password = getpass.getpass(
-            "Please enter password to your central host to add the public key. "
+    password = utils.get_connection_secret_from_user(
+        connection_method_name="SSH",
+        key_name_full="password",
+        key_name_short="password",
+        key_info=(
+            "You are required to enter the password to your central host to add the public key. "
             "You will not have to enter your password again."
-        )
+        ),
+        log_status=log,
+    )
 
     add_public_key_to_central_authorized_keys(cfg, password)
 

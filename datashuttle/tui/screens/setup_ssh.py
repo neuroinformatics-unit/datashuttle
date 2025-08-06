@@ -22,10 +22,6 @@ class SetupSshScreen(ModalScreen):
 
     This asks to confirm the central hostkey, and takes password to setup
     SSH key pair. Under the hood uses `project.setup_ssh_connection()`.
-
-    This is the one instance in which it is not possible for
-    the TUI to nearly wrap the API, because the logic flow is
-    broken up requiring user input (accept hostkey and input password).
     """
 
     def __init__(self, interface: Interface) -> None:
