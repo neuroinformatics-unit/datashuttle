@@ -134,7 +134,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
                 pilot,
                 "#create_folders_directorytree",
                 hover_line=2,
-                press_string="ctrl+c",
+                press_string="ctrl+q",
             )
 
             pasted_path = pyperclip.paste()
@@ -178,7 +178,7 @@ class TestTuiCreateDirectoryTree(TuiBase):
                 pilot,
                 "#create_folders_directorytree",
                 hover_line=2,
-                press_string="ctrl+c",
+                press_string="ctrl+q",
             )
 
             # Check that the error message is displayed.

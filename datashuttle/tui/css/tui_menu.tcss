@@ -4,14 +4,12 @@
 #mainwindow_contents_container {
     align: center top;
     padding: 1 0 0 0;
-    width: 100%
 }
-
 #mainwindow_contents_container > Button {
     width: 50%;
-    margin: 1 0 0 0;
+    content-align: center middle;
+    margin: 0 0 1 0;
 }
-
 #mainwindow_banner_label {
     border: hkey $primary;
     content-align: center middle;
@@ -25,8 +23,7 @@
 /* Project Select ------------------------------------------------------------------- */
 
 #project_select_top_container {
-    width: 50%;
-    align: center middle;
+    align: center top;
     margin: 3 2 0 0;
     content-align: center middle;
     height: auto;
@@ -34,6 +31,8 @@
 
 #project_select_top_container > Button {
     width: 50%;
+    align: center middle;
+    content-align: left middle;
     margin: 0 0 1 0;
 }
 

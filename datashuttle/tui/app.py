@@ -46,15 +46,6 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
         Binding("ctrl+c", "show_copy_help", "Show copy help", priority=True),
     ]
 
-    def action_show_copy_help(self) -> None:
-        """Display a notification (for CTRL+C)."""
-        self.notify(
-            "Use CTRL+Q to copy from Inputs and DirectoryTrees.\n"
-            "Use ESC or the 'Exit' button to quit the application.\n"
-            "CTRL+Q can be used to copy after highlighting text with the mouse while pressing 'shift'.",
-            timeout=6,
-        )
-
     def compose(self) -> ComposeResult:
         """Set up widgets for the main window."""
         yield Container(
@@ -123,6 +114,15 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
 
         elif event.button.id == "mainwindow_exit_button":
             self.app.exit()
+
+    def action_show_copy_help(self) -> None:
+        """Display a notification (for CTRL+C)."""
+        self.notify(
+            "Use CTRL+Q to copy from Inputs and DirectoryTrees.\n"
+            "Use ESC or the 'Exit' button to quit the application.\n"
+            "CTRL+Q can be used to copy after highlighting text with the mouse while pressing 'shift'.",
+            timeout=6,
+        )
 
     def load_project_page(self, interface: Interface) -> None:
         """Load the project manager page.
