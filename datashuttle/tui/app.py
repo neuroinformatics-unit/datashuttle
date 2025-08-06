@@ -12,6 +12,7 @@ import pyperclip
 import showinfm
 import yaml
 from textual.app import App, ComposeResult
+from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import Button, Label
 
@@ -39,6 +40,20 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     tui_path = Path(__file__).parent
     CSS_PATH = list(Path(tui_path / "css").glob("*.tcss"))
     ENABLE_COMMAND_PALETTE = False
+
+    BINDINGS = [
+        Binding("escape", "app.quit", "Exit app", priority=True),
+        Binding("ctrl+c", "show_copy_help", "Show copy help", priority=True),
+    ]
+
+    def action_show_copy_help(self) -> None:
+        """Display a notification (for CTRL+C)."""
+        self.notify(
+            "Use CTRL+Q to copy from Inputs and DirectoryTrees.\n"
+            "Use ESC or the 'Exit' button to quit the application.\n"
+            "CTRL+Q can be used to copy after highlighting text with the mouse while pressing 'shift'.",
+            timeout=6,
+        )
 
     def compose(self) -> ComposeResult:
         """Set up widgets for the main window."""

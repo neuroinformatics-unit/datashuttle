@@ -155,8 +155,6 @@ class ValidateContent(Container):
                 "#validate_strict_mode_checkbox"
             ).value
 
-            #            assert False, f"strict mode: {strict_mode}"
-
             if self.interface:
                 if self.interface.project.is_local_project():
                     include_central = False

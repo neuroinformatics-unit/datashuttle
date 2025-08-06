@@ -325,11 +325,14 @@ class CreateFoldersTab(TreeAndInputTab):
             If `True`, search central project as well to generate the suggestion.
 
         """
-        assert self.interface.project.cfg["connection_method"] in [
-            None,
-            "local_filesystem",
-            "ssh",
-        ]
+        try:
+            assert self.interface.project.cfg["connection_method"] in [
+                None,
+                "local_filesystem",
+                "ssh",
+            ]
+        except:
+            assert False, f"{self.interface.project.cfg['connection_method']}"
 
         if (
             include_central
