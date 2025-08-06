@@ -497,11 +497,15 @@ class TestTuiCreateFolders(TuiBase):
                 == "ses-"
             )
 
+            await pilot.pause()
+
             # Double click without CTRL modifier key.
             await self.double_click(pilot, "#create_folders_subject_input")
             await test_utils.await_task_by_name_if_present(
                 "suggest_next_sub_async_task"
             )
+            await pilot.pause()
+
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
