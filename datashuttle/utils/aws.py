@@ -20,7 +20,7 @@ def check_if_aws_bucket_exists(cfg: Configs) -> bool:
 
     bucket_name = get_aws_bucket_name(cfg)
 
-    if bucket_name != "" and bucket_name not in names:  # TODO: CHECK
+    if bucket_name not in names:
         return False
 
     return True
