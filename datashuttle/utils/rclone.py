@@ -308,7 +308,7 @@ def setup_rclone_config_for_aws(
         "s3 provider AWS "
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
-        f"region {cfg['aws_region']} "
+        f"region {aws_region} "
         f"location_constraint {location_constraint}",
         pipe_std=True,
     )
