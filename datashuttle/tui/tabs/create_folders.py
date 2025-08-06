@@ -524,9 +524,10 @@ class CreateFoldersTab(TreeAndInputTab):
                 "#create_folders_session_input"
             ).as_names_list()
 
+        ALLOW_ALPHANUMERIC = self.interface.tui_settings["ALLOW_ALPHANUMERIC"]
+
         success, output = self.interface.validate_names(
-            sub_names,
-            ses_names,
+            sub_names, ses_names, ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC
         )
 
         if not success:

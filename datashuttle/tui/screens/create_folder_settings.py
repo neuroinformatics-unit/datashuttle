@@ -99,6 +99,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
         """
 
         bypass_validation = self.interface.tui_settings["bypass_validation"]
+        ALLOW_ALPHANUMERIC = self.interface.tui_settings["ALLOW_ALPHANUMERIC"]
         suggest_next_sub_ses_central = self.interface.tui_settings[
             "suggest_next_sub_ses_central"
         ]
@@ -125,6 +126,11 @@ class CreateFoldersSettingsScreen(ModalScreen):
                     "Bypass validation",
                     value=bypass_validation,
                     id="create_folders_settings_bypass_validation_checkbox",
+                ),
+                Checkbox(
+                    "ALLOW_ALPHANUMERIC",
+                    value=ALLOW_ALPHANUMERIC,
+                    id="create_folders_ALLOW_ALPHANUMERIC_checkbox",
                 ),
                 Container(
                     Horizontal(
@@ -172,6 +178,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
             "#suggest_next_sub_ses_central_checkbox",
+            "#create_folders_ALLOW_ALPHANUMERIC_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -269,6 +276,9 @@ class CreateFoldersSettingsScreen(ModalScreen):
             self.interface.save_tui_settings(
                 is_on, "suggest_next_sub_ses_central"
             )
+
+        elif event.checkbox.id == "create_folders_ALLOW_ALPHANUMERIC_checkbox":
+            self.interface.save_tui_settings(is_on, "ALLOW_ALPHANUMERIC")
 
     def on_radio_set_changed(self, event: RadioSet.Changed) -> None:
         """Update the displayed SSH widgets.

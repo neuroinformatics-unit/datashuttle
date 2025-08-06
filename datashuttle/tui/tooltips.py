@@ -180,6 +180,9 @@ def get_tooltip(id: str) -> str:
             "Allow folder creation even when there is a validation error."
         )
 
+    elif id == "#create_folders_ALLOW_ALPHANUMERIC_checkbox":
+        tooltip = "ALLOW_ALPHANUMERIC"
+
     # template validation checkbox
     elif id == "#template_settings_validation_on_checkbox":
         tooltip = "Turn on the 'name templates' feature."

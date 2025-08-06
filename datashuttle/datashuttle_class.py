@@ -124,6 +124,7 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
+        ALLOW_ALPHANUMERIC: bool = False,
         log: bool = True,
     ) -> Dict[str, List[Path]]:
         """Create a folder tree in the project folder.
@@ -217,6 +218,7 @@ class DataShuttle:
             ses_names,
             name_templates,
             bypass_validation,
+            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
             log=True,
         )
 
@@ -253,16 +255,25 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]],
         name_templates: Dict,
         bypass_validation: bool,
+        ALLOW_ALPHANUMERIC: bool = False,
         log: bool = True,
     ) -> Tuple[List[str], List[str]]:
         """Central method to format and validate subject and session names."""
         format_sub = formatting.check_and_format_names(
-            sub_names, "sub", name_templates, bypass_validation
+            sub_names,
+            "sub",
+            name_templates,
+            bypass_validation,
+            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
         )
 
         if ses_names is not None:
             format_ses = formatting.check_and_format_names(
-                ses_names, "ses", name_templates, bypass_validation
+                ses_names,
+                "ses",
+                name_templates,
+                bypass_validation,
+                ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
             )
         else:
             format_ses = []
@@ -277,6 +288,7 @@ class DataShuttle:
                 display_mode="error",
                 log=log,
                 name_templates=name_templates,
+                ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
             )
 
         return format_sub, format_ses
@@ -1277,6 +1289,7 @@ class DataShuttle:
         display_mode: DisplayMode,
         include_central: bool = False,
         strict_mode: bool = False,
+        ALLOW_ALPHANUMERIC: bool = False,
     ) -> List[str]:
         """Perform validation on the project.
 
@@ -1344,6 +1357,7 @@ class DataShuttle:
             display_mode=display_mode,
             name_templates=name_templates,
             strict_mode=strict_mode,
+            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
         )
 
         ds_logger.close_log_filehandler()
@@ -1379,7 +1393,9 @@ class DataShuttle:
         if isinstance(names, str):
             names = [names]
 
-        formatted_names = formatting.check_and_format_names(names, prefix)
+        formatted_names = formatting.check_and_format_names(
+            names, prefix, ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC
+        )
         utils.print_message_to_user(formatted_names)
 
     # -------------------------------------------------------------------------
@@ -1636,6 +1652,7 @@ class DataShuttle:
             "overwrite_existing_files",
             "dry_run",
             "suggest_next_sub_ses_central",
+            "ALLOW_ALPHANUMERIC",
         ]:
             if key not in settings["tui"]:
                 settings["tui"][key] = canonical_tui_configs["tui"][key]
