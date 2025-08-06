@@ -416,6 +416,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=True
             )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -425,6 +428,9 @@ class TestTuiCreateFolders(TuiBase):
 
             await self.double_click(
                 pilot, "#create_folders_session_input", control=True
+            )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -480,6 +486,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.double_click(
                 pilot, "#create_folders_subject_input", control=True
             )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_sub_async_task"
+            )
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -489,6 +498,9 @@ class TestTuiCreateFolders(TuiBase):
 
             await self.double_click(
                 pilot, "#create_folders_session_input", control=True
+            )
+            await test_utils.await_task_by_name_if_present(
+                "suggest_next_ses_async_task"
             )
             assert (
                 pilot.app.screen.query_one(
