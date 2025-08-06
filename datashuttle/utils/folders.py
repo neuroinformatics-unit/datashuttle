@@ -722,4 +722,4 @@ def search_central_via_connection(
         else:
             all_filenames.append(to_append)
 
-    return all_folder_names, all_filenames
+    return sorted(all_folder_names), sorted(all_filenames)
