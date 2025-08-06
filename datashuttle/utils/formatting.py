@@ -21,6 +21,7 @@ def check_and_format_names(
     prefix: Prefix,
     name_templates: Optional[Dict] = None,
     bypass_validation: bool = False,
+    ALLOW_ALPHANUMERIC: bool = False,
 ) -> List[str]:
     """Format a list of subject or session names.
 
@@ -81,6 +82,7 @@ def check_and_format_names(
             formatted_names,
             prefix,
             name_templates=name_templates,
+            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
         )
         for message in error_messages:
             validation.raise_display_mode(message, "error", log=True)
