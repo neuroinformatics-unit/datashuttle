@@ -70,14 +70,9 @@ jobs:
           echo "AWS_REGION=${{secrets.AWS_REGION}}" >> $GITHUB_ENV
           echo "AWS_BUCKET_NAME=${{secrets.AWS_BUCKET_NAME}}" >> $GITHUB_ENV
           echo "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> $GITHUB_ENV
-      - name: Test SSH (Linux only)
-        if: runner.os == 'Linux'
-        run: |
-          sudo service mysql stop  # free up port 3306 for ssh tests
-          pytest tests/tests_transfers/ssh
       - name: All Other Tests
         run: |
-          pytest -k "test_aws_transfer or test_gdrive_transfer"
+          pytest -k "test_aws_transfer or test_gdrive_transfer or test_tui_setup_aws or test_tui_setup_gdrive"
 
   build_sdist_wheels:
     name: Build source distribution

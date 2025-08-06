@@ -299,14 +299,17 @@ def setup_rclone_config_for_aws(
         Whether to log, if True logger must already be initialised.
 
     """
+    aws_region = cfg["aws_region"]
+    location_constraint = "" if aws_region == "us-east-1" else aws_region
+
     output = call_rclone(
         "config create "
         f"{rclone_config_name} "
         "s3 provider AWS "
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
-        f"region {cfg['aws_region']}",
-        # f"location_constraint {cfg['aws_region']}",
+        f"region {cfg['aws_region']} "
+        f"location_constraint {location_constraint}",
         pipe_std=True,
     )
 
