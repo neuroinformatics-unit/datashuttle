@@ -20,7 +20,7 @@ def check_if_aws_bucket_exists(cfg: Configs) -> bool:
 
     bucket_name = get_aws_bucket_name(cfg)
 
-    if bucket_name not in names:
+    if bucket_name != "" and bucket_name not in names:  # TODO: CHECK
         return False
 
     return True
@@ -40,7 +40,11 @@ def raise_if_bucket_absent(cfg: Configs) -> None:
 
 def get_aws_bucket_name(cfg: Configs) -> str:
     """Return the formatted AWS bucket name from the `central_path`."""
-    return cfg["central_path"].as_posix().strip("/").split("/")[0]
+    return (
+        cfg["central_path"].as_posix().strip("/").split("/")[0]
+        if cfg["central_path"] is not None
+        else ""
+    )
 
 
 # -----------------------------------------------------------------------------

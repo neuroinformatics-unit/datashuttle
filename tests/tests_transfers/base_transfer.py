@@ -193,10 +193,10 @@ class BaseTransfer(BaseTest):
 
         assert sorted(paths_to_transferred_files) == sorted(
             expected_transferred_paths
-        )
+        ), f"Paths do not match. Failed project configs: {project.cfg}"
 
         # Now, move data from the central path where the project is
-        # setup, to a temp local folder to test download.
+        # set up, to a temp local folder to test download.
         true_local_path = project.cfg["local_path"]
         tmp_local_path = (
             project.cfg["local_path"] / "tmp" / project.project_name

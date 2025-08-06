@@ -1,5 +1,7 @@
 import copy
 import os
+import random
+import string
 
 from datashuttle import DataShuttle
 from datashuttle.utils import aws
@@ -7,9 +9,13 @@ from datashuttle.utils import aws
 
 def setup_project_for_aws(project: DataShuttle):
     aws_bucket_name = os.environ["AWS_BUCKET_NAME"]
+
+    characters = string.ascii_letters + string.digits
+    random_string = "".join(random.choices(characters, k=15))
+
     project.update_config_file(
         connection_method="aws",
-        central_path=f"{aws_bucket_name}/main/{project.project_name}",
+        central_path=f"{aws_bucket_name}/main/{random_string}/{project.project_name}",
         aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
         aws_region=os.environ["AWS_REGION"],
     )
