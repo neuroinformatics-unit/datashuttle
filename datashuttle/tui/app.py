@@ -13,11 +13,8 @@ import showinfm
 import yaml
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Container
-from textual.widgets import (
-    Button,
-    Label,
-)
+from textual.containers import Container, Horizontal
+from textual.widgets import Button, Label
 
 from datashuttle.configs import canonical_folders
 from datashuttle.tui.screens import (
@@ -63,6 +60,10 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             ),
             Button("Settings", id="mainwindow_settings_button"),
             Button("Get Help", id="mainwindow_get_help_button"),
+            Horizontal(
+                Button("Exit", id="mainwindow_exit_button"),
+                id="mainwindow_horizontal",
+            ),
             id="mainwindow_contents_container",
         )
 

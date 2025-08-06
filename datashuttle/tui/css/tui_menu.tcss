@@ -20,10 +20,26 @@
     margin: 2 0 2 0;
 }
 
+#mainwindow_contents_container > Button#mainwindow_exit_button {
+    height: auto;
+    margin: 0 0 0 0;
+    width: 50%;
+    align: center middle;
+    content-align: center middle;
+}
+
+#mainwindow_horizontal {
+    width: auto;
+    align: center middle;
+    content-align: center middle;
+    margin: 0 0 1 0;
+}
+
 /* Project Select ------------------------------------------------------------------- */
 
 #project_select_top_container {
-    align: center top;
+    width: 50%;
+    align: center middle;
     margin: 3 2 0 0;
     content-align: center middle;
     height: auto;
@@ -31,8 +47,6 @@
 
 #project_select_top_container > Button {
     width: 50%;
-    align: center middle;
-    content-align: left middle;
     margin: 0 0 1 0;
 }
 
