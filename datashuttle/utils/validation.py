@@ -41,10 +41,14 @@ def get_missing_prefix_error(name: str, prefix, path_: Path | None) -> str:
     )
 
 
-def get_bad_value_error(name: str, prefix, path_: Path | None) -> str:
+def get_bad_value_error(
+    name: str, prefix, path_: Path | None, ALLOW_ALPHANUMERIC: bool
+) -> str:
     """Return error message when the value for a prefix is not an integer."""
+    type_ = "alphanumeric" if ALLOW_ALPHANUMERIC else "integer"
+
     return handle_path(
-        f"BAD_VALUE: The value for prefix {prefix} in name {name} is not an integer.",
+        f"BAD_VALUE: The value for prefix {prefix} in name {name} is not {type_}.",
         path_,
     )
 
@@ -167,6 +171,12 @@ def validate_list_of_names(
         If `True`, check that the prefix-<value> value lengths
         are consistent across the passed list.
 
+    ALLOW_ALPHANUMERIC
+        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
+        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
+        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
+        and duplicate label checks are only based on alphanumeric values.
+
     Returns
     -------
     error_messages
@@ -242,6 +252,10 @@ def prefix_is_duplicate_or_has_bad_values(
     path_
         Path to the folder that is being checked.
 
+    ALLOW_ALPHANUMERIC
+        If `False`, an error is returned if the label value is
+        not integer. Otherwise, any alphanumeric value is allowed.
+
     Returns
     -------
         A list of validation errors.
@@ -256,13 +270,17 @@ def prefix_is_duplicate_or_has_bad_values(
         return [get_duplicate_prefix_error(name, prefix, path_)]
 
     if ALLOW_ALPHANUMERIC:
-        return []
+        if not value[0].isalnum():
+            return [
+                get_bad_value_error(name, prefix, path_, ALLOW_ALPHANUMERIC)
+            ]
     else:
-        try:
-            int(value[0])
-            return []
-        except ValueError:
-            return [get_bad_value_error(name, prefix, path_)]
+        if not value[0].isdigit():
+            return [
+                get_bad_value_error(name, prefix, path_, ALLOW_ALPHANUMERIC)
+            ]
+
+    return []
 
 
 def new_name_duplicates_existing(
@@ -290,6 +308,11 @@ def new_name_duplicates_existing(
     prefix
         "sub" or "ses"
 
+    ALLOW_ALPHANUMERIC
+        If `False`, labels are cast from string to integer
+        for comparison (e.g. sub-01 and sub-001_date-20250101 will be a clash).
+        Otherwise, the string values are compared directly.
+
     Returns
     -------
         A list of validation errors.
@@ -299,7 +322,9 @@ def new_name_duplicates_existing(
 
     # Make a list of matches between `new_name` and any in `existing_names`
     new_name_id = utils.get_values_from_bids_formatted_name(
-        [new_name], prefix, return_as_int=return_as_int
+        [new_name],
+        prefix,
+        return_as_int=return_as_int,  # type: ignore
     )[0]
 
     error_messages = []
@@ -307,7 +332,9 @@ def new_name_duplicates_existing(
         exist_path, exist_name = get_path_and_name(exist_path_or_name)
 
         exist_name_id = utils.get_values_from_bids_formatted_name(
-            [exist_name], prefix, return_as_int=return_as_int
+            [exist_name],
+            prefix,
+            return_as_int=return_as_int,  # type: ignore
         )[0]
 
         if exist_name_id == new_name_id:
@@ -684,6 +711,12 @@ def validate_project(
         any folder not prefixed with sub-, ses- or a valid datatype will
         raise a validation issue.
 
+    ALLOW_ALPHANUMERIC
+        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
+        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
+        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
+        and duplicate label checks are only based on alphanumeric values.
+
     Returns
     -------
     error_messages
@@ -801,6 +834,12 @@ def validate_names_against_project(
 
     name_templates
         A `name_template` dictionary to validate against. See `set_name_templates()`.
+
+    ALLOW_ALPHANUMERIC
+        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
+        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
+        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
+        and duplicate label checks are only based on alphanumeric values.
 
     """
     error_messages = []
@@ -1119,6 +1158,9 @@ def strip_uncheckable_names(
     prefix
         "sub" or "ses".
 
+    ALLOW_ALPHANUMERIC
+        If `False` alphanumeric labels are stripped and only integer labels pass.
+
     Returns
     -------
     List of path or names which the uncheckable ones (e.g. that are too broken
@@ -1134,7 +1176,9 @@ def strip_uncheckable_names(
 
         try:
             utils.get_values_from_bids_formatted_name(
-                [name], prefix, return_as_int=return_as_int
+                [name],
+                prefix,
+                return_as_int=return_as_int,  # type: ignore
             )[0]
         except BaseException:
             continue
