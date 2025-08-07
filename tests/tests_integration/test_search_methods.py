@@ -66,8 +66,7 @@ class TestSubSesSearches(BaseTest):
         )
 
         subprocess.run(
-            ["rclone", "config", "create", "local", "local", "nounc", "true"],
-            shell=True,
+            "rclone config create local local nounc true", shell=True
         )
 
         # Perform a range of checks across folders and files
