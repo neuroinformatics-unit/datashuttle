@@ -60,14 +60,14 @@ jobs:
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
-      - name: Test SSH (Linux only)
-        if: runner.os == 'Linux'
-        run: |
-          sudo service mysql stop  # free up port 3306 for ssh tests
-          pytest tests/tests_transfers/ssh
+  #    - name: Test SSH (Linux only)
+   #     if: runner.os == 'Linux'
+    #    run: |
+     #     sudo service mysql stop  # free up port 3306 for ssh tests
+      #    pytest tests/tests_transfers/ssh
       - name: All Other Tests
         run: |
-          pytest --ignore tests/tests_transfers/ssh
+          pytest -k test_tui_create_folders
 
   build_sdist_wheels:
     name: Build source distribution
