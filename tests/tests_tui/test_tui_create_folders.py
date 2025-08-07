@@ -453,6 +453,9 @@ class TestTuiCreateFolders(TuiBase):
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
         """Test the double click on Input correctly fills with the
         next sub or ses (or prefix only when CTRL is pressed).
+
+        This function lead to issues in CI tests where the suggest next sub/ses was not
+        properly registering. Existing the pilot.pause to 0.5 s helped.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
@@ -513,6 +516,9 @@ class TestTuiCreateFolders(TuiBase):
         """Test getting the next subject / session with the include_central option. Check the
         checkbox widget that turns the setting on. Trigger a get next subject / session and mock
         the underlying datashuttle function to ensure include_central is properly called.
+
+        This function lead to issues in CI tests where the suggest next sub/ses was not
+        properly registering. Existing the pilot.pause to 0.5 s helped.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
