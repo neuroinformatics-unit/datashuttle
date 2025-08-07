@@ -1,10 +1,13 @@
 import copy
 from pathlib import Path
 from time import monotonic
+from typing import List
 
 import pytest
+from textual.widget import Widget
 
 from datashuttle.configs import load_configs
+from datashuttle.configs.canonical_configs import get_connection_methods_list
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
@@ -361,6 +364,45 @@ class TestTuiConfigs(TuiBase):
             )
             await pilot.pause()
 
+    @pytest.mark.asyncio
+    async def test_switch_connection_radiobuttons(self):
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            # Select the page and ConfigsContent for setting up new project
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
+
+            configs_content = pilot.app.screen.query_one(
+                "#new_project_configs_content"
+            )
+
+            ssh_widgets = configs_content.config_ssh_widgets
+            gdrive_widgets = configs_content.config_gdrive_widgets
+            aws_widgets = configs_content.config_aws_widgets
+
+            await self.switch_and_check_widgets_display(
+                pilot,
+                "ssh",
+                ssh_widgets,
+                gdrive_widgets,
+                aws_widgets,
+            )
+            await self.switch_and_check_widgets_display(
+                pilot,
+                "gdrive",
+                ssh_widgets,
+                gdrive_widgets,
+                aws_widgets,
+            )
+            await self.switch_and_check_widgets_display(
+                pilot,
+                "aws",
+                ssh_widgets,
+                gdrive_widgets,
+                aws_widgets,
+            )
+
     # -------------------------------------------------------------------------
     # Test project name is number
     # -------------------------------------------------------------------------
@@ -521,3 +563,26 @@ class TestTuiConfigs(TuiBase):
         await self.check_configs_widgets_match_configs(configs_content, kwargs)
 
         await pilot.pause()
+
+    async def switch_and_check_widgets_display(
+        self,
+        pilot,
+        connection_method: str,
+        ssh_widgets: List[Widget],
+        gdrive_widgets: List[Widget],
+        aws_widgets: List[Widget],
+    ):
+        assert connection_method in get_connection_methods_list()
+        await self.scroll_to_click_pause(
+            pilot, f"#configs_{connection_method}_radiobutton"
+        )
+
+        widget_map = {
+            "ssh": ssh_widgets,
+            "gdrive": gdrive_widgets,
+            "aws": aws_widgets,
+        }
+
+        for method, widgets in widget_map.items():
+            for widget in widgets:
+                assert widget.display == bool(method == connection_method)
