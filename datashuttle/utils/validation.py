@@ -261,7 +261,7 @@ def prefix_is_duplicate_or_has_bad_values(
         A list of validation errors.
 
     """
-    value = re.findall(f"{prefix}(.*?)(?=_|$)", name)
+    value = re.findall(f"{prefix}-(.*?)(?=_|$)", name)
 
     if len(value) == 0:
         return [get_missing_prefix_error(name, prefix, path_)]
