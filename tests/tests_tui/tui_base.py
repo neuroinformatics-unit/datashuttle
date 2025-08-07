@@ -119,7 +119,7 @@ class TuiBase:
         for _ in range(2):
             await pilot.click(id, control=control)
             # await self.scroll_to_click_pause(pilot, id, control=control)
-        pilot.pause(2)
+        await pilot.pause(0.5)
 
     async def reload_tree_nodes(self, pilot, id, num_nodes):
         """For some reason, for TUI tree nodes to register in the
