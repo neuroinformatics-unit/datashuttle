@@ -300,7 +300,11 @@ def setup_rclone_config_for_aws(
 
     """
     aws_region = cfg["aws_region"]
-    location_constraint = "" if aws_region == "us-east-1" else aws_region
+    location_constraint_key_value = (
+        ""
+        if aws_region == "us-east-1"
+        else f" location_constraint {aws_region}"
+    )
 
     output = call_rclone(
         "config create "
@@ -308,8 +312,8 @@ def setup_rclone_config_for_aws(
         "s3 provider AWS "
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
-        f"region {aws_region} "
-        f"location_constraint {location_constraint}",
+        f"region {aws_region}"
+        f"{location_constraint_key_value}",
         pipe_std=True,
     )
 
