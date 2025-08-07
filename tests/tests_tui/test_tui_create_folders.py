@@ -494,7 +494,8 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
             )
-            # await pilot.pause(0.5)
+            await pilot.pause(0.5)
+
             await self.double_click_input(pilot, "ses")
             assert (
                 pilot.app.screen.query_one(
@@ -541,11 +542,8 @@ class TestTuiCreateFolders(TuiBase):
             )
 
             # Check subject suggestion called mocked function correctly
-            await self.double_click(pilot, "#create_folders_subject_input")
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_sub_async_task"
-            )
-            await pilot.pause(0.5)
+            await self.double_click_input(pilot, "sub")
+
             spy_get_next_sub.assert_called_with(
                 "rawdata", return_with_prefix=True, include_central=True
             )
@@ -556,12 +554,8 @@ class TestTuiCreateFolders(TuiBase):
             )
             await pilot.pause(0.5)
 
-            await self.double_click(pilot, "#create_folders_session_input")
+            await self.double_click_input(pilot, "ses")
 
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_ses_async_task"
-            )
-            await pilot.pause(0.5)
             spy_get_next_ses.assert_called_with(
                 "rawdata",
                 "sub-001",
@@ -589,11 +583,9 @@ class TestTuiCreateFolders(TuiBase):
             # Clear the subject input
             await self.fill_input(pilot, "#create_folders_subject_input", "")
             await pilot.pause(0.5)
-            await self.double_click(pilot, "#create_folders_session_input")
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_ses_async_task"
-            )
-            await pilot.pause(0.5)
+
+            await self.double_click_input(pilot, "ses")
+
             assert (
                 "Must input a subject number before suggesting next session number."
                 in pilot.app.screen.query_one(
