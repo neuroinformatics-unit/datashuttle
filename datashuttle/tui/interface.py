@@ -167,6 +167,9 @@ class Interface:
         ses_names
             List of session names to format.
 
+        ALLOW_ALPHANUMERIC
+            If `True`, alphanumeric values will not raise an error.
+
         """
         top_level_folder = self.tui_settings["top_level_folder_select"][
             "create_tab"
@@ -210,6 +213,8 @@ class Interface:
             If `True`, the central project is also validated.
         strict_mode
             If `True`, validation will be run in strict mode.
+        ALLOW_ALPHANUMERIC
+            If `True`, alphanumeric values will not raise an error.
 
         Returns
         -------

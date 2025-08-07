@@ -54,6 +54,9 @@ def check_and_format_names(
         If `True`, NeuroBlueprint validation will be performed
         on the passed names.
 
+    ALLOW_ALPHANUMERIC
+        If `True`, alphanumeric values will not raise an error.
+
     Returns
     -------
     A list of formatted names.

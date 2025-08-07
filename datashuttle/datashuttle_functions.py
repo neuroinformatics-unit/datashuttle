@@ -59,6 +59,12 @@ def validate_project_from_path(
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.
 
+    ALLOW_ALPHANUMERIC
+        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
+        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
+        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
+        and duplicate label checks are only based on alphanumeric values.
+
     Returns
     -------
     error_messages

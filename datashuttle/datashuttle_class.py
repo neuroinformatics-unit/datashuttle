@@ -160,6 +160,12 @@ class DataShuttle:
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
 
+        ALLOW_ALPHANUMERIC
+            If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
+            value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
+            considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
+            and duplicate label checks are only based on alphanumeric values.
+
         log
             If `True`, details of folder creation will be logged.
 
@@ -1319,6 +1325,12 @@ class DataShuttle:
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
 
+        ALLOW_ALPHANUMERIC
+            If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
+            value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
+            considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
+            and duplicate label checks are only based on alphanumeric values.
+
         Returns
         -------
         error_messages
@@ -1365,7 +1377,11 @@ class DataShuttle:
         return error_messages
 
     @staticmethod
-    def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
+    def check_name_formatting(
+        names: Union[str, list],
+        prefix: Prefix,
+        ALLOW_ALPHANUMERIC: bool = False,
+    ) -> None:
         """Format a list of subject or session names.
 
         Pass list of names to check how these will be auto-formatted,
@@ -1382,6 +1398,12 @@ class DataShuttle:
         prefix
             The relevant subject or session prefix,
             e.g. ``"sub-"`` or ``"ses-"``
+
+        ALLOW_ALPHANUMERIC
+            If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
+            value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
+            considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
+            and duplicate label checks are only based on alphanumeric values.
 
         """
         if prefix not in ["sub", "ses"]:
