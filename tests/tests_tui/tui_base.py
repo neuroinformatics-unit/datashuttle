@@ -117,7 +117,9 @@ class TuiBase:
         control modifier key will be used.
         """
         for _ in range(2):
-            await self.scroll_to_click_pause(pilot, id, control=control)
+            await pilot.click(id, control=control)
+            # await self.scroll_to_click_pause(pilot, id, control=control)
+        pilot.pause(2)
 
     async def reload_tree_nodes(self, pilot, id, num_nodes):
         """For some reason, for TUI tree nodes to register in the
