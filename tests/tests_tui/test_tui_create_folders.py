@@ -449,17 +449,6 @@ class TestTuiCreateFolders(TuiBase):
             )
             await pilot.pause()
 
-    async def double_click_input(self, pilot, sub_or_ses, control=False):
-        expand_name = "session" if sub_or_ses == "ses" else "subject"
-
-        await self.double_click(
-            pilot, f"#create_folders_{expand_name}_input", control=control
-        )
-        await test_utils.await_task_by_name_if_present(
-            f"suggest_next_{sub_or_ses}_async_task"
-        )
-        await pilot.pause(0.5)
-
     @pytest.mark.asyncio
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
         """Test the double click on Input correctly fills with the
@@ -491,7 +480,6 @@ class TestTuiCreateFolders(TuiBase):
             )
             pilot.app.screen.query_one("#create_folders_subject_input").clear()
             pilot.app.screen.query_one("#create_folders_session_input").clear()
-            # await pilot.pause(0.5)
 
             # Double click without CTRL modifier key.
             await self.double_click_input(pilot, "sub")
@@ -730,3 +718,20 @@ class TestTuiCreateFolders(TuiBase):
             sessions=sessions,
             folder_used=folder_used,
         )
+
+    async def double_click_input(self, pilot, sub_or_ses, control=False):
+        """Helper function to double click input to suggest next sub or ses.
+
+        Because this function is performed in a worker, this was a little
+        brittle in the CI tests leading to random errors. The below
+        combination of awaiting the test, then pausing, stopped the errors.
+        """
+        expand_name = "session" if sub_or_ses == "ses" else "subject"
+
+        await self.double_click(
+            pilot, f"#create_folders_{expand_name}_input", control=control
+        )
+        await test_utils.await_task_by_name_if_present(
+            f"suggest_next_{sub_or_ses}_async_task"
+        )
+        await pilot.pause(0.5)
