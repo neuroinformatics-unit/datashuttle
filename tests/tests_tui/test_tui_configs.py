@@ -201,61 +201,61 @@ class TestTuiConfigs(TuiBase):
             # Make sure they are all different to the existing configs,
             # then save and check the configs on the DataShuttle instance
             # and file are updated.
-            
+
             new_kwargs = {
-                "local_path": self.make_and_get_random_project_path(tmp_path, project_name),
-                "central_path": self.make_and_get_random_project_path(tmp_path, project_name),
+                "local_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "central_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
                 "connection_method": "ssh",
                 "central_host_id": "random_host",
                 "central_host_username": "random_username",
             }
             await self.edit_configs_and_check_widgets(
-                pilot, 
-                tmp_config_path, 
-                project_name, 
-                new_kwargs, 
-                project_cfg
+                pilot, tmp_config_path, project_name, new_kwargs, project_cfg
             )
 
             project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
             new_kwargs = {
-                "local_path": self.make_and_get_random_project_path(tmp_path, project_name),
-                "central_path": self.make_and_get_random_project_path(tmp_path, project_name),
+                "local_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "central_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
                 "connection_method": "gdrive",
                 "gdrive_root_folder_id": "random-folder-id",
                 "gdrive_client_id": "random-client-id",
             }
             await self.edit_configs_and_check_widgets(
-                pilot, 
-                tmp_config_path, 
-                project_name, 
-                new_kwargs, 
-                project_cfg
+                pilot, tmp_config_path, project_name, new_kwargs, project_cfg
             )
 
             project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
             new_kwargs = {
-                "local_path": self.make_and_get_random_project_path(tmp_path, project_name),
-                "central_path": self.make_and_get_random_project_path(tmp_path, project_name),
+                "local_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "central_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
                 "connection_method": "aws",
                 "aws_access_key_id": "random-access-key-id",
-                "aws_region": "us-east-1"
+                "aws_region": "us-east-1",
             }
             await self.edit_configs_and_check_widgets(
-                pilot, 
-                tmp_config_path, 
-                project_name, 
-                new_kwargs, 
-                project_cfg
+                pilot, tmp_config_path, project_name, new_kwargs, project_cfg
             )
 
     async def edit_configs_and_check_widgets(
-        self, 
-        pilot, 
-        tmp_config_path, 
-        project_name, 
-        new_kwargs, 
-        prev_project_cfg
+        self,
+        pilot,
+        tmp_config_path,
+        project_name,
+        new_kwargs,
+        prev_project_cfg,
     ):
         for key in new_kwargs:
             # The purpose is to update to completely new configs
@@ -276,9 +276,7 @@ class TestTuiConfigs(TuiBase):
             "#configs_save_configs_button",
         )
         assert (
-            pilot.app.screen.query_one(
-                "#messagebox_message_label"
-            ).renderable
+            pilot.app.screen.query_one("#messagebox_message_label").renderable
             == "Configs saved."
         )
         await self.close_messagebox(pilot)
@@ -295,9 +293,7 @@ class TestTuiConfigs(TuiBase):
         await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
         assert pilot.app.screen.id == "_default"
 
-        await self.check_and_click_onto_existing_project(
-            pilot, project_name
-        )
+        await self.check_and_click_onto_existing_project(pilot, project_name)
         await self.switch_tab(pilot, "configs")
         configs_content = pilot.app.screen.query_one(
             "#tabscreen_configs_content"
@@ -307,7 +303,6 @@ class TestTuiConfigs(TuiBase):
         )
 
         await pilot.pause()
-
 
     # -------------------------------------------------------------------------
     # Test the config page widgets
@@ -511,10 +506,10 @@ class TestTuiConfigs(TuiBase):
             "local_filesystem": "Local Filesystem",
             "ssh": "SSH",
             "gdrive": "Google Drive",
-            "aws": "AWS S3"
+            "aws": "AWS S3",
         }
         label = connection_method_to_label[kwargs["connection_method"]]
-        
+
         assert (
             configs_content.query_one(
                 "#configs_connect_method_radioset"
@@ -540,13 +535,13 @@ class TestTuiConfigs(TuiBase):
                 ).value
                 == kwargs["central_host_username"]
             )
-        
+
         elif kwargs["connection_method"] == "gdrive":
             # Root Folder ID -------------------------------------------------
 
             assert (
                 configs_content.query_one(
-                "#configs_gdrive_root_folder_id_input",
+                    "#configs_gdrive_root_folder_id_input",
                 ).value
                 == kwargs["gdrive_root_folder_id"]
             )
@@ -555,7 +550,7 @@ class TestTuiConfigs(TuiBase):
 
             assert (
                 configs_content.query_one(
-                "#configs_gdrive_client_id_input",
+                    "#configs_gdrive_client_id_input",
                 ).value
                 == kwargs["gdrive_client_id"]
             )
@@ -565,9 +560,9 @@ class TestTuiConfigs(TuiBase):
 
             assert (
                 configs_content.query_one(
-                "#configs_aws_access_key_id_input",
+                    "#configs_aws_access_key_id_input",
                 ).value
-                == kwargs["aws_access_key_id"] 
+                == kwargs["aws_access_key_id"]
             )
 
             # AWS Region -------------------------------------------
@@ -614,7 +609,9 @@ class TestTuiConfigs(TuiBase):
             )
 
         elif kwargs["connection_method"] == "gdrive":
-            await self.scroll_to_click_pause(pilot, "#configs_gdrive_radiobutton")
+            await self.scroll_to_click_pause(
+                pilot, "#configs_gdrive_radiobutton"
+            )
 
             # Root Folder ID -------------------------------------------------
 
@@ -708,7 +705,9 @@ class TestTuiConfigs(TuiBase):
             for widget in widgets:
                 assert widget.display == bool(method == connection_method)
 
-    def make_and_get_random_project_path(self, tmp_path: Path, project_name: str):
-        random_path = (tmp_path / f"{uuid4()}/{project_name}")
+    def make_and_get_random_project_path(
+        self, tmp_path: Path, project_name: str
+    ):
+        random_path = tmp_path / f"{uuid4()}/{project_name}"
         random_path.mkdir(parents=True)
         return random_path.as_posix()
