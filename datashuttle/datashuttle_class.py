@@ -121,7 +121,6 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]] = None,
         datatype: Union[str, List[str]] = "",
         bypass_validation: bool = False,
-        ALLOW_ALPHANUMERIC: bool = False,
         log: bool = True,
     ) -> Dict[str, List[Path]]:
         """Create a folder tree in the project folder.
@@ -156,12 +155,6 @@ class DataShuttle:
         bypass_validation
             If `True`, folders will be created even if they are not
             valid to NeuroBlueprint style.
-
-        ALLOW_ALPHANUMERIC
-            If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
-            value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
-            considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
-            and duplicate label checks are only based on alphanumeric values.
 
         log
             If `True`, details of folder creation will be logged.
@@ -221,7 +214,6 @@ class DataShuttle:
             ses_names,
             name_templates,
             bypass_validation,
-            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
             log=True,
         )
 
@@ -258,25 +250,16 @@ class DataShuttle:
         ses_names: Optional[Union[str, List[str]]],
         name_templates: Dict,
         bypass_validation: bool,
-        ALLOW_ALPHANUMERIC: bool = False,
         log: bool = True,
     ) -> Tuple[List[str], List[str]]:
         """Central method to format and validate subject and session names."""
         format_sub = formatting.check_and_format_names(
-            sub_names,
-            "sub",
-            name_templates,
-            bypass_validation,
-            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+            sub_names, "sub", name_templates, bypass_validation
         )
 
         if ses_names is not None:
             format_ses = formatting.check_and_format_names(
-                ses_names,
-                "ses",
-                name_templates,
-                bypass_validation,
-                ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+                ses_names, "ses", name_templates, bypass_validation
             )
         else:
             format_ses = []
@@ -291,7 +274,6 @@ class DataShuttle:
                 display_mode="error",
                 log=log,
                 name_templates=name_templates,
-                ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
             )
 
         return format_sub, format_ses
@@ -1167,7 +1149,6 @@ class DataShuttle:
         display_mode: DisplayMode,
         include_central: bool = False,
         strict_mode: bool = False,
-        ALLOW_ALPHANUMERIC: bool = False,
     ) -> List[str]:
         """Perform validation on the project.
 
@@ -1196,12 +1177,6 @@ class DataShuttle:
             starting with sub- or ses- prefix are checked. In ``Strict Mode``,
             any folder not prefixed with sub-, ses- or a valid datatype will
             raise a validation issue.
-
-        ALLOW_ALPHANUMERIC
-            If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
-            value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
-            considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
-            and duplicate label checks are only based on alphanumeric values.
 
         Returns
         -------
@@ -1241,7 +1216,6 @@ class DataShuttle:
             display_mode=display_mode,
             name_templates=name_templates,
             strict_mode=strict_mode,
-            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
         )
 
         ds_logger.close_log_filehandler()
@@ -1249,11 +1223,7 @@ class DataShuttle:
         return error_messages
 
     @staticmethod
-    def check_name_formatting(
-        names: Union[str, list],
-        prefix: Prefix,
-        ALLOW_ALPHANUMERIC: bool = False,
-    ) -> None:
+    def check_name_formatting(names: Union[str, list], prefix: Prefix) -> None:
         """Format a list of subject or session names.
 
         Pass list of names to check how these will be auto-formatted,
@@ -1271,12 +1241,6 @@ class DataShuttle:
             The relevant subject or session prefix,
             e.g. ``"sub-"`` or ``"ses-"``
 
-        ALLOW_ALPHANUMERIC
-            If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
-            value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
-            considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
-            and duplicate label checks are only based on alphanumeric values.
-
         """
         if prefix not in ["sub", "ses"]:
             utils.log_and_raise_error(
@@ -1287,9 +1251,7 @@ class DataShuttle:
         if isinstance(names, str):
             names = [names]
 
-        formatted_names = formatting.check_and_format_names(
-            names, prefix, ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC
-        )
+        formatted_names = formatting.check_and_format_names(names, prefix)
         utils.print_message_to_user(formatted_names)
 
     # -------------------------------------------------------------------------
