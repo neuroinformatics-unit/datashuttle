@@ -1,0 +1,67 @@
+import base64
+import json
+from typing import Dict
+
+import pytest
+
+from datashuttle.utils import gdrive
+
+
+class TestGdrivePreliminarySetup:
+    @pytest.mark.parametrize(
+        "client_id", ["client-id-1", "some-random-client-id-2"]
+    )
+    @pytest.mark.parametrize("root_folder_id", ["folder-id-1", "folder-id-2"])
+    @pytest.mark.parametrize("client_secret", ["secret-1", "some-secret-2"])
+    def test_preliminary_setup_for_gdrive(
+        self, client_id, root_folder_id, client_secret
+    ):
+        mock_configs = {
+            "gdrive_client_id": client_id,
+            "gdrive_root_folder_id": root_folder_id,
+        }
+        output = gdrive.preliminary_for_setup_without_browser(
+            mock_configs, client_secret, "test_gdrive_preliminary"
+        )
+
+        assert (
+            "Execute the following on the machine with the web browser "
+            in output
+        )
+        assert 'rclone authorize "drive"' in output
+
+        connection_credential_string = (
+            output.split('rclone authorize "drive"')[-1]
+            .split("Then paste the result")[0]
+            .strip()
+        )
+        connection_credential_string = connection_credential_string.strip('"')
+        credentials_dict = self.get_decoded_dict_from_base64(
+            connection_credential_string
+        )
+
+        assert "client_id" in credentials_dict
+        assert credentials_dict["client_id"] == client_id
+
+        assert "root_folder_id" in credentials_dict
+        assert credentials_dict["root_folder_id"] == root_folder_id
+
+        assert "client_secret" in credentials_dict
+        assert credentials_dict["client_secret"] == client_secret
+
+    def get_decoded_dict_from_base64(
+        self, base64_string: str
+    ) -> Dict[str, str]:
+        base64_string = base64_string.strip().rstrip("=")
+
+        padding_needed = 4 - (len(base64_string) % 4)
+
+        if padding_needed != 4:  # Only add padding if needed
+            base64_string += "=" * padding_needed
+
+        decoded_bytes = base64.b64decode(base64_string)
+
+        decoded_str = decoded_bytes.decode("utf-8")
+        data = json.loads(decoded_str)
+
+        return data
