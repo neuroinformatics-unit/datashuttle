@@ -1,0 +1,7 @@
+local_path: old_ver
+central_path: old_ver
+connection_method: gdrive
+central_host_id: null
+central_host_username: null
+gdrive_client_id: null
+gdrive_root_folder_id: null

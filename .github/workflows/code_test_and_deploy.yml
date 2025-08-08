@@ -72,7 +72,7 @@ jobs:
           echo "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> $GITHUB_ENV
       - name: All Other Tests
         run: |
-          pytest -k "test_aws_transfer or test_gdrive_transfer or test_tui_setup_aws or test_tui_setup_gdrive or test_tui_configs"
+          pytest -k "test_aws_transfer or test_gdrive_transfer or test_tui_setup_aws or test_tui_setup_gdrive or test_tui_configs or test_backwards_compatibility"
 
   build_sdist_wheels:
     name: Build source distribution
