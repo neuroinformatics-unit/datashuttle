@@ -60,10 +60,11 @@ def validate_project_from_path(
         for details.
 
     ALLOW_ALPHANUMERIC
-        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
-        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
-        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
-        and duplicate label checks are only based on alphanumeric values.
+        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
+        labels must be integer and the following additional checks are performed:
+            - Identical numbers are considered the same value even if padded with different number of zeros
+                (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
