@@ -70,12 +70,8 @@ class TestSSHTransfer(BaseSSHTransfer):
         """
         pathtable, project = ssh_setup
 
-        expected_transferred_paths = self.get_expected_transferred_paths(
-            pathtable, sub_names, ses_names, datatype
-        )
-
-        self.check_transfer_ssh(
-            project, sub_names, ses_names, datatype, expected_transferred_paths
+        self.run_and_check_transfers(
+            project, pathtable, sub_names, ses_names, datatype
         )
 
     # Test Wildcards

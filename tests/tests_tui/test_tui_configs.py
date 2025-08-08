@@ -1,10 +1,14 @@
 import copy
 from pathlib import Path
 from time import monotonic
+from typing import List
+from uuid import uuid4
 
 import pytest
+from textual.widget import Widget
 
 from datashuttle.configs import load_configs
+from datashuttle.configs.canonical_configs import get_connection_methods_list
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
@@ -197,66 +201,108 @@ class TestTuiConfigs(TuiBase):
             # Make sure they are all different to the existing configs,
             # then save and check the configs on the DataShuttle instance
             # and file are updated.
-            local_path = tmp_path / f"some-random-path/{project_name}"
-            central_path = tmp_path / f"some-random-path2/{project_name}"
-
-            local_path.mkdir(parents=True)
-            central_path.mkdir(parents=True)
 
             new_kwargs = {
-                "local_path": local_path.as_posix(),
-                "central_path": central_path.as_posix(),
+                "local_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "central_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
                 "connection_method": "ssh",
                 "central_host_id": "random_host",
                 "central_host_username": "random_username",
             }
-
-            for key in new_kwargs:
-                # The purpose is to update to completely new configs
-                assert new_kwargs[key] != project_cfg[key]
-
-            await self.set_configs_content_widgets(pilot, new_kwargs)
-
-            await self.check_configs_widgets_match_configs(
-                configs_content, new_kwargs
+            await self.edit_configs_and_check_widgets(
+                pilot, tmp_config_path, project_name, new_kwargs, project_cfg
             )
 
-            await self.scroll_to_click_pause(
-                pilot,
-                "#configs_save_configs_button",
-            )
-            assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
-                == "Configs saved."
-            )
-            await self.close_messagebox(pilot)
-
-            test_utils.check_configs(
-                pilot.app.screen.interface.project,
-                new_kwargs,
-                tmp_config_path / project_name / "config.yaml",
+            project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
+            new_kwargs = {
+                "local_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "central_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "connection_method": "gdrive",
+                "gdrive_root_folder_id": "random-folder-id",
+                "gdrive_client_id": "random-client-id",
+            }
+            await self.edit_configs_and_check_widgets(
+                pilot, tmp_config_path, project_name, new_kwargs, project_cfg
             )
 
-            # Finally, use "Main Menu" button to go back to the home screen,
-            # navigate back to the project and check the new configs are now
-            # displayed.
-            await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
-            assert pilot.app.screen.id == "_default"
+            project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
+            new_kwargs = {
+                "local_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "central_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "connection_method": "aws",
+                "aws_access_key_id": "random-access-key-id",
+                "aws_region": "us-east-1",
+            }
+            await self.edit_configs_and_check_widgets(
+                pilot, tmp_config_path, project_name, new_kwargs, project_cfg
+            )
 
-            await self.check_and_click_onto_existing_project(
-                pilot, project_name
-            )
-            await self.switch_tab(pilot, "transfer")
-            configs_content = pilot.app.screen.query_one(
-                "#tabscreen_configs_content"
-            )
-            await self.check_configs_widgets_match_configs(
-                configs_content, new_kwargs
-            )
+    async def edit_configs_and_check_widgets(
+        self,
+        pilot,
+        tmp_config_path,
+        project_name,
+        new_kwargs,
+        prev_project_cfg,
+    ):
+        for key in new_kwargs:
+            # The purpose is to update to completely new configs
+            assert new_kwargs[key] != prev_project_cfg[key]
 
-            await pilot.pause()
+        configs_content = pilot.app.screen.query_one(
+            "#tabscreen_configs_content"
+        )
+
+        await self.set_configs_content_widgets(pilot, new_kwargs)
+
+        await self.check_configs_widgets_match_configs(
+            configs_content, new_kwargs
+        )
+
+        await self.scroll_to_click_pause(
+            pilot,
+            "#configs_save_configs_button",
+        )
+        assert (
+            pilot.app.screen.query_one("#messagebox_message_label").renderable
+            == "Configs saved."
+        )
+        await self.close_messagebox(pilot)
+
+        test_utils.check_configs(
+            pilot.app.screen.interface.project,
+            new_kwargs,
+            tmp_config_path / project_name / "config.yaml",
+        )
+
+        # Finally, use "Main Menu" button to go back to the home screen,
+        # navigate back to the project and check the new configs are now
+        # displayed.
+        await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
+        assert pilot.app.screen.id == "_default"
+
+        await self.check_and_click_onto_existing_project(pilot, project_name)
+        await self.switch_tab(pilot, "configs")
+        configs_content = pilot.app.screen.query_one(
+            "#tabscreen_configs_content"
+        )
+        await self.check_configs_widgets_match_configs(
+            configs_content, new_kwargs
+        )
+
+        await pilot.pause()
 
     # -------------------------------------------------------------------------
     # Test the config page widgets
@@ -361,6 +407,45 @@ class TestTuiConfigs(TuiBase):
             )
             await pilot.pause()
 
+    @pytest.mark.asyncio
+    async def test_switch_connection_radiobuttons(self):
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            # Select the page and ConfigsContent for setting up new project
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
+
+            configs_content = pilot.app.screen.query_one(
+                "#new_project_configs_content"
+            )
+
+            ssh_widgets = configs_content.config_ssh_widgets
+            gdrive_widgets = configs_content.config_gdrive_widgets
+            aws_widgets = configs_content.config_aws_widgets
+
+            await self.switch_and_check_widgets_display(
+                pilot,
+                "ssh",
+                ssh_widgets,
+                gdrive_widgets,
+                aws_widgets,
+            )
+            await self.switch_and_check_widgets_display(
+                pilot,
+                "gdrive",
+                ssh_widgets,
+                gdrive_widgets,
+                aws_widgets,
+            )
+            await self.switch_and_check_widgets_display(
+                pilot,
+                "aws",
+                ssh_widgets,
+                gdrive_widgets,
+                aws_widgets,
+            )
+
     # -------------------------------------------------------------------------
     # Test project name is number
     # -------------------------------------------------------------------------
@@ -417,11 +502,14 @@ class TestTuiConfigs(TuiBase):
 
         # Connection Method ---------------------------------------------------
 
-        label = (
-            "SSH"
-            if kwargs["connection_method"] == "ssh"
-            else "Local Filesystem"
-        )
+        connection_method_to_label = {
+            "local_filesystem": "Local Filesystem",
+            "ssh": "SSH",
+            "gdrive": "Google Drive",
+            "aws": "AWS S3",
+        }
+        label = connection_method_to_label[kwargs["connection_method"]]
+
         assert (
             configs_content.query_one(
                 "#configs_connect_method_radioset"
@@ -447,6 +535,40 @@ class TestTuiConfigs(TuiBase):
                 ).value
                 == kwargs["central_host_username"]
             )
+
+        elif kwargs["connection_method"] == "gdrive":
+            # Root Folder ID -------------------------------------------------
+
+            assert (
+                configs_content.query_one(
+                    "#configs_gdrive_root_folder_id_input",
+                ).value
+                == kwargs["gdrive_root_folder_id"]
+            )
+
+            # Gdrive Client ID -------------------------------------------
+
+            assert (
+                configs_content.query_one(
+                    "#configs_gdrive_client_id_input",
+                ).value
+                == kwargs["gdrive_client_id"]
+            )
+
+        elif kwargs["connection_method"] == "aws":
+            # AWS Access Key ID -------------------------------------------------
+
+            assert (
+                configs_content.query_one(
+                    "#configs_aws_access_key_id_input",
+                ).value
+                == kwargs["aws_access_key_id"]
+            )
+
+            # AWS Region -------------------------------------------
+
+            select = configs_content.query_one("#configs_aws_region_select")
+            assert select.value == kwargs["aws_region"]
 
         # Central Path --------------------------------------------------------
 
@@ -486,6 +608,44 @@ class TestTuiConfigs(TuiBase):
                 kwargs["central_host_username"],
             )
 
+        elif kwargs["connection_method"] == "gdrive":
+            await self.scroll_to_click_pause(
+                pilot, "#configs_gdrive_radiobutton"
+            )
+
+            # Root Folder ID -------------------------------------------------
+
+            await self.fill_input(
+                pilot,
+                "#configs_gdrive_root_folder_id_input",
+                kwargs["gdrive_root_folder_id"],
+            )
+
+            # Gdrive Client ID -------------------------------------------
+
+            await self.fill_input(
+                pilot,
+                "#configs_gdrive_client_id_input",
+                kwargs["gdrive_client_id"],
+            )
+
+        elif kwargs["connection_method"] == "aws":
+            await self.scroll_to_click_pause(pilot, "#configs_aws_radiobutton")
+
+            # AWS Access Key ID -------------------------------------------------
+
+            await self.fill_input(
+                pilot,
+                "#configs_aws_access_key_id_input",
+                kwargs["aws_access_key_id"],
+            )
+
+            # AWS Region -------------------------------------------
+
+            select = pilot.app.screen.query_one("#configs_aws_region_select")
+            select.value = kwargs["aws_region"]
+            await pilot.pause()
+
         # Central Path --------------------------------------------------------
 
         await self.fill_input(
@@ -521,3 +681,33 @@ class TestTuiConfigs(TuiBase):
         await self.check_configs_widgets_match_configs(configs_content, kwargs)
 
         await pilot.pause()
+
+    async def switch_and_check_widgets_display(
+        self,
+        pilot,
+        connection_method: str,
+        ssh_widgets: List[Widget],
+        gdrive_widgets: List[Widget],
+        aws_widgets: List[Widget],
+    ):
+        assert connection_method in get_connection_methods_list()
+        await self.scroll_to_click_pause(
+            pilot, f"#configs_{connection_method}_radiobutton"
+        )
+
+        widget_map = {
+            "ssh": ssh_widgets,
+            "gdrive": gdrive_widgets,
+            "aws": aws_widgets,
+        }
+
+        for method, widgets in widget_map.items():
+            for widget in widgets:
+                assert widget.display == bool(method == connection_method)
+
+    def make_and_get_random_project_path(
+        self, tmp_path: Path, project_name: str
+    ):
+        random_path = tmp_path / f"{uuid4()}/{project_name}"
+        random_path.mkdir(parents=True)
+        return random_path.as_posix()

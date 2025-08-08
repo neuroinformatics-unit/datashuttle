@@ -129,7 +129,7 @@ class ConfigsContent(Container):
             ClickableInput(
                 self.parent_class.mainwindow,
                 placeholder="Google Drive Root Folder ID",
-                id="configs_gdrive_root_folder_id",
+                id="configs_gdrive_root_folder_id_input",
             ),
             Label("Client ID (Optional)", id="configs_gdrive_client_id_label"),
             ClickableInput(
@@ -301,7 +301,7 @@ class ConfigsContent(Container):
             "#configs_central_host_username_input",
             "#configs_central_host_id_input",
             "#configs_gdrive_client_id_input",
-            "#configs_gdrive_root_folder_id",
+            "#configs_gdrive_root_folder_id_input",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -721,7 +721,7 @@ class ConfigsContent(Container):
         input.value = value
 
         # Google Drive Root Folder ID
-        input = self.query_one("#configs_gdrive_root_folder_id")
+        input = self.query_one("#configs_gdrive_root_folder_id_input")
         value = (
             ""
             if cfg_to_load["gdrive_root_folder_id"] is None
@@ -897,7 +897,7 @@ class ConfigsContent(Container):
 
             cfg_kwargs["gdrive_root_folder_id"] = (
                 self.get_config_value_from_input_value(
-                    "#configs_gdrive_root_folder_id"
+                    "#configs_gdrive_root_folder_id_input"
                 )
             )
 

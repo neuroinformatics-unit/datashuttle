@@ -1,6 +1,7 @@
 import asyncio
 import copy
 import glob
+import json
 import logging
 import os
 import pathlib
@@ -412,6 +413,49 @@ def check_config_file(config_path, *kwargs):
 
         for name, value in kwargs[0].items():
             assert value == config_yaml[name], f"{name}"
+
+
+# -----------------------------------------------------------------------------
+# Search
+# -----------------------------------------------------------------------------
+
+
+def recursive_search_central(project: DataShuttle):
+    """
+    A convenience function to recursively search a
+    project for files on remote folders using `rclone
+    lsjson`
+    """
+    all_filenames: list[str] = []
+    rclone_recursive_search(
+        project,
+        (project.cfg["central_path"] / "rawdata").as_posix(),
+        all_filenames,
+    )
+
+    return all_filenames
+
+
+def rclone_recursive_search(
+    project: DataShuttle, path_: str, all_filenames: list[str]
+):
+    output = rclone.call_rclone(
+        f"lsjson {project.cfg.get_rclone_config_name()}:{path_}", pipe_std=True
+    )
+
+    files_or_folders = json.loads(output.stdout)
+
+    for file_or_folder in files_or_folders:
+        name = file_or_folder["Name"]
+        is_dir = file_or_folder.get("IsDir", False)
+        if is_dir:
+            rclone_recursive_search(
+                project,
+                path_ + "/" + name,
+                all_filenames,
+            )
+        else:
+            all_filenames.append(path_ + "/" + name)
 
 
 # -----------------------------------------------------------------------------

@@ -4,6 +4,8 @@ from pathlib import Path
 
 import pytest
 
+from datashuttle.utils.custom_exceptions import ConfigError
+
 from .. import test_utils
 
 TEST_PROJECT_NAME = "test_project"
@@ -75,6 +77,34 @@ class TestBackwardsCompatibility:
         assert transfer_checkboxes["all"]["displayed"] is True
         assert transfer_checkboxes["motion"]["displayed"] is False
         assert transfer_checkboxes["f2pe"]["displayed"] is False
+
+    def test_new_connection_methods_for_backwards_compatibility(
+        self, project, tmp_path
+    ):
+        reloaded_ver_configs, reloaded_ver_persistent_settings = (
+            self.load_and_check_old_version_yamls(project, tmp_path, "v0.6.0")
+        )
+        assert reloaded_ver_configs["local_path"] == Path("old_ver")
+
+        new_config_keys = [
+            "gdrive_client_id",
+            "gdrive_root_folder_id",
+            "aws_access_key_id",
+            "aws_region",
+        ]
+
+        for key in new_config_keys:
+            assert key in reloaded_ver_configs
+
+    def test_bad_config_yaml_for_backward_compatibility(
+        self, project, tmp_path
+    ):
+        with pytest.raises(ConfigError):
+            reloaded_ver_configs, reloaded_ver_persistent_settings = (
+                self.load_and_check_old_version_yamls(
+                    project, tmp_path, "v0.6.0_bad"
+                )
+            )
 
     def load_and_check_old_version_yamls(
         self, project, tmp_path, datashuttle_version

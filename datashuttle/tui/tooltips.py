@@ -84,7 +84,7 @@ def get_tooltip(id: str) -> str:
             "Can be left empty to use rclone's default client (slower)"
         )
 
-    elif id == "#configs_gdrive_root_folder_id":
+    elif id == "#configs_gdrive_root_folder_id_input":
         tooltip = (
             "The Google Drive root folder ID to use for transfer.\n\n"
             "It can be obtained by navigating to the folder in Google Drive and copying the ID from the URL.\n\n"
