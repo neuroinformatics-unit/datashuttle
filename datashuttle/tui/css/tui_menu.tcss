@@ -521,3 +521,39 @@ RenameFileOrFolderScreen {
 #rename_screen_cancel_button {
     align: center middle;
  }
+
+/* Accept or Decline Modal Popup ------------------------------------------------------------ */
+
+AcceptOrDeclineMessageBox {
+    align: center middle;
+    content-align: center middle;
+}
+
+#accept_or_decline_messagebox_container {
+    align: center middle;
+    content-align: center middle;
+    height: 12;
+    width: 65;
+    border: tall $panel-lighten-1;
+    background: $primary-background;
+ }
+
+ AcceptOrDeclineMessageBox:light > #accept_or_decline_messagebox_container {
+    border: tall $panel-darken-3;
+    background: $boost;
+ }
+
+#accept_or_decline_messagebox_label {
+    align: center middle;
+    text-align: center;
+    width: 100%;
+    margin: 0 0 1 2;
+ }
+
+#accept_or_decline_messagebox_accept_button {
+    align: center middle;
+}
+
+#accept_or_decline_messagebox_decline_button {
+    align: center middle;
+ }

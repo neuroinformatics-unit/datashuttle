@@ -42,9 +42,11 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
     ENABLE_COMMAND_PALETTE = False
 
     BINDINGS = [
-        Binding("escape", "app.quit", "Exit app", priority=True),
+        Binding("escape", "exit_app", "Exit app", priority=True),
         Binding("ctrl+c", "show_copy_help", "Show copy help", priority=True),
     ]
+
+    exit_accept_or_decline_popup = False
 
     def compose(self) -> ComposeResult:
         """Set up widgets for the main window."""
@@ -123,6 +125,27 @@ class TuiApp(App, inherit_bindings=False):  # type: ignore
             "CTRL+C can be used to copy after highlighting text with the mouse while pressing 'shift'.",
             timeout=6,
         )
+
+    def action_exit_app(self) -> None:
+        """Show pop up to confirm closing the application."""
+        if self.exit_accept_or_decline_popup:
+            return
+
+        def exit_function(exit: bool) -> None:
+            self.exit_accept_or_decline_popup = False
+            if exit:
+                self.exit()
+
+        self.exit_accept_or_decline_popup = (
+            modal_dialogs.AcceptOrDeclineMessageBox(
+                self,
+                "Press 'Exit' to confirm closing datashuttle.",
+                "Exit",
+                "Cancel",
+            )
+        )
+
+        self.push_screen(self.exit_accept_or_decline_popup, exit_function)
 
     def load_project_page(self, interface: Interface) -> None:
         """Load the project manager page.
