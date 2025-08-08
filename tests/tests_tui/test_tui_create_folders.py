@@ -259,7 +259,7 @@ class TestTuiCreateFolders(TuiBase):
         checking an error displays. Next, turn on 'bypass validation'
         and check the folders are created despite being invalid.
         """
-        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+        _, _, project_name = setup_project_paths.values()
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
@@ -300,6 +300,52 @@ class TestTuiCreateFolders(TuiBase):
             )
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_bypass_validation_checkbox"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_close_button"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_create_folders_button"
+            )
+
+            assert (
+                pilot.app.screen.interface.project.cfg["local_path"]
+                / "rawdata"
+                / "sub-abc"
+            ).is_dir()
+            assert (
+                pilot.app.screen.interface.project.cfg["local_path"]
+                / "rawdata"
+                / "sub-abc"
+                / "ses-abc"
+            ).is_dir()
+
+            await pilot.pause()
+
+    @pytest.mark.asyncio
+    async def test_ALLOW_ALPHANUMERIC(self, setup_project_paths):
+        """"""
+        _, _, project_name = setup_project_paths.values()
+
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            await self.check_and_click_onto_existing_project(
+                pilot, project_name
+            )
+
+            await self.fill_input(
+                pilot, "#create_folders_subject_input", "sub-abc"
+            )
+            await self.fill_input(
+                pilot, "#create_folders_session_input", "ses-abc"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_settings_button"
+            )
+            await self.scroll_to_click_pause(
+                pilot, "#create_folders_ALLOW_ALPHANUMERIC_checkbox"
             )
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_close_button"
