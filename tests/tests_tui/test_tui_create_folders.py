@@ -720,7 +720,7 @@ class TestTuiCreateFolders(TuiBase):
     async def double_click_input(self, pilot, sub_or_ses, control=False):
         """Helper function to double click input to suggest next sub or ses.
 
-        Because this function is performed in a worker, this was a little
+        Because this function is performed in separate asyncio task, this was a little
         brittle in the CI tests leading to random errors. The below
         combination of awaiting the test, then pausing, stopped the errors.
         """
