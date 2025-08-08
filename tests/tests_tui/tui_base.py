@@ -115,9 +115,13 @@ class TuiBase:
     async def double_click(self, pilot, id, control=False):
         """Double-click on a widget of `id`, if `control` is `True` the
         control modifier key will be used.
+
+        It seems quite important not to pause in between clicks,
+        using `scroll_to_click_pause` led to random errors testing in CI.
         """
         for _ in range(2):
-            await self.scroll_to_click_pause(pilot, id, control=control)
+            await pilot.click(id, control=control)
+        await pilot.pause(0.5)
 
     async def reload_tree_nodes(self, pilot, id, num_nodes):
         """For some reason, for TUI tree nodes to register in the

@@ -413,9 +413,7 @@ class TestTuiCreateFolders(TuiBase):
 
             # Finally, double-click the input to suggest next
             # ses / sub numbers, which should respect the name templates.
-            await self.double_click(
-                pilot, "#create_folders_subject_input", control=True
-            )
+            await self.double_click_input(pilot, "sub", control=True)
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -423,9 +421,7 @@ class TestTuiCreateFolders(TuiBase):
                 == "sub-\\d\\d\\d"
             )
 
-            await self.double_click(
-                pilot, "#create_folders_session_input", control=True
-            )
+            await self.double_click_input(pilot, "ses", control=True)
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -433,12 +429,7 @@ class TestTuiCreateFolders(TuiBase):
                 == "ses-...."
             )
 
-            await self.double_click(
-                pilot, "#create_folders_subject_input", control=False
-            )
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_sub_async_task"
-            )
+            await self.double_click_input(pilot, "sub")
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -449,12 +440,7 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
             )
-            await self.double_click(
-                pilot, "#create_folders_session_input", control=False
-            )
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_ses_async_task"
-            )
+            await self.double_click_input(pilot, "ses")
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -467,6 +453,9 @@ class TestTuiCreateFolders(TuiBase):
     async def test_get_next_sub_and_ses_no_template(self, setup_project_paths):
         """Test the double click on Input correctly fills with the
         next sub or ses (or prefix only when CTRL is pressed).
+
+        This function lead to issues in CI tests where the suggest next sub/ses was not
+        properly registering. Existing the pilot.pause to 0.5 s helped.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
@@ -477,9 +466,7 @@ class TestTuiCreateFolders(TuiBase):
             )
 
             # Double-click with CTRL modifier key
-            await self.double_click(
-                pilot, "#create_folders_subject_input", control=True
-            )
+            await self.double_click_input(pilot, "sub", control=True)
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -487,21 +474,19 @@ class TestTuiCreateFolders(TuiBase):
                 == "sub-"
             )
 
-            await self.double_click(
-                pilot, "#create_folders_session_input", control=True
-            )
+            await self.double_click_input(pilot, "ses", control=True)
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
                 ).value
                 == "ses-"
             )
+            pilot.app.screen.query_one("#create_folders_subject_input").clear()
+            pilot.app.screen.query_one("#create_folders_session_input").clear()
 
             # Double click without CTRL modifier key.
-            await self.double_click(pilot, "#create_folders_subject_input")
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_sub_async_task"
-            )
+            await self.double_click_input(pilot, "sub")
+
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_subject_input"
@@ -512,10 +497,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
             )
-            await self.double_click(pilot, "#create_folders_session_input")
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_ses_async_task"
-            )
+            await pilot.pause(0.5)
+
+            await self.double_click_input(pilot, "ses")
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_session_input"
@@ -532,6 +516,9 @@ class TestTuiCreateFolders(TuiBase):
         """Test getting the next subject / session with the include_central option. Check the
         checkbox widget that turns the setting on. Trigger a get next subject / session and mock
         the underlying datashuttle function to ensure include_central is properly called.
+
+        This function lead to issues in CI tests where the suggest next sub/ses was not
+        properly registering. Existing the pilot.pause to 0.5 s helped.
         """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
@@ -561,10 +548,7 @@ class TestTuiCreateFolders(TuiBase):
             )
 
             # Check subject suggestion called mocked function correctly
-            await self.double_click(pilot, "#create_folders_subject_input")
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_sub_async_task"
-            )
+            await self.double_click_input(pilot, "sub")
 
             spy_get_next_sub.assert_called_with(
                 "rawdata", return_with_prefix=True, include_central=True
@@ -574,11 +558,9 @@ class TestTuiCreateFolders(TuiBase):
             await self.fill_input(
                 pilot, "#create_folders_subject_input", "sub-001"
             )
-            await self.double_click(pilot, "#create_folders_session_input")
+            await pilot.pause(0.5)
 
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_ses_async_task"
-            )
+            await self.double_click_input(pilot, "ses")
 
             spy_get_next_ses.assert_called_with(
                 "rawdata",
@@ -606,11 +588,9 @@ class TestTuiCreateFolders(TuiBase):
 
             # Clear the subject input
             await self.fill_input(pilot, "#create_folders_subject_input", "")
+            await pilot.pause(0.5)
 
-            await self.double_click(pilot, "#create_folders_session_input")
-            await test_utils.await_task_by_name_if_present(
-                "suggest_next_ses_async_task"
-            )
+            await self.double_click_input(pilot, "ses")
 
             assert (
                 "Must input a subject number before suggesting next session number."
@@ -736,3 +716,20 @@ class TestTuiCreateFolders(TuiBase):
             sessions=sessions,
             folder_used=folder_used,
         )
+
+    async def double_click_input(self, pilot, sub_or_ses, control=False):
+        """Helper function to double click input to suggest next sub or ses.
+
+        Because this function is performed in separate asyncio task, this was a little
+        brittle in the CI tests leading to random errors. The below
+        combination of awaiting the test, then pausing, stopped the errors.
+        """
+        expand_name = "session" if sub_or_ses == "ses" else "subject"
+
+        await self.double_click(
+            pilot, f"#create_folders_{expand_name}_input", control=control
+        )
+        await test_utils.await_task_by_name_if_present(
+            f"suggest_next_{sub_or_ses}_async_task"
+        )
+        await pilot.pause(0.5)
