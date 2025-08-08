@@ -98,6 +98,67 @@ class MessageBox(ModalScreen):
         self.dismiss(True)
 
 
+class AcceptOrDeclineMessageBox(ModalScreen):
+    """Display generic pop up window to ask user to accept or decline."""
+
+    def __init__(
+        self,
+        mainwindow: TuiApp,
+        message: str,
+        accept_button_label: str,
+        decline_button_label: str,
+    ) -> None:
+        """Initialise the accept or decline pop up window.
+
+        Parameters
+        ----------
+        mainwindow
+            Textual main app screen.
+
+        message
+            Message to show above the accept / decline button.
+
+        accept_button_label
+            Label to display on the 'accept' button.
+
+        decline_button_label
+                    Label to display on the 'decline' button.
+
+        """
+        super(AcceptOrDeclineMessageBox, self).__init__()
+
+        self.mainwindow = mainwindow
+        self.message = message
+        self.accept_button_label = accept_button_label
+        self.decline_button_label = decline_button_label
+
+    def compose(self) -> ComposeResult:
+        """Add widgets to the RenameFileOrFolderScreen."""
+        yield Container(
+            Label(self.message, id="accept_or_decline_messagebox_label"),
+            Horizontal(
+                Button(
+                    self.accept_button_label,
+                    id="accept_or_decline_messagebox_accept_button",
+                ),
+                Button(
+                    self.decline_button_label,
+                    id="accept_or_decline_messagebox_decline_button",
+                ),
+                id="rename_screen_horizontal",
+            ),
+            id="accept_or_decline_messagebox_container",
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Handle button pressed on the RenameFileOrFolderScreen."""
+        if event.button.id == "accept_or_decline_messagebox_accept_button":
+            self.dismiss(True)
+
+        elif event.button.id == "accept_or_decline_messagebox_decline_button":
+            self.dismiss(False)
+
+
 class ConfirmAndAwaitTransferPopup(ModalScreen):
     """A popup screen for confirming, awaiting and finishing a Transfer.
 
