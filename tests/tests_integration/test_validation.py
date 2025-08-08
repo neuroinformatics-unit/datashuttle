@@ -960,3 +960,17 @@ class TestValidation(BaseTest):
             "PROJECT_NAME: The central project name folder bad@project@name@"
             in str(w[1].message)
         )
+
+    # ----------------------------------------------------------------------------------
+    # Test ALLOW_ALPHANUMERIC off
+    # ----------------------------------------------------------------------------------
+
+    # create folders
+
+    # validate from path
+
+    # validate project
+
+    # do with mocking for tui
+
+    # persistent settings
