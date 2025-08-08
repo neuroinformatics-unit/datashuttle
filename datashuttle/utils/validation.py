@@ -45,7 +45,7 @@ def get_bad_value_error(
     name: str, prefix, path_: Path | None, ALLOW_ALPHANUMERIC: bool
 ) -> str:
     """Return error message when the value for a prefix is not an integer."""
-    type_ = "alphanumeric" if ALLOW_ALPHANUMERIC else "integer"
+    type_ = "alphanumeric" if ALLOW_ALPHANUMERIC else "an integer"
 
     return handle_path(
         f"BAD_VALUE: The value for prefix {prefix} in name {name} is not {type_}.",
@@ -172,10 +172,11 @@ def validate_list_of_names(
         are consistent across the passed list.
 
     ALLOW_ALPHANUMERIC
-        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
-        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
-        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
-        and duplicate label checks are only based on alphanumeric values.
+        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
+        labels must be integer and the following additional checks are performed:
+            - Identical numbers are considered the same value even if padded with different number of zeros
+                (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
@@ -221,7 +222,7 @@ def validate_list_of_names(
             name, stripped_path_or_names_list, prefix, ALLOW_ALPHANUMERIC
         )
 
-    if check_value_lengths:
+    if not ALLOW_ALPHANUMERIC and check_value_lengths:
         error_messages += value_lengths_are_inconsistent(
             stripped_path_or_names_list, prefix
         )
@@ -309,9 +310,11 @@ def new_name_duplicates_existing(
         "sub" or "ses"
 
     ALLOW_ALPHANUMERIC
-        If `False`, labels are cast from string to integer
-        for comparison (e.g. sub-01 and sub-001_date-20250101 will be a clash).
-        Otherwise, the string values are compared directly.
+        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
+        labels must be integer and the following additional checks are performed:
+            - Identical numbers are considered the same value even if padded with different number of zeros
+                (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
@@ -712,10 +715,11 @@ def validate_project(
         raise a validation issue.
 
     ALLOW_ALPHANUMERIC
-        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
-        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
-        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
-        and duplicate label checks are only based on alphanumeric values.
+        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
+        labels must be integer and the following additional checks are performed:
+            - Identical numbers are considered the same value even if padded with different number of zeros
+                (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
@@ -765,14 +769,15 @@ def validate_project(
             )
 
         # Next, check inconsistent value lengths across the entire project
-        all_ses_paths = list(chain(*folder_paths["ses"].values()))
+        if not ALLOW_ALPHANUMERIC:
+            all_ses_paths = list(chain(*folder_paths["ses"].values()))
 
-        stripped_ses_paths = strip_uncheckable_names(
-            all_ses_paths, "ses", ALLOW_ALPHANUMERIC
-        )
-        error_messages += value_lengths_are_inconsistent(
-            stripped_ses_paths, "ses"
-        )
+            stripped_ses_paths = strip_uncheckable_names(
+                all_ses_paths, "ses", ALLOW_ALPHANUMERIC
+            )
+            error_messages += value_lengths_are_inconsistent(
+                stripped_ses_paths, "ses"
+            )
 
     # Display the collected errors using the selected method
     if any(error_messages):
@@ -836,10 +841,11 @@ def validate_names_against_project(
         A `name_template` dictionary to validate against. See `set_name_templates()`.
 
     ALLOW_ALPHANUMERIC
-        If `False`, non-integer sub- or ses- labels will raise an error, and duplicate
-        value checks include checks on the numerical value(e.g. sub-01 and sub-001_date-20240101 are
-        considered duplicate). If `True`, alphanumeric labels (e.g. sub-abc) will not raise an error
-        and duplicate label checks are only based on alphanumeric values.
+        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
+        labels must be integer and the following additional checks are performed:
+            - Identical numbers are considered the same value even if padded with different number of zeros
+                (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     """
     error_messages = []
@@ -870,16 +876,19 @@ def validate_names_against_project(
 
         # Check list of passed names against all the names in the project
         # for value-length violations and duplicates.
-        if any(value_lengths_are_inconsistent(valid_sub_in_project, "sub")):
-            error_messages += [
-                "Cannot check names for inconsistent value lengths "
-                "because the subject value lengths are not consistent "
-                "across the project."
-            ]
-        else:
-            error_messages += value_lengths_are_inconsistent(
-                valid_sub_names + valid_sub_in_project, "sub"
-            )
+        if not ALLOW_ALPHANUMERIC:
+            if any(
+                value_lengths_are_inconsistent(valid_sub_in_project, "sub")
+            ):
+                error_messages += [
+                    "Cannot check names for inconsistent value lengths "
+                    "because the subject value lengths are not consistent "
+                    "across the project."
+                ]
+            else:
+                error_messages += value_lengths_are_inconsistent(
+                    valid_sub_names + valid_sub_in_project, "sub"
+                )
 
         for new_sub in valid_sub_names:
             error_messages += new_name_duplicates_existing(
@@ -928,16 +937,17 @@ def validate_names_against_project(
                 all_ses_paths, "ses", ALLOW_ALPHANUMERIC
             )
 
-            if any(value_lengths_are_inconsistent(all_valid_ses, "ses")):
-                error_messages += [
-                    "Cannot check names for inconsistent value lengths "
-                    "because the session value lengths for this project "
-                    "are not consistent."
-                ]
-            else:
-                error_messages += value_lengths_are_inconsistent(
-                    valid_ses_names + all_valid_ses, "ses"
-                )
+            if not ALLOW_ALPHANUMERIC:
+                if any(value_lengths_are_inconsistent(all_valid_ses, "ses")):
+                    error_messages += [
+                        "Cannot check names for inconsistent value lengths "
+                        "because the session value lengths for this project "
+                        "are not consistent."
+                    ]
+                else:
+                    error_messages += value_lengths_are_inconsistent(
+                        valid_ses_names + all_valid_ses, "ses"
+                    )
 
     # Display the collected errors using the selected method
     for message in error_messages:
