@@ -965,12 +965,103 @@ class TestValidation(BaseTest):
     # Test ALLOW_ALPHANUMERIC off
     # ----------------------------------------------------------------------------------
 
-    # create folders
+    def test_ALLOW_ALPHANUMERIC(self, project):
+        """Test `ALLOW_ALPHANUMERIC` for validation functions.
 
-    # validate from path
+        When `ALLOW_ALPHANUMERIC=True`, any alphanumeric sub- or ses-
+        key is allowed, and it is not restricted to integer only.
 
-    # validate project
+        Additionally, a few other restrictions are loosened:
+            - Identical sub / ses key is based on alphanumeric not integer values (e.g. "sub-001" != "sub-01"
+            - Sub / ses labels do not have to be the same length (e.g. "sub-a" and "sub-ab" is okay.
+        """
+        sub_names = ["sub-abc", "sub-123a", "sub-001", "sub-01"]
+        ses_names = ["ses-abc", "ses-123a", "ses-001", "ses-01"]
 
-    # do with mocking for tui
+        # Cannot create folders with alphanumeric characters by default
+        with pytest.raises(NeuroBlueprintError) as e:
+            project.create_folders("rawdata", sub_names, ses_names, "ephys")
 
-    # persistent settings
+        assert "sub-abc is not an integer." in str(e.value)
+
+        # Now, we can create alphanumeric characters
+        project.create_folders(
+            "rawdata", sub_names, ses_names, "ephys", ALLOW_ALPHANUMERIC=True
+        )
+
+        # Check that duplicate names are still detected for alphanumeric labels
+        # for sub and ses when creating new folders.
+        with pytest.raises(NeuroBlueprintError) as e:
+            project.create_folders(
+                "rawdata", "sub-abc_id-123", ALLOW_ALPHANUMERIC=True
+            )
+
+        assert (
+            "DUPLICATE_NAME: The prefix for sub-abc_id-123 duplicates the name: sub-abc."
+            in str(e.value)
+        )
+
+        with pytest.raises(NeuroBlueprintError) as e:
+            project.create_folders(
+                "rawdata", "sub-abc", "ses-abc_id-123", ALLOW_ALPHANUMERIC=True
+            )
+
+        assert (
+            "DUPLICATE_NAME: The prefix for ses-abc_id-123 duplicates the name: ses-abc."
+            in str(e.value)
+        )
+
+        # Check that the validation functions also catch alphanumeric characters
+        # but allow them if `ALLOW_ALPHANUMERIC=True`
+        with pytest.raises(NeuroBlueprintError) as e_val:
+            project.validate_project("rawdata", "error")
+
+        with pytest.raises(NeuroBlueprintError) as e_val_from_path:
+            quick_validate_project(
+                project.get_local_path(), display_mode="error"
+            )
+
+        for e in [e_val, e_val_from_path]:
+            assert (
+                "BAD_VALUE: The value for prefix sub in name sub-123a is not an integer."
+                in str(e.value)
+            )
+
+        project.validate_project("rawdata", "error", ALLOW_ALPHANUMERIC=True)
+
+        quick_validate_project(
+            project.get_local_path(),
+            display_mode="error",
+            ALLOW_ALPHANUMERIC=True,
+        )
+
+        # Create a duplicate alphanumeric label and check that the validation functions throw validation error
+        (project.get_local_path() / "rawdata" / "sub-abc_id-123").mkdir(
+            parents=True
+        )
+        (
+            project.get_local_path() / "rawdata" / "sub-abc" / "ses-abc_id-123"
+        ).mkdir(parents=True)
+
+        with pytest.warns(UserWarning) as w_val:
+            project.validate_project(
+                "rawdata", display_mode="warn", ALLOW_ALPHANUMERIC=True
+            )
+
+        with pytest.warns(UserWarning) as w_val_from_path:
+            quick_validate_project(
+                project.get_local_path(),
+                display_mode="warn",
+                ALLOW_ALPHANUMERIC=True,
+            )
+
+        for w in [w_val, w_val_from_path]:
+            assert (
+                "DUPLICATE_NAME: The prefix for sub-abc duplicates the name: sub-abc_id-123."
+                in str(w[0].message)
+            )
+
+            assert (
+                "DUPLICATE_NAME: The prefix for ses-abc duplicates the name: ses-abc_id-123."
+                in str(w[2].message)
+            )
