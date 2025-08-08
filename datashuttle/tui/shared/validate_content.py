@@ -106,7 +106,7 @@ class ValidateContent(Container):
                 Checkbox(
                     "ALLOW_ALPHANUMERIC",
                     value=False,
-                    id="ALLOW_ALPHANUMERIC_checkbox",
+                    id="validate_ALLOW_ALPHANUMERIC_checkbox",
                 ),
                 id="validate_arguments_horizontal",
             ),
@@ -163,7 +163,7 @@ class ValidateContent(Container):
             ).value
 
             ALLOW_ALPHANUMERIC = self.query_one(
-                "#ALLOW_ALPHANUMERIC_checkbox"
+                "#validate_ALLOW_ALPHANUMERIC_checkbox"
             ).value
 
             if self.interface:
