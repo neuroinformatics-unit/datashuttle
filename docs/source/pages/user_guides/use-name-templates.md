@@ -12,7 +12,7 @@ by defining template names using 'regular expressions'.
 
 For example, say you wanted your subjects to be in the form
 `sub-XXX_id-XXXXXX` where `X` is a digit (i.e. subject number with
-a 6-digit id.
+a 6-digit id).
 
 We can define this
 as a regexp where `\d` stands for 'any digit`:
