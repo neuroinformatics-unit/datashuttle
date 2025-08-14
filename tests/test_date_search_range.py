@@ -1,8 +1,7 @@
 import os
-import re
 import shutil
+
 import pytest
-from pathlib import Path
 
 from datashuttle.configs import canonical_tags
 
@@ -15,28 +14,28 @@ class TestDateSearchRange(BaseTest):
 
     def test_simple_wildcard_first(self, project):
         """Test basic wildcard functionality before testing date ranges."""
-        subs = ["sub-001", "sub-002"] 
+        subs = ["sub-001", "sub-002"]
         sessions = ["ses-001", "ses-002"]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=[f"sub-{canonical_tags.tags('*')}"],
             ses_names=[f"ses-{canonical_tags.tags('*')}"],
             datatype=["behav"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata"
         transferred_subs = [sub.name for sub in central_path.glob("sub-*")]
-        
+
         expected_subs = ["sub-001", "sub-002"]
         assert sorted(transferred_subs) == sorted(expected_subs)
-        
+
         for sub_name in expected_subs:
             sub_path = central_path / sub_name
             transferred_sessions = [ses.name for ses in sub_path.glob("ses-*")]
@@ -48,33 +47,43 @@ class TestDateSearchRange(BaseTest):
         subs = ["sub-001", "sub-002"]
         sessions = [
             "ses-001_date-20240301",
-            "ses-002_date-20240315", 
+            "ses-002_date-20240315",
             "ses-003_date-20240401",
             "ses-004_date-20240415",
             "ses-005_date-20240501",
         ]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True, "ephys": True})
         test_utils.make_and_check_local_project_folders(
-            project, "rawdata", subs, sessions, ["behav", "ephys"], datatypes_used
+            project,
+            "rawdata",
+            subs,
+            sessions,
+            ["behav", "ephys"],
+            datatypes_used,
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=subs,
-            ses_names=[f"ses-{canonical_tags.tags('*')}_20240315{canonical_tags.tags('DATETO')}20240401"],
+            ses_names=[
+                f"ses-{canonical_tags.tags('*')}_20240315{canonical_tags.tags('DATETO')}20240401"
+            ],
             datatype=["behav", "ephys"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata"
         transferred_subs = list(central_path.glob("sub-*"))
-        
+
         assert len(transferred_subs) == 2
-        
+
         for sub_path in transferred_subs:
             transferred_sessions = [ses.name for ses in sub_path.glob("ses-*")]
-            expected_sessions = ["ses-002_date-20240315", "ses-003_date-20240401"]
+            expected_sessions = [
+                "ses-002_date-20240315",
+                "ses-003_date-20240401",
+            ]
             assert sorted(transferred_sessions) == sorted(expected_sessions)
 
     def test_time_range_transfer(self, project):
@@ -82,27 +91,29 @@ class TestDateSearchRange(BaseTest):
         subs = ["sub-001"]
         sessions = [
             "ses-001_time-080000",
-            "ses-002_time-120000",  
+            "ses-002_time-120000",
             "ses-003_time-160000",
             "ses-004_time-200000",
         ]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=subs,
-            ses_names=[f"ses-{canonical_tags.tags('*')}_100000{canonical_tags.tags('TIMETO')}180000"],
+            ses_names=[
+                f"ses-{canonical_tags.tags('*')}_100000{canonical_tags.tags('TIMETO')}180000"
+            ],
             datatype=["behav"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata" / "sub-001"
         transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
-        
+
         expected_sessions = ["ses-002_time-120000", "ses-003_time-160000"]
         assert sorted(transferred_sessions) == sorted(expected_sessions)
 
@@ -112,16 +123,16 @@ class TestDateSearchRange(BaseTest):
         sessions = [
             "ses-001_datetime-20240301T080000",
             "ses-002_datetime-20240315T120000",
-            "ses-003_datetime-20240401T160000", 
+            "ses-003_datetime-20240401T160000",
             "ses-004_datetime-20240415T200000",
         ]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=subs,
@@ -131,11 +142,14 @@ class TestDateSearchRange(BaseTest):
             ],
             datatype=["behav"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata" / "sub-001"
         transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
-        
-        expected_sessions = ["ses-002_datetime-20240315T120000", "ses-003_datetime-20240401T160000"]
+
+        expected_sessions = [
+            "ses-002_datetime-20240315T120000",
+            "ses-003_datetime-20240401T160000",
+        ]
         assert sorted(transferred_sessions) == sorted(expected_sessions)
 
     def test_combined_wildcard_and_date_range(self, project):
@@ -147,31 +161,34 @@ class TestDateSearchRange(BaseTest):
             "ses-003_date-20240401_run-01",
             "ses-004_date-20240415_run-03",
         ]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=[f"sub-{canonical_tags.tags('*')}"],
             ses_names=[
                 f"ses-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240420_run-01",
-                f"ses-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240420_run-02"
+                f"ses-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240420_run-02",
             ],
             datatype=["behav"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata"
         transferred_subs = list(central_path.glob("sub-*"))
-        
+
         assert len(transferred_subs) == 3
-        
+
         for sub_path in transferred_subs:
             transferred_sessions = [ses.name for ses in sub_path.glob("ses-*")]
-            expected_sessions = ["ses-002_date-20240315_run-02", "ses-003_date-20240401_run-01"]
+            expected_sessions = [
+                "ses-002_date-20240315_run-02",
+                "ses-003_date-20240401_run-01",
+            ]
             assert sorted(transferred_sessions) == sorted(expected_sessions)
 
     def test_invalid_date_range_errors(self, project):
@@ -189,7 +206,9 @@ class TestDateSearchRange(BaseTest):
             project.upload_custom(
                 "rawdata",
                 sub_names=subs,
-                ses_names=[f"ses-{canonical_tags.tags('*')}_20240401{canonical_tags.tags('DATETO')}20240301"],
+                ses_names=[
+                    f"ses-{canonical_tags.tags('*')}_20240401{canonical_tags.tags('DATETO')}20240301"
+                ],
                 datatype=["behav"],
             )
         assert "before start" in str(exc_info.value)
@@ -198,7 +217,9 @@ class TestDateSearchRange(BaseTest):
             project.upload_custom(
                 "rawdata",
                 sub_names=subs,
-                ses_names=[f"ses-{canonical_tags.tags('*')}_2024030{canonical_tags.tags('DATETO')}20240401"],
+                ses_names=[
+                    f"ses-{canonical_tags.tags('*')}_2024030{canonical_tags.tags('DATETO')}20240401"
+                ],
                 datatype=["behav"],
             )
         assert "Invalid" in str(exc_info.value)
@@ -210,53 +231,61 @@ class TestDateSearchRange(BaseTest):
             "ses-001_date-20240101",
             "ses-002_date-20240201",
         ]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=subs,
-            ses_names=[f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240401"],
+            ses_names=[
+                f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240401"
+            ],
             datatype=["behav"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata"
         transferred_items = list(central_path.glob("*"))
-        
+
         if transferred_items:
-            transferred_sub_names = [item.name for item in transferred_items if item.name.startswith("sub-")]
+            transferred_sub_names = [
+                item.name
+                for item in transferred_items
+                if item.name.startswith("sub-")
+            ]
             assert len(transferred_sub_names) == 0
 
     def test_subject_level_date_range(self, project):
         """Test date ranges work at the subject level too."""
         subs = [
             "sub-001_date-20240301",
-            "sub-002_date-20240315", 
+            "sub-002_date-20240315",
             "sub-003_date-20240401",
             "sub-004_date-20240415",
         ]
         sessions = ["ses-001"]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
-            sub_names=[f"sub-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240410"],
+            sub_names=[
+                f"sub-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240410"
+            ],
             ses_names=sessions,
             datatype=["behav"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata"
         transferred_subs = [sub.name for sub in central_path.glob("sub-*")]
-        
+
         expected_subs = ["sub-002_date-20240315", "sub-003_date-20240401"]
         assert sorted(transferred_subs) == sorted(expected_subs)
 
@@ -267,43 +296,48 @@ class TestDateSearchRange(BaseTest):
         sessions = [
             "ses-001_date-20240301",
             "ses-002_date-20240315",
-            "ses-003_date-20240401", 
+            "ses-003_date-20240401",
             "ses-004_date-20240415",
         ]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=subs,
             ses_names=sessions,
             datatype=["behav"],
         )
-        
+
         os.chdir(project.get_local_path())
         local_rawdata = project.get_local_path() / "rawdata"
         if local_rawdata.exists():
             shutil.rmtree(local_rawdata)
-        
+
         project.download_custom(
             "rawdata",
             sub_names=subs,
-            ses_names=[f"ses-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240401"],
+            ses_names=[
+                f"ses-{canonical_tags.tags('*')}_20240310{canonical_tags.tags('DATETO')}20240401"
+            ],
             datatype=["behav"],
         )
-        
+
         local_path = project.get_local_path() / "rawdata"
         downloaded_subs = list(local_path.glob("sub-*"))
-        
+
         assert len(downloaded_subs) == 2
-        
+
         for sub_path in downloaded_subs:
             downloaded_sessions = [ses.name for ses in sub_path.glob("ses-*")]
-            expected_sessions = ["ses-002_date-20240315", "ses-003_date-20240401"]
+            expected_sessions = [
+                "ses-002_date-20240315",
+                "ses-003_date-20240401",
+            ]
             assert sorted(downloaded_sessions) == sorted(expected_sessions)
 
     def test_edge_case_exact_boundary_dates(self, project):
@@ -315,26 +349,28 @@ class TestDateSearchRange(BaseTest):
             "ses-003_date-20240401",
             "ses-004_date-20240415",
         ]
-        
+
         datatypes_used = test_utils.get_all_broad_folders_used(value=False)
         datatypes_used.update({"behav": True})
         test_utils.make_and_check_local_project_folders(
             project, "rawdata", subs, sessions, ["behav"], datatypes_used
         )
-        
+
         project.upload_custom(
             "rawdata",
             sub_names=subs,
-            ses_names=[f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240401"],
+            ses_names=[
+                f"ses-{canonical_tags.tags('*')}_20240301{canonical_tags.tags('DATETO')}20240401"
+            ],
             datatype=["behav"],
         )
-        
+
         central_path = project.get_central_path() / "rawdata" / "sub-001"
         transferred_sessions = [ses.name for ses in central_path.glob("ses-*")]
-        
+
         expected_sessions = [
-            "ses-001_date-20240301", 
+            "ses-001_date-20240301",
             "ses-002_date-20240315",
-            "ses-003_date-20240401"
+            "ses-003_date-20240401",
         ]
         assert sorted(transferred_sessions) == sorted(expected_sessions)
