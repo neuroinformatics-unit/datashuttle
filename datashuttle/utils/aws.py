@@ -40,11 +40,7 @@ def raise_if_bucket_absent(cfg: Configs) -> None:
 
 def get_aws_bucket_name(cfg: Configs) -> str:
     """Return the formatted AWS bucket name from the `central_path`."""
-    return (
-        cfg["central_path"].as_posix().strip("/").split("/")[0]
-        if cfg["central_path"] is not None
-        else ""
-    )
+    return cfg["central_path"].as_posix().strip("/").split("/")[0]
 
 
 # -----------------------------------------------------------------------------
