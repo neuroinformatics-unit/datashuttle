@@ -337,3 +337,202 @@ that the SSH server connected to is correct (pressing `y` to proceed).
 
 Finally, your password to the central server will be requested (you will
 only need to do this once).
+
+:::
+::::
+
+(new-project-gdrive)=
+### Connecting to central storage through Google Drive
+
+Another common method of connecting to a central storage machine is via
+[Google Drive](https://drive.google.com).
+
+To set up Google Drive connection
+we need to provide:
+
+1) **gdrive_client_id:** This is the the client ID that allows you to connect to Google Drive.
+
+2) **gdrive_root_folder_id:** This is the folder ID of the root folder you want to setup
+connection to.
+
+3) **central path**: This is the path to the project *relative to the root folder*.
+
+:::{dropdown} Google Drive Example
+:color: info
+:icon: info
+
+Let's say the central project was stored on a google drive folder
+with root folder id `1KAN9QLD2K2EANE`, and your google drive client id
+is `93412981629-2icf0ba09cks9skjkcrs85tinf73s2bqv.apps.googleusercontent.com`.
+
+We want to store the project at the path (relative to the root folder)
+`/my_name/my_projects/project_name/`.
+
+Then the settings would be:
+
+**gdrive root folder id**: `1KAN9QLD2K2EANE`
+
+**gdrive client id**: `93412981629-2icf0ba09cks9skjkcrs85tinf73s2bqv.apps.googleusercontent.com`
+
+**central path**: `/my_name/my_projects/project_name/`
+
+You may pass the **local path** and **central path** without
+the **project name**, it will be automatically included.
+
+::::
+
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+:sync: gui
+
+```{image} /_static/screenshots/how-to-create-project-gdrive-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-create-project-gdrive-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
+When setting up a new project, the **project name** and **local path**
+can be input exactly the
+[same as when setting with local filesystem](general-tui-datashuttle-setup).
+
+Next, input the `Google Drive Root Folder ID`, `Client ID` and
+`Central Path` as described above.
+
+Clicking `Save` will save these project configs. A button
+`Set up Google Drive Connection` will appear. Click to
+start the setup, you will be required to enter your Google Drive
+client secret and then authenticate via a browser.
+
+:::
+:::{tab-item} Python API
+:sync: python
+
+The `connection_method` configuration must be set to `"gdrive"`
+to use the Google Drive for data transfers.
+
+Enter the `central_path`, `gdrive_root_folder_id` and
+`gdrive_client_id` as  described above.
+
+```{code-block} python
+project.make_config_file(
+	local_path=r"C:\path\to\local\my_projects\my_first_project",
+	central_path="/my_name/my_projects/project_name/",
+	connection_method="gdrive",
+	gdrive_client_id="93412981629-2icf0ba09cks9skjkcrs85tinf73s2bqv.apps.googleusercontent.com",
+	gdrive_root_folder_id="1KAN9QLD2K2EANE",
+)
+```
+
+Next, a one-time command to set up the Google Drive connection must be run:
+
+```{code-block} python
+project.setup_google_drive_connection()
+```
+
+Running `setup_google_drive()` will require entering your
+google drive client secret.
+
+Finally, you will be required to authenticate to google drive via your browser.
+
+
+:::
+::::
+
+(new-project-aws)=
+### Connecting to central storage through AWS
+
+To set up AWS connection we need to provide:
+
+1) **aws_access_key_id:** This is the the access key ID that allows you to connect to AWS buckets.
+
+2) **aws_region:** This is the region of your AWS bucket.
+
+3) **central path**: This is the path to the project. Remember, the central path must start with the name of your AWS bucket.
+
+:::{dropdown} AWS Example
+:color: info
+:icon: info
+
+Let's say the central project was stored on a AWS bucket in the region
+`eu-north-1`, and your AWS access key id
+is `ADI82KSN29OE10CKAO92MSW9`.
+
+We want to store the project at the path (starting with the bucket name)
+`my_bucket_name/my_name/my_projects/project_name/`.
+
+Then the settings would be:
+
+**aws access key id**: `ADI82KSN29OE10CKAO92MSW9`
+
+**aws region**: `eu-north-1`
+
+**central path**: `my_bucket_name/my_name/my_projects/project_name/`
+
+You may pass the **local path** and **central path** without
+the **project name**, it will be automatically included.
+
+::::
+
+::::{tab-set}
+
+:::{tab-item} Graphical Interface
+:sync: gui
+
+```{image} /_static/screenshots/how-to-create-project-aws-dark.png
+   :align: center
+   :class: only-dark
+   :width: 900px
+```
+```{image} /_static/screenshots/how-to-create-project-aws-light.png
+   :align: center
+   :class: only-light
+   :width: 900px
+```
+<br>
+
+When setting up a new project, the **project name** and **local path**
+can be input exactly the
+[same as when setting with local filesystem](general-tui-datashuttle-setup).
+
+Next, input the `AWS Access Key ID`, `AWS Region` and
+`Central Path` as described above.
+
+Clicking `Save` will save these project configs. A button
+`Set up AWS Connection` will appear. Click to
+start the setup, you will be required to enter your AWS Secret Access Key.
+
+:::
+:::{tab-item} Python API
+:sync: python
+
+The `connection_method` configuration must be set to `"aws"`
+to use the AWS for data transfers.
+
+Enter the `central_path`, `aws_access_key_id` and
+`aws_region` as  described above.
+
+```{code-block} python
+project.make_config_file(
+	local_path=r"C:\path\to\local\my_projects\my_first_project",
+	central_path="my_bucket_name/my_name/my_projects/project_name/",
+	connection_method="aws",
+	aws_access_key_id="ADI82KSN29OE10CKAO92MSW9",
+	aws_region="eu-north-1",
+)
+```
+
+Next, a one-time command to set up the AWS connection must be run:
+
+```{code-block} python
+project.setup_aws_connection()
+```
+
+Running `setup_aws_connection()` will require entering your
+AWS Secret Access Key and the setup will be completed.
