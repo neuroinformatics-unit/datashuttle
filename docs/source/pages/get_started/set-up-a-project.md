@@ -357,6 +357,8 @@ connection to.
 
 3) **central path**: This is the path to the project *relative to the root folder*.
 
+Read about setting up your google drive client [here](https://rclone.org/drive/#making-your-own-client-id).
+
 :::{dropdown} Google Drive Example
 :color: info
 :icon: info
@@ -455,6 +457,11 @@ To set up AWS connection we need to provide:
 2) **aws_region:** This is the region of your AWS bucket.
 
 3) **central path**: This is the path to the project. Remember, the central path must start with the name of your AWS bucket.
+
+[How to create an AWS access key?](https://repost.aws/knowledge-center/create-access-key)
+
+Please make sure that your
+access key has the required [permissions](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonS3FullAccess.html#AmazonS3FullAccess).
 
 :::{dropdown} AWS Example
 :color: info
