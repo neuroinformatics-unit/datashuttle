@@ -168,8 +168,22 @@ class BaseTransfer(BaseTest):
     # -------------------------------------------------------------------------
 
     def run_and_check_transfers(
-        self, project, pathtable, sub_names, ses_names, datatype
+        self,
+        project,
+        sub_names,
+        ses_names,
+        datatype,
+        expected_transferred_paths,
     ):
+        """Transfer the data and check the transferred files match the
+        `expected_transferred_paths`.
+
+        In test setup, the entire project is created in the `local_path` and
+        is uploaded to `central_path`. So we only need to set up once per test,
+        upload and download is to temporary folders and these temporary folders
+        are cleaned at the end of each parameterization.
+        """
+
         # Upload data from the setup local project to a temporary
         # central directory.
         true_central_path = project.cfg["central_path"]
@@ -182,10 +196,6 @@ class BaseTransfer(BaseTest):
 
         project.upload_custom(
             "rawdata", sub_names, ses_names, datatype, init_log=False
-        )
-
-        expected_transferred_paths = self.get_expected_transferred_paths(
-            pathtable, sub_names, ses_names, datatype
         )
 
         # Search the paths that were transferred and tidy them up,

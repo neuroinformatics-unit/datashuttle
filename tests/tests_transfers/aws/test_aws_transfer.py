@@ -45,6 +45,10 @@ class TestAwsTransfer(BaseTransfer):
     ):
         pathtable, project = aws_setup
 
+        expected_transferred_paths = self.get_expected_transferred_paths(
+            pathtable, sub_names, ses_names, datatype
+        )
+
         self.run_and_check_transfers(
-            project, pathtable, sub_names, ses_names, datatype
+            project, sub_names, ses_names, datatype, expected_transferred_paths
         )
