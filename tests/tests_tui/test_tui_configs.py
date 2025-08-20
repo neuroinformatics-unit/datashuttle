@@ -409,6 +409,7 @@ class TestTuiConfigs(TuiBase):
 
     @pytest.mark.asyncio
     async def test_switch_connection_radiobuttons(self):
+        """Test correct widgets being displayed for each connection method"""
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
             # Select the page and ConfigsContent for setting up new project
@@ -677,6 +678,7 @@ class TestTuiConfigs(TuiBase):
         gdrive_widgets: List[Widget],
         aws_widgets: List[Widget],
     ):
+        """Switch radiobutton to a given `connection_method` and assert the presence of its widgets."""
         assert connection_method in get_connection_methods_list()
         await self.scroll_to_click_pause(
             pilot, f"#configs_{connection_method}_radiobutton"

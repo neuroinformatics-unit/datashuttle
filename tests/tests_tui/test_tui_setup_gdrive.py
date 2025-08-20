@@ -14,6 +14,14 @@ class TestTuiSetupGdrive(TuiBase):
     async def test_gdrive_connection_setup_without_browser(
         self, setup_project_paths
     ):
+        """Test Google Drive connection setup via the TUI.
+
+        Google Drive connection details are filled in the configs tab. The setup
+        process is run and final connection success output is checked. Since it's
+        not possible to authenticate via a browser during tests, the connection
+        setup is tested without a browser. The credentials in the environment are
+        set by the CI. For testing locally, the developer must set these themselves.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -62,6 +70,9 @@ class TestTuiSetupGdrive(TuiBase):
     async def test_gdrive_connection_setup_incorrect_config_token(
         self, setup_project_paths
     ):
+        """Test Google Drive connection setup using an incorrect config token and check
+        for a failed message on the output.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -110,6 +121,9 @@ class TestTuiSetupGdrive(TuiBase):
     async def test_gdrive_connection_setup_incorrect_root_folder_id(
         self, setup_project_paths
     ):
+        """Test Google Drive connection setup using an incorrect root folder ID
+        and check for a failed message on the output.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -162,6 +176,14 @@ class TestTuiSetupGdrive(TuiBase):
 
     @pytest.mark.asyncio
     async def test_cancel_gdrive_connection_setup(self, setup_project_paths):
+        """Test cancelling the Google Drive setup and then try to rerun the setup.
+
+        After having run a Google Drive setup, to run a Google Drive setup again, it
+        is mandatory to stop/exit the old setup process so as to free the port used by
+        rclone for running Google's oauth locally. This was done by using `subprocess.Popen`
+        and killing the process once the cancel button is pressed. This is being tested here
+        to ensure that the Google Drive setup can be rerun after being cancelled.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -203,6 +225,8 @@ class TestTuiSetupGdrive(TuiBase):
     async def setup_gdrive_project(
         self, pilot, project_name, gdrive_client_id, root_folder_id
     ):
+        """Navigate to the configs tab, fill in the Google Drive config credentials and save them."""
+
         await self.check_and_click_onto_existing_project(pilot, project_name)
         await self.switch_tab(pilot, "configs")
         await self.scroll_to_click_pause(pilot, "#configs_gdrive_radiobutton")
@@ -221,6 +245,11 @@ class TestTuiSetupGdrive(TuiBase):
     async def setup_gdrive_connection_via_tui(
         self, pilot, with_browser: bool = True
     ):
+        """This is a utility function that starts the Google Drive connection setup, fills
+        in the Google Drive client secret and answers a yes/no for the browser present question.
+
+        Further process of the setup is done by the respective tests.
+        """
         await self.scroll_to_click_pause(
             pilot, "#configs_setup_connection_button"
         )

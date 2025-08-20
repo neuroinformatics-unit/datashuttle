@@ -11,6 +11,13 @@ from .tui_base import TuiBase
 class TestTuiSetupAws(TuiBase):
     @pytest.mark.asyncio
     async def test_aws_connection_setup(self, setup_project_paths):
+        """Test AWS connection setup via the TUI.
+
+        AWS connection details are filled in the configs tab. The setup
+        process is run and final connection success output is checked.
+        The credentials in the environment are set by the CI. For testing
+        locally, the developer must set these themselves.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -33,6 +40,9 @@ class TestTuiSetupAws(TuiBase):
 
     @pytest.mark.asyncio
     async def test_aws_connection_setup_failed(self, setup_project_paths):
+        """Test AWS connection setup using an incorrect client secret and check
+        for a failed message on the output.
+        """
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         app = TuiApp()
@@ -56,6 +66,7 @@ class TestTuiSetupAws(TuiBase):
     async def setup_aws_project_and_run_connection_setup(
         self, pilot, secret_access_key
     ):
+        """Set up AWS project via the configs tab and run the connection setup."""
         await self.setup_aws_project(pilot)
 
         await self.scroll_to_click_pause(
@@ -87,6 +98,7 @@ class TestTuiSetupAws(TuiBase):
         await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
 
     async def setup_aws_project(self, pilot):
+        """Navigate to the configs tab, fill in the AWS config credentials and save them."""
         assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
         await self.switch_tab(pilot, "configs")
