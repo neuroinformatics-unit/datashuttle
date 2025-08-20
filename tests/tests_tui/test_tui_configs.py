@@ -424,27 +424,14 @@ class TestTuiConfigs(TuiBase):
             gdrive_widgets = configs_content.config_gdrive_widgets
             aws_widgets = configs_content.config_aws_widgets
 
-            await self.switch_and_check_widgets_display(
-                pilot,
-                "ssh",
-                ssh_widgets,
-                gdrive_widgets,
-                aws_widgets,
-            )
-            await self.switch_and_check_widgets_display(
-                pilot,
-                "gdrive",
-                ssh_widgets,
-                gdrive_widgets,
-                aws_widgets,
-            )
-            await self.switch_and_check_widgets_display(
-                pilot,
-                "aws",
-                ssh_widgets,
-                gdrive_widgets,
-                aws_widgets,
-            )
+            for connection_method in ["ssh", "gdrive", "aws"]:
+                await self.switch_and_check_widgets_display(
+                    pilot,
+                    connection_method,
+                    ssh_widgets,
+                    gdrive_widgets,
+                    aws_widgets,
+                )
 
     # -------------------------------------------------------------------------
     # Test project name is number

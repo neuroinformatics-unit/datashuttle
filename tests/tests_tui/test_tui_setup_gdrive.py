@@ -3,6 +3,7 @@ import os
 import pytest
 
 from datashuttle.tui.app import TuiApp
+from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
 from .. import test_utils
 from .tui_base import TuiBase
@@ -196,6 +197,8 @@ class TestTuiSetupGdrive(TuiBase):
             await self.scroll_to_click_pause(
                 pilot, "#setup_gdrive_cancel_button"
             )
+
+            assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
     async def setup_gdrive_project(
         self, pilot, project_name, gdrive_client_id, root_folder_id
