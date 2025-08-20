@@ -87,6 +87,15 @@ jobs:
           pytest tests/tests_transfers/aws
 
       - name: All Other Tests
+        env:
+          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+          GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
+          GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
           pytest --ignore=tests/tests_transfer/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws -k "test_tui_setup_aws or test_tui_setup_gdrive or test_tui_configs or test_backwards_compatibility or test_gdrive_preliminary_setup"
 

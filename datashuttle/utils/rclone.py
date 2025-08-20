@@ -300,6 +300,9 @@ def setup_rclone_config_for_aws(
 
     """
     aws_region = cfg["aws_region"]
+
+    # Rclone mandates location_constraint be set as the aws regions for
+    # all regions except us-east-1
     location_constraint_key_value = (
         ""
         if aws_region == "us-east-1"
