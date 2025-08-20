@@ -45,6 +45,10 @@ class TestGdriveTransfer(BaseTransfer):
         ses_names,
         datatype,
     ):
+        """Test Google Drive transfers by uploading and downloading data from Google Drive
+
+        See `run_and_check_transfer`.
+        """
         pathtable, project = gdrive_setup
 
         expected_transferred_paths = self.get_expected_transferred_paths(

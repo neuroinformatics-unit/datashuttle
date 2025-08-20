@@ -422,7 +422,7 @@ def check_config_file(config_path, *kwargs):
 
 def recursive_search_central(project: DataShuttle):
     """
-    A convenience function to search  project for files on remote folders
+    A convenience function to search project for files on remote folders
     using rclone's recursive search.
     """
     all_filenames: list[str] = []

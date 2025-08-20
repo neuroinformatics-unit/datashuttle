@@ -43,6 +43,10 @@ class TestAwsTransfer(BaseTransfer):
         ses_names,
         datatype,
     ):
+        """Test AWS transfers by uploading and downloading data from AWS buckets.
+
+        See `run_and_check_transfer`.
+        """
         pathtable, project = aws_setup
 
         expected_transferred_paths = self.get_expected_transferred_paths(
