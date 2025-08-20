@@ -7,6 +7,7 @@ import pytest
 
 from datashuttle.utils import ssh
 
+from ... import test_utils
 from . import ssh_test_utils
 from .base_ssh import BaseSSHTransfer
 
@@ -190,7 +191,7 @@ class TestSSHTransfer(BaseSSHTransfer):
 
         # Search the paths that were transferred and tidy them up,
         # then check against the paths that were expected to be transferred.
-        transferred_files = ssh_test_utils.recursive_search_central(project)
+        transferred_files = test_utils.recursive_search_central(project)
         paths_to_transferred_files = self.remove_path_before_rawdata(
             transferred_files
         )
