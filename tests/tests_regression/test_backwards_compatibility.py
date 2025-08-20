@@ -81,6 +81,12 @@ class TestBackwardsCompatibility:
     def test_new_connection_methods_for_backwards_compatibility(
         self, project, tmp_path
     ):
+        """This tests backward compatibility for new connection method (`gdrive` and `aws`)
+        config keys with the old config.yaml.
+
+        This is tested by loading an old version of config.yaml and checking if it has the
+        new config values.
+        """
         reloaded_ver_configs, reloaded_ver_persistent_settings = (
             self.load_and_check_old_version_yamls(project, tmp_path, "v0.6.0")
         )
@@ -95,10 +101,14 @@ class TestBackwardsCompatibility:
 
         for key in new_config_keys:
             assert key in reloaded_ver_configs
+            assert reloaded_ver_configs[key] is None
 
     def test_bad_config_yaml_for_backward_compatibility(
         self, project, tmp_path
     ):
+        """Test config.yaml partially contains new connection method config keys. Running backwards
+        compatibility on such a config.yaml should throw an error.
+        """
         with pytest.raises(ConfigError):
             reloaded_ver_configs, reloaded_ver_persistent_settings = (
                 self.load_and_check_old_version_yamls(
