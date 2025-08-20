@@ -16,6 +16,9 @@ class TestGdrivePreliminarySetup:
     def test_preliminary_setup_for_gdrive(
         self, client_id, root_folder_id, client_secret
     ):
+        """Test the outputs of `preliminary_for_setup_without_browser` and check
+        that they contain the correct credentials in the encoded format.
+        """
         mock_configs = {
             "gdrive_client_id": client_id,
             "gdrive_root_folder_id": root_folder_id,
@@ -25,7 +28,7 @@ class TestGdrivePreliminarySetup:
         )
 
         assert (
-            "Execute the following on the machine with the web browser "
+            "Execute the following on the machine with the web browser"
             in output
         )
         assert 'rclone authorize "drive"' in output
@@ -52,6 +55,7 @@ class TestGdrivePreliminarySetup:
     def get_decoded_dict_from_base64(
         self, base64_string: str
     ) -> Dict[str, str]:
+        """Decode a base64 string and return the encoded dictionary."""
         base64_string = base64_string.strip().rstrip("=")
 
         padding_needed = 4 - (len(base64_string) % 4)
