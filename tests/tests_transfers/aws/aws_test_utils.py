@@ -1,17 +1,14 @@
 import copy
 import os
-import random
-import string
 
 from datashuttle import DataShuttle
-from datashuttle.utils import aws
+from datashuttle.utils import aws, utils
 
 
 def setup_project_for_aws(project: DataShuttle):
     aws_bucket_name = os.environ["AWS_BUCKET_NAME"]
 
-    characters = string.ascii_letters + string.digits
-    random_string = "".join(random.choices(characters, k=15))
+    random_string = utils.get_random_string()
 
     project.update_config_file(
         connection_method="aws",

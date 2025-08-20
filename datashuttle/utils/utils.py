@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 import getpass
+import random
 import re
+import string
 import sys
 import traceback
 import warnings
@@ -327,3 +329,11 @@ def all_unique(list_: List) -> bool:
 def all_identical(list_: List) -> bool:
     """Return bool indicating whether all values in a list are identical."""
     return len(set(list_)) == 1
+
+
+def get_random_string() -> str:
+    """Return a random string of characters."""
+    characters = string.ascii_letters + string.digits
+    random_string = "".join(random.choices(characters, k=15))
+
+    return random_string

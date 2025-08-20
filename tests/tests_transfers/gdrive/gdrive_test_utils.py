@@ -1,19 +1,16 @@
 import builtins
 import copy
 import os
-import random
-import string
 
 from datashuttle import DataShuttle
-from datashuttle.utils import gdrive
+from datashuttle.utils import gdrive, utils
 
 
 def setup_project_for_gdrive(project: DataShuttle):
     """
     Set up a project with configs for Google Drive transfers.
     """
-    characters = string.ascii_letters + string.digits
-    random_string = "".join(random.choices(characters, k=15))
+    random_string = utils.get_random_string()
 
     project.update_config_file(
         connection_method="gdrive",
