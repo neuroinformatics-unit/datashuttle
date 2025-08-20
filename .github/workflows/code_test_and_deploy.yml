@@ -53,26 +53,43 @@ jobs:
         run: |
           conda activate datashuttle-test
           conda install -c conda-forge rclone
+
       - name: Install datashuttle from repo
         run: |
           python -m pip install --upgrade pip
           pip install .[dev]
+
         # run SSH tests only on Linux because Windows and macOS
         # are already run within a virtual container and so cannot
         # run Linux containers because nested containerisation is disabled.
-      - name: Setup Google Drive and AWS Secrets
+      - name: Test SSH (Linux only)
+        if: runner.os == 'Linux'
         run: |
-          echo "GDRIVE_CLIENT_ID=${{secrets.GDRIVE_CLIENT_ID}}" >> $GITHUB_ENV
-          echo "GDRIVE_CLIENT_SECRET=${{secrets.GDRIVE_CLIENT_SECRET}}" >> $GITHUB_ENV
-          echo "GDRIVE_ROOT_FOLDER_ID=${{secrets.GDRIVE_ROOT_FOLDER_ID}}" >> $GITHUB_ENV
-          echo "GDRIVE_CONFIG_TOKEN=${{secrets.GDRIVE_CONFIG_TOKEN}}" >> $GITHUB_ENV
-          echo "AWS_ACCESS_KEY_ID=${{secrets.AWS_ACCESS_KEY_ID}}" >> $GITHUB_ENV
-          echo "AWS_REGION=${{secrets.AWS_REGION}}" >> $GITHUB_ENV
-          echo "AWS_BUCKET_NAME=${{secrets.AWS_BUCKET_NAME}}" >> $GITHUB_ENV
-          echo "AWS_SECRET_ACCESS_KEY=${{secrets.AWS_SECRET_ACCESS_KEY}}" >> $GITHUB_ENV
+          sudo service mysql stop  # free up port 3306 for ssh tests
+          pytest tests/tests_transfers/ssh
+
+      - name: Test Google Drive
+        env:
+          GDRIVE_CLIENT_ID: ${{ secrets.GDRIVE_CLIENT_ID }}
+          GDRIVE_CLIENT_SECRET: ${{ secrets.GDRIVE_CLIENT_SECRET }}
+          GDRIVE_ROOT_FOLDER_ID: ${{ secrets.GDRIVE_ROOT_FOLDER_ID }}
+          GDRIVE_CONFIG_TOKEN: ${{ secrets.GDRIVE_CONFIG_TOKEN }}
+        run: |
+          pytest tests/tests_transfers/gdrive
+
+      - name: Test AWS
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
+        run: |
+          pytest tests/tests_transfers/aws
+
       - name: All Other Tests
         run: |
-          pytest -k "test_aws_transfer or test_gdrive_transfer or test_tui_setup_aws or test_tui_setup_gdrive or test_tui_configs or test_backwards_compatibility or test_gdrive_preliminary_setup"
+          pytest --ignore=tests/tests_transfer/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws -k "test_tui_setup_aws or test_tui_setup_gdrive or test_tui_configs or test_backwards_compatibility or test_gdrive_preliminary_setup"
+
 
   build_sdist_wheels:
     name: Build source distribution
