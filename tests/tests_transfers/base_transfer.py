@@ -170,6 +170,8 @@ class BaseTransfer(BaseTest):
     def run_and_check_transfers(
         self, project, pathtable, sub_names, ses_names, datatype
     ):
+        # Upload data from the setup local project to a temporary
+        # central directory.
         true_central_path = project.cfg["central_path"]
         tmp_central_path = (
             project.cfg["central_path"] / "tmp" / project.project_name
@@ -186,6 +188,8 @@ class BaseTransfer(BaseTest):
             pathtable, sub_names, ses_names, datatype
         )
 
+        # Search the paths that were transferred and tidy them up,
+        # then check against the paths that were expected to be transferred.
         transferred_files = test_utils.recursive_search_central(project)
         paths_to_transferred_files = self.remove_path_before_rawdata(
             transferred_files
@@ -225,6 +229,8 @@ class BaseTransfer(BaseTest):
             expected_transferred_paths
         )
 
+        # Clean up, removing the temp directories and
+        # resetting the project paths.
         rclone.call_rclone(
             f"purge {project.cfg.get_rclone_config_name()}:{tmp_central_path.as_posix()}"
         )
