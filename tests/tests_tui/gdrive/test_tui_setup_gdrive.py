@@ -16,12 +16,12 @@ class TestTuiSetupGdrive(TuiBase):
         tmp_config_path, tmp_path, project_name = setup_project_paths.values()
 
         random_prefix = utils.get_random_string()
-        central_path = f"{random_prefix}/{tmp_path.as_posix().lstrip('/')}"
+        central_path = f"/{random_prefix}"
 
         yield central_path, project_name
 
         rclone.call_rclone(
-            f"purge central_{project_name}_gdrive:{random_prefix}"
+            f"purge central_{project_name}_gdrive:{central_path}"
         )
 
     @pytest.mark.parametrize("central_path_none", [True, False])
