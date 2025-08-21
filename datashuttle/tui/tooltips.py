@@ -180,14 +180,24 @@ def get_tooltip(id: str) -> str:
             "Allow folder creation even when there is a validation error."
         )
 
-    elif id == "#create_folders_allow_alphanumeric_sub_ses_values_checkbox":
-        tooltip = "allow_alphanumeric_sub_ses_values"
+    elif (
+        id == "#create_folders_allow_alphanumeric_sub_ses_values_checkbox"
+        or id == "validate_allow_alphanumeric_sub_ses_values_checkbox"
+    ):
+        tooltip = (
+            "If `True`, any alphanumeric character are allowed for the values associated "
+            "with sub- or ses- keys. \n\n"
+            "Otherwise, values must be integer and the following additional checks are performed:\n"
+            " - Identical numbers are considered the same value even if padded with different number of zeros "
+            "   (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).\n"
+            " - Labels must be the same length (e.g. sub-01 and sub-002 is invalid)."
+        )
 
     # template validation checkbox
     elif id == "#template_settings_validation_on_checkbox":
         tooltip = "Turn on the 'name templates' feature."
 
-    # Tabscreen - Tranfser tab
+    # Tabscreen - Transfer tab
     # -------------------------------------------------------------------------
 
     # directorytree

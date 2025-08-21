@@ -104,7 +104,7 @@ class ValidateContent(Container):
                     id="validate_strict_mode_checkbox",
                 ),
                 Checkbox(
-                    "allow_alphanumeric_sub_ses_values",
+                    "Allow alphanumeric sub- and ses- values",
                     value=False,
                     id="validate_allow_alphanumeric_sub_ses_values_checkbox",
                 ),
@@ -124,6 +124,7 @@ class ValidateContent(Container):
             "validate_top_level_folder_select",
             "validate_include_central_checkbox",
             "validate_strict_mode_checkbox",
+            "validate_allow_alphanumeric_sub_ses_values_checkbox",
         ]:
             self.query_one(f"#{id}").tooltip = get_tooltip(id)
 
