@@ -352,10 +352,10 @@ we need to provide:
 
 1) **gdrive_client_id:** This is the the client ID that allows you to connect to Google Drive.
 
-2) **gdrive_root_folder_id:** This is the folder ID of the root folder you want to setup
+2) **gdrive_root_folder_id:** This is the Google Drive folder ID of the project folder. This is the alphanumeric code in the Google Drive URL when located in the folder (after the `/folders/` part).
 connection to.
 
-3) **central path**: This is the path to the project *relative to the root folder*.
+3) **central path** (optional): This is the path to the project *relative to the root folder*. If not provided, it is assumed the `gdrive_root_folder_id` points directly to the project folder.
 
 Read about setting up your google drive client [here](https://rclone.org/drive/#making-your-own-client-id).
 
@@ -438,30 +438,30 @@ Next, a one-time command to set up the Google Drive connection must be run:
 project.setup_google_drive_connection()
 ```
 
-Running `setup_google_drive()` will require entering your
+Running `setup_google_drive_connection()` will require entering your
 google drive client secret.
 
-Finally, you will be required to authenticate to google drive via your browser.
+Finally, you will be required to authenticate to Google Drive via your browser.
 
 
 :::
 ::::
 
 (new-project-aws)=
-### Connecting to central storage through AWS
+### Connecting to central storage through Amazon Web Services (AWS) S3 Bucket
 
 To set up AWS connection we need to provide:
 
-1) **aws_access_key_id:** This is the the access key ID that allows you to connect to AWS buckets.
+1) **aws_access_key_id:** This is the the access key ID that allows you to connect to AWS buckets and can be set up through the AWS website. See [here](xxx) for a guide on creating an access key.
 
-2) **aws_region:** This is the region of your AWS bucket.
+2) **aws_region:** This is the region of your AWS bucket as stated on the bucket details on the AWS website.
 
-3) **central path**: This is the path to the project. Remember, the central path must start with the name of your AWS bucket.
+3) **central path**:  For AWS connections, the `central_path` **must** start with the bucket name. You can then extend this to point to the project folder on the bucket, or leave it as only the bucket name only to transfer directly into the bucket root.
 
 [How to create an AWS access key?](https://repost.aws/knowledge-center/create-access-key)
 
 Please make sure that your
-access key has the required [permissions](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonS3FullAccess.html#AmazonS3FullAccess).
+access key has the required permissions. Please see [this guide](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonS3FullAccess.html#AmazonS3FullAccess) on providing the permissions.
 
 :::{dropdown} AWS Example
 :color: info
