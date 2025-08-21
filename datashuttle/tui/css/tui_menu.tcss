@@ -387,12 +387,8 @@ DisplayedDatatypesScreen {
 CreateFoldersSettingsScreen {
     align: center middle;
 }
-
-#labelTESTEST {
-    padding: 1 0 1 2;
-}
-#tabscreen_toplevel_select {
-    padding: 0 0 0 1;
+#create_folders_settings_toplevel_label {
+    margin: 1 0 0 2;
 }
 #create_tab_settings_outer_container {
     height: 80%;
@@ -401,26 +397,30 @@ CreateFoldersSettingsScreen {
     border: tall $panel-lighten-3;
 }
 #checkbox_container {
-    height: 65%;
+    height: 75%;
     overflow: hidden auto;
 }
-#toplevel_folder_select_container {
-    height: 15%;
+#create_folders_settings_allow_alphanumeric_checkbox {
+    padding: 0 0;
+}
+#create_folders_settings_checkbox_outer_container {
+    margin: 0 0 0 0;
 }
 #template_top_container {
-    height: 70%;
+    height: 60%;
     background: $primary-background;
     border: tall $panel-lighten-3;
     overflow: hidden auto;
- }
+}
+
 #template_inner_horizontal_container{
     height: 3;
 }
 
- #template_inner_container {
+#template_inner_container {
     height: 15;
     overflow: auto;
- }
+}
 
 #template_message_label {
     width: auto;
