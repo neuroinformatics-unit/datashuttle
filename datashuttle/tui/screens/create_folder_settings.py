@@ -119,20 +119,24 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 id="toplevel_folder_select_container",
             ),
             Container(
-                Checkbox(
-                    "Search central for suggestions",
-                    value=suggest_next_sub_ses_central,
-                    id="suggest_next_sub_ses_central_checkbox",
-                ),
-                Checkbox(
-                    "Bypass validation",
-                    value=bypass_validation,
-                    id="create_folders_settings_bypass_validation_checkbox",
-                ),
-                Checkbox(
-                    "Allow alphanumeric sub- and ses- values",
-                    value=allow_alphanumeric_sub_ses_values,
-                    id="create_folders_allow_alphanumeric_sub_ses_values_checkbox",
+                Container(
+                    Checkbox(
+                        "Search central for suggestions",
+                        value=suggest_next_sub_ses_central,
+                        id="suggest_next_sub_ses_central_checkbox",
+                    ),
+                    Horizontal(
+                        Checkbox(
+                            "Bypass validation",
+                            value=bypass_validation,
+                            id="create_folders_settings_bypass_validation_checkbox",
+                        ),
+                        Checkbox(
+                            "Allow alphanumeric sub- and ses- values",
+                            value=allow_alphanumeric_sub_ses_values,
+                            id="create_folders_settings_allow_alphanumeric_checkbox",
+                        ),
+                    ),
                 ),
                 Container(
                     Horizontal(
@@ -168,7 +172,6 @@ class CreateFoldersSettingsScreen(ModalScreen):
                 ),
                 id="checkbox_container",
             ),
-            Container(),
             Button("Close", id="create_folders_settings_close_button"),
             id="create_tab_settings_outer_container",
         )
@@ -180,7 +183,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             "#create_folders_settings_bypass_validation_checkbox",
             "#template_settings_validation_on_checkbox",
             "#suggest_next_sub_ses_central_checkbox",
-            "#create_folders_allow_alphanumeric_sub_ses_values_checkbox",
+            "#create_folders_settings_allow_alphanumeric_checkbox",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -281,7 +284,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
 
         elif (
             event.checkbox.id
-            == "create_folders_allow_alphanumeric_sub_ses_values_checkbox"
+            == "create_folders_settings_allow_alphanumeric_checkbox"
         ):
             self.interface.save_tui_settings(
                 is_on, "allow_alphanumeric_sub_ses_values"

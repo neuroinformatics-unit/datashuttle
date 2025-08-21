@@ -423,13 +423,13 @@ class TestTuiWidgets(TuiBase):
             # allow_alphanumeric_sub_ses_values
             assert (
                 pilot.app.screen.query_one(
-                    "#create_folders_allow_alphanumeric_sub_ses_values_checkbox"
+                    "#create_folders_settings_allow_alphanumeric_checkbox"
                 ).label._text
                 == "allow_alphanumeric_sub_ses_values"
             )
             assert (
                 pilot.app.screen.query_one(
-                    "#create_folders_allow_alphanumeric_sub_ses_values_checkbox"
+                    "#create_folders_settings_allow_alphanumeric_checkbox"
                 ).value
                 is False
             )
@@ -688,7 +688,7 @@ class TestTuiWidgets(TuiBase):
             checkbox_id = "#create_folders_settings_bypass_validation_checkbox"
         else:
             checkbox_id = (
-                "#create_folders_allow_alphanumeric_sub_ses_values_checkbox"
+                "#create_folders_settings_allow_alphanumeric_checkbox"
             )
 
         app = TuiApp()
