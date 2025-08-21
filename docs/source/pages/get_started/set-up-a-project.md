@@ -241,8 +241,7 @@ project.make_config_file(
 Another common method of connecting to a central storage machine is via
 [SSH](https://www.ssh.com/academy/ssh/protocol).
 
-To set up SSH connection
-we need to provide:
+Following details are required in the configs before setting up SSH connection:
 
 1) **central_host_id:** This is the address of the server you want to connect to.
 
@@ -276,6 +275,9 @@ the **project name**, it will be automatically included.
 Note that Linux-based shortcuts (e.g. `~` for home directory) are not permitted.
 
 ::::
+
+Once the configs are saved, we can set up the connection by clicking Set Up SSH Connection
+(through the TUI) or running the function `project.setup_ssh_connection()`.
 
 ::::{tab-set}
 
@@ -347,17 +349,18 @@ only need to do this once).
 Another common method of connecting to a central storage machine is via
 [Google Drive](https://drive.google.com).
 
-To set up Google Drive connection
-we need to provide:
+Following details are required in the configs before setting up Google Drive connection:
 
-1) **gdrive_client_id:** This is the the client ID that allows you to connect to Google Drive.
-
-2) **gdrive_root_folder_id:** This is the Google Drive folder ID of the project folder. This is the alphanumeric code in the Google Drive URL when located in the folder (after the `/folders/` part).
+1) **gdrive_root_folder_id:** This is the Google Drive folder ID of the project folder. This is the alphanumeric code in the Google Drive URL when located in the folder (after the `/folders/` part).
 connection to.
+
+2) **gdrive_client_id** (optional): This is a client ID that can be set up through the Google API Console which to improve transfer speeds. If not provided, `RClone's` shared default client ID is used, which may be slower. See [this guide](https://rclone.org/drive/#making-your-own-client-id) for more information on setting up your own client ID.
 
 3) **central path** (optional): This is the path to the project *relative to the root folder*. If not provided, it is assumed the `gdrive_root_folder_id` points directly to the project folder.
 
-Read about setting up your google drive client [here](https://rclone.org/drive/#making-your-own-client-id).
+```{important}
+You must rerun the connection setup every time you change your gdrive_root_folder_id.
+```
 
 :::{dropdown} Google Drive Example
 :color: info
@@ -382,6 +385,9 @@ You may pass the **local path** and **central path** without
 the **project name**, it will be automatically included.
 
 ::::
+
+Once the configs are saved, we can set up the connection by clicking Set Up Google Drive Connection
+(through the TUI) or running the function `project.setup_google_drive_connection()`.
 
 ::::{tab-set}
 
@@ -440,7 +446,7 @@ Next, a one-time command to set up the Google Drive connection must be run:
 project.setup_google_drive_connection()
 ```
 
-Running `setup_google_drive_connection()` will require entering your
+Running `setup_google_drive_connection()` will prompt to you to enter your
 google drive client secret.
 
 Finally, you will be required to authenticate to Google Drive via your browser. If you do not have access to an internet browser on your machine, instructions will be provided for browserless connection set up.
@@ -452,7 +458,7 @@ Finally, you will be required to authenticate to Google Drive via your browser. 
 (new-project-aws)=
 ### Connecting to central storage through Amazon Web Services (AWS) S3 Bucket
 
-To set up AWS connection we need to provide:
+Following details are required in the configs before setting up AWS connection:
 
 1) **aws_access_key_id:** This is the the access key ID that allows you to connect to AWS buckets and can be set up through the AWS website. See [here](https://repost.aws/knowledge-center/create-access-key) for a guide on creating an access key.
 
@@ -460,8 +466,10 @@ To set up AWS connection we need to provide:
 
 3) **central path**:  For AWS connections, the `central_path` **must** start with the bucket name. You can then extend this to point to the project folder on the bucket, or leave it as only the bucket name only to transfer directly into the bucket root.
 
+```{important}
 Please make sure that your
 access key has the required permissions. Please see [this guide](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonS3FullAccess.html#AmazonS3FullAccess) on providing the permissions.
+```
 
 :::{dropdown} AWS Example
 :color: info
@@ -486,6 +494,9 @@ You may pass the **local path** and **central path** without
 the **project name**, it will be automatically included.
 
 ::::
+
+Once the configs are saved, we can set up the connection by clicking Set Up AWS Connection
+(through the TUI) or running the function `project.setup_aws_connection()`.
 
 ::::{tab-set}
 
