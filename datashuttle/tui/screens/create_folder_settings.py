@@ -120,7 +120,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
             ),
             Container(
                 Checkbox(
-                    "Search Central For Suggestions",
+                    "Search central for suggestions",
                     value=suggest_next_sub_ses_central,
                     id="suggest_next_sub_ses_central_checkbox",
                 ),
@@ -130,7 +130,7 @@ class CreateFoldersSettingsScreen(ModalScreen):
                     id="create_folders_settings_bypass_validation_checkbox",
                 ),
                 Checkbox(
-                    "allow_alphanumeric_sub_ses_values",
+                    "Allow alphanumeric sub- and ses- values",
                     value=allow_alphanumeric_sub_ses_values,
                     id="create_folders_allow_alphanumeric_sub_ses_values_checkbox",
                 ),
