@@ -23,7 +23,7 @@ class TestSubSesSearches(BaseTest):
     ):
         """
         Test the `search_local_filesystem` and `search_central_via_connection`
-        functions. These functions perform the same function but `search_local_filesystem`
+        functions. These functions should have the same outputs but `search_local_filesystem`
         is used for local filesystem for speed. Here we check the outputs of these
         functions match.
 
@@ -36,7 +36,7 @@ class TestSubSesSearches(BaseTest):
         """
         central_path = project.get_central_path()
 
-        # Create a set of folders and files
+        # Create a project of folders and files
         # fmt: off
         paths_to_make = []
         for i in range(1, 4):
@@ -84,6 +84,7 @@ class TestSubSesSearches(BaseTest):
             (central_path / "rawdata", "sub-003*"),
         ):
         # fmt: on
+
             central_method_folders, central_method_files = (
                 search_central_via_connection(
                     project.cfg,

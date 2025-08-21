@@ -571,11 +571,12 @@ def search_for_folders(
     verbose: bool = True,
     return_full_path: bool = False,
 ) -> Tuple[List[Any], List[Any]]:
-    """Determine the method used to search for search prefix folders in the search path.
+    """Search for files and folders in the search path.
 
-    If local filesystem, use a bespoke function because it is faster. `rclone`
-    can be used to search local filesystem, but it is slow because a new process
-    must be created. These functions are tested against each-other.
+    If searching the local filesystem, use a separate function that does not call `rclone`,
+    which is faster as a new process does not have to be created. This slowness
+    is mostly a problem on Windows. This does mean there are two duplicate functions,
+    these are tested against each-other in unit tests.
 
     Parameters
     ----------
@@ -643,8 +644,10 @@ def search_local_filesystem(
         The path to search (relative to the local or remote drive). For example,
         for "local_filesystem" this is the path on the local machine. For "ssh", this
         is the path on the machine that has been connected to.
+
     search_prefix
         The search string e.g. "sub-*".
+
     return_full_path
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
