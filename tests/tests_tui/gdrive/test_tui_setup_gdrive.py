@@ -10,9 +10,10 @@ from ..tui_base import TuiBase
 
 
 class TestTuiSetupGdrive(TuiBase):
+    @pytest.mark.parametrize("central_path_none", [True, False])
     @pytest.mark.asyncio
     async def test_gdrive_connection_setup_without_browser(
-        self, setup_project_paths
+        self, central_path_none, setup_project_paths
     ):
         """Test Google Drive connection setup via the TUI.
 
@@ -32,6 +33,7 @@ class TestTuiSetupGdrive(TuiBase):
                 project_name,
                 os.environ["GDRIVE_CLIENT_ID"],
                 os.environ["GDRIVE_ROOT_FOLDER_ID"],
+                central_path_none=central_path_none,
             )
 
             await self.setup_gdrive_connection_via_tui(
@@ -223,7 +225,12 @@ class TestTuiSetupGdrive(TuiBase):
             assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
     async def setup_gdrive_project(
-        self, pilot, project_name, gdrive_client_id, root_folder_id
+        self,
+        pilot,
+        project_name,
+        gdrive_client_id,
+        root_folder_id,
+        central_path_none: bool = False,
     ):
         """Navigate to the configs tab, fill in the Google Drive config credentials and save them."""
 
@@ -238,6 +245,10 @@ class TestTuiSetupGdrive(TuiBase):
         await self.fill_input(
             pilot, "#configs_gdrive_root_folder_id_input", root_folder_id
         )
+
+        if central_path_none:
+            pilot.app.screen.query_one("#configs_central_path_input").clear()
+            await pilot.pause()
 
         await self.scroll_to_click_pause(pilot, "#configs_save_configs_button")
         await self.close_messagebox(pilot)
