@@ -35,6 +35,7 @@ from datashuttle.tui.screens import (
     setup_ssh,
 )
 from datashuttle.tui.tooltips import get_tooltip
+from datashuttle.utils import utils
 
 
 class ConfigsContent(Container):
@@ -565,12 +566,7 @@ class ConfigsContent(Container):
             ).visible = True
 
             # A message template to display custom message to user according to the chosen connection method
-            message_template = (
-                "A datashuttle project has now been created.\n\n "
-                "Next, setup the {method_name} connection. Once complete, navigate to the "
-                "'Main Menu' and proceed to the project page, where you will be "
-                "able to create and transfer project folders."
-            )
+            message_template = utils.get_project_created_message_template()
 
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.

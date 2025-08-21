@@ -5,8 +5,8 @@ import pytest
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
-from .. import test_utils
-from .tui_base import TuiBase
+from ... import test_utils
+from ..tui_base import TuiBase
 
 
 class TestTuiSetupGdrive(TuiBase):

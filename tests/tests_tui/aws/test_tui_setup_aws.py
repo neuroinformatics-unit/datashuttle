@@ -5,7 +5,7 @@ import pytest
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
-from .tui_base import TuiBase
+from ..tui_base import TuiBase
 
 
 class TestTuiSetupAws(TuiBase):
