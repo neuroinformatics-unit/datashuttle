@@ -104,7 +104,7 @@ class TestTuiValidate(TuiBase):
                 "ses": None,
             }
             assert kwargs_["strict_mode"] is False
-            assert kwargs_["ALLOW_ALPHANUMERIC"] is False
+            assert kwargs_["allow_alphanumeric_sub_ses_values"] is False
 
             # Then, change all arguments and check these are
             # changed at the level of the called function.
@@ -119,7 +119,7 @@ class TestTuiValidate(TuiBase):
             await self.change_checkbox(pilot, "#validate_strict_mode_checkbox")
 
             await self.change_checkbox(
-                pilot, "#validate_ALLOW_ALPHANUMERIC_checkbox"
+                pilot, "#validate_allow_alphanumeric_sub_ses_values_checkbox"
             )
 
             await self.scroll_to_click_pause(
@@ -151,7 +151,7 @@ class TestTuiValidate(TuiBase):
                 "ses": None,
             }
             assert kwargs_["strict_mode"] is False
-            assert kwargs_["ALLOW_ALPHANUMERIC"] is True
+            assert kwargs_["allow_alphanumeric_sub_ses_values"] is True
 
             # Check the widgets are hidden as expected.
             # Path widgets are not shown for Transfer tab
@@ -183,7 +183,7 @@ class TestTuiValidate(TuiBase):
             await self.fill_input(pilot, "#validate_path_input", project_path)
 
             await self.change_checkbox(
-                pilot, "#validate_ALLOW_ALPHANUMERIC_checkbox"
+                pilot, "#validate_allow_alphanumeric_sub_ses_values_checkbox"
             )
 
             # Spy the function and click 'validate' button
@@ -204,7 +204,7 @@ class TestTuiValidate(TuiBase):
             assert args_[0] == project_path
             assert kwargs_["top_level_folder"] == "rawdata"
             assert kwargs_["strict_mode"] is False
-            assert kwargs_["ALLOW_ALPHANUMERIC"] is True
+            assert kwargs_["allow_alphanumeric_sub_ses_values"] is True
 
             # Check removed widgets, this should be removed because always local
             with pytest.raises(textual.css.query.InvalidQueryFormat):

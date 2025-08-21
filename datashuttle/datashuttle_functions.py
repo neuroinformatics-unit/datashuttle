@@ -28,7 +28,7 @@ def validate_project_from_path(
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
-    ALLOW_ALPHANUMERIC: bool = False,
+    allow_alphanumeric_sub_ses_values: bool = False,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -59,9 +59,10 @@ def validate_project_from_path(
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.
 
-    ALLOW_ALPHANUMERIC
-        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-        labels must be integer and the following additional checks are performed:
+    allow_alphanumeric_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
             - Identical numbers are considered the same value even if padded with different number of zeros
                 (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
@@ -103,7 +104,7 @@ def validate_project_from_path(
         display_mode=display_mode,
         name_templates=name_templates,
         strict_mode=strict_mode,
-        ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+        allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
     )
 
     return error_messages

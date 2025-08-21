@@ -183,7 +183,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-002"
         existing_names = [f"{prefix}-001", f"{prefix}-002", f"{prefix}-003"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix, ALLOW_ALPHANUMERIC=False
+            new_name,
+            existing_names,
+            prefix,
+            allow_alphanumeric_sub_ses_values=False,
         )
         assert len(error_messages) == 0
 
@@ -191,7 +194,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-99999"
         existing_names = [f"{prefix}-999"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix, ALLOW_ALPHANUMERIC=False
+            new_name,
+            existing_names,
+            prefix,
+            allow_alphanumeric_sub_ses_values=False,
         )
         assert len(error_messages) == 0
 
@@ -199,7 +205,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-002_date-12345"
         existing_names = [f"{prefix}-002_date-00000", f"{prefix}-003"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix, ALLOW_ALPHANUMERIC=False
+            new_name,
+            existing_names,
+            prefix,
+            allow_alphanumeric_sub_ses_values=False,
         )
         assert len(error_messages) == 1
         assert (
@@ -212,7 +221,10 @@ class TestValidationUnit:
         new_name = f"{prefix}-3"
         existing_names = [f"{prefix}-3", f"{prefix}-3_s-a"]
         error_messages = validation.new_name_duplicates_existing(
-            new_name, existing_names, prefix, ALLOW_ALPHANUMERIC=False
+            new_name,
+            existing_names,
+            prefix,
+            allow_alphanumeric_sub_ses_values=False,
         )
         assert len(error_messages) == 1
         assert (

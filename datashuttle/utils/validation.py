@@ -42,10 +42,15 @@ def get_missing_prefix_error(name: str, prefix, path_: Path | None) -> str:
 
 
 def get_bad_value_error(
-    name: str, prefix, path_: Path | None, ALLOW_ALPHANUMERIC: bool
+    name: str,
+    prefix,
+    path_: Path | None,
+    allow_alphanumeric_sub_ses_values: bool,
 ) -> str:
     """Return error message when the value for a prefix is not an integer."""
-    type_ = "alphanumeric" if ALLOW_ALPHANUMERIC else "an integer"
+    type_ = (
+        "alphanumeric" if allow_alphanumeric_sub_ses_values else "an integer"
+    )
 
     return handle_path(
         f"BAD_VALUE: The value for prefix {prefix} in name {name} is not {type_}.",
@@ -152,7 +157,7 @@ def validate_list_of_names(
     prefix: Prefix,
     name_templates: Optional[Dict] = None,
     check_value_lengths: bool = True,
-    ALLOW_ALPHANUMERIC: bool = False,
+    allow_alphanumeric_sub_ses_values: bool = False,
 ) -> List[str]:
     """Validate a list of subject or session names against NeuroBlueprint.
 
@@ -171,9 +176,10 @@ def validate_list_of_names(
         If `True`, check that the prefix-<value> value lengths
         are consistent across the passed list.
 
-    ALLOW_ALPHANUMERIC
-        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-        labels must be integer and the following additional checks are performed:
+    allow_alphanumeric_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
             - Identical numbers are considered the same value even if padded with different number of zeros
                 (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
@@ -194,7 +200,7 @@ def validate_list_of_names(
         path_, name = get_path_and_name(path_or_name)
 
         error_messages += prefix_is_duplicate_or_has_bad_values(
-            name, prefix, path_, ALLOW_ALPHANUMERIC
+            name, prefix, path_, allow_alphanumeric_sub_ses_values
         )
         error_messages += name_begins_with_bad_key(name, prefix, path_)
         error_messages += names_include_special_characters(name, path_)
@@ -212,17 +218,20 @@ def validate_list_of_names(
     # Note this called functions again loop over the list (O(n^2)) so
     # this is not very efficient but these lists should never be that long.
     stripped_path_or_names_list = strip_uncheckable_names(
-        path_or_name_list, prefix, ALLOW_ALPHANUMERIC
+        path_or_name_list, prefix, allow_alphanumeric_sub_ses_values
     )
 
     for path_or_name in stripped_path_or_names_list:
         path_, name = get_path_and_name(path_or_name)
 
         error_messages += new_name_duplicates_existing(
-            name, stripped_path_or_names_list, prefix, ALLOW_ALPHANUMERIC
+            name,
+            stripped_path_or_names_list,
+            prefix,
+            allow_alphanumeric_sub_ses_values,
         )
 
-    if not ALLOW_ALPHANUMERIC and check_value_lengths:
+    if not allow_alphanumeric_sub_ses_values and check_value_lengths:
         error_messages += value_lengths_are_inconsistent(
             stripped_path_or_names_list, prefix
         )
@@ -231,7 +240,10 @@ def validate_list_of_names(
 
 
 def prefix_is_duplicate_or_has_bad_values(
-    name: str, prefix: Prefix, path_: Path | None, ALLOW_ALPHANUMERIC: bool
+    name: str,
+    prefix: Prefix,
+    path_: Path | None,
+    allow_alphanumeric_sub_ses_values: bool,
 ) -> List[str]:
     """Check the sub- or ses- prefix.
 
@@ -253,7 +265,7 @@ def prefix_is_duplicate_or_has_bad_values(
     path_
         Path to the folder that is being checked.
 
-    ALLOW_ALPHANUMERIC
+    allow_alphanumeric_sub_ses_values
         If `False`, an error is returned if the label value is
         not integer. Otherwise, any alphanumeric value is allowed.
 
@@ -270,15 +282,19 @@ def prefix_is_duplicate_or_has_bad_values(
     if len(value) > 1:
         return [get_duplicate_prefix_error(name, prefix, path_)]
 
-    if ALLOW_ALPHANUMERIC:
+    if allow_alphanumeric_sub_ses_values:
         if not value[0].isalnum():
             return [
-                get_bad_value_error(name, prefix, path_, ALLOW_ALPHANUMERIC)
+                get_bad_value_error(
+                    name, prefix, path_, allow_alphanumeric_sub_ses_values
+                )
             ]
     else:
         if not value[0].isdigit():
             return [
-                get_bad_value_error(name, prefix, path_, ALLOW_ALPHANUMERIC)
+                get_bad_value_error(
+                    name, prefix, path_, allow_alphanumeric_sub_ses_values
+                )
             ]
 
     return []
@@ -288,7 +304,7 @@ def new_name_duplicates_existing(
     new_name: str,
     existing_path_or_name_list: List[Path] | List[str],
     prefix: Prefix,
-    ALLOW_ALPHANUMERIC: bool,
+    allow_alphanumeric_sub_ses_values: bool,
 ) -> List[str]:
     """Check that a subject or session value does not duplicate an existing value.
 
@@ -309,9 +325,10 @@ def new_name_duplicates_existing(
     prefix
         "sub" or "ses"
 
-    ALLOW_ALPHANUMERIC
-        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-        labels must be integer and the following additional checks are performed:
+    allow_alphanumeric_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
             - Identical numbers are considered the same value even if padded with different number of zeros
                 (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
@@ -321,7 +338,7 @@ def new_name_duplicates_existing(
         A list of validation errors.
 
     """
-    return_as_int = not ALLOW_ALPHANUMERIC
+    return_as_int = not allow_alphanumeric_sub_ses_values
 
     # Make a list of matches between `new_name` and any in `existing_names`
     new_name_id = utils.get_values_from_bids_formatted_name(
@@ -680,7 +697,7 @@ def validate_project(
     log: bool = True,
     name_templates: Optional[Dict] = None,
     strict_mode: bool = False,
-    ALLOW_ALPHANUMERIC: bool = False,
+    allow_alphanumeric_sub_ses_values: bool = False,
 ) -> List[str]:
     """Validate all subject and session folders within a project.
 
@@ -714,9 +731,10 @@ def validate_project(
         any folder not prefixed with sub-, ses- or a valid datatype will
         raise a validation issue.
 
-    ALLOW_ALPHANUMERIC
-        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-        labels must be integer and the following additional checks are performed:
+    allow_alphanumeric_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
             - Identical numbers are considered the same value even if padded with different number of zeros
                 (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
@@ -750,7 +768,7 @@ def validate_project(
             folder_paths["sub"],
             prefix="sub",
             name_templates=name_templates,
-            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+            allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
         )
 
         # Sessions a little more complicated. We need to check
@@ -765,15 +783,15 @@ def validate_project(
                 "ses",
                 check_value_lengths=False,
                 name_templates=name_templates,
-                ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+                allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
             )
 
         # Next, check inconsistent value lengths across the entire project
-        if not ALLOW_ALPHANUMERIC:
+        if not allow_alphanumeric_sub_ses_values:
             all_ses_paths = list(chain(*folder_paths["ses"].values()))
 
             stripped_ses_paths = strip_uncheckable_names(
-                all_ses_paths, "ses", ALLOW_ALPHANUMERIC
+                all_ses_paths, "ses", allow_alphanumeric_sub_ses_values
             )
             error_messages += value_lengths_are_inconsistent(
                 stripped_ses_paths, "ses"
@@ -798,7 +816,7 @@ def validate_names_against_project(
     display_mode: DisplayMode = "error",
     log: bool = True,
     name_templates: Optional[Dict] = None,
-    ALLOW_ALPHANUMERIC: bool = False,
+    allow_alphanumeric_sub_ses_values: bool = False,
 ) -> None:
     """Check that sub / ses names are formatted consistently with the rest of the project.
 
@@ -840,9 +858,10 @@ def validate_names_against_project(
     name_templates
         A `name_template` dictionary to validate against. See `set_name_templates()`.
 
-    ALLOW_ALPHANUMERIC
-        If `True`, any alphanumeric character are allowed for sub- or ses- labels. Otherwise,
-        labels must be integer and the following additional checks are performed:
+    allow_alphanumeric_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
             - Identical numbers are considered the same value even if padded with different number of zeros
                 (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
             - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
@@ -855,7 +874,7 @@ def validate_names_against_project(
         sub_names,
         prefix="sub",
         name_templates=name_templates,
-        ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+        allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
     )
 
     # Next, get all of the subjects and sessions from
@@ -868,15 +887,15 @@ def validate_names_against_project(
         # Strip any totally invalid names which we can't extract
         # the sub integer value for the following checks
         valid_sub_names = strip_uncheckable_names(
-            sub_names, "sub", ALLOW_ALPHANUMERIC
+            sub_names, "sub", allow_alphanumeric_sub_ses_values
         )
         valid_sub_in_project = strip_uncheckable_names(
-            folder_paths["sub"], "sub", ALLOW_ALPHANUMERIC
+            folder_paths["sub"], "sub", allow_alphanumeric_sub_ses_values
         )
 
         # Check list of passed names against all the names in the project
         # for value-length violations and duplicates.
-        if not ALLOW_ALPHANUMERIC:
+        if not allow_alphanumeric_sub_ses_values:
             if any(
                 value_lengths_are_inconsistent(valid_sub_in_project, "sub")
             ):
@@ -892,7 +911,10 @@ def validate_names_against_project(
 
         for new_sub in valid_sub_names:
             error_messages += new_name_duplicates_existing(
-                new_sub, valid_sub_in_project, "sub", ALLOW_ALPHANUMERIC
+                new_sub,
+                valid_sub_in_project,
+                "sub",
+                allow_alphanumeric_sub_ses_values,
             )
 
     # Now we need to check the sessions.
@@ -902,7 +924,7 @@ def validate_names_against_project(
             ses_names,
             "ses",
             name_templates=name_templates,
-            ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+            allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
         )
 
         if folder_paths["sub"]:
@@ -910,7 +932,7 @@ def validate_names_against_project(
             # do not duplicate existing session names and
             # that do not create inconsistent ses-<value> lengths across the project.
             valid_ses_names = strip_uncheckable_names(
-                ses_names, "ses", ALLOW_ALPHANUMERIC
+                ses_names, "ses", allow_alphanumeric_sub_ses_values
             )
 
             # First, we need to check for duplicate session names
@@ -919,14 +941,16 @@ def validate_names_against_project(
             for new_sub in sub_names:
                 if new_sub in folder_paths["ses"]:
                     valid_ses_in_sub = strip_uncheckable_names(
-                        folder_paths["ses"][new_sub], "ses", ALLOW_ALPHANUMERIC
+                        folder_paths["ses"][new_sub],
+                        "ses",
+                        allow_alphanumeric_sub_ses_values,
                     )
                     for new_ses in valid_ses_names:
                         error_messages += new_name_duplicates_existing(
                             new_ses,
                             valid_ses_in_sub,
                             "ses",
-                            ALLOW_ALPHANUMERIC,
+                            allow_alphanumeric_sub_ses_values,
                         )
             # Next, we need to check for inconsistent session value lengths
             # across the entire project at once (because inconsistent
@@ -934,10 +958,10 @@ def validate_names_against_project(
             all_ses_paths = list(chain(*folder_paths["ses"].values()))
 
             all_valid_ses = strip_uncheckable_names(
-                all_ses_paths, "ses", ALLOW_ALPHANUMERIC
+                all_ses_paths, "ses", allow_alphanumeric_sub_ses_values
             )
 
-            if not ALLOW_ALPHANUMERIC:
+            if not allow_alphanumeric_sub_ses_values:
                 if any(value_lengths_are_inconsistent(all_valid_ses, "ses")):
                     error_messages += [
                         "Cannot check names for inconsistent value lengths "
@@ -1139,20 +1163,24 @@ def check_strict_mode(
 
 @overload
 def strip_uncheckable_names(
-    path_or_names_list: List[Path], prefix: Prefix, ALLOW_ALPHANUMERIC: bool
+    path_or_names_list: List[Path],
+    prefix: Prefix,
+    allow_alphanumeric_sub_ses_values: bool,
 ) -> List[Path]: ...
 
 
 @overload
 def strip_uncheckable_names(
-    path_or_names_list: List[str], prefix: Prefix, ALLOW_ALPHANUMERIC: bool
+    path_or_names_list: List[str],
+    prefix: Prefix,
+    allow_alphanumeric_sub_ses_values: bool,
 ) -> List[str]: ...
 
 
 def strip_uncheckable_names(
     path_or_names_list: List[Path] | List[str],
     prefix: Prefix,
-    ALLOW_ALPHANUMERIC: bool,
+    allow_alphanumeric_sub_ses_values: bool,
 ) -> List[Path] | List[str]:
     """Remove any name in which the `prefix` value (sub or ses typically) cannot be converted into an integer.
 
@@ -1168,7 +1196,7 @@ def strip_uncheckable_names(
     prefix
         "sub" or "ses".
 
-    ALLOW_ALPHANUMERIC
+    allow_alphanumeric_sub_ses_values
         If `False` alphanumeric labels are stripped and only integer labels pass.
 
     Returns
@@ -1179,7 +1207,7 @@ def strip_uncheckable_names(
     """
     new_list = []
 
-    return_as_int = not ALLOW_ALPHANUMERIC
+    return_as_int = not allow_alphanumeric_sub_ses_values
 
     for path_or_name in path_or_names_list:
         path_, name = get_path_and_name(path_or_name)

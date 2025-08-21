@@ -104,9 +104,9 @@ class ValidateContent(Container):
                     id="validate_strict_mode_checkbox",
                 ),
                 Checkbox(
-                    "ALLOW_ALPHANUMERIC",
+                    "allow_alphanumeric_sub_ses_values",
                     value=False,
-                    id="validate_ALLOW_ALPHANUMERIC_checkbox",
+                    id="validate_allow_alphanumeric_sub_ses_values_checkbox",
                 ),
                 id="validate_arguments_horizontal",
             ),
@@ -162,8 +162,8 @@ class ValidateContent(Container):
                 "#validate_strict_mode_checkbox"
             ).value
 
-            ALLOW_ALPHANUMERIC = self.query_one(
-                "#validate_ALLOW_ALPHANUMERIC_checkbox"
+            allow_alphanumeric_sub_ses_values = self.query_one(
+                "#validate_allow_alphanumeric_sub_ses_values_checkbox"
             ).value
 
             if self.interface:
@@ -178,7 +178,7 @@ class ValidateContent(Container):
                     top_level_folder=top_level_folder,
                     include_central=include_central,
                     strict_mode=strict_mode,
-                    ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+                    allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
                 )
                 if not success:
                     self.parent_class.mainwindow.show_modal_error_dialog(
@@ -208,7 +208,7 @@ class ValidateContent(Container):
                     path_,
                     top_level_folder=top_level_folder,
                     strict_mode=strict_mode,
-                    ALLOW_ALPHANUMERIC=ALLOW_ALPHANUMERIC,
+                    allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
                 )
                 self.write_results_to_richlog(output)
 
