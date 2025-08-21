@@ -97,7 +97,7 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           AWS_BUCKET_NAME: ${{ secrets.AWS_BUCKET_NAME }}
         run: |
-          pytest --ignore=tests/tests_transfer/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws -k "test_tui_setup_aws or test_tui_setup_gdrive or test_tui_configs or test_backwards_compatibility or test_gdrive_preliminary_setup"
+          pytest --ignore=tests/tests_transfer/ssh --ignore=tests/tests_transfers/gdrive --ignore=tests/tests_transfers/aws -k "test_tui_aws_configs or test_tui_gdrive_configs or test_tui_setup_aws or test_tui_setup_gdrive or test_tui_configs or test_backwards_compatibility or test_gdrive_preliminary_setup"
 
 
   build_sdist_wheels:
