@@ -407,10 +407,12 @@ can be input exactly the
 Next, input the `Google Drive Root Folder ID`, `Client ID` and
 `Central Path` as described above.
 
-Clicking `Save` will save these project configs. A button
-`Set up Google Drive Connection` will appear. Click to
+Clicking `Save` will save these project configs. A
+`Set up Google Drive Connection` button will appear. Click to
 start the setup, you will be required to enter your Google Drive
-client secret and then authenticate via a browser.
+client secret and then authenticate via a browser.  If you do not
+have access to an internet browser on your machine, instructions
+will be provided for browserless connection set up.
 
 :::
 :::{tab-item} Python API
@@ -441,7 +443,7 @@ project.setup_google_drive_connection()
 Running `setup_google_drive_connection()` will require entering your
 google drive client secret.
 
-Finally, you will be required to authenticate to Google Drive via your browser.
+Finally, you will be required to authenticate to Google Drive via your browser. If you do not have access to an internet browser on your machine, instructions will be provided for browserless connection set up.
 
 
 :::
@@ -452,13 +454,11 @@ Finally, you will be required to authenticate to Google Drive via your browser.
 
 To set up AWS connection we need to provide:
 
-1) **aws_access_key_id:** This is the the access key ID that allows you to connect to AWS buckets and can be set up through the AWS website. See [here](xxx) for a guide on creating an access key.
+1) **aws_access_key_id:** This is the the access key ID that allows you to connect to AWS buckets and can be set up through the AWS website. See [here](https://repost.aws/knowledge-center/create-access-key) for a guide on creating an access key.
 
 2) **aws_region:** This is the region of your AWS bucket as stated on the bucket details on the AWS website.
 
 3) **central path**:  For AWS connections, the `central_path` **must** start with the bucket name. You can then extend this to point to the project folder on the bucket, or leave it as only the bucket name only to transfer directly into the bucket root.
-
-[How to create an AWS access key?](https://repost.aws/knowledge-center/create-access-key)
 
 Please make sure that your
 access key has the required permissions. Please see [this guide](https://docs.aws.amazon.com/aws-managed-policy/latest/reference/AmazonS3FullAccess.html#AmazonS3FullAccess) on providing the permissions.
