@@ -20,7 +20,7 @@ def setup_project_for_aws(project: DataShuttle):
 
     project.update_config_file(
         connection_method="aws",
-        central_path=f"{aws_bucket_name}/main/{random_string}/{project.project_name}",
+        central_path=f"{aws_bucket_name}/{random_string}/{project.project_name}",
         aws_access_key_id=os.environ["AWS_ACCESS_KEY_ID"],
         aws_region=os.environ["AWS_REGION"],
     )

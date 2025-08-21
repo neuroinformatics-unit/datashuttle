@@ -4,13 +4,26 @@ import pytest
 
 from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
+from datashuttle.utils import rclone, utils
 
 from ..tui_base import TuiBase
 
 
 class TestTuiSetupAws(TuiBase):
+    @pytest.fixture(scope="function")
+    def central_path_and_project(self, setup_project_paths):
+        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+
+        aws_bucket_name = os.environ["AWS_BUCKET_NAME"]
+        random_prefix = utils.get_random_string()
+        central_path = f"{aws_bucket_name}/{random_prefix}"
+
+        yield central_path, project_name
+
+        rclone.call_rclone(f"purge central_{project_name}_aws:{central_path}")
+
     @pytest.mark.asyncio
-    async def test_aws_connection_setup(self, setup_project_paths):
+    async def test_aws_connection_setup(self, central_path_and_project):
         """Test AWS connection setup via the TUI.
 
         AWS connection details are filled in the configs tab. The setup
@@ -18,7 +31,7 @@ class TestTuiSetupAws(TuiBase):
         The credentials in the environment are set by the CI. For testing
         locally, the developer must set these themselves.
         """
-        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+        central_path, project_name = central_path_and_project
 
         app = TuiApp()
 
@@ -28,7 +41,9 @@ class TestTuiSetupAws(TuiBase):
             )
 
             await self.setup_aws_project_and_run_connection_setup(
-                pilot, os.environ["AWS_SECRET_ACCESS_KEY"]
+                pilot,
+                central_path=central_path,
+                secret_access_key=os.environ["AWS_SECRET_ACCESS_KEY"],
             )
 
             assert (
@@ -39,11 +54,11 @@ class TestTuiSetupAws(TuiBase):
             )
 
     @pytest.mark.asyncio
-    async def test_aws_connection_setup_failed(self, setup_project_paths):
+    async def test_aws_connection_setup_failed(self, central_path_and_project):
         """Test AWS connection setup using an incorrect client secret and check
         for a failed message on the output.
         """
-        tmp_config_path, tmp_path, project_name = setup_project_paths.values()
+        central_path, project_name = central_path_and_project
 
         app = TuiApp()
 
@@ -53,7 +68,9 @@ class TestTuiSetupAws(TuiBase):
             )
 
             await self.setup_aws_project_and_run_connection_setup(
-                pilot, "some-random-client-secret"
+                pilot,
+                central_path=central_path,
+                secret_access_key="some-random-client-secret",
             )
 
             assert (
@@ -64,10 +81,10 @@ class TestTuiSetupAws(TuiBase):
             )
 
     async def setup_aws_project_and_run_connection_setup(
-        self, pilot, secret_access_key
+        self, pilot, central_path, secret_access_key
     ):
         """Set up AWS project via the configs tab and run the connection setup."""
-        await self.setup_aws_project(pilot)
+        await self.setup_aws_project(pilot, central_path)
 
         await self.scroll_to_click_pause(
             pilot, "#configs_setup_connection_button"
@@ -97,7 +114,7 @@ class TestTuiSetupAws(TuiBase):
 
         await self.scroll_to_click_pause(pilot, "#setup_aws_ok_button")
 
-    async def setup_aws_project(self, pilot):
+    async def setup_aws_project(self, pilot, central_path):
         """Navigate to the configs tab, fill in the AWS config credentials and save them."""
         assert isinstance(pilot.app.screen, ProjectManagerScreen)
 
@@ -114,9 +131,8 @@ class TestTuiSetupAws(TuiBase):
         select = pilot.app.screen.query_one("#configs_aws_region_select")
         select.value = os.environ["AWS_REGION"]
 
-        aws_bucket_name = os.environ["AWS_BUCKET_NAME"]
         await self.fill_input(
-            pilot, "#configs_central_path_input", f"{aws_bucket_name}/main"
+            pilot, "#configs_central_path_input", central_path
         )
 
         await self.scroll_to_click_pause(pilot, "#configs_save_configs_button")

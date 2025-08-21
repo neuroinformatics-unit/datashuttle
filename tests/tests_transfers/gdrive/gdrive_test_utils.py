@@ -19,7 +19,7 @@ def setup_project_for_gdrive(project: DataShuttle):
 
     project.update_config_file(
         connection_method="gdrive",
-        central_path=f"/main/{random_string}/{project.project_name}",
+        central_path=f"/{random_string}/{project.project_name}",
         gdrive_client_id=os.environ["GDRIVE_CLIENT_ID"],
         gdrive_root_folder_id=os.environ["GDRIVE_ROOT_FOLDER_ID"],
     )
