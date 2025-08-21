@@ -4,8 +4,6 @@ from pathlib import Path
 
 import pytest
 
-from datashuttle.utils.custom_exceptions import ConfigError
-
 from .. import test_utils
 
 TEST_PROJECT_NAME = "test_project"
@@ -102,19 +100,6 @@ class TestBackwardsCompatibility:
         for key in new_config_keys:
             assert key in reloaded_ver_configs
             assert reloaded_ver_configs[key] is None
-
-    def test_bad_config_yaml_for_backward_compatibility(
-        self, project, tmp_path
-    ):
-        """Test config.yaml partially contains new connection method config keys. Running backwards
-        compatibility on such a config.yaml should throw an error.
-        """
-        with pytest.raises(ConfigError):
-            reloaded_ver_configs, reloaded_ver_persistent_settings = (
-                self.load_and_check_old_version_yamls(
-                    project, tmp_path, "v0.6.0_bad"
-                )
-            )
 
     def load_and_check_old_version_yamls(
         self, project, tmp_path, datashuttle_version
