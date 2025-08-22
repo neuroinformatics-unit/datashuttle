@@ -179,9 +179,9 @@ class BaseTransfer(BaseTest):
         `expected_transferred_paths`.
 
         In test setup, the entire project is created in the `local_path` and
-        is uploaded to `central_path`. So we only need to set up once per test,
-        upload and download is to temporary folders and these temporary folders
-        are cleaned at the end of each parameterization.
+        is uploaded to `central_path`. So we only need to set up once for all
+        tests, upload and download is to temporary folders and these temporary
+        folders are cleaned at the end of each parameterization.
         """
 
         # Upload data from the setup local project to a temporary

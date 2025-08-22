@@ -35,7 +35,7 @@ from datashuttle.tui.screens import (
     setup_ssh,
 )
 from datashuttle.tui.tooltips import get_tooltip
-from datashuttle.utils import utils
+from datashuttle.tui.utils import tui_utils
 
 
 class ConfigsContent(Container):
@@ -566,7 +566,7 @@ class ConfigsContent(Container):
             ).visible = True
 
             # A message template to display custom message to user according to the chosen connection method
-            message_template = utils.get_project_created_message_template()
+            message_template = tui_utils.get_project_created_message_template()
 
             # Could not find a neater way to combine the push screen
             # while initiating the callback in one case but not the other.

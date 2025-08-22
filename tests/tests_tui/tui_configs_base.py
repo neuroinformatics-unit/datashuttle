@@ -6,7 +6,7 @@ from textual.widget import Widget
 
 from datashuttle.configs.canonical_configs import get_connection_methods_list
 from datashuttle.tui.screens.project_manager import ProjectManagerScreen
-from datashuttle.utils import utils
+from datashuttle.tui.utils import tui_utils
 
 from .. import test_utils
 from .tui_base import TuiBase
@@ -68,7 +68,7 @@ class TuiConfigsBase(TuiBase):
                 pilot.app.screen.query_one(
                     "#messagebox_message_label"
                 ).renderable
-                == utils.get_project_created_message_template().format(
+                == tui_utils.get_project_created_message_template().format(
                     method_name=connection_method_name
                 )
             )
