@@ -812,6 +812,10 @@ class DataShuttle:
             ssh.setup_ssh_key(self.cfg, log=True)
             self._setup_rclone_central_ssh_config(log=True)
 
+            rclone.check_successful_connection_and_raise_error_on_fail(
+                self.cfg
+            )
+
         ds_logger.close_log_filehandler()
 
     @requires_ssh_configs

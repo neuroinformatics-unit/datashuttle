@@ -500,6 +500,10 @@ class Interface:
             )
             self.project._setup_rclone_central_ssh_config(log=False)
 
+            rclone.check_successful_connection_and_raise_error_on_fail(
+                self.project.cfg
+            )
+
             return True, None
 
         except BaseException as e:

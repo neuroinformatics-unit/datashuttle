@@ -9,13 +9,11 @@ from datashuttle.tui.app import TuiApp
 from datashuttle.tui.screens.modal_dialogs import (
     SelectDirectoryTreeScreen,
 )
-from datashuttle.tui.screens.project_manager import ProjectManagerScreen
 
-from .. import test_utils
-from .tui_base import TuiBase
+from .tui_configs_base import TuiConfigsBase
 
 
-class TestTuiConfigs(TuiBase):
+class TestTuiConfigs(TuiConfigsBase):
     # -------------------------------------------------------------------------
     # Test New Project Configs
     # -------------------------------------------------------------------------
@@ -67,87 +65,13 @@ class TestTuiConfigs(TuiBase):
 
         app = TuiApp()
         async with app.run_test(size=self.tui_size()) as pilot:
-            # Select a new project, check NewProjectScreen is
-            # displayed correctly.
-            await self.scroll_to_click_pause(
-                pilot, "#mainwindow_new_project_button"
-            )
-
-            # Get the ConfigsContent and check all configs are displayed
-            # correctly. `check_new_project_configs` checks empty defaults
-            # are displayed, then updates with the kwargs and checks.
-            configs_content = pilot.app.screen.query_one(
-                "#new_project_configs_content"
-            )
-
-            await self.check_new_project_configs(
-                pilot, project_name, configs_content, kwargs
-            )
-
-            # Save the configs and check the correct messages are shown.
-            await self.scroll_to_click_pause(
+            await self.run_and_test_new_project_configs(
                 pilot,
-                "#configs_save_configs_button",
+                project_name,
+                tmp_config_path,
+                connection_method_name="SSH" if kwargs_set == 2 else "",
+                config_kwargs=kwargs,
             )
-
-            # if SSH is set, then the config window remains up and the
-            # 'setup ssh' button is enabled. Otherwise, the screen
-            # will automatically move to the project page.
-            if kwargs["connection_method"] == "ssh":
-                assert (
-                    pilot.app.screen.query_one(
-                        "#messagebox_message_label"
-                    ).renderable
-                    == "A datashuttle project has now been created.\n\n Next, "
-                    "setup the SSH connection. Once complete, navigate to "
-                    "the 'Main Menu' and proceed to the project page, "
-                    "where you will be able to create and transfer "
-                    "project folders."
-                )
-                await self.close_messagebox(pilot)
-                assert (
-                    pilot.app.screen.query_one(
-                        "#configs_setup_connection_button"
-                    ).label
-                    == "Setup SSH Connection"
-                )
-            else:
-                assert (
-                    pilot.app.screen.query_one(
-                        "#messagebox_message_label"
-                    ).renderable
-                    == "A datashuttle project has now been created.\n\n "
-                    "Next proceed to the project page, where you will "
-                    "be able to create and transfer project folders."
-                )
-                await self.close_messagebox(pilot)
-
-            assert (
-                pilot.app.screen.query_one(
-                    "#configs_go_to_project_screen_button"
-                ).visible
-                is True
-            )
-            await self.scroll_to_click_pause(
-                pilot, "#configs_go_to_project_screen_button"
-            )
-            assert isinstance(pilot.app.screen, ProjectManagerScreen)
-
-            project = pilot.app.screen.interface.project
-
-            assert (
-                pilot.app.screen.interface.project.project_name == project_name
-            )
-
-            # After saving, check all configs are correct on the DataShuttle
-            # instance as well as the stored configs.
-            test_utils.check_configs(
-                project,
-                kwargs,
-                tmp_config_path / project_name / "config.yaml",
-            )
-
-            await pilot.pause()
 
     # -------------------------------------------------------------------------
     # Test Existing Project Configs
@@ -197,66 +121,21 @@ class TestTuiConfigs(TuiBase):
             # Make sure they are all different to the existing configs,
             # then save and check the configs on the DataShuttle instance
             # and file are updated.
-            local_path = tmp_path / f"some-random-path/{project_name}"
-            central_path = tmp_path / f"some-random-path2/{project_name}"
-
-            local_path.mkdir(parents=True)
-            central_path.mkdir(parents=True)
 
             new_kwargs = {
-                "local_path": local_path.as_posix(),
-                "central_path": central_path.as_posix(),
+                "local_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
+                "central_path": self.make_and_get_random_project_path(
+                    tmp_path, project_name
+                ),
                 "connection_method": "ssh",
                 "central_host_id": "random_host",
                 "central_host_username": "random_username",
             }
-
-            for key in new_kwargs:
-                # The purpose is to update to completely new configs
-                assert new_kwargs[key] != project_cfg[key]
-
-            await self.set_configs_content_widgets(pilot, new_kwargs)
-
-            await self.check_configs_widgets_match_configs(
-                configs_content, new_kwargs
+            await self.edit_configs_and_check_widgets(
+                pilot, tmp_config_path, project_name, new_kwargs, project_cfg
             )
-
-            await self.scroll_to_click_pause(
-                pilot,
-                "#configs_save_configs_button",
-            )
-            assert (
-                pilot.app.screen.query_one(
-                    "#messagebox_message_label"
-                ).renderable
-                == "Configs saved."
-            )
-            await self.close_messagebox(pilot)
-
-            test_utils.check_configs(
-                pilot.app.screen.interface.project,
-                new_kwargs,
-                tmp_config_path / project_name / "config.yaml",
-            )
-
-            # Finally, use "Main Menu" button to go back to the home screen,
-            # navigate back to the project and check the new configs are now
-            # displayed.
-            await self.scroll_to_click_pause(pilot, "#all_main_menu_buttons")
-            assert pilot.app.screen.id == "_default"
-
-            await self.check_and_click_onto_existing_project(
-                pilot, project_name
-            )
-            await self.switch_tab(pilot, "transfer")
-            configs_content = pilot.app.screen.query_one(
-                "#tabscreen_configs_content"
-            )
-            await self.check_configs_widgets_match_configs(
-                configs_content, new_kwargs
-            )
-
-            await pilot.pause()
 
     # -------------------------------------------------------------------------
     # Test the config page widgets
@@ -361,6 +240,33 @@ class TestTuiConfigs(TuiBase):
             )
             await pilot.pause()
 
+    @pytest.mark.asyncio
+    async def test_switch_connection_radiobuttons(self):
+        """Test correct widgets being displayed for each connection method"""
+        app = TuiApp()
+        async with app.run_test(size=self.tui_size()) as pilot:
+            # Select the page and ConfigsContent for setting up new project
+            await self.scroll_to_click_pause(
+                pilot, "#mainwindow_new_project_button"
+            )
+
+            configs_content = pilot.app.screen.query_one(
+                "#new_project_configs_content"
+            )
+
+            ssh_widgets = configs_content.config_ssh_widgets
+            gdrive_widgets = configs_content.config_gdrive_widgets
+            aws_widgets = configs_content.config_aws_widgets
+
+            for connection_method in ["ssh", "gdrive", "aws"]:
+                await self.switch_and_check_widgets_display(
+                    pilot,
+                    connection_method,
+                    ssh_widgets,
+                    gdrive_widgets,
+                    aws_widgets,
+                )
+
     # -------------------------------------------------------------------------
     # Test project name is number
     # -------------------------------------------------------------------------
@@ -397,127 +303,3 @@ class TestTuiConfigs(TuiBase):
             )
 
             await pilot.pause()
-
-    # -------------------------------------------------------------------------
-    # Helpers
-    # -------------------------------------------------------------------------
-
-    async def check_configs_widgets_match_configs(
-        self, configs_content, kwargs
-    ):
-        """Check that the widgets of the TUI configs match those found
-        in `kwargs`.
-        """
-        # Local Path ----------------------------------------------------------
-
-        assert (
-            configs_content.query_one("#configs_local_path_input").value
-            == kwargs["local_path"]
-        )
-
-        # Connection Method ---------------------------------------------------
-
-        label = (
-            "SSH"
-            if kwargs["connection_method"] == "ssh"
-            else "Local Filesystem"
-        )
-        assert (
-            configs_content.query_one(
-                "#configs_connect_method_radioset"
-            ).pressed_button.label._text
-            == label
-        )
-
-        if kwargs["connection_method"] == "ssh":
-            # Central Host ID -------------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_central_host_id_input"
-                ).value
-                == kwargs["central_host_id"]
-            )
-
-            # Central Host Username -------------------------------------------
-
-            assert (
-                configs_content.query_one(
-                    "#configs_central_host_username_input"
-                ).value
-                == kwargs["central_host_username"]
-            )
-
-        # Central Path --------------------------------------------------------
-
-        assert (
-            configs_content.query_one("#configs_central_path_input").value
-            == kwargs["central_path"]
-        )
-
-    async def set_configs_content_widgets(self, pilot, kwargs):
-        """Given a dict of options that can be set on the configs TUI
-        in kwargs, set all configs widgets according to kwargs.
-        """
-        # Local Path ----------------------------------------------------------
-
-        await self.fill_input(
-            pilot, "#configs_local_path_input", kwargs["local_path"]
-        )
-
-        # Connection Method ---------------------------------------------------
-
-        if kwargs["connection_method"] == "ssh":
-            await self.scroll_to_click_pause(pilot, "#configs_ssh_radiobutton")
-
-            # Central Host ID -------------------------------------------------
-
-            await self.fill_input(
-                pilot,
-                "#configs_central_host_id_input",
-                kwargs["central_host_id"],
-            )
-
-            # Central Host Username -------------------------------------------
-
-            await self.fill_input(
-                pilot,
-                "#configs_central_host_username_input",
-                kwargs["central_host_username"],
-            )
-
-        # Central Path --------------------------------------------------------
-
-        await self.fill_input(
-            pilot, "#configs_central_path_input", kwargs["central_path"]
-        )
-
-    async def check_new_project_configs(
-        self, pilot, project_name, configs_content, kwargs
-    ):
-        """Check the configs displayed on the TUI match those found in `kwargs`.
-        Also, check the widgets unique to ConfigsContent on the
-        configs selection for a new project.
-        """
-        # Project Name --------------------------------------------------------
-
-        await self.fill_input(pilot, "#configs_name_input", project_name)
-        assert (
-            configs_content.query_one("#configs_name_input").value
-            == project_name
-        )
-
-        # Shared Config Widgets -----------------------------------------------
-
-        default_kwargs = {
-            "local_path": "",
-            "central_path": "",
-            "connection_method": "local_filesystem",
-        }
-        await self.check_configs_widgets_match_configs(
-            configs_content, default_kwargs
-        )
-        await self.set_configs_content_widgets(pilot, kwargs)
-        await self.check_configs_widgets_match_configs(configs_content, kwargs)
-
-        await pilot.pause()

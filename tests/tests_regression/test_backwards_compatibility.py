@@ -76,6 +76,31 @@ class TestBackwardsCompatibility:
         assert transfer_checkboxes["motion"]["displayed"] is False
         assert transfer_checkboxes["f2pe"]["displayed"] is False
 
+    def test_new_connection_methods_for_backwards_compatibility(
+        self, project, tmp_path
+    ):
+        """This tests backward compatibility for new connection method (`gdrive` and `aws`)
+        config keys with the old config.yaml.
+
+        This is tested by loading an old version of config.yaml and checking if it has the
+        new config values.
+        """
+        reloaded_ver_configs, reloaded_ver_persistent_settings = (
+            self.load_and_check_old_version_yamls(project, tmp_path, "v0.6.0")
+        )
+        assert reloaded_ver_configs["local_path"] == Path("old_ver")
+
+        new_config_keys = [
+            "gdrive_client_id",
+            "gdrive_root_folder_id",
+            "aws_access_key_id",
+            "aws_region",
+        ]
+
+        for key in new_config_keys:
+            assert key in reloaded_ver_configs
+            assert reloaded_ver_configs[key] is None
+
     def load_and_check_old_version_yamls(
         self, project, tmp_path, datashuttle_version
     ):
