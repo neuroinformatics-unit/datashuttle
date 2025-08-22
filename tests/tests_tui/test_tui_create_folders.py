@@ -345,7 +345,7 @@ class TestTuiCreateFolders(TuiBase):
                 pilot, "#create_folders_settings_button"
             )
             await self.scroll_to_click_pause(
-                pilot, "#create_folders_ALLOW_ALPHANUMERIC_checkbox"
+                pilot, "#create_folders_settings_allow_alphanumeric_checkbox"
             )
             await self.scroll_to_click_pause(
                 pilot, "#create_folders_settings_close_button"
