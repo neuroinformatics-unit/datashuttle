@@ -397,7 +397,7 @@ class TestTuiWidgets(TuiBase):
                 pilot.app.screen.query_one(
                     "#suggest_next_sub_ses_central_checkbox"
                 ).label._text
-                == "Search Central For Suggestions"
+                == "Search central for suggestions"
             )
             assert (
                 pilot.app.screen.query_one(
@@ -420,12 +420,11 @@ class TestTuiWidgets(TuiBase):
                 is False
             )
 
-            # allow_alphanumeric_sub_ses_values
             assert (
                 pilot.app.screen.query_one(
                     "#create_folders_settings_allow_alphanumeric_checkbox"
                 ).label._text
-                == "allow_alphanumeric_sub_ses_values"
+                == "Allow alphanumeric sub- and ses- values"
             )
             assert (
                 pilot.app.screen.query_one(
