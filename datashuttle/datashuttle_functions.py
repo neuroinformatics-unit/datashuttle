@@ -28,6 +28,7 @@ def quick_validate_project(
     display_mode: DisplayMode = "warn",
     strict_mode: bool = False,
     name_templates: Optional[Dict] = None,
+    allow_alphanumeric_sub_ses_values: bool = False,
 ) -> List[str]:
     """Perform validation on a NeuroBlueprint-formatted project.
 
@@ -57,6 +58,14 @@ def quick_validate_project(
         A dictionary of templates for subject and session name
         to validate against. See ``DataShuttle.set_name_templates()``
         for details.
+
+    allow_alphanumeric_sub_ses_values
+        If `True`, any alphanumeric character are allowed for the values associated
+        with sub- or ses-  keys. Otherwise, values must be integer
+        and the following additional checks are performed:
+            - Identical numbers are considered the same value even if padded with different number of zeros
+                (e.g. sub-01 and sub-001_date-20240101 are considered duplicate).
+            - Labels must be the same length (e.g. sub-01 and sub-002 is invalid).
 
     Returns
     -------
@@ -95,6 +104,7 @@ def quick_validate_project(
         display_mode=display_mode,
         name_templates=name_templates,
         strict_mode=strict_mode,
+        allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
     )
 
     return error_messages

@@ -103,6 +103,11 @@ class ValidateContent(Container):
                     value=False,
                     id="validate_strict_mode_checkbox",
                 ),
+                Checkbox(
+                    "Allow alphanumeric sub- and ses- values",
+                    value=False,
+                    id="validate_allow_alphanumeric_sub_ses_values_checkbox",
+                ),
                 id="validate_arguments_horizontal",
             ),
             RichLog(highlight=True, markup=True, id="validate_richlog"),
@@ -119,6 +124,7 @@ class ValidateContent(Container):
             "validate_top_level_folder_select",
             "validate_include_central_checkbox",
             "validate_strict_mode_checkbox",
+            "validate_allow_alphanumeric_sub_ses_values_checkbox",
         ]:
             self.query_one(f"#{id}").tooltip = get_tooltip(id)
 
@@ -150,9 +156,15 @@ class ValidateContent(Container):
             select_value = self.query_one(
                 "#validate_top_level_folder_select"
             ).value
+
             top_level_folder = None if select_value == "both" else select_value
+
             strict_mode = self.query_one(
                 "#validate_strict_mode_checkbox"
+            ).value
+
+            allow_alphanumeric_sub_ses_values = self.query_one(
+                "#validate_allow_alphanumeric_sub_ses_values_checkbox"
             ).value
 
             if self.interface:
@@ -167,6 +179,7 @@ class ValidateContent(Container):
                     top_level_folder=top_level_folder,
                     include_central=include_central,
                     strict_mode=strict_mode,
+                    allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
                 )
                 if not success:
                     self.parent_class.mainwindow.show_modal_error_dialog(
@@ -196,6 +209,7 @@ class ValidateContent(Container):
                     path_,
                     top_level_folder=top_level_folder,
                     strict_mode=strict_mode,
+                    allow_alphanumeric_sub_ses_values=allow_alphanumeric_sub_ses_values,
                 )
                 self.write_results_to_richlog(output)
 
