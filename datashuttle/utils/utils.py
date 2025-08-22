@@ -343,9 +343,9 @@ def all_identical(list_: List) -> bool:
     return len(set(list_)) == 1
 
 
-def get_random_string() -> str:
-    """Return a random string of characters."""
+def get_random_string(num_chars: int = 15) -> str:
+    """Return a random string of alphanumeric characters."""
     characters = string.ascii_letters + string.digits
-    random_string = "".join(random.choices(characters, k=15))
+    random_string = "".join(random.choices(characters, k=num_chars))
 
     return random_string

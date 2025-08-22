@@ -54,6 +54,7 @@ class TestTuiGdriveConfigs(TuiConfigsBase):
 
             await self.switch_tab(pilot, "configs")
 
+            # Create mock gdrive configs to input to widgets and check
             project_cfg = copy.deepcopy(pilot.app.screen.interface.project.cfg)
             new_kwargs = {
                 "local_path": self.make_and_get_random_project_path(

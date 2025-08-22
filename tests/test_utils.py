@@ -435,14 +435,14 @@ def recursive_search_central(project: DataShuttle):
         pipe_std=True,
     )
 
-    files_or_folders = json.loads(output.stdout)
+    all_files_or_folders = json.loads(output.stdout)
 
-    for file_or_folder in files_or_folders:
+    for file_or_folder in all_files_or_folders:
         is_dir = file_or_folder.get("IsDir", False)
 
         if not is_dir:
             file_path = file_or_folder["Path"]
-            all_filenames.append(path_ + "/" + file_path)
+            all_filenames.append(f"{path_}/{file_path}")
 
     return all_filenames
 

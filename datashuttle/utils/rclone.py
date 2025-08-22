@@ -338,6 +338,7 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     filename = f"{utils.get_random_string()}_temp.txt"
 
     if cfg["central_path"] is None:
+        assert cfg["connection_method"] == "gdrive", "`central_path` may only be `None` for `gdrive`"
         tempfile_path = filename
     else:
         tempfile_path = (cfg["central_path"] / filename).as_posix()
