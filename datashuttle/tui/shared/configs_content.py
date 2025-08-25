@@ -276,21 +276,18 @@ class ConfigsContent(Container):
                 ]
             )
         else:
-            self.query_one(
-                "#configs_local_filesystem_radiobutton"
-            ).value = True
+            self.query_one("#configs_local_only_radiobutton").value = True
 
-            self.setup_widgets_to_display(connection_method="local_filesystem")
+            self.setup_widgets_to_display(connection_method=None)
 
         # Setup tooltips
         if not self.interface:
             id = "#configs_name_input"
             self.query_one(id).tooltip = get_tooltip(id)
 
-            # Assumes 'local_filesystem' is default if no project set.
+            # Assumes local-only is default if no project set.
             assert (
-                self.query_one("#configs_local_filesystem_radiobutton").value
-                is True
+                self.query_one("#configs_local_only_radiobutton").value is True
             )
 
         for id in [
@@ -359,11 +356,9 @@ class ConfigsContent(Container):
     def set_central_path_input_tooltip(
         self, connection_method: str | None
     ) -> None:
-        """Set tooltip depending on whether connection method is SSH or local filesystem."""
+        """Set tooltip depending on the connection method."""
         if connection_method is None:
-            tooltip = get_tooltip(
-                "config_central_path_input_mode-local_filesystem"
-            )
+            tooltip = get_tooltip("config_central_path_input_mode-local_only")
         else:
             tooltip = get_tooltip(
                 f"config_central_path_input_mode-{connection_method}"

@@ -62,6 +62,9 @@ def get_tooltip(id: str) -> str:
             "to a project folder, possibly on a mounted drive.\n\n"
         )
 
+    elif id == "config_central_path_input_mode-local_only":
+        tooltip = "Central Path is not required in local-only mode."
+
     elif id == "config_central_path_input_mode-aws":
         tooltip = (
             "The path to the project folder within the aws bucket.\n"
