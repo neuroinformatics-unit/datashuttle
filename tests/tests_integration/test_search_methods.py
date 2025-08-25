@@ -1,4 +1,3 @@
-import subprocess
 from pathlib import Path
 
 import pytest
@@ -7,6 +6,7 @@ from datashuttle.utils.folders import (
     search_central_via_connection,
     search_local_filesystem,
 )
+from datashuttle.utils.rclone import call_rclone
 
 from .. import test_utils
 from ..base import BaseTest
@@ -65,9 +65,7 @@ class TestSubSesSearches(BaseTest):
             lambda connection_method: "local",
         )
 
-        subprocess.run(
-            "rclone config create local local nounc true", shell=True
-        )
+        call_rclone("config create local local nounc true")
 
         # Perform a range of checks across folders and files
         # and check the outputs of both approaches match.

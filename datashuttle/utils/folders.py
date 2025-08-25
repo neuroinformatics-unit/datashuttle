@@ -642,8 +642,9 @@ def search_local_filesystem(
     ----------
     search_path
         The path to search (relative to the local or remote drive). For example,
-        for "local_filesystem" this is the path on the local machine. For "ssh", this
-        is the path on the machine that has been connected to.
+        for "local_filesystem" this is the path on the local machine. For any other
+        connection to central, this is the path on the central storage that has been
+        connected to.
 
     search_prefix
         The search string e.g. "sub-*".
@@ -683,10 +684,13 @@ def search_central_via_connection(
         datashuttle Configs class.
     search_path
         The path to search (relative to the local or remote drive). For example,
-        for "local_filesystem" this is the path on the local machine. For "ssh", this
-        is the path on the machine that has been connected to.
+        for "local_filesystem" this is the path on the local machine. For any other
+        connection to central, this is the path on the central storage that has been
+        connected to.
+
     search_prefix
         The search string e.g. "sub-*".
+
     return_full_path
         If `True`, return the full filepath, otherwise return only the folder/file name.
 
