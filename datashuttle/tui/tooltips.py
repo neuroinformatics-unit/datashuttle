@@ -73,7 +73,7 @@ def get_tooltip(id: str) -> str:
 
     elif id == "config_central_path_input_mode-gdrive":
         tooltip = (
-            "The path to the project folder within the Google Drive folder.\n"
+            "The path to the project folder within the Google Drive folder.\n\n"
             "Leave blank if the Google Drive folder is the project folder."
         )
     # Google Drive configs
@@ -90,7 +90,8 @@ def get_tooltip(id: str) -> str:
     elif id == "#configs_gdrive_root_folder_id_input":
         tooltip = (
             "The Google Drive root folder ID to use for transfer.\n\n"
-            "It can be obtained by navigating to the folder in Google Drive and copying the ID from the URL.\n\n"
+            "It can be obtained by navigating to the folder in Google Drive "
+            "and copying the ID from the URL\n(the code after the /folders/ section).\n\n"
         )
 
     # Settings
