@@ -302,7 +302,7 @@ class TestTuiSetupGdrive(TuiBase):
         await self.scroll_to_click_pause(pilot, "#setup_gdrive_enter_button")
 
         assert (
-            "Are you running Datashuttle on a machine "
+            "Are you running datashuttle on a machine "
             "that can open a web browser?"
             in pilot.app.screen.query_one(
                 "#gdrive_setup_messagebox_message"

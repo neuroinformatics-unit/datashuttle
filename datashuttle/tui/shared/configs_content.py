@@ -187,7 +187,7 @@ class ConfigsContent(Container):
                     id=self.radiobutton_id_from_connection_method("gdrive"),
                 ),
                 RadioButton(
-                    "AWS S3",
+                    "AWS S3 Bucket",
                     id=self.radiobutton_id_from_connection_method("aws"),
                 ),
                 id="configs_connect_method_radioset",
@@ -231,7 +231,7 @@ class ConfigsContent(Container):
             Horizontal(
                 Static(
                     "Set your configurations for a new project. For more "
-                    "details on each section,\nsee the Datashuttle "
+                    "details on each section,\nsee the datashuttle "
                     "documentation. Once configs are set, you will "
                     "be able\nto use the 'Create' and 'Transfer' tabs.",
                     id="configs_info_label",
@@ -320,7 +320,7 @@ class ConfigsContent(Container):
             "Local Filesystem",
             "No connection (local only)",
             "Google Drive",
-            "AWS S3",
+            "AWS S3 Bucket",
         ], "Unexpected label."
 
         connection_method = self.connection_method_from_radiobutton_id(

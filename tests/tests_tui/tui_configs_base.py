@@ -211,7 +211,7 @@ class TuiConfigsBase(TuiBase):
             "local_filesystem": "Local Filesystem",
             "ssh": "SSH",
             "gdrive": "Google Drive",
-            "aws": "AWS S3",
+            "aws": "AWS S3 Bucket",
         }
         label = connection_method_to_label[kwargs["connection_method"]]
 
