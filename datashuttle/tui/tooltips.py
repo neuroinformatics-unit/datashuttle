@@ -84,7 +84,7 @@ def get_tooltip(id: str) -> str:
         tooltip = (
             "The Google Drive Client ID to use for authentication.\n\n"
             "It can be obtained by creating an OAuth 2.0 client in the Google Cloud Console.\n\n"
-            "Can be left empty to use rclone's default client (slower)"
+            "Can be left empty to use Rclone's default client (slower)"
         )
 
     elif id == "#configs_gdrive_root_folder_id_input":
