@@ -299,14 +299,24 @@ def setup_rclone_config_for_aws(
         Whether to log, if True logger must already be initialised.
 
     """
+    aws_region = cfg["aws_region"]
+
+    # Rclone mandates location_constraint be set as the aws regions for
+    # all regions except us-east-1
+    location_constraint_key_value = (
+        ""
+        if aws_region == "us-east-1"
+        else f" location_constraint {aws_region}"
+    )
+
     output = call_rclone(
         "config create "
         f"{rclone_config_name} "
         "s3 provider AWS "
         f"access_key_id {cfg['aws_access_key_id']} "
         f"secret_access_key {aws_secret_access_key} "
-        f"region {cfg['aws_region']} "
-        f"location_constraint {cfg['aws_region']}",
+        f"region {aws_region}"
+        f"{location_constraint_key_value}",
         pipe_std=True,
     )
 
@@ -325,10 +335,15 @@ def check_successful_connection_and_raise_error_on_fail(cfg: Configs) -> None:
     If the command fails, it raises a ConnectionError. The created file is
     deleted thereafter.
     """
+    filename = f"{utils.get_random_string()}_temp.txt"
+
     if cfg["central_path"] is None:
-        tempfile_path = "temp.txt"
+        assert cfg["connection_method"] == "gdrive", (
+            "`central_path` may only be `None` for `gdrive`"
+        )
+        tempfile_path = filename
     else:
-        tempfile_path = (cfg["central_path"] / "temp.txt").as_posix()
+        tempfile_path = (cfg["central_path"] / filename).as_posix()
 
     output = call_rclone(
         f"touch {cfg.get_rclone_config_name()}:{tempfile_path}", pipe_std=True
