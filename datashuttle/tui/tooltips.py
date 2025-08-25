@@ -73,8 +73,8 @@ def get_tooltip(id: str) -> str:
 
     elif id == "config_central_path_input_mode-gdrive":
         tooltip = (
-            "The path to the project folder within the google drive folder.\n"
-            "Leave blank if the google drive folder is the project folder."
+            "The path to the project folder within the Google Drive folder.\n"
+            "Leave blank if the Google Drive folder is the project folder."
         )
     # Google Drive configs
     # -------------------------------------------------------------------------

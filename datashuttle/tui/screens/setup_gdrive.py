@@ -241,7 +241,7 @@ class SetupGdriveScreen(ModalScreen):
 
         The setup is run in a worker thread to avoid blocking the UI so that
         the user can cancel the setup if needed. This function starts the worker
-        thread for google drive setup, sets `self.setup_worker` to the worker and
+        thread for Google Drive setup, sets `self.setup_worker` to the worker and
         awaits the worker to finish. After completion, it displays a
         success / failure screen. The setup on the lower level is a bit complicated.
         The worker thread runs the `setup_google_drive_connection` method of the
