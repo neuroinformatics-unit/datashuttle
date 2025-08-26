@@ -80,7 +80,7 @@ def preliminary_for_setup_without_browser(
 
 def ask_user_for_browser(log: bool = True) -> bool:
     """Ask the user if they have access to an internet browser, for Google Drive set up."""
-    message = "Are you running atashuttle on a machine with access to a web browser? (y/n): "
+    message = "Are you running Datashuttle on a machine with access to a web browser? (y/n): "
     input_ = utils.get_user_input(message).lower()
 
     while input_ not in ["y", "n"]:

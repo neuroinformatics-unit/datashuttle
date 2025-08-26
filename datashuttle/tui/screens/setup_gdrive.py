@@ -185,9 +185,7 @@ class SetupGdriveScreen(ModalScreen):
         The connection setup is asynchronous so that the user is able to
         cancel the setup if anything goes wrong without quitting datashuttle altogether.
         """
-        message = (
-            "Please authenticate through browser (it should open shortly)."
-        )
+        message = "Please authenticate through browser (it should open automatically)."
         self.update_message_box_message(message)
 
         asyncio.create_task(

@@ -797,7 +797,7 @@ class ConfigsContent(Container):
 
         # Central Path Label
         central_path_label = self.query_one("#configs_central_path_label")
-        if connection_method in ["gdrive"]:
+        if connection_method == "gdrive":
             central_path_label.update(content="Central Path (Optional)")
         else:
             central_path_label.update(content="Central Path")
