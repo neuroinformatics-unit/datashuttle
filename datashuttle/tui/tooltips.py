@@ -67,8 +67,9 @@ def get_tooltip(id: str) -> str:
 
     elif id == "config_central_path_input_mode-aws":
         tooltip = (
-            "The path to the project folder within the aws bucket.\n"
-            "Leave blank if the aws bucket is the project folder."
+            "The path to the project folder within the AWS bucket.\n\n"
+            "The first part must be the bucket name. To transfer directly "
+            "into the bucket, use only the bucket name."
         )
 
     elif id == "config_central_path_input_mode-gdrive":
@@ -84,7 +85,7 @@ def get_tooltip(id: str) -> str:
         tooltip = (
             "The Google Drive Client ID to use for authentication.\n\n"
             "It can be obtained by creating an OAuth 2.0 client in the Google Cloud Console.\n\n"
-            "Can be left empty to use Rclone's default client (slower)"
+            "Can be left empty to use Rclone's default client (may be slower)"
         )
 
     elif id == "#configs_gdrive_root_folder_id_input":
@@ -93,6 +94,18 @@ def get_tooltip(id: str) -> str:
             "It can be obtained by navigating to the folder in Google Drive "
             "and copying the ID from the URL\n(the code after the /folders/ section).\n\n"
         )
+
+    # AWS configs
+    # -------------------------------------------------------------------------
+
+    elif id == "#configs_aws_access_key_id_input":
+        tooltip = (
+            "The Amazon IAM Access Key ID.\n\n"
+            "Manage or create one in the AWS Console under IAM settings."
+        )
+
+    elif id == "#configs_aws_region_select":
+        tooltip = "Select the region for the S3 Bucket you are connecting to."
 
     # Settings
     # -------------------------------------------------------------------------

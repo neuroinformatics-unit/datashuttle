@@ -129,13 +129,13 @@ class ConfigsContent(Container):
             Label("Root Folder ID", id="configs_gdrive_root_folder_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="Google Drive Root Folder ID",
+                placeholder="e.g. 1KAN9QLD2K2EANE",
                 id="configs_gdrive_root_folder_id_input",
             ),
             Label("Client ID (Optional)", id="configs_gdrive_client_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="Google Drive Client ID (Optional)",
+                placeholder="e.g. 93412981629-2icf0ba09cks9.apps.googleusercontent.com",
                 id="configs_gdrive_client_id_input",
             ),
         ]
@@ -144,7 +144,7 @@ class ConfigsContent(Container):
             Label("AWS Access Key ID", id="configs_aws_access_key_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="AWS Access Key ID eg. EJIBCLSIP2K2PQK3CDON",
+                placeholder="eg. EJIBCLSIP2K2PQK3CDON",
                 id="configs_aws_access_key_id_input",
             ),
             Label("AWS S3 Region", id="configs_aws_region_label"),
@@ -300,6 +300,8 @@ class ConfigsContent(Container):
             "#configs_central_host_id_input",
             "#configs_gdrive_client_id_input",
             "#configs_gdrive_root_folder_id_input",
+            "#configs_aws_access_key_id_input",
+            "#configs_aws_region_select",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -391,9 +393,10 @@ class ConfigsContent(Container):
         ):
             if connection_method == "ssh":
                 example_path = "e.g. /nfs/path_on_server/myprojects/central"
-            elif connection_method in ["aws", "gdrive"]:
+            elif connection_method == "aws":
+                example_path = "my-bucket-name/my-folder"
+            elif connection_method == "gdrive":
                 example_path = ""
-
         else:
             if platform.system() == "Windows":
                 example_path = rf"e.g. C:\path\to\{local_or_central}\my_projects\my_first_project"
@@ -794,7 +797,7 @@ class ConfigsContent(Container):
 
         # Central Path Label
         central_path_label = self.query_one("#configs_central_path_label")
-        if connection_method in ["gdrive", "aws"]:
+        if connection_method in ["gdrive"]:
             central_path_label.update(content="Central Path (Optional)")
         else:
             central_path_label.update(content="Central Path")
