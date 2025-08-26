@@ -292,8 +292,7 @@ class TestConfigs(BaseTest):
             assert no_cfg_project.cfg["central_path"] is None
 
     @pytest.mark.parametrize(
-        "connection_method",
-        ["aws"],  # "local_filesystem", "ssh", "gdrive", "
+        "connection_method", ["aws", "local_filesystem", "ssh", "gdrive"]
     )
     def test_get_base_folder(
         self, tmp_path, no_cfg_project, connection_method
