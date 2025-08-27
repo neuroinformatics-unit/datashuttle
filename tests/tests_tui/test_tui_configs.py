@@ -20,7 +20,7 @@ class TestTuiConfigs(TuiConfigsBase):
 
     @pytest.mark.asyncio
     @pytest.mark.parametrize("kwargs_set", [1, 2])
-    async def test_make_new_project_configs(
+    async def test_make_new_project_configs__(
         self,
         empty_project_paths,
         kwargs_set,
@@ -69,7 +69,9 @@ class TestTuiConfigs(TuiConfigsBase):
                 pilot,
                 project_name,
                 tmp_config_path,
-                connection_method_name="SSH" if kwargs_set == 2 else "",
+                connection_method_name="SSH"
+                if kwargs_set == 2
+                else "Local Filesystem",
                 config_kwargs=kwargs,
             )
 
@@ -163,6 +165,10 @@ class TestTuiConfigs(TuiConfigsBase):
 
             configs_content = pilot.app.screen.query_one(
                 "#new_project_configs_content"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#configs_local_filesystem_radiobutton"
             )
 
             local_path_button = pilot.app.screen.query_one(

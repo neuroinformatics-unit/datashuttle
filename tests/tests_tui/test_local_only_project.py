@@ -205,6 +205,10 @@ class TestTuiLocalOnlyProject(TuiBase):
             "#new_project_configs_content"
         )
 
+        await self.scroll_to_click_pause(
+            pilot, "#configs_local_filesystem_radiobutton"
+        )
+
         # Input `local_path` and placeholder text in `central_path` which
         # will be deleted when the no-connection option is selected.
         await self.fill_input(pilot, "#configs_name_input", project_name)

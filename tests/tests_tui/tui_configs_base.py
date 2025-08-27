@@ -126,7 +126,7 @@ class TuiConfigsBase(TuiBase):
         default_kwargs = {
             "local_path": "",
             "central_path": "",
-            "connection_method": "local_filesystem",
+            "connection_method": "local_only",
         }
         await self.check_configs_widgets_match_configs(
             configs_content, default_kwargs
@@ -212,6 +212,7 @@ class TuiConfigsBase(TuiBase):
             "ssh": "SSH",
             "gdrive": "Google Drive",
             "aws": "AWS S3 Bucket",
+            "local_only": "No connection (local only)",
         }
         label = connection_method_to_label[kwargs["connection_method"]]
 
@@ -350,6 +351,11 @@ class TuiConfigsBase(TuiBase):
             select = pilot.app.screen.query_one("#configs_aws_region_select")
             select.value = kwargs["aws_region"]
             await pilot.pause()
+
+        elif kwargs["connection_method"] == "local_filesystem":
+            await self.scroll_to_click_pause(
+                pilot, "#configs_local_filesystem_radiobutton"
+            )
 
         # Central Path --------------------------------------------------------
 

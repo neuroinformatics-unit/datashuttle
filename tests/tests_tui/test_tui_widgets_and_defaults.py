@@ -108,7 +108,11 @@ class TestTuiWidgets(TuiBase):
                 configs_content.query_one(
                     "#configs_connect_method_radioset"
                 ).pressed_button.label._text
-                == "Local Filesystem"
+                == "No connection (local only)"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#configs_local_filesystem_radiobutton"
             )
 
             # Central Path (Local Filesystem) ------------------------------------------
