@@ -18,8 +18,6 @@ if TYPE_CHECKING:
     from datashuttle.utils.custom_types import TopLevelFolder
 
 import fnmatch
-import json
-import fnmatch
 from pathlib import Path
 
 from datashuttle.configs import canonical_folders, canonical_tags
