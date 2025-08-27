@@ -129,13 +129,13 @@ class ConfigsContent(Container):
             Label("Root Folder ID", id="configs_gdrive_root_folder_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="Google Drive Root Folder ID",
+                placeholder="e.g. 1KAN9QLD2K2EANE",
                 id="configs_gdrive_root_folder_id_input",
             ),
             Label("Client ID (Optional)", id="configs_gdrive_client_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="Google Drive Client ID (Optional)",
+                placeholder="e.g. 93412981629-2icf0ba09cks9.apps.googleusercontent.com",
                 id="configs_gdrive_client_id_input",
             ),
         ]
@@ -144,7 +144,7 @@ class ConfigsContent(Container):
             Label("AWS Access Key ID", id="configs_aws_access_key_id_label"),
             ClickableInput(
                 self.parent_class.mainwindow,
-                placeholder="AWS Access Key ID eg. EJIBCLSIP2K2PQK3CDON",
+                placeholder="eg. EJIBCLSIP2K2PQK3CDON",
                 id="configs_aws_access_key_id_input",
             ),
             Label("AWS S3 Region", id="configs_aws_region_label"),
@@ -187,7 +187,7 @@ class ConfigsContent(Container):
                     id=self.radiobutton_id_from_connection_method("gdrive"),
                 ),
                 RadioButton(
-                    "AWS S3",
+                    "AWS S3 Bucket",
                     id=self.radiobutton_id_from_connection_method("aws"),
                 ),
                 id="configs_connect_method_radioset",
@@ -231,7 +231,7 @@ class ConfigsContent(Container):
             Horizontal(
                 Static(
                     "Set your configurations for a new project. For more "
-                    "details on each section,\nsee the Datashuttle "
+                    "details on each section,\nsee the datashuttle "
                     "documentation. Once configs are set, you will "
                     "be able\nto use the 'Create' and 'Transfer' tabs.",
                     id="configs_info_label",
@@ -276,21 +276,18 @@ class ConfigsContent(Container):
                 ]
             )
         else:
-            self.query_one(
-                "#configs_local_filesystem_radiobutton"
-            ).value = True
+            self.query_one("#configs_local_only_radiobutton").value = True
 
-            self.setup_widgets_to_display(connection_method="local_filesystem")
+            self.setup_widgets_to_display(connection_method=None)
 
         # Setup tooltips
         if not self.interface:
             id = "#configs_name_input"
             self.query_one(id).tooltip = get_tooltip(id)
 
-            # Assumes 'local_filesystem' is default if no project set.
+            # Assumes local-only is default if no project set.
             assert (
-                self.query_one("#configs_local_filesystem_radiobutton").value
-                is True
+                self.query_one("#configs_local_only_radiobutton").value is True
             )
 
         for id in [
@@ -303,6 +300,8 @@ class ConfigsContent(Container):
             "#configs_central_host_id_input",
             "#configs_gdrive_client_id_input",
             "#configs_gdrive_root_folder_id_input",
+            "#configs_aws_access_key_id_input",
+            "#configs_aws_region_select",
         ]:
             self.query_one(id).tooltip = get_tooltip(id)
 
@@ -323,7 +322,7 @@ class ConfigsContent(Container):
             "Local Filesystem",
             "No connection (local only)",
             "Google Drive",
-            "AWS S3",
+            "AWS S3 Bucket",
         ], "Unexpected label."
 
         connection_method = self.connection_method_from_radiobutton_id(
@@ -359,11 +358,9 @@ class ConfigsContent(Container):
     def set_central_path_input_tooltip(
         self, connection_method: str | None
     ) -> None:
-        """Set tooltip depending on whether connection method is SSH or local filesystem."""
+        """Set tooltip depending on the connection method."""
         if connection_method is None:
-            tooltip = get_tooltip(
-                "config_central_path_input_mode-local_filesystem"
-            )
+            tooltip = get_tooltip("config_central_path_input_mode-local_only")
         else:
             tooltip = get_tooltip(
                 f"config_central_path_input_mode-{connection_method}"
@@ -396,9 +393,10 @@ class ConfigsContent(Container):
         ):
             if connection_method == "ssh":
                 example_path = "e.g. /nfs/path_on_server/myprojects/central"
-            elif connection_method in ["aws", "gdrive"]:
+            elif connection_method == "aws":
+                example_path = "my-bucket-name/my-folder"
+            elif connection_method == "gdrive":
                 example_path = ""
-
         else:
             if platform.system() == "Windows":
                 example_path = rf"e.g. C:\path\to\{local_or_central}\my_projects\my_first_project"
@@ -799,7 +797,7 @@ class ConfigsContent(Container):
 
         # Central Path Label
         central_path_label = self.query_one("#configs_central_path_label")
-        if connection_method in ["gdrive", "aws"]:
+        if connection_method == "gdrive":
             central_path_label.update(content="Central Path (Optional)")
         else:
             central_path_label.update(content="Central Path")

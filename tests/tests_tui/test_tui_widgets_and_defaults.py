@@ -52,7 +52,7 @@ class TestTuiWidgets(TuiBase):
             assert (
                 configs_content.query_one("#configs_info_label").renderable
                 == "Set your configurations for a new project. For more details on "
-                "each section,\nsee the Datashuttle documentation. Once configs "
+                "each section,\nsee the datashuttle documentation. Once configs "
                 "are set, you will be able\nto use the 'Create' and 'Transfer' tabs."
             )
 
@@ -108,7 +108,11 @@ class TestTuiWidgets(TuiBase):
                 configs_content.query_one(
                     "#configs_connect_method_radioset"
                 ).pressed_button.label._text
-                == "Local Filesystem"
+                == "No connection (local only)"
+            )
+
+            await self.scroll_to_click_pause(
+                pilot, "#configs_local_filesystem_radiobutton"
             )
 
             # Central Path (Local Filesystem) ------------------------------------------

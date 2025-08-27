@@ -138,7 +138,7 @@ class SetupGdriveScreen(ModalScreen):
     def ask_user_for_browser(self) -> None:
         """Ask the user if their machine has access to a browser."""
         message = (
-            "Are you running Datashuttle on a machine "
+            "Are you running datashuttle on a machine "
             "that can open a web browser?"
         )
         self.update_message_box_message(message)
@@ -185,7 +185,7 @@ class SetupGdriveScreen(ModalScreen):
         The connection setup is asynchronous so that the user is able to
         cancel the setup if anything goes wrong without quitting datashuttle altogether.
         """
-        message = "Please authenticate through browser."
+        message = "Please authenticate through browser (it should open automatically)."
         self.update_message_box_message(message)
 
         asyncio.create_task(
@@ -241,7 +241,7 @@ class SetupGdriveScreen(ModalScreen):
 
         The setup is run in a worker thread to avoid blocking the UI so that
         the user can cancel the setup if needed. This function starts the worker
-        thread for google drive setup, sets `self.setup_worker` to the worker and
+        thread for Google Drive setup, sets `self.setup_worker` to the worker and
         awaits the worker to finish. After completion, it displays a
         success / failure screen. The setup on the lower level is a bit complicated.
         The worker thread runs the `setup_google_drive_connection` method of the

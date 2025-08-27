@@ -559,7 +559,7 @@ class Interface:
             return False, str(e)
 
     def terminate_google_drive_setup(self) -> None:
-        """Terminate rclone setup for google drive by killing the rclone process."""
+        """Terminate rclone setup for Google Drive by killing the rclone process."""
         assert self.google_drive_rclone_setup_process is not None
 
         process = self.google_drive_rclone_setup_process
@@ -572,7 +572,7 @@ class Interface:
     def await_successful_gdrive_connection_setup_raise_on_fail(
         self, process: subprocess.Popen
     ):
-        """Wait for rclone setup for google drive to finish and verify successful connection.
+        """Wait for rclone setup for Google Drive to finish and verify successful connection.
 
         The `self.gdrive_setup_process_killed` flag helps prevent raising errors in case the
         process was killed manually.

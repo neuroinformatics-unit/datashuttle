@@ -215,7 +215,7 @@ class TestTuiSetupGdrive(TuiBase):
             # Setup connection and cancel midway
             await self.setup_gdrive_connection_via_tui(pilot)
             assert (
-                "Please authenticate through browser."
+                "Please authenticate through browser"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
                 ).renderable
@@ -227,7 +227,7 @@ class TestTuiSetupGdrive(TuiBase):
             # Try setting up the connection again
             await self.setup_gdrive_connection_via_tui(pilot)
             assert (
-                "Please authenticate through browser."
+                "Please authenticate through browser"
                 in pilot.app.screen.query_one(
                     "#gdrive_setup_messagebox_message"
                 ).renderable
@@ -302,7 +302,7 @@ class TestTuiSetupGdrive(TuiBase):
         await self.scroll_to_click_pause(pilot, "#setup_gdrive_enter_button")
 
         assert (
-            "Are you running Datashuttle on a machine "
+            "Are you running datashuttle on a machine "
             "that can open a web browser?"
             in pilot.app.screen.query_one(
                 "#gdrive_setup_messagebox_message"
